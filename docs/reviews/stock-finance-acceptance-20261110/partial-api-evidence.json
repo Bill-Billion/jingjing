@@ -1,0 +1,123 @@
+{
+  "code_sha": "6b8f711c554412a177387f586d89d615aabae8e9",
+  "environment": "isolated",
+  "dataset_id": "stock-finance-synthetic-20261110",
+  "checks": [
+    {
+      "id": "STOCK-SAME-ORDER",
+      "result": "PASS",
+      "surface": "api",
+      "case": "normal",
+      "record_id": "5c9ca6b3-0e7d-4869-93eb-f0b6492f0ff2",
+      "actors": [
+        "buyer",
+        "seller",
+        "independent_reviewer"
+      ],
+      "test_case": "one stock order survives lost response and refund review without duplicate money or licenses",
+      "limits": [
+        "Trusted payment/refund proofs injected internally; no provider call",
+        "Invalid-session recovery uses existing valid synthetic session, not SMS login",
+        "Synthetic file bytes; no App or web interaction"
+      ]
+    },
+    {
+      "id": "STOCK-DOWNLOAD-PARTIAL",
+      "result": "PASS",
+      "surface": "api",
+      "test_cases": [
+        "one stock order survives lost response and refund review without duplicate money or licenses",
+        "ordinary unlisting leaves purchased license and contract unchanged",
+        "rights hold remains during re-review; two approvals restore purchased access",
+        "replacement publication leaves bought file and licence intact and prevents old reactivation"
+      ],
+      "limits": [
+        "No expiring download-link refresh assertion or complete commercial-use journey in this batch"
+      ]
+    },
+    {
+      "id": "REFUND-PARTIAL",
+      "result": "PASS",
+      "surface": "api",
+      "test_cases": [
+        "one stock order survives lost response and refund review without duplicate money or licenses",
+        "refund reservations prevent concurrent excessive refunds and require separate review",
+        "verified partial refund reverses commission once with exact rounding"
+      ],
+      "limits": [
+        "No voucher, growth, points and referral reversal on same refunded order in this batch"
+      ]
+    },
+    {
+      "id": "HISTORY-PARTIAL",
+      "result": "PASS",
+      "surface": "api",
+      "test_cases": [
+        "old nonstandard commission remains payable and immutable after new-order switch",
+        "new relations take 10/30/fractional percent only after artist confirmation; old unversioned terms cannot be reinterpreted"
+      ],
+      "limits": [
+        "Missing version is rejected; review queue creation, ownership and resolution not yet proven"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/backend.junit.xml",
+      "sha256": "b05e58c898ed3583f869cb9e5af9dfc35db43df0b4f060248961aa24e36c96fb"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/backend.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/contract-six-http-fixtures.json",
+      "sha256": "87346dd78c14161b321c58e56efeccc9eee7e5d4cfc9f5d2eb44b8d07bed4428"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/customization-quote-http-fixtures.json",
+      "sha256": "05873ac6f75ea9791cd1a7cdfc7e01e97e5079f0101fa28e18698b98f3257a83"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/finance-http-fixtures.json",
+      "sha256": "0aea38e269288371fa76203a9639e79ac8e3f1a293f815d44462a81f5bc2f86d"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/gigs-contract-http-fixtures.json",
+      "sha256": "be9e9fa15f52cafa452c21a6d66ef5bafbacd2e54e1c13cd09c7e207b6ca9fc9"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/gigs-http-fixtures.json",
+      "sha256": "b7d1b0b2be5efc33a1fe70d76bdc5f5cc4a7a72b7fa30ad3a768ccf660bb904e"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/marketplace-contract-http-fixtures.json",
+      "sha256": "54692486c7981dd619468fd05398551f30f2d3c12768b32c1c36bf0376e9b8ff"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/marketplace-http-fixtures.json",
+      "sha256": "47f0ffa5ec3bd1eff849eafa7d69e4b464ef578c70115357c8e6209c9e6204d6"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/run.json",
+      "sha256": "5163f49c2eaa39adb63b616bb23c928d537df2bdbfe3c6f6d73deef4b3f3e1c8"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/runtime-contract.json",
+      "sha256": "33078b7c698098401f221939ff88e1098e55f1403f9ca6aab44365e65a89e8a8"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/stock-http-fixtures.json",
+      "sha256": "705177fe3867eb217516b7686830cdf78bcb94822e3cd62b2a4fbcc73f9608a5"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/stock-payment-refund-journey-20261110.json",
+      "sha256": "bf33a99e9182bfe4f1276d326983f7399fdd67b2051e6fd99d1b622b8638b748"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/trade-http-fixtures.json",
+      "sha256": "9ce62e938ecc11a5598ccd7ff45e15916f9fb7a373413d844989338f7328e103"
+    }
+  ],
+  "meaning": "部分证据不等于原条款或整链全部通过"
+}

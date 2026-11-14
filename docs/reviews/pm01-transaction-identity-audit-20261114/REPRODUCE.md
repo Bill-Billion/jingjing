@@ -1,0 +1,3 @@
+# 复验和当前运行
+
+当前完整后端exec64612仍活跃，先轮询同句柄，不启动第二轮。独立定制探针源在customization-identity-probe.cjs，使用backendOnlyEnvironment及test-network-guard，只连已校验的本机测试MySQL；创建独立jx_test进程库后清理。HTTP在CONTRACT_20261029配置下创建/审核/接受5工作日当前报价，付款准备使用同样显式合同配置的业务仓库，不调用真实渠道。原输出失败是预期发现缺口，不应改断言使之变绿。

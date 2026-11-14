@@ -1,0 +1,87 @@
+{
+  "synthetic_only": true,
+  "database": "jx_test_27752_77926ffdd78c",
+  "checks": [
+    {
+      "case": "payout-approval-after-restriction",
+      "evidence": "c7c2d6d1-b760-4097-9094-8e76e926b8da",
+      "payout": "120a485f-6649-4f03-9ba2-c8e75cbe6de0",
+      "asset": "a57c0029-7ce7-45af-8f65-38c12c99aee4",
+      "privacy_request": "a27bb2e7-a2d4-415c-8ce6-b2d574a313d8",
+      "expected_status": 409,
+      "actual_status": 409,
+      "actual_error": "CONTENT_RESTRICTED",
+      "before": {
+        "records": 4,
+        "entries": 2,
+        "audit": 13
+      },
+      "after": {
+        "records": 4,
+        "entries": 2,
+        "audit": 13
+      },
+      "payout_status": "APPROVED",
+      "evidence_status": "IN_REVIEW",
+      "before_paid": 0,
+      "after_paid": 0
+    },
+    {
+      "case": "same-payout-after-approved-release",
+      "evidence": "c7c2d6d1-b760-4097-9094-8e76e926b8da",
+      "payout": "120a485f-6649-4f03-9ba2-c8e75cbe6de0",
+      "result": "PASS",
+      "paid_minor": 1000
+    },
+    {
+      "case": "restricted-new-draft",
+      "asset": "4af76dd7-7758-49cd-a285-1fa8ad626a1d",
+      "expected_status": 409,
+      "actual_status": 409,
+      "actual_error": "CONTENT_RESTRICTED",
+      "before": {
+        "records": 4,
+        "entries": 3,
+        "audit": 15
+      },
+      "after": {
+        "records": 4,
+        "entries": 3,
+        "audit": 15
+      }
+    },
+    {
+      "case": "draft-after-approved-release",
+      "draft": "fbb1725f-9815-4290-a747-2a1caafdb96e",
+      "result": "PASS"
+    },
+    {
+      "case": "restricted-approved-agreement-new-payout",
+      "agreement": "670d27f0-eb0c-414b-a455-49faa7b9f9cd",
+      "asset": "9ea3376e-970f-4af5-b1b6-9b7aeb0c95e2",
+      "destination_asset": "f7fa7106-2371-4ad9-b45b-f6b6d2db8f3c",
+      "expected_status": 409,
+      "actual_status": 409,
+      "actual_error": "CONTENT_RESTRICTED",
+      "before": {
+        "records": 5,
+        "entries": 3,
+        "audit": 16
+      },
+      "after": {
+        "records": 5,
+        "entries": 3,
+        "audit": 16
+      }
+    },
+    {
+      "case": "payout-after-agreement-restriction-released",
+      "payout": "9731d100-c8bc-4f09-998a-bd3fcc8a0213",
+      "result": "PASS"
+    }
+  ],
+  "cleanup": {
+    "database_removed": true,
+    "server_stopped": true
+  }
+}

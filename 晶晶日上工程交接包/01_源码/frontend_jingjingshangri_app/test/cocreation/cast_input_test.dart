@@ -83,6 +83,8 @@ void main() {
     await tester
         .runAsync(() => Future<void>.delayed(const Duration(milliseconds: 40)));
     await tester.pumpAndSettle();
+    expect(input.selectedPerson?.id, artists.personKey);
+    expect(input.selectedPerson?.owner, personId);
     expect(find.text('本人测试艺人 · 版本1'), findsOneWidget);
     expect(find.text('本人共创作品使用原约定 · 版本2'), findsOneWidget);
     expect(find.textContaining('尚无属于当前本人的艺人资料'), findsNothing);

@@ -1,5 +1,5 @@
 {
-  "version": "0.30.0-rc.1",
+  "version": "0.31.78-rc.6",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -276,6 +276,8 @@
     "getAuditionMessages",
     "getAuditionItinerary",
     "downloadAuditionMaterial",
+    "downloadAuditionDisputeEvidence",
+    "supplementAuditionDisputeEvidence",
     "reviewAuditionDelivery",
     "listAuditionInvitationOffers",
     "listWalletRules",
@@ -331,6 +333,7 @@
     "engagementReferralRecords",
     "engagementRankings",
     "engagementBuyerCityRank",
+    "engagementMyProfiles",
     "engagementMyRewards",
     "engagementExposures",
     "engagementCompetitionResult",
@@ -380,6 +383,9 @@
     "redemptionReviewStock",
     "redemptionExchange",
     "redemptionBind",
+    "redemptionSupplierGrants",
+    "redemptionSubmitDeliveryEvidence",
+    "redemptionDeliveryEvidenceOptions",
     "redemptionProposeDelivery",
     "redemptionReviewDelivery",
     "redemptionAcknowledge",
@@ -433,6 +439,7 @@
     "reopenPrivacyRequest",
     "getPrivacyResponseHistory",
     "downloadPrivacyResponseFile",
+    "downloadPrivacyOperationEvidence",
     "getPrivacyModelAssets",
     "getPrivacyActions",
     "withdrawPrivacyConsent",
@@ -449,7 +456,227 @@
     "createMediaTask",
     "getMediaTask",
     "getMediaTaskForReview",
-    "reviewMediaTask"
+    "reviewMediaTask",
+    "listNoticeSubmissionOptions",
+    "readNoticeInvitationContext",
+    "readPublicArtistListing",
+    "reviseStockListing",
+    "createStockSalesPublication",
+    "listStockSalesPublications",
+    "reviewStockSalesPublication",
+    "listStockParticipantOptions",
+    "listStockSalesPublicationSources",
+    "listAuditionOfferOptions",
+    "listPrivacyFileOptions",
+    "downloadPrivacyOriginalFile",
+    "customizationAttachments",
+    "uploadCustomizationAttachment",
+    "downloadCustomizationAttachment",
+    "revokeCustomizationAttachment",
+    "cocreationCreationOptions",
+    "readPublicArtistMedia",
+    "getStockPublicMedia",
+    "downloadStockCover",
+    "submitDirectoryOrganization",
+    "proposeDirectoryFeature",
+    "reviewDirectoryRecord",
+    "withdrawDirectoryRecord",
+    "listDirectoryRecords",
+    "getDirectoryRecord",
+    "listPublicOrganizations",
+    "listFeaturedArtists",
+    "getPublicOrganization",
+    "downloadOrganizationCover",
+    "downloadDirectoryMaterial",
+    "listDiscoveryCities",
+    "searchPublicCatalogues",
+    "getCollectionPreferences",
+    "setCollectionPreferences",
+    "listPersonalFavorites",
+    "setPersonalFavorite",
+    "listPersonalHistory",
+    "recordPersonalVisit",
+    "clearPersonalHistory",
+    "removePersonalHistory",
+    "getPersonalCollectionTarget",
+    "listSupportTickets",
+    "getSupportTicket",
+    "listSupportHistory",
+    "actOnSupportTicket",
+    "downloadSupportEvidence",
+    "listSupportTicketsForSupport",
+    "getSupportTicketForSupport",
+    "listSupportHistoryForSupport",
+    "actOnSupportTicketForSupport",
+    "downloadSupportEvidenceForSupport",
+    "createSupportTicket",
+    "getNotificationUnread",
+    "markNotificationSnapshotRead",
+    "listNotificationFeed",
+    "listPersonalContracts",
+    "listPersonalWorks",
+    "listPersonalIncome",
+    "getInvoiceEligibility",
+    "createInvoiceRequest",
+    "listInvoiceRequests",
+    "getInvoiceRequest",
+    "listInvoiceHistory",
+    "listInvoiceDocuments",
+    "actOnInvoice",
+    "downloadInvoiceEvidence",
+    "downloadInvoiceDocument",
+    "listInvoiceRequestsForOperator",
+    "getInvoiceRequestForOperator",
+    "listInvoiceHistoryForOperator",
+    "listInvoiceDocumentsForOperator",
+    "actOnInvoiceForOperator",
+    "downloadInvoiceEvidenceForOperator",
+    "downloadInvoiceDocumentForOperator",
+    "createPhoneChange",
+    "getCurrentPhoneChange",
+    "getPhoneChange",
+    "sendPhoneChangeChallenge",
+    "verifyPhoneChangeChallenge",
+    "confirmPhoneChange",
+    "cancelPhoneChange",
+    "getMyPartyAccess",
+    "getInvoiceCommandResult",
+    "getOperatorInvoiceCommandResult",
+    "getStockSellerEligibility",
+    "requestFreeArtistService",
+    "recordIPProcurementEvent",
+    "createIPRoyaltyStatement",
+    "downloadIPProcurementEvidence",
+    "getGigHandover",
+    "acknowledgeGigHandover",
+    "getPrivacyClosureClock",
+    "getPrivacyClosureClockForOperator",
+    "listPrivacyClosureClocks",
+    "proposePrivacyClosureClock",
+    "reviewPrivacyClosureClock",
+    "createInfringementCase",
+    "listInfringementCases",
+    "getInfringementCase",
+    "actOnInfringementCase",
+    "downloadInfringementEvidence",
+    "listInfringementCasesForOperator",
+    "getInfringementCaseForOperator",
+    "actOnInfringementCaseForOperator",
+    "downloadInfringementEvidenceForOperator",
+    "inviteGuardianLink",
+    "listGuardianRecords",
+    "getGuardianRecord",
+    "decideGuardianRecord",
+    "listGuardianRecordsForOperator",
+    "getGuardianRecordForOperator",
+    "decideGuardianRecordForOperator",
+    "updateGuardianControls",
+    "getGuardianUsage",
+    "createGuardianUsageSession",
+    "getGuardianInformation",
+    "createGuardianPrivacyRequest",
+    "createGuardianSpendingConsent",
+    "createGuardianRefundRequest",
+    "requestReviewedGuardianRefund",
+    "listGuardianSuitableContent",
+    "downloadGuardianSuitablePreview",
+    "createDailyReconciliation",
+    "listDailyReconciliations",
+    "getDailyReconciliation",
+    "listDailyReconciliationFacts",
+    "getDailyReconciliationHistory",
+    "downloadDailyReconciliationEvidence",
+    "importDailyReconciliationStatement",
+    "recordDailyReconciliationManualEvidence",
+    "compareDailyReconciliation",
+    "reviewDailyReconciliation",
+    "reopenDailyReconciliation",
+    "getConsumerControls",
+    "changeConsumerLimit",
+    "confirmConsumerLimit",
+    "cancelConsumerLimit",
+    "listConsumerLimitHistory",
+    "getPersonalUsage",
+    "reportPersonalUsage",
+    "acknowledgePersonalRest",
+    "getConsumerRiskStatus",
+    "listConsumerRiskRules",
+    "createConsumerRiskRule",
+    "reviewConsumerRiskRule",
+    "previewConsumerRisk",
+    "confirmConsumerRisk",
+    "listMyBusinessReports",
+    "cocreationCreateInviteLink",
+    "cocreationInviteLinks",
+    "cocreationRevokeInviteLink",
+    "cocreationClaimInviteLink",
+    "listAuditionDeliveryOptions",
+    "listPrivacyExecutionPolicyOptions",
+    "listOperationsPrivacyExecutionPolicyOptions",
+    "listPrivacyRetentionPolicyOptions",
+    "listNoticeCaseQuoteOptions",
+    "listGigRelationOptions",
+    "listArtistDelegationOptions",
+    "getPrivacyCopyOptions",
+    "downloadPrivacyCopyFile",
+    "getPrivacyStoryCopy",
+    "getPrivacyTransactionCopy",
+    "getPrivacyAccountCopy",
+    "submitOrganizationBatch",
+    "getOrganizationBatch",
+    "findOrganizationBatchByRequest",
+    "getDiscoveryRecommendations",
+    "getDiscoveryMatches",
+    "getEngagementRankingExplanation",
+    "getPrivacyCopyOptionsForOperations",
+    "getPrivacyAccountCopyForOperations",
+    "getPrivacyTransactionCopyForOperations",
+    "getPrivacyStoryCopyForOperations",
+    "exportPrivacyDataForOperations",
+    "getPrivacyBusinessMessageDraft",
+    "requestRechargeRefund",
+    "requestGuardianRechargeRefund",
+    "listMyRechargeRefunds",
+    "getMyRechargeRefund",
+    "listGuardianRechargeRefunds",
+    "getGuardianRechargeRefund",
+    "listOperatorRechargeRefunds",
+    "getOperatorRechargeRefund",
+    "cancelRechargeRefund",
+    "reviewRechargeRefund",
+    "scheduleRechargeRefund",
+    "retryRechargeRefundTask",
+    "downloadRechargeRefundEvidence",
+    "reviseNoticeAnnouncement",
+    "acknowledgeNoticeRevision",
+    "getNoticeRevisionHistory",
+    "assignNoticeCaseSupport",
+    "listNoticeAssignmentOptions",
+    "listNoticeAssignmentHistory",
+    "getAuditionDistanceLocation",
+    "setAuditionDistanceLocation",
+    "searchAuditionsByDistance",
+    "listCommercialMessageRisk",
+    "listAuditionMessageRisk",
+    "createProductCatalogRecord",
+    "reviseProductCatalogRecord",
+    "reviewProductCatalogRecord",
+    "withdrawProductCatalogRecord",
+    "listProductCatalogRecords",
+    "getProductCatalogRecord",
+    "listPublishedProductCatalog",
+    "getPublishedProductCatalog",
+    "engagementBuyerRankingSnapshot",
+    "engagementBuyerRankingIndex",
+    "engagementBuyerRanking",
+    "downloadProductionStoryAttachment",
+    "getDiscoveryRecommendedMatches",
+    "listPartyRepresentatives",
+    "offerPartyRepresentation",
+    "actPartyRepresentation",
+    "requestRecoveryFinanceOperation",
+    "linkRecoveryReceiptFinanceOperation",
+    "cancelRecoveryFinanceOperation"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -564,7 +791,8 @@
       "syncCustomizationRefund",
       "acknowledgeCustomizationDelivery",
       "reissueCustomizationDelivery",
-      "downloadCustomizationCaseEvidence"
+      "downloadCustomizationCaseEvidence",
+      "downloadProductionStoryAttachment"
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/customization-delivery.integration.test.cjs",
     "status": "IMPLEMENTED_ISOLATED_TESTS",
@@ -591,11 +819,12 @@
       "acknowledgeStockReceipt",
       "acceptStockDelivery",
       "openStockCase",
-      "resolveStockCase"
+      "resolveStockCase",
+      "getStockSellerEligibility"
     ],
     "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/stock.integration.test.cjs",
     "status": "IMPLEMENTED_ISOLATED_TESTS",
-    "limits": "仅后端及合成材料。页面、真实媒体、外部收退款与双方审阅合入待完成。L1可售，全部出镜人授权和独立审核必需。"
+    "limits": "新上架和新购买要求L1加主角光环人工审核；逐人授权和内容权利审核保留。历史购买保留原快照。本批合成资料验证，页面和正式服务需另验收。"
   },
   "notices": {
     "operations": [
@@ -651,6 +880,8 @@
       "getAuditionMessages",
       "getAuditionItinerary",
       "downloadAuditionMaterial",
+      "downloadAuditionDisputeEvidence",
+      "supplementAuditionDisputeEvidence",
       "reviewAuditionDelivery",
       "listAuditionInvitationOffers"
     ],
@@ -726,6 +957,7 @@
       "engagementReferralRecords",
       "engagementRankings",
       "engagementBuyerCityRank",
+      "engagementMyProfiles",
       "engagementMyRewards",
       "engagementExposures",
       "engagementCompetitionResult",
@@ -808,5 +1040,567 @@
       "正式媒体规则、云审核及存储需单独启用验证",
       "实际视频标识不代表法律合规审查完成"
     ]
+  },
+  "story_attachments_and_creation": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "customizationAttachments",
+      "uploadCustomizationAttachment",
+      "downloadCustomizationAttachment",
+      "revokeCustomizationAttachment",
+      "cocreationCreationOptions"
+    ],
+    "evidence": "docs/tasks/records/CORE-client-complete-story-20261028.md",
+    "production_enabled": false,
+    "limits": [
+      "App/Vue已由90dc8855接入附件保留和恢复；网页暂离重开恢复尚待补做浏览器检查",
+      "撤回仅关闭访问，不宣称物理删除或备份擦除",
+      "已提交文件保持历史版本，正式保留依据待甲方",
+      "共创目前仅配置的平台签约主体，外部制作机构不能因此读取私人故事"
+    ]
+  },
+  "stock_public_media": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getStockPublicMedia",
+      "downloadStockCover"
+    ],
+    "production_enabled": false,
+    "limits": [
+      "封面只取已审预览首帧，不裁切、不从完整私片截取",
+      "完整作品和预览时长分开；仅实际可解析的受限MP4",
+      "需部署配置MEDIA_FFMPEG与MEDIA_FFPROBE，缺配置明确报错",
+      "前端新封面/时长页面待接，整版未验收"
+    ]
+  },
+  "public_directory": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "submitDirectoryOrganization",
+      "proposeDirectoryFeature",
+      "reviewDirectoryRecord",
+      "withdrawDirectoryRecord",
+      "listDirectoryRecords",
+      "getDirectoryRecord",
+      "listPublicOrganizations",
+      "listFeaturedArtists",
+      "getPublicOrganization",
+      "downloadOrganizationCover",
+      "downloadDirectoryMaterial"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/directory.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端页面待接，整体业务验收未完成",
+      "精选为经独立审核的运营推荐，不是明星认证",
+      "机构公开资料不授予接单、承制或艺人代办权限"
+    ]
+  },
+  "personal_collections": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getCollectionPreferences",
+      "setCollectionPreferences",
+      "listPersonalFavorites",
+      "setPersonalFavorite",
+      "listPersonalHistory",
+      "recordPersonalVisit",
+      "clearPersonalHistory",
+      "removePersonalHistory",
+      "getPersonalCollectionTarget"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/collections.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端页面尚未接入，不是整组验收",
+      "仅本人账号，机构代办不可访问",
+      "过期后台需COLLECTION_WORKER_ENABLED=true，正式运行另验收",
+      "不增加榜单互动分数，不缓存私有正文"
+    ]
+  },
+  "support_and_notifications": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "listSupportTickets",
+      "getSupportTicket",
+      "listSupportHistory",
+      "actOnSupportTicket",
+      "downloadSupportEvidence",
+      "listSupportTicketsForSupport",
+      "getSupportTicketForSupport",
+      "listSupportHistoryForSupport",
+      "actOnSupportTicketForSupport",
+      "downloadSupportEvidenceForSupport",
+      "createSupportTicket",
+      "getNotificationUnread",
+      "markNotificationSnapshotRead",
+      "listNotificationFeed"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/support.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端待接、整链待验",
+      "客服须单独授予SUPPORT_HANDLE，不自动发权；原业务售后仍走原订单",
+      "通知新增域仅新feed返回，旧notifications列表保持原域；历史消息不伪造新增通知",
+      "通知已读与原会话已读分别表达；查看原会话并标已读会同步通知回执",
+      "真实赔偿、客服时限及隐私保留依据不自行设定"
+    ]
+  },
+  "personal_center": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "listPersonalContracts",
+      "listPersonalWorks",
+      "listPersonalIncome"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/personal-center.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "按来源独立分页，不承诺跨来源全局排序",
+      "收入只汇总已登记台账中的本人份额；不汇总其他主体、不把未入账预期当收入",
+      "页面接入、完整办理及真实服务分别验收"
+    ]
+  },
+  "invoices": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getInvoiceEligibility",
+      "createInvoiceRequest",
+      "listInvoiceRequests",
+      "getInvoiceRequest",
+      "listInvoiceHistory",
+      "listInvoiceDocuments",
+      "actOnInvoice",
+      "downloadInvoiceEvidence",
+      "downloadInvoiceDocument",
+      "listInvoiceRequestsForOperator",
+      "getInvoiceRequestForOperator",
+      "listInvoiceHistoryForOperator",
+      "listInvoiceDocumentsForOperator",
+      "actOnInvoiceForOperator",
+      "downloadInvoiceEvidenceForOperator",
+      "downloadInvoiceDocumentForOperator",
+      "getInvoiceCommandResult",
+      "getOperatorInvoiceCommandResult"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/invoices.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "正式出票方配置与核验依据未提供，真实税务服务未接入",
+      "测试凭证非发票；页面接入、整链与阶段验收分别记录",
+      "材料历史保留，具体合法保留期限待甲方依据，不编造期限"
+    ]
+  },
+  "phone_change": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "createPhoneChange",
+      "getCurrentPhoneChange",
+      "getPhoneChange",
+      "sendPhoneChangeChallenge",
+      "verifyPhoneChangeChallenge",
+      "confirmPhoneChange",
+      "cancelPhoneChange"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/phone-change.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端页面待接；本轮只用内存短信验证，无真实发送",
+      "旧号码不可用仅客服登记核查，不提供人工自动换绑",
+      "确认会注销本人全部旧登录，使用新号码重新登录，账号和历史业务不变"
+    ]
+  },
+  "identity_recovery": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getMyPartyAccess"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "前端身份恢复及私有缓存修复待接；接口可用不代表4个浏览器问题已经关闭",
+      "只返回当前账号有效成员关系，停用主体动作为空；写操作另核权限"
+    ]
+  },
+  "artist_contract_20261029": {
+    "record": "docs/tasks/records/CORE-artist-contract-20261102.md",
+    "tests": [
+      "晶晶日上工程交接包/01_源码/backend_server/test/artists-contract.integration.test.cjs",
+      "晶晶日上工程交接包/01_源码/backend_server/test/artists-contract-policy.test.cjs"
+    ],
+    "scope": "分类材料、同案补件、10元审核不退、免费创建托管、原单兼容；正式开关和真实服务未启用"
+  },
+  "marketplace_contract_20261029": {
+    "status": "IMPLEMENTED_ISOLATED_TESTED",
+    "policy": "MARKETPLACE_CONTRACT_POLICY=CONTRACT_20261029",
+    "default": "LEGACY_COMPATIBLE",
+    "evidence": [
+      "晶晶日上工程交接包/01_源码/backend_server/test/gigs.integration.test.cjs",
+      "晶晶日上工程交接包/01_源码/backend_server/test/marketplace-contract.integration.test.cjs",
+      "晶晶日上工程交接包/01_源码/backend_server/test/marketplace-policy.test.cjs"
+    ],
+    "limits": "New stock 18%, commercial 22%, confirmed MCN supply share. Historical orders retain stored contracts. No frontend acceptance, real payments, automatic payout or deployment. Copyright choices are a separate outstanding task."
+  },
+  "contract_six_20261102": {
+    "record": "docs/tasks/records/CORE-six-contract-tasks-20261102.md",
+    "operations": [
+      "getGigHandover",
+      "acknowledgeGigHandover",
+      "getPrivacyClosureClock",
+      "getPrivacyClosureClockForOperator",
+      "listPrivacyClosureClocks",
+      "proposePrivacyClosureClock",
+      "reviewPrivacyClosureClock",
+      "createInfringementCase",
+      "listInfringementCases",
+      "getInfringementCase",
+      "actOnInfringementCase",
+      "downloadInfringementEvidence",
+      "listInfringementCasesForOperator",
+      "getInfringementCaseForOperator",
+      "actOnInfringementCaseForOperator",
+      "downloadInfringementEvidenceForOperator",
+      "inviteGuardianLink",
+      "listGuardianRecords",
+      "getGuardianRecord",
+      "decideGuardianRecord",
+      "listGuardianRecordsForOperator",
+      "getGuardianRecordForOperator",
+      "decideGuardianRecordForOperator",
+      "updateGuardianControls",
+      "getGuardianUsage",
+      "createGuardianUsageSession",
+      "getGuardianInformation",
+      "createGuardianPrivacyRequest",
+      "createGuardianSpendingConsent",
+      "createGuardianRefundRequest",
+      "requestReviewedGuardianRefund",
+      "listGuardianSuitableContent",
+      "downloadGuardianSuitablePreview"
+    ],
+    "production_enabled": false,
+    "migration": "0201"
+  },
+  "daily_reconciliation": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "createDailyReconciliation",
+      "listDailyReconciliations",
+      "getDailyReconciliation",
+      "listDailyReconciliationFacts",
+      "getDailyReconciliationHistory",
+      "downloadDailyReconciliationEvidence",
+      "importDailyReconciliationStatement",
+      "recordDailyReconciliationManualEvidence",
+      "compareDailyReconciliation",
+      "reviewDailyReconciliation",
+      "reopenDailyReconciliation"
+    ],
+    "migration": "0204",
+    "record": "docs/tasks/records/CORE-finance-closure-20261102.md",
+    "limits": [
+      "No funds transfer",
+      "Fee/bank evidence requires independent manual review",
+      "Mixed-channel payout needs explicit allocation, cannot close by waiver",
+      "New rounding version; legacy contracts unchanged"
+    ]
+  },
+  "consumer_controls": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getConsumerControls",
+      "changeConsumerLimit",
+      "confirmConsumerLimit",
+      "cancelConsumerLimit",
+      "listConsumerLimitHistory"
+    ],
+    "migration": "0206",
+    "record": "docs/tasks/records/CORE-consumer-controls-20261103.md",
+    "production_enabled": false,
+    "lottery_notice": "NEW_PUBLICATIONS_SEVEN_DAYS_LEGACY_SNAPSHOTS_UNCHANGED"
+  },
+  "usage_reminders": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getPersonalUsage",
+      "reportPersonalUsage",
+      "acknowledgePersonalRest"
+    ],
+    "migration": "0207",
+    "record": "docs/tasks/records/CORE-usage-reminders-20261103.md",
+    "production_enabled": false
+  },
+  "consumer_protection": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "getConsumerRiskStatus",
+      "listConsumerRiskRules",
+      "createConsumerRiskRule",
+      "reviewConsumerRiskRule",
+      "previewConsumerRisk",
+      "confirmConsumerRisk"
+    ],
+    "migrations": [
+      "0208",
+      "0209"
+    ],
+    "record": "docs/tasks/records/CORE-consumer-protection-closure-20261103.md",
+    "production_enabled": false,
+    "notification_provider": "NOT_CONNECTED"
+  },
+  "report_history": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "scope": "Current requester and exact acting identity, summaries only; source permission rechecked, keyset pagination. Frontend list pending.",
+    "evidence": "docs/tasks/records/CORE-backend-acceptance-closure-20261103.md",
+    "production_enabled": false
+  },
+  "cocreation_invite_links": {
+    "test": "test/cocreation-invite-links.integration.test.cjs",
+    "scope": "Authenticated private family invitation, one-time claim, expiry/revocation, original request recovery; personal consent remains separate",
+    "migration": "none; existing cocreation records",
+    "frontend": "pending integration",
+    "production_enabled": false
+  },
+  "tonight_delivery": {
+    "production_enabled": false,
+    "evidence": "docs/tasks/records/CORE-tonight-execution-20261104.md",
+    "scope": "Case-scoped approved quote options; restricted finance evidence cannot authorize new entries; isolated per-browser synthetic data and restart recovery."
+  },
+  "privacy_agreement_copy_evidence": {
+    "report": "docs/reviews/prelaunch-agreement-copy-20261106/REPORT.md",
+    "operation": "getPrivacyAccountCopy",
+    "sections": [
+      "LICENSE_AGREEMENTS",
+      "PARTICIPATION_AGREEMENTS",
+      "AGENCY_AGREEMENTS"
+    ],
+    "test_status": "ISOLATED_HTTP_AND_MYSQL_PASS",
+    "frontend": "NOT_VERIFIED",
+    "production_enabled": false
+  },
+  "security_copy_ranking_contract_evidence": {
+    "report": "docs/reviews/prelaunch-security-ranking-20261106/REPORT.md",
+    "contract": "0.31.42-rc.1",
+    "sections": [
+      "SESSION_RECORDS",
+      "PHONE_CHANGES"
+    ],
+    "ranking_policy": "CONTRACT_20261029",
+    "test_status": "ISOLATED_MYSQL_HTTP_AND_RULES_PASS",
+    "frontend": "NOT_VERIFIED",
+    "production_enabled": false
+  },
+  "prelaunch_independent_20261109": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "report": "docs/reviews/prelaunch-independent-20261109/REPORT.md",
+    "frontend": "PENDING",
+    "production_enabled": false
+  },
+  "privacy_activity_copy_20261109": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "report": "docs/reviews/privacy-activity-copy-20261109/REPORT.md",
+    "sections": [
+      "SUPPORT_TICKETS",
+      "SUPPORT_MESSAGES",
+      "INVOICE_REQUESTS",
+      "INVOICE_HISTORY",
+      "INVOICE_DOCUMENTS",
+      "FAVORITES",
+      "BROWSING_HISTORY",
+      "COLLECTION_SETTINGS"
+    ],
+    "frontend": "NOT_VERIFIED",
+    "production_enabled": false
+  },
+  "privacy_participation_copy_20261109": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "report": "docs/reviews/privacy-participation-copy-20261109/REPORT.md",
+    "sections": [
+      "PRIVACY_REQUESTS",
+      "PRIVACY_RESPONSES",
+      "PRIVACY_EVENTS",
+      "PRIVACY_ACTIONS",
+      "PRIVACY_EXECUTIONS",
+      "NOTIFICATION_DELIVERIES",
+      "GUARDIAN_LINKS",
+      "ENGAGEMENT_RECORDS"
+    ],
+    "frontend": "NOT_VERIFIED",
+    "production_enabled": false
+  },
+  "privacy_benefit_copy_20261109": {
+    "report": "docs/reviews/privacy-benefit-copy-20261109/REPORT.md",
+    "sections": [
+      "GROWTH_RECORDS",
+      "REFERRAL_COMMISSIONS",
+      "REWARD_GRANTS",
+      "LOTTERY_DRAWS",
+      "REWARD_FULFILLMENT",
+      "REWARD_DISCOUNTS"
+    ],
+    "production_enabled": false,
+    "limits": "Account-only isolated copies; page integration, full business journeys and real providers remain unverified."
+  },
+  "privacy_guardian_copy_20261109": {
+    "report": "docs/reviews/privacy-guardian-copy-20261109/REPORT.md",
+    "sections": [
+      "NOTIFICATION_READS",
+      "GUARDIAN_USAGE",
+      "GUARDIAN_CONTROLS",
+      "GUARDIAN_CASES"
+    ],
+    "production_enabled": false,
+    "limits": "Current guardian permission required for details; guardian cannot bulk export child usage history; original messages and evidence remain under business authorization."
+  },
+  "privacy_response_delivery_20261109": {
+    "report": "docs/reviews/privacy-response-delivery-20261109/REPORT.md",
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "production_enabled": false,
+    "limits": "Private evidence must be readable and match proposal snapshot; manual scope review remains required. Old pending drafts must be rejected and resubmitted; historical responses retained."
+  },
+  "privacy_usage_copy_20261109": {
+    "sections": [
+      "GUARDIAN_SESSIONS",
+      "PERSONAL_USAGE_STATE"
+    ],
+    "report": "docs/reviews/privacy-usage-closure-20261109/REPORT.md",
+    "production_enabled": false,
+    "limits": "Request receipts and current state only, not actual complete usage history; original evidence remains subject to separate authorization."
+  },
+  "privacy_operator_copy_evidence": {
+    "test": "晶晶日上工程交接包/01_源码/backend_server/test/privacy-response-delivery.integration.test.cjs",
+    "operations": [
+      "getPrivacyCopyOptionsForOperations",
+      "getPrivacyAccountCopyForOperations",
+      "getPrivacyTransactionCopyForOperations",
+      "getPrivacyStoryCopyForOperations",
+      "exportPrivacyDataForOperations"
+    ],
+    "scope": "Scoped redacted projections only, independent review and request-bound bytes; not complete provider export.",
+    "production_enabled": false
+  },
+  "recharge_refund_http": {
+    "operations": [
+      "requestRechargeRefund",
+      "requestGuardianRechargeRefund",
+      "listMyRechargeRefunds",
+      "getMyRechargeRefund",
+      "listGuardianRechargeRefunds",
+      "getGuardianRechargeRefund",
+      "listOperatorRechargeRefunds",
+      "getOperatorRechargeRefund",
+      "cancelRechargeRefund",
+      "reviewRechargeRefund",
+      "scheduleRechargeRefund",
+      "retryRechargeRefundTask",
+      "downloadRechargeRefundEvidence"
+    ],
+    "backend_test": "test/recharge-refund-api.integration.test.cjs",
+    "guardian_copy_section": "GUARDIAN_RECHARGE_REFUNDS",
+    "limits": [
+      "No live provider registered",
+      "No public dispatch or trusted receipt endpoint",
+      "No frontend changes; independent maintainer review pending"
+    ]
+  },
+  "product_catalog": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "operations": [
+      "createProductCatalogRecord",
+      "reviseProductCatalogRecord",
+      "reviewProductCatalogRecord",
+      "withdrawProductCatalogRecord",
+      "listProductCatalogRecords",
+      "getProductCatalogRecord",
+      "listPublishedProductCatalog",
+      "getPublishedProductCatalog"
+    ],
+    "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/product-catalog.integration.test.cjs",
+    "production_enabled": false,
+    "limits": [
+      "只做后端；前端、正式运营配置及独立签收待接",
+      "集合引用单独销售的现货，不新增捆绑定价或许可",
+      "现货来源变动立即限制新展示，旧订单继续原快照和当前权属约束"
+    ]
+  },
+  "production_media_files": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "migration": "0222",
+    "source_kind": "PRODUCTION_FILE",
+    "backend_test": "test/production-media.integration.test.cjs",
+    "scope": "Assigned producer processes a READY project file before version submission; delivery and acceptance recheck current marking/moderation evidence; existing PRODUCTION_VERSION processing preserved",
+    "production_enabled": false,
+    "limits": [
+      "Only backend and synthetic identities/payment/moderation/private storage; actual FFmpeg-generated sample video",
+      "Migration enum extended; no data backfill or automatic approval",
+      "No frontend changes; independent maintainer review and real services pending"
+    ]
+  },
+  "release_current_evidence": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "migration": "0222",
+    "backend_test": "test/projects.integration.test.cjs",
+    "scope": "Recheck edition material and channel owner/proof for release use; hide unavailable channels; pending external publication rechecks, historical approvals preserved and withdrawal evidence remains allowed",
+    "production_enabled": false
+  },
+  "unfulfilled_referral_refund": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "migration": "0222",
+    "backend_test": "test/referral-audition-refund.integration.test.cjs",
+    "scope": "Verified fully refunded orders reverse original referral without requiring nonexistent fulfillment; zero unpaid, partial/requested refunds, simulation and payment-review restrictions remain",
+    "production_enabled": false
+  },
+  "enterprise_representatives": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "migration": "0223",
+    "test": "test/stock-commercial.integration.test.cjs",
+    "scope": "Explicit expiring TRADE/INVOICES grants, member acceptance, current grantor and membership versions; trade and stock buyer plus applicant invoices. Other wrappers, legal owner replacement and frontend remain pending.",
+    "production_enabled": false
+  },
+  "enterprise_representative_copy": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "migration": "0223 unchanged",
+    "tests": [
+      "test/privacy-representative-copy.integration.test.cjs",
+      "test/stock-commercial.integration.test.cjs"
+    ],
+    "scope": "Own issued/received retained grant summaries under CONTRACTS; unrelated accounts redacted, business loss does not remove own copy. Invoice representatives upload/read only their own REVIEW_EVIDENCE, permission rechecked after transport.",
+    "production_enabled": false
+  },
+  "finance_recovery_cases": {
+    "migration": "0224",
+    "meaning": "Independent claim review and links to already posted returns; no new money entry, automatic debit or debt writeoff",
+    "frontend_run": false,
+    "real_services": false
+  },
+  "privacy_recovery_copy": {
+    "section": "FINANCE_RECOVERIES",
+    "scope": "TRANSACTIONS",
+    "migration": "0224 unchanged",
+    "meaning": "Personal claimant/recipient summaries; retained cancelled/rejected cases; no raw reasons, bank files, company ownership or reviewer identifiers"
+  },
+  "production_delivery_handoff": {
+    "migration": "0225",
+    "test": "test/customization-handoff.integration.test.cjs",
+    "meaning": "Per-delivery verified-byte observations; current actor authority and own observation required; original notified receipt/deadline immutable across handoff; legacy first-reader observation retained",
+    "frontend_run": false,
+    "real_services": false
+  },
+  "privacy_production_copy": {
+    "sections": [
+      "PRODUCTION_DELIVERY_VIEWS",
+      "PRODUCTION_FEEDBACK"
+    ],
+    "scope": "TRANSACTIONS",
+    "migration": "0225 unchanged",
+    "meaning": "Own retained actor summaries and independently released request file; no company ownership or free-text/raw media export",
+    "frontend_run": false,
+    "real_services": false
+  },
+  "interview_nonselection_remedy": {
+    "migration": "0225 unchanged",
+    "meaning": "Completed NOT_SELECTED interviews may request existing independently reviewed extension or points fallback; completed_delivery retains the original attempt; completed schedules are not cancelled; no automatic role or money award",
+    "frontend_run": false,
+    "real_services": false
   }
 }

@@ -3,7 +3,7 @@ const express=require('express'),{createHash}=require('node:crypto');
 const {createGigsRepository}=require('../modules/gigs/repository');
 const {shape,id,ref,version,error}=require('../modules/party/policy');
 function createGigsRouter({db,resolvePrincipal,env={},storageFactory}){
- const router=express.Router(),repo=createGigsRepository(db,{resolvePrincipal}),caps=new WeakMap();
+ const router=express.Router(),repo=createGigsRepository(db,{resolvePrincipal,marketplaceContractPolicy:env.MARKETPLACE_CONTRACT_POLICY}),caps=new WeakMap();
  const storage=storageFactory?storageFactory():require('../modules/providers/private-storage').createPrivateStorage({env,repository:require('../modules/providers/readiness').createReadinessRepository(db),authorize:async({operation,key,context})=>operation==='get'&&caps.get(context)===key});
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  const acting=(req,required=true)=>{const v=req.get('X-Acting-Party');if(!v){if(required)throw error('ACTING_PARTY_REQUIRED',400);return null;}return req.actingParty=id(v);};
@@ -13,8 +13,11 @@ function createGigsRouter({db,resolvePrincipal,env={},storageFactory}){
  post('/rules','createRule',['rule'],{party:false});
  post('/records/:record_id/reviews','review',['decision','reason','checks'],{party:false,existing:true});
  post('/rules/:record_id/retirement','retireRule',['reason'],{party:false,existing:true});
- post('/relations','relation',['artist_party_id','scope','valid_from','valid_until','exclusive','terms','commission','v5_terms','evidence_asset_ids']);
+ router.get('/relation-options',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);reply(req,res,await repo.relationOptions(req,{party_id:acting(req),after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));
+ post('/relations','relation',['artist_party_id','source_listing_id','scope','valid_from','valid_until','exclusive','terms','commission','v5_terms','evidence_asset_ids']);
  post('/relations/:record_id/decision','relationDecision',['decision','reason'],{existing:true});
+ post('/relations/:record_id/handover','acknowledgeHandover',['order_id','note'],{existing:true});
+ router.get('/relations/:record_id/handover',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);reply(req,res,await repo.handover(req,{record_id:id(req.params.record_id),party_id:acting(req),after:req.query.cursor||'',limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));
  post('/requests','createGig',['title','brief','category','scope','rule_id','proofs']);
  post('/requests/:record_id/suspension','suspend',['reason'],{party:false,existing:true});
  post('/offers','offer',['gig_id','spec_id','avatar_id','consent_id','relation_id','commission','terms','ranking_opt_in','evidence_asset_ids']);
@@ -32,6 +35,7 @@ function createGigsRouter({db,resolvePrincipal,env={},storageFactory}){
  for(const [path,method,fields,match] of [
   ['messages','commercialMessage',['kind','body','asset_id'],false],['control','commercialControl',['action','reason'],true],['contact','commercialContact',['name','phone','consent'],true],['read','commercialRead',['message_id'],false],['moderation','commercialModerate',['message_id','reason'],false]
  ])router.post('/orders/:order_id/conversation/'+path,wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,fields);const p=acting(req,false);if(path==='moderation'&&p)throw error('ACTING_PARTY_NOT_ALLOWED',400);reply(req,res,await repo[method](req,{...req.body,order_id:id(req.params.order_id),...(path==='moderation'?{}:{party_id:p}),...(match?{expected_version:expected(req)}:{}),operation_key:ref(req.get('Idempotency-Key'))}));}));
+ router.get('/orders/:order_id/conversation/message-risk',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);if(acting(req,false))throw error('ACTING_PARTY_NOT_ALLOWED',400);if(req.query.limit!==undefined&&(typeof req.query.limit!=='string'||!/^(?:[1-9][0-9]?|100)$/.test(req.query.limit)))throw error('INVALID_LIMIT',400);res.set('Cache-Control','no-store');reply(req,res,await repo.commercialRiskEvents(req,{order_id:id(req.params.order_id),after:req.query.cursor,limit:req.query.limit===undefined?20:Number(req.query.limit)}));}));
  for(const [path,method] of [['messages','commercialMessages'],['contacts','commercialContacts']])router.get('/orders/:order_id/conversation/'+path,wrap(async(req,res)=>{shape(req.query,path==='messages'?['cursor','limit']:[]);reply(req,res,await repo[method](req,{order_id:id(req.params.order_id),party_id:acting(req,false),after:req.query.cursor,limit:req.query.limit===undefined?30:Number(req.query.limit)}));}));
  router.get('/orders/:order_id/conversation/messages/:message_id/file',wrap(async(req,res)=>{shape(req.query,[]);const i={order_id:id(req.params.order_id),message_id:id(req.params.message_id),party_id:acting(req,false)},f=await repo.commercialMedia(req,i),ctx={};caps.set(ctx,f.object_key);let bytes;try{bytes=await storage.getBuffer(f.object_key,ctx);}finally{caps.delete(ctx);}await repo.commercialMedia(req,i);if(!Buffer.isBuffer(bytes)||bytes.length!==f.byte_size||createHash('sha256').update(bytes).digest('hex')!==f.content_sha256)throw error('PRIVATE_CONTENT_MISMATCH',503);res.set({'Cache-Control':'no-store','Content-Type':'application/octet-stream','Content-Disposition':'attachment; filename="conversation-file"','X-Content-Type-Options':'nosniff'}).end(bytes);}));
  return router;

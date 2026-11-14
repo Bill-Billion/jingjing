@@ -1,0 +1,507 @@
+TAP version 13
+# Subtest: auth requires explicit secret and encrypted replay binds to its request
+ok 1 - auth requires explicit secret and encrypted replay binds to its request
+  ---
+  duration_ms: 3.1258
+  type: 'test'
+  ...
+# Subtest: auth security configuration rejects invalid bounds
+ok 2 - auth security configuration rejects invalid bounds
+  ---
+  duration_ms: 0.5759
+  type: 'test'
+  ...
+# Subtest: configured SMS refuses SDK debug logging before any network call
+ok 3 - configured SMS refuses SDK debug logging before any network call
+  ---
+  duration_ms: 7.4536
+  type: 'test'
+  ...
+# Subtest: reviewed privacy execution changes actual records and preserves unresolved boundaries
+    # Subtest: copy only returns own explicitly requested profile and cannot enumerate another account
+    ok 1 - copy only returns own explicitly requested profile and cannot enumerate another account
+      ---
+      duration_ms: 20.7099
+      type: 'test'
+      ...
+    # Subtest: personal copy includes own stories and buyer order index without exposing another person or contract body
+    ok 2 - personal copy includes own stories and buyer order index without exposing another person or contract body
+      ---
+      duration_ms: 226.5441
+      type: 'test'
+      ...
+    # Subtest: paid history allows only proven completed buyer work and rejects incomplete work or pending refund
+    ok 3 - paid history allows only proven completed buyer work and rejects incomplete work or pending refund
+      ---
+      duration_ms: 184.7439
+      type: 'test'
+      ...
+    # Subtest: correction requires independent approval and actually updates profile
+    ok 4 - correction requires independent approval and actually updates profile
+      ---
+      duration_ms: 34.3267
+      type: 'test'
+      ...
+    # Subtest: deletion lists readable own materials and reviewed policies; referenced files require review
+    ok 5 - deletion lists readable own materials and reviewed policies; referenced files require review
+      ---
+      duration_ms: 199.0849
+      type: 'test'
+      ...
+    # Subtest: missing effective policy cannot authorize deletion
+    ok 6 - missing effective policy cannot authorize deletion
+      ---
+      duration_ms: 8.4566
+      type: 'test'
+      ...
+    # Subtest: file removal is bound to owner and exact storage configuration
+    ok 7 - file removal is bound to owner and exact storage configuration
+      ---
+      duration_ms: 591.3217
+      type: 'test'
+      ...
+    # Subtest: unknown deletion result remains pending; retry checks same object and records current-object-only result
+    ok 8 - unknown deletion result remains pending; retry checks same object and records current-object-only result
+      ---
+      duration_ms: 27.8576
+      type: 'test'
+      ...
+    # Subtest: queued erasure rechecks changed target before any storage call, then recovers the same approved object
+    ok 9 - queued erasure rechecks changed target before any storage call, then recovers the same approved object
+      ---
+      duration_ms: 218.5843
+      type: 'test'
+      ...
+    # Subtest: lost provider reply after deletion recovers once without claiming backups or request completion
+    ok 10 - lost provider reply after deletion recovers once without claiming backups or request completion
+      ---
+      duration_ms: 67.9479
+      type: 'test'
+      ...
+    # Subtest: complaint restricts actual download and approved release restores only that restriction
+    ok 11 - complaint restricts actual download and approved release restores only that restriction
+      ---
+      duration_ms: 52.8866
+      type: 'test'
+      ...
+    # Subtest: closing sole organization owner is blocked and leaves login intact
+    ok 12 - closing sole organization owner is blocked and leaves login intact
+      ---
+      duration_ms: 22.792
+      type: 'test'
+      ...
+    # Subtest: zero remaining wallet balance cannot hide an unresolved original recharge refund case during closure
+    ok 13 - zero remaining wallet balance cannot hide an unresolved original recharge refund case during closure
+      ---
+      duration_ms: 37.3993
+      type: 'test'
+      ...
+    # Subtest: account closure revokes old sessions and personal identity while retaining request evidence
+    ok 14 - account closure revokes old sessions and personal identity while retaining request evidence
+      ---
+      duration_ms: 40.4996
+      type: 'test'
+      ...
+    # Subtest: lost closure response keeps sessions closed and operators can reconcile the single executed request
+    ok 15 - lost closure response keeps sessions closed and operators can reconcile the single executed request
+      ---
+      duration_ms: 556.0588
+      type: 'test'
+      ...
+    # Subtest: new closure clock requires verified identity and actual execution before completion
+    ok 16 - new closure clock requires verified identity and actual execution before completion
+      ---
+      duration_ms: 182.8653
+      type: 'test'
+      ...
+    # Subtest: stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete
+    ok 17 - stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete
+      ---
+      duration_ms: 354.671
+      type: 'test'
+      ...
+    # Subtest: HTTP exposes the same scoped proposal, review, execution and export flow
+    ok 18 - HTTP exposes the same scoped proposal, review, execution and export flow
+      ---
+      duration_ms: 176.6387
+      type: 'test'
+      ...
+    # Subtest: restoring an actual older backup requires replaying latest erasure register before access
+    ok 19 - restoring an actual older backup requires replaying latest erasure register before access
+      ---
+      duration_ms: 8409.4532
+      type: 'test'
+      ...
+    1..19
+ok 4 - reviewed privacy execution changes actual records and preserves unresolved boundaries
+  ---
+  duration_ms: 19979.7612
+  type: 'test'
+  ...
+# Subtest: private object evidence is tied to real encrypted snapshot and CLI remains offline
+    # Subtest: authenticated snapshot exports private inventory without database or provider access
+    ok 1 - authenticated snapshot exports private inventory without database or provider access
+      ---
+      duration_ms: 136.2896
+      type: 'test'
+      ...
+    # Subtest: existing inventory, wrong snapshot digest and wrong decryption key are refused
+    ok 2 - existing inventory, wrong snapshot digest and wrong decryption key are refused
+      ---
+      duration_ms: 341.9623
+      type: 'test'
+      ...
+    # Subtest: actual bytes are compared with the same encrypted backup rather than a caller-edited inventory
+    ok 3 - actual bytes are compared with the same encrypted backup rather than a caller-edited inventory
+      ---
+      duration_ms: 398.4126
+      type: 'test'
+      ...
+    # Subtest: wrong bytes, wrong size and missing originals are distinguished without changing source
+    ok 4 - wrong bytes, wrong size and missing originals are distinguished without changing source
+      ---
+      duration_ms: 390.8799
+      type: 'test'
+      ...
+    # Subtest: a newer privacy register blocks an otherwise matching object and retains absent-later suppressions
+    ok 5 - a newer privacy register blocks an otherwise matching object and retains absent-later suppressions
+      ---
+      duration_ms: 383.5492
+      type: 'test'
+      ...
+    # Subtest: directory junctions and symlinks cannot redirect the local object check
+    ok 6 - directory junctions and symlinks cannot redirect the local object check
+      ---
+      duration_ms: 289.9931
+      type: 'test'
+      ...
+    1..6
+ok 5 - private object evidence is tied to real encrypted snapshot and CLI remains offline
+  ---
+  duration_ms: 11868.1455
+  type: 'test'
+  ...
+# Subtest: snapshot-bound inventory covers both native object tables and deduplicates consistent references
+ok 6 - snapshot-bound inventory covers both native object tables and deduplicates consistent references
+  ---
+  duration_ms: 2.6594
+  type: 'test'
+  ...
+# Subtest: changed snapshot, missing coverage and conflicting references cannot produce a misleading list
+ok 7 - changed snapshot, missing coverage and conflicting references cannot produce a misleading list
+  ---
+  duration_ms: 1.4801
+  type: 'test'
+  ...
+# Subtest: erasure, revocation, unfinished uploads and tombstones are never restoration candidates
+ok 8 - erasure, revocation, unfinished uploads and tombstones are never restoration candidates
+  ---
+  duration_ms: 1.4831
+  type: 'test'
+  ...
+# Subtest: newer suppression and suppressed keys absent from the backup remain in the review list
+ok 9 - newer suppression and suppressed keys absent from the backup remain in the review list
+  ---
+  duration_ms: 1.6944
+  type: 'test'
+  ...
+# Subtest: unsafe object keys and unknown register hashes are rejected
+ok 10 - unsafe object keys and unknown register hashes are rejected
+  ---
+  duration_ms: 0.5866
+  type: 'test'
+  ...
+# Subtest: local bytes distinguish matched, missing, wrong size, wrong digest and non-regular files
+ok 11 - local bytes distinguish matched, missing, wrong size, wrong digest and non-regular files
+  ---
+  duration_ms: 16.2005
+  type: 'test'
+  ...
+# Subtest: suppressed local objects are reported without reading, deleting or permitting recovery
+ok 12 - suppressed local objects are reported without reading, deleting or permitting recovery
+  ---
+  duration_ms: 2.7604
+  type: 'test'
+  ...
+# Subtest: all declared provider interfaces fail closed without implementations
+ok 13 - all declared provider interfaces fail closed without implementations
+  ---
+  duration_ms: 3.8604
+  type: 'test'
+  ...
+# Subtest: configuration alone, wrong environment, stale proof and disabled status never call a provider
+ok 14 - configuration alone, wrong environment, stale proof and disabled status never call a provider
+  ---
+  duration_ms: 1.2102
+  type: 'test'
+  ...
+# Subtest: timeout reports unknown outcome, aborts and never automatically repeats payment
+ok 15 - timeout reports unknown outcome, aborts and never automatically repeats payment
+  ---
+  duration_ms: 22.9196
+  type: 'test'
+  ...
+# Subtest: provider error bodies and logger metadata do not leak credentials or private URLs
+ok 16 - provider error bodies and logger metadata do not leak credentials or private URLs
+  ---
+  duration_ms: 0.8595
+  type: 'test'
+  ...
+# Subtest: private files require permission and verified configuration, never local fallback
+ok 17 - private files require permission and verified configuration, never local fallback
+  ---
+  duration_ms: 1.7645
+  type: 'test'
+  ...
+# Subtest: private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
+ok 18 - private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
+  ---
+  duration_ms: 1.6243
+  type: 'test'
+  ...
+# Subtest: changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
+ok 19 - changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
+  ---
+  duration_ms: 313.2082
+  type: 'test'
+  ...
+# Subtest: health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
+ok 20 - health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
+  ---
+  duration_ms: 71.6404
+  type: 'test'
+  ...
+# Subtest: OSS failures never produce a successful or public result; revocation is checked before each read
+ok 21 - OSS failures never produce a successful or public result; revocation is checked before each read
+  ---
+  duration_ms: 1.1085
+  type: 'test'
+  ...
+# {"error_code":"PRIVATE_STORAGE_UNAVAILABLE","time":"2026-11-14T02:56:48.184Z","level":"warn","event":"legacy_private_upload_blocked"}
+# Subtest: legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
+ok 22 - legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
+  ---
+  duration_ms: 62.6908
+  type: 'test'
+  ...
+# Subtest: verified erasure confirms only the exact current object; access errors and changed bytes never pass
+ok 23 - verified erasure confirms only the exact current object; access errors and changed bytes never pass
+  ---
+  duration_ms: 1.0829
+  type: 'test'
+  ...
+# Subtest: private missing-object probe distinguishes exact absence from denied or uncertain reads
+ok 24 - private missing-object probe distinguishes exact absence from denied or uncertain reads
+  ---
+  duration_ms: 1.0564
+  type: 'test'
+  ...
+# Subtest: real isolated MySQL persists provider status, evidence and concurrent edits
+    # Subtest: database readiness requires applied migrations, not just a connection
+    ok 1 - database readiness requires applied migrations, not just a connection
+      ---
+      duration_ms: 6856.1399
+      type: 'test'
+      ...
+    # Subtest: recording is denied by default and requires genuine server-side evidence checking
+    ok 2 - recording is denied by default and requires genuine server-side evidence checking
+      ---
+      duration_ms: 3.9081
+      type: 'test'
+      ...
+    # Subtest: configuration is saved but does not authorize real calls
+    ok 3 - configuration is saved but does not authorize real calls
+      ---
+      duration_ms: 9.1425
+      type: 'test'
+      ...
+    # Subtest: verified evidence survives closing and reopening the database connection
+    ok 4 - verified evidence survives closing and reopening the database connection
+      ---
+      duration_ms: 13.2418
+      type: 'test'
+      ...
+    # Subtest: disabling and awaiting approval keep history but block new calls
+    ok 5 - disabling and awaiting approval keep history but block new calls
+      ---
+      duration_ms: 10.5067
+      type: 'test'
+      ...
+    # Subtest: two concurrent updates cannot overwrite each other silently
+    ok 6 - two concurrent updates cannot overwrite each other silently
+      ---
+      duration_ms: 9.9773
+      type: 'test'
+      ...
+    # Subtest: history write failure rolls back both status and version
+    ok 7 - history write failure rolls back both status and version
+      ---
+      duration_ms: 4.3072
+      type: 'test'
+      ...
+    # Subtest: re-enabling requires fresh evidence and preserves earlier verification
+    ok 8 - re-enabling requires fresh evidence and preserves earlier verification
+      ---
+      duration_ms: 4.9817
+      type: 'test'
+      ...
+    # Subtest: capabilities have separate status even for the same provider
+    ok 9 - capabilities have separate status even for the same provider
+      ---
+      duration_ms: 2.8137
+      type: 'test'
+      ...
+    1..9
+ok 25 - real isolated MySQL persists provider status, evidence and concurrent edits
+  ---
+  duration_ms: 8678.4146
+  type: 'test'
+  ...
+# Subtest: release evidence is commit-bound, time-bound and never self-approves launch
+ok 26 - release evidence is commit-bound, time-bound and never self-approves launch
+  ---
+  duration_ms: 1.2597
+  type: 'test'
+  ...
+# Subtest: backup cells preserve exact integers and distinguish binary from plain text
+ok 27 - backup cells preserve exact integers and distinguish binary from plain text
+  ---
+  duration_ms: 1.0338
+  type: 'test'
+  ...
+# Subtest: maintenance CLI rejects unspecified operation, shell-shaped identifiers and live database names
+ok 28 - maintenance CLI rejects unspecified operation, shell-shaped identifiers and live database names
+  ---
+  duration_ms: 0.4227
+  type: 'test'
+  ...
+# Subtest: release config distinguishes unavailable and unsafe configuration without leaking values
+ok 29 - release config distinguishes unavailable and unsafe configuration without leaking values
+  ---
+  duration_ms: 0.3365
+  type: 'test'
+  ...
+# Subtest: release configuration rejects wildcard and empty browser origins while retaining exact HTTPS origins
+ok 30 - release configuration rejects wildcard and empty browser origins while retaining exact HTTPS origins
+  ---
+  duration_ms: 0.326
+  type: 'test'
+  ...
+# Subtest: release logging check sees both debug switches without emitting their values
+ok 31 - release logging check sees both debug switches without emitting their values
+  ---
+  duration_ms: 0.2413
+  type: 'test'
+  ...
+# Subtest: release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load
+    # Subtest: legacy inspection is read-only and retains unsafe-size integers, raw money and binary
+    ok 1 - legacy inspection is read-only and retains unsafe-size integers, raw money and binary
+      ---
+      duration_ms: 5.2865
+      type: 'test'
+      ...
+    # Subtest: source declaration and active WAL reject before unsafe copy
+    ok 2 - source declaration and active WAL reject before unsafe copy
+      ---
+      duration_ms: 2.2876
+      type: 'test'
+      ...
+    # Subtest: archiving twice preserves old facts without creating active identities, payment receipts or licenses
+    ok 3 - archiving twice preserves old facts without creating active identities, payment receipts or licenses
+      ---
+      duration_ms: 11.1269
+      type: 'test'
+      ...
+    # Subtest: concurrent archives converge and manifest tampering is detected
+    ok 4 - concurrent archives converge and manifest tampering is detected
+      ---
+      duration_ms: 10.2134
+      type: 'test'
+      ...
+    # Subtest: modified archive payload fails without partial writes
+    ok 5 - modified archive payload fails without partial writes
+      ---
+      duration_ms: 0.3784
+      type: 'test'
+      ...
+    # Subtest: backup includes immutable payment and pending-job facts
+    ok 6 - backup includes immutable payment and pending-job facts
+      ---
+      duration_ms: 519.5012
+      type: 'test'
+      ...
+    # Subtest: encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite
+    ok 7 - encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite
+      ---
+      duration_ms: 42.6874
+      type: 'test'
+      ...
+    # Subtest: restore to a fresh database matches every row while leaving runtime quarantined
+    ok 8 - restore to a fresh database matches every row while leaving runtime quarantined
+      ---
+      duration_ms: 6493.8611
+      type: 'test'
+      ...
+    # Subtest: restore never overwrites an existing database or accepts the wrong source checksum
+    ok 9 - restore never overwrites an existing database or accepts the wrong source checksum
+      ---
+      duration_ms: 34.2241
+      type: 'test'
+      ...
+    # Subtest: invalid foreign key rolls back all imported rows and preserves quarantine
+    ok 10 - invalid foreign key rolls back all imported rows and preserves quarantine
+      ---
+      duration_ms: 5217.5324
+      type: 'test'
+      ...
+    # Subtest: schema injection or renamed column is rejected without executing backup SQL
+    ok 11 - schema injection or renamed column is rejected without executing backup SQL
+      ---
+      duration_ms: 4908.2594
+      type: 'test'
+      ...
+    # Subtest: release checks do not confuse filled forms, sandbox providers or running process with launch approval
+    ok 12 - release checks do not confuse filled forms, sandbox providers or running process with launch approval
+      ---
+      duration_ms: 124.8233
+      type: 'test'
+      ...
+    # Subtest: registered provider evidence remains version-bound and never substitutes for a live check
+    ok 13 - registered provider evidence remains version-bound and never substitutes for a live check
+      ---
+      duration_ms: 265.4593
+      type: 'test'
+      ...
+    # Subtest: sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity
+    ok 14 - sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity
+      ---
+      duration_ms: 603.3288
+      type: 'test'
+      ...
+    # Subtest: concurrent duplicate writes preserve one business object and one set of receipts
+    ok 15 - concurrent duplicate writes preserve one business object and one set of receipts
+      ---
+      duration_ms: 35.6072
+      type: 'test'
+      ...
+    # Subtest: HTTP security failures never expose SQL, credentials or accept forged payment flags
+    ok 16 - HTTP security failures never expose SQL, credentials or accept forged payment flags
+      ---
+      duration_ms: 7.318
+      type: 'test'
+      ...
+    1..16
+ok 32 - release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load
+  ---
+  duration_ms: 30603.7485
+  type: 'test'
+  ...
+1..32
+# tests 82
+# suites 0
+# pass 82
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 41035.0164

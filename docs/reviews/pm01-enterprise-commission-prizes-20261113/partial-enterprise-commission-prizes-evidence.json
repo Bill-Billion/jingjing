@@ -1,0 +1,236 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "8f25ce893b7007dbe0463a1b25deb46e818a82b1",
+  "run_id": "pm01-enterprise-prizes-2026-11-13T10-36-24-184Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "runtime_business_code_changed": true,
+  "checks": [
+    {
+      "id": "ENTERPRISE-SAME-ORDER",
+      "acceptance_id": "ACC-DEL-01.04",
+      "result": "LOCAL_PASS",
+      "scope": "同企业订单与模拟票据、切换公司隔离、自审禁止、撤代表权后旧命令拒绝",
+      "remaining": "仅现有已核准OWNER；普通员工通用代理、法定代表变更与真实税务未验",
+      "actual_checks": [
+        {
+          "name": "same organization order permits its owner without scout membership; ordinary employee cannot apply or read",
+          "file": "test/support/enterprise-invoice-journey.cjs",
+          "line": 14,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 78.3285,
+          "error_code": null
+        }
+      ],
+      "business_records": {
+        "result": "PASS",
+        "checks": [
+          {
+            "name": "same organization order permits its owner without scout membership; ordinary employee cannot apply or read",
+            "result": "PASS",
+            "records": {
+              "order_id": "09f6ab42-1169-485e-9fc2-24744a2c7538",
+              "party_id": "26e498b3-eafa-4295-8f2f-7b4a81a006bf",
+              "invoice_id": "1d7745f6-4c7f-4982-a1d9-1c1ef01295cb",
+              "employee_account_id": "788adb25-9e22-4165-8f21-e252f97df9a8",
+              "scout_membership_required": false
+            }
+          },
+          {
+            "name": "switching to another owned company cannot inherit the original company order, invoice or command result",
+            "result": "PASS",
+            "records": {
+              "original_party_id": "26e498b3-eafa-4295-8f2f-7b4a81a006bf",
+              "second_party_id": "cf6f3439-a1e7-4156-a108-94290a1e23ac",
+              "order_id": "09f6ab42-1169-485e-9fc2-24744a2c7538",
+              "invoice_id": "1d7745f6-4c7f-4982-a1d9-1c1ef01295cb"
+            }
+          },
+          {
+            "name": "organization applicant cannot self-approve with operator grants or a second company; independent handlers issue the same simulated document",
+            "result": "PASS",
+            "records": {
+              "order_id": "09f6ab42-1169-485e-9fc2-24744a2c7538",
+              "invoice_id": "1d7745f6-4c7f-4982-a1d9-1c1ef01295cb",
+              "document_id": "427e09f8-fa9b-4aae-9f19-ac75594d4038",
+              "simulated": true,
+              "independent_handler": "e0b07629-7921-4186-82a3-9b6b0e2e1833",
+              "independent_verifier": "223deedf-a9f7-40be-bffc-c29716cb98d3"
+            }
+          },
+          {
+            "name": "original owner authority withdrawal blocks old reads, document and idempotent recovery without changing company facts",
+            "result": "PASS",
+            "records": {
+              "order_id": "09f6ab42-1169-485e-9fc2-24744a2c7538",
+              "invoice_id": "1d7745f6-4c7f-4982-a1d9-1c1ef01295cb",
+              "document_id": "427e09f8-fa9b-4aae-9f19-ac75594d4038",
+              "contract_unchanged": true,
+              "authority_change": "SYNTHETIC_ADMIN_PREREQUISITE"
+            }
+          }
+        ],
+        "limits": [
+          "Synthetic reviewed organization capability and operator grants; no real invoice or owner-transfer workflow."
+        ]
+      }
+    },
+    {
+      "id": "REFERRAL-RISK-SETTLEMENT",
+      "acceptance_id": "ACC-DEL-20.03",
+      "result": "LOCAL_PASS",
+      "scope": "异常订单阻止新结佣、旧待审批准及可支付额度；推荐受益人不得自审；独审恢复原佣金",
+      "remaining": "履约成熟时间为合成前提；真实售后周期、持牌清分与独立财务签收未验",
+      "actual_checks": [
+        {
+          "name": "last valid referral is frozen at checkout and receives only platform allocation",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 83,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 801.4025,
+          "error_code": null
+        }
+      ],
+      "business_records": {
+        "synthetic_only": true,
+        "order_id": "97b67abd-a2dc-4273-96ba-0242f2e6321d",
+        "payment_id": "4a3dee48-b039-44bf-9ea0-28bf5f40051e",
+        "refund_id": "4a2c26d4-8643-47a8-a0af-adc1ac9fa642",
+        "commission_id": "890b8cee-93f7-454f-9112-523fddef21cd",
+        "agreement_id": "4ae8ac6d-de8d-43b5-a341-6eef9f1e983d",
+        "rule_id": "6a35be9b-a7fc-416a-a741-f5cebc7b2fa9",
+        "rate_bps": 1000,
+        "platform_bps": 1800,
+        "commission_before_minor": 10,
+        "partial_refund_id": "4fb47bcf-2b15-44a5-b593-db45c20d01a9",
+        "partial_refund_minor": 40,
+        "partial_commission_minor": 6,
+        "remaining_refund_minor": 60,
+        "commission_after_minor": 0,
+        "financial": {
+          "net_minor": 0,
+          "received_minor": 100,
+          "refunded_minor": 100
+        },
+        "contract_unchanged": true,
+        "risk_exclusion": {
+          "record_id": "73eadd0d-2e26-4ea4-a6de-a1fe94af3af8",
+          "settlement_blocked": true,
+          "pending_settlement_approval_blocked": true,
+          "referrer_self_review_blocked": true,
+          "payable_blocked": true,
+          "old_accrual_retained_minor": 10,
+          "independent_appeal_restored_minor": 10
+        },
+        "limits": [
+          "Synthetic PRODUCTION-labelled receipts in disposable test DB only; no provider called or enabled",
+          "Fulfillment maturity is a prebuilt fixture, not actual elapsed delivery"
+        ]
+      }
+    },
+    {
+      "id": "REFERRAL-ORIGINAL-REFUNDS",
+      "acceptance_id": "ACC-DEL-20.04",
+      "result": "LOCAL_PASS",
+      "scope": "同原单部分退款40使佣金10降至6，余款60后为0，重复回执不重记，历史快照不改",
+      "remaining": "MCN关系变更与同一推荐佣金组合未新增验证；实际追偿与到账仍单列",
+      "actual_checks": [
+        {
+          "name": "last valid referral is frozen at checkout and receives only platform allocation",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 83,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 801.4025,
+          "error_code": null
+        },
+        {
+          "name": "refund reduces future entitlement, preserves old settlement and actual payout",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 183,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 309.8572,
+          "error_code": null
+        }
+      ],
+      "business_records": {
+        "synthetic_only": true,
+        "order_id": "97b67abd-a2dc-4273-96ba-0242f2e6321d",
+        "payment_id": "4a3dee48-b039-44bf-9ea0-28bf5f40051e",
+        "refund_id": "4a2c26d4-8643-47a8-a0af-adc1ac9fa642",
+        "commission_id": "890b8cee-93f7-454f-9112-523fddef21cd",
+        "agreement_id": "4ae8ac6d-de8d-43b5-a341-6eef9f1e983d",
+        "rule_id": "6a35be9b-a7fc-416a-a741-f5cebc7b2fa9",
+        "rate_bps": 1000,
+        "platform_bps": 1800,
+        "commission_before_minor": 10,
+        "partial_refund_id": "4fb47bcf-2b15-44a5-b593-db45c20d01a9",
+        "partial_refund_minor": 40,
+        "partial_commission_minor": 6,
+        "remaining_refund_minor": 60,
+        "commission_after_minor": 0,
+        "financial": {
+          "net_minor": 0,
+          "received_minor": 100,
+          "refunded_minor": 100
+        },
+        "contract_unchanged": true,
+        "risk_exclusion": {
+          "record_id": "73eadd0d-2e26-4ea4-a6de-a1fe94af3af8",
+          "settlement_blocked": true,
+          "pending_settlement_approval_blocked": true,
+          "referrer_self_review_blocked": true,
+          "payable_blocked": true,
+          "old_accrual_retained_minor": 10,
+          "independent_appeal_restored_minor": 10
+        },
+        "limits": [
+          "Synthetic PRODUCTION-labelled receipts in disposable test DB only; no provider called or enabled",
+          "Fulfillment maturity is a prebuilt fixture, not actual elapsed delivery"
+        ]
+      }
+    },
+    {
+      "id": "PRIZE-FULFILLMENT",
+      "acceptance_id": "ACC-DEL-21.04",
+      "result": "LOCAL_PASS",
+      "scope": "同次实际抽奖曝光权益接独审排期、确认、履行或原约定补救；复验面试卡、制作券、免单成片及积分返还",
+      "remaining": "测试控制随机源和时间；真实曝光、面试、成片质量、概率成本及独立验收未替代",
+      "actual_checks": [
+        {
+          "name": "same actual winning exposure reaches reviewed delivery or one original fallback without redrawing",
+          "file": "test/support/lottery-exposure-journey.cjs",
+          "line": 5,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 462.9206,
+          "error_code": null
+        }
+      ],
+      "business_records": {
+        "result": "PASS",
+        "pool_id": "f5508bb4-4d4f-4d0b-bbfe-4cd67e5f6567",
+        "stock_id": "e8acd411-f77a-4e42-b244-771f6eaf5b71",
+        "draw_id": "bf9123e7-d6bb-4c99-83a2-8d901595d1b6",
+        "grant_id": "53ab1af6-4976-411a-a3c3-207a1dab7d24",
+        "schedule_id": "37d2e92a-ace8-471a-bbf2-54a70cec87fb",
+        "fulfilled": true,
+        "fallback_draw_id": "43c10260-83c5-47ce-9ec5-05221ca47c15",
+        "fallback_grant_id": "f78623fe-d9a7-4fa6-9c32-92040ef5b1ae",
+        "remedy_id": "e8aeab90-8bcf-409c-aa51-215eb2ee14e0",
+        "draw_stake": 300,
+        "fallback_points": 600,
+        "original_draws_unchanged": true,
+        "limits": [
+          "Test-controlled draw entropy, valid guarantee inventory; not a production probability claim",
+          "Synthetic publication and elapsed slot timestamps; no actual public exposure",
+          "Synthetic reviewed stock, permissions and fulfillment proof; no frontend or real service"
+        ]
+      }
+    }
+  ]
+}

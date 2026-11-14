@@ -1,0 +1,418 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "bf8c18db785f5da747d13db7d67b3cb90701f9b2",
+  "run_id": "pm01-archive-scope-2026-11-13T12-54-44-527Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "COMMERCIAL-ARCHIVE-SCOPE-TIMING",
+      "acceptance_id": "ACC-DEL-12.03",
+      "result": "LOCAL_PASS",
+      "scope": "修复商单归档检查误影响普通制作确认；受限证明仍不能提现；先清分确认后四阶段验收的同商单可由独审人工归档，保留历史/成片/合同/金额",
+      "remaining": "确认时自动归档及晚验收后人工归档已验，未增加历史/到期自动扫描；真实服务与所需端、独立验收仍缺",
+      "actual_checks": [
+        {
+          "name": "confirmed full current finance does not prematurely archive before accepted production",
+          "file": "test/commercial-archive-timing.integration.test.cjs",
+          "line": 25,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 143.43,
+          "error_code": null
+        },
+        {
+          "name": "same order completes all independently reviewed and buyer accepted production stages",
+          "file": "test/commercial-archive-timing.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 529.9138,
+          "error_code": null
+        },
+        {
+          "name": "independent manual archive finishes the later-acceptance path without changing rights or money",
+          "file": "test/commercial-archive-timing.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 73.6425,
+          "error_code": null
+        },
+        {
+          "name": "same commercial production accepts after finance confirmation and closes through independent manual archive",
+          "file": "test/commercial-archive-timing.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 10418.016,
+          "error_code": null
+        },
+        {
+          "name": "new publishing rule requires independent approval; old rule and notices retain snapshots",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 31,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 144.3198,
+          "error_code": null
+        },
+        {
+          "name": "never-funded adult can publish all five ordinary types without changing membership",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 227.0017,
+          "error_code": null
+        },
+        {
+          "name": "membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 56,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 98.1127,
+          "error_code": null
+        },
+        {
+          "name": "unverified, child, expired, inactive, foreign identity and official impersonation remain rejected",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 70,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 112.3758,
+          "error_code": null
+        },
+        {
+          "name": "identity or ownership lost after submission is checked at review and public read",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 84,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 70.7499,
+          "error_code": null
+        },
+        {
+          "name": "organization scope and other project ownership cannot be bypassed with an ordinary rule",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 95,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 91.4716,
+          "error_code": null
+        },
+        {
+          "name": "same notice receives reviewed artist submission then one support case after lost response recovery",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 105,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 120.654,
+          "error_code": null
+        },
+        {
+          "name": "suspended account or party hides publication and blocks further cooperation",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 121,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 59.3951,
+          "error_code": null
+        },
+        {
+          "name": "independent support links actual quote and creates the same unpaid order without membership",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 132,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1006.3428,
+          "error_code": null
+        },
+        {
+          "name": "same notice order receives payment, scoped conversation and independently reviewed full refund",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 144,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1016.2041,
+          "error_code": null
+        },
+        {
+          "name": "closing ordinary notice blocks new submissions while historical quote remains unchanged",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 232,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 19.4585,
+          "error_code": null
+        },
+        {
+          "name": "notice withdrawal notifies each historical application once without changing submission or contract",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 240,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 510.2234,
+          "error_code": null
+        },
+        {
+          "name": "failure to record notice withdrawal notification rolls back closure and all prior events",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 261,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 75.044,
+          "error_code": null
+        },
+        {
+          "name": "ordinary publishing and same-notice cooperation in isolated MySQL",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 13243.0989,
+          "error_code": null
+        },
+        {
+          "name": "existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 14,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 7316.5425,
+          "error_code": null
+        },
+        {
+          "name": "authentication, explicit rules and independent review are required",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 88,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 127.2005,
+          "error_code": null
+        },
+        {
+          "name": "rejected draft can be replaced while history stays; active agreement cannot change",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 93,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 132.7983,
+          "error_code": null
+        },
+        {
+          "name": "restricted finance evidence respects overlapping restrictions and restrictions activated during storage read",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 100,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 264.312,
+          "error_code": null
+        },
+        {
+          "name": "settlement review and every party confirmation precede available balance",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 116,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 201.8231,
+          "error_code": null
+        },
+        {
+          "name": "settlement detail and list isolate participant balances while payer and reviewer retain original snapshot",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 132,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 23.9287,
+          "error_code": null
+        },
+        {
+          "name": "concurrent withdrawals reserve available amount once and exact retries reuse request",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 140,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 94.9299,
+          "error_code": null
+        },
+        {
+          "name": "request approval is not paid; only independent bank evidence books actual payout",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 146,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 104.8805,
+          "error_code": null
+        },
+        {
+          "name": "dispute after payout requests blocks new approval but preserves verified failure and cancellation facts",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 153,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 253.9068,
+          "error_code": null
+        },
+        {
+          "name": "return and failed payouts keep facts and release reservation for a new request",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 176,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 205.0867,
+          "error_code": null
+        },
+        {
+          "name": "disputes notify parties, freeze new payouts, retain replies and all decisions",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 184,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 79.3136,
+          "error_code": null
+        },
+        {
+          "name": "refund reduces future entitlement, preserves old settlement and actual payout",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 192,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 203.7943,
+          "error_code": null
+        },
+        {
+          "name": "adjustment is balanced, separately reviewed and forces new settlement confirmation",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 204,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 133.1221,
+          "error_code": null
+        },
+        {
+          "name": "reconciliation compares verified facts without turning imported rows into money",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 207,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 38.4351,
+          "error_code": null
+        },
+        {
+          "name": "daily books include verified refunds, actual split payments and returned split money, not reservations",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 212,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 31.9497,
+          "error_code": null
+        },
+        {
+          "name": "external release statement is accrued revenue, not cash received or automatic payout",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 228,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 268.9492,
+          "error_code": null
+        },
+        {
+          "name": "same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 234,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 126.4994,
+          "error_code": null
+        },
+        {
+          "name": "partial receipts, duplicate bank references and statement corrections never rewrite history",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 250,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 319.735,
+          "error_code": null
+        },
+        {
+          "name": "record permissions, private proof integrity, stale membership and disabled automatic payout",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 267,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 44.6154,
+          "error_code": null
+        },
+        {
+          "name": "late customer payment review and unaccepted delivery block payouts even with prior agreement",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 274,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 50.5617,
+          "error_code": null
+        },
+        {
+          "name": "notification cursor can retrieve newly recorded events, and different parties keep their own feed",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 279,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 32.2574,
+          "error_code": null
+        },
+        {
+          "name": "audit failure rolls back adjustment and idempotency reservation; stale review fails",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 285,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 39.9953,
+          "error_code": null
+        },
+        {
+          "name": "personal income uses posted own shares including payout returns; no other party amounts or estimated revenue",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 291,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 134.2864,
+          "error_code": null
+        },
+        {
+          "name": "finance actual HTTP: separately verified receipts, accrual, payouts and corrections",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 10,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 16791.1088,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "name": "full finance confirmed before final delivery keeps cooperation open",
+          "result": "PASS",
+          "order_id": "ec223818-9b86-42b9-9f89-bbbc6ddbbee7",
+          "settlement_id": "eb83b5f2-364a-48da-9731-27c5bffbae3b"
+        },
+        {
+          "name": "same paid order accepts all four production stages after finance",
+          "result": "PASS",
+          "order_id": "ec223818-9b86-42b9-9f89-bbbc6ddbbee7",
+          "project_id": "25fe25a5-9c12-4afd-b2f5-c100f8d6b15b",
+          "final_version_id": "45faf574-439e-47df-8ab2-a1e5b1a0c3b7"
+        },
+        {
+          "name": "independent manual archive preserves history and delivered bytes without payout or new rights",
+          "result": "PASS",
+          "order_id": "ec223818-9b86-42b9-9f89-bbbc6ddbbee7",
+          "settlement_id": "eb83b5f2-364a-48da-9731-27c5bffbae3b"
+        }
+      ]
+    }
+  ]
+}

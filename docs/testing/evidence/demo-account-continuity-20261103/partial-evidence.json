@@ -1,0 +1,122 @@
+{
+  "base_commit": "4c81ab79cda8b7eb8e57c69a6d482b2732f805ef",
+  "surface": "api",
+  "result": "PASS",
+  "raw": {
+    "path": "docs/testing/evidence/demo-account-continuity-20261103/complete-flow.json",
+    "sha256": "fb4c37d8ba5847e7ea4ac48323ce007216cbff9fc0487d4c578b937bfed9580d"
+  },
+  "checks": [
+    {
+      "id": "CONTINUITY-01",
+      "result": "PASS",
+      "name": "机构公开档案仍展示已审核版，新草稿不覆盖，主图能读取",
+      "records": {
+        "party_id": "edd128b2-ed84-48ad-8ab8-66b4a0218cf8",
+        "approved_id": "7a0a5f3f-8fa2-4e16-bd49-10c899c4d16c",
+        "pending_id": "25de39bc-41b1-42c9-b1ea-43ce02ee3343",
+        "featured_id": "392b2fe9-a2ad-4832-bda8-b629f03966c0"
+      }
+    },
+    {
+      "id": "CONTINUITY-02",
+      "result": "PASS",
+      "name": "精选艺人使用已审公开形象并标明编辑推荐",
+      "records": {
+        "party_id": "edd128b2-ed84-48ad-8ab8-66b4a0218cf8",
+        "approved_id": "7a0a5f3f-8fa2-4e16-bd49-10c899c4d16c",
+        "pending_id": "25de39bc-41b1-42c9-b1ea-43ce02ee3343",
+        "featured_id": "392b2fe9-a2ad-4832-bda8-b629f03966c0"
+      }
+    },
+    {
+      "id": "CONTINUITY-03",
+      "result": "PASS",
+      "name": "样片订单已付款可读取私有成片，确为视频",
+      "records": {
+        "order_id": "ba1873fc-5310-463a-b8b8-cced947c36c7",
+        "sha256": "2f996469337427b80f818fec711d43ce538991763b75e9d8376c1e73fd6606d2"
+      }
+    },
+    {
+      "id": "CONTINUITY-04",
+      "result": "PASS",
+      "name": "另一个身份不能读取原订单成片",
+      "records": {
+        "order_id": "ba1873fc-5310-463a-b8b8-cced947c36c7"
+      }
+    },
+    {
+      "id": "CONTINUITY-05",
+      "result": "PASS",
+      "name": "收藏中有真实可打开的测试作品",
+      "records": {
+        "role": "stock_buyer",
+        "kind": "STOCK",
+        "target_id": "a98d67cf-5c6f-46a6-8721-bfa60fd4455d"
+      }
+    },
+    {
+      "id": "CONTINUITY-06",
+      "result": "PASS",
+      "name": "开启足迹、记录、清空、旧请求不能写回",
+      "records": {}
+    },
+    {
+      "id": "CONTINUITY-07",
+      "result": "PASS",
+      "name": "客服补件、处理、答复、关闭、重开保留同一工单记录",
+      "records": {
+        "ticket_id": "510622a5-051e-416f-82eb-2683463e9683"
+      }
+    },
+    {
+      "id": "CONTINUITY-08",
+      "result": "PASS",
+      "name": "客服处理后本人通知可读取",
+      "records": {
+        "ticket_id": "510622a5-051e-416f-82eb-2683463e9683"
+      }
+    },
+    {
+      "id": "CONTINUITY-09",
+      "result": "PASS",
+      "name": "同一订单补全抬头、审核、独立复核、下载明确标注的模拟凭证",
+      "records": {
+        "order_id": "ba1873fc-5310-463a-b8b8-cced947c36c7",
+        "invoice_id": "94933613-622e-4182-9be8-be64c4115b66",
+        "document_id": "534f0fd2-6231-44a0-9d70-371aeca57ffa"
+      }
+    },
+    {
+      "id": "CONTINUITY-10",
+      "result": "PASS",
+      "name": "本人合同和作品能关联原现货订单",
+      "records": {
+        "order_id": "ba1873fc-5310-463a-b8b8-cced947c36c7"
+      }
+    },
+    {
+      "id": "CONTINUITY-11",
+      "result": "PASS",
+      "name": "验证两号码、确认、重新登录后原订单文件、发票和工单均保留，旧登录全部失效",
+      "records": {
+        "account_id": "b53ec113-a112-4445-a224-500362a309bf",
+        "change_id": "d4e2e002-c7a0-4d84-8006-481c3b1960d3",
+        "order_id": "ba1873fc-5310-463a-b8b8-cced947c36c7",
+        "invoice_id": "94933613-622e-4182-9be8-be64c4115b66",
+        "ticket_id": "510622a5-051e-416f-82eb-2683463e9683"
+      }
+    },
+    {
+      "id": "CONTINUITY-12",
+      "result": "PASS",
+      "name": "旧号码重新注册只能获得新账号，不能访问原订单",
+      "records": {
+        "original_account_id": "b53ec113-a112-4445-a224-500362a309bf",
+        "new_account_id": "1de98c55-e87a-4957-a59c-7615a4378c4c"
+      }
+    }
+  ],
+  "limits": "API-only partial evidence; preseeded paid video and records explicitly identified; not complete first-time UI journey or native test"
+}

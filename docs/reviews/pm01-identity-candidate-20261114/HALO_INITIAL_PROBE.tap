@@ -1,0 +1,132 @@
+TAP version 13
+# Subtest: new artist contract, classified review and free services in isolated MySQL
+    # Subtest: cutover exposes free options, filters old offers and blocks old new purchases
+    ok 1 - cutover exposes free options, filters old offers and blocks old new purchases
+      ---
+      duration_ms: 36.169
+      type: 'test'
+      ...
+    # Subtest: pending historical creation is not silently replaced and can finish its original payment
+    ok 2 - pending historical creation is not silently replaced and can finish its original payment
+      ---
+      duration_ms: 279.0557
+      type: 'test'
+      ...
+    # Subtest: free hosting is perpetual and deduplicates simultaneous requests without money records
+    ok 3 - free hosting is perpetual and deduplicates simultaneous requests without money records
+      ---
+      duration_ms: 134.9712
+      type: 'test'
+      ...
+    # Subtest: free creation failure records no refund, requires independent operator and is retryable
+    ok 4 - free creation failure records no refund, requires independent operator and is retryable
+      ---
+      duration_ms: 126.2655
+      type: 'test'
+      ...
+    # Subtest: free archive needs owned files and both face and voice; never enables a provider model
+    ok 5 - free archive needs owned files and both face and voice; never enables a provider model
+      ---
+      duration_ms: 211.7592
+      type: 'test'
+      ...
+    # Subtest: free routes still enforce minor restrictions and cancellation does not create money
+    ok 6 - free routes still enforce minor restrictions and cancellation does not create money
+      ---
+      duration_ms: 104.4222
+      type: 'test'
+      ...
+    # Subtest: unpaid classified review cannot submit; failed attempt leaves the same order unpaid and no application
+    ok 7 - unpaid classified review cannot submit; failed attempt leaves the same order unpaid and no application
+      ---
+      duration_ms: 244.9462
+      type: 'test'
+      ...
+    # Subtest: paid review fee is recorded separately from an application and certification approval
+    ok 8 - paid review fee is recorded separately from an application and certification approval
+      ---
+      duration_ms: 22.8177
+      type: 'test'
+      ...
+    # Subtest: new certification refuses missing categories, wrong files and another owner assets
+    ok 9 - new certification refuses missing categories, wrong files and another owner assets
+      ---
+      duration_ms: 167.3383
+      type: 'test'
+      ...
+    # Subtest: supplement replaces classified snapshot, preserves original evidence and consumes one fee
+    ok 10 - supplement replaces classified snapshot, preserves original evidence and consumes one fee
+      ---
+      duration_ms: 119.6
+      type: 'test'
+      ...
+    # Subtest: new fee cannot be refunded; previous contract remains refundable
+    ok 11 - new fee cannot be refunded; previous contract remains refundable
+      ---
+      duration_ms: 28.2762
+      type: 'test'
+      ...
+    # Subtest: withdrawing a new application consumes its review, keeps evidence and grants no certification
+    ok 12 - withdrawing a new application consumes its review, keeps evidence and grants no certification
+      ---
+      duration_ms: 286.3346
+      type: 'test'
+      ...
+    # Subtest: expiry removes effective certification without rewriting approval history or automatically charging again
+    ok 13 - expiry removes effective certification without rewriting approval history or automatically charging again
+      ---
+      duration_ms: 35.5192
+      type: 'test'
+      ...
+    # Subtest: certification alone expires at its original boundary while renewed identity and free base qualification remain valid
+    ok 14 - certification alone expires at its original boundary while renewed identity and free base qualification remain valid
+      ---
+      duration_ms: 129.8033
+      type: 'test'
+      ...
+    # Subtest: observe current classified level three service, payment and submission without inventing approval criteria
+    not ok 15 - observe current classified level three service, payment and submission without inventing approval criteria
+      ---
+      duration_ms: 80.046
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\halo-classification-audit.cjs:167:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":409,"error":{"code":"HALO_VERIFIED_METRICS_NOT_AVAILABLE","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\halo-classification-audit.cjs:25:24)
+        serviceOrder (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\halo-classification-audit.cjs:38:15)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\halo-classification-audit.cjs:169:11)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\halo-classification-audit.cjs:167:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..15
+not ok 1 - new artist contract, classified review and free services in isolated MySQL
+  ---
+  duration_ms: 38815.279
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\halo-classification-audit.cjs:11:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 16
+# suites 0
+# pass 14
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 39211.8818

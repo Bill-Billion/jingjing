@@ -1,0 +1,377 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "78f07c2971e502c8a6c2076967be60b66947e648",
+  "run_id": "pm01-mcn-income-2026-11-13T13-30-09-595Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "new_runtime_code": "仅25.04机构查询；其他五项既有能力复验",
+  "checks": [
+    {
+      "id": "MCN-CONTROLS-05-04",
+      "acceptance_id": "ACC-DEL-05.04",
+      "name": "产品配置",
+      "result": "LOCAL_PASS",
+      "scope": "既有分类表单不可变版本、附件版本、独审定价及艺人精选推荐通过同版复验；本项没有新增产品配置代码",
+      "remaining": "视频节日套餐、走量SKU与推荐位的完整管理未证实；不把艺人精选等同视频CMS",
+      "actual_checks": [
+        {
+          "name": "empty configuration exposes no fabricated categories; only a publisher can publish immutable template versions",
+          "file": "test/customization.integration.test.cjs",
+          "line": 60,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 82.3398,
+          "error_code": null
+        },
+        {
+          "name": "publishing a newer category does not silently migrate existing drafts or their questions",
+          "file": "test/customization.integration.test.cjs",
+          "line": 88,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 27.804,
+          "error_code": null
+        },
+        {
+          "name": "private attachments upload, reopen, submit, supplement and retain immutable versions through HTTP",
+          "file": "test/customization.integration.test.cjs",
+          "line": 342,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 317.5235,
+          "error_code": null
+        },
+        {
+          "name": "editorial recommendation needs independent review and is not star certification",
+          "file": "test/directory.integration.test.cjs",
+          "line": 66,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 80.2296,
+          "error_code": null
+        },
+        {
+          "name": "expired recommendation is hidden; revoked underlying public consent immediately hides selection",
+          "file": "test/directory.integration.test.cjs",
+          "line": 72,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 22.5547,
+          "error_code": null
+        },
+        {
+          "name": "independent review and immutable explicitly priced specification",
+          "file": "test/trade.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 167.5722,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "MCN-CONTROLS-07-03",
+      "acceptance_id": "ACC-DEL-07.03",
+      "name": "订单补差",
+      "result": "LOCAL_PASS",
+      "scope": "试镜追加报价经独审/对方接受，单独支付及退款；定制创意变更单独审/接受/付款后关联原项目，退款后阻止继续交付；原款不改",
+      "remaining": "全部业务形态、真实支付和独立整链签收仍缺；不是新开发补差功能",
+      "actual_checks": [
+        {
+          "name": "expired unaccepted supplement does not block a new proposal",
+          "file": "test/auditions-supplements.integration.test.cjs",
+          "line": 11,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 21.7806,
+          "error_code": null
+        },
+        {
+          "name": "supplement refund needs independent decision; repeat provider proof restores only once",
+          "file": "test/auditions-supplements.integration.test.cjs",
+          "line": 14,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 86.472,
+          "error_code": null
+        },
+        {
+          "name": "creative amendment is independently quoted, accepted, paid once and attached to the original production",
+          "file": "test/customization-delivery.integration.test.cjs",
+          "line": 120,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 530.3907,
+          "error_code": null
+        },
+        {
+          "name": "same-story amendment HTTP create review acceptance keeps original binding and rejects stale or duplicate cases",
+          "file": "test/customization-delivery.integration.test.cjs",
+          "line": 122,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 975.3142,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "MCN-CONTROLS-09-02",
+      "acceptance_id": "ACC-DEL-09.02",
+      "name": "试镜先付后接拒",
+      "result": "LOCAL_PASS",
+      "scope": "未付款不接受/不开会话；付款后仍待艺人接受；独立联系方式同意；拒接、到期、并发决定及可信退款结果已复验",
+      "remaining": "本组未单独组合证明拒接退款的全部成长/返佣归因；真实资金与现场、完整端侧及独审签收另验",
+      "actual_checks": [
+        {
+          "name": "unpaid order cannot accept or open conversation; independent venue review required",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 54,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 121.3515,
+          "error_code": null
+        },
+        {
+          "name": "verified payment is idempotent and still needs artist acceptance",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 55,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 70.9228,
+          "error_code": null
+        },
+        {
+          "name": "accept opens conversation; duplicate decision returns same booking",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 56,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 35.07,
+          "error_code": null
+        },
+        {
+          "name": "contact requires separate consent and is never embedded in booking/order",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 57,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 32.9325,
+          "error_code": null
+        },
+        {
+          "name": "decline creates one refund request; verified provider refund required for refunded status",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 69,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 125.5627,
+          "error_code": null
+        },
+        {
+          "name": "unaccepted expiry cannot be accepted, goes through refund request",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 70,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 111.4365,
+          "error_code": null
+        },
+        {
+          "name": "automated expiry is lease fenced and creates only one refund request",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 74,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 109.4161,
+          "error_code": null
+        },
+        {
+          "name": "concurrent accept or decline produces one winner",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 134,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 156.4593,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "MCN-CONTROLS-20-02",
+      "acceptance_id": "ACC-DEL-20.02",
+      "name": "新旧合同返佣费率",
+      "result": "LOCAL_PASS",
+      "scope": "新合同四类10%—15%范围、活动独审、老规则不改；实际订单锁推荐归因和平台来源，供应方/机构本金不挤占，退款逆向既有能力复验",
+      "remaining": "真实资金、全部活动规则与独立财务签收仍缺；7.2%/6.6%不是新默认",
+      "actual_checks": [
+        {
+          "name": "all four new referral rates must be configured in range, not just one field",
+          "file": "test/contract-six-policy.test.cjs",
+          "line": 22,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.4354,
+          "error_code": null
+        },
+        {
+          "name": "new referral rates enforce 10-15 percent without rewriting historical five-percent rules",
+          "file": "test/contract-six.integration.test.cjs",
+          "line": 90,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 39.3532,
+          "error_code": null
+        },
+        {
+          "name": "referral comes from platform and preserves total, sandbox never allocates",
+          "file": "test/engagement-policy.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 20.0262,
+          "error_code": null
+        },
+        {
+          "name": "last valid referral is frozen at checkout and receives only platform allocation",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 83,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1102.1059,
+          "error_code": null
+        },
+        {
+          "name": "V5 splits MCN from supply income and referral only from platform",
+          "file": "test/marketplace-policy.test.cjs",
+          "line": 7,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 4.273,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "MCN-CONTROLS-25-04",
+      "acceptance_id": "ACC-DEL-25.04",
+      "name": "机构经营查询",
+      "result": "LOCAL_PASS",
+      "scope": "新增艺人/订单/创建期间筛选、报价/实收/退款/净收与机构预期/应计分列；合成历史订单HTTP反例验证起含止不含、多指派不重计、员工隔离、沙盒排除和未知艺人不猜测",
+      "remaining": "不是实际多艺人新下单全链；艺人筛选限商单数字人绑定，其他来源未知保留null；试镜接拒结果及完整多业务经营视图仍需核；500条截断不当全量总计，非期间收款流水/实际打款",
+      "actual_checks": [
+        {
+          "name": "income filters use order creation UTC boundaries, keep actual receipts separate, and count each order once",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 216,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 102.4753,
+          "error_code": null
+        },
+        {
+          "name": "income retains gross receipts and refunds, excludes sandbox totals, and does not invent artist attribution",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 237,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 65.5015,
+          "error_code": null
+        },
+        {
+          "name": "MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 182,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 573.478,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "MCN-CONTROLS-26-03",
+      "acceptance_id": "ACC-DEL-26.03",
+      "name": "后台真实风险",
+      "result": "LOCAL_PASS",
+      "scope": "未接服务/未审规则状态、配置与证据版本、失败/阻塞任务与有限重试、只读诊断在隔离后端复验",
+      "remaining": "真实供应商、运营界面与独立操作签收仍缺；本项复验已有能力，没有新后台页面",
+      "actual_checks": [
+        {
+          "name": "service state requires matching environment, configuration revision and verification evidence",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 111,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 45.7,
+          "error_code": null
+        },
+        {
+          "name": "diagnostics report blocked, failed and expired jobs without executing or exposing private references",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 117,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 317.6588,
+          "error_code": null
+        },
+        {
+          "name": "configuration is saved but does not authorize real calls",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 11.7433,
+          "error_code": null
+        },
+        {
+          "name": "disabling and awaiting approval keep history but block new calls",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 15.4312,
+          "error_code": null
+        },
+        {
+          "name": "conflicting outbox intent is visibly blocked and does not replace the original job",
+          "file": "test/worker.integration.test.cjs",
+          "line": 64,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 10328.3319,
+          "error_code": null
+        },
+        {
+          "name": "retry is delayed, capped and manually resumed without erasing attempt history",
+          "file": "test/worker.integration.test.cjs",
+          "line": 102,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 10114.976,
+          "error_code": null
+        },
+        {
+          "name": "missing handlers and ambiguous handler errors block without fake success or immediate replay",
+          "file": "test/worker.integration.test.cjs",
+          "line": 133,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 5577.9605,
+          "error_code": null
+        },
+        {
+          "name": "provider retry without a recovery adapter becomes blocked instead of executing again",
+          "file": "test/worker.integration.test.cjs",
+          "line": 155,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 5253.1987,
+          "error_code": null
+        }
+      ]
+    }
+  ]
+}

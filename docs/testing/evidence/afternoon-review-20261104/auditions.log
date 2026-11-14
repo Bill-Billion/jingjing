@@ -1,0 +1,338 @@
+TAP version 13
+# Subtest: booking scoped delivery options preserve person recipient and live permissions
+    # Subtest: unpaid booking cannot browse delivery materials
+    ok 1 - unpaid booking cannot browse delivery materials
+      ---
+      duration_ms: 56.0688
+      type: 'test'
+      ...
+    # Subtest: six linked photos paginate once; video separate; no storage paths or private evidence
+    ok 2 - six linked photos paginate once; video separate; no storage paths or private evidence
+      ---
+      duration_ms: 69.3922
+      type: 'test'
+      ...
+    # Subtest: consent matches booking person avatar purpose and recipient; foreign and other-avatar consents excluded
+    ok 3 - consent matches booking person avatar purpose and recipient; foreign and other-avatar consents excluded
+      ---
+      duration_ms: 52.4953
+      type: 'test'
+      ...
+    # Subtest: buyer operator stranger spoofed identity and missing identity cannot enumerate
+    ok 4 - buyer operator stranger spoofed identity and missing identity cannot enumerate
+      ---
+      duration_ms: 51.5104
+      type: 'test'
+      ...
+    # Subtest: invalid types limits and caller-selected person rejected
+    ok 5 - invalid types limits and caller-selected person rejected
+      ---
+      duration_ms: 21.0065
+      type: 'test'
+      ...
+    # Subtest: unlinked same-owner upload and another persons linked upload excluded
+    ok 6 - unlinked same-owner upload and another persons linked upload excluded
+      ---
+      duration_ms: 42.8852
+      type: 'test'
+      ...
+    # Subtest: unused linked material can be reviewed for deletion before any audition delivery uses it
+    ok 7 - unused linked material can be reviewed for deletion before any audition delivery uses it
+      ---
+      duration_ms: 97.619
+      type: 'test'
+      ...
+    # Subtest: actual submission still validates chosen options and cannot reuse selection during review
+    ok 8 - actual submission still validates chosen options and cannot reuse selection during review
+      ---
+      duration_ms: 32.8843
+      type: 'test'
+      ...
+    # Subtest: submitted audition materials disclose retention reason without private booking data
+    ok 9 - submitted audition materials disclose retention reason without private booking data
+      ---
+      duration_ms: 19.387
+      type: 'test'
+      ...
+    # Subtest: prior approved deletion is refused after delivery references the asset and leaves the file intact
+    ok 10 - prior approved deletion is refused after delivery references the asset and leaves the file intact
+      ---
+      duration_ms: 14.7392
+      type: 'test'
+      ...
+    1..10
+ok 1 - booking scoped delivery options preserve person recipient and live permissions
+  ---
+  duration_ms: 12338.3217
+  type: 'test'
+  ...
+# personal-photo-pagination
+# video-filter
+# agency-owner-explicit-double-permission
+# audition-only-staff-cannot-read-materials
+# staff-explicit-double-permission
+# staff-materials-withdrawal-immediate
+# artist-withdrawal-removes-owner-access-preserves-self
+# buyers-operators-strangers-cannot-enumerate
+# consent-pagination-filters-recipient-avatar-purpose
+# withdrawn-consent-not-listed-and-stale-delivery-rejected
+# restricted-photo-excluded-pagination-continues
+# caller-cannot-change-booking-person-or-list-shape
+# {"checks":12,"issues":[],"cleanup":{"services_stopped":true,"database_removed":true}}
+# Subtest: independent delivery staff scopes revocation and restricted pagination
+ok 2 - independent delivery staff scopes revocation and restricted pagination
+  ---
+  duration_ms: 12776.3602
+  type: 'test'
+  ...
+# Subtest: trial contact needs both acceptance and verified full payment
+ok 3 - trial contact needs both acceptance and verified full payment
+  ---
+  duration_ms: 0.91
+  type: 'test'
+  ...
+# Subtest: unsafe venue and contact bait rejected; ordinary business text remains
+ok 4 - unsafe venue and contact bait rejected; ordinary business text remains
+  ---
+  duration_ms: 2.1478
+  type: 'test'
+  ...
+# Subtest: unknown counts and timers are never assigned silently
+ok 5 - unknown counts and timers are never assigned silently
+  ---
+  duration_ms: 0.2361
+  type: 'test'
+  ...
+# Subtest: paid audition supplements and isolated simulated payments
+    # Subtest: simulator refuses production and ordinary development databases
+    ok 1 - simulator refuses production and ordinary development databases
+      ---
+      duration_ms: 3.2619
+      type: 'test'
+      ...
+    # Subtest: expired unaccepted supplement does not block a new proposal
+    ok 2 - expired unaccepted supplement does not block a new proposal
+      ---
+      duration_ms: 25.246
+      type: 'test'
+      ...
+    # Subtest: seller proposes, independent reviewer approves, buyer accepts exact terms once
+    ok 3 - seller proposes, independent reviewer approves, buyer accepts exact terms once
+      ---
+      duration_ms: 72.7683
+      type: 'test'
+      ...
+    # Subtest: mock checkout explicit, pending and unknown do not pay; outsider cannot choose success
+    ok 4 - mock checkout explicit, pending and unknown do not pay; outsider cannot choose success
+      ---
+      duration_ms: 116.4772
+      type: 'test'
+      ...
+    # Subtest: supplement refund needs independent decision; repeat provider proof restores only once
+    ok 5 - supplement refund needs independent decision; repeat provider proof restores only once
+      ---
+      duration_ms: 119.5724
+      type: 'test'
+      ...
+    1..5
+ok 6 - paid audition supplements and isolated simulated payments
+  ---
+  duration_ms: 11519.1808
+  type: 'test'
+  ...
+# Subtest: audition booking, delivery, privacy and refunds in isolated MySQL
+    # Subtest: future or expired manual review cannot supply audition options or a new offer
+    ok 1 - future or expired manual review cannot supply audition options or a new offer
+      ---
+      duration_ms: 135.3619
+      type: 'test'
+      ...
+    # Subtest: first offer reads qualified rules and minimal authorizations with no prior offer
+    ok 2 - first offer reads qualified rules and minimal authorizations with no prior offer
+      ---
+      duration_ms: 60.2019
+      type: 'test'
+      ...
+    # Subtest: only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage
+    ok 3 - only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage
+      ---
+      duration_ms: 70.1651
+      type: 'test'
+      ...
+    # Subtest: visibility changes independent of public artist archive; price not leaked by catalog
+    ok 4 - visibility changes independent of public artist archive; price not leaked by catalog
+      ---
+      duration_ms: 62.8202
+      type: 'test'
+      ...
+    # Subtest: accepted private invitation exposes matching offers only; revoked invitation cannot book
+    ok 5 - accepted private invitation exposes matching offers only; revoked invitation cannot book
+      ---
+      duration_ms: 139.1897
+      type: 'test'
+      ...
+    # Subtest: unsafe place refused and stale price cannot book
+    ok 6 - unsafe place refused and stale price cannot book
+      ---
+      duration_ms: 21.7741
+      type: 'test'
+      ...
+    # Subtest: unpaid order cannot accept or open conversation; independent venue review required
+    ok 7 - unpaid order cannot accept or open conversation; independent venue review required
+      ---
+      duration_ms: 120.2907
+      type: 'test'
+      ...
+    # Subtest: verified payment is idempotent and still needs artist acceptance
+    ok 8 - verified payment is idempotent and still needs artist acceptance
+      ---
+      duration_ms: 81.0828
+      type: 'test'
+      ...
+    # Subtest: accept opens conversation; duplicate decision returns same booking
+    ok 9 - accept opens conversation; duplicate decision returns same booking
+      ---
+      duration_ms: 41.5191
+      type: 'test'
+      ...
+    # Subtest: contact requires separate consent and is never embedded in booking/order
+    ok 10 - contact requires separate consent and is never embedded in booking/order
+      ---
+      duration_ms: 39.2944
+      type: 'test'
+      ...
+    # Subtest: conversation deduplicates, rejects bait, and unauthorized support cannot read
+    ok 11 - conversation deduplicates, rejects bait, and unauthorized support cannot read
+      ---
+      duration_ms: 99.8399
+      type: 'test'
+      ...
+    # Subtest: departed safety case freezes contact and settlement without credit penalty
+    ok 12 - departed safety case freezes contact and settlement without credit penalty
+      ---
+      duration_ms: 59.1229
+      type: 'test'
+      ...
+    # Subtest: delivery requires correct count, authorization and arrival
+    ok 13 - delivery requires correct count, authorization and arrival
+      ---
+      duration_ms: 102.5848
+      type: 'test'
+      ...
+    # Subtest: actual private bytes required before receipt and acceptance
+    ok 14 - actual private bytes required before receipt and acceptance
+      ---
+      duration_ms: 458.1448
+      type: 'test'
+      ...
+    # Subtest: decline creates one refund request; verified provider refund required for refunded status
+    ok 15 - decline creates one refund request; verified provider refund required for refunded status
+      ---
+      duration_ms: 168.7433
+      type: 'test'
+      ...
+    # Subtest: unaccepted expiry cannot be accepted, goes through refund request
+    ok 16 - unaccepted expiry cannot be accepted, goes through refund request
+      ---
+      duration_ms: 136.1587
+      type: 'test'
+      ...
+    # Subtest: minor cannot create offer or buy even if client says otherwise
+    ok 17 - minor cannot create offer or buy even if client says otherwise
+      ---
+      duration_ms: 6.7571
+      type: 'test'
+      ...
+    # Subtest: legacy order comments cannot bypass dedicated conversation gate
+    ok 18 - legacy order comments cannot bypass dedicated conversation gate
+      ---
+      duration_ms: 12.3196
+      type: 'test'
+      ...
+    # Subtest: automated expiry is lease fenced and creates only one refund request
+    ok 19 - automated expiry is lease fenced and creates only one refund request
+      ---
+      duration_ms: 153.8749
+      type: 'test'
+      ...
+    # Subtest: before departure cancellation is full refund even for safety reason
+    ok 20 - before departure cancellation is full refund even for safety reason
+      ---
+      duration_ms: 126.8989
+      type: 'test'
+      ...
+    # Subtest: custody channel is captured at checkout without changing old contracts or claiming real payment
+    ok 21 - custody channel is captured at checkout without changing old contracts or claiming real payment
+      ---
+      duration_ms: 71.1413
+      type: 'test'
+      ...
+    # Subtest: unpaid cancellation uses trade and preserves cancelled appointment
+    ok 22 - unpaid cancellation uses trade and preserves cancelled appointment
+      ---
+      duration_ms: 79.2104
+      type: 'test'
+      ...
+    # Subtest: concurrent accept or decline produces one winner
+    ok 23 - concurrent accept or decline produces one winner
+      ---
+      duration_ms: 164.6824
+      type: 'test'
+      ...
+    # Subtest: reschedule needs other party plus independent venue review; support join/leave controls access
+    ok 24 - reschedule needs other party plus independent venue review; support join/leave controls access
+      ---
+      duration_ms: 347.0972
+      type: 'test'
+      ...
+    # Subtest: new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights
+    ok 25 - new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights
+      ---
+      duration_ms: 65.1934
+      type: 'test'
+      ...
+    # Subtest: automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing
+    ok 26 - automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing
+      ---
+      duration_ms: 900.4315
+      type: 'test'
+      ...
+    # Subtest: same artist cannot accept two overlapping appointments and one can be rescheduled later
+    ok 27 - same artist cannot accept two overlapping appointments and one can be rescheduled later
+      ---
+      duration_ms: 207.9277
+      type: 'test'
+      ...
+    # Subtest: MCN requires this persons explicit audition delegation and loses access immediately on withdrawal
+    ok 28 - MCN requires this persons explicit audition delegation and loses access immediately on withdrawal
+      ---
+      duration_ms: 54.652
+      type: 'test'
+      ...
+    # Subtest: withdrawn sample consent closes buyer file access without deleting artist archive
+    ok 29 - withdrawn sample consent closes buyer file access without deleting artist archive
+      ---
+      duration_ms: 12.6089
+      type: 'test'
+      ...
+    # Subtest: retired offer rule blocks new publication and booking, preserving original paid record
+    ok 30 - retired offer rule blocks new publication and booking, preserving original paid record
+      ---
+      duration_ms: 39.7568
+      type: 'test'
+      ...
+    1..30
+ok 7 - audition booking, delivery, privacy and refunds in isolated MySQL
+  ---
+  duration_ms: 15189.4603
+  type: 'test'
+  ...
+1..7
+# tests 52
+# suites 0
+# pass 52
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 15481.4959

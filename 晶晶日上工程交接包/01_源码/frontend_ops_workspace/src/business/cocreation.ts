@@ -11,7 +11,7 @@ export const cocreation:Domain={key:'cocreation',title:'共同成片',journal:'C
 {key:'benefits',label:'本人的服务额度',path:'/cocreation/benefits',party:'required'},
 {key:'rules',label:'共创参加规则',path:'/cocreation/rules',party:'none'},
 {key:'reviews',label:'独立共创核验',path:'/cocreation/queue',party:'none',query:[select('kind','核验类别',['RULE','ROOM','CASE','SNIPPET'])],files:[{label:'查看待审实际片段',path:'/cocreation/snippets/:record_id/review-file',party:'none'}]}],operations:[
-op('room','为原故事建立共创房间','/cocreation/rooms',[id('request_id','本人已受理原故事'),id('rule_id','已审共创规则'),id('producer_party_id','明确承制方'),text('title','本次共同作品名称',200),date('deadline','报名截止时间'),text('purpose','具体制作与分享用途',200),text('territory','使用地区',100)],'required',false,['rooms']),
+op('room','为原故事建立共创房间','/cocreation/rooms',[id('request_id','本人已提交的原故事'),id('producer_party_id','本故事的平台承制方'),id('rule_id','本故事的生效参加规则'),text('title','本次共同作品名称',200),date('deadline','报名截止时间'),text('purpose','具体制作与分享用途',100),text('territory','使用地区',100)],'required',false,['rooms']),
 op('invite','邀请明确真人本人参加','/cocreation/rooms/:record_id/invitations',[id('person_id','明确被邀请真人')],'required',true,['rooms']),
 op('join','本人填写授权并确认参加','/cocreation/rooms/:record_id/members',[id('person_id','本人真人档案'),...memberFields()],'required',false,['rooms','invitations']),
 op('member','本人更新本次参加材料','/cocreation/members/:record_id',memberFields(),'required',true,['members']),

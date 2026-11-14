@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:jingjingshangri_app/account/account_api.dart';
+import 'personal_business_fixtures.dart';
 
 const accountId = '11111111-1111-4111-8111-111111111111';
 const personId = '22222222-2222-4222-8222-222222222222';
@@ -63,6 +64,97 @@ class FakeAccountAdapter implements HttpClientAdapter {
   }
 
   ResponseBody defaultReply(RequestOptions options) {
+    // The default legacy fixture has no active consumption policy. Still return
+    // the real preview envelope: missing/malformed previews must block writes.
+    if (options.path == '/api/v1/wallet/consumer-risk/preview' &&
+        options.method == 'GET' &&
+        options.queryParameters['kind'] == 'PAYMENT') {
+      return envelope({
+        'configured': false,
+        'required': false,
+        'rule_id': null,
+        'preview_sha256': null,
+        'reasons': [],
+        'message': null,
+        'target': {...options.queryParameters, 'amount_minor': 100},
+        'expires_in_seconds': null
+      });
+    }
+    if (options.path.startsWith('/api/v1/me/business/')) {
+      return envelope(businessResponse(
+          options.path.split('/').last, options.headers['X-Acting-Party'],
+          source: options.queryParameters['source']));
+    }
+    if (options.path == '/api/v1/discovery/cities') {
+      return envelope({
+        'revision': 'quick-cities-v1',
+        'scope': 'QUICK_CHOICES',
+        'allows_custom_city': true,
+        'items': [
+          for (final city in [
+            ('beijing', '北京'),
+            ('shanghai', '上海'),
+            ('hangzhou', '杭州'),
+            ('guangzhou', '广州'),
+            ('shenzhen', '深圳'),
+            ('zhengzhou', '郑州')
+          ])
+            {
+              'code': city.$1,
+              'name': city.$2,
+              'aliases': ['${city.$2}市']
+            }
+        ]
+      });
+    }
+    if (options.path == '/api/v1/discovery/search') {
+      return envelope({
+        'kind': options.queryParameters['kind'],
+        'city': options.queryParameters['city'],
+        'q': options.queryParameters['q'],
+        'items': [],
+        'next_cursor': null
+      });
+    }
+    if (options.path == '/api/v1/directory/featured-artists') {
+      return envelope({'items': [], 'next_cursor': null});
+    }
+    if (options.path == '/api/v1/me/collections/preferences') {
+      return envelope({
+        'history_enabled': false,
+        'object_version': 1,
+        'history_days': 30,
+        'history_max_entries': 200
+      });
+    }
+    if (options.path.startsWith('/api/v1/me/collections/targets/')) {
+      return envelope({'saved': false, 'visited': false});
+    }
+    if ([
+          '/api/v1/me/collections/favorites',
+          '/api/v1/me/collections/history',
+          '/api/v1/support/tickets',
+          '/api/v1/operations/notifications/feed'
+        ].contains(options.path) &&
+        options.method == 'GET') {
+      return envelope({'items': [], 'next_cursor': null});
+    }
+    if (options.path == '/api/v1/operations/notifications/unread') {
+      return envelope({
+        'total': 0,
+        'channels': {
+          'ORDER_CONVERSATIONS': 0,
+          'SUBMISSION_INTENTS': 0,
+          'ACTIVITY_VOTING': 0,
+          'SYSTEM': 0
+        },
+        'snapshot_id': invitationId,
+        'as_of': '2026-10-30T00:00:00Z',
+        'expires_at': '2026-10-30T01:00:00Z',
+        'coverage': 'CURRENT_AUTHORIZED_NOTIFICATIONS'
+      });
+    }
+
     if (options.path.endsWith('sms-challenges')) {
       return envelope({
         'challenge_id': invitationId,
@@ -93,9 +185,19 @@ class FakeAccountAdapter implements HttpClientAdapter {
     }
     if (options.path == '/api/v1/me/parties') {
       return envelope({
-        'items': [identity(orgId), identity(personId)],
+        'items': [identity(orgId), identity(personId)]
+            .where((row) =>
+                options.queryParameters['party_id'] == null ||
+                row['party']['id'] == options.queryParameters['party_id'])
+            .toList(),
         'next_cursor': null
       });
+    }
+    if (options.path.startsWith('/api/v1/me/parties/')) {
+      final id = options.path.split('/').last;
+      return [orgId, personId].contains(id)
+          ? envelope(identity(id))
+          : envelope({'code': 'PARTY_NOT_FOUND'}, status: 404, error: true);
     }
     if (options.path == '/api/v1/me/invitations') {
       return envelope({

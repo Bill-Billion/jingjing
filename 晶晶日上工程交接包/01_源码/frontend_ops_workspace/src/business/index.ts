@@ -1,3 +1,7 @@
+import {consumer,dailyFinance} from './fourPages'
+import {guardians} from './guardians'
+import {infringement} from './infringement'
+import {handover} from './handover'
 import { stock } from './stock'
 import {notices} from './notices'
 import {auditions,conversations} from './auditions'
@@ -8,4 +12,4 @@ import {redemption} from './redemption'
 import {participation} from './participation'
 import {privacy,media} from './privacy'
 import type { Domain } from './model'
-export const domains:Record<string,Domain>={stock,notices,auditions,conversations,wallet,engagement,cocreation,redemption,participation,privacy,media}
+export const domains:Record<string,Domain>={consumer,'daily-finance':dailyFinance,guardians,infringement,handover,stock,notices,auditions,conversations,wallet,engagement,cocreation,redemption,participation,privacy,media}

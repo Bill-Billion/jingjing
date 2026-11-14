@@ -1,0 +1,258 @@
+TAP version 13
+# Subtest: wallet rule rejects guessed/missing limits, aftercare and changed 365-day commitment
+ok 1 - wallet rule rejects guessed/missing limits, aftercare and changed 365-day commitment
+  ---
+  duration_ms: 2.346
+  type: 'test'
+  ...
+# Subtest: integer money conversion, rounding and cumulative proportional refund never use floating point
+ok 2 - integer money conversion, rounding and cumulative proportional refund never use floating point
+  ---
+  duration_ms: 0.3462
+  type: 'test'
+  ...
+# Subtest: payment alone, pending aftercare and unspecified periods never earn points
+ok 3 - payment alone, pending aftercare and unspecified periods never earn points
+  ---
+  duration_ms: 1.4808
+  type: 'test'
+  ...
+# Subtest: cumulative 300 yuan unlocks one year and contributes zero growth
+ok 4 - cumulative 300 yuan unlocks one year and contributes zero growth
+  ---
+  duration_ms: 9.5473
+  type: 'test'
+  ...
+# Subtest: large one-time topup cannot buy several membership years
+ok 5 - large one-time topup cannot buy several membership years
+  ---
+  duration_ms: 0.185
+  type: 'test'
+  ...
+# Subtest: renewal counted once per membership year, expiration retains growth and topup restores
+ok 6 - renewal counted once per membership year, expiration retains growth and topup restores
+  ---
+  duration_ms: 0.9945
+  type: 'test'
+  ...
+# Subtest: sixth level requires independent current qualification in addition to growth
+ok 7 - sixth level requires independent current qualification in addition to growth
+  ---
+  duration_ms: 0.2812
+  type: 'test'
+  ...
+# Subtest: refunded topups and future receipts do not falsely qualify
+ok 8 - refunded topups and future receipts do not falsely qualify
+  ---
+  duration_ms: 0.149
+  type: 'test'
+  ...
+# Subtest: pending topup counts against limits and cooldown to prevent concurrent overspend
+ok 9 - pending topup counts against limits and cooldown to prevent concurrent overspend
+  ---
+  duration_ms: 0.7928
+  type: 'test'
+  ...
+# Subtest: earliest-expiring points first; holds and expired batches are excluded
+ok 10 - earliest-expiring points first; holds and expired batches are excluded
+  ---
+  duration_ms: 1.0208
+  type: 'test'
+  ...
+# Subtest: spending, expiry and free points do not change qualified consumption growth
+ok 11 - spending, expiry and free points do not change qualified consumption growth
+  ---
+  duration_ms: 0.3822
+  type: 'test'
+  ...
+# Subtest: refund plan accounts for already spent and expired points without negative balances or cash debt
+ok 12 - refund plan accounts for already spent and expired points without negative balances or cash debt
+  ---
+  duration_ms: 0.2251
+  type: 'test'
+  ...
+# Subtest: partial refund points equal the historical rate applied to cumulative net paid, regardless of timing
+ok 13 - partial refund points equal the historical rate applied to cumulative net paid, regardless of timing
+  ---
+  duration_ms: 0.4568
+  type: 'test'
+  ...
+# Subtest: daily recharge caps use the China business day, including the UTC date boundary
+ok 14 - daily recharge caps use the China business day, including the UTC date boundary
+  ---
+  duration_ms: 0.2296
+  type: 'test'
+  ...
+# Subtest: received stock orders, refunds and returned rewards preserve original point debts
+    # Subtest: independently reviewed wallet and new 48-hour stock terms, zero initial points
+    ok 1 - independently reviewed wallet and new 48-hour stock terms, zero initial points
+      ---
+      duration_ms: 197.6669
+      type: 'test'
+      ...
+    # Subtest: two fresh paid orders earn nothing before real content read and buyer acceptance
+    ok 2 - two fresh paid orders earn nothing before real content read and buyer acceptance
+      ---
+      duration_ms: 546.5311
+      type: 'test'
+      ...
+    # Subtest: mature original order issues once under its captured rule; concurrent sync does not duplicate
+    ok 3 - mature original order issues once under its captured rule; concurrent sync does not duplicate
+      ---
+      duration_ms: 56.1822
+      type: 'test'
+      ...
+    # Subtest: a real reward exchange consumes four points once and retains original expiry
+    ok 4 - a real reward exchange consumes four points once and retains original expiry
+      ---
+      duration_ms: 82.6475
+      type: 'test'
+      ...
+    # Subtest: full cash refund succeeds despite spent points; debt prevents new exchange without using stock
+    ok 5 - full cash refund succeeds despite spent points; debt prevents new exchange without using stock
+      ---
+      duration_ms: 142.4592
+      type: 'test'
+      ...
+    # Subtest: later order earnings clear earlier debt without erasing the new consumption growth
+    ok 6 - later order earnings clear earlier debt without erasing the new consumption growth
+      ---
+      duration_ms: 25.474
+      type: 'test'
+      ...
+    # Subtest: refunding the replacement earning creates its own shortage; free check-in pays debt without adding growth
+    ok 7 - refunding the replacement earning creates its own shortage; free check-in pays debt without adding growth
+      ---
+      duration_ms: 149.299
+      type: 'test'
+      ...
+    # Subtest: independent reward remedy returns original spent points once, clears remaining debt and cannot resurrect growth
+    ok 8 - independent reward remedy returns original spent points once, clears remaining debt and cannot resurrect growth
+      ---
+      duration_ms: 98.0775
+      type: 'test'
+      ...
+    1..8
+ok 15 - received stock orders, refunds and returned rewards preserve original point debts
+  ---
+  duration_ms: 10334.3156
+  type: 'test'
+  ...
+# Subtest: wallet ledger, custody boundary and order points in isolated MySQL
+    # Subtest: independent rule review, stale rule hash and client balance forgery rejected
+    ok 1 - independent rule review, stale rule hash and client balance forgery rejected
+      ---
+      duration_ms: 211.1941
+      type: 'test'
+      ...
+    # Subtest: other accounts, organizations, revoked identity and unopened custody are blocked
+    ok 2 - other accounts, organizations, revoked identity and unopened custody are blocked
+      ---
+      duration_ms: 52.7074
+      type: 'test'
+      ...
+    # Subtest: only matching verified custody receipt credits balance once; topup yields zero growth
+    ok 3 - only matching verified custody receipt credits balance once; topup yields zero growth
+      ---
+      duration_ms: 41.4502
+      type: 'test'
+      ...
+    # Subtest: new order captures original rule and payment without fulfillment earns nothing
+    ok 4 - new order captures original rule and payment without fulfillment earns nothing
+      ---
+      duration_ms: 210.8396
+      type: 'test'
+      ...
+    # Subtest: aftercare deadline and unresolved case block points; mature order credits exactly once
+    ok 5 - aftercare deadline and unresolved case block points; mature order credits exactly once
+      ---
+      duration_ms: 88.2122
+      type: 'test'
+      ...
+    # Subtest: concurrent point reservations cannot overspend; exact replay and release are safe
+    ok 6 - concurrent point reservations cannot overspend; exact replay and release are safe
+      ---
+      duration_ms: 65.1405
+      type: 'test'
+      ...
+    # Subtest: verified refund continues even when points spent; growth reversed and shortage explicit
+    ok 7 - verified refund continues even when points spent; growth reversed and shortage explicit
+      ---
+      duration_ms: 97.7227
+      type: 'test'
+      ...
+    # Subtest: future points first recover refund shortfall; recovered debt does not erase new consumption growth
+    ok 8 - future points first recover refund shortfall; recovered debt does not erase new consumption growth
+      ---
+      duration_ms: 177.7427
+      type: 'test'
+      ...
+    # Subtest: expired batches cannot be used; materialized expiry preserves earned growth
+    ok 9 - expired batches cannot be used; materialized expiry preserves earned growth
+      ---
+      duration_ms: 34.4277
+      type: 'test'
+      ...
+    # Subtest: expired adult verification preserves balance history but disables displayed membership
+    ok 10 - expired adult verification preserves balance history but disables displayed membership
+      ---
+      duration_ms: 23.9098
+      type: 'test'
+      ...
+    # Subtest: sixth level requires private evidence and separate current operator review
+    ok 11 - sixth level requires private evidence and separate current operator review
+      ---
+      duration_ms: 55.0552
+      type: 'test'
+      ...
+    # Subtest: custody order reservation is atomic, unknown payments retain funds, refund restores original lots
+    ok 12 - custody order reservation is atomic, unknown payments retain funds, refund restores original lots
+      ---
+      duration_ms: 540.7471
+      type: 'test'
+      ...
+    # Subtest: wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain
+    ok 13 - wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain
+      ---
+      duration_ms: 13.755
+      type: 'test'
+      ...
+    # Subtest: automatic maintenance grants mature earnings; a lost lease cannot mutate points
+    ok 14 - automatic maintenance grants mature earnings; a lost lease cannot mutate points
+      ---
+      duration_ms: 183.5604
+      type: 'test'
+      ...
+    # Subtest: each fulfillment adapter requires its own actual completion source, not a paid flag
+    ok 15 - each fulfillment adapter requires its own actual completion source, not a paid flag
+      ---
+      duration_ms: 102.2024
+      type: 'test'
+      ...
+    # Subtest: free awards require published amounts and real events; concurrent check-in awards once without growth
+    ok 16 - free awards require published amounts and real events; concurrent check-in awards once without growth
+      ---
+      duration_ms: 50.2582
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back rule creation; stored digest corruption fails closed
+    ok 17 - audit failure rolls back rule creation; stored digest corruption fails closed
+      ---
+      duration_ms: 19.0168
+      type: 'test'
+      ...
+    1..17
+ok 16 - wallet ledger, custody boundary and order points in isolated MySQL
+  ---
+  duration_ms: 10855.9935
+  type: 'test'
+  ...
+1..16
+# tests 41
+# suites 0
+# pass 41
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11118.9265

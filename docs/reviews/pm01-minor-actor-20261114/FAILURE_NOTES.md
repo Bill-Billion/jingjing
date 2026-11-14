@@ -1,0 +1,9 @@
+# 本轮失败与修复记录
+
+初始真实业务反例：已知未成年无监护绑定的机构上架返回200而非拒绝；2个失败子项连父项共3失败。原输出INITIAL_FAILURE.tap为PowerShell原始重定向字节，未改写。专项修后9通过。
+
+首次关联14文件239通过，但新HTTP数组缺少synthetic_only/cases外壳，收集器明确INVALID_EVIDENCE并退出1；initial-linked-run保留原摘要/源码/断言/HTTP清单与错误格式文件。业务测试成功不抵消收集失败。已修格式后整批重跑。
+
+第一次暂存检查指出新增测试末尾空行，PowerShell后续命令未检查退出码仍完成提交；第二次已移除空行，并在提交前显式遇非零退出。本轮最终记录检查及暂存检查另列。
+
+首次记录检查因验收登记release.contract_version仍为rc.2而当前OpenAPI已为rc.3失败，原输出保留INITIAL_RECORD_CHECKS.json。仅同步候选版本标记，不改变正式标准状态或历史报告版本；随后重新执行全部记录检查。

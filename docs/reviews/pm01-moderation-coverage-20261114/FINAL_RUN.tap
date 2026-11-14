@@ -1,0 +1,790 @@
+TAP version 13
+# Subtest: partial or wrong-variant preview labels cannot become apparently complete cover metadata
+ok 1 - partial or wrong-variant preview labels cannot become apparently complete cover metadata
+  ---
+  duration_ms: 1.903
+  type: 'test'
+  ...
+# Subtest: damaged JPEG headers and oversized comments are rejected instead of appending an unbound label
+ok 2 - damaged JPEG headers and oversized comments are rejected instead of appending an unbound label
+  ---
+  duration_ms: 0.6638
+  type: 'test'
+  ...
+# Subtest: actual remuxed video with missing or wrong labels is refused before cover export
+ok 3 - actual remuxed video with missing or wrong labels is refused before cover export
+  ---
+  duration_ms: 579.3625
+  type: 'test'
+  ...
+# Subtest: actual video bytes receive visible text and embedded AI metadata
+ok 4 - actual video bytes receive visible text and embedded AI metadata
+  ---
+  duration_ms: 502.4559
+  type: 'test'
+  ...
+# Subtest: unconfigured tools and invalid marking policy never claim processed output
+ok 5 - unconfigured tools and invalid marking policy never claim processed output
+  ---
+  duration_ms: 0.4291
+  type: 'test'
+  ...
+# Subtest: private media jobs bind permission, source bytes, policy and provider result
+    # Subtest: another account cannot process or read private material
+    ok 1 - another account cannot process or read private material
+      ---
+      duration_ms: 9.2564
+      type: 'test'
+      ...
+    # Subtest: marked output is privately persisted and source bytes remain unchanged
+    ok 2 - marked output is privately persisted and source bytes remain unchanged
+      ---
+      duration_ms: 86.5703
+      type: 'test'
+      ...
+    # Subtest: lost upload response recovers verified private bytes without rendering or uploading twice
+    ok 3 - lost upload response recovers verified private bytes without rendering or uploading twice
+      ---
+      duration_ms: 75.7316
+      type: 'test'
+      ...
+    # Subtest: recovery rejects altered stored output and keeps the task uncompleted
+    ok 4 - recovery rejects altered stored output and keeps the task uncompleted
+      ---
+      duration_ms: 54.2506
+      type: 'test'
+      ...
+    # Subtest: recovery cannot finish after the owner is suspended
+    ok 5 - recovery cannot finish after the owner is suspended
+      ---
+      duration_ms: 49.651
+      type: 'test'
+      ...
+    # Subtest: publication requires receipt for exact output, variant and active policy
+    ok 6 - publication requires receipt for exact output, variant and active policy
+      ---
+      duration_ms: 8.1669
+      type: 'test'
+      ...
+    # Subtest: new marking rejects missing, false or inconsistent label receipts before reserving or uploading
+    ok 7 - new marking rejects missing, false or inconsistent label receipts before reserving or uploading
+      ---
+      duration_ms: 222.2802
+      type: 'test'
+      ...
+    # Subtest: old incomplete checkpoint cannot finish even when its bytes and digest match
+    ok 8 - old incomplete checkpoint cannot finish even when its bytes and digest match
+      ---
+      duration_ms: 61.8122
+      type: 'test'
+      ...
+    # Subtest: publication rejects incomplete historical receipts despite a valid stored digest
+    ok 9 - publication rejects incomplete historical receipts despite a valid stored digest
+      ---
+      duration_ms: 19.602
+      type: 'test'
+      ...
+    # Subtest: actual processed private video retains separate AI and preview labels after save and download
+    ok 10 - actual processed private video retains separate AI and preview labels after save and download
+      ---
+      duration_ms: 2181.647
+      type: 'test'
+      ...
+    # Subtest: video submission remains pending and retry queries the persisted original task
+    ok 11 - video submission remains pending and retry queries the persisted original task
+      ---
+      duration_ms: 54.3027
+      type: 'test'
+      ...
+    # Subtest: permission withdrawn while queued blocks processing without provider call
+    ok 12 - permission withdrawn while queued blocks processing without provider call
+      ---
+      duration_ms: 21.0017
+      type: 'test'
+      ...
+    # Subtest: unknown video submit outcome never automatically resubmits
+    ok 13 - unknown video submit outcome never automatically resubmits
+      ---
+      duration_ms: 17.042
+      type: 'test'
+      ...
+    # Subtest: machine review can be cleared only by an independent authorized reviewer and retains original outcome
+    ok 14 - machine review can be cleared only by an independent authorized reviewer and retains original outcome
+      ---
+      duration_ms: 51.9133
+      type: 'test'
+      ...
+    # Subtest: HTTP queues the same private media task and exposes only its owner progress
+    ok 15 - HTTP queues the same private media task and exposes only its owner progress
+      ---
+      duration_ms: 603.0456
+      type: 'test'
+      ...
+    1..15
+ok 6 - private media jobs bind permission, source bytes, policy and provider result
+  ---
+  duration_ms: 12896.9939
+  type: 'test'
+  ...
+# Subtest: moderation rejects unrecognised or incomplete clean-looking responses
+ok 7 - moderation rejects unrecognised or incomplete clean-looking responses
+  ---
+  duration_ms: 1.1347
+  type: 'test'
+  ...
+# Subtest: video coverage uses actual tracks, bound SDK results, persistent jobs and independent review
+    # Subtest: actual file inspection distinguishes a silent video from a video with an audio track
+    ok 1 - actual file inspection distinguishes a silent video from a video with an audio track
+      ---
+      duration_ms: 133.1556
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:44.541Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-submit","time":"2026-11-14T00:56:44.613Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:45.239Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-result","time":"2026-11-14T00:56:45.289Z","level":"info","event":"provider_call_returned"}
+    # Subtest: clean SDK result retains coverage in the same persisted task and owner HTTP receipt
+    ok 2 - clean SDK result retains coverage in the same persisted task and owner HTTP receipt
+      ---
+      duration_ms: 877.2731
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:45.408Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-submit","time":"2026-11-14T00:56:45.454Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:45.474Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-result","time":"2026-11-14T00:56:45.519Z","level":"info","event":"provider_call_returned"}
+    # Subtest: empty frames remain unpublished until independent manual review preserves the automated evidence
+    ok 3 - empty frames remain unpublished until independent manual review preserves the automated evidence
+      ---
+      duration_ms: 205.3025
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:45.603Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-submit","time":"2026-11-14T00:56:45.653Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:45.672Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-result","time":"2026-11-14T00:56:45.718Z","level":"info","event":"provider_call_returned"}
+    # Subtest: audio high risk is rejected despite clean overall and frame fields
+    ok 4 - audio high risk is rejected despite clean overall and frame fields
+      ---
+      duration_ms: 174.1945
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:45.779Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-submit","time":"2026-11-14T00:56:45.825Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:45.844Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-result","time":"2026-11-14T00:56:45.890Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:45.935Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-submit","time":"2026-11-14T00:56:45.977Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:45.994Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-result","time":"2026-11-14T00:56:46.035Z","level":"info","event":"provider_call_returned"}
+    # Subtest: missing audio cannot pass an audible file but may pass a verified silent file
+    ok 5 - missing audio cannot pass an audible file but may pass a verified silent file
+      ---
+      duration_ms: 310.4021
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:46.086Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-submit","time":"2026-11-14T00:56:46.133Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:46.151Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:46.201Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:46.218Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T00:56:46.291Z","level":"error","event":"provider_call_failed"}
+    # Subtest: pending result retries the original task and mismatched final task never gets a successful receipt
+    ok 6 - pending result retries the original task and mismatched final task never gets a successful receipt
+      ---
+      duration_ms: 245.9756
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:46.302Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text","time":"2026-11-14T00:56:46.302Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:46.304Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T00:56:46.304Z","level":"error","event":"provider_call_failed"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:46.305Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-image","time":"2026-11-14T00:56:46.306Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:46.307Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T00:56:46.307Z","level":"error","event":"provider_call_failed"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:46.309Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T00:56:46.309Z","level":"error","event":"provider_call_failed"}
+    # Subtest: text and image adapter requests use their exact data ID, while standalone audio remains explicitly unsupported
+    ok 7 - text and image adapter requests use their exact data ID, while standalone audio remains explicitly unsupported
+      ---
+      duration_ms: 9.3374
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T00:56:46.311Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T00:56:46.349Z","level":"error","event":"provider_call_failed"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_NOT_VERIFIED","time":"2026-11-14T00:56:46.354Z","level":"warn","event":"provider_call_blocked"}
+    # Subtest: unverified or disabled provider and invalid video never reach the SDK client
+    ok 8 - unverified or disabled provider and invalid video never reach the SDK client
+      ---
+      duration_ms: 44.5893
+      type: 'test'
+      ...
+    1..8
+ok 8 - video coverage uses actual tracks, bound SDK results, persistent jobs and independent review
+  ---
+  duration_ms: 12426.1446
+  type: 'test'
+  ...
+# Subtest: empty, malformed and zero-frame results never automatically pass video review
+ok 9 - empty, malformed and zero-frame results never automatically pass video review
+  ---
+  duration_ms: 1.1122
+  type: 'test'
+  ...
+# Subtest: video with audio or unknown audio presence requires a meaningful audio result
+ok 10 - video with audio or unknown audio presence requires a meaningful audio result
+  ---
+  duration_ms: 0.1722
+  type: 'test'
+  ...
+# Subtest: known high risk is never downgraded by missing coverage or a clean aggregate
+ok 11 - known high risk is never downgraded by missing coverage or a clean aggregate
+  ---
+  duration_ms: 0.2223
+  type: 'test'
+  ...
+# Subtest: medium, low or unknown nested risks remain for review even when the aggregate says none
+ok 12 - medium, low or unknown nested risks remain for review even when the aggregate says none
+  ---
+  duration_ms: 0.1228
+  type: 'test'
+  ...
+# Subtest: complete video results pass with auditable coverage, including verified silent video
+ok 13 - complete video results pass with auditable coverage, including verified silent video
+  ---
+  duration_ms: 0.193
+  type: 'test'
+  ...
+# Subtest: request identity and result identity are required before interpreting risk
+ok 14 - request identity and result identity are required before interpreting risk
+  ---
+  duration_ms: 0.6584
+  type: 'test'
+  ...
+# Subtest: text and image results retain reviewed low-risk policy and exact data binding
+ok 15 - text and image results retain reviewed low-risk policy and exact data binding
+  ---
+  duration_ms: 0.231
+  type: 'test'
+  ...
+# Subtest: new early version invalidates its own and downstream approvals
+ok 16 - new early version invalidates its own and downstream approvals
+  ---
+  duration_ms: 1.0041
+  type: 'test'
+  ...
+# Subtest: next stage requires current predecessor acceptance
+ok 17 - next stage requires current predecessor acceptance
+  ---
+  duration_ms: 0.2834
+  type: 'test'
+  ...
+# Subtest: final acceptance requires explicit complete checklist
+ok 18 - final acceptance requires explicit complete checklist
+  ---
+  duration_ms: 0.3298
+  type: 'test'
+  ...
+# Subtest: unselected digital human service remains explicitly not implemented
+ok 19 - unselected digital human service remains explicitly not implemented
+  ---
+  duration_ms: 5.814
+  type: 'test'
+  ...
+# Subtest: production actual HTTP: private versions, explicit acceptance and payment gates
+    # Subtest: one project per order line; project approval is independent and requires evidence
+    ok 1 - one project per order line; project approval is independent and requires evidence
+      ---
+      duration_ms: 173.737
+      type: 'test'
+      ...
+    # Subtest: no production before agreed first payment; final payment stays closed
+    ok 2 - no production before agreed first payment; final payment stays closed
+      ---
+      duration_ms: 67.9699
+      type: 'test'
+      ...
+    # Subtest: private upload retries return same file; outsiders and unassigned buyer cannot upload
+    ok 3 - private upload retries return same file; outsiders and unassigned buyer cannot upload
+      ---
+      duration_ms: 64.5359
+      type: 'test'
+      ...
+    # Subtest: simultaneous upload retries do not write the same private object twice
+    ok 4 - simultaneous upload retries do not write the same private object twice
+      ---
+      duration_ms: 50.8679
+      type: 'test'
+      ...
+    # Subtest: script acceptance precedes sample; customer cannot accept unpublished or old version
+    ok 5 - script acceptance precedes sample; customer cannot accept unpublished or old version
+      ---
+      duration_ms: 909.5898
+      type: 'test'
+      ...
+    # Subtest: unconfigured long-lived provider stays visibly disabled and queues no fake success
+    ok 6 - unconfigured long-lived provider stays visibly disabled and queues no fake success
+      ---
+      duration_ms: 23.3625
+      type: 'test'
+      ...
+    # Subtest: durable generation recovers by original key after lost worker lease without resubmission
+    ok 7 - durable generation recovers by original key after lost worker lease without resubmission
+      ---
+      duration_ms: 305.924
+      type: 'test'
+      ...
+    # Subtest: withdrawal during creation preserves late assets for deletion without new creation
+        # Subtest: withdrawal during first external send still records the pending task
+        ok 1 - withdrawal during first external send still records the pending task
+          ---
+          duration_ms: 58.5112
+          type: 'test'
+          ...
+        # Subtest: a changed provider identity cannot query the old model
+        ok 2 - a changed provider identity cannot query the old model
+          ---
+          duration_ms: 26.6703
+          type: 'test'
+          ...
+        # Subtest: failed audit rolls back the late model and original result together
+        ok 3 - failed audit rolls back the late model and original result together
+          ---
+          duration_ms: 59.8724
+          type: 'test'
+          ...
+        # Subtest: recovery queries once more and quarantines the late model instead of making it usable
+        ok 4 - recovery queries once more and quarantines the late model instead of making it usable
+          ---
+          duration_ms: 55.6442
+          type: 'test'
+          ...
+        # Subtest: the late model is visible to its subject and uses the existing personal deletion path
+        ok 5 - the late model is visible to its subject and uses the existing personal deletion path
+          ---
+          duration_ms: 92.4974
+          type: 'test'
+          ...
+        # Subtest: withdrawal while a result query is in flight also quarantines the resulting model
+        ok 6 - withdrawal while a result query is in flight also quarantines the resulting model
+          ---
+          duration_ms: 156.5865
+          type: 'test'
+          ...
+        # Subtest: withdrawal before first dispatch sends nothing, and ambiguous recovery never resubmits
+        ok 7 - withdrawal before first dispatch sends nothing, and ambiguous recovery never resubmits
+          ---
+          duration_ms: 86.0314
+          type: 'test'
+          ...
+        1..7
+    ok 8 - withdrawal during creation preserves late assets for deletion without new creation
+      ---
+      duration_ms: 538.9238
+      type: 'test'
+      ...
+    # Subtest: new sample invalidates previous confirmation; feedback versions are not overwritten
+    ok 9 - new sample invalidates previous confirmation; feedback versions are not overwritten
+      ---
+      duration_ms: 146.0925
+      type: 'test'
+      ...
+    # Subtest: concurrent decisions use version check; only buyer can accept
+    ok 10 - concurrent decisions use version check; only buyer can accept
+      ---
+      duration_ms: 128.9392
+      type: 'test'
+      ...
+    # Subtest: final acceptance and final delivery are separate; tail cannot unlock itself
+    ok 11 - final acceptance and final delivery are separate; tail cannot unlock itself
+      ---
+      duration_ms: 194.279
+      type: 'test'
+      ...
+    # Subtest: completed delivery cannot be silently replaced by producer
+    ok 12 - completed delivery cannot be silently replaced by producer
+      ---
+      duration_ms: 39.139
+      type: 'test'
+      ...
+    # Subtest: private bytes verified and permission rechecked before download
+    ok 13 - private bytes verified and permission rechecked before download
+      ---
+      duration_ms: 20.4326
+      type: 'test'
+      ...
+    # Subtest: reassigning a producer requires current membership and project version
+    ok 14 - reassigning a producer requires current membership and project version
+      ---
+      duration_ms: 28.063
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back a production mutation and idempotency key
+    ok 15 - audit failure rolls back a production mutation and idempotency key
+      ---
+      duration_ms: 26.8341
+      type: 'test'
+      ...
+    # Subtest: refund blocks further delivery even though historical acceptance is retained
+    ok 16 - refund blocks further delivery even though historical acceptance is retained
+      ---
+      duration_ms: 48.7096
+      type: 'test'
+      ...
+    1..16
+ok 20 - production actual HTTP: private versions, explicit acceptance and payment gates
+  ---
+  duration_ms: 12397.661
+  type: 'test'
+  ...
+# Subtest: all declared provider interfaces fail closed without implementations
+ok 21 - all declared provider interfaces fail closed without implementations
+  ---
+  duration_ms: 4.6329
+  type: 'test'
+  ...
+# Subtest: configuration alone, wrong environment, stale proof and disabled status never call a provider
+ok 22 - configuration alone, wrong environment, stale proof and disabled status never call a provider
+  ---
+  duration_ms: 2.0005
+  type: 'test'
+  ...
+# Subtest: timeout reports unknown outcome, aborts and never automatically repeats payment
+ok 23 - timeout reports unknown outcome, aborts and never automatically repeats payment
+  ---
+  duration_ms: 15.4698
+  type: 'test'
+  ...
+# Subtest: provider error bodies and logger metadata do not leak credentials or private URLs
+ok 24 - provider error bodies and logger metadata do not leak credentials or private URLs
+  ---
+  duration_ms: 0.8696
+  type: 'test'
+  ...
+# Subtest: private files require permission and verified configuration, never local fallback
+ok 25 - private files require permission and verified configuration, never local fallback
+  ---
+  duration_ms: 1.7646
+  type: 'test'
+  ...
+# Subtest: private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
+ok 26 - private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time
+  ---
+  duration_ms: 2.1907
+  type: 'test'
+  ...
+# Subtest: changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
+ok 27 - changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS
+  ---
+  duration_ms: 1001.3825
+  type: 'test'
+  ...
+# Subtest: health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
+ok 28 - health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate
+  ---
+  duration_ms: 63.7373
+  type: 'test'
+  ...
+# Subtest: OSS failures never produce a successful or public result; revocation is checked before each read
+ok 29 - OSS failures never produce a successful or public result; revocation is checked before each read
+  ---
+  duration_ms: 1.1926
+  type: 'test'
+  ...
+# {"error_code":"PRIVATE_STORAGE_UNAVAILABLE","time":"2026-11-14T00:56:49.924Z","level":"warn","event":"legacy_private_upload_blocked"}
+# Subtest: legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
+ok 30 - legacy photo upload returns a clear failure and never creates a record when private storage is unavailable
+  ---
+  duration_ms: 338.3054
+  type: 'test'
+  ...
+# Subtest: verified erasure confirms only the exact current object; access errors and changed bytes never pass
+ok 31 - verified erasure confirms only the exact current object; access errors and changed bytes never pass
+  ---
+  duration_ms: 1.8793
+  type: 'test'
+  ...
+# Subtest: private missing-object probe distinguishes exact absence from denied or uncertain reads
+ok 32 - private missing-object probe distinguishes exact absence from denied or uncertain reads
+  ---
+  duration_ms: 1.1282
+  type: 'test'
+  ...
+# Subtest: real isolated MySQL persists provider status, evidence and concurrent edits
+    # Subtest: database readiness requires applied migrations, not just a connection
+    ok 1 - database readiness requires applied migrations, not just a connection
+      ---
+      duration_ms: 7228.7201
+      type: 'test'
+      ...
+    # Subtest: recording is denied by default and requires genuine server-side evidence checking
+    ok 2 - recording is denied by default and requires genuine server-side evidence checking
+      ---
+      duration_ms: 5.1781
+      type: 'test'
+      ...
+    # Subtest: configuration is saved but does not authorize real calls
+    ok 3 - configuration is saved but does not authorize real calls
+      ---
+      duration_ms: 8.8403
+      type: 'test'
+      ...
+    # Subtest: verified evidence survives closing and reopening the database connection
+    ok 4 - verified evidence survives closing and reopening the database connection
+      ---
+      duration_ms: 12.8506
+      type: 'test'
+      ...
+    # Subtest: disabling and awaiting approval keep history but block new calls
+    ok 5 - disabling and awaiting approval keep history but block new calls
+      ---
+      duration_ms: 11.6963
+      type: 'test'
+      ...
+    # Subtest: two concurrent updates cannot overwrite each other silently
+    ok 6 - two concurrent updates cannot overwrite each other silently
+      ---
+      duration_ms: 11.8362
+      type: 'test'
+      ...
+    # Subtest: history write failure rolls back both status and version
+    ok 7 - history write failure rolls back both status and version
+      ---
+      duration_ms: 4.4973
+      type: 'test'
+      ...
+    # Subtest: re-enabling requires fresh evidence and preserves earlier verification
+    ok 8 - re-enabling requires fresh evidence and preserves earlier verification
+      ---
+      duration_ms: 4.6174
+      type: 'test'
+      ...
+    # Subtest: capabilities have separate status even for the same provider
+    ok 9 - capabilities have separate status even for the same provider
+      ---
+      duration_ms: 2.3495
+      type: 'test'
+      ...
+    1..9
+ok 33 - real isolated MySQL persists provider status, evidence and concurrent edits
+  ---
+  duration_ms: 9098.0793
+  type: 'test'
+  ...
+# Subtest: actual stock cover and full/preview durations with isolated authorization
+    # Subtest: review is required and request identity is explicit
+    ok 1 - review is required and request identity is explicit
+      ---
+      duration_ms: 115.6533
+      type: 'test'
+      ...
+    # Subtest: durations come from distinct actual files and cover pixels come only from preview
+    ok 2 - durations come from distinct actual files and cover pixels come only from preview
+      ---
+      duration_ms: 292.652
+      type: 'test'
+      ...
+    # Subtest: unlisting blocks metadata and cover despite a warmed cache
+    ok 3 - unlisting blocks metadata and cover despite a warmed cache
+      ---
+      duration_ms: 23.359
+      type: 'test'
+      ...
+    # Subtest: damaged stored bytes do not reuse a cached cover; missing tools never claim success
+    ok 4 - damaged stored bytes do not reuse a cached cover; missing tools never claim success
+      ---
+      duration_ms: 331.3272
+      type: 'test'
+      ...
+    # Subtest: unplayable approved fixture is rejected instead of invented duration
+    ok 5 - unplayable approved fixture is rejected instead of invented duration
+      ---
+      duration_ms: 159.166
+      type: 'test'
+      ...
+    # Subtest: actual processed preview labels survive JPEG HTTP delivery and cached policy checks
+    ok 6 - actual processed preview labels survive JPEG HTTP delivery and cached policy checks
+      ---
+      duration_ms: 930.2978
+      type: 'test'
+      ...
+    # Subtest: withdrawn person authorization blocks both media routes
+    ok 7 - withdrawn person authorization blocks both media routes
+      ---
+      duration_ms: 216.6113
+      type: 'test'
+      ...
+    1..7
+ok 34 - actual stock cover and full/preview durations with isolated authorization
+  ---
+  duration_ms: 11451.8796
+  type: 'test'
+  ...
+# Subtest: preview cache still rechecks current permission and storage bytes
+ok 35 - preview cache still rechecks current permission and storage bytes
+  ---
+  duration_ms: 2.7504
+  type: 'test'
+  ...
+# Subtest: withdrawal during storage access blocks a newly generated cover
+ok 36 - withdrawal during storage access blocks a newly generated cover
+  ---
+  duration_ms: 0.285
+  type: 'test'
+  ...
+# Subtest: same source shares processing and concurrent request count is bounded
+ok 37 - same source shares processing and concurrent request count is bounded
+  ---
+  duration_ms: 0.6905
+  type: 'test'
+  ...
+# Subtest: changed listing version cannot reuse a previous rendering
+ok 38 - changed listing version cannot reuse a previous rendering
+  ---
+  duration_ms: 0.369
+  type: 'test'
+  ...
+# Subtest: invalid video claims do not create duration or image metadata
+ok 39 - invalid video claims do not create duration or image metadata
+  ---
+  duration_ms: 0.6056
+  type: 'test'
+  ...
+# Subtest: missing tools cannot return fabricated cover or duration
+ok 40 - missing tools cannot return fabricated cover or duration
+  ---
+  duration_ms: 1.3793
+  type: 'test'
+  ...
+# Subtest: thumbnail dimensions preserve non-square pixels and quarter-turn orientation
+ok 41 - thumbnail dimensions preserve non-square pixels and quarter-turn orientation
+  ---
+  duration_ms: 0.279
+  type: 'test'
+  ...
+# Subtest: supply HTTP, immutable works, private materials and personal consents with isolated MySQL
+    # Subtest: raw private upload hashes actual bytes and repeated request does not upload twice
+    ok 1 - raw private upload hashes actual bytes and repeated request does not upload twice
+      ---
+      duration_ms: 43.6499
+      type: 'test'
+      ...
+    # Subtest: private bytes require ownership or permission to an actually submitted record
+    ok 2 - private bytes require ownership or permission to an actually submitted record
+      ---
+      duration_ms: 46.5472
+      type: 'test'
+      ...
+    # Subtest: profile submission preserves evidence and cannot be approved by its submitter
+    ok 3 - profile submission preserves evidence and cannot be approved by its submitter
+      ---
+      duration_ms: 58.6535
+      type: 'test'
+      ...
+    # Subtest: original work retains separate authors and rights holders, foreign private material is denied
+    ok 4 - original work retains separate authors and rights holders, foreign private material is denied
+      ---
+      duration_ms: 34.7064
+      type: 'test'
+      ...
+    # Subtest: submission exposes materials to the appropriate reviewers, with no self approval
+    ok 5 - submission exposes materials to the appropriate reviewers, with no self approval
+      ---
+      duration_ms: 48.0312
+      type: 'test'
+      ...
+    # Subtest: rights and content approvals remain independent; no license or publishing success
+    ok 6 - rights and content approvals remain independent; no license or publishing success
+      ---
+      duration_ms: 29.5098
+      type: 'test'
+      ...
+    # Subtest: concurrent revisions serialize, retain the old approved version and reset review results
+    ok 7 - concurrent revisions serialize, retain the old approved version and reset review results
+      ---
+      duration_ms: 28.221
+      type: 'test'
+      ...
+    # Subtest: adaptation fails closed without a verified project and license binding
+    ok 8 - adaptation fails closed without a verified project and license binding
+      ---
+      duration_ms: 11.2396
+      type: 'test'
+      ...
+    # Subtest: list and pagination respect selected party and explicit review permissions
+    ok 9 - list and pagination respect selected party and explicit review permissions
+      ---
+      duration_ms: 31.0746
+      type: 'test'
+      ...
+    # Subtest: avatar materials are separate from personal face/voice consent and cannot be given by an institution
+    ok 10 - avatar materials are separate from personal face/voice consent and cannot be given by an institution
+      ---
+      duration_ms: 33.0892
+      type: 'test'
+      ...
+    # Subtest: reviewed consent only matches its explicit scope; it does not enable generation or identity verification
+    ok 11 - reviewed consent only matches its explicit scope; it does not enable generation or identity verification
+      ---
+      duration_ms: 28.4446
+      type: 'test'
+      ...
+    # Subtest: withdrawal is personal, immediately stops scope matching and atomically records one pending event
+    ok 12 - withdrawal is personal, immediately stops scope matching and atomically records one pending event
+      ---
+      duration_ms: 44.5063
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-oss","capability_code":"private_assets","error_code":"PROVIDER_NOT_CONFIGURED","time":"2026-11-14T00:56:58.212Z","level":"warn","event":"provider_call_blocked"}
+    # Subtest: missing real private storage configuration never creates a READY asset or fake public URL
+    ok 13 - missing real private storage configuration never creates a READY asset or fake public URL
+      ---
+      duration_ms: 13.1015
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back new records and idempotency results
+    ok 14 - audit failure rolls back new records and idempotency results
+      ---
+      duration_ms: 9.6659
+      type: 'test'
+      ...
+    # Subtest: institution owners can apply but a reviewer belonging to the same institution cannot approve it
+    ok 15 - institution owners can apply but a reviewer belonging to the same institution cannot approve it
+      ---
+      duration_ms: 48.1944
+      type: 'test'
+      ...
+    # Subtest: work withdrawal preserves the approved original and revoked requests cannot mutate the withdrawn version
+    ok 16 - work withdrawal preserves the approved original and revoked requests cannot mutate the withdrawn version
+      ---
+      duration_ms: 27.4299
+      type: 'test'
+      ...
+    # Subtest: storage corruption is refused and errors never reveal private bytes or object keys
+    ok 17 - storage corruption is refused and errors never reveal private bytes or object keys
+      ---
+      duration_ms: 8.8995
+      type: 'test'
+      ...
+    # Subtest: removed membership, suspended accounts and revoked reviewer permissions fail on every request
+    ok 18 - removed membership, suspended accounts and revoked reviewer permissions fail on every request
+      ---
+      duration_ms: 24.8661
+      type: 'test'
+      ...
+    1..18
+ok 42 - supply HTTP, immutable works, private materials and personal consents with isolated MySQL
+  ---
+  duration_ms: 9504.8863
+  type: 'test'
+  ...
+1..42
+# tests 122
+# suites 0
+# pass 122
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 25271.3768

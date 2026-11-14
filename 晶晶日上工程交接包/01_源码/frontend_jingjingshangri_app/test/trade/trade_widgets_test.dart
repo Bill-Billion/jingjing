@@ -19,6 +19,43 @@ Future<void> recoveryFrames(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('订单汇总不把测试渠道记账当成真实到账', (tester) async {
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(handler: (r) {
+      if (r.path.endsWith(orderId)) return envelope(tradeData('ORDER'));
+      if (r.path == '/api/v1/trade/records') {
+        return envelope({'items': [], 'next_cursor': null});
+      }
+      return adapter.defaultReply(r);
+    });
+    final session = (await tester.runAsync(() => buyerSession(adapter)))!;
+    await nav.openApp(tester, session,
+        route: '/trade/record?recordId=$orderId');
+    await tester.scrollUntilVisible(find.text('订单记账收款'), 300,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.text('订单记账收款'), findsOneWidget);
+    await tester.scrollUntilVisible(find.textContaining('测试渠道的记账不代表真实资金到账'), 300,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.textContaining('渠道、环境及回执'), findsOneWidget);
+  });
+  testWidgets('测试环境渠道回执不能显示成真实收款', (tester) async {
+    final payment = tradeData('PAYMENT', status: 'SUCCEEDED');
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(handler: (r) {
+      if (r.path.endsWith(paymentId)) return envelope(payment);
+      if (r.path == '/api/v1/trade/records')
+        return envelope({'items': [], 'next_cursor': null});
+      return adapter.defaultReply(r);
+    });
+    final session = (await tester.runAsync(() => buyerSession(adapter)))!;
+    await nav.openApp(tester, session,
+        route: '/trade/record?recordId=$paymentId');
+    await tester.scrollUntilVisible(find.textContaining('测试环境的渠道回执'), 300,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.textContaining('不代表真实资金到账'), findsOneWidget);
+    expect(find.textContaining('服务器已核实真实收款'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets('已确认报价无需翻过长条款即可打开原订单，不重复确认', (tester) async {
     final quote = tradeData('QUOTE', status: 'ACCEPTED');
     quote['data']['order_id'] = orderId; // Actual accepted-quote HTTP shape.

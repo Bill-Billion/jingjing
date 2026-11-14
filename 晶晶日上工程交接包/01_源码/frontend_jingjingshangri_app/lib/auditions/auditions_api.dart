@@ -17,7 +17,7 @@ class AuditionsApi extends V5Api {
       return '公开选择';
     }
     if (RegExp(
-            r'^/bookings/[0-9a-fA-F-]{36}/(decision|travel|delivery|receipt|confirm|cancel|contact|support|reschedule|reschedule-response|baseplate|supplements|messages|messages/read)$')
+            r'^/bookings/[0-9a-fA-F-]{36}/(decision|travel|delivery|receipt|confirm|cancel|dispute-evidence|contact|support|reschedule|reschedule-response|baseplate|supplements|messages|messages/read)$')
         .hasMatch(s)) {
       return '本单办理';
     }
@@ -64,6 +64,24 @@ class AuditionsApi extends V5Api {
     return r;
   }
 
+  Future<List<Map<String, dynamic>>> offerOptions(
+      String personId, String kind) async {
+    final items = <Map<String, dynamic>>[], seen = <String>{};
+    String? cursor;
+    do {
+      final r = await get('/offer-options', (d) => v5Map(d), query: {
+        'person_id': key(personId),
+        'kind': kind,
+        'limit': 100,
+        if (cursor != null) 'cursor': cursor
+      });
+      items.addAll(v5Rows(r['items'], max: 100).map(v5Map));
+      cursor = r['next_cursor'];
+      if (cursor != null) v5Require(v5Id(cursor) && seen.add(cursor));
+    } while (cursor != null);
+    return items;
+  }
+
   Future<V5Page<AuditionOffer>> catalog(
           {String? cursor, String? city, String? invitationId}) =>
       get(invitationId == null ? '/catalog' : '/invitation-offers',
@@ -97,6 +115,53 @@ class AuditionsApi extends V5Api {
       query: {'kind': kind, 'limit': 20, if (cursor != null) 'cursor': cursor});
   Future<AuditionRecord> record(String id) =>
       get('/records/${key(id)}', (d) => AuditionRecord(d, id: id));
+  Future<List<Map<String, dynamic>>> deliveryOptions(
+      AuditionRecord booking, String kind) async {
+    if (booking.kind != 'BOOKING' ||
+        !const ['PHOTO', 'VIDEO', 'CONSENT'].contains(kind)) {
+      throw const AccountError(400, 'INVALID_ACTION');
+    }
+    final offer = v5Map(booking.data['offer']);
+    final person = offer['person_id'], avatar = offer['avatar_id'];
+    v5Require(v5Id(person) && v5Id(avatar));
+    final result = <Map<String, dynamic>>[],
+        seen = <String>{},
+        ids = <String>{};
+    String? cursor;
+    do {
+      final d = await get(
+          '/bookings/${key(booking.id)}/delivery-options', (d) => d, query: {
+        'kind': kind,
+        'limit': 20,
+        if (cursor != null) 'cursor': cursor
+      });
+      v5Require(d['booking_id'] == booking.id &&
+          d['person_id'] == person &&
+          d['avatar_id'] == avatar &&
+          d['kind'] == kind);
+      for (final raw in v5Rows(d['items'], max: 20)) {
+        final item = v5Map(raw);
+        v5Require(v5Id(item['id']) && ids.add(item['id']));
+        if (kind == 'CONSENT') {
+          v5Require(v5Date(item['valid_until']));
+        } else {
+          v5Require((kind == 'PHOTO'
+                  ? const ['image/jpeg', 'image/png']
+                      .contains(item['media_type'])
+                  : item['media_type'] == 'video/mp4') &&
+              v5Int(item['byte_size'], min: 1) &&
+              v5Hash(item['content_sha256']));
+        }
+        result.add(item);
+      }
+      final next = d['next_cursor'];
+      v5Require(next == null ||
+          v5Id(next) && next != cursor && seen.add(next) && seen.length <= 100);
+      cursor = next as String?;
+    } while (cursor != null);
+    return result;
+  }
+
   Future<List<AuditionRecord>> supplements(String id) =>
       get('/bookings/${key(id)}/supplements', (d) {
         v5Require(d['booking_id'] == id);

@@ -1,5 +1,7 @@
+import '../rights/rights_widgets.dart';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import '../support/collections.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
@@ -11,6 +13,7 @@ import 'stock_api.dart';
 import 'stock_models.dart';
 import 'stock_listing_form.dart';
 import 'stock_public_card.dart';
+import 'stock_public_media.dart';
 import 'v5_media.dart';
 import 'v5_support.dart';
 
@@ -22,6 +25,7 @@ class StockPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => V5Gate(
       domain: 'stock',
+      stateKey: mode == 'catalog' ? '/stock/catalog' : null,
       route: Uri(path: '/stock/$mode', queryParameters: {
         if (mode == 'catalog' && city?.trim().isNotEmpty == true)
           'city': city!.trim(),
@@ -30,11 +34,12 @@ class StockPage extends StatelessWidget {
         if (mode == 'listing' && action != null) 'action': action!,
       }).toString(),
       account: ['catalog', 'video'].contains(mode),
-      personal: ['purchases', 'purchase'].contains(mode),
+      personal: false,
       showExpired: mode == 'catalog',
       expiredLabel: '现成视频',
-      builder: (s) => mode == 'new'
-          ? StockListingForm(session: s)
+      builder: (s) => mode == 'new' || mode == 'listing' && action == 'revise'
+          ? StockListingForm(
+              session: s, revisionId: mode == 'listing' ? id : null)
           : _StockScreen(
               session: s,
               mode: mode,
@@ -43,13 +48,7 @@ class StockPage extends StatelessWidget {
               initialCity: city));
 }
 
-List<Widget> stockLicenseFacts(StockLicense l) => [
-      tradeFact('许可', '仅购买本人使用 · 非独家 · 全球 · 永久'),
-      tradeFact('允许范围', '个人收藏及个人社交分享，非商业使用'),
-      tradeFact('不包含', '广告、改编、发行、独立声音、重新生成、新数字人内容、源文件或模型、独家买断'),
-      tradeFact('明确收件后的核对期限', '${l.hours} 小时；以本单服务器记录为准'),
-      tradeFact('售后约定', l.data['aftercare_terms']),
-    ];
+List<Widget> stockLicenseFacts(StockLicense l) => stockRightsFacts(l.data);
 
 class _StockScreen extends StatefulWidget {
   const _StockScreen(
@@ -83,12 +82,39 @@ class _StockScreenState extends State<_StockScreen> {
       quoteChanged = false,
       loadFailed = false,
       hasRead = false;
+  bool independentCity = false;
+  String queryCity = '';
   int ticket = 0;
   @override
   void initState() {
     super.initState();
     load();
   }
+
+  @override
+  void didUpdateWidget(covariant _StockScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.mode == 'catalog' &&
+        !independentCity &&
+        oldWidget.initialCity != widget.initialCity) {
+      city.text = (widget.initialCity ?? '').trim();
+      load();
+    }
+  }
+
+  Widget cityScope() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        appNotice(
+            '${independentCity ? "本页独立筛选" : "跟随广场城市"} · 当前结果：${queryCity.isEmpty ? "全部城市" : queryCity}'),
+        if (independentCity)
+          tradeButton('恢复跟随广场城市', () {
+            setState(() {
+              independentCity = false;
+              city.text = (widget.initialCity ?? '').trim();
+            });
+            load();
+          }, outline: true),
+      ]);
 
   @override
   void dispose() {
@@ -107,6 +133,7 @@ class _StockScreenState extends State<_StockScreen> {
       error = null;
       loadFailed = false;
       if (!more) {
+        queryCity = city.text.trim();
         offers.clear();
         listings.clear();
         purchases.clear();
@@ -123,8 +150,10 @@ class _StockScreenState extends State<_StockScreen> {
     try {
       switch (widget.mode) {
         case 'catalog':
-          final r = await api.catalog(
-              cursor: more ? cursor : null, city: city.text.trim());
+          final r =
+              await api.catalog(cursor: more ? cursor : null, city: queryCity);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, null);
           offers.addAll(r.items);
           cursor = r.cursor;
         case 'video':
@@ -258,7 +287,7 @@ class _StockScreenState extends State<_StockScreen> {
         !await v5Confirm(
             context,
             api,
-            action == 'receipt' ? '明确确认本次文件已收到' : '确认本次个人许可交付',
+            action == 'receipt' ? '明确确认本次文件已收到' : '确认本次原单许可交付',
             [Text(current.title), ...stockLicenseFacts(current.license)])) {
       return;
     }
@@ -313,7 +342,9 @@ class _StockScreenState extends State<_StockScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       StockPublicCard(
+                          session: widget.session,
                           offer: item,
+                          onRefreshOffer: () => load(),
                           onTap: () => go('/stock/video?listingId=${item.id}')),
                       const SizedBox(height: 4),
                       Text('${item.data['city']} · ${v5Money(item.price)}',
@@ -334,7 +365,7 @@ class _StockScreenState extends State<_StockScreen> {
       'listings' => '我上架的作品',
       'listing' => '上架与双审核',
       'purchases' => '已购视频',
-      _ => '我的个人许可'
+      _ => '我的购买许可'
     };
     if (busy &&
         !hasRead &&
@@ -369,8 +400,13 @@ class _StockScreenState extends State<_StockScreen> {
         title: title,
         children: [
           if (o != null) ...[
+            StockPublicMediaView(
+                session: widget.session,
+                offer: o,
+                onRefreshOffer: () => load()),
+            const SizedBox(height: 16),
             V5Media(
-                key: ValueKey('stock-preview-${o.id}'),
+                key: ValueKey('stock-preview-${o.id}-${o.version}-${o.hash}'),
                 api: api,
                 account: true,
                 label: '读取已审预览',
@@ -430,15 +466,17 @@ class _StockScreenState extends State<_StockScreen> {
             const CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsets.zero,
-                title: Text('我已阅读本版价格、个人许可与售后约定'),
+                title: Text('我已阅读本版价格、许可用途、地域、期间与售后约定'),
                 value: false,
                 onChanged: null),
             tradeButton('重新核对后才能确认购买', null),
           ],
           if (widget.mode == 'catalog') ...[
-            appNotice('选择已完成的作品，按已审个人使用许可购买，无需先创建自己的数字人或填写故事。'),
+            appNotice('选择已完成的作品，按该商品已审的个人或商用许可购买，无需先创建自己的数字人或填写故事。'),
+            cityScope(),
             TextField(
                 controller: city,
+                onChanged: (_) => setState(() => independentCity = true),
                 decoration: const InputDecoration(labelText: '城市筛选（可留空）')),
             tradeButton('按城市读取', busy ? null : () => load(), outline: true),
             catalogueCards(),
@@ -451,6 +489,11 @@ class _StockScreenState extends State<_StockScreen> {
             tradeButton('我上架的作品', () => go('/stock/listings'), outline: true),
           ],
           if (o != null) ...[
+            CollectionDetailActions(
+                key: ValueKey('stock-save:${o.id}'),
+                session: widget.session,
+                kind: 'STOCK',
+                targetId: o.id),
             tradeSection('价格与本版许可', [
               tradeFact('价格', v5Money(o.price)),
               ...stockLicenseFacts(o.license)
@@ -458,7 +501,7 @@ class _StockScreenState extends State<_StockScreen> {
             CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
                 contentPadding: EdgeInsets.zero,
-                title: const Text('我已阅读本版价格、个人许可与售后约定'),
+                title: const Text('我已阅读本版价格、许可用途、地域、期间与售后约定'),
                 value: licenseRead,
                 onChanged: busy || api.pending('/checkout') != null
                     ? null
@@ -494,6 +537,26 @@ class _StockScreenState extends State<_StockScreen> {
               appNotice('本人当前没有上架材料。'),
           ],
           if (l != null) ...[
+            if (['REJECTED', 'UNLISTED', 'LISTED'].contains(l.status) &&
+                l.data['rights_hold'] != true &&
+                l.data['revision_id'] == null &&
+                l.data['replaced_by_listing_id'] == null)
+              tradeButton(
+                  '修改材料并重新提交审核',
+                  busy
+                      ? null
+                      : () =>
+                          go('/stock/listing?listingId=${l.id}&action=revise')),
+            if (l.data['revision_id'] != null)
+              tradeButton('查看已提交的新版本',
+                  () => go('/stock/listing?listingId=${l.data['revision_id']}'),
+                  outline: true),
+            if (l.data['previous_listing_id'] != null)
+              tradeButton(
+                  '查看修改前版本',
+                  () => go(
+                      '/stock/listing?listingId=${l.data['previous_listing_id']}'),
+                  outline: true),
             tradeSection('上架状态与审核', [
               tradeFact('状态', stockStatuses[l.status]),
               tradeFact('卖方具体真人', '本次已授权真人'),
@@ -520,6 +583,8 @@ class _StockScreenState extends State<_StockScreen> {
                   ]),
               if (l.data['rights_hold'] == true)
                 appNotice('权利暂停会限制已购下载；恢复须重新双审。'),
+              if (l.status == 'REJECTED')
+                appNotice('请按权利审核和内容审核的退回原因修改材料，再提交新版本重新审核；原记录和已售许可继续保留。'),
               if (l.status == 'UNLISTED') appNotice('普通下架停止新销售，已售许可仍按原约定核对。')
             ]),
             V5Media(
@@ -558,7 +623,7 @@ class _StockScreenState extends State<_StockScreen> {
               row(r.title, stockStatuses[r.status]!,
                   '/stock/purchase?orderId=${r.orderId}'),
             if (!busy && purchases.isEmpty && error == null)
-              appNotice('本人当前没有现货订单。付款核实后才发放个人许可。'),
+              appNotice('当前身份没有现货订单。付款及资格核实后按原单发放许可。'),
           ],
           if (p != null) ...[
             tradeSection('本次许可与交付', [
@@ -619,7 +684,7 @@ class _StockScreenState extends State<_StockScreen> {
               tradeButton(
                   api.pending('/purchases/${p.orderId}/acceptance') != null
                       ? '恢复原验收请求核对'
-                      : '确认本次个人许可交付',
+                      : '确认本次原单许可交付',
                   busy ||
                           api.pending('/purchases/${p.orderId}/acceptance') ==
                                   null &&
@@ -628,12 +693,19 @@ class _StockScreenState extends State<_StockScreen> {
                       : () => purchaseAction('acceptance'),
                   outline: true),
             ],
+            if (p.data['acceptance_started_at'] != null)
+              tradeFact(
+                  '服务器记录的原下单起点', tradeDate(p.data['acceptance_started_at'])),
             if (p.data['deadline_at'] != null)
               tradeFact('服务器记录的核对截止', tradeDate(p.data['deadline_at'])),
             if (p.data['accepted_at'] != null)
               appNotice(p.data['acceptance_method'] == 'AGREED_TIMEOUT'
                   ? '按原约定期限处理，未冒记本人主动确认。'
                   : '本人已明确确认本次交付。'),
+            if (p.data['refund_plan'] != null) ...[
+              tradeFact('本案核定退款', v5Money(p.data['refund_plan']['amount_minor'])),
+              tradeFact('退款到账后原许可', p.data['refund_plan']['license_action'] == 'KEEP' ? '保留原许可，仍须满足当前授权' : '撤销原许可'),
+            ],
             for (final c in p.cases)
               tradeSection(stockCases[c['kind']]!, [
                 Text(c['reason']),
@@ -643,8 +715,8 @@ class _StockScreenState extends State<_StockScreen> {
                         ? '等待独立客服核对'
                         : '${c['resolution']['decision'] == 'REFUND' ? '已核定应退款，渠道结果另查' : '恢复核对；需重新读取与收件'} · ${c['resolution']['reason']}')
               ]),
-            if (p.data['current_case_id'] == null &&
-                !['AWAITING_PAYMENT', 'REVOKED', 'REFUND_REQUIRED']
+            if (p.data['current_case_id'] == null && p.raw['order_status'] != 'REFUNDED' &&
+                !['AWAITING_PAYMENT', 'REFUND_REQUIRED']
                     .contains(p.status))
               V5Form(
                   api: api,
@@ -665,7 +737,7 @@ class _StockScreenState extends State<_StockScreen> {
             tradeButton(
                 '原订单、付款与退款记录', () => go('/trade/record?recordId=${p.orderId}'),
                 outline: true),
-            appNotice('实际退款核实后平台停止继续下载，不能远程抹去已经保存到本地的文件。售后独立处理不等于资金已经到账。'),
+            appNotice('退款金额和许可处理分别由独立审核员决定。到账前暂停使用；到账后按已审决定保留或撤销原许可，权属和本人授权仍另行核验。不能远程抹去本地文件，售后决定也不表示资金已到账。'),
           ],
           if (cursor != null)
             tradeButton('继续读取下一页', busy ? null : () => load(more: true),

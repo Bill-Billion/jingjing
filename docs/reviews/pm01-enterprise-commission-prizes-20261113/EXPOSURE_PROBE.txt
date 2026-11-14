@@ -1,0 +1,112 @@
+TAP version 13
+# Subtest: fixed redemption through actual HTTP and isolated MySQL transactions
+    # Subtest: independent stock approval, private evidence and unauthorized queue rejected
+    ok 1 - independent stock approval, private evidence and unauthorized queue rejected
+      ---
+      duration_ms: 129.9545
+      type: 'test'
+      ...
+    # Subtest: repeated exchange spends once; changed key payload rejected; another user cannot read
+    ok 2 - repeated exchange spends once; changed key payload rejected; another user cannot read
+      ---
+      duration_ms: 73.9178
+      type: 'test'
+      ...
+    # Subtest: last inventory races: exactly one grant, one debit, no overselling
+    ok 3 - last inventory races: exactly one grant, one debit, no overselling
+      ---
+      duration_ms: 64.8664
+      type: 'test'
+      ...
+    # Subtest: insufficient balance and underage gate roll back grant and stock together
+    ok 4 - insufficient balance and underage gate roll back grant and stock together
+      ---
+      duration_ms: 65.4772
+      type: 'test'
+      ...
+    # Subtest: retired inventory prevents new exchange but preserves prior entitlement
+    ok 5 - retired inventory prevents new exchange but preserves prior entitlement
+      ---
+      duration_ms: 38.8234
+      type: 'test'
+      ...
+    # Subtest: service failure refund returns original points exactly once
+    ok 6 - service failure refund returns original points exactly once
+      ---
+      duration_ms: 61.7751
+      type: 'test'
+      ...
+    # Subtest: exposure binds real public artist, independently schedules and requires holder confirmation
+    ok 7 - exposure binds real public artist, independently schedules and requires holder confirmation
+      ---
+      duration_ms: 238.0528
+      type: 'test'
+      ...
+    # Subtest: fulfilled exposure records proof and cannot be redeemed twice
+    ok 8 - fulfilled exposure records proof and cannot be redeemed twice
+      ---
+      duration_ms: 68.6435
+      type: 'test'
+      ...
+    # Subtest: verified production credit gets correct price; unrelated existing stock video cannot authorize template
+    ok 9 - verified production credit gets correct price; unrelated existing stock video cannot authorize template
+      ---
+      duration_ms: 94.5351
+      type: 'test'
+      ...
+    # Subtest: interview belongs to self, requires authorized materials, extension once and actual interview result never grants role
+    ok 10 - interview belongs to self, requires authorized materials, extension once and actual interview result never grants role
+      ---
+      duration_ms: 580.5066
+      type: 'test'
+      ...
+    # Subtest: points pending reversal blocks new exchange; remedy clears original debt before any available balance
+    ok 11 - points pending reversal blocks new exchange; remedy clears original debt before any available balance
+      ---
+      duration_ms: 108.7197
+      type: 'test'
+      ...
+    # Subtest: returning expired original points does not mint a fresh year of validity
+    ok 12 - returning expired original points does not mint a fresh year of validity
+      ---
+      duration_ms: 89.3415
+      type: 'test'
+      ...
+    # Subtest: same actual winning exposure reaches reviewed delivery or one original fallback without redrawing
+    not ok 13 - same actual winning exposure reaches reviewed delivery or one original fallback without redrawing
+      ---
+      duration_ms: 36.4627
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\support\\lottery-exposure-journey.cjs:5:10'
+      failureType: 'testCodeFailure'
+      error: 'LOTTERY_PROBABILITY_INVALID'
+      code: 'LOTTERY_PROBABILITY_INVALID'
+      stack: |-
+        call (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\redemption.integration.test.cjs:19:49)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\lottery-exposure-journey.cjs:9:12)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async module.exports (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\lottery-exposure-journey.cjs:5:2)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\redemption.integration.test.cjs:127:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..13
+not ok 1 - fixed redemption through actual HTTP and isolated MySQL transactions
+  ---
+  duration_ms: 35947.2144
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\redemption.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 14
+# suites 0
+# pass 12
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 36165.9198

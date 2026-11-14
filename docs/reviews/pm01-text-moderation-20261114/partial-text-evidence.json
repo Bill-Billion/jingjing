@@ -1,0 +1,110 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "ca418d422f368478a76ae8d4d24e186f8d516e96",
+  "run_id": "pm01-text-moderation-2026-11-14T10-40-57-211Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "LONG-TEXT-COMPLETE-REVIEW",
+      "acceptance_id": "ACC-DEL-24.02",
+      "name": "长文本全文分段及原文件独审",
+      "result": "LOCAL_PASS",
+      "scope": "供稿私有text/plain实际HTTP建任务/独审及同文件，600/601与尾风险、未知不重发、撤权/已知预检失败恢复、最终写入故障、原字节复核",
+      "remaining": "审核SDK与准入合成，不代表检测质量或正式服务；人工定制SCRIPT实际长文同项目交付接续、完整所需端/维护者验收待。未知外部提交留人工核查，不能自动当未提交。",
+      "actual_checks": [
+        {
+          "name": "600 Unicode characters retain existing single-request behavior",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 190.2913,
+          "error_code": null
+        },
+        {
+          "name": "601 characters include the actual tail and require full-file independent review",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 307.3288,
+          "error_code": null
+        },
+        {
+          "name": "tail high risk rejects the original whole document and cannot be manually approved",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 552.9283,
+          "error_code": null
+        },
+        {
+          "name": "unknown second response preserves first receipt and never resends either segment on manual retry",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 120.6852,
+          "error_code": null
+        },
+        {
+          "name": "withdrawn account stops later segments; restored authority resumes only known unsubmitted tail",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 138.5032,
+          "error_code": null
+        },
+        {
+          "name": "interrupted final database write recovers all known receipts without new provider requests",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 127.6885,
+          "error_code": null
+        },
+        {
+          "name": "different response identity and malformed UTF8 never yield a publishable result",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 85.609,
+          "error_code": null
+        },
+        {
+          "name": "manual approval rechecks actual original bytes and current owner, not only stored file metadata",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 37,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 93.7757,
+          "error_code": null
+        },
+        {
+          "name": "known provider preflight disable keeps an unsubmitted segment recoverable after independent revalidation",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 141.1942,
+          "error_code": null
+        },
+        {
+          "name": "complete long-text moderation uses original private file, durable segment receipts and independent review",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 24009.71,
+          "error_code": null
+        }
+      ]
+    }
+  ]
+}

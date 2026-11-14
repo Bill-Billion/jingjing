@@ -59,7 +59,7 @@ async function main() {
     await control.query('CREATE DATABASE ' + mysql.escapeId(name) + ' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin'); created = true; checkRunning();
     db = await openDatabase({ ...env, MYSQL_DATABASE:name }); await migrate(db); checkRunning();
 
-    const f=await require('./v5-r05-r12-seed.cjs').prepare(db,checkRunning),{people,scenarios}=f;
+    const f=await require('./v5-r05-r12-seed.cjs').prepare(db,checkRunning,{firstSupply:true}),{people,scenarios}=f;
     const app=createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,
       tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.merchantId},
       allowedOrigins:['http://127.0.0.1:5173','http://localhost:5173','http://127.0.0.1:5000','http://localhost:5000','http://127.0.0.1:5500']});

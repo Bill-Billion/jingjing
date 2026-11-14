@@ -72,6 +72,7 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
   return row;
  }
  return Object.freeze({
+  ...require('./representatives').methods({db,actor,party,active,owner,command,audit,membership}),
   async registerAccount(context,input) {
    shape(input,['display_name']);label(input.display_name,80);const p=await principal(context);
    return db.withTransaction(async tx=>{
@@ -117,6 +118,18 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
      membership_id:p.membership_id,membership_version:p.membership_version,role:p.role_code,capabilities,allowed_actions:actions});
    }
    return result;
+  },
+  async getMembership(context,partyId) {
+   id(partyId);const a=await actor(context);
+   return db.withTransaction(async tx=>{
+    await active(tx,a);
+    const p=await one(tx,'SELECT * FROM parties WHERE id=? FOR SHARE',[partyId]);
+    const m=await one(tx,'SELECT * FROM party_memberships WHERE party_id=? AND account_id=? FOR SHARE',[partyId,a.account_id]);
+    if(!p||!m||m.current_status!=='ACTIVE')throw error('PARTY_NOT_FOUND',404);
+    const [capabilities]=await tx.execute('SELECT code,current_status,object_version FROM party_capabilities WHERE party_id=? ORDER BY code FOR SHARE',[partyId]);
+    return {party_id:p.id,kind:p.kind,display_name:p.display_name,current_status:p.current_status,object_version:p.object_version,
+     membership_id:m.id,membership_version:m.object_version,role:m.role_code,capabilities,allowed_actions:allowedActions(p,m)};
+   });
   },
   async assertPermission(context,input) {
    shape(input,['party_id','action']);const {party_id,action}=input;
@@ -235,6 +248,7 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
     if(m.object_version!==input.expected_version)throw error('VERSION_CONFLICT',412);
     if(m.current_status!=='ACTIVE')throw error('MEMBERSHIP_NOT_ACTIVE');
     await tx.execute("UPDATE party_memberships SET current_status='REVOKED',object_version=object_version+1,updated_at=CURRENT_TIMESTAMP(6) WHERE id=?",[m.id]);
+    await require('../engagement/mcn').revokeMemberGrants(tx,{id:a.account_id,request_id:a.request_id},p.id,input.account_id);
     await audit(tx,a,p.id,'MEMBER_REMOVED',m.id,m.object_version+1);
     return {membership_id:m.id,current_status:'REVOKED',object_version:m.object_version+1};
    });

@@ -180,9 +180,24 @@ try{
     ['/projects/channels','/projects/channels'],['/projects/channels/new','/projects/channels'],['/projects/channels/'+id(15),'/projects/channels'],['/projects/records/'+id(17),'/projects/projects']
    ]
    for(const section of ['plans','editions','channels','releases','external-events'])for(const suffix of ['', '/'+id(section==='plans'?13:section==='editions'?14:section==='channels'?15:section==='releases'?16:17)])entries.push(['/projects/reviews/'+section+suffix,'/projects/reviews/plans'])
-   for(const [path,active] of entries){assert.equal(loginRedirect(path),path);const router=createRouter({history:createMemoryHistory(),routes:[...projectsRoutes,{path:'/:pathMatch(.*)*',component:{render:()=>null}}]}),app=createSSRApp({render:()=>h(RouterView)}).use(createPinia()).use(router);await router.push(path);await router.isReady();assert.ok(router.currentRoute.value.name,path);const html=await renderToString(app),nav=html.match(/<nav\b[^>]*aria-label="工作区导航"[^>]*>([\s\S]*?)<\/nav>/)?.[1];assert.ok(nav);const links=[...nav.matchAll(/<a\b([^>]*)>/g)];assert.equal(links.length,43);assert.deepEqual(links.filter(([,attrs])=>attrs.includes('aria-current="page"')).map(([,attrs])=>attrs.match(/href="([^"]+)"/)?.[1]),[active],path);for(const label of ['项目选角','项目会签','项目发行','渠道档案','项目独立核验','制作项目','制作独立核验','商品规格','报价订单','付款退款'])assert.ok(nav.includes(label))}
+   for(const [path,active] of entries){assert.equal(loginRedirect(path),path);const router=createRouter({history:createMemoryHistory(),routes:[...projectsRoutes,{path:'/:pathMatch(.*)*',component:{render:()=>null}}]}),app=createSSRApp({render:()=>h(RouterView)}).use(createPinia()).use(router);await router.push(path);await router.isReady();assert.ok(router.currentRoute.value.name,path);const html=await renderToString(app),nav=html.match(/<nav\b[^>]*aria-label="工作区导航"[^>]*>([\s\S]*?)<\/nav>/)?.[1];assert.ok(nav);const links=[...nav.matchAll(/<a\b([^>]*)>/g)];assert.equal(links.length,79);assert.deepEqual(links.filter(([,attrs])=>attrs.includes('aria-current="page"')).map(([,attrs])=>attrs.match(/href="([^"]+)"/)?.[1]),[active],path);for(const label of ['项目选角','项目会签','项目发行','渠道档案','项目独立核验','制作项目','制作独立核验','商品规格','报价订单','付款退款'])assert.ok(nav.includes(label))}
    for(const path of ['/projects/admin','//foreign/projects/projects','/projects/projects/bad','/projects/projects/new?fake=true','/projects/reviews/roles','/projects/editions','/projects/roles/'+id(11)+'/select',' /projects/projects'])assert.equal(loginRedirect(path),'/workspace')
   }finally{if(oldWindow===undefined)delete globalThis.window;else globalThis.window=oldWindow;if(oldStorage)Object.defineProperty(globalThis,'sessionStorage',oldStorage);else delete globalThis.sessionStorage}
+ })
+ test('发行实际依据受限后清除已读与核验，解除后须主动重读',async()=>{
+  const savedStorage=Object.getOwnPropertyDescriptor(globalThis,'sessionStorage'),values=new Map()
+  Object.defineProperty(globalThis,'sessionStorage',{configurable:true,value:{getItem:key=>values.get(key)??null,setItem:(key,value)=>values.set(key,String(value)),removeItem:key=>values.delete(key)}})
+  try{
+  const {useSessionStore}=await server.ssrLoadModule('/src/stores/session.ts'),pinia=createPinia(),session=useSessionStore(pinia)
+  session.token=who.token;session.account={id:id(1),display_name:'独立核验',current_status:'ACTIVE',object_version:1,allowed_actions:[]};session.parties=[]
+  const router=createRouter({history:createMemoryHistory(),routes:[...projectsRoutes,{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push(`/projects/reviews/releases/${id(16)}`);await router.isReady()
+  let vm;const app=createSSRApp({render:()=>h(RouterView)}).use(pinia).use(router);app.mixin({created(){if(this.$options.__name==='ProjectsView')vm=this.$.setupState}});await renderToString(app)
+  vm.ui.detail.value=release();vm.readAssets=[id(32)];vm.decision='APPROVED';vm.reason='合成核验';vm.notice='旧的成功提示'
+  globalThis.fetch=async()=>failure(409,'CONTENT_RESTRICTED');await vm.readEvidence(id(32))
+  assert.deepEqual(vm.readAssets,[]);assert.equal(vm.notice,'');assert.equal(vm.decision,'');assert.equal(explainError(vm.error),'材料当前受到限制，暂不能读取。限制解除后可重新读取。')
+  const oldDocument=globalThis.document;let saves=0;globalThis.document={createElement:()=>({click(){saves++}})}
+  try{globalThis.fetch=async()=>new Response('synthetic',{headers:{'Content-Type':'application/octet-stream'}});await vm.readEvidence(id(32));assert.equal(saves,1);assert.deepEqual(vm.readAssets,[id(32)]);assert.equal(vm.decision,'')}finally{if(oldDocument===undefined)delete globalThis.document;else globalThis.document=oldDocument;session.token=null}
+  }finally{if(savedStorage)Object.defineProperty(globalThis,'sessionStorage',savedStorage);else delete globalThis.sessionStorage}
  })
  test('真实制作链保留项目桥接、失权清理及412重确认；权限由服务器授予',async()=>{
   const source=await readFile(root+'/src/views/ProjectsView.vue','utf8'),production=await readFile(root+'/src/views/ProductionView.vue','utf8')

@@ -1,0 +1,788 @@
+{
+  "result": "PASS",
+  "contract_version": "0.31.71-rc.1",
+  "contract_sha256": "8d1cb03f8229d6f77a92f21b7adc3ac107c9540737232dd058b58a6cf245c73c",
+  "openapi_version": "3.1.1",
+  "operations": 674,
+  "schemas": 841,
+  "runtime_response_cases": 7627,
+  "valid_fixtures": 304,
+  "negative_cases": 247,
+  "checks": 34937,
+  "failures": [],
+  "python": "3.10.11",
+  "tools": {
+    "openapi-spec-validator": "0.9.0",
+    "jsonschema": "4.26.0",
+    "PyYAML": "6.0.3"
+  },
+  "network_during_validation": "DISABLED",
+  "runtime_tests": "NOT_RUN",
+  "limits": "Schema and declared protocol only. Runtime permissions, SMS/payment, DB transactions, idempotency races and client SDK generation remain unverified.",
+  "runtime_files": [
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/account-api-http-fixtures.json",
+      "sha256": "2bef87a2a4599c3c8ca08ec466983002d2a53876c4fa9da2abc548f9d94653c0",
+      "runtime_response_cases": 46,
+      "checks": 46,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/account-api-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/contract-six-http-fixtures.json",
+      "sha256": "47b62786c268c690c33043a5be81d423f8dc814f936799d94e2f1014757e9a16",
+      "runtime_response_cases": 72,
+      "checks": 144,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/contract-six-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/daily-reconciliation-http-fixtures.json",
+      "sha256": "b9e75b38969f96d0f79997249b28ec331e538e7aa4ecd665a3c19bcd5aa735e1",
+      "runtime_response_cases": 20,
+      "checks": 40,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/daily-reconciliation-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/consumer-controls-http-fixtures.json",
+      "sha256": "f28b645c77d5674182e90ed6246d69d09371ee7f8684008e268165024b8cb0cf",
+      "runtime_response_cases": 17,
+      "checks": 34,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/consumer-controls-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/stock-http-fixtures.json",
+      "sha256": "36f8450f0bf32e202898252491eae9419bbac08b4042437ebaa9b7e2ea2b7345",
+      "runtime_response_cases": 219,
+      "checks": 438,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/stock-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/notices-http-fixtures.json",
+      "sha256": "38c2a20dc9bab69f2f3a9129351616e092b1880fe5dd49a9c6c14fb1ec4296ec",
+      "runtime_response_cases": 120,
+      "checks": 240,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/notices-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/auditions-http-fixtures.json",
+      "sha256": "a5fe477904252332512b7db21ba7cccc48360e1f03d1d49fbf2755db856bf2ca",
+      "runtime_response_cases": 275,
+      "checks": 550,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/auditions-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/wallet-http-fixtures.json",
+      "sha256": "55d37c3a44b7115b0bfedc8b77bd910eeaad9a7eba31fb8b618ba433205f7fa2",
+      "runtime_response_cases": 29,
+      "checks": 58,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/wallet-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/engagement-http-fixtures.json",
+      "sha256": "ea76d9175629fa78c507f8f1acd622d829f7812d4315a2b3c39abf678f463fea",
+      "runtime_response_cases": 256,
+      "checks": 512,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/engagement-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/artists-http-fixtures.json",
+      "sha256": "d1b5573ef7f8d5f21d59608091d9726388c842846f636af7bc2a493fcb16e64a",
+      "runtime_response_cases": 171,
+      "checks": 342,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/artists-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/artist-contract-http-fixtures.json",
+      "sha256": "a6ee091605348d4300062b790e34c3d5f8da20806b044673bc57e82c5b102cca",
+      "runtime_response_cases": 117,
+      "checks": 234,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/artist-contract-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/customization-delivery-http-fixtures.json",
+      "sha256": "3952ea97a2357a6b153904641d2378b5b53d12fe0aec5525ca9d457aee8c3a45",
+      "runtime_response_cases": 612,
+      "checks": 1224,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/customization-delivery-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/customization-http-fixtures.json",
+      "sha256": "bc5a7bfb3091abc387a462217fa45842e422b9d01c6ae4a4b58539c584a510f0",
+      "runtime_response_cases": 218,
+      "checks": 218,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/customization-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/customization-quote-http-fixtures.json",
+      "sha256": "87fdd35257e6e702acbd57926781dbaae90d8851971178f4d11e93d779ae004d",
+      "runtime_response_cases": 97,
+      "checks": 97,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/customization-quote-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/marketplace-http-fixtures.json",
+      "sha256": "5e6b72fa94ce00c188858073eeb3f7c6f5c93819a1ad1d09f31ab723540d4c13",
+      "runtime_response_cases": 52,
+      "checks": 52,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/marketplace-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/governance-http-fixtures.json",
+      "sha256": "0ebb62973385a148f37d5ac6ef134bc65b55741edf36700c813988d24c0ceadf",
+      "runtime_response_cases": 3,
+      "checks": 3,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/governance-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/governance-service-http-fixtures.json",
+      "sha256": "96ad9cfed62b4e871226d1b89ae7cd7e7a322678da84554d5fa85cd2e2c4b335",
+      "runtime_response_cases": 1,
+      "checks": 1,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/governance-service-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/supply-http-fixtures.json",
+      "sha256": "4bc6bb721523cb63cfe02d2795165935e54d4c2e333259b418618978768806a3",
+      "runtime_response_cases": 26,
+      "checks": 26,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/supply-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/licensing-http-fixtures.json",
+      "sha256": "d4c851f5674eec5fc0aff24338635683285c6685f37bb43c277bfff3a66d6de3",
+      "runtime_response_cases": 40,
+      "checks": 40,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/licensing-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/manual-sample-copyright-http-fixtures.json",
+      "sha256": "1e3198e462f2feca1878026c00d38635f6a236bffffae6942951583bce3d68f9",
+      "runtime_response_cases": 115,
+      "checks": 230,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/manual-sample-copyright-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/copyright-http-fixtures.json",
+      "sha256": "803d08289603cfc32f949238f3c311968e4ea206637aed76e11f693baed5029a",
+      "runtime_response_cases": 12,
+      "checks": 24,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/copyright-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/ip-procurement-http-fixtures.json",
+      "sha256": "0d8b261e67285d051e4ea93a68f4cfa94559a3eacf0cd64543630bd7fb763233",
+      "runtime_response_cases": 33,
+      "checks": 33,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/ip-procurement-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/trade-http-fixtures.json",
+      "sha256": "31ba8fde99fec7bffa6134883be4b0c47aad4c1e6ed7ac5dbcebbb4c45cf1eff",
+      "runtime_response_cases": 52,
+      "checks": 52,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/trade-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/production-http-fixtures.json",
+      "sha256": "e1133b73d9a1b929b7095b226ffc31de18a4e932c51df801837106e38dec71ca",
+      "runtime_response_cases": 81,
+      "checks": 81,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/production-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/projects-http-fixtures.json",
+      "sha256": "7edf52c54166fa57dfef66230a015e80fa49f4f81092608567ccf501cb52de1d",
+      "runtime_response_cases": 103,
+      "checks": 103,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/projects-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/gigs-http-fixtures.json",
+      "sha256": "0381c33ed3354517ff5758eba5dfcd71979c7c7cc1058e11d0ac5fc746a9511c",
+      "runtime_response_cases": 92,
+      "checks": 127,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/gigs-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/gigs-contract-http-fixtures.json",
+      "sha256": "a7d5fa0e0befb765f26692bfd1309899b2d191f1781763e5b6b46186f6686f2d",
+      "runtime_response_cases": 91,
+      "checks": 126,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/gigs-contract-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/marketplace-contract-http-fixtures.json",
+      "sha256": "6e5f50897815ed2f2d7af9a3381a2c62086e05341f7dfed13ef41280fbee91ec",
+      "runtime_response_cases": 10,
+      "checks": 10,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/marketplace-contract-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/finance-http-fixtures.json",
+      "sha256": "c4a1aba8f82b1e9cb9a9e642b1faa83ba1054b035a3038fd2a2da515cfce0cfc",
+      "runtime_response_cases": 157,
+      "checks": 157,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/finance-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/operations-http-fixtures.json",
+      "sha256": "38a2386ba85e87ffac3eee5eac1f301a1abada3b03c475806b8cd20887e5e62a",
+      "runtime_response_cases": 91,
+      "checks": 91,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/operations-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/cocreation-http-fixtures.json",
+      "sha256": "054d71d46f7ec7a2de3b54f7987bb0c9e929fc60a8d72f2910eba3d5dc8b45ea",
+      "runtime_response_cases": 540,
+      "checks": 1080,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/cocreation-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/participation-http-fixtures.json",
+      "sha256": "4f5ec5503b16bdb23b041c6dcaab2dba5ad26d4e12c75ef9b71d8d1a91722093",
+      "runtime_response_cases": 124,
+      "checks": 248,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/participation-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/redemption-http-fixtures.json",
+      "sha256": "4fd5caac6d923aec64e887142e8d0f92617345fae8862c50b9e2b0333472e83d",
+      "runtime_response_cases": 117,
+      "checks": 234,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/redemption-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/redemption-delivery-evidence-http.json",
+      "sha256": "9649d71de289a6614906040aca9eba30c52c00e50c472ab0bed1d9c6a31fe0c1",
+      "runtime_response_cases": 41,
+      "checks": 82,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/redemption-delivery-evidence-http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/redemption-checkout-http-fixtures.json",
+      "sha256": "8efeb500e32510759c09641c798557010126558d8e9e1523dcf7fd83578d09a5",
+      "runtime_response_cases": 118,
+      "checks": 236,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/redemption-checkout-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/redemption-lottery-http-fixtures.json",
+      "sha256": "113e09fe456d9a20abdf40e7309867d49ad29c6f72b3f4e85ef3b16c3f058097",
+      "runtime_response_cases": 101,
+      "checks": 202,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/redemption-lottery-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/manual-sample-legacy-http-fixtures.json",
+      "sha256": "c1abfbab679f33431a0a76715f7a22619f60041073b7d5bf0ad35847fbbfeb5c",
+      "runtime_response_cases": 115,
+      "checks": 230,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/manual-sample-legacy-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/script-intake-http-fixtures.json",
+      "sha256": "2686779c7135aac6a0f90e6faec0da6e5baea715a03a494e1491c43c2b388e59",
+      "runtime_response_cases": 10,
+      "checks": 20,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/script-intake-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/project-income-http-fixtures.json",
+      "sha256": "a6104f3d9057c15a88d9b0f687084f60f23d11a6423c8e849439e2a9cfe96efe",
+      "runtime_response_cases": 9,
+      "checks": 18,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/project-income-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/participation-amendment-http-fixtures.json",
+      "sha256": "dacfe60aaaa8d7290d1a5461807e040d418cbc15ca1c4cd50c610b37a25e24e3",
+      "runtime_response_cases": 112,
+      "checks": 224,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/participation-amendment-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/fixed-income-release-http-fixtures.json",
+      "sha256": "fef6334fb3896a42189e961e1f570a13896dddf8de26c0a3e1a2ba8633df9874",
+      "runtime_response_cases": 109,
+      "checks": 218,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/fixed-income-release-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/consumer-risk-http-fixtures.json",
+      "sha256": "5ae6ea03fa4169f18c814bff050f83b68a47b98d765ae3015b560373a3852b41",
+      "runtime_response_cases": 14,
+      "checks": 28,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/consumer-risk-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/usage-http-fixtures.json",
+      "sha256": "a48fb8468d6ff8c4cd936b2aba88930b32d647cf2aaeb034b6468c190f9df0c5",
+      "runtime_response_cases": 28,
+      "checks": 56,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/usage-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-http-fixtures.json",
+      "sha256": "a7628f1ab109192638e454222946f8202c2712df8beb1b68ae79eff0befb3074",
+      "runtime_response_cases": 57,
+      "checks": 114,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-20261106/privacy-copy-http.json",
+      "sha256": "baf2c1942e34fe1d893e982648ae48e8f91df5c3a69f8566bc82835815915f45",
+      "runtime_response_cases": 22,
+      "checks": 44,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-20261106/privacy-copy-http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-story-copy-20261106/http.json",
+      "sha256": "4821f63aa4c09ff1fcf462012808b75c4e19a5861976a65db648255eab161e22",
+      "runtime_response_cases": 22,
+      "checks": 44,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-story-copy-20261106/http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-transaction-copy-20261106/http.json",
+      "sha256": "ee1f8f9e87c491cf0aff949f2048e9aad687b4c91bf3396ae219886f96dd39e7",
+      "runtime_response_cases": 61,
+      "checks": 122,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-transaction-copy-20261106/http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261106/recommendations.json",
+      "sha256": "c8999b6c81b87c459552b14ce8ddbb53c5d1ee69b62719e8636f305a2e912780",
+      "runtime_response_cases": 18,
+      "checks": 36,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261106/recommendations.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261106/organization-merchandise-batch.json",
+      "sha256": "7f52643eb2565eef891c585a99b20db499083b8e0d9542359fe8ad5559b925b5",
+      "runtime_response_cases": 4,
+      "checks": 8,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261106/organization-merchandise-batch.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261106/organization-batch.json",
+      "sha256": "f508d909143148adc319b0ebc097a408c3dded2f6443c47b78ec859856a74ed3",
+      "runtime_response_cases": 22,
+      "checks": 44,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261106/organization-batch.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261106/privacy-account-copy.json",
+      "sha256": "b338a9265d313517c7f55d3e66d818a8949b46d88ee2f469213935e288a37ed3",
+      "runtime_response_cases": 18,
+      "checks": 36,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261106/privacy-account-copy.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-agreement-copy-20261106/http.json",
+      "sha256": "436e052569097c0546e7b74b20d91334382bd210b1ad43b4cc73fc68ec443e56",
+      "runtime_response_cases": 28,
+      "checks": 56,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-agreement-copy-20261106/http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-participation-copy-20261109/http.json",
+      "sha256": "1836e7e416a3f3b2cb9fd3b7a339d44d7ba153d826bf671c1a2d68fb416160ea",
+      "runtime_response_cases": 75,
+      "checks": 150,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-participation-copy-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-benefit-copy-20261109/http.json",
+      "sha256": "7e1010ec990fb80acde27b69932b0e82ab25d6d7f4500c79207324d9e53b3f74",
+      "runtime_response_cases": 65,
+      "checks": 130,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-benefit-copy-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-guardian-copy-20261109/http.json",
+      "sha256": "fc69e7b25ef2802e5b5f2aa7a47dea58ee5f6860ca4b19aac4d55f7c5c8e2bfe",
+      "runtime_response_cases": 78,
+      "checks": 156,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-guardian-copy-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-response-delivery-20261109/http.json",
+      "sha256": "1783f3afa32e9347249d9356139dd74c59ca5509b47047a92f7e0e7a218aafc3",
+      "runtime_response_cases": 135,
+      "checks": 270,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-response-delivery-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-activity-copy-20261109/http.json",
+      "sha256": "84122e7cfee4d0041d3bce9551fe36d40a4470c90a21a339e67f06a55919cf97",
+      "runtime_response_cases": 75,
+      "checks": 150,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-activity-copy-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261109/http.json",
+      "sha256": "38313f7fdbd8877a9132f79c72a3d9360edb2f7efd65f26f45715b757d2c4832",
+      "runtime_response_cases": 35,
+      "checks": 70,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261109/matches-STOCK.json",
+      "sha256": "86ccfe6bf93b6af469b0d815ee67c28d13da212202908e9210cc7cabaeca52d9",
+      "runtime_response_cases": 17,
+      "checks": 34,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261109/matches-STOCK.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261109/matches-AUDITION.json",
+      "sha256": "7aa7217605cb7f4dcbd26defa1bb43c5265b231753351dfe7ef221fe4afc946a",
+      "runtime_response_cases": 12,
+      "checks": 24,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261109/matches-AUDITION.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261109/matches-NOTICE.json",
+      "sha256": "8df79369c007438eb1079a6650c36c7f4988b19e5bf987ef20c06920f12d8376",
+      "runtime_response_cases": 17,
+      "checks": 34,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261109/matches-NOTICE.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261109/matches-ARTIST.json",
+      "sha256": "1d66606b1a4c34b65a87c8bc5a4d0ef9143c16895bfd34adfbd15545bf1717d5",
+      "runtime_response_cases": 14,
+      "checks": 28,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-independent-20261109/matches-ARTIST.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-security-copy-20261106/http.json",
+      "sha256": "66c233bfcd36ad37dc80fe8e3078952d71523ead68d0b3fa31d010873226ac5d",
+      "runtime_response_cases": 50,
+      "checks": 100,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-security-copy-20261106/http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-security-copy-20261106/ranking-http.json",
+      "sha256": "cf82be2b9fb770b887d1bcb12992e3aead4faf3d7e89e6dce8fd95e4b3708829",
+      "runtime_response_cases": 10,
+      "checks": 20,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/prelaunch-security-copy-20261106/ranking-http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-actions-http-fixtures.json",
+      "sha256": "f6493b9b25b1a90638034624d9641f4dfeab2b1b1e833978ac91828d87705264",
+      "runtime_response_cases": 58,
+      "checks": 116,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-actions-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/seven-privacy-http.json",
+      "sha256": "20205a6375b350cc86e0a8290b14c6b3db237f7901e353e1480358dfe640e0d3",
+      "runtime_response_cases": 13,
+      "checks": 26,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/seven-privacy-http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/seven-media-http.json",
+      "sha256": "55d421111d8dd360b95480bf029ee308731921952e9b852a6291e676bc2126b0",
+      "runtime_response_cases": 5,
+      "checks": 10,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/seven-media-http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/discovery-http-fixtures.json",
+      "sha256": "a8a17f0df1da260ef6ed0bb51e5a6677f1ea728c8691b898d6eb2b163a8c0154",
+      "runtime_response_cases": 43,
+      "checks": 86,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/discovery-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/wallet-refund-entitlement-fixtures.json",
+      "sha256": "4e777ad4f188103b1abd562bbc162f2a2c5f3f1dafbf228aef05dcb95c45ee3f",
+      "runtime_response_cases": 77,
+      "checks": 154,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/wallet-refund-entitlement-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-business-copy-20261110/COMMERCIAL.json",
+      "sha256": "f2e673d360d795afb179882b461626b6830bf42a85668672a7c700d5152d78f0",
+      "runtime_response_cases": 30,
+      "checks": 60,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-business-copy-20261110/COMMERCIAL.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-business-copy-20261110/AUDITION.json",
+      "sha256": "e2ac46e8b790f4794e6456fe1465de6ac45c42fcabc2e6da92fe452f81995c0a",
+      "runtime_response_cases": 29,
+      "checks": 58,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/privacy-business-copy-20261110/AUDITION.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/phone-change-http-fixtures.json",
+      "sha256": "9fd2746d68dc2ab384f82250cc6d3e5bc3a9eb2c6cebf59c49ac5a9b8afb8744",
+      "runtime_response_cases": 70,
+      "checks": 140,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/phone-change-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/notices-ordinary-http-fixtures.json",
+      "sha256": "a4596e2d5231a66a9a9bae82b4d526b674161923491417ae4eb8ac280d1614be",
+      "runtime_response_cases": 165,
+      "checks": 330,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/notices-ordinary-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/contract-cutover-http-fixtures.json",
+      "sha256": "16a5720d9cb8d2027622c6b0a03666df37bf3ab889410763ae1bb5f4d2ef3d19",
+      "runtime_response_cases": 14,
+      "checks": 28,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/contract-cutover-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/recharge-refund-http-fixtures.json",
+      "sha256": "8a0f738a9cf8cd7cfd19fff0cbce105a75e7bef6cecb3b244ebbc6be70420a78",
+      "runtime_response_cases": 3,
+      "checks": 6,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/recharge-refund-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/recharge-refund-api-http.json",
+      "sha256": "cc501d2b17d35d216fb8735a017816420bb522df112034ad01f2165ac524fbb6",
+      "runtime_response_cases": 77,
+      "checks": 154,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/recharge-refund-api-http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/reward-remedy-lifecycle-http.json",
+      "sha256": "8897df20e7047952f16811a86979f06b8c2893dadaa5ddab6f69d7871ade4dc8",
+      "runtime_response_cases": 82,
+      "checks": 164,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/reward-remedy-lifecycle-http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/candidate-withdrawal-http.json",
+      "sha256": "d15de140e572192dd07a61f1c4faa608bf225244f705fc0ba7eb6a6ba151e7dd",
+      "runtime_response_cases": 61,
+      "checks": 122,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/candidate-withdrawal-http.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/cocreation-modern-journey-fixtures.json",
+      "sha256": "fe6efe2b630e45c037d11515dc5883d15cb15165c1934d369d42e345ac823b59",
+      "runtime_response_cases": 531,
+      "checks": 1062,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/cocreation-modern-journey-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/stock-media-http-fixtures.json",
+      "sha256": "975b07a1782a1dcf45aa0d02f1f651e0414a0e51c144738c01381e968c281dc9",
+      "runtime_response_cases": 13,
+      "checks": 26,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/stock-media-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/notices-revisions-http-fixtures.json",
+      "sha256": "fec0b67e9b79f9aeab574d4ce271b20a64ef88c099bc3fc6641a2e82a2d2fde9",
+      "runtime_response_cases": 81,
+      "checks": 162,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/notices-revisions-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/wallet-cross-period-http-fixtures.json",
+      "sha256": "a5bbe294434dc7d2a3144f734257f5f6299335d15b3c852b68c31306eb0217fb",
+      "runtime_response_cases": 25,
+      "checks": 50,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/wallet-cross-period-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/notices-assignment-http-fixtures.json",
+      "sha256": "e3d20ad3f1b6b6f98df8a5c53ad5cdc50fc340362b784c694232f5f576404438",
+      "runtime_response_cases": 56,
+      "checks": 112,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/notices-assignment-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/audition-distance-http-fixtures.json",
+      "sha256": "db169b99fb0b24c7e82358e6fd7b9c71b2cea316198d5ff9396dba086101efb1",
+      "runtime_response_cases": 67,
+      "checks": 134,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/audition-distance-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/conversation-risk/COMMERCIAL.json",
+      "sha256": "57917f21f2244e27fc96cb63a0bd6602b4f31a45b07fd212dc27c35e387c21a3",
+      "runtime_response_cases": 39,
+      "checks": 78,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/conversation-risk/COMMERCIAL.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/conversation-risk/AUDITION.json",
+      "sha256": "8f1e2886a2a6c1358729dbd054ab37f83fafb16145814e5868f0122e9d17761f",
+      "runtime_response_cases": 39,
+      "checks": 78,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/conversation-risk/AUDITION.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/commercial-archive-timing.json",
+      "sha256": "68330c2cb9eb5165a09cb900b7d5b2ed2b49e38180987467ab74796a0681dfa7",
+      "runtime_response_cases": 31,
+      "checks": 62,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/commercial-archive-timing.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/product-catalog-http-fixtures.json",
+      "sha256": "aa1eb61a18ed330c08ea07a87a589e54d3f3db923f4bbdb14d7a58f947b83256",
+      "runtime_response_cases": 107,
+      "checks": 214,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/product-catalog-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/mcn-stock-orders-http-fixtures.json",
+      "sha256": "f5aad6d9592d97b4b9c2ab301a9333a904618b8ddd4ee189335f25bc37ee512c",
+      "runtime_response_cases": 63,
+      "checks": 126,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/mcn-stock-orders-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/championship-contract-http-fixtures.json",
+      "sha256": "d918ae83db5bae291ae70a24d64c527dd94c3b4935c59968e07b9412a9369be1",
+      "runtime_response_cases": 67,
+      "checks": 134,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/championship-contract-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/buyer-rank-http-fixtures.json",
+      "sha256": "36563375a9b4259675d6beeacd9ed8b17cef1f6daab3d322de7942d1615a8c4c",
+      "runtime_response_cases": 55,
+      "checks": 110,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/buyer-rank-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/cast-rights-http-fixtures.json",
+      "sha256": "4c165f7095d04ff3cffabc0831870704e2253d93d6f18fb65595e25265997d26",
+      "runtime_response_cases": 40,
+      "checks": 80,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/cast-rights-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/story-scope-http-fixtures.json",
+      "sha256": "b8e39bd419f4741312e3f156955dbacf20b7eeba71b8e3f33dbc727e8893853c",
+      "runtime_response_cases": 34,
+      "checks": 68,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/story-scope-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/rank-boundaries-http-fixtures.json",
+      "sha256": "00f6fe5a06fcae264ec8c09a3443e5e218f360864dfefad2e1766db9d49f0556",
+      "runtime_response_cases": 90,
+      "checks": 180,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/rank-boundaries-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/mcn-supplier-http-fixtures.json",
+      "sha256": "2b90c7354e3184519b1a4b3605977f5a90b2ddb98166c2058b591372ee039139",
+      "runtime_response_cases": 61,
+      "checks": 122,
+      "failures": [],
+      "report": ".local/ci-evidence/full-mcn-backend-acceptance-2026-11-13T17-35-27-195Z-92b8e9/mcn-supplier-http-fixtures.json"
+    }
+  ],
+  "common_checks": 20806,
+  "common_failures": [],
+  "runtime_file_count": 95,
+  "elapsed_seconds": 22.151
+}

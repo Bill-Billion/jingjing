@@ -1,0 +1,108 @@
+TAP version 13
+# Subtest: declared public audition area and ephemeral distance search
+    # Subtest: location is optional; ownership and separate purpose cannot be replaced by operator or another party
+    ok 1 - location is optional; ownership and separate purpose cannot be replaced by operator or another party
+      ---
+      duration_ms: 131.3397
+      type: 'test'
+      ...
+    # Subtest: concurrent consent records one version without changing offer or copying the point to commands and audit
+    ok 2 - concurrent consent records one version without changing offer or copying the point to commands and audit
+      ---
+      duration_ms: 53.8989
+      type: 'test'
+      ...
+    # Subtest: search returns honest rounded area distances and no position, keeps private prices and scopes pagination
+    ok 3 - search returns honest rounded area distances and no position, keeps private prices and scopes pagination
+      ---
+      duration_ms: 79.6482
+      type: 'test'
+      ...
+    # Subtest: missing consent and URL positions are rejected without storing query input or blocking city browsing
+    ok 4 - missing consent and URL positions are rejected without storing query input or blocking city browsing
+      ---
+      duration_ms: 58.2141
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls location and idempotency back together
+    not ok 5 - audit failure rolls location and idempotency back together
+      ---
+      duration_ms: 1.5763
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-distance.integration.test.cjs:63:11'
+      failureType: 'testCodeFailure'
+      error: 'This command is not supported in the prepared statement protocol yet'
+      code: 'ER_UNSUPPORTED_PS'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:31:60
+        withConnection (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:19:24)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-distance.integration.test.cjs:64:19)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-distance.integration.test.cjs:63:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: same-request personal copy includes own declaration only and retains scope restrictions
+    ok 6 - same-request personal copy includes own declaration only and retains scope restrictions
+      ---
+      duration_ms: 58.1109
+      type: 'test'
+      ...
+    # Subtest: withdrawal clears stored grid; stale version fails and original consent key cannot resurrect it
+    not ok 7 - withdrawal clears stored grid; stale version fails and original consent key cannot resurrect it
+      ---
+      duration_ms: 24.2093
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-distance.integration.test.cjs:77:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":412,"cache":"no-store","meta":{"request_id":"9457e9d6-0711-4d02-8526-80ff0dd24559","actor":{"account_id":"09d04c4f-836d-4840-ad78-4a1a1542a540"},"acting_party":"4536c0ca-d789-4f3e-a25e-e5a00730fda8"},"error":{"code":"VERSION_CONFLICT","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        412 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 412
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-distance.integration.test.cjs:14:23)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-distance.integration.test.cjs:79:20)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-distance.integration.test.cjs:77:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: filtered empty pages keep a cursor and current publication, qualification and authorization are rechecked
+    ok 8 - filtered empty pages keep a cursor and current publication, qualification and authorization are rechecked
+      ---
+      duration_ms: 398.1931
+      type: 'test'
+      ...
+    1..8
+not ok 1 - declared public audition area and ephemeral distance search
+  ---
+  duration_ms: 6924.7695
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-distance.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: grid distance handles date line, poles and invalid precise inputs
+ok 2 - grid distance handles date line, poles and invalid precise inputs
+  ---
+  duration_ms: 1.0189
+  type: 'test'
+  ...
+1..2
+# tests 10
+# suites 0
+# pass 7
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7118.6801

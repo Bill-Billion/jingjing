@@ -1,0 +1,20 @@
+CREATE TABLE infringement_cases (
+ id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ applicant_account_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ applicant_party_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ respondent_party_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ target_kind VARCHAR(30) NOT NULL,
+ target_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ current_status VARCHAR(40) NOT NULL,
+ restriction_active BOOLEAN NOT NULL DEFAULT FALSE,
+ object_version INT UNSIGNED NOT NULL DEFAULT 1,
+ data_json JSON NOT NULL,
+ data_sha256 CHAR(64) NOT NULL,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ FOREIGN KEY(applicant_account_id) REFERENCES identity_accounts(id),
+ FOREIGN KEY(applicant_party_id) REFERENCES parties(id),
+ FOREIGN KEY(respondent_party_id) REFERENCES parties(id),
+ INDEX rights_target(target_kind,target_id,restriction_active),
+ INDEX rights_applicant(applicant_party_id,id),
+ INDEX rights_respondent(respondent_party_id,id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin;

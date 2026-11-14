@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "kind": "partial_audition_delivery_evidence",
+  "result": "LOCAL_VALIDATED_NOT_FORMAL_ACCEPTANCE",
+  "base_sha": "0f8295412c82649cc08831b42506488df1a9bc92",
+  "execution_code_sha": "7e8e6e64800db09b0f597f1914cb6e973da5ca4d",
+  "candidate_base_sha": "3e33810e01a9a0c4542ad62defec1496328889b8",
+  "candidate_code_sha": "72ea85e804960fd888b47213576408614a54478f",
+  "interface_version": "0.31.30-rc.1",
+  "migration": "0209",
+  "formal_151_pass_count": 0,
+  "source_manifest": "docs/testing/evidence/mac-mini-pr39-audition-delivery-20261103/SOURCE_MANIFEST.json",
+  "items": [
+    {
+      "id": "AUD-LOCAL-01",
+      "groups": [
+        1,
+        2,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-09.03",
+        "E2E-03",
+        "TASK-17"
+      ],
+      "expected": "本人或明确获权的机构员工按当前预约和订单快照选择素材及授权；提交结果未知时恢复原请求；独立审核后买方可读取并确认同一预约。",
+      "steps": [
+        "合成预约与模拟已付款由夹具准备，负责人网页逐人授予材料权限",
+        "员工Android选择6照1视频与授权，丢失成功响应后按原键恢复",
+        "独立运营网页逐份读取并审核，买方网页读取同7份材料、确认完成并核对同单模拟账目"
+      ],
+      "actual": "实际Android模拟器1项和网页5项通过，同一预约8f2fb256-fc16-4946-b8b1-8ceaaec0acd9、订单67fe48b6-8cd8-4e2f-b6a9-f3e25fcd6775。",
+      "evidence": [
+        "android-results.json",
+        "cross-results.json"
+      ],
+      "limits": "不是从首次新预约创建开始；身份会话和付款为合成夹具。未证明全部现场到场、退款、录用及后续版权，未用3e后端或物理机复跑。"
+    },
+    {
+      "id": "AUD-LOCAL-02",
+      "groups": [
+        1,
+        2,
+        17
+      ],
+      "standards": [
+        "TASK-17"
+      ],
+      "expected": "缺少材料权限、撤权、断网或切身份时不保留可用的旧选择，独立权限恢复后可重新读取；不能重复提交。",
+      "steps": [
+        "网页缺权、负责人授予、选材，断网清空并恢复",
+        "实际撤销后网页重读拒绝；Android显示缺权并于明确重新授权后重读",
+        "自动测试覆盖空页游标、跨预约、切身份、过期、重复及原键恢复"
+      ],
+      "actual": "网页4项和撤权1项、Android撤销及重授权1项通过；自动回归覆盖所列场景。",
+      "evidence": [
+        "web-results.json",
+        "revoke-results.json",
+        "permission-android-results.json",
+        "combined-web-results.json"
+      ],
+      "limits": "新组合仅以网页只读冒烟连接旧0f后端；其他异常是自动测试，不均为真实离线设备实测。"
+    }
+  ]
+}

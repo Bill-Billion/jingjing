@@ -1,0 +1,313 @@
+{
+  "completed": true,
+  "synthetic_only": true,
+  "started_at": "2026-11-03T04:47:48.805Z",
+  "finished_at": "2026-11-03T04:47:52.363Z",
+  "checks": [
+    {
+      "id": "CP01-web-rule-independent",
+      "result": "PASS",
+      "rule_id": "bd5f0b4f-e384-4af7-b426-f50a9989b215"
+    },
+    {
+      "id": "CP02-web-confirm-unknown-reload",
+      "result": "PASS",
+      "order_id": "0b5b106b-7f29-4458-afac-9916dbe8a094",
+      "payment_id": "631c9874-cdea-4d30-8916-280a41393334",
+      "confirmation_key": "79c70c67-0f1f-47e0-af77-aa4dbe02ede3",
+      "consumption_key": "7aa1eeac-ec10-468c-8438-06eec587177a"
+    },
+    {
+      "id": "CP03-web-confirm-payment-refund",
+      "result": "PASS",
+      "payment_id": "631c9874-cdea-4d30-8916-280a41393334",
+      "refund_id": "83559dbe-320b-439a-81d4-dfb0c788459f"
+    },
+    {
+      "id": "CP04-web-draw-unknown-reload",
+      "result": "PASS",
+      "draw_id": "6f46514d-8201-4731-8d67-75d93dc1ab71",
+      "key": "56743cf5-eaa8-4441-b547-98b9fb9687b3"
+    },
+    {
+      "id": "CP04-web-overlimit-no-deduction",
+      "result": "PASS"
+    },
+    {
+      "id": "CP05-web-night-settings-optout-offline",
+      "result": "PASS"
+    },
+    {
+      "id": "CP06-web-contract-candidate-no-invented-cost",
+      "result": "PASS",
+      "candidate_count": 11,
+      "published": false
+    },
+    {
+      "id": "CP04-web-global-recovery-clears-original-form",
+      "result": "PASS",
+      "draw_id": "6f46514d-8201-4731-8d67-75d93dc1ab71",
+      "consumption_key": "56743cf5-eaa8-4441-b547-98b9fb9687b3"
+    }
+  ],
+  "records": {
+    "rule_id": "bd5f0b4f-e384-4af7-b426-f50a9989b215",
+    "web_order": "0b5b106b-7f29-4458-afac-9916dbe8a094",
+    "web_payment": "631c9874-cdea-4d30-8916-280a41393334",
+    "aftercare_case": "25a64aa1-7bf8-4be9-a199-a3894dadb50c",
+    "web_refund": "83559dbe-320b-439a-81d4-dfb0c788459f",
+    "draw_id": "6f46514d-8201-4731-8d67-75d93dc1ab71"
+  },
+  "writes": [
+    {
+      "role": "seller",
+      "path": "/api/v1/wallet/consumer-risk/rules",
+      "key": "dc390a98-f978-437b-b310-27fbb19524c4",
+      "party": null,
+      "body": {
+        "rule": {
+          "version": "synthetic-browser-v1",
+          "source_ref": "本机合成测试，非正式经营阈值",
+          "message": "合成提示：请确认本次消费与个人预算。",
+          "window_seconds": 86400,
+          "trigger_count": 2,
+          "large_recharge_minor": null,
+          "night": null,
+          "confirmation_seconds": 60,
+          "lottery_window_max_draws": 2,
+          "lottery_daily_points": 600
+        }
+      }
+    },
+    {
+      "role": "reviewer",
+      "path": "/api/v1/wallet/consumer-risk/rules/bd5f0b4f-e384-4af7-b426-f50a9989b215/review",
+      "key": "1b45df21-4a18-423f-b4f0-ac8479eb29cd",
+      "version": "\"1\"",
+      "party": null,
+      "body": {
+        "decision": "APPROVE",
+        "reason": "独立核对隔离合成规则，不能作为正式阈值"
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/wallet/consumer-risk/confirm",
+      "key": "79c70c67-0f1f-47e0-af77-aa4dbe02ede3",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "target": {
+          "kind": "PAYMENT",
+          "order_id": "0b5b106b-7f29-4458-afac-9916dbe8a094",
+          "installment_key": "stock",
+          "request_key": "7aa1eeac-ec10-468c-8438-06eec587177a"
+        },
+        "preview_sha256": "bff9b3ada7313cb4cc849942b185ee25c9b3f64b459e5fa2324d47a70b94d573",
+        "read_confirmed": true
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/wallet/consumer-risk/confirm",
+      "key": "79c70c67-0f1f-47e0-af77-aa4dbe02ede3",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "target": {
+          "kind": "PAYMENT",
+          "order_id": "0b5b106b-7f29-4458-afac-9916dbe8a094",
+          "installment_key": "stock",
+          "request_key": "7aa1eeac-ec10-468c-8438-06eec587177a"
+        },
+        "preview_sha256": "bff9b3ada7313cb4cc849942b185ee25c9b3f64b459e5fa2324d47a70b94d573",
+        "read_confirmed": true
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/wallet/consumer-risk/confirm",
+      "key": "5f75b425-d5dd-4ec5-abdf-180f6a40a029",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "target": {
+          "kind": "PAYMENT",
+          "order_id": "0b5b106b-7f29-4458-afac-9916dbe8a094",
+          "installment_key": "stock",
+          "request_key": "7aa1eeac-ec10-468c-8438-06eec587177a"
+        },
+        "preview_sha256": "bff9b3ada7313cb4cc849942b185ee25c9b3f64b459e5fa2324d47a70b94d573",
+        "read_confirmed": true
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/trade/payments",
+      "key": "7aa1eeac-ec10-468c-8438-06eec587177a",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "order_id": "0b5b106b-7f29-4458-afac-9916dbe8a094",
+        "installment_key": "stock"
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/trade/payments/631c9874-cdea-4d30-8916-280a41393334/reconciliation",
+      "key": "a0c9804d-06fc-4db5-a2f8-756d3e71e609",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "transaction_id": null
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/stock/purchases/0b5b106b-7f29-4458-afac-9916dbe8a094/cases",
+      "key": "d0c56920-7da9-4969-81d4-3b1ca4b25c48",
+      "version": "\"2\"",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "kind": "REFUND",
+        "reason": "合成售后请求，先经独立审核再退款"
+      }
+    },
+    {
+      "role": "reviewer",
+      "path": "/api/v1/stock/purchases/0b5b106b-7f29-4458-afac-9916dbe8a094/case-resolution",
+      "key": "51f28d62-b8d1-4873-be9b-98e665824c71",
+      "version": "\"3\"",
+      "party": null,
+      "body": {
+        "case_id": "25a64aa1-7bf8-4be9-a199-a3894dadb50c",
+        "decision": "REFUND",
+        "reason": "独立核对同一原订单合成售后与全额退款"
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/trade/refunds",
+      "key": "b6bca5bc-0cb1-4f67-b866-173fe77f39a6",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "payment_id": "631c9874-cdea-4d30-8916-280a41393334",
+        "allocations": [
+          {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        ],
+        "reason": "同一合成消费的退款恢复检查"
+      }
+    },
+    {
+      "role": "reviewer",
+      "path": "/api/v1/trade/records/83559dbe-320b-439a-81d4-dfb0c788459f/reviews",
+      "key": "020982bd-b35d-4808-ab00-d3f357ee9e09",
+      "version": "\"1\"",
+      "party": null,
+      "body": {
+        "decision": "APPROVED",
+        "reason": "独立核对合成原付款全额退回"
+      }
+    },
+    {
+      "role": "reviewer",
+      "path": "/api/v1/trade/refunds/83559dbe-320b-439a-81d4-dfb0c788459f/execution",
+      "key": "fcc17c01-397b-4296-bf70-0416fd82a055",
+      "party": null,
+      "body": {}
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/trade/refunds/83559dbe-320b-439a-81d4-dfb0c788459f/reconciliation",
+      "key": "db3a650e-f7ed-40ca-af94-d287e00ce64c",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {}
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/wallet/consumer-risk/confirm",
+      "key": "d9685ff2-e443-4e9e-ada1-ee4db1ae830e",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "target": {
+          "kind": "LOTTERY",
+          "pool_id": "e0006a7b-ee21-48c1-83a9-423c6345df5a",
+          "count": 1,
+          "request_key": "56743cf5-eaa8-4441-b547-98b9fb9687b3"
+        },
+        "preview_sha256": "cdf0305630bccdff2190fe1a63e3bae5cd32f57667a1b176622b3c5cdf1b0030",
+        "read_confirmed": true
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/redemption/draws",
+      "key": "56743cf5-eaa8-4441-b547-98b9fb9687b3",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "pool_id": "e0006a7b-ee21-48c1-83a9-423c6345df5a",
+        "rules_sha256": "f2bdbc342e70c58393848379a820ff8c61fdd2d2de29d15553ddb82644b5ceb3",
+        "count": 1
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/redemption/draws",
+      "key": "56743cf5-eaa8-4441-b547-98b9fb9687b3",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "pool_id": "e0006a7b-ee21-48c1-83a9-423c6345df5a",
+        "rules_sha256": "f2bdbc342e70c58393848379a820ff8c61fdd2d2de29d15553ddb82644b5ceb3",
+        "count": 1
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/privacy/preferences",
+      "key": "043cf95e-f55d-40f3-9cb2-d4023769dc8a",
+      "version": "\"0\"",
+      "party": null,
+      "body": {
+        "personalization": false,
+        "marketing": true,
+        "rest_reminder_minutes": 0,
+        "push_enabled": true,
+        "night_reminder_enabled": true,
+        "quiet_hours": {
+          "enabled": true,
+          "start_minute": 0,
+          "end_minute": 1439
+        }
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/privacy/preferences",
+      "key": "78b923ad-5a80-464f-ac4f-238b944bd256",
+      "version": "\"1\"",
+      "party": null,
+      "body": {
+        "personalization": false,
+        "marketing": false,
+        "rest_reminder_minutes": 0,
+        "push_enabled": true,
+        "night_reminder_enabled": true,
+        "quiet_hours": {
+          "enabled": true,
+          "start_minute": 0,
+          "end_minute": 1439
+        }
+      }
+    },
+    {
+      "role": "buyer2",
+      "path": "/api/v1/redemption/draws",
+      "key": "56743cf5-eaa8-4441-b547-98b9fb9687b3",
+      "party": "7ad756e5-ffc4-4bf0-919b-b2c824e1835b",
+      "body": {
+        "pool_id": "e0006a7b-ee21-48c1-83a9-423c6345df5a",
+        "rules_sha256": "f2bdbc342e70c58393848379a820ff8c61fdd2d2de29d15553ddb82644b5ceb3",
+        "count": 1
+      }
+    }
+  ],
+  "pageErrors": []
+}

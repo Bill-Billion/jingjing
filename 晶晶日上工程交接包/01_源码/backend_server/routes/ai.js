@@ -1,5 +1,5 @@
 // routes/ai.js - 火山 AI 统一接口（V12：文案 / TTS / 声音复刻 / Seedream文生图 / Seedance视频异步）
-// 这些接口会产生上游调用费用：开发环境可直接调用，生产环境强制登录（见 costGuard）。
+// 历史接口保留；客户直连视频生成已关闭，定制服务统一由人工受理。其他能力仍受成本与授权限制。
 // 合规：数字人/照片开口视频必须使用“真人照片”，禁止动漫/卡通人脸；本层不提供卡通人脸生成。
 const express = require('express');
 const crypto = require('crypto');
@@ -125,23 +125,10 @@ router.post('/image', optionalAuth, async (req, res) => {
 // 6) Seedance 视频异步创建（t2v 文生视频 / i2v 照片开口视频）
 //    body: {type:'i2v'|'t2v', prompt, imageUrl(真人照片,可访问URL), duration, ratio, resolution}
 //    返回本地任务id，前端用 GET /api/ai/task/:id 轮询；后台自动轮询上游并转存成片。
-router.post('/video', optionalAuth, async (req, res) => {
-  try {
-    const b = req.body || {};
-    const type = b.type === 'i2v' ? 'i2v' : 't2v';
-    if (type === 'i2v' && !b.imageUrl) return res.status(400).json({ code: 400, message: '照片开口视频必须提供已上传的真人照片 imageUrl' });
-    const t = await volc.createVideoTask({
-      type,
-      prompt: b.prompt || '',
-      imageUrl: b.imageUrl || null,
-      duration: Number(b.duration || 5),
-      ratio: b.ratio || '9:16',
-      resolution: b.resolution || '480p',
-      generateAudio: b.generateAudio !== false,
-      userId: req.userId || null,
-    });
-    res.json({ code: 0, task: taskDto(t) });
-  } catch (e) { fail(res, e); }
+router.post('/video', (req, res) => {
+  // Customer requests are fulfilled through reviewed manual production orders.
+  // No environment flag may restore this legacy paid generation shortcut.
+  res.status(410).json({code:'MANUAL_PRODUCTION_REQUIRED',message:'请提交短视频定制需求，由平台人工受理、报价、制作与审片后交付。无需填写模型提示词。',requestPath:'/api/v1/customization-requests'});
 });
 
 // 7) 查询异步任务状态/结果  GET /api/ai/task/:id

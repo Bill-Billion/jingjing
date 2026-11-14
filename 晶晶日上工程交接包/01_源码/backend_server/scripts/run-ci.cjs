@@ -18,16 +18,18 @@ function main() {
   const suites = [
     ...Object.keys(require('./mysql-test-suites.cjs')).map(name=>({name,args:['scripts/test-mysql.js',name],allowedSkips:0})),
     { name: 'legacy-safety', args: ['scripts/test-legacy-safety.cjs'], allowedSkips: 0 },
-    // The whole regression includes every module plus real lease timers; keep each focused suite at four minutes.
-    { name: 'regression', args: ['scripts/run-tests.cjs'], timeout: 600000, allowedSkips: process.env.JX_LEGACY_SQLITE_SNAPSHOT ? 0 : 1 },
+    // Full regression reached the final worker tests at the former ten-minute cap on hosted runners.
+    // Keep every test, bounded concurrency and the existing focused-suite limits.
+    { name: 'regression', args: ['scripts/run-tests.cjs'], timeout: 900000, allowedSkips: process.env.JX_LEGACY_SQLITE_SNAPSHOT ? 0 : 1 },
   ];
   for (const suite of suites) {
-    const child = spawnSync(process.execPath, suite.args, { cwd: backend, env: process.env, encoding: 'utf8', timeout: suite.timeout || 240000, maxBuffer: 16 * 1024 * 1024, windowsHide: true });
+    const started = Date.now(), timeout = suite.timeout || 240000;
+    const child = spawnSync(process.execPath, suite.args, { cwd: backend, env: process.env, encoding: 'utf8', timeout, maxBuffer: 16 * 1024 * 1024, windowsHide: true });
     const log = ((child.stdout || '') + (child.stderr || '')).split(root).join('<WORKTREE>');
     fs.writeFileSync(path.join(output, suite.name + '.log'), log);
-    const result = assessResult({ exitCode: child.status, log, allowedSkips: suite.allowedSkips, allowLegacySkip: suite.name === 'regression' });
-    report.commands.push({ name: suite.name, ...result }); save();
-    console.log(`${suite.name}: ${result.ok ? 'PASS' : 'FAIL'}; ${JSON.stringify(result.counts)}`);
+    const result = assessResult({ exitCode: child.status, log, allowedSkips: suite.allowedSkips, allowLegacySkip: suite.name === 'regression', processError: child.error, signal: child.signal });
+    report.commands.push({ name: suite.name, elapsed_ms: Date.now()-started, timeout_ms: timeout, ...result }); save();
+    console.log(`${suite.name}: ${result.ok ? 'PASS' : 'FAIL'}; ${JSON.stringify(result.counts)}; process=${result.process_error_code || result.signal || 'EXIT_' + result.exit_code}`);
     if (!result.ok) { console.error(log.slice(-12000)); process.exitCode = 1; return; }
   }
   report.result = 'PASS'; save();

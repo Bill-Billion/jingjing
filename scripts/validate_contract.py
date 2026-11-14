@@ -69,22 +69,28 @@ def validate(runtime_fixtures=None):
     negatives = json.loads((ROOT/'contracts/tests/schema_cases.json').read_text(encoding='utf-8'))['cases']
     negatives += json.loads((ROOT/'contracts/tests/account_permission_cases.json').read_text(encoding='utf-8'))['cases']
     failures, checks = [], []
-    runtime_cases = []
-    if runtime_fixtures:
-        runtime_data=json.loads(runtime_fixtures.read_text(encoding='utf-8'))
-        if runtime_data.get('synthetic_only') is not True or not runtime_data.get('cases'):
-            raise ValueError('Runtime fixtures must contain explicitly synthetic cases')
-        runtime_cases=runtime_data['cases']
+    runtime_cases, runtime_sources, runtime_reports = [], [], []
+    inputs = runtime_fixtures if isinstance(runtime_fixtures, list) else ([runtime_fixtures] if runtime_fixtures else [])
+    for source in inputs:
+        raw = source.read_bytes()
+        runtime_data = json.loads(raw.decode('utf-8'))
+        if runtime_data.get('synthetic_only') is not True or not isinstance(runtime_data.get('cases'), list) or not runtime_data['cases']:
+            raise ValueError('Runtime fixtures must contain explicitly synthetic cases: ' + str(source))
+        runtime_sources.append((source, hashlib.sha256(raw).hexdigest(), runtime_data['cases']))
+        runtime_cases.extend(runtime_data['cases'])
 
     def check(condition, name):
         checks.append(name)
         if not condition:
             failures.append(name)
 
+    validators = {}
     def valid(schema, value):
-        root = {'$schema':'https://json-schema.org/draft/2020-12/schema',
-                '$ref':'#/components/schemas/'+schema,'components':spec['components']}
-        return Draft202012Validator(root, format_checker=FormatChecker()).is_valid(value)
+        if schema not in validators:
+            root = {'$schema':'https://json-schema.org/draft/2020-12/schema',
+                    '$ref':'#/components/schemas/'+schema,'components':spec['components']}
+            validators[schema] = Draft202012Validator(root, format_checker=FormatChecker())
+        return validators[schema].is_valid(value)
 
     check(fixtures['synthetic_only'] is True, 'Examples explicitly synthetic')
     fixture_map = {x['schema']:x for x in fixtures['cases']}
@@ -106,16 +112,31 @@ def validate(runtime_fixtures=None):
             schema, value = x['schema'], x['value']
         check(not valid(schema, value), 'Rejected example: '+x['name'])
 
-    for x in runtime_cases:
-        schema = x['schema']
-        if 'method' in x and 'path' in x:
-            matches = [item[x['method'].lower()] for route, item in spec['paths'].items()
-                       if x['method'].lower() in item and re.fullmatch(re.sub(r'\{[^}]+\}', '[^/]+', route), x['path'])]
-            check(len(matches) == 1, 'Actual HTTP route declared: '+x['method']+' '+x['path'])
-            if len(matches) == 1 and schema != 'ErrorResponse':
-                schema = matches[0]['responses']['200']['content']['application/json']['schema']['$ref'].split('/')[-1]
-        check(valid(schema,x['value']), 'Actual HTTP response: '+schema)
-
+    # Compile route patterns once; preserve concrete-path precedence and ambiguity rejection.
+    routes = {}
+    for route, item in spec['paths'].items():
+        pattern = re.compile(re.sub(r'\{[^}]+\}', '[^/]+', route))
+        for method, operation in item.items():
+            if method in {'get','post','patch','put','delete','head','options','trace'}:
+                routes.setdefault(method, []).append((pattern, operation))
+    runtime_failure_start, runtime_check_start = len(failures), len(checks)
+    for source, sha, cases in runtime_sources:
+        failure_start, check_start = len(failures), len(checks)
+        for x in cases:
+            schema = x['schema']
+            if 'method' in x and 'path' in x:
+                method = x['method'].lower()
+                matches = [op for pattern, op in routes.get(method, []) if pattern.fullmatch(x['path'])]
+                exact = spec['paths'].get(x['path'], {}).get(method)
+                if exact is not None:
+                    matches = [exact]
+                check(len(matches) == 1, 'Actual HTTP route declared: '+x['method']+' '+x['path'])
+                if len(matches) == 1 and schema != 'ErrorResponse':
+                    schema = matches[0]['responses']['200']['content']['application/json']['schema']['$ref'].split('/')[-1]
+            check(valid(schema,x['value']), 'Actual HTTP response: '+schema)
+        runtime_reports.append({'fixtures':str(source), 'sha256':sha, 'runtime_response_cases':len(cases),
+                                'checks':len(checks)-check_start, 'failures':failures[failure_start:]})
+    runtime_failure_end, runtime_check_end = len(failures), len(checks)
 
     # Candidate protocol invariants. These are not server behavioral tests.
     implemented_ids=set(json.loads((ROOT/'contracts/implementation.json').read_text(encoding='utf-8'))['isolated_tested_operations'])
@@ -133,6 +154,8 @@ def validate(runtime_fixtures=None):
         'listCustomizationIntakeRequests': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
         'intakeCustomizationRequest': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
     }
+    personal_collection_ops = {'recordPersonalVisit', 'getCollectionPreferences', 'listPersonalFavorites', 'listPersonalHistory', 'getPersonalCollectionTarget', 'setCollectionPreferences', 'clearPersonalHistory', 'removePersonalHistory', 'setPersonalFavorite'}
+    personal_collection_ops.update({'cancelPhoneChange', 'getPhoneChange', 'getCurrentPhoneChange', 'createPhoneChange', 'confirmPhoneChange', 'verifyPhoneChangeChallenge', 'sendPhoneChangeChallenge'})
     # Newly reviewed operator-only endpoints use no acting-party header.
     for path, item in spec['paths'].items():
         for method, op in item.items():
@@ -143,25 +166,62 @@ def validate(runtime_fixtures=None):
             check((security == []) == (op['operationId'] in public_ids), 'Security: '+op['operationId'])
             params = [resolve(spec, p['$ref']) if '$ref' in p else p for p in op.get('parameters',[])]
             headers = {p['name']:p for p in params if p['in']=='header'}
+            if op['operationId'] in {'scheduleRechargeRefund', 'downloadRechargeRefundEvidence', 'requestGuardianRechargeRefund', 'listOperatorRechargeRefunds', 'retryRechargeRefundTask', 'getGuardianRechargeRefund', 'reviewRechargeRefund', 'listGuardianRechargeRefunds', 'getOperatorRechargeRefund'}:
+                check('X-Acting-Party' not in headers, 'Refund account identity only: '+path)
             if op['operationId'] in provider_callbacks:
                 check(op.get('x-provider-signature-required') is True, 'Provider signature required: '+path)
             if method in {'post','patch','put','delete'} and op['operationId'] not in provider_callbacks:
-                check(headers.get('Idempotency-Key',{}).get('required') is True, 'Mutation idempotency: '+path)
+                if op['operationId'] == 'reportPersonalUsage':
+                    check(path == '/api/v1/privacy/usage/pulse' and method == 'post' and op.get('x-idempotency-mode') == 'SERVER_TIME_SAMPLE', 'Server time sampling exception is explicit and bounded')
+                elif op['operationId'] == 'searchAuditionsByDistance':
+                    check(path == '/api/v1/discovery/auditions/distance' and method == 'post' and op.get('x-idempotency-mode') == 'READ_ONLY_EPHEMERAL_QUERY' and 'Idempotency-Key' not in headers, 'Ephemeral distance query is read-only, uses no stored command, and has one explicit path')
+                else:
+                    check(headers.get('Idempotency-Key',{}).get('required') is True, 'Mutation idempotency: '+path)
                 check('409' in op['responses'], 'Mutation replay conflict: '+path)
             if method == 'patch' or op['operationId'] in {'submitCustomizationRequest','intakeCustomizationRequest','requestCustomizationSupplement','submitCustomizationSupplement'}:
                 check(headers.get('If-Match',{}).get('required') is True, 'Mutation version: '+path)
                 check({'412','428'} <= set(op['responses']), 'Version error statuses: '+path)
-            account_scoped_supply = {'listWalletRules','createWalletRule','reviewWalletRule','reviewWalletLevelSix','reviewAuditionDelivery','reviewAuditionOffer','reviewAuditionBooking','expireAudition','resolveAuditionCase','manageAuditionSupport','sendAuditionMessage','markAuditionMessagesRead','reviewAuditionReschedule','listAuditionCatalog','listAuditionRecords','getAuditionRecord','getAuditionContacts','getAuditionMessages','getAuditionItinerary','downloadAuditionMaterial','listNoticeRules','createNoticeRule','recordNoticeFinancialFact','createAnnouncement','reviewNoticeRecord','closeNoticeRecord','linkNoticeQuote','listNoticeRecords','getNoticeRecord','listNoticeCatalog','getNoticePublic','downloadNoticeMaterial','listStockListings','getStockListing','reviewStockListing','changeReviewedStockStatus','listStockCatalog','getStockOffer','downloadStockPreview','downloadStockReviewFile','downloadStockEvidence','getStockPurchase','resolveStockCase','getCustomizationFulfillment','getProductionStory','resolveCustomizationCase','downloadCustomizationCaseEvidence','getArtistServices','listArtistCatalogue','listArtistReviews','getArtistRecord','reviewArtistRecord','recordArtistServiceResult','downloadArtistReviewAsset','downloadArtistPublicPreview','previewMarketplaceFinance','listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
+            account_scoped_supply = {'reviseNoticeAnnouncement','getNoticeRevisionHistory','requestGuardianRechargeRefund','listGuardianRechargeRefunds','getGuardianRechargeRefund','listOperatorRechargeRefunds','getOperatorRechargeRefund','reviewRechargeRefund','scheduleRechargeRefund','retryRechargeRefundTask','downloadRechargeRefundEvidence','listDiscoveryCities','searchPublicCatalogues','listStockSalesPublications','createStockSalesPublication','reviewStockSalesPublication','listStockSalesPublicationSources','readPublicArtistListing','readPublicArtistMedia','listWalletRules','createWalletRule','reviewWalletRule','reviewWalletLevelSix','reviewAuditionDelivery','reviewAuditionOffer','reviewAuditionBooking','expireAudition','resolveAuditionCase','manageAuditionSupport','sendAuditionMessage','markAuditionMessagesRead','reviewAuditionReschedule','listAuditionCatalog','listAuditionRecords','getAuditionRecord','getAuditionContacts','getAuditionMessages','getAuditionItinerary','downloadAuditionMaterial','listNoticeRules','createNoticeRule','recordNoticeFinancialFact','createAnnouncement','reviewNoticeRecord','closeNoticeRecord','linkNoticeQuote','listNoticeRecords','getNoticeRecord','listNoticeCatalog','getNoticePublic','downloadNoticeMaterial','listStockListings','getStockListing','reviewStockListing','changeReviewedStockStatus','listStockCatalog','getStockOffer','downloadStockPreview','downloadStockReviewFile','downloadStockEvidence','getStockPurchase','resolveStockCase','getCustomizationFulfillment','getProductionStory','downloadProductionStoryAttachment','resolveCustomizationCase','downloadCustomizationCaseEvidence','getArtistServices','listArtistCatalogue','listArtistReviews','getArtistRecord','reviewArtistRecord','recordArtistServiceResult','downloadArtistReviewAsset','downloadArtistPublicPreview','previewMarketplaceFinance','listSupplyRecords','getSupplyRecord','getSupplyAsset','downloadSupplyAsset',
                 'reviewSupplyProfile','reviewSupplyWorkVersion','reviewSupplyConsent','withdrawSupplyConsent',
-                'reviewLicenseRecord','activateLicense','suspendLicense','listLicenseRecords','getLicenseRecord','downloadLicenseEvidence','reviewTradeRecord','executeTradeRefund','importTradeLegacyOrder','listTradeRecords','getTradeRecord','downloadTradeEvidence','reviewProductionRecord','getProductionRecord','listProductionRecords','downloadManualSampleOwnedContent','downloadProductionContent','downloadProductionEvidence','getProductionJob','retryProductionJob','reviewProjectOperation','listProjectCatalogue','listManagedProjects','getProjectRecord','listProjectRecords','listProjectConfirmations','getProjectReadiness','downloadProjectEvidence','createGigRule','retireGigRule','reviewGigRecord','suspendGig','createGigRanking','listGigRecords','getGigRecord','listGigCatalogue','getGigRanking','downloadGigEvidence','decideDisputeFinanceOperation','reviewFinanceOperation','listFinanceAgreements','listFinanceRecords','getFinanceRecord','listFinanceConfirmations','getFinanceReadiness','getFinanceBalances','listFinanceEntries','downloadFinanceEvidence','listBusinessComments','addBusinessComment','changeBusinessComment','listOperationsAudit','listBusinessAudit','requestBusinessReport','getBusinessReport','downloadBusinessReport','retryBusinessReport'}
+                'reviewLicenseRecord','activateLicense','suspendLicense','listLicenseRecords','getLicenseRecord','downloadLicenseEvidence','downloadIPProcurementEvidence','reviewTradeRecord','executeTradeRefund','importTradeLegacyOrder','listTradeRecords','getTradeRecord','downloadTradeEvidence','reviewProductionRecord','getProductionRecord','listProductionRecords','downloadManualSampleOwnedContent','downloadProductionContent','downloadProductionEvidence','getProductionJob','retryProductionJob','reviewProjectOperation','listProjectCatalogue','listManagedProjects','getProjectRecord','listProjectRecords','listProjectConfirmations','getProjectReadiness','downloadProjectEvidence','createGigRule','retireGigRule','reviewGigRecord','suspendGig','createGigRanking','listGigRecords','getGigRecord','listGigCatalogue','getGigRanking','downloadGigEvidence','decideDisputeFinanceOperation','reviewFinanceOperation','listFinanceAgreements','listFinanceRecords','getFinanceRecord','listFinanceConfirmations','getFinanceReadiness','getFinanceBalances','listFinanceEntries','downloadFinanceEvidence','listBusinessComments','addBusinessComment','changeBusinessComment','listOperationsAudit','listBusinessAudit','requestBusinessReport','listMyBusinessReports','getBusinessReport','downloadBusinessReport','retryBusinessReport'}
+            account_scoped_supply.add('cancelRecoveryFinanceOperation')
+            account_scoped_supply.add('getPrivacyBusinessMessageDraft')
+            account_scoped_supply.update({'getPrivacyCopyOptions','downloadPrivacyCopyFile','getPrivacyStoryCopy','getPrivacyTransactionCopy','getPrivacyAccountCopy'})
+            account_scoped_supply.update({'getStockPublicMedia','downloadStockCover'})
+            account_scoped_supply.update({'getDiscoveryRecommendations','getDiscoveryMatches','getDiscoveryRecommendedMatches','getEngagementRankingExplanation'})
+            account_scoped_supply.update({'listDirectoryRecords', 'downloadDirectoryMaterial', 'listPublicOrganizations', 'downloadOrganizationCover', 'listFeaturedArtists', 'getDirectoryRecord', 'getPublicOrganization', 'withdrawDirectoryRecord', 'proposeDirectoryFeature', 'reviewDirectoryRecord'})
+            account_scoped_supply.update({'customizationAttachments','downloadCustomizationAttachment'})
             account_scoped_supply.update({'withdrawPrivacyConsent', 'requestPrivacyModelDeletion', 'getPrivacyActions', 'getPrivacyModelAssets', 'getPrivacyModelCreations'})
             account_scoped_supply.update({'applyPrivacyExecution', 'applyPrivacyExecutionForHandler', 'getMediaTask', 'proposePrivacyExecutionForHandler', 'listPrivacyExecutionsForHandler', 'listPrivacyExecutions', 'reviewPrivacyExecution', 'exportPrivacyData', 'proposePrivacyExecution'})
             account_scoped_supply.update({'reviewMediaTask', 'getMediaTaskForReview'})
-            account_scoped_supply.update({'getPrivacyRequest', 'startPrivacyRequest', 'reviewPrivacyResponse', 'downloadPrivacyResponseFile', 'createPrivacyRequest', 'savePrivacyPreferences', 'getPrivacyPreferences', 'getPrivacyRequestForHandler', 'proposePrivacyResponse', 'listPrivacyRequestsForHandler', 'getPrivacyResponseHistory', 'reopenPrivacyRequest', 'listPrivacyRequests'})
+            personal_collection_ops.update({'getPersonalUsage','reportPersonalUsage','acknowledgePersonalRest'})
+            account_scoped_supply.update({'getConsumerRiskStatus','listConsumerRiskRules','createConsumerRiskRule','reviewConsumerRiskRule'})
+            account_scoped_supply.update({'listPrivacyExecutionPolicyOptions','listOperationsPrivacyExecutionPolicyOptions','listPrivacyRetentionPolicyOptions','listPrivacyFileOptions','downloadPrivacyOriginalFile','getPrivacyRequest', 'startPrivacyRequest', 'reviewPrivacyResponse', 'downloadPrivacyResponseFile','downloadPrivacyOperationEvidence', 'createPrivacyRequest', 'savePrivacyPreferences', 'getPrivacyPreferences', 'getPrivacyRequestForHandler', 'proposePrivacyResponse', 'listPrivacyRequestsForHandler', 'getPrivacyResponseHistory', 'reopenPrivacyRequest', 'listPrivacyRequests'})
+            # Buyer rank creation is operator-scoped; historical/index reads are account-scoped.
+            account_scoped_supply.update({'engagementBuyerRankingSnapshot', 'engagementBuyerRankingIndex', 'engagementBuyerRanking'})
             account_scoped_supply.update({'reviewProjectIncomeAgreement','controlCommercialConversation', 'engagementProposeTie', 'engagementQueue', 'engagementCompetitionResult', 'listAuditionSupplements', 'engagementInteraction', 'listCommercialMessages', 'engagementRead', 'readCommercialMessage', 'engagementSyncGrowth', 'engagementReviewTie', 'engagementBuyerCityRank', 'engagementReviewRule', 'reviewAuditionSupplementRefund', 'engagementFinalize', 'engagementRankings', 'engagementExposures', 'engagementReviewRewardStock', 'engagementModerate', 'engagementCreateRule', 'engagementRedeemReward', 'engagementReferralSync', 'engagementExcludeOrder', 'engagementVoteReview', 'engagementCompetition', 'downloadCommercialMessageFile', 'getCommercialContacts', 'engagementRankingSnapshot', 'reviewAuditionSupplement', 'engagementReviewCandidate', 'engagementRankingIndex', 'sendCommercialMessage', 'moderateCommercialMessage', 'engagementCompetitions', 'downloadEngagementListen', 'engagementJudge', 'engagementResolveAppeal', 'engagementReviewCompetition'})
             account_scoped_supply.update({'cocreationDownloadReviewFile', 'cocreationReviewCase', 'cocreationClose', 'cocreationQueue', 'cocreationReviewSnippet', 'cocreationRules', 'cocreationCreateRule', 'cocreationCases', 'cocreationRoom', 'cocreationReviewRule'})
             account_scoped_supply.update({'reviewParticipationAgreement', 'getParticipationProgress'})
             account_scoped_supply.update({'redemptionExposures', 'redemptionCatalog', 'redemptionEvidence', 'redemptionReviewPool', 'redemptionRetirePool', 'redemptionPools', 'redemptionPool', 'redemptionProposeDelivery', 'redemptionReviewStock', 'redemptionReviewDelivery', 'redemptionQueue', 'redemptionReviewRemedy', 'redemptionFinish'})
+            account_scoped_supply.add('redemptionDeliveryEvidenceOptions')
+            account_scoped_supply.update({'decideGuardianRecordForOperator', 'getInfringementCaseForOperator', 'listGuardianRecords', 'listInfringementCasesForOperator', 'getGuardianRecordForOperator', 'requestReviewedGuardianRefund', 'inviteGuardianLink', 'listGuardianRecordsForOperator', 'reviewPrivacyClosureClock', 'createGuardianRefundRequest', 'downloadInfringementEvidenceForOperator', 'getGuardianRecord', 'listPrivacyClosureClocks', 'createGuardianSpendingConsent', 'getGuardianUsage', 'decideGuardianRecord', 'createGuardianUsageSession', 'createGuardianPrivacyRequest', 'proposePrivacyClosureClock', 'getPrivacyClosureClock', 'actOnInfringementCaseForOperator', 'getPrivacyClosureClockForOperator', 'updateGuardianControls', 'getGuardianInformation'})
+            account_scoped_supply.update({'listGuardianSuitableContent','downloadGuardianSuitablePreview'})
+            account_scoped_supply.update({'importDailyReconciliationStatement', 'recordDailyReconciliationManualEvidence', 'createDailyReconciliation', 'getDailyReconciliationHistory', 'reviewDailyReconciliation', 'reopenDailyReconciliation', 'getDailyReconciliation', 'downloadDailyReconciliationEvidence', 'listDailyReconciliationFacts', 'compareDailyReconciliation', 'listDailyReconciliations'})
+            account_scoped_supply.add('getOperatorInvoiceCommandResult')
+            account_scoped_supply.update({'getPrivacyTransactionCopyForOperations', 'exportPrivacyDataForOperations', 'getPrivacyAccountCopyForOperations', 'getPrivacyStoryCopyForOperations', 'getPrivacyCopyOptionsForOperations'})
+            account_scoped_supply.add('downloadAuditionDisputeEvidence')
+            account_scoped_supply.add('searchAuditionsByDistance')
+            account_scoped_supply.update({'listCommercialMessageRisk','listAuditionMessageRisk'})
+            catalog_operations={'createProductCatalogRecord', 'reviewProductCatalogRecord', 'getProductCatalogRecord', 'withdrawProductCatalogRecord', 'getPublishedProductCatalog', 'reviseProductCatalogRecord', 'listProductCatalogRecords', 'listPublishedProductCatalog'}
+            account_scoped_supply.update(catalog_operations)
+            if op['operationId'] in catalog_operations:
+                check('X-Acting-Party' not in headers, 'Catalog account/operator identity: '+path)
+                if op['operationId'] in {'reviseProductCatalogRecord', 'withdrawProductCatalogRecord', 'reviewProductCatalogRecord'}:
+                    check(headers.get('If-Match',{}).get('required') is True, 'Catalog mutation version: '+path)
+
+            account_scoped_supply.update({'listNoticeCaseQuoteOptions','assignNoticeCaseSupport','listNoticeAssignmentOptions','listNoticeAssignmentHistory'})
+            account_scoped_supply.update({'listInvoiceRequestsForOperator', 'downloadInvoiceDocumentForOperator', 'listInvoiceDocumentsForOperator', 'downloadInvoiceEvidenceForOperator', 'listInvoiceHistoryForOperator', 'actOnInvoiceForOperator', 'getInvoiceRequestForOperator'})
+            account_scoped_supply.update({'actOnSupportTicketForSupport', 'downloadSupportEvidenceForSupport', 'listSupportHistoryForSupport', 'listSupportTicketsForSupport', 'getSupportTicketForSupport'})
             if op['operationId'] in customization_account_scopes:
                 check(op.get('x-actor-scope') == customization_account_scopes[op['operationId']],
                       'Customization actor scope: '+path)
@@ -171,8 +231,11 @@ def validate(runtime_fixtures=None):
                 else:
                     check('X-Acting-Party' not in headers, 'Customization account-scoped action: '+path)
             if op['operationId'] in account_scoped_supply:
-                check(op.get('x-actor-scope') == 'ACCOUNT_OR_AUTHORIZED_REVIEWER', 'Supply actor scope: '+path)
-            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks | set(customization_account_scopes) and path not in {
+                expected_scope = 'ACCOUNT_SELF' if op['operationId'] in {'exportPrivacyData','getPrivacyCopyOptions','downloadPrivacyCopyFile','getPrivacyStoryCopy','getPrivacyTransactionCopy','getPrivacyAccountCopy'} else 'ACCOUNT_OR_AUTHORIZED_REVIEWER'
+                check(op.get('x-actor-scope') == expected_scope, 'Supply actor scope: '+path)
+            if op['operationId'] in personal_collection_ops | {'getMyPartyAccess'}:
+                check(op.get('x-actor-scope') == 'ACCOUNT' and 'X-Acting-Party' not in headers, 'Personal collection scope: '+path)
+            if path.startswith('/api/v1/') and op['operationId'] not in account_scoped_supply | provider_callbacks | set(customization_account_scopes) | personal_collection_ops | {'getMyPartyAccess'} and path not in {
                     '/api/v1/auth/sms-challenges','/api/v1/auth/sessions','/api/v1/me',
                     '/api/v1/me/parties','/api/v1/identity-verifications/current',
                     '/api/v1/auth/sessions/current','/api/v1/organizations','/api/v1/me/invitations'}:
@@ -189,9 +252,13 @@ def validate(runtime_fixtures=None):
             for code, response in op['responses'].items():
                 response = resolve(spec,response['$ref']) if '$ref' in response else response
                 check('X-Request-Id' in response.get('headers',{}), f'Request correlation: {path} {code}')
-                if op['operationId'] in {'downloadPrivacyResponseFile','redemptionEvidence','cocreationDownloadReviewFile','cocreationDownloadMaterial','cocreationDownloadSnippet','downloadEngagementReward','downloadEngagementListen','downloadCommercialMessageFile','downloadAuditionMaterial','downloadNoticeMaterial','downloadStockPreview','downloadStockReviewFile','downloadStockEvidence','downloadPurchasedStock','downloadCustomizationCaseEvidence','downloadArtistAsset','downloadArtistReviewAsset','downloadArtistPublicPreview','downloadSupplyAsset','downloadLicenseEvidence','downloadTradeEvidence','downloadManualSampleOwnedContent','downloadProductionContent','downloadProductionEvidence','downloadProjectEvidence','downloadGigEvidence','downloadFinanceEvidence'} and code=='200':
-                    check(response['content'].get('application/octet-stream',response['content'].get('audio/*',{}))['schema']=={'type':'string','format':'binary'}, 'Private file binary response')
+                if op['operationId'] in {'downloadRechargeRefundEvidence','downloadPrivacyCopyFile','downloadDailyReconciliationEvidence','downloadGuardianSuitablePreview','downloadInfringementEvidence','downloadInfringementEvidenceForOperator','downloadInvoiceEvidence','downloadInvoiceDocument','downloadInvoiceEvidenceForOperator','downloadInvoiceDocumentForOperator','downloadSupportEvidence','downloadSupportEvidenceForSupport','downloadDirectoryMaterial','downloadCustomizationAttachment','downloadPrivacyOriginalFile','downloadPrivacyResponseFile','downloadPrivacyOperationEvidence','redemptionEvidence','cocreationDownloadReviewFile','cocreationDownloadMaterial','cocreationDownloadSnippet','downloadEngagementReward','downloadEngagementListen','downloadCommercialMessageFile','downloadAuditionMaterial','downloadAuditionDisputeEvidence','downloadNoticeMaterial','downloadStockPreview','downloadStockReviewFile','downloadStockEvidence','downloadPurchasedStock','downloadProductionStoryAttachment','downloadCustomizationCaseEvidence','downloadArtistAsset','downloadArtistReviewAsset','downloadArtistPublicPreview','downloadSupplyAsset','downloadLicenseEvidence','downloadIPProcurementEvidence','downloadTradeEvidence','downloadManualSampleOwnedContent','downloadProductionContent','downloadProductionEvidence','downloadProjectEvidence','downloadGigEvidence','downloadFinanceEvidence'} and code=='200':
+                    check(response['content'].get('application/octet-stream',response['content'].get('audio/*',response['content'].get('video/*',{})))['schema']=={'type':'string','format':'binary'}, 'Private file binary response')
                     check('Cache-Control' in response.get('headers',{}), 'Private file no-store declared')
+                    continue
+                if op['operationId'] in {'downloadStockCover','downloadOrganizationCover'} and code=='200':
+                    check(response['content']['image/jpeg']['schema']=={'type':'string','format':'binary'}, 'Stock cover binary response')
+                    check('Cache-Control' in response.get('headers',{}), 'Stock cover no-store declared')
                     continue
                 if op['operationId']=='downloadBusinessReport' and code=='200':
                     check(response['content']['text/csv']['schema']=={'type':'string','format':'binary'}, 'Report CSV response')
@@ -225,6 +292,10 @@ def validate(runtime_fixtures=None):
               'tools':{p:version(p) for p in ['openapi-spec-validator','jsonschema','PyYAML']},
               'network_during_validation':'DISABLED','runtime_tests':'NOT_RUN',
               'limits':'Schema and declared protocol only. Runtime permissions, SMS/payment, DB transactions, idempotency races and client SDK generation remain unverified.'}
+    if isinstance(runtime_fixtures, list):
+        report['runtime_files'] = runtime_reports
+        report['common_checks'] = len(checks) - (runtime_check_end-runtime_check_start)
+        report['common_failures'] = failures[:runtime_failure_start] + failures[runtime_failure_end:]
     return report
 
 

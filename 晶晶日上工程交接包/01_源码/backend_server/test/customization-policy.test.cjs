@@ -33,16 +33,14 @@ test('text bounds count Unicode characters while the overall saved answers have 
  const many={...t,fields:Array.from({length:5},(_,i)=>({key:'text_'+i,label:'合成'+i,type:'TEXT',required:false,max_length:12000}))};
  assert.throws(()=>p.normalizeAnswers(many,Object.fromEntries(many.fields.map(f=>[f.key,'汉'.repeat(12000)]))),e=>e.code==='CUSTOMIZATION_VALIDATION_FAILED');
 });
-test('required private materials cannot be replaced by a public URL, a raw file identifier or a fake successful upload',()=>{
- const t={...template(),fields:[...template().fields,{key:'portrait',label:'私有授权照片',type:'PRIVATE_ATTACHMENT',required:true}]};
- assert.equal(p.availability(t).submission_available,false);
- rejects(()=>p.normalizeAnswers(t,{portrait:'https://example.invalid/public.jpg'}),'portrait','ATTACHMENT_NOT_SUPPORTED');
- rejects(()=>p.normalizeAnswers(t,{portrait:'00000000-0000-0000-0000-000000000000'}),'portrait','ATTACHMENT_NOT_SUPPORTED');
- assert.throws(()=>p.validateSubmission(t,{story:'合成故事',tone:'温暖'}),e=>e.code==='CUSTOMIZATION_VALIDATION_FAILED'&&e.details.some(x=>x.reason==='ATTACHMENT_SUBMISSION_NOT_READY'));
- const optional={...t,fields:t.fields.map(f=>f.key==='portrait'?{...f,required:false}:f)};
- assert.equal(p.availability(optional).submission_available,true);
- assert.doesNotThrow(()=>p.validateSubmission(optional,{story:'合成故事',tone:'温暖'}));
+test('attachment answers accept only identifiers and required fields stay mandatory; repository checks ownership',()=>{
+ const t={...template(),fields:[...template().fields,{key:'portrait',label:'私有参考材料',type:'PRIVATE_ATTACHMENT',required:true}]};
+ assert.equal(p.availability(t).submission_available,true);
+ rejects(()=>p.normalizeAnswers(t,{portrait:'https://example.invalid/public.jpg'}),'portrait','INVALID_ATTACHMENT_REFERENCE');
+ rejects(()=>p.validateSubmission(t,{story:'合成故事',tone:'温暖'}),'portrait','REQUIRED');
+ assert.doesNotThrow(()=>p.validateSubmission(t,{story:'合成故事',tone:'温暖',portrait:require('node:crypto').randomUUID()}));
 });
+
 test('published template validation rejects ambiguous field keys, unknown types and duplicate choices',()=>{
  const t=template();assert.deepEqual(p.normalizeTemplate(t),t);
  for(const fields of [[],[t.fields[0],t.fields[0]],[{...t.fields[0],key:'__proto__'}],[{...t.fields[0],key:'NotSnake'}],[{...t.fields[0],type:'PRICE'}],[{...t.fields[1],options:['重复','重复']}],[{...t.fields[0],required:'yes'}]])assert.throws(()=>p.normalizeTemplate({...t,fields}));

@@ -1,0 +1,948 @@
+{
+  "result": "PASS",
+  "contract_version": "0.31.76-rc.2",
+  "contract_sha256": "8c25153b99b7b62133f08589fd966cee105be12704e43960fef81820883b3a2b",
+  "openapi_version": "3.1.1",
+  "operations": 681,
+  "schemas": 855,
+  "runtime_response_cases": 8644,
+  "valid_fixtures": 308,
+  "negative_cases": 252,
+  "checks": 37107,
+  "failures": [],
+  "python": "3.10.11",
+  "tools": {
+    "openapi-spec-validator": "0.9.0",
+    "jsonschema": "4.26.0",
+    "PyYAML": "6.0.3"
+  },
+  "network_during_validation": "DISABLED",
+  "runtime_tests": "NOT_RUN",
+  "limits": "Schema and declared protocol only. Runtime permissions, SMS/payment, DB transactions, idempotency races and client SDK generation remain unverified.",
+  "runtime_files": [
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/account-api-http-fixtures.json",
+      "sha256": "8a56aeccfd0cb8d930553f3cfd8410783e9ddb8bf2716ad8e3b3f37b43f8aee3",
+      "runtime_response_cases": 46,
+      "checks": 46,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/account-api-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/contract-six-http-fixtures.json",
+      "sha256": "c3c1f3be3b54ff3179c9562a1c10e114c96b97aea1e98fa0c21363dd8b3bc31f",
+      "runtime_response_cases": 72,
+      "checks": 144,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/contract-six-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/daily-reconciliation-http-fixtures.json",
+      "sha256": "f182b4226fbbb5919fa4cbe92aef75ba2d8fc9714f0af91c2dbb6574d807a321",
+      "runtime_response_cases": 20,
+      "checks": 40,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/daily-reconciliation-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/consumer-controls-http-fixtures.json",
+      "sha256": "f7590d36e5df63486b485209f91592e7e7f9522bc418145495b239874afff3e2",
+      "runtime_response_cases": 17,
+      "checks": 34,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/consumer-controls-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/stock-http-fixtures.json",
+      "sha256": "7b337964c0488ffbab30a8e70e2327f533e1e26a33917dcb381931916a7af040",
+      "runtime_response_cases": 219,
+      "checks": 438,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/stock-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/notices-http-fixtures.json",
+      "sha256": "8efba10bee8c0dab5a4cf2422bb4555769e0c0942e68e3e4b6184e4de64ff3db",
+      "runtime_response_cases": 120,
+      "checks": 240,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/notices-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/auditions-http-fixtures.json",
+      "sha256": "c831bfa9ca1e56ec6192cda54f29ad13f48f22ec4b2bff9790411878602a1ac3",
+      "runtime_response_cases": 275,
+      "checks": 550,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/auditions-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/wallet-http-fixtures.json",
+      "sha256": "561e876501d7df31369d9eb1fd9f7ee0a7abefa1b97e348cf76caac06b281592",
+      "runtime_response_cases": 29,
+      "checks": 58,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/wallet-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/engagement-http-fixtures.json",
+      "sha256": "85cd87aa1412517498b80eb0f8272d240036fb0245a399532e2adb21f94309c4",
+      "runtime_response_cases": 256,
+      "checks": 512,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/engagement-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/artists-http-fixtures.json",
+      "sha256": "fc8ffce058128c85f725c8b654eead4133f4b6ba17032109d8bdf245ab5f593e",
+      "runtime_response_cases": 171,
+      "checks": 342,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/artists-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/artist-contract-http-fixtures.json",
+      "sha256": "8d924208d08bfdfdd1ee536cfc7c79a7a1e6337a4631b502512d28368af0665a",
+      "runtime_response_cases": 117,
+      "checks": 234,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/artist-contract-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/customization-delivery-http-fixtures.json",
+      "sha256": "3743e5b9073053b8c9c08b079e51e1118b6c3d1bce2e3acb7af1d1a8643b3fc9",
+      "runtime_response_cases": 625,
+      "checks": 1250,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/customization-delivery-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/customization-http-fixtures.json",
+      "sha256": "d243a3589cf9f284fa1a580677f606aa72d78fad00e2c8ee25e8bcafb75ac879",
+      "runtime_response_cases": 218,
+      "checks": 218,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/customization-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/customization-quote-http-fixtures.json",
+      "sha256": "4b5201200c999c223e86ca333ef6e9ed3e3b50c642c049e94528a8592ecdab76",
+      "runtime_response_cases": 97,
+      "checks": 97,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/customization-quote-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/marketplace-http-fixtures.json",
+      "sha256": "dcc5d7f9350b5a28b55edfec55dc556a357757210f1c7b97347faf2b521d7291",
+      "runtime_response_cases": 52,
+      "checks": 52,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/marketplace-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/governance-http-fixtures.json",
+      "sha256": "a77014b132222c139e9e4e7d380fa00fa4d0c238ed75592f50eac8df6a16365d",
+      "runtime_response_cases": 3,
+      "checks": 3,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/governance-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/governance-service-http-fixtures.json",
+      "sha256": "1f61819917b2a821e1d0630a5c554f26f6acb9b3cb30214a4cfb836da44c9b6a",
+      "runtime_response_cases": 1,
+      "checks": 1,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/governance-service-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/supply-http-fixtures.json",
+      "sha256": "12c675c70343de4768fd5d0428b15caaa5559f885930522ed6b731b54f225618",
+      "runtime_response_cases": 26,
+      "checks": 26,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/supply-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/licensing-http-fixtures.json",
+      "sha256": "100a42e70a12c062fe462074cc8b184920234c32c1a84e431d336b5df6788b00",
+      "runtime_response_cases": 40,
+      "checks": 40,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/licensing-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/manual-sample-copyright-http-fixtures.json",
+      "sha256": "b836b6de53b372e0fe9525a4cb8f88c75c76fa0a500ea0d5877699bda4ac8db7",
+      "runtime_response_cases": 115,
+      "checks": 230,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/manual-sample-copyright-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/copyright-http-fixtures.json",
+      "sha256": "d0e6a9d9adf955a1c1c396a99900deb2d18c8da83e542bb222a8aa6c7e2ff867",
+      "runtime_response_cases": 12,
+      "checks": 24,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/copyright-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/ip-procurement-http-fixtures.json",
+      "sha256": "c59b4f198c45f4bd4b78e15fb8f03b77a751bf639fc86ecf7f39cadd78ba0bb4",
+      "runtime_response_cases": 33,
+      "checks": 33,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/ip-procurement-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/trade-http-fixtures.json",
+      "sha256": "533f579f0d099223129be30aae1b29058f08ec3cf9ab5689da3e7ce7994ec80a",
+      "runtime_response_cases": 52,
+      "checks": 52,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/trade-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/production-http-fixtures.json",
+      "sha256": "5e7884d9172b1cf9900cc6e47a20c756b6732166fb400961332f567692681c84",
+      "runtime_response_cases": 82,
+      "checks": 82,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/production-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/projects-http-fixtures.json",
+      "sha256": "88063b51479de9b1d5df818cfefcc7c25aa4dbce7bf0c03d9fbf9904e78de98d",
+      "runtime_response_cases": 133,
+      "checks": 133,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/projects-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/gigs-http-fixtures.json",
+      "sha256": "24317017240ec921b15b16f54e0d3de115c9074fdbe125b95f5a512a1b27cff1",
+      "runtime_response_cases": 92,
+      "checks": 127,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/gigs-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/gigs-contract-http-fixtures.json",
+      "sha256": "7d260efeccb00effe5c2563b5754fbaa5a40ad948a010299ecd8160297844e3b",
+      "runtime_response_cases": 91,
+      "checks": 126,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/gigs-contract-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/marketplace-contract-http-fixtures.json",
+      "sha256": "ad461a583e2869dea8568da2c898468f27948daadbd04527a8557866647c7650",
+      "runtime_response_cases": 10,
+      "checks": 10,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/marketplace-contract-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/finance-http-fixtures.json",
+      "sha256": "de7e197b7f251abc15f3b00ffc2bc3d178562e4b20ec7d6f1e91760eda6b08a4",
+      "runtime_response_cases": 219,
+      "checks": 219,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/finance-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/operations-http-fixtures.json",
+      "sha256": "809324286c796c0a1bc0a7c90cc92ab4b57198015de9a3391c78da941f1c6c29",
+      "runtime_response_cases": 91,
+      "checks": 91,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/operations-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/cocreation-http-fixtures.json",
+      "sha256": "04f88cb364a6d5a48617270f7bf2cdf13f8fbd021cfe7d561eb50738d1f61f79",
+      "runtime_response_cases": 540,
+      "checks": 1080,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/cocreation-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/participation-http-fixtures.json",
+      "sha256": "f6f308879556a9681df47b1fbd49ad8f8e3e4ec56be266837d18d756d7cfe326",
+      "runtime_response_cases": 124,
+      "checks": 248,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/participation-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/redemption-http-fixtures.json",
+      "sha256": "458372776931f651241bf7261b3c61653c52861a32680c55151aceea9304ff34",
+      "runtime_response_cases": 117,
+      "checks": 234,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/redemption-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/redemption-delivery-evidence-http.json",
+      "sha256": "fc3010a9ea8d5cca3cbc8e268c82e11c622ef3438341ffb51b5a1824d0bc9c95",
+      "runtime_response_cases": 41,
+      "checks": 82,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/redemption-delivery-evidence-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/redemption-checkout-http-fixtures.json",
+      "sha256": "e048b1f9d0b8c7007bdbf140e6a6051b2a54807a7fe368aad2cd18cea6965993",
+      "runtime_response_cases": 118,
+      "checks": 236,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/redemption-checkout-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/redemption-lottery-http-fixtures.json",
+      "sha256": "9637a9cda0b879ba7194fd37bc84359d55140ed289b83433546f4228a8015c57",
+      "runtime_response_cases": 101,
+      "checks": 202,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/redemption-lottery-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/manual-sample-legacy-http-fixtures.json",
+      "sha256": "61a5c8b7eaacf4fed1983b6255bda0c8d1ca2988109b7045d045c90494101529",
+      "runtime_response_cases": 115,
+      "checks": 230,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/manual-sample-legacy-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/script-intake-http-fixtures.json",
+      "sha256": "d6c15d5a7ab37cf1a661d205a84981fd2571d7a60d7de85cf3d52025417b2960",
+      "runtime_response_cases": 10,
+      "checks": 20,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/script-intake-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/project-income-http-fixtures.json",
+      "sha256": "c5588ed6292c1a6e7f9d929084b14137189f7c2597c07baff43aaf83b05bbe10",
+      "runtime_response_cases": 9,
+      "checks": 18,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/project-income-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/participation-amendment-http-fixtures.json",
+      "sha256": "0e4e5a15bd9a25e6e3559341dccb6ef9c792e88ab341ce74588d65d01e563307",
+      "runtime_response_cases": 113,
+      "checks": 226,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/participation-amendment-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/fixed-income-release-http-fixtures.json",
+      "sha256": "1ad70ff3ce6f669fdcfbf8f8d9c972aaf99e6c59dddf71ec7a5c7ec9f6a43595",
+      "runtime_response_cases": 109,
+      "checks": 218,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/fixed-income-release-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/consumer-risk-http-fixtures.json",
+      "sha256": "6c44021e4c800e3029a37b787d0723928dba47904c0ea2a651a13e3ef3096a57",
+      "runtime_response_cases": 14,
+      "checks": 28,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/consumer-risk-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/usage-http-fixtures.json",
+      "sha256": "0b7c5ff279f9d606606dd0764b2670f483965c64e139affaebb22d2771b2c61a",
+      "runtime_response_cases": 28,
+      "checks": 56,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/usage-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-http-fixtures.json",
+      "sha256": "4d1427f1dbd9f1272fc7a5f100ddb7e9ac025cdcce0d1c86178b0bca6107cecc",
+      "runtime_response_cases": 57,
+      "checks": 114,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-20261106/privacy-copy-http.json",
+      "sha256": "5afb0b67495c3549bc3417af2c478bdeef063427bd29dc74ac1b6f001a962504",
+      "runtime_response_cases": 22,
+      "checks": 44,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-20261106/privacy-copy-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-story-copy-20261106/http.json",
+      "sha256": "a493ef51577cf6791b213a69a568b1aaeadf9b6f7d6cf889b92d907aa20ab7d6",
+      "runtime_response_cases": 22,
+      "checks": 44,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-story-copy-20261106/http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-transaction-copy-20261106/http.json",
+      "sha256": "ec0a8a94b15b12c3f60212d08bbf944a1ff999e72522487996c1602abb540186",
+      "runtime_response_cases": 61,
+      "checks": 122,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-transaction-copy-20261106/http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261106/recommendations.json",
+      "sha256": "061e43447155abd8651cb5f4c180897075e62bc67b5118898ce0eaa0bf0d42e6",
+      "runtime_response_cases": 18,
+      "checks": 36,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261106/recommendations.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261106/organization-merchandise-batch.json",
+      "sha256": "cd8b2229d921b617110aaaf97a97747442bbc287e9d811976a8986276cad59b6",
+      "runtime_response_cases": 4,
+      "checks": 8,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261106/organization-merchandise-batch.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261106/organization-batch.json",
+      "sha256": "a7f25736c84cc7258a7c627362b25653f034aa5ea7f55668d0801c1ffcd3c1ef",
+      "runtime_response_cases": 22,
+      "checks": 44,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261106/organization-batch.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261106/privacy-account-copy.json",
+      "sha256": "b44acdecd45d06ec06a68f52d70c0128f4b082f9d7f2fefd4ff22d3c04d5551d",
+      "runtime_response_cases": 18,
+      "checks": 36,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261106/privacy-account-copy.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-agreement-copy-20261106/http.json",
+      "sha256": "7d16871e5cd216a872f4c2d9d86e8a732fe5599ba073426fc5acb46f10ec5cb1",
+      "runtime_response_cases": 28,
+      "checks": 56,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-agreement-copy-20261106/http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-participation-copy-20261109/http.json",
+      "sha256": "0a68c41cfb0fbdb8d905a7e17db5fcbbb8358c4c8b2acad3b547a4e332e48198",
+      "runtime_response_cases": 75,
+      "checks": 150,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-participation-copy-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-benefit-copy-20261109/http.json",
+      "sha256": "f4eba7242dff735bf04f9bffe6c6a6bc37f140ede9d1c9734ca3d7a12a820306",
+      "runtime_response_cases": 65,
+      "checks": 130,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-benefit-copy-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-guardian-copy-20261109/http.json",
+      "sha256": "51baa0d338db6978442847b7a491c9833826219a691bdec2a496505251939a02",
+      "runtime_response_cases": 78,
+      "checks": 156,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-guardian-copy-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-response-delivery-20261109/http.json",
+      "sha256": "4cbcdf82dff81295f0eb8e4c01cc5d5b12c0c5266855bf4dfeeef25fa61be04b",
+      "runtime_response_cases": 135,
+      "checks": 270,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-response-delivery-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-activity-copy-20261109/http.json",
+      "sha256": "6c3af29c6a50c6ca05ba43c74e6d02445975e0471b76cd3968b77efe73cde331",
+      "runtime_response_cases": 75,
+      "checks": 150,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-activity-copy-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261109/http.json",
+      "sha256": "548b17cfebc7a610c28cb5e1ef5a0982f20697f2cc03c32640043d94ff5797b7",
+      "runtime_response_cases": 35,
+      "checks": 70,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261109/http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261109/matches-STOCK.json",
+      "sha256": "eb050b74453c55cff2047ad136908307f84029a653b3f399aaea9fc8b72dcf7d",
+      "runtime_response_cases": 23,
+      "checks": 46,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261109/matches-STOCK.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261109/matches-AUDITION.json",
+      "sha256": "4406f41c9ed44ebb46ea91d89cd0c69b268f8f022d1e730f2dd9fc9d260db297",
+      "runtime_response_cases": 18,
+      "checks": 36,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261109/matches-AUDITION.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261109/matches-NOTICE.json",
+      "sha256": "8254b9fa837729c45794fb7da710272a3cdf0736fd8d476d108da970115a5098",
+      "runtime_response_cases": 20,
+      "checks": 40,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261109/matches-NOTICE.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261109/matches-ARTIST.json",
+      "sha256": "c96f3a0500ec944cb1f4e7f386baddf8dc868c47ead2e82109457602ccff6a55",
+      "runtime_response_cases": 17,
+      "checks": 34,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-independent-20261109/matches-ARTIST.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-security-copy-20261106/http.json",
+      "sha256": "1106a8879eab563354719eb7665ff80e9d491f1f9d62e097387db9c48882a2b9",
+      "runtime_response_cases": 50,
+      "checks": 100,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-security-copy-20261106/http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-security-copy-20261106/ranking-http.json",
+      "sha256": "b65eea6e56140995f25c5e83fd62d0ee73a7a1d54b8cf41c69a0bcc6e1cf1123",
+      "runtime_response_cases": 10,
+      "checks": 20,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/prelaunch-security-copy-20261106/ranking-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-actions-http-fixtures.json",
+      "sha256": "87a1672724f0138062c81b5472c9a9a0ba4c668180fc59ed4437d6aebedfc26f",
+      "runtime_response_cases": 58,
+      "checks": 116,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-actions-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/seven-privacy-http.json",
+      "sha256": "2a4afed9f2292c8d02de3f53e044b64af2fec5239d2b1f9c443d771b8a7ab4dd",
+      "runtime_response_cases": 13,
+      "checks": 26,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/seven-privacy-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/seven-media-http.json",
+      "sha256": "82453a8fc787a1b9ab0bc736f0015ab9107266e76d9a2628f28e65a596976cf4",
+      "runtime_response_cases": 5,
+      "checks": 10,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/seven-media-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/discovery-http-fixtures.json",
+      "sha256": "2546093ff793dd824b1b54aa2032f6eee90e35e51162b01af782c719a6e48f0c",
+      "runtime_response_cases": 44,
+      "checks": 88,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/discovery-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/wallet-refund-entitlement-fixtures.json",
+      "sha256": "d8eb860fe37f584770ab305b035639e4814d1c2b84beda0bfc492dec6fa10113",
+      "runtime_response_cases": 77,
+      "checks": 154,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/wallet-refund-entitlement-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-business-copy-20261110/COMMERCIAL.json",
+      "sha256": "2c26129a156bbe5b975031a4e5f1b6ec7dc2018f412d9d344b6307fef9f3901b",
+      "runtime_response_cases": 30,
+      "checks": 60,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-business-copy-20261110/COMMERCIAL.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-business-copy-20261110/AUDITION.json",
+      "sha256": "2e80002b4e03e40cc5831b3bd05504775b75ddf1975fc5099e7e4ff8c7cb550e",
+      "runtime_response_cases": 29,
+      "checks": 58,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-business-copy-20261110/AUDITION.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/phone-change-http-fixtures.json",
+      "sha256": "b81bf08a543484a638cd0fbdc4d7fc74bf0ae7c57eea3a6df3e94dfae45681af",
+      "runtime_response_cases": 70,
+      "checks": 140,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/phone-change-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/notices-ordinary-http-fixtures.json",
+      "sha256": "30810d89acacb739c930208854092ffd051ae60cacf38fc6862d07ac296ec83d",
+      "runtime_response_cases": 165,
+      "checks": 330,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/notices-ordinary-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/contract-cutover-http-fixtures.json",
+      "sha256": "779fa154ac8988c6c6a7110662f61c54a60af2296e521498fb4d8b11837548f5",
+      "runtime_response_cases": 14,
+      "checks": 28,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/contract-cutover-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/recharge-refund-http-fixtures.json",
+      "sha256": "b8b3ab86e45e1abc012736ad3da86a44a047834e9364d758fda71bf52f6ca6f9",
+      "runtime_response_cases": 3,
+      "checks": 6,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/recharge-refund-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/recharge-refund-api-http.json",
+      "sha256": "4ca2bd59bf29f693289a8f11d1dc01deaf081ba7076c5b618e49180d33b91d1c",
+      "runtime_response_cases": 77,
+      "checks": 154,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/recharge-refund-api-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/reward-remedy-lifecycle-http.json",
+      "sha256": "1e90cb40821bc68fa2ec397eb3681154fdda39c89e41cb222969dbba16768978",
+      "runtime_response_cases": 82,
+      "checks": 164,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/reward-remedy-lifecycle-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/candidate-withdrawal-http.json",
+      "sha256": "c4455910a3757faa7e3d74b74403aa5580d7eeaf0033d6a41e9d4383647a75cd",
+      "runtime_response_cases": 61,
+      "checks": 122,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/candidate-withdrawal-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/cocreation-modern-journey-fixtures.json",
+      "sha256": "e49f3193d15c33bc31cbb0d895e72101a7a6ab3840cfde195f898821588c6de0",
+      "runtime_response_cases": 531,
+      "checks": 1062,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/cocreation-modern-journey-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/stock-media-http-fixtures.json",
+      "sha256": "41dee3a71b3e1089db825abf2534f1db3347cfde4480bac25d8d2fe9ba22db17",
+      "runtime_response_cases": 17,
+      "checks": 34,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/stock-media-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/notices-revisions-http-fixtures.json",
+      "sha256": "f842cb433e0fc203ec0da96f5ca6802c59b4cf74c75b5305423f3199948d5585",
+      "runtime_response_cases": 81,
+      "checks": 162,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/notices-revisions-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/wallet-cross-period-http-fixtures.json",
+      "sha256": "b4f4fe44841fa71b006a23aaac0d9fc992447dc39dc381e258bc6668848be82f",
+      "runtime_response_cases": 25,
+      "checks": 50,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/wallet-cross-period-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/notices-assignment-http-fixtures.json",
+      "sha256": "fdecde7e54b24e7a593a4b94444dbde782862646b51345db77215504a0357e56",
+      "runtime_response_cases": 56,
+      "checks": 112,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/notices-assignment-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/audition-distance-http-fixtures.json",
+      "sha256": "f16ac3b2cb3b15adb4a7e7f84e8b441c1b226cd4cc71dd11da9907890798fd0a",
+      "runtime_response_cases": 67,
+      "checks": 134,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/audition-distance-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/conversation-risk/COMMERCIAL.json",
+      "sha256": "749eb71d2679e1ed7c74cc5a9bbe891296b749a46b7fb1995d614ecc51952282",
+      "runtime_response_cases": 39,
+      "checks": 78,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/conversation-risk/COMMERCIAL.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/conversation-risk/AUDITION.json",
+      "sha256": "9b32b0d5d05a8b3162b165342ab9ab5304f1fd5da8353ffd52db310961e0c4e0",
+      "runtime_response_cases": 39,
+      "checks": 78,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/conversation-risk/AUDITION.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/commercial-archive-timing.json",
+      "sha256": "d00f4529822c8b04fec7c0c3cea71e79f4371aeaf47444d058c031057f4920f6",
+      "runtime_response_cases": 31,
+      "checks": 62,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/commercial-archive-timing.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/product-catalog-http-fixtures.json",
+      "sha256": "3c2bb3868c0e53b4dad137b37bfb2cf91edf0a06ae6add1bf20da14dd35c3d4d",
+      "runtime_response_cases": 107,
+      "checks": 214,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/product-catalog-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/mcn-stock-orders-http-fixtures.json",
+      "sha256": "1b1e2c89e50a34e707e6faa151ab70e9800ea741ab2afd75a80112a88f81aec0",
+      "runtime_response_cases": 63,
+      "checks": 126,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/mcn-stock-orders-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/championship-contract-http-fixtures.json",
+      "sha256": "3ac1ec3259f693e407e8f4566d455f5896c358394816097bae77872e9db9f58d",
+      "runtime_response_cases": 67,
+      "checks": 134,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/championship-contract-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/buyer-rank-http-fixtures.json",
+      "sha256": "aaa030166f95275a0736be1fc2e36e49065bb289bd456e1b414dce471c0b47fe",
+      "runtime_response_cases": 55,
+      "checks": 110,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/buyer-rank-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/cast-rights-http-fixtures.json",
+      "sha256": "7d108cb46b58858800fe9028558c34597f2b21435eeaef0d51eb62b6c903c665",
+      "runtime_response_cases": 40,
+      "checks": 80,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/cast-rights-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/story-scope-http-fixtures.json",
+      "sha256": "f45468e821fe83a3dfed3a9904160a60057bffca72362330545c875edeb84a68",
+      "runtime_response_cases": 34,
+      "checks": 68,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/story-scope-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/rank-boundaries-http-fixtures.json",
+      "sha256": "001da40fd1e8423e17757bcee9c1fab5abdd22435ae25c557ae6d1490ab5f518",
+      "runtime_response_cases": 90,
+      "checks": 180,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/rank-boundaries-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/mcn-supplier-http-fixtures.json",
+      "sha256": "3e74dfe217089929b6d158b76f2fcf034928f1d35ee201d2a50b82a790526529",
+      "runtime_response_cases": 61,
+      "checks": 122,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/mcn-supplier-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/recommended-matches-http-fixtures.json",
+      "sha256": "0f56ac4be7b664e70c05e63b7397137c3bacff0352d8eaba154be2a62c7e6158",
+      "runtime_response_cases": 29,
+      "checks": 58,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/recommended-matches-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/buyer-rank-scale-http-fixtures.json",
+      "sha256": "6afb4164c4b48159d2dacaeb29514dd07f071a3f9711dd95ac3adfc47f71e4e5",
+      "runtime_response_cases": 26,
+      "checks": 52,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/buyer-rank-scale-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/moderation-coverage-http-fixtures.json",
+      "sha256": "1de16d5ead0542522a88febcfc9b56333b7cf6d83b8e86b1fbce397984e89a7f",
+      "runtime_response_cases": 7,
+      "checks": 14,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/moderation-coverage-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/audio-moderation-http-fixtures.json",
+      "sha256": "e6b8bcb14a98ade8bc55bd1ae2895d31c6a10e64724b642126d34da4a8c4d7d8",
+      "runtime_response_cases": 7,
+      "checks": 14,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/audio-moderation-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/production-media-http-fixtures.json",
+      "sha256": "b9168c575114a5b36ce509c73ea84aaab1de05756eed55db9efe5a0ebc4ae387",
+      "runtime_response_cases": 107,
+      "checks": 214,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/production-media-http-fixtures.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/referral-audition-refund-http.json",
+      "sha256": "62c9a6a069e4abe6ba562876f513ab3ab95df8af94a4c08cf748d0593ac2a26b",
+      "runtime_response_cases": 31,
+      "checks": 62,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/referral-audition-refund-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-representative-copy-http.json",
+      "sha256": "94b5a9a8674552868d647a9508954cccd214861af0977119489c359cb839e481",
+      "runtime_response_cases": 11,
+      "checks": 22,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-representative-copy-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/audition-representative-http.json",
+      "sha256": "920022f0ddfc2666b22a4422bb8dcc05e503cf3c6dfcf0c360b3c5f01708fbf4",
+      "runtime_response_cases": 51,
+      "checks": 102,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/audition-representative-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/notice-representative-http.json",
+      "sha256": "4a5f4496b83665e65884cc6fee9e29257f05f99b8f60d3ad68618c3fac9d96be",
+      "runtime_response_cases": 50,
+      "checks": 100,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/notice-representative-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/invitation-representative-http.json",
+      "sha256": "a33d8a80d5a9c94d557b9604426f9f6eac3c2cad7bb0d0fbe38289f167510260",
+      "runtime_response_cases": 51,
+      "checks": 102,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/invitation-representative-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/referral-customization-http.json",
+      "sha256": "9d1bba445ca3e2a1c144d23cc68378f8b0c35f5dd006e1ec4387da0b964d63c1",
+      "runtime_response_cases": 68,
+      "checks": 136,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/referral-customization-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/referral-audition-fulfilled-http.json",
+      "sha256": "6080aed41ca760d9a7a9c458529b621e63ac9968ca71cab8bf8c1360dc484829",
+      "runtime_response_cases": 71,
+      "checks": 142,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/referral-audition-fulfilled-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/referral-commercial-fulfilled-http.json",
+      "sha256": "b757b48ee54369764d7e3905214ac335bde3bd6add22b792f0fb78a4fe982b5b",
+      "runtime_response_cases": 81,
+      "checks": 162,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/referral-commercial-fulfilled-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-recovery-copy-http.json",
+      "sha256": "49fac9e22bb846709a8f26fa409dcf4e39a4a9030c5f665119e0f3f34ce0a93a",
+      "runtime_response_cases": 35,
+      "checks": 70,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-recovery-copy-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/customization-representative-http.json",
+      "sha256": "b657be5148e86f35f5e6e00f301cf132efeb51ac25f1ecdc308df7bcd5ec90db",
+      "runtime_response_cases": 70,
+      "checks": 140,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/customization-representative-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/customization-handoff-http.json",
+      "sha256": "fe2e3f656388f8eb620946aa547d6b9d6b87351e5f66fa9bfe4e2974b0b95025",
+      "runtime_response_cases": 96,
+      "checks": 192,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/customization-handoff-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-production-copy-http.json",
+      "sha256": "c2045fb2e5f2769f77863e7c99ad46cbe67b148cd94aa6de03efa158660ebcd1",
+      "runtime_response_cases": 38,
+      "checks": 76,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-production-copy-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/mcn-fulfilled-audition-http.json",
+      "sha256": "1a09fe732cdb7f73495e0837d5b803d55715de6dbb395c59865c43dfea97f42e",
+      "runtime_response_cases": 18,
+      "checks": 36,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/mcn-fulfilled-audition-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/mcn-fulfilled-commercial-http.json",
+      "sha256": "c41709fcaeab30fbcee5b472a601d33d9099ba0e9bf4e6e465ed06bf84a9cb85",
+      "runtime_response_cases": 14,
+      "checks": 28,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/mcn-fulfilled-commercial-http.json"
+    },
+    {
+      "fixtures": ".local/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-feedback-text-http.json",
+      "sha256": "53d8d37deef1a0220a1c0eefb3ae06d6bd5e7304550ac8e1854739f6b90d3345",
+      "runtime_response_cases": 26,
+      "checks": 52,
+      "failures": [],
+      "report": ".local/ci-evidence/pm01-six-domain-review-2026-11-14T08-11-41-750Z/privacy-feedback-text-http.json"
+    }
+  ],
+  "common_checks": 21035,
+  "common_failures": [],
+  "runtime_file_count": 115,
+  "elapsed_seconds": 24.528
+}

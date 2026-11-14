@@ -1,0 +1,108 @@
+[
+  {
+    "id": "ACC-DEL-00.01",
+    "work": "共同起点",
+    "status": "NOT_RUN",
+    "source_expected": "复核头提交、目标分支、CI、祖先关系和机密文件；只合integration。；头或目标变化即停；不得拿预生成merge_commit_sha当实际合并。",
+    "required_cases": [
+      "review"
+    ],
+    "required_surfaces": [
+      "review"
+    ]
+  },
+  {
+    "id": "ACC-DEL-00.02",
+    "work": "单一执行入口",
+    "status": "NOT_RUN",
+    "source_expected": "沿用现有docs/status与docs/tasks/board.json，建立V5完整交付登记。；不得再维护第二个CURRENT真相；旧记录只追加说明。",
+    "required_cases": [
+      "review"
+    ],
+    "required_surfaces": [
+      "review"
+    ]
+  },
+  {
+    "id": "ACC-DEL-00.03",
+    "work": "历史范围映射",
+    "status": "NOT_RUN",
+    "source_expected": "旧REQ60、原型40条、V5正文与专项参数均有去向。；每个“取消/后置”保留来源和历史读路径。",
+    "required_cases": [
+      "review"
+    ],
+    "required_surfaces": [
+      "review"
+    ]
+  },
+  {
+    "id": "ACC-DEL-07.02",
+    "work": "真实收银接线",
+    "status": "NOT_RUN",
+    "source_expected": "调用已确认的渠道产品，回跳后向服务器查单。；取消/超时/未知结果不冒充失败可重扣或成功。",
+    "required_cases": [
+      "normal",
+      "reverse"
+    ],
+    "required_surfaces": [
+      "api"
+    ]
+  },
+  {
+    "id": "ACC-DEL-28.01",
+    "work": "导航和深链",
+    "status": "NOT_RUN",
+    "source_expected": "新五Tab真实接线，表单详情有返回；旧地址有明确映射或禁用说明。；不能仅改标签并继续打开旧项目/作者页。",
+    "required_cases": [
+      "normal",
+      "reverse"
+    ],
+    "required_surfaces": [
+      "app",
+      "web"
+    ]
+  },
+  {
+    "id": "ACC-DEL-28.02",
+    "work": "同步规范测试",
+    "status": "NOT_RUN",
+    "source_expected": "AGENTS导航段、旧图册映射、导航测试和实现说明同批迁移。；禁止删除测试来保住旧假成功。",
+    "required_cases": [
+      "normal",
+      "reverse"
+    ],
+    "required_surfaces": [
+      "app",
+      "web"
+    ]
+  },
+  {
+    "id": "ACC-DEL-29.01",
+    "work": "场景不按页数",
+    "status": "NOT_RUN",
+    "source_expected": "现货/定制/试镜/投稿/共创/积分兑换/退款等端到端。；旧测试绿色不等于V5通过；跳过需明确原因。",
+    "required_cases": [
+      "normal",
+      "reverse"
+    ],
+    "required_surfaces": [
+      "operations"
+    ]
+  },
+  {
+    "id": "TASK-18",
+    "status": "NOT_RUN",
+    "effective_expected": "固定源代码、接口/规则、资料与两端构建摘要；候选版本CI通过；实际备份恢复及回退保留既有订单/反馈；重启不换版本、不延期，访问到期关闭；从交付产物完成冒烟与真实问题归档。",
+    "required_cases": [
+      "candidate_ci",
+      "build_freeze",
+      "backup_restore",
+      "rollback_preserves_orders_and_feedback",
+      "access_expiry",
+      "client_smoke"
+    ],
+    "required_surfaces": [
+      "operations"
+    ]
+  }
+]

@@ -1,0 +1,74 @@
+TAP version 13
+# Subtest: durable recharge refund recovery and guardian delegation in isolated MySQL
+    # Subtest: task insert and case link are atomic; same case scheduling keeps one durable task
+    ok 1 - task insert and case link are atomic; same case scheduling keeps one durable task
+      ---
+      duration_ms: 262.1425
+      type: 'test'
+      ...
+    # Subtest: lost provider response persists UNKNOWN and worker restart only queries the original refund
+    ok 2 - lost provider response persists UNKNOWN and worker restart only queries the original refund
+      ---
+      duration_ms: 176.3871
+      type: 'test'
+      ...
+# RECEIPT_DIAGNOSTIC {"code":"LEASE_LOST","occurred_at":"2026-11-13T08:18:55.764Z","validation_clock":[]}
+# RECEIPT_DIAGNOSTIC {"code":"LEASE_LOST","occurred_at":"2026-11-13T08:18:55.764Z","validation_clock":[]}
+    # Subtest: expired lease cannot settle money or finish a job; a new lease queries and settles once
+    ok 3 - expired lease cannot settle money or finish a job; a new lease queries and settles once
+      ---
+      duration_ms: 154.1624
+      type: 'test'
+      ...
+# RECEIPT_DIAGNOSTIC {"code":"CUSTODY_RECEIPT_MISMATCH","occurred_at":"2026-11-13T08:18:55.870Z","validation_clock":[]}
+    # Subtest: bad receipt blocks, never releases funds; current independent permission is required to resume
+    ok 4 - bad receipt blocks, never releases funds; current independent permission is required to resume
+      ---
+      duration_ms: 131.7572
+      type: 'test'
+      ...
+    # Subtest: missing adapter and changed merchant fail closed; cancelled queued cases never send
+    ok 5 - missing adapter and changed merchant fail closed; cancelled queued cases never send
+      ---
+      duration_ms: 169.9036
+      type: 'test'
+      ...
+    # Subtest: a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+    ok 6 - a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+      ---
+      duration_ms: 108.2525
+      type: 'test'
+      ...
+    # Subtest: consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+    ok 7 - consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+      ---
+      duration_ms: 563.5407
+      type: 'test'
+      ...
+    # Subtest: guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+    ok 8 - guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+      ---
+      duration_ms: 137.112
+      type: 'test'
+      ...
+    # Subtest: revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+    ok 9 - revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+      ---
+      duration_ms: 164.817
+      type: 'test'
+      ...
+    1..9
+ok 1 - durable recharge refund recovery and guardian delegation in isolated MySQL
+  ---
+  duration_ms: 24143.5959
+  type: 'test'
+  ...
+1..1
+# tests 10
+# suites 0
+# pass 10
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 24354.1358

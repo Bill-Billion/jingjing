@@ -1,0 +1,179 @@
+TAP version 13
+# Subtest: company delivery handoff preserves first receipt, current authority and original final payment
+    # Subtest: 0224 upgrades with a legacy first-reader receipt unchanged and repeated 0225 application is idempotent
+    ok 1 - 0224 upgrades with a legacy first-reader receipt unchanged and repeated 0225 application is idempotent
+      ---
+      duration_ms: 329.7581
+      type: 'test'
+      ...
+    # Subtest: a new representative must personally read the current preview and notification before taking over
+    ok 2 - a new representative must personally read the current preview and notification before taking over
+      ---
+      duration_ms: 242.7434
+      type: 'test'
+      ...
+    # Subtest: another viewer never overwrites a completed receipt and each actor feedback uses their own read
+    ok 3 - another viewer never overwrites a completed receipt and each actor feedback uses their own read
+      ---
+      duration_ms: 244.859
+      type: 'test'
+      ...
+    # Subtest: failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version
+    ok 4 - failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version
+      ---
+      duration_ms: 324.9328
+      type: 'test'
+      ...
+    # Subtest: concurrent current company viewers create one observation each and one immutable final deadline
+    ok 5 - concurrent current company viewers create one observation each and one immutable final deadline
+      ---
+      duration_ms: 234.4411
+      type: 'test'
+      ...
+    # Subtest: same company completes final acceptance and last payment; duplicate final downloads keep one completion fact
+    ok 6 - same company completes final acceptance and last payment; duplicate final downloads keep one completion fact
+      ---
+      duration_ms: 133.6048
+      type: 'test'
+      ...
+    # Subtest: personal retained delivery and feedback copy uses the same actual company journey
+        # Subtest: own delivery reads, own signoff and authored feedback are copyable after business revocation without company documents
+        not ok 1 - own delivery reads, own signoff and authored feedback are copyable after business revocation without company documents
+          ---
+          duration_ms: 34.3285
+          type: 'test'
+          location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\support\\privacy-production-copy.cjs:8:93'
+          failureType: 'testCodeFailure'
+          error: |-
+            {"status":503,"meta":{"request_id":"9dbacf47-e0be-42ed-abe8-22becd00d7dd","actor":{"account_id":"4181ec61-91ff-4d8e-ad7e-f187a7bcf4c1"},"acting_party":null},"error":{"code":"SERVICE_UNAVAILABLE","message":"服务暂不可用，请稍后核对状态","retryable":false,"details":[]}}
+            
+            503 !== 200
+            
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected: 200
+          actual: 503
+          operator: 'strictEqual'
+          stack: |-
+            ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:8:22)
+            D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:12:37
+            process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:8:113)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async Object.verify (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:11:2)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:94:3)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+          ...
+        # Subtest: request scope, requester identity, section cursors and operator work state apply to every page
+        not ok 2 - request scope, requester identity, section cursors and operator work state apply to every page
+          ---
+          duration_ms: 20.7221
+          type: 'test'
+          location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\support\\privacy-production-copy.cjs:8:93'
+          failureType: 'testCodeFailure'
+          error: |-
+            {"status":503,"meta":{"request_id":"43cf5a82-763b-4797-b426-8a3098566262","actor":{"account_id":"4181ec61-91ff-4d8e-ad7e-f187a7bcf4c1"},"acting_party":null},"error":{"code":"SERVICE_UNAVAILABLE","message":"服务暂不可用，请稍后核对状态","retryable":false,"details":[]}}
+            
+            503 !== 200
+            
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected: 200
+          actual: 503
+          operator: 'strictEqual'
+          stack: |-
+            ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:8:22)
+            D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:23:38
+            process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:8:113)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async Object.verify (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:21:2)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:94:3)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+          ...
+        # Subtest: retained legacy receipt fills a missing new-table row without duplicate observations or trusting corrupt source content
+        not ok 3 - retained legacy receipt fills a missing new-table row without duplicate observations or trusting corrupt source content
+          ---
+          duration_ms: 0.505
+          type: 'test'
+          location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\support\\privacy-production-copy.cjs:8:93'
+          failureType: 'testCodeFailure'
+          error: "Cannot read properties of undefined (reading 'find')"
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:30:21
+            TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:8:119)
+            Test.runInAsyncScope (node:async_hooks:214:14)
+            Test.run (node:internal/test_runner/test:1047:25)
+            Test.start (node:internal/test_runner/test:944:17)
+            TestContext.test (node:internal/test_runner/test:373:20)
+            sub (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:8:93)
+            Object.verify (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:29:8)
+            process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+            async Test.run (node:internal/test_runner/test:1054:7)
+          ...
+        # Subtest: leaving the company retains personal action history and a same-request file remains subject to independent release
+        not ok 4 - leaving the company retains personal action history and a same-request file remains subject to independent release
+          ---
+          duration_ms: 18.1974
+          type: 'test'
+          location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\support\\privacy-production-copy.cjs:8:93'
+          failureType: 'testCodeFailure'
+          error: |-
+            {"status":503,"meta":{"request_id":"542c20e0-b2e8-4c3a-9492-473059ba5e05","actor":{"account_id":"4181ec61-91ff-4d8e-ad7e-f187a7bcf4c1"},"acting_party":null},"error":{"code":"SERVICE_UNAVAILABLE","message":"服务暂不可用，请稍后核对状态","retryable":false,"details":[]}}
+            
+            503 !== 200
+            
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected: 200
+          actual: 503
+          operator: 'strictEqual'
+          stack: |-
+            ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:8:22)
+            D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:39:148
+            process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:8:113)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async Object.verify (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-production-copy.cjs:37:2)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:94:3)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+          ...
+        1..4
+    not ok 7 - personal retained delivery and feedback copy uses the same actual company journey
+      ---
+      duration_ms: 88.0603
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\customization-handoff.integration.test.cjs:94:11'
+      failureType: 'subtestsFailed'
+      error: '4 subtests failed'
+      code: 'ERR_TEST_FAILURE'
+      stack: |-
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:94:3)
+      ...
+    1..7
+not ok 1 - company delivery handoff preserves first receipt, current authority and original final payment
+  ---
+  duration_ms: 8709.3883
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\customization-handoff.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 12
+# suites 0
+# pass 6
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9067.3583

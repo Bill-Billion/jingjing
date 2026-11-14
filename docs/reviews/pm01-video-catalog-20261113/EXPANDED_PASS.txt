@@ -1,0 +1,101 @@
+TAP version 13
+# Subtest: operator video categories, holiday collections and placements use reviewed stock through real HTTP
+    # Subtest: empty catalog invents no products; authentication, actor scope and operator permission are enforced
+    ok 1 - empty catalog invents no products; authentication, actor scope and operator permission are enforced
+      ---
+      duration_ms: 74.9783
+      type: 'test'
+      ...
+    # Subtest: configuration rejects executable fields, price overrides, invalid dates and duplicate codes
+    ok 2 - configuration rejects executable fields, price overrides, invalid dates and duplicate codes
+      ---
+      duration_ms: 70.6235
+      type: 'test'
+      ...
+    # Subtest: independent category publication exposes only reviewed content and never private author metadata
+    ok 3 - independent category publication exposes only reviewed content and never private author metadata
+      ---
+      duration_ms: 48.3039
+      type: 'test'
+      ...
+    # Subtest: holiday collection binds reviewed stock prices, licences and offers; seller cannot approve their own recommendation
+    ok 4 - holiday collection binds reviewed stock prices, licences and offers; seller cannot approve their own recommendation
+      ---
+      duration_ms: 486.3748
+      type: 'test'
+      ...
+    # Subtest: placement, code and category filters expose only the exact reviewed collection
+    ok 5 - placement, code and category filters expose only the exact reviewed collection
+      ---
+      duration_ms: 324.1669
+      type: 'test'
+      ...
+    # Subtest: catalog item buys through original stock checkout; removing recommendation preserves paid order and licensed download
+    ok 6 - catalog item buys through original stock checkout; removing recommendation preserves paid order and licensed download
+      ---
+      duration_ms: 113.9474
+      type: 'test'
+      ...
+    # Subtest: new immutable versions require review; concurrent drafts cannot silently replace an intervening publication
+    ok 7 - new immutable versions require review; concurrent drafts cannot silently replace an intervening publication
+      ---
+      duration_ms: 109.495
+      type: 'test'
+      ...
+    # Subtest: category revision invalidates dependent publication until freshly reviewed; withdrawn source can still be rejected
+    ok 8 - category revision invalidates dependent publication until freshly reviewed; withdrawn source can still be rejected
+      ---
+      duration_ms: 174.2845
+      type: 'test'
+      ...
+    # Subtest: source unlisting immediately hides affected product without inventing replacement prices or changing old orders
+    ok 9 - source unlisting immediately hides affected product without inventing replacement prices or changing old orders
+      ---
+      duration_ms: 26.1571
+      type: 'test'
+      ...
+    # Subtest: scheduled content stays hidden before start and cannot be reviewed after expiry
+    ok 10 - scheduled content stays hidden before start and cannot be reviewed after expiry
+      ---
+      duration_ms: 98.7195
+      type: 'test'
+      ...
+    # Subtest: actual source consent withdrawal immediately hides collection and placement and retains the paid contract
+    ok 11 - actual source consent withdrawal immediately hides collection and placement and retains the paid contract
+      ---
+      duration_ms: 114.4234
+      type: 'test'
+      ...
+    # Subtest: concurrent replay creates one version, cursor cannot cross filters and changed request keys conflict
+    ok 12 - concurrent replay creates one version, cursor cannot cross filters and changed request keys conflict
+      ---
+      duration_ms: 63.2762
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back publication and old-version retirement; retry uses the original key
+    ok 13 - audit failure rolls back publication and old-version retirement; retry uses the original key
+      ---
+      duration_ms: 58.1693
+      type: 'test'
+      ...
+    # Subtest: revoked operator cannot replay old success or read administration; public content remains available
+    ok 14 - revoked operator cannot replay old success or read administration; public content remains available
+      ---
+      duration_ms: 36.6908
+      type: 'test'
+      ...
+    1..14
+ok 1 - operator video categories, holiday collections and placements use reviewed stock through real HTTP
+  ---
+  duration_ms: 8338.2791
+  type: 'test'
+  ...
+1..1
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8531.0012

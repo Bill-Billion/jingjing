@@ -1,0 +1,113 @@
+{
+  "synthetic_only": true,
+  "evidence": [
+    {
+      "case_id": "561c85c6-b5b1-4ca0-89db-9879258570a3",
+      "job_id": "379b659b-8734-4ff0-9d60-27606424ea9e",
+      "check": "atomic_schedule_and_one_send"
+    },
+    {
+      "case_id": "665f73df-a5eb-426f-9a20-755d93d0bfce",
+      "job_id": "469d0c7e-0431-424f-804f-02b59a59eea1",
+      "check": "restart_queries_without_resend"
+    },
+    {
+      "case_id": "e27cdc18-8ea0-4ecc-b80e-db12d872a3f2",
+      "job_id": "9edbe8de-9085-4ff7-82f2-98cd7c3def67",
+      "check": "expired_lease_blocked_then_recovered"
+    },
+    {
+      "case_id": "1af01557-9fe9-4099-ab0c-c034037d8c3a",
+      "job_id": "85637409-05b6-455c-8f52-ecd895906d43",
+      "check": "independent_retry_does_not_resend"
+    },
+    {
+      "case_id": "b7f500b1-f2f7-4f66-aa58-2fa72f7698fd",
+      "job_id": "223d3447-90c5-415b-b4e6-51aff147f1f0",
+      "check": "legacy_send_query_and_finished_money_job_recovery"
+    },
+    {
+      "recharge_id": "2510d344-e114-44b0-9919-61c2d73decac",
+      "order_id": "5fb98b77-2890-44aa-94cf-6202b8d0d443",
+      "payment_id": "e9b87a8a-82c0-4c67-9901-fb0fde5d4f48",
+      "consumption_refund_id": "d4448cc7-dc3c-4de5-abaf-0a8d71bdfbef",
+      "case_id": "f5b02e55-549c-405a-90a2-64ba8cbacf13",
+      "job_id": "8e6877dd-e9cb-45d7-9a9f-423db228a4a7",
+      "check": "spent_lot_recovered_then_original_refund"
+    },
+    {
+      "guardian_link_id": "0f78f4b6-e729-4fab-8152-236f70ecb89d",
+      "recharge_id": "c0b764e1-59b7-4fb5-98e7-332f3d5f4a38",
+      "case_id": "8af8c264-5d3f-40b9-bdaa-153294c43cfc",
+      "job_id": "59a818e3-90ac-4fd8-9adb-c79d10659f4a",
+      "check": "independent_guardian_refund"
+    },
+    {
+      "guardian_link_id": "0f78f4b6-e729-4fab-8152-236f70ecb89d",
+      "sent_case_id": "b746ae1a-7dd8-4bad-b96f-b14c42d60b06",
+      "unsent_case_id": "efa94b7c-6943-4515-9314-596b2967b47d",
+      "check": "revocation_blocks_new_send_but_preserves_financial_truth"
+    }
+  ],
+  "provider_calls": [
+    {
+      "method": "refund",
+      "id": "561c85c6-b5b1-4ca0-89db-9879258570a3"
+    },
+    {
+      "method": "refund",
+      "id": "665f73df-a5eb-426f-9a20-755d93d0bfce"
+    },
+    {
+      "method": "query",
+      "id": "665f73df-a5eb-426f-9a20-755d93d0bfce"
+    },
+    {
+      "method": "refund",
+      "id": "e27cdc18-8ea0-4ecc-b80e-db12d872a3f2"
+    },
+    {
+      "method": "query",
+      "id": "e27cdc18-8ea0-4ecc-b80e-db12d872a3f2"
+    },
+    {
+      "method": "refund",
+      "id": "1af01557-9fe9-4099-ab0c-c034037d8c3a"
+    },
+    {
+      "method": "query",
+      "id": "1af01557-9fe9-4099-ab0c-c034037d8c3a"
+    },
+    {
+      "method": "refund",
+      "id": "b7f500b1-f2f7-4f66-aa58-2fa72f7698fd"
+    },
+    {
+      "method": "query",
+      "id": "b7f500b1-f2f7-4f66-aa58-2fa72f7698fd"
+    },
+    {
+      "method": "refund",
+      "id": "f5b02e55-549c-405a-90a2-64ba8cbacf13"
+    },
+    {
+      "method": "refund",
+      "id": "8af8c264-5d3f-40b9-bdaa-153294c43cfc"
+    },
+    {
+      "method": "refund",
+      "id": "b746ae1a-7dd8-4bad-b96f-b14c42d60b06"
+    },
+    {
+      "method": "query",
+      "id": "b746ae1a-7dd8-4bad-b96f-b14c42d60b06"
+    }
+  ],
+  "live_provider_enabled": false,
+  "frontend_run": false,
+  "limits": [
+    "Internal injected normalized adapter, not real signatures or network",
+    "Guardian relation and cases via repository, no new HTTP or page",
+    "Spent funds recovered only by actual synthetic order refund; no platform advance"
+  ]
+}

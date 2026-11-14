@@ -1,0 +1,364 @@
+{
+  "schema_version": 1,
+  "kind": "partial_contract_extension_evidence",
+  "result": "LOCAL_VALIDATED_NOT_FORMAL_ACCEPTANCE",
+  "base_sha": "a9eba1cf0a09b32a111fcf13470c3eef7ff1b3b0",
+  "working_tree": true,
+  "checked_at": "2026-11-03T04:37:08.190851+00:00",
+  "interface_version": "0.31.27-rc.1",
+  "migration": "0209",
+  "formal_151_pass_count": 0,
+  "source_manifest": "docs/testing/evidence/mac-mini-pr39-consumer-protection-20261103/SOURCE_MANIFEST.json",
+  "items": [
+    {
+      "id": "CP01",
+      "groups": [
+        11,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-26.02",
+        "ACC-DEL-28.03"
+      ],
+      "expected": "规则严格字段及独立审核；不得自审或猜正式经营阈值。",
+      "steps": [
+        "运营录入合成规则",
+        "核对自审按钮禁用",
+        "另一审核账号批准"
+      ],
+      "actual": "规则独审生效；12组消费状态测试补规则替换/过期/权限变化。",
+      "records": {
+        "rule_id": "14dae3a1-53b3-45f2-ab30-54acf058fc74"
+      },
+      "evidence": [
+        "browser-recovery-results.json",
+        "web-all-final.log"
+      ],
+      "limits": "合成参数，不代表甲方正式阈值。"
+    },
+    {
+      "id": "CP02",
+      "groups": [
+        11,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-17.04",
+        "ACC-DEL-28.03",
+        "ACC-DEL-28.04",
+        "TASK-17"
+      ],
+      "expected": "消费需明确阅读；确认及实际消费未知均恢复原键；旧响应不跨身份回写。",
+      "steps": [
+        "网页丢阅读确认响应，刷新并原键恢复",
+        "Android丢确认响应，再丢付款响应，原键分别恢复",
+        "同一付款读取模拟回执"
+      ],
+      "actual": "Web同单付款正常；原生分段付款确认与付款各同键恢复，回执成功且明确模拟。",
+      "records": {
+        "web": {
+          "id": "CP02-web-confirm-unknown-reload",
+          "result": "PASS",
+          "order_id": "196045dc-0173-4053-b8f7-34da76d70c13",
+          "payment_id": "a69a243d-fb05-442d-92a2-67b21f89e1e0",
+          "confirmation_key": "4a6a2383-7862-48da-84cd-0fcf689d6ab6",
+          "consumption_key": "9badfc2f-6228-4336-9f5e-2af1442623b5"
+        },
+        "native": {
+          "id": "native-cp-payment-original-recovery",
+          "order_id": "c3c56f41-a45e-4d00-a048-b71167faa2d3",
+          "payment_id": "faf2feb0-45e4-4427-981f-289ec2d5be60",
+          "confirmation_keys": [],
+          "payment_keys": [],
+          "result": "PASS",
+          "at": "2026-11-03T04:17:10.486Z"
+        }
+      },
+      "evidence": [
+        "browser-recovery-results.json",
+        "NATIVE_SEGMENTS.json",
+        "backend-consumer.log"
+      ],
+      "limits": "消费主链运行时0.31.26；最新0.31.27消费专项另验，不是新后端全量原生重跑。"
+    },
+    {
+      "id": "CP03",
+      "groups": [
+        11,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-17.04",
+        "TASK-17"
+      ],
+      "expected": "原付款退款须经过现货售后及独立审核，不受新消费确认阻断。",
+      "steps": [
+        "买家申请售后",
+        "独立运营决策退款",
+        "买家申请退款，独立审核/模拟执行",
+        "网页和原生读同一退款"
+      ],
+      "actual": "首次跳过售后返回409符合规则；随后同单完整退款与两端结果通过。",
+      "records": {
+        "id": "CP03-web-confirm-payment-refund",
+        "result": "PASS",
+        "payment_id": "a69a243d-fb05-442d-92a2-67b21f89e1e0",
+        "refund_id": "0d322acc-a6ae-4e7f-be99-49f6b00771f8"
+      },
+      "evidence": [
+        "browser-recovery-results.json",
+        "native-results-after-payment.json"
+      ],
+      "limits": "原生只读取Web办理的退款结果，不冒称原生独立走退款全链。"
+    },
+    {
+      "id": "CP04",
+      "groups": [
+        14,
+        17
+      ],
+      "standards": [
+        "E2E-07",
+        "ACC-DEL-28.04"
+      ],
+      "expected": "理性确认与限额在扣钻前；未知结果同键不重抽；全局恢复解除匹配表单锁。",
+      "steps": [
+        "网页单抽后丢响应，刷新恢复同键",
+        "网页十连超限拒绝且记录数未变",
+        "原生在同一合成池单抽丢响应，用原键恢复",
+        "网页以原请求缓存复验恢复后表单解锁"
+      ],
+      "actual": "Web原结果1条，Android新增原结果1条；原键重放不会再抽。",
+      "records": {
+        "web_draw": {
+          "id": "CP04-web-draw-unknown-reload",
+          "result": "PASS",
+          "draw_id": "4309b5b1-f2aa-4dd1-b135-b2d6039859ff",
+          "key": "5b51d031-fed1-4f5d-b7c5-d7acfd3d326d"
+        },
+        "native_draw": {
+          "id": "native-cp-draw-original-recovery",
+          "draw_id": "28969a0e-d4ed-4ff8-bdc1-43b96e696cc5",
+          "keys": [
+            "app-761969402fbadabb30820abc8035a6e4f8380f9722f70274",
+            "app-761969402fbadabb30820abc8035a6e4f8380f9722f70274"
+          ],
+          "result": "PASS",
+          "at": "2026-11-03T04:23:07.420Z"
+        }
+      },
+      "evidence": [
+        "browser-recovery-results.json",
+        "native-results-draw.json",
+        "NATIVE_SEGMENTS.json"
+      ],
+      "limits": "历史/合成兼容池，不代表11项新合同奖池正式发布或全部奖品兑现。"
+    },
+    {
+      "id": "CP05",
+      "groups": [
+        4,
+        10,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-28.03",
+        "ACC-DEL-28.04"
+      ],
+      "expected": "通知偏好跨端按版本保存，未知原键恢复；直接退订保留其他字段；夜间仅同日一次。",
+      "steps": [
+        "Web保存偏好、退订并断网重读",
+        "Android改同账号设置后丢PATCH响应，原键核对",
+        "直接营销退订，重新打开确认偏好和同日提示不重复"
+      ],
+      "actual": {
+        "object_version": 4,
+        "push_enabled": false,
+        "night_reminder_enabled": true,
+        "quiet_hours": {
+          "enabled": true,
+          "end_minute": 1439,
+          "start_minute": 0
+        },
+        "marketing": false,
+        "personalization": false,
+        "rest_reminder_minutes": 0
+      },
+      "evidence": [
+        "browser-recovery-results.json",
+        "native-results-after-payment.json",
+        "web-all-final.log",
+        "app-ci-tests.log"
+      ],
+      "limits": "没有真实推送送达；旧批Chromium实际15分钟与Android夹具分开记录，不重复计时。"
+    },
+    {
+      "id": "CP06",
+      "groups": [
+        14,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-26.02"
+      ],
+      "expected": "11项候选填入既有合同概率，成本/依据不代填，不自动发布。",
+      "steps": [
+        "运营选择合同候选",
+        "逐项核对11项且成本空",
+        "编码缺成本拒绝；MySQL候选规则校验回归"
+      ],
+      "actual": "候选生成及严格成本输入已接，未发布正式活动。",
+      "evidence": [
+        "browser-recovery-results.json",
+        "web-all-final.log",
+        "backend-consumer.log"
+      ],
+      "limits": "未完整发布11项候选并兑现全部奖项，真实成本与概率说明待签认。"
+    },
+    {
+      "id": "CP07",
+      "groups": [
+        11,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-26.04",
+        "ACC-DEL-28.03",
+        "ACC-DEL-28.04",
+        "TASK-17"
+      ],
+      "expected": "本人当前身份报表可列表找回，原申请未知不另建，权限变化不泄露历史。",
+      "steps": [
+        "实际网页丢POST响应后原键恢复",
+        "实际后台生成后返回列表/刷新/同详情/CSV",
+        "陌生账号列表不可见",
+        "断网后重读，撤权清列表"
+      ],
+      "actual": "4组真实浏览器通过；25组运营状态测试含空页继续、游标拒绝回退、迟到响应隔离。",
+      "records": [
+        {
+          "id": "CP07-report-original-recovery-list-download",
+          "result": "PASS",
+          "report_id": "b92d17cd-3418-4b9f-8e33-4c2d0c798119",
+          "request_key": "ce8c5b79-7484-4d6d-83de-da6abf4c2338"
+        },
+        {
+          "id": "CP07-other-account-not-visible",
+          "result": "PASS"
+        },
+        {
+          "id": "CP07-list-offline-recovery-narrow",
+          "result": "PASS"
+        },
+        {
+          "id": "CP07-operator-revocation-clears-history",
+          "result": "PASS",
+          "report_id": "99715f53-9343-4ab3-bca7-f842ac14f825"
+        }
+      ],
+      "evidence": [
+        "report-results.json",
+        "web-reports-test.log",
+        "backend-operations.log"
+      ],
+      "limits": "财务/运营Web范围，无新增App财务审核或报表入口；最新接口0.31.27。"
+    },
+    {
+      "id": "CP08",
+      "groups": [
+        11,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-17.04",
+        "ACC-DEL-28.04",
+        "TASK-17"
+      ],
+      "expected": "尚未发送的付款按契约展开预览；确认及核对仍用原付款编号，不新建付款、不假报成功。",
+      "steps": [
+        "后端隔离准备CREATED付款及模拟供应商先建未落账记录",
+        "Web与Android各打开原付款，主动阅读后确认",
+        "核对同一付款变PENDING且没有POST新付款"
+      ],
+      "actual": "两端真实页面均从CREATED进入PENDING；预览不含payment_id仍正确校验，确认保留PAYMENT_RECORD原编号。",
+      "records": {
+        "web": [
+          {
+            "id": "CP08-prepared-payment-web",
+            "result": "PASS",
+            "payment_id": "2f23352b-37f9-41da-b164-177b0ed39450",
+            "order_id": "a8bbef64-74bc-420c-888c-42ed1d40901e",
+            "from": "CREATED",
+            "to": "PENDING",
+            "preview": {
+              "configured": true,
+              "required": true,
+              "rule_id": "5eede3c4-b8e1-4e95-8d0c-53f15494e83f",
+              "preview_sha256": "99bbe9006e3939bff587c4b578db4bb4ba9c7d9cf988fe012bb080ee306a1134",
+              "reasons": [
+                "FREQUENT_CASH_REQUESTS"
+              ],
+              "message": "合成提示：请确认本次消费与个人预算。",
+              "target": {
+                "kind": "PAYMENT",
+                "order_id": "a8bbef64-74bc-420c-888c-42ed1d40901e",
+                "installment_key": "stock",
+                "request_key": "1c2eb61d-db6c-4d50-b4e0-6a19fb1681da",
+                "amount_minor": 100
+              },
+              "expires_in_seconds": 60
+            }
+          }
+        ],
+        "native": [
+          {
+            "id": "CP08-prepared-payment-native",
+            "payment_id": "3a4b947e-b50d-4592-96c0-c16fd2051b9b",
+            "order_id": "f30a7633-0575-4772-9b46-5d0bceaef24f",
+            "from": "CREATED",
+            "to": "PENDING",
+            "preview": {
+              "configured": true,
+              "required": true,
+              "rule_id": "5eede3c4-b8e1-4e95-8d0c-53f15494e83f",
+              "preview_sha256": "d6ceaeca827c9e6154a8a9c9fe2f6ae02a911a4754ceadf0a6025195c1462974",
+              "reasons": [
+                "FREQUENT_CASH_REQUESTS"
+              ],
+              "message": "合成提示：请确认本次消费与个人预算。",
+              "target": {
+                "kind": "PAYMENT",
+                "order_id": "f30a7633-0575-4772-9b46-5d0bceaef24f",
+                "installment_key": "stock",
+                "request_key": "5ff1df39-1e45-47e0-8473-57272672f61c",
+                "amount_minor": 100
+              },
+              "expires_in_seconds": 60
+            },
+            "confirmation_keys": [
+              "consumer-a5c13a1ff562ff1d07c7ee580f92183da54d9018ccfe2e49"
+            ],
+            "result": "PASS",
+            "at": "2026-11-03T04:34:29.326Z"
+          },
+          {
+            "id": "native-cp-prepared-payment",
+            "result": "PASS",
+            "at": "2026-11-03T04:34:32.431Z"
+          }
+        ]
+      },
+      "evidence": [
+        "prepared-payment-browser.json",
+        "native-results-prepared.json",
+        "app-preview-before.log",
+        "app-targeted-final.log"
+      ],
+      "limits": "最新0.31.27隔离模拟环境；PENDING是处理中，未冒称实际收款。首次脚本误带运营身份与缺模拟供应商记录均被接口拒绝，补齐夹具后通过。"
+    }
+  ]
+}

@@ -30,7 +30,13 @@ class SavingPicker extends FilePickerPlatform {
 }
 
 void main() {
-  for (final mode in ['unavailable', 'corrupt', 'save-failed']) {
+  for (final mode in [
+    'unavailable',
+    'corrupt',
+    'save-failed',
+    'restricted',
+    'forbidden'
+  ]) {
     testWidgets('项目材料重读 $mode 清旧提示，恢复后可重试', (t) async {
       final old = FilePickerPlatform.instance, picker = SavingPicker();
       FilePickerPlatform.instance = picker;
@@ -53,6 +59,14 @@ void main() {
           if (failing && mode == 'unavailable') {
             return envelope({'code': 'SERVICE_UNAVAILABLE'},
                 status: 503, error: true);
+          }
+          if (failing && mode == 'restricted') {
+            return envelope({'code': 'CONTENT_RESTRICTED'},
+                status: 409, error: true);
+          }
+          if (failing && mode == 'forbidden') {
+            return envelope({'code': 'PROJECT_EVIDENCE_FORBIDDEN'},
+                status: 403, error: true);
           }
           return ResponseBody.fromBytes(
               failing && mode == 'corrupt' ? [65, 66, 68] : content, 200,
@@ -89,9 +103,19 @@ void main() {
       if (mode == 'save-failed') {
         expect(find.text('文件保存未完成，请检查设备后重试。'), findsOneWidget);
       }
+      if (mode == 'restricted') {
+        expect(find.text('材料当前受到限制，暂不能读取。限制解除后可重新读取。'), findsOneWidget);
+      }
+      if (mode == 'forbidden') {
+        expect(find.text('当前记录权限已失效，私有内容已清空。请重新核对身份。'), findsOneWidget);
+      }
       expect(picker.saves, 1);
       failing = false;
       picker.fail = false;
+      if (mode == 'forbidden') {
+        await t.tap(find.text('重新核对权限'));
+        await nav.frames(t);
+      }
       await download();
       await reveal(t, find.text('已按当前权限读取材料。'));
       expect(find.text('已按当前权限读取材料。'), findsOneWidget);

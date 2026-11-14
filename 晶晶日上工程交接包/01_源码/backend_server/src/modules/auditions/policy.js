@@ -3,8 +3,8 @@ const {shape,id,ref,label,error}=require('../party/policy');
 const {list}=require('../artists/policy'),{amount,copy,instant}=require('../trade/policy');
 function integer(v,min,max){if(!Number.isSafeInteger(v)||v<min||v>max)throw error('INVALID_AUDITION_RULE',400);return v;}
 function terms(v){
- shape(v,['version','accept_hours','acceptance_hours','photo_count','video_count','payment_window_minutes','terms']);ref(v.version);label(v.terms,8000);
- integer(v.accept_hours,1,168);integer(v.acceptance_hours,1,720);integer(v.photo_count,1,30);integer(v.video_count,1,5);integer(v.payment_window_minutes,1,1440);return copy(v);
+ shape(v,['version','accept_hours','acceptance_hours','photo_count','video_count','payment_window_minutes','terms','acceptance_policy']);ref(v.version);label(v.terms,8000);
+ integer(v.accept_hours,1,168);integer(v.acceptance_hours,1,720);integer(v.photo_count,1,30);integer(v.video_count,1,5);integer(v.payment_window_minutes,1,1440);require('../trade/acceptance-policy').validate(v);return copy(v);
 }
 function appointment(v){
  shape(v,['mode','city','venue','address','starts_at','ends_at','purpose']);if(!['OFFLINE','ONLINE_MATERIALS'].includes(v.mode))throw error('INVALID_AUDITION_MODE',400);

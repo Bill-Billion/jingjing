@@ -10,14 +10,16 @@ async function prepare(db,checkRunning,options={}){
  const stock=await load('test/helpers/stock-seed.cjs').seedStock(db);checkRunning();
  const notices=await load('test/helpers/notices-seed.cjs').seedNotices(db);checkRunning();
  const auditions=await load('test/helpers/auditions-seed.cjs').seedAuditions(db);checkRunning();
+ const firstAuditions=options.firstSupply?await load('test/helpers/auditions-seed.cjs').seedAuditions(db,{ruleVersion:'first-supply'}):null;checkRunning();
  const common=await load('test/support/customization-delivery.cjs').seed(db);checkRunning();
  if(options.samples){const make=common.newOrder;common.newOrder=(args={})=>make({title:'测试定制短片 · 家庭记忆',...args});}
  const people={...common.people},scenarios={},extraFiles=new Map();
- for(const [prefix,seed]of Object.entries({stock,notices,auditions})){
+ for(const [prefix,seed]of Object.entries({stock,notices,auditions,...firstAuditions?{first_auditions:firstAuditions}:{}})){
   for(const role of ['seller','buyer','reviewer','outsider','buyer2']){
    const u=seed[role];u.acting_party_id=u.personal_party_id;people[prefix+'_'+role]=u;
   }
  }
+ if(firstAuditions)scenarios.first_audition={person_id:firstAuditions.seller.person.id,avatar_id:firstAuditions.offer.avatar_id,public_consent_id:firstAuditions.publicConsent.id,rule_id:firstAuditions.ruleId};
  const mediaDir=path.resolve(__dirname,'../.local/v5-r05-r12-media');
  await fs.mkdir(mediaDir,{recursive:true});
  const ffmpeg=process.env.FFMPEG_PATH||'/opt/homebrew/bin/ffmpeg';
@@ -31,7 +33,7 @@ async function prepare(db,checkRunning,options={}){
  for(const [field,body]of [['file_id',full],['preview_file_id',preview]]){
   stock.listingInput[field]=(await stock.supply.upload(stock.seller.ctx,{party_id:stock.seller.personal_party_id,purpose:'WORK_CONTENT',media_type:'video/mp4',body,operation_key:key()})).id;
  }
- if(options.samples){const d=stock.spec.data;let spec=await stock.trade.createSpec(stock.seller.ctx,{party_id:stock.seller.personal_party_id,previous_spec_id:stock.spec.id,title:'样片体验 · 私人观看许可',provider_party_id:stock.seller.personal_party_id,line_kind:d.line_kind,unit_minor:d.unit_minor,currency:d.currency,specification:{...d.specification,terms:'只用于测试购买、预览与售后，不产生真实销售或真人授权。'},product_profile:d.product_profile,operation_key:key()});spec=await stock.trade.review(stock.reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'独立检查模拟商品',operation_key:key()});stock.listingInput.spec_id=spec.id;}
+ if(options.samples){const d=stock.spec.data;let spec=await stock.trade.createSpec(stock.seller.ctx,{party_id:stock.seller.personal_party_id,previous_spec_id:stock.spec.id,title:'样片体验 · 私人观看许可',provider_party_id:stock.seller.personal_party_id,line_kind:d.line_kind,unit_minor:d.unit_minor,currency:d.currency,specification:{...d.specification,terms:'只用于测试购买、预览与售后，不产生真实销售或真人授权。'},product_profile:d.product_profile,operation_key:key()});spec=await stock.trade.review(stock.reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'独立检查模拟商品',operation_key:key()});stock.listingInput.spec_id=spec.id;await stock.publishSales(stock.seller.personal_party_id,spec.id);}
  if(options.samples){stock.listingInput.description='甲方样片 1 · 测试展示，不代表销售或真人授权';stock.listingInput.city='郑州';}
  for(const state of ['unpaid','paid','unlisted','dispute']){
   const listing=await stock.listing(),order=await stock.checkout(listing);
@@ -84,7 +86,7 @@ async function prepare(db,checkRunning,options={}){
  const participant=await common.registerActor('共创隔离参与者'),cast=await common.actorCast(participant);people.participant=participant;
  const secret=common.secret,auth=load('src/modules/auth/repository').createAuthRepository(db,{secret});
  for(const u of Object.values(people))await db.execute('UPDATE auth_sessions SET token_hash=? WHERE account_id=?',[auth.secure.digest('token',u.token),u.account_id]);
- const maps=[extraFiles,stock.bytes,notices.bytes,auditions.bytes,common.files];
+ const maps=[extraFiles,stock.bytes,notices.bytes,auditions.bytes,...firstAuditions?[firstAuditions.bytes]:[],common.files];
  const storageFactory=()=>({put:async({key:objectKey,body})=>{extraFiles.set(objectKey,Buffer.from(body));return {key:objectKey,sha256:createHash('sha256').update(body).digest('hex'),size:body.length};},getBuffer:async objectKey=>maps.map(m=>m.get(objectKey)).find(Boolean)});
  for(const u of [common.people.producer,common.people.reviewer,common.people.outsider]){
   for(const action of ['REDEMPTION_REVIEW','WALLET_RULE_REVIEW','FINANCE_REVIEW','COCREATION_REVIEW','ENGAGEMENT_REVIEW','PROJECT_REVIEW','PRIVACY_HANDLE','PRIVACY_REVIEW']){

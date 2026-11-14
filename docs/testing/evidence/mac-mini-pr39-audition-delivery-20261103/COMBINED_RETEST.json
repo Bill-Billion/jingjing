@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "kind": "two_entry_combined_retest",
+  "result": "LOCAL_VALIDATED_NOT_FORMAL_ACCEPTANCE",
+  "backend_base_sha": "3e33810e01a9a0c4542ad62defec1496328889b8",
+  "local_code_sha": "0db27e078758f3f3bfd47ddc4e00ebdf91574879",
+  "interface_version": "0.31.31-rc.1",
+  "migration": "0209",
+  "checks": [
+    {
+      "id": "BOTH-INVITE-01",
+      "standards": [
+        "TASK-15",
+        "E2E-05"
+      ],
+      "result": "PASS",
+      "actual": "同一合成房间网页9组、Android发起与领取2项；响应丢失、重复、撤销、失效及恢复按各证据限定。",
+      "room_id": "62e00914-dc86-4996-aae5-8b8f206ad819",
+      "evidence": [
+        "combined-invite-web.json",
+        "combined-invite-android.json"
+      ]
+    },
+    {
+      "id": "BOTH-AUDITION-01",
+      "standards": [
+        "ACC-DEL-09.03",
+        "E2E-03",
+        "TASK-17"
+      ],
+      "result": "PASS",
+      "actual": "同一合成预约Android选材并恢复丢响应原请求，独立运营网页审核、买方读取7份材料并确认；预先已付款预约由夹具提供。",
+      "booking_id": "d9d0cfd8-e862-482f-ad14-122ccf7a5125",
+      "order_id": "cac3aca9-c899-4232-bd1c-d924d4bd18f0",
+      "evidence": [
+        "combined-audition-android.json",
+        "combined-audition-web-finish.json"
+      ]
+    },
+    {
+      "id": "BOTH-AUDITION-02",
+      "standards": [
+        "TASK-17"
+      ],
+      "result": "PASS",
+      "actual": "同版后端下网页员工缺权限、负责人授予、选择、断网及重读4项；此页当次使用试镜单项代码72ea85e8。",
+      "evidence": [
+        "same-backend-audition-web.json"
+      ]
+    }
+  ],
+  "automated": "组合代码Web业务92项、邀请专项、类型检查及构建通过；App相关21项通过。试镜单项72ea85e8的App全量833项与Web全量另记。",
+  "limits": "只使用合成会话、隔离数据库和模拟付款；试镜预约与付款由夹具预置，未从首次创建起完成全链。共创只验已有房间邀请，不代完整故事/参加授权/最终交付。Android为模拟器，不是实体手机。未推送，非远端CI或151条正式验收。"
+}

@@ -9,14 +9,35 @@ import '../trade/trade_models.dart';
 import '../engagement/community_support.dart';
 import '../cocreation/cocreation_cast.dart';
 
+String? lotteryAvailability(Map<String, dynamic> r, {DateTime? now}) {
+  final at = now ?? DateTime.now(), notice = r['publication_notice'];
+  if (notice != null) {
+    final n = communityMap(notice);
+    communityRequire(n['days'] == 7 &&
+        DateTime.tryParse('${n['published_at']}') != null &&
+        DateTime.tryParse('${n['opens_at']}') != null);
+    if (at.isBefore(DateTime.parse('${n['opens_at']}'))) {
+      return '奖池规则正在公示，尚未开放抽奖。';
+    }
+  }
+  final starts = DateTime.tryParse('${r['starts_at']}'),
+      ends = DateTime.tryParse('${r['ends_at']}');
+  if (starts != null && at.isBefore(starts)) return '活动尚未开始。';
+  if (ends != null && !at.isBefore(ends)) return '活动已结束。';
+  return r['current_status'] == 'PUBLISHED' ? null : '奖池尚未开放或已停止。';
+}
+
 String redemptionKind(Object? kind) =>
     const {
       'PRODUCTION_CREDIT': '制作金',
       'PRODUCTION_FREE': '指定服务免付权益',
       'SERVICE_CREDIT': '共创服务额度',
       'INTERVIEW': '面试权益',
+      'INTERVIEW_OPEN': '公开面试权益',
+      'INTERVIEW_PRIORITY': '优先面试权益',
       'EXPOSURE': '曝光权益',
       'POINT_BACK': '晶钻返还',
+      'NONE': '本次未获实物权益',
       'EMPTY': '本次未获实物权益'
     }[kind] ??
     communityText(kind);
@@ -80,8 +101,9 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
       why = field(),
       benefit = field(widget.benefitId ?? '');
   late final cast = CocreationCastInput(field);
-  List<Map<String, dynamic>> rows = [], benefits = [];
+  List<Map<String, dynamic>> rows = [], benefits = [], exposureProfiles = [];
   List<TradeRecord> quotes = [];
+  String? quoteError, exposureError;
   Map<String, dynamic>? detail, hold;
   bool agreed = false, bindingAgreed = false;
   @override
@@ -109,7 +131,10 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
   void clearPrivate() {
     rows = [];
     benefits = [];
+    exposureProfiles = [];
     quotes = [];
+    quoteError = null;
+    exposureError = null;
     detail = null;
     hold = null;
     agreed = false;
@@ -131,6 +156,10 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     setState(() {
       checking = true;
       error = null;
+      quotes = [];
+      quoteError = null;
+      exposureProfiles = [];
+      exposureError = null;
     });
     try {
       if (widget.view == 'role') {
@@ -144,18 +173,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
       }
       Map<String, dynamic>? d;
       List<Map<String, dynamic>> r = [];
-      if (['grant', 'checkout', 'grants'].contains(widget.view) &&
-          session.isOwner) {
-        quotes = (await TradeApi(session).all('QUOTE'))
-            .where((q) =>
-                q.buyer == session.partyId &&
-                q.status == 'APPROVED' &&
-                q.data['customization'] is Map &&
-                q.data['customization_change'] == null &&
-                q.data['cocreation'] == null &&
-                q.data['discount'] == null)
-            .toList();
-      }
+      var needsQuotes = false, needsProfiles = false;
       if (widget.view == 'catalog' && session.partyId != null) {
         benefits = communityItems(
             await CommunityApi(session, 'cocreation').read('benefits'));
@@ -171,6 +189,13 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         communityRequire(g['template'] is Map &&
             g['cashable'] == false &&
             g['transferable'] == false);
+        final kind = communityMap(g['template'])['kind'];
+        needsQuotes = session.isOwner &&
+            ['PRODUCTION_CREDIT', 'PRODUCTION_FREE', 'SERVICE_CREDIT']
+                .contains(kind);
+        needsProfiles = session.isOwner &&
+            kind == 'EXPOSURE' &&
+            d['effective_status'] == 'AVAILABLE';
       } else if (widget.view == 'pool') {
         d = await api.read(
             'pools/${communityRequiredId(widget.id ?? '', '活动奖池')}',
@@ -224,6 +249,56 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
           detail = d;
         });
       }
+      if (mounted && t == ticket && needsQuotes) {
+        try {
+          final nextQuotes = (await TradeApi(session).all('QUOTE'))
+              .where((q) =>
+                  q.buyer == session.partyId &&
+                  q.status == 'APPROVED' &&
+                  q.data['customization'] is Map &&
+                  q.data['customization_change'] == null &&
+                  q.data['cocreation'] == null &&
+                  q.data['discount'] == null)
+              .toList();
+          if (mounted && t == ticket) setState(() => quotes = nextQuotes);
+        } catch (e) {
+          if (mounted && t == ticket) {
+            setState(() => quoteError = communityError(e));
+          }
+        }
+      }
+      if (mounted && t == ticket && needsProfiles) {
+        try {
+          final items = communityItems(
+              await CommunityApi(session, 'engagement').read('profiles/mine'));
+          communityRequire(items.every((p) =>
+                  communityId(p['id']) &&
+                  communityId(p['person_id']) &&
+                  ['city', 'district', 'category'].every(
+                      (k) => p[k] is String && (p[k] as String).isNotEmpty)) &&
+              items.map((p) => p['id']).toSet().length == items.length);
+          if (mounted && t == ticket) {
+            setState(() {
+              exposureProfiles = items;
+              if (!items.any((p) =>
+                  p['id'] == profile.text &&
+                  p['person_id'] == cast.person.text)) {
+                profile.clear();
+                bindingAgreed = false;
+              }
+            });
+          }
+        } catch (e) {
+          if (mounted && t == ticket) {
+            setState(() {
+              exposureProfiles = [];
+              profile.clear();
+              bindingAgreed = false;
+              exposureError = communityError(e);
+            });
+          }
+        }
+      }
     } catch (e) {
       if (mounted && t == ticket) setState(() => fail(e));
     } finally {
@@ -245,6 +320,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
   }
 
   void validatePool(Map<String, dynamic> r) {
+    lotteryAvailability(r);
     communityRequire(communityId(r['id']) &&
         r['object_version'] is int &&
         r['rules_sha256'] is String &&
@@ -353,17 +429,43 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     }
   }
 
-  Widget quoteChoice() => communitySelect(
-      '已审核的本人原报价',
-      quote.text,
-      [
-        for (final q in quotes
-            .where((q) => widget.quoteId == null || q.id == widget.quoteId))
-          (q.id, '${q.title} · ${communityMoney(q.amount)} · 版本${q.version}')
-      ],
-      enabled && widget.quoteId == null && hold == null
-          ? (v) => setState(() => quote.text = v ?? '')
-          : null);
+  Widget quoteChoice() =>
+      Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        communitySelect(
+            '已审核的本人原报价',
+            quote.text,
+            [
+              for (final q in quotes.where(
+                  (q) => widget.quoteId == null || q.id == widget.quoteId))
+                (
+                  q.id,
+                  '${q.title} · ${communityMoney(q.amount)} · 版本${q.version}'
+                )
+            ],
+            enabled && !checking && widget.quoteId == null && hold == null
+                ? (v) => setState(() => quote.text = v ?? '')
+                : null),
+        if (quoteError != null) ...[
+          appNotice('原报价暂时无法读取，权益记录仍可查看；核对前不能发起抵扣。$quoteError'),
+          tradeButton(
+              '重新读取本人原报价',
+              checking || busy
+                  ? null
+                  : () async {
+                      try {
+                        if (session.tradeAccessDenied) {
+                          await session.retryTradeAccess();
+                        }
+                        if (mounted) await load();
+                      } catch (e) {
+                        if (mounted) {
+                          setState(() => quoteError = communityError(e));
+                        }
+                      }
+                    },
+              outline: true)
+        ]
+      ]);
   Future<void> submit(Future<void> Function() work) async {
     try {
       await work();
@@ -575,6 +677,8 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
           tradeButton(
               '读取服务器抵扣后的报价',
               enabled &&
+                      !checking &&
+                      quoteError == null &&
                       r['effective_status'] == 'AVAILABLE' &&
                       quotes.any((q) => q.id == quote.text)
                   ? () => Navigator.pushNamed(context,
@@ -592,12 +696,61 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
       if (['INTERVIEW', 'EXPOSURE'].contains(t['kind']) &&
           r['effective_status'] == 'AVAILABLE')
         communitySection('绑定我本人的艺人', [
-          if (t['kind'] == 'INTERVIEW')
-            cast.chooser(session,
-                enabled: enabled, changed: () => setState(() {}))
-          else
-            appNotice(
-                '绑定曝光需要可选择的本人当前榜单资料。服务器尚未提供本人公开资料列表，暂请平台协助核对；已审核排期和兑现结果仍可在此确认与查询。'),
+          cast.chooser(session,
+              enabled: enabled && !checking,
+              personAndAvatarOnly: t['kind'] == 'EXPOSURE', changed: () {
+            if (!mounted) return;
+            setState(() {
+              if (!exposureProfiles.any((p) =>
+                  p['id'] == profile.text &&
+                  p['person_id'] == cast.person.text)) {
+                profile.clear();
+              }
+              bindingAgreed = false;
+            });
+          }),
+          if (t['kind'] == 'EXPOSURE') ...[
+            if (exposureError != null) ...[
+              appNotice('本人公开资料暂时无法核对：$exposureError'),
+              tradeButton(
+                  '重新核对本人公开资料',
+                  checking || busy
+                      ? null
+                      : () async {
+                          try {
+                            if (session.isDomainDenied('/api/v1/engagement/')) {
+                              await session
+                                  .retryDomainAccess('/api/v1/engagement/');
+                            }
+                            if (mounted) await load();
+                          } catch (e) {
+                            if (mounted) {
+                              setState(() => exposureError = communityError(e));
+                            }
+                          }
+                        },
+                  outline: true),
+            ],
+            if (!checking && exposureError == null && exposureProfiles.isEmpty)
+              appNotice('当前没有可用的本人公开榜单资料。请先核对本人公开授权及参榜状态，再重新读取。'),
+            communitySelect(
+                '本人有效公开榜单资料',
+                profile.text,
+                [
+                  for (final p in exposureProfiles
+                      .where((p) => p['person_id'] == cast.person.text))
+                    (
+                      p['id'] as String,
+                      '${p['city']} · ${p['district']} · ${p['category']}'
+                    )
+                ],
+                enabled && !checking
+                    ? (v) => setState(() {
+                          profile.text = v ?? '';
+                          bindingAgreed = false;
+                        })
+                    : null),
+          ],
           communityCheck(
               '我已核对本人、授权用途和该权益原条款',
               bindingAgreed,
@@ -606,7 +759,15 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                   : null),
           tradeButton(
               '确认绑定本人',
-              enabled && bindingAgreed && t['kind'] == 'INTERVIEW'
+              enabled &&
+                      !checking &&
+                      bindingAgreed &&
+                      (t['kind'] == 'INTERVIEW' ||
+                          exposureProfiles.any((p) =>
+                                  p['id'] == profile.text &&
+                                  p['person_id'] == cast.person.text) &&
+                              communityId(cast.avatar.text) &&
+                              cast.personAvatarVerified)
                   ? () => submit(() async {
                         final c =
                             t['kind'] == 'INTERVIEW' ? cast.value() : null;
@@ -690,6 +851,8 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         tradeButton(
             '读取并暂时占用这份权益',
             enabled &&
+                    !checking &&
+                    quoteError == null &&
                     r['effective_status'] == 'AVAILABLE' &&
                     quotes.any((q) => q.id == quote.text)
                 ? () => submit(() async {
@@ -816,6 +979,16 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     return [
       communityHeading(communityText(c['version']), '开奖结果由服务器保存，每次请求只扣一次。'),
       communityFact('活动进展', communityState(r['current_status'])),
+      if (r['publication_notice'] != null) ...[
+        communityFact(
+            '本版实际公示时间',
+            communityDate(
+                communityMap(r['publication_notice'])['published_at'])),
+        communityFact('公示结束后最早开放',
+            communityDate(communityMap(r['publication_notice'])['opens_at'])),
+        appNotice('公示期内可查看规则与概率；公示期届满仍须满足活动起止、资格和库存条件。'),
+      ],
+      if (lotteryAvailability(r) != null) appNotice(lotteryAvailability(r)!),
       communityFact('开始', communityDate(r['starts_at'])),
       communityFact('截止', communityDate(r['ends_at'])),
       communitySection('本次完整条款', [
@@ -842,7 +1015,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
       for (final count in [1, 10])
         tradeButton(
             count == 1 ? '按本次规则单抽' : '按本次规则十连',
-            enabled && agreed && r['current_status'] == 'PUBLISHED'
+            enabled && agreed && lotteryAvailability(r) == null
                 ? () => submit(() async {
                       if (await confirm('确认本次${count == 1 ? '单抽' : '十连'}',
                           '将扣用${count == 1 ? c['single_points'] : c['ten_points']}晶钻。提交后先核对同一次结果，不更换编号重复抽取。')) {
@@ -858,6 +1031,12 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                         if (out != null && mounted) {
                           setState(() => agreed = false);
                           open('draw', out['id']);
+                        } else if (mounted &&
+                            recovery == null &&
+                            error?.contains('奖池规则正在公示') == true) {
+                          final message = error;
+                          await load();
+                          if (mounted) setState(() => error = message);
                         }
                       }
                     })

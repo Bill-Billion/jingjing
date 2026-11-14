@@ -1,0 +1,20 @@
+CREATE TABLE party_representations (
+ id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ party_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ account_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ grantor_account_id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ membership_version INT UNSIGNED NOT NULL,
+ grantor_membership_version INT UNSIGNED NOT NULL,
+ scope_code ENUM('TRADE','INVOICES') NOT NULL,
+ current_status ENUM('OFFERED','ACTIVE','DECLINED','REVOKED') NOT NULL DEFAULT 'OFFERED',
+ expires_at DATETIME(3) NOT NULL,
+ object_version INT UNSIGNED NOT NULL DEFAULT 1,
+ created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ updated_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+ INDEX representation_access(party_id,account_id,scope_code,current_status),
+ FOREIGN KEY(party_id) REFERENCES parties(id),
+ FOREIGN KEY(account_id) REFERENCES identity_accounts(id),
+ FOREIGN KEY(grantor_account_id) REFERENCES identity_accounts(id),
+ CONSTRAINT representation_distinct CHECK(account_id <> grantor_account_id),
+ CONSTRAINT representation_versions CHECK(object_version > 0 AND membership_version > 0 AND grantor_membership_version > 0)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin

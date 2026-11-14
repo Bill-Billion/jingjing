@@ -42,17 +42,17 @@ function isField(v: unknown): v is CustomizationField {
 export function isCustomizationTemplate(v: unknown): v is CustomizationTemplate {
   return obj(v) && only(v, ['title','description','fields']) && text(v.title,160) && text(v.description,2000,true) && Array.isArray(v.fields) && v.fields.length > 0 && v.fields.length <= 40 && v.fields.every(isField) && new Set(v.fields.map(f => f.key)).size === v.fields.length
 }
-export function answers(v: unknown, t: CustomizationTemplate): v is Record<string,string> {
+export function answers(v: unknown, t: CustomizationTemplate, submitted = true): v is Record<string,string> {
   if (!obj(v) || Object.keys(v).length > 40 || new TextEncoder().encode(JSON.stringify(v)).length > 48 * 1024) return false
   for (const [key,value] of Object.entries(v)) {
     const f = t.fields.find(f => f.key === key)
-    if (!fieldKey(key) || !f || !text(value,f.max_length ?? 12000,true) || f.type === 'PRIVATE_ATTACHMENT' && value !== '' || f.type === 'CHOICE' && value !== '' && !f.options?.includes(value)) return false
+    if (!fieldKey(key) || !f || !text(value,f.max_length ?? 12000,true) || f.type === 'PRIVATE_ATTACHMENT' && value !== '' && !validSupplyId(value) || f.type === 'CHOICE' && value !== '' && !f.options?.includes(value)) return false
   }
-  return t.fields.every(f => !f.required || f.type !== 'PRIVATE_ATTACHMENT' && typeof v[f.key] === 'string' && String(v[f.key]).trim().length > 0)
+  return !submitted || t.fields.every(f => !f.required || typeof v[f.key] === 'string' && String(v[f.key]).trim().length > 0)
 }
 const sameAnswers = (a: Record<string,string>, b: Record<string,string>) => Object.keys(a).length === Object.keys(b).length && Object.keys(a).every(k => a[k] === b[k])
 const canonical = (v: unknown): string => Array.isArray(v) ? '[' + v.map(canonical).join(',') + ']' : obj(v) ? '{' + Object.keys(v).sort().map(k => JSON.stringify(k) + ':' + canonical(v[k])).join(',') + '}' : JSON.stringify(v)
-function isSubmission(v: unknown): v is CustomizationSubmission {
+export function isSubmission(v: unknown): v is CustomizationSubmission {
   return obj(v) && only(v,['id','answers','template_snapshot','content_sha256','submitted_by','submitted_at']) && validSupplyId(v.id) && isCustomizationTemplate(v.template_snapshot) && answers(v.answers,v.template_snapshot) && typeof v.content_sha256 === 'string' && /^[a-f0-9]{64}$/.test(v.content_sha256) && validSupplyId(v.submitted_by) && instant(v.submitted_at)
 }
 function summary(v: Record<string,unknown>): boolean {
@@ -67,11 +67,12 @@ export function isIntakeRequest(v: unknown): v is IntakeRequest {
   if (!obj(v) || !only(v,['id','created_by','party_id','template_version_id','template_snapshot','answers','current_status','object_version','submission','submitted_at','intake_at','intake_by','allowed_actions']) || !summary(v) || !validSupplyId(v.created_by) || !isCustomizationTemplate(v.template_snapshot) || !answers(v.answers,v.template_snapshot) || !isSubmission(v.submission)) return false
   return (v.current_status === 'INTAKE' ? validSupplyId(v.intake_by) : v.intake_by === null) && v.submitted_at === v.submission.submitted_at && sameAnswers(v.answers,v.submission.answers) && canonical(v.template_snapshot) === canonical(v.submission.template_snapshot)
 }
-function checked<T>(r: ApiResult<unknown>, i: IntakeIdentity, guard: (v: unknown) => v is T): T {
-  if (!guard(r.data) || !r.meta?.request_id || r.meta.actor?.account_id !== i.accountId || r.meta.acting_party !== null) throw new ApiError({ status: 200, code: 'UNEXPECTED_RESPONSE_SHAPE', message: '无法核实当前账号的正式提交记录，请重新读取。', requestId: r.requestId })
+type ReadIdentity = IntakeIdentity & { partyId?: string }
+function checked<T>(r: ApiResult<unknown>, i: ReadIdentity, guard: (v: unknown) => v is T): T {
+  if (!guard(r.data) || !r.meta?.request_id || r.meta.actor?.account_id !== i.accountId || r.meta.acting_party !== (i.partyId ?? null)) throw new ApiError({ status: 200, code: 'UNEXPECTED_RESPONSE_SHAPE', message: '无法核实当前账号的正式提交记录，请重新读取。', requestId: r.requestId })
   return r.data
 }
-const options = (i: IntakeIdentity, signal?: AbortSignal) => ({ token: i.token, signal, cache: 'no-store' as const })
+const options = (i: ReadIdentity, signal?: AbortSignal) => ({ token: i.token, actingParty: i.partyId, signal, cache: 'no-store' as const })
 export async function listIntake(i: IntakeIdentity, status: IntakeStatus | '', cursor: string | null = null, signal?: AbortSignal): Promise<IntakePage> {
   const q = new URLSearchParams({ limit:'20' }); if (status) q.set('current_status',status); if (cursor) q.set('cursor',cursor)
   return checked(await request<unknown>(`/operations/customization-requests?${q}`, options(i,signal)),i,(v): v is IntakePage => obj(v) && only(v,['items','next_cursor']) && Array.isArray(v.items) && v.items.length <= 20 && v.items.every(r => isIntakeSummary(r) && (!status || r.current_status === status)) && new Set(v.items.map(r => r.id)).size === v.items.length && (v.next_cursor === null || text(v.next_cursor,512)))
@@ -111,7 +112,7 @@ export function validSupplementItems(v: unknown, template?: CustomizationTemplat
 function responses(v: unknown, items: SupplementItem[]): v is Record<string,string> {
   return obj(v) && Object.keys(v).length === items.length && items.every(x => text(v[x.field_key],2000)) && byteLength(v) <= 16 * 1024
 }
-function isSupplement(v: unknown): v is Supplement {
+export function isSupplement(v: unknown): v is Supplement {
   if (!obj(v) || !only(v,['id','base_submission_id','items','current_status','requested_by','requested_at','response']) || !validSupplyId(v.id) || !validSupplyId(v.base_submission_id) || !validSupplementItems(v.items) || !validSupplyId(v.requested_by) || !instant(v.requested_at)) return false
   return v.current_status === 'OPEN' ? v.response === null : v.current_status === 'RESPONDED' && obj(v.response) && only(v.response,['submission_id','responses','submitted_at']) && validSupplyId(v.response.submission_id) && responses(v.response.responses,v.items) && instant(v.response.submitted_at)
 }
@@ -130,7 +131,7 @@ export async function requestSupplement(i: IntakeIdentity, c: SupplementCommand)
 function isSubmissionSummary(v: unknown): v is SubmissionSummary {
   return obj(v) && only(v,['id','submission_number','submitted_by','submitted_at','content_sha256']) && validSupplyId(v.id) && version(v.submission_number) && validSupplyId(v.submitted_by) && instant(v.submitted_at) && hash(v.content_sha256)
 }
-export async function listSubmissions(i: IntakeIdentity, id: string, cursor: string|null = null, signal?: AbortSignal) {
+export async function listSubmissions(i: ReadIdentity, id: string, cursor: string|null = null, signal?: AbortSignal) {
   const q = new URLSearchParams({limit:'20'}); if (cursor) q.set('cursor',cursor)
   return checked(await request<unknown>(`/customization-requests/${encodeURIComponent(id)}/submissions?${q}`,options(i,signal)),i,(v): v is {items:SubmissionSummary[];next_cursor:string|null} => obj(v) && only(v,['items','next_cursor']) && Array.isArray(v.items) && v.items.length <= 20 && v.items.every(isSubmissionSummary) && new Set(v.items.map(x => x.id)).size === v.items.length && v.items.every((x,n) => n === 0 || x.submission_number > (v.items as SubmissionSummary[])[n-1]!.submission_number) && (v.next_cursor === null || text(v.next_cursor,512)))
 }
@@ -139,7 +140,7 @@ export function isSubmissionVersion(v: unknown): v is SubmissionVersion {
   const s = v.supplement_response
   return s === null || obj(s) && only(s,['supplement_id','base_submission_id','items','responses','requested_by','requested_at']) && validSupplyId(s.supplement_id) && validSupplyId(s.base_submission_id) && validSupplementItems(s.items,v.submission.template_snapshot) && responses(s.responses,s.items) && validSupplyId(s.requested_by) && instant(s.requested_at)
 }
-export async function getSubmission(i: IntakeIdentity, id: string, submissionId: string, signal?: AbortSignal) {
+export async function getSubmission(i: ReadIdentity, id: string, submissionId: string, signal?: AbortSignal) {
   return checked(await request<unknown>(`/customization-requests/${encodeURIComponent(id)}/submissions/${encodeURIComponent(submissionId)}`,options(i,signal)),i,(v): v is SubmissionVersion => isSubmissionVersion(v) && v.request_id === id && v.submission.id === submissionId)
 }
 export async function listCustomizationQuotes(i: IntakeIdentity, id: string, cursor: string|null = null, signal?: AbortSignal) {

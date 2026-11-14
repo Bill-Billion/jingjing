@@ -1,0 +1,70 @@
+{
+  "synthetic_only": true,
+  "evidence": [
+    {
+      "check": "revoked_and_self_authority_refused",
+      "case_id": "6346ff49-8e96-425c-8caf-26ae5504a19e",
+      "query_count": 0,
+      "reserved_minor": 1000
+    },
+    {
+      "check": "authority_changed_during_readiness",
+      "query_count": 0,
+      "reserved_minor": 1000
+    },
+    {
+      "check": "provider_binding_changes_refused",
+      "variants": 5,
+      "query_count": 0,
+      "reserved_minor": 1000
+    },
+    {
+      "check": "readiness_and_config_race_refused",
+      "query_count": 0,
+      "reserved_minor": 1000
+    },
+    {
+      "check": "transport_pending_unknown_keep_reservation",
+      "query_count": 3,
+      "restored_send_count": 0,
+      "reserved_minor": 1000
+    },
+    {
+      "check": "invalid_receipts_block_without_release",
+      "variants": 4,
+      "restored_send_count": 0,
+      "reserved_minor": 1000
+    },
+    {
+      "check": "lost_lease_then_same_request_terminal",
+      "case_id": "6346ff49-8e96-425c-8caf-26ae5504a19e",
+      "job_id": "cec1b449-c372-4d19-8511-8a316bf59e9c",
+      "restored_send_count": 0,
+      "receipt_count": 1,
+      "reserved_minor": 0,
+      "terminal_conflicts_refused": true,
+      "quarantine_preserved": true
+    },
+    {
+      "check": "closed_original_hold_only",
+      "branch": "separate_restore_of_same_snapshot",
+      "case_id": "6346ff49-8e96-425c-8caf-26ae5504a19e",
+      "query_count": 1,
+      "restored_send_count": 0,
+      "receipt_count": 0,
+      "reserved_minor": 0,
+      "contradictory_success_refused": true
+    }
+  ],
+  "source_send_count": 1,
+  "restored_send_count": 0,
+  "restored_query_count": 9,
+  "source_unchanged": true,
+  "limits": [
+    "internal engine invocation only; no recovery release or HTTP/worker bootstrap",
+    "synthetic adapters and receipts only",
+    "current authority/config changes are fixtures in the restored DB, not synchronization of all changes after backup",
+    "CLOSED alternative is a separate isolated restore of the same original snapshot",
+    "no frontend, live provider or production data"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "partial_cocreation_invitation_evidence",
+  "result": "LOCAL_VALIDATED_NOT_FORMAL_ACCEPTANCE",
+  "base_sha": "f94eed5141bd648e742bd92e7562bbaeccfc8e6c",
+  "local_code_sha": "8aef7428952c88009b39c6ab4090a103357df9ae",
+  "working_tree": false,
+  "checked_at": "2026-11-03T08:22:13.551905+00:00",
+  "interface_version": "0.31.29-rc.1",
+  "migration": "0209",
+  "formal_151_pass_count": 0,
+  "source_manifest": "docs/testing/evidence/mac-mini-pr39-cocreation-invite-20261103/SOURCE_MANIFEST.json",
+  "items": [
+    {
+      "id": "INVITE-LOCAL-01",
+      "groups": [
+        15,
+        17
+      ],
+      "standards": [
+        "TASK-15",
+        "E2E-05"
+      ],
+      "expected": "In a preexisting room the host may create or revoke an invitation; a signed-in adult explicitly claims it, enters the same room, and recovers unknown results using the original request key without automatically joining.",
+      "steps": [
+        "Host creates and loses a successful response; reload and retry the original request",
+        "Guest claims and loses a successful response; reload, reenter original credential, and retry the original request",
+        "Check repeated, revoked, expired, offline, logout and corrupt recovery records",
+        "Operate on Android in the same room and separately force-stop and restart the process before recovery"
+      ],
+      "actual": "Web 10 checks; Android same-room 2 and force-stop recovery 2 checks passed. The room participant count did not change on claiming.",
+      "records": {
+        "room_id": "b3c0cbe9-159a-49db-b65b-6e4edece0336"
+      },
+      "evidence": [
+        "web-results.json",
+        "web-login-results.json",
+        "android-same-room-results.json",
+        "android-force-stop-results.json"
+      ],
+      "limits": "Preexisting room only. No complete new-story creation, 10/20 thresholds, all individual authorizations, replacement after exit, final delivery, joint acceptance, physical device or external app-link launch. Synthetic identity, no real SMS, money or services."
+    }
+  ],
+  "execution_source_sha": "6901730f8824e05f225485502778f4c8eda5b10d",
+  "post_execution_change": "Two brace-only Dart test-harness lint fixes; production sources unchanged.",
+  "candidate_base_sha": "0f8295412c82649cc08831b42506488df1a9bc92",
+  "candidate_code_sha": "ea2ad69e839607bf4180f6515eb8b9420748841a",
+  "candidate_note": "Tests executed on f94 / API 0.31.29; newer base changes stock contract documentation and benefit tests. No actual rerun on API 0.31.30."
+}

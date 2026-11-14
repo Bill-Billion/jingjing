@@ -1,0 +1,71 @@
+{
+  "synthetic_only": true,
+  "database": "jx_test_membership_ui_c5ccc43221e44edc",
+  "started_at": "2026-11-04T11:43:53.288Z",
+  "steps": [
+    {
+      "name": "native-wallet-open",
+      "account_id": "8b5d1e21-238e-4738-bd37-dfbb50676318"
+    },
+    {
+      "name": "native-topup-same-key-recovery",
+      "recharge_id": "6ce0d59a-8fc4-4f3a-a48e-3c425a655338",
+      "balance_minor": 30000,
+      "growth": 0,
+      "level": 1,
+      "same_key": true
+    },
+    {
+      "name": "web-same-wallet-read",
+      "account_id": "8b5d1e21-238e-4738-bd37-dfbb50676318",
+      "balance_minor": 30000
+    },
+    {
+      "name": "synthetic-membership-expired",
+      "balance_minor": 30000,
+      "clock": "isolated connection +366 days"
+    },
+    {
+      "name": "synthetic-renewal-repeated-key-once",
+      "renewal_id": "e728af10-f9a1-4f5e-8882-bca7078dd008",
+      "balance_minor": 60000,
+      "growth": 0
+    },
+    {
+      "name": "synthetic-identity-expired-preserves-balance",
+      "balance_minor": 60000
+    },
+    {
+      "name": "synthetic-identity-restored-membership",
+      "balance_minor": 60000
+    }
+  ],
+  "records": {
+    "account_id": "8b5d1e21-238e-4738-bd37-dfbb50676318",
+    "recharge_id": "6ce0d59a-8fc4-4f3a-a48e-3c425a655338",
+    "renewal_id": "e728af10-f9a1-4f5e-8882-bca7078dd008"
+  },
+  "cleanup": {
+    "reverse_removed": true,
+    "database_removed": true,
+    "services_stopped": true
+  },
+  "failures": [],
+  "source_sha256": {
+    "scripts/tonight-membership-native-check.mjs": "19c5fd40db1733936ab22aaba7e165011318565edde2e3acc7b5f63522bd1712",
+    "contracts/openapi.yaml": "c1c4536203353c16b9dbaf6edf0c120ad453bfe4e08281a5718e30eb6c87131a",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/wallet/repository.js": "71c51adc17532590e715c54dee6483ddff7a8117680f01785ffa507bf2deb262",
+    "晶晶日上工程交接包/01_源码/backend_server/src/modules/wallet/custody.js": "dc7495b1474dda69bb0ea390ce1cf5871ab82bab2ccf9400cfdcec012437ae8d",
+    "晶晶日上工程交接包/01_源码/backend_server/src/testing/payment-simulator.js": "df385c5dfe62b096f9f1038f8152e3976c7b943398ecf630fececb69d1cfb1de",
+    "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/wallet/wallet_pages.dart": "2e7baef29d334c1226527a7f78eb973869bcaa95d4a2d06b5b81a345f9f8f7a7",
+    "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/wallet/wallet_models.dart": "4c80f6e513b5865be6f6ca3e527eaf4fa075aed05b0b95e10bb9882663725483",
+    "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/wallet/wallet_api.dart": "b1745e8bf4a1fc8d5112607ed5e94e1fbb17c7a06680e454a039c6a3873a81eb",
+    "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/stock/v5_support.dart": "ed6599fe20a377d82422b521ef90cb1e03e61bac662c6053d4d6e66ec46ed1da",
+    "晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/integration_test/tonight_membership_local_test.dart": "13e96918092c71d099787a91a750c676c7e94f34814344cb3f7592dab4bbf89f",
+    "晶晶日上工程交接包/01_源码/frontend_ops_workspace/src/business/wallet.ts": "c4c23bc572612c660d1d78a451131b06f3116ea2c4c19fbb1cfa7cec8e851c1b",
+    "晶晶日上工程交接包/01_源码/frontend_ops_workspace/src/views/BusinessView.vue": "2f3b830841b62b1d37ed1e37f85a6eb113e6bf8a569df1f6aa8ac0533ecf1224",
+    "晶晶日上工程交接包/01_源码/frontend_ops_workspace/dist/index.html": "fced6d09da7bb1c39641f3f9fb57d6dd308425f636d290d4a5ce779cc8f5c7a9"
+  },
+  "passed": true,
+  "finished_at": "2026-11-04T11:45:48.264Z"
+}

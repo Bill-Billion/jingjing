@@ -1,3 +1,4 @@
+import '../contracts/marketplace_allocation.dart';
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
 import 'dart:convert';
@@ -152,21 +153,37 @@ void financeRules(dynamic v) {
   final lines = financeList(d['lines'], min: 1, max: 30);
   final ids = <String>{};
   for (final l in lines) {
-    final x = financeMap(l, required: ['line_id', 'shares', 'deductions']);
+    final x = financeMap(l,
+        required: ['line_id', 'deductions'],
+        optional: ['shares', 'allocation']);
+    financeRequire(x.containsKey('shares') != x.containsKey('allocation'));
     financeRequire(financeText(x['line_id'], 128) && ids.add(x['line_id']));
     final parties = <String>{};
-    var bps = 0;
-    for (final s in financeList(x['shares'], min: 1, max: 30)) {
-      final z = financeMap(s, required: ['party_id', 'bps', 'role']);
-      financeRequire(financeId(z['party_id']) &&
-          parties.add(z['party_id']) &&
-          z['bps'] is int &&
-          z['bps'] >= 0 &&
-          z['bps'] <= 10000 &&
-          financeRoles.containsKey(z['role']));
-      bps += z['bps'] as int;
+    if (x.containsKey('allocation')) {
+      final allocation = x['allocation'];
+      financeRequire(marketplaceAllocationValid(allocation));
+      for (final key in [
+        'platform_party_id',
+        'supplier_party_id',
+        'mcn_party_id',
+        'referrer_party_id'
+      ]) {
+        if (allocation[key] != null) parties.add(allocation[key] as String);
+      }
+    } else {
+      var bps = 0;
+      for (final s in financeList(x['shares'], min: 1, max: 30)) {
+        final z = financeMap(s, required: ['party_id', 'bps', 'role']);
+        financeRequire(financeId(z['party_id']) &&
+            parties.add(z['party_id']) &&
+            z['bps'] is int &&
+            z['bps'] >= 0 &&
+            z['bps'] <= 10000 &&
+            financeRoles.containsKey(z['role']));
+        bps += z['bps'] as int;
+      }
+      financeRequire(bps == 10000);
     }
-    financeRequire(bps == 10000);
     for (final f in financeList(x['deductions'], max: 30)) {
       final z = financeMap(f, required: [
         'category',
@@ -576,6 +593,8 @@ String financeError(AccountError e, {bool writing = false}) {
   if (e.uncertain && writing) return '操作结果尚未确认。原请求、内容与版本已保留，请先恢复原请求核对。';
   if (e.status == 412) return '内容已更新，请重新查看当前记录并重新确认。旧决定不会自动重放。';
   return {
+        'CONTENT_RESTRICTED': '材料当前受到限制，暂不能读取。限制解除后可重新读取。',
+        'FINANCE_ROUNDING_REVIEW_REQUIRED': '历史分钱存在尾差异常，旧账保留，暂停新增付款并等待人工复核。',
         'FINANCE_AGREEMENT_NOT_APPROVED': '结算约定尚未审核通过。',
         'FINANCE_CONFIRMATIONS_REQUIRED': '相关方尚未完整确认这份准确约定。',
         'CURRENT_SETTLEMENT_CONFIRMATION_REQUIRED': '当前来源的结算单尚未完成各方确认。',

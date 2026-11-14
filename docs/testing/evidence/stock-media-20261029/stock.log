@@ -1,0 +1,312 @@
+TAP version 13
+# Subtest: actual stock cover and full/preview durations with isolated authorization
+    # Subtest: review is required and request identity is explicit
+    ok 1 - review is required and request identity is explicit
+      ---
+      duration_ms: 138.4333
+      type: 'test'
+      ...
+    # Subtest: durations come from distinct actual files and cover pixels come only from preview
+    ok 2 - durations come from distinct actual files and cover pixels come only from preview
+      ---
+      duration_ms: 307.0322
+      type: 'test'
+      ...
+    # Subtest: unlisting blocks metadata and cover despite a warmed cache
+    ok 3 - unlisting blocks metadata and cover despite a warmed cache
+      ---
+      duration_ms: 23.4627
+      type: 'test'
+      ...
+    # Subtest: damaged stored bytes do not reuse a cached cover; missing tools never claim success
+    ok 4 - damaged stored bytes do not reuse a cached cover; missing tools never claim success
+      ---
+      duration_ms: 291.0039
+      type: 'test'
+      ...
+    # Subtest: unplayable approved fixture is rejected instead of invented duration
+    ok 5 - unplayable approved fixture is rejected instead of invented duration
+      ---
+      duration_ms: 156.7041
+      type: 'test'
+      ...
+    # Subtest: withdrawn person authorization blocks both media routes
+    ok 6 - withdrawn person authorization blocks both media routes
+      ---
+      duration_ms: 269.7836
+      type: 'test'
+      ...
+    1..6
+ok 1 - actual stock cover and full/preview durations with isolated authorization
+  ---
+  duration_ms: 8651.6473
+  type: 'test'
+  ...
+# Subtest: preview cache still rechecks current permission and storage bytes
+ok 2 - preview cache still rechecks current permission and storage bytes
+  ---
+  duration_ms: 2.1884
+  type: 'test'
+  ...
+# Subtest: withdrawal during storage access blocks a newly generated cover
+ok 3 - withdrawal during storage access blocks a newly generated cover
+  ---
+  duration_ms: 0.2901
+  type: 'test'
+  ...
+# Subtest: same source shares processing and concurrent request count is bounded
+ok 4 - same source shares processing and concurrent request count is bounded
+  ---
+  duration_ms: 0.5208
+  type: 'test'
+  ...
+# Subtest: changed listing version cannot reuse a previous rendering
+ok 5 - changed listing version cannot reuse a previous rendering
+  ---
+  duration_ms: 0.2535
+  type: 'test'
+  ...
+# Subtest: invalid video claims do not create duration or image metadata
+ok 6 - invalid video claims do not create duration or image metadata
+  ---
+  duration_ms: 0.4183
+  type: 'test'
+  ...
+# Subtest: missing tools cannot return fabricated cover or duration
+ok 7 - missing tools cannot return fabricated cover or duration
+  ---
+  duration_ms: 0.3211
+  type: 'test'
+  ...
+# Subtest: thumbnail dimensions preserve non-square pixels and quarter-turn orientation
+ok 8 - thumbnail dimensions preserve non-square pixels and quarter-turn orientation
+  ---
+  duration_ms: 0.7728
+  type: 'test'
+  ...
+# Subtest: stock license is a specific noncommercial perpetual video license
+ok 9 - stock license is a specific noncommercial perpetual video license
+  ---
+  duration_ms: 1.356
+  type: 'test'
+  ...
+# Subtest: stock specification rejects undisclosed license expansion and missing acceptance terms
+ok 10 - stock specification rejects undisclosed license expansion and missing acceptance terms
+  ---
+  duration_ms: 0.3682
+  type: 'test'
+  ...
+# Subtest: stock video commerce in isolated MySQL
+    # Subtest: empty seller obtains reviewed choices before first listing
+    ok 1 - empty seller obtains reviewed choices before first listing
+      ---
+      duration_ms: 74.8673
+      type: 'test'
+      ...
+    # Subtest: L1 may list without paid L2; source and preview must differ
+    ok 2 - L1 may list without paid L2; source and preview must differ
+      ---
+      duration_ms: 68.5216
+      type: 'test'
+      ...
+    # Subtest: listing requires current L1 fact, not seller checkbox
+    ok 3 - listing requires current L1 fact, not seller checkbox
+      ---
+      duration_ms: 15.9141
+      type: 'test'
+      ...
+    # Subtest: independent rights and content reviews required before public sale
+    ok 4 - independent rights and content reviews required before public sale
+      ---
+      duration_ms: 60.2349
+      type: 'test'
+      ...
+    # Subtest: catalog reveals no source, private evidence or contact data
+    ok 5 - catalog reveals no source, private evidence or contact data
+      ---
+      duration_ms: 55.8212
+      type: 'test'
+      ...
+    # Subtest: verified personal buyer needs neither own avatar nor company; unverified account blocked
+    ok 6 - verified personal buyer needs neither own avatar nor company; unverified account blocked
+      ---
+      duration_ms: 82.9218
+      type: 'test'
+      ...
+    # Subtest: unpaid and another buyer cannot download source
+    ok 7 - unpaid and another buyer cannot download source
+      ---
+      duration_ms: 27.0235
+      type: 'test'
+      ...
+    # Subtest: trusted payment grants once and leaves clock stopped until actual receipt
+    ok 8 - trusted payment grants once and leaves clock stopped until actual receipt
+      ---
+      duration_ms: 85.9603
+      type: 'test'
+      ...
+    # Subtest: ordinary unlisting leaves purchased license and contract unchanged
+    ok 9 - ordinary unlisting leaves purchased license and contract unchanged
+      ---
+      duration_ms: 55.8032
+      type: 'test'
+      ...
+    # Subtest: rights hold remains during re-review; two approvals restore purchased access
+    ok 10 - rights hold remains during re-review; two approvals restore purchased access
+      ---
+      duration_ms: 114.9312
+      type: 'test'
+      ...
+    # Subtest: notification read plus actual content access permits explicit receipt clock
+    ok 11 - notification read plus actual content access permits explicit receipt clock
+      ---
+      duration_ms: 41.7599
+      type: 'test'
+      ...
+    # Subtest: issue stops clock and prevents download until independent resolution
+    ok 12 - issue stops clock and prevents download until independent resolution
+      ---
+      duration_ms: 78.3447
+      type: 'test'
+      ...
+    # Subtest: refund approval is not refund success; actual full refund revokes license
+    ok 13 - refund approval is not refund success; actual full refund revokes license
+      ---
+      duration_ms: 86.1964
+      type: 'test'
+      ...
+    # Subtest: concurrent clicks with different keys cannot create duplicate purchase
+    ok 14 - concurrent clicks with different keys cannot create duplicate purchase
+      ---
+      duration_ms: 81.7632
+      type: 'test'
+      ...
+    # Subtest: changed reviewed offer requires buyer to confirm again; Apple needs reviewed product mapping
+    ok 15 - changed reviewed offer requires buyer to confirm again; Apple needs reviewed product mapping
+      ---
+      duration_ms: 68.6184
+      type: 'test'
+      ...
+    # Subtest: unlisting after preparing payment blocks dispatch; late cancelled receipt grants no access
+    ok 16 - unlisting after preparing payment blocks dispatch; late cancelled receipt grants no access
+      ---
+      duration_ms: 126.3654
+      type: 'test'
+      ...
+    # Subtest: stored full-file hash change cannot silently replace sold file
+    ok 17 - stored full-file hash change cannot silently replace sold file
+      ---
+      duration_ms: 114.7184
+      type: 'test'
+      ...
+    # Subtest: automatic acceptance checks actual private bytes and a current worker lease
+    ok 18 - automatic acceptance checks actual private bytes and a current worker lease
+      ---
+      duration_ms: 175.5304
+      type: 'test'
+      ...
+    # Subtest: missing private file stops the clock rather than falsely completing order
+    ok 19 - missing private file stops the clock rather than falsely completing order
+      ---
+      duration_ms: 209.112
+      type: 'test'
+      ...
+    # Subtest: rights suspension invalidates old receipt even when review finishes before timer runs
+    ok 20 - rights suspension invalidates old receipt even when review finishes before timer runs
+      ---
+      duration_ms: 224.6996
+      type: 'test'
+      ...
+    # Subtest: explicit acceptance needs actual source access and cannot be done for another buyer
+    ok 21 - explicit acceptance needs actual source access and cannot be done for another buyer
+      ---
+      duration_ms: 147.4226
+      type: 'test'
+      ...
+    # Subtest: failed purchase audit rolls back order and purchase together
+    ok 22 - failed purchase audit rolls back order and purchase together
+      ---
+      duration_ms: 140.5591
+      type: 'test'
+      ...
+    # Subtest: seller and reviewer browse private files; buyer lists remain personal
+    ok 23 - seller and reviewer browse private files; buyer lists remain personal
+      ---
+      duration_ms: 88.6841
+      type: 'test'
+      ...
+    # Subtest: stock upload supports bounded video size independently of old 8MB materials
+    ok 24 - stock upload supports bounded video size independently of old 8MB materials
+      ---
+      duration_ms: 55.0901
+      type: 'test'
+      ...
+    # Subtest: MCN listing binds the actual L1 artist and stops new sales when delegation is withdrawn
+    ok 25 - MCN listing binds the actual L1 artist and stops new sales when delegation is withdrawn
+      ---
+      duration_ms: 212.5541
+      type: 'test'
+      ...
+    # Subtest: first seller reads published rules and scoped consents without past listings
+    ok 26 - first seller reads published rules and scoped consents without past listings
+      ---
+      duration_ms: 23.3032
+      type: 'test'
+      ...
+    # Subtest: publication independent review, stale versions and withdrawals gate new sale
+    ok 27 - publication independent review, stale versions and withdrawals gate new sale
+      ---
+      duration_ms: 18.0457
+      type: 'test'
+      ...
+    # Subtest: rejected listing resubmits a separate version with replay and review protection
+    ok 28 - rejected listing resubmits a separate version with replay and review protection
+      ---
+      duration_ms: 94.6367
+      type: 'test'
+      ...
+    # Subtest: replacement publication leaves bought file and licence intact and prevents old reactivation
+    ok 29 - replacement publication leaves bought file and licence intact and prevents old reactivation
+      ---
+      duration_ms: 203.6567
+      type: 'test'
+      ...
+    # Subtest: publication routes require operator rights, independent review and exact version
+    ok 30 - publication routes require operator rights, independent review and exact version
+      ---
+      duration_ms: 85.7448
+      type: 'test'
+      ...
+    # Subtest: two rejected revisions and later replacements keep one active sale and original purchases
+    ok 31 - two rejected revisions and later replacements keep one active sale and original purchases
+      ---
+      duration_ms: 239.2277
+      type: 'test'
+      ...
+    # Subtest: stopped sales publication blocks new listings and checkout but preserves old purchase
+    ok 32 - stopped sales publication blocks new listings and checkout but preserves old purchase
+      ---
+      duration_ms: 132.3838
+      type: 'test'
+      ...
+    # Subtest: new consent withdrawal hides catalog and stops another download without rewriting sold history
+    ok 33 - new consent withdrawal hides catalog and stops another download without rewriting sold history
+      ---
+      duration_ms: 138.8152
+      type: 'test'
+      ...
+    1..33
+ok 11 - stock video commerce in isolated MySQL
+  ---
+  duration_ms: 10552.1708
+  type: 'test'
+  ...
+1..11
+# tests 50
+# suites 0
+# pass 50
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10759.7896

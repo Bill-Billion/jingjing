@@ -1,0 +1,221 @@
+TAP version 13
+# cross-grant schedule HTTP 409 REWARD_EVIDENCE_NOT_FOUND
+# Subtest: supplier evidence is explicitly linked to one grant and only an independent operator can read it
+    # Subtest: cannot schedule a grant using evidence explicitly submitted only to another grant
+    ok 1 - cannot schedule a grant using evidence explicitly submitted only to another grant
+      ---
+      duration_ms: 17.5413
+      type: 'test'
+      ...
+# cross-purpose completion HTTP 409 REWARD_EVIDENCE_NOT_FOUND
+    # Subtest: completion requires this grant completion evidence; original schedule and finish replay remain stable
+    ok 2 - completion requires this grant completion evidence; original schedule and finish replay remain stable
+      ---
+      duration_ms: 198.8956
+      type: 'test'
+      ...
+    1..2
+ok 1 - supplier evidence is explicitly linked to one grant and only an independent operator can read it
+  ---
+  duration_ms: 11497.2104
+  type: 'test'
+  ...
+# Subtest: fixed redemption through actual HTTP and isolated MySQL transactions
+    # Subtest: independent stock approval, private evidence and unauthorized queue rejected
+    ok 1 - independent stock approval, private evidence and unauthorized queue rejected
+      ---
+      duration_ms: 178.504
+      type: 'test'
+      ...
+    # Subtest: repeated exchange spends once; changed key payload rejected; another user cannot read
+    ok 2 - repeated exchange spends once; changed key payload rejected; another user cannot read
+      ---
+      duration_ms: 104.373
+      type: 'test'
+      ...
+    # Subtest: last inventory races: exactly one grant, one debit, no overselling
+    ok 3 - last inventory races: exactly one grant, one debit, no overselling
+      ---
+      duration_ms: 396.7244
+      type: 'test'
+      ...
+    # Subtest: insufficient balance and underage gate roll back grant and stock together
+    ok 4 - insufficient balance and underage gate roll back grant and stock together
+      ---
+      duration_ms: 340.5309
+      type: 'test'
+      ...
+    # Subtest: retired inventory prevents new exchange but preserves prior entitlement
+    ok 5 - retired inventory prevents new exchange but preserves prior entitlement
+      ---
+      duration_ms: 39.4454
+      type: 'test'
+      ...
+    # Subtest: service failure refund returns original points exactly once
+    ok 6 - service failure refund returns original points exactly once
+      ---
+      duration_ms: 70.1996
+      type: 'test'
+      ...
+    # Subtest: exposure binds real public artist, independently schedules and requires holder confirmation
+    ok 7 - exposure binds real public artist, independently schedules and requires holder confirmation
+      ---
+      duration_ms: 227.9049
+      type: 'test'
+      ...
+    # Subtest: fulfilled exposure records proof and cannot be redeemed twice
+    ok 8 - fulfilled exposure records proof and cannot be redeemed twice
+      ---
+      duration_ms: 60.9734
+      type: 'test'
+      ...
+    # Subtest: verified production credit gets correct price; unrelated existing stock video cannot authorize template
+    ok 9 - verified production credit gets correct price; unrelated existing stock video cannot authorize template
+      ---
+      duration_ms: 87.4357
+      type: 'test'
+      ...
+    # Subtest: interview belongs to self, requires authorized materials, extension once and actual interview result never grants role
+    ok 10 - interview belongs to self, requires authorized materials, extension once and actual interview result never grants role
+      ---
+      duration_ms: 355.09
+      type: 'test'
+      ...
+    # Subtest: points pending reversal blocks new exchange; remedy clears original debt before any available balance
+    ok 11 - points pending reversal blocks new exchange; remedy clears original debt before any available balance
+      ---
+      duration_ms: 88.0898
+      type: 'test'
+      ...
+    # Subtest: returning expired original points does not mint a fresh year of validity
+    ok 12 - returning expired original points does not mint a fresh year of validity
+      ---
+      duration_ms: 72.9765
+      type: 'test'
+      ...
+    1..12
+ok 2 - fixed redemption through actual HTTP and isolated MySQL transactions
+  ---
+  duration_ms: 12047.324
+  type: 'test'
+  ...
+# Subtest: reward remedy preserves one grant and all pending schedules across invalid binding
+    # Subtest: return original points cancels the still-pending schedule atomically; rejection and replay cannot resurrect it
+    not ok 1 - return original points cancels the still-pending schedule atomically; rejection and replay cannot resurrect it
+      ---
+      duration_ms: 836.8902
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\reward-remedy-lifecycle.integration.test.cjs:63:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+
+          Comparison {
+        +   code: 'VERSION_CONFLICT'
+        -   code: 'REVIEW_NOT_PENDING'
+          }
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        code: 'REVIEW_NOT_PENDING'
+      actual:
+      error: 'VERSION_CONFLICT'
+      stack: |-
+        call (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:19:49)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async waitForActual (node:assert:644:5)
+        async Function.rejects (node:assert:767:25)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:70:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:63:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      operator: 'rejects'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:70:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:63:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: one-time interview extension cancels old pending slot and permits a fresh schedule
+    not ok 2 - one-time interview extension cancels old pending slot and permits a fresh schedule
+      ---
+      duration_ms: 192.9651
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\reward-remedy-lifecycle.integration.test.cjs:73:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+
+          Comparison {
+        +   code: 'VERSION_CONFLICT'
+        -   code: 'REVIEW_NOT_PENDING'
+          }
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        code: 'REVIEW_NOT_PENDING'
+      actual:
+      error: 'VERSION_CONFLICT'
+      stack: |-
+        call (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:19:49)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async waitForActual (node:assert:644:5)
+        async Function.rejects (node:assert:767:25)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:78:62)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:73:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      operator: 'rejects'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:78:62)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:73:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected remedy preserves pending slot; stale and changed commands cannot change the outcome
+    ok 3 - rejected remedy preserves pending slot; stale and changed commands cannot change the outcome
+      ---
+      duration_ms: 177.9107
+      type: 'test'
+      ...
+    # Subtest: withdrawn public participation blocks acceptance but permits declining the original future slot
+    ok 4 - withdrawn public participation blocks acceptance but permits declining the original future slot
+      ---
+      duration_ms: 199.8799
+      type: 'test'
+      ...
+    # Subtest: confirmed but no longer public award cannot finish; remedy cancels its approved slot once
+    ok 5 - confirmed but no longer public award cannot finish; remedy cancels its approved slot once
+      ---
+      duration_ms: 200.5352
+      type: 'test'
+      ...
+    1..5
+not ok 3 - reward remedy preserves one grant and all pending schedules across invalid binding
+  ---
+  duration_ms: 11937.4551
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\reward-remedy-lifecycle.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..3
+# tests 22
+# suites 0
+# pass 19
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12276.7375

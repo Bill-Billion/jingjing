@@ -1,0 +1,45 @@
+WebSocket server error:
+Error: listen EPERM: operation not permitted 0.0.0.0:24678
+    at Server.setupListenHandle [as _listen2] (node:net:1986:21)
+    at listenInCluster (node:net:2065:12)
+    at Server.listen (node:net:2170:7)
+    at Object.listen (file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A%E5%B7%A5%E7%A8%8B%E4%BA%A4%E6%8E%A5%E5%8C%85/01_%E6%BA%90%E7%A0%81/frontend_ops_workspace/node_modules/vite/dist/node/chunks/node.js:24182:18)
+    at Object.listen (file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A%E5%B7%A5%E7%A8%8B%E4%BA%A4%E6%8E%A5%E5%8C%85/01_%E6%BA%90%E7%A0%81/frontend_ops_workspace/node_modules/vite/dist/node/chunks/node.js:24851:27)
+    at DevEnvironment.listen (file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A%E5%B7%A5%E7%A8%8B%E4%BA%A4%E6%8E%A5%E5%8C%85/01_%E6%BA%90%E7%A0%81/frontend_ops_workspace/node_modules/vite/dist/node/chunks/node.js:36374:12)
+    at file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A%E5%B7%A5%E7%A8%8B%E4%BA%A4%E6%8E%A5%E5%8C%85/01_%E6%BA%90%E7%A0%81/frontend_ops_workspace/node_modules/vite/dist/node/chunks/node.js:24555:95
+    at Array.map (<anonymous>)
+    at file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A%E5%B7%A5%E7%A8%8B%E4%BA%A4%E6%8E%A5%E5%8C%85/01_%E6%BA%90%E7%A0%81/frontend_ops_workspace/node_modules/vite/dist/node/chunks/node.js:24555:82
+    at async _createServer (file:///Users/yanghaoran/Code/jingjing/.local/figma-frontend-restore/%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A%E5%B7%A5%E7%A8%8B%E4%BA%A4%E6%8E%A5%E5%8C%85/01_%E6%BA%90%E7%A0%81/frontend_ops_workspace/node_modules/vite/dist/node/chunks/node.js:24572:9)
+✓ 开票DTO区分申请、额度、票据和历史，拒绝错状态及坏金额
+✓ 人民币金额只接整数分，零更正与原申请的下限分别校验
+✓ 运营能力缺失或空数组默认只读，显式授权和当前状态共同过滤
+✓ 开票本人查询携带身份，运营查询不带身份；错误回显身份不得采信
+✓ 申请页读取原单真实额度，无收款和零额度不出现申请表
+✓ 本人申请写入失败保留文字附件，未知结果重试同一键同一body
+✓ 补件只提交约定字段与原版本；412重读后需重新选择和确认，保留输入
+✓ 明确授权的运营录入使用账号域，核准权限不能执行录入，同人自审空动作禁用
+✓ 运营旧契约无能力数组时显示只读边界，不暴露可提交的操作表单
+✓ 本人票据守卫拒绝未核准文件，已更正历史单独显示，退款更正不标为退款完成
+✓ 已核准零金额更正明确说明归零且不是退款，待核准和普通零金额不冒称完成
+✓ 票据历史中的录入PDF不错误走申请附件接口
+✓ 列表中间空页继续，失败重试保留原游标，循环游标拒绝追加
+✓ 读取权限撤回清抬头记录票据和历史，切身份迟到响应不得回填
+✓ 历史读取失去权限后错误仍可见，已读抬头和税号也清除
+✓ 模拟下载校验当前内容，正式PDF使用asset_proof而非JSON摘要；受控失效清文件
+✓ 换号DTO限制脱敏、步骤、挑战和relogin语义
+✓ 账号域发起和挑战写入从不传actingparty，版本精确引用当前申请
+✓ 切个人机构与业务revision不会清掉账号换号申请和未知请求
+✓ 未知创建不能用相同脱敏号的历史或其他会话申请解除原key
+✓ 未知发码不能借旧challenge和新版本认作成功，须原键原版本恢复且不自动重发
+✓ 错误验证码保留登录并读剩余次数，验证码未写入GET路径或自动再发
+✓ 412刷新最新换号状态并要求重新决定，不自动重发POST
+✓ 其他设备can_continue=false不会继续验证，结束状态不直接再确认
+✓ 确认未知只读核对，无自动POST；仍READY须重新明确确认后同键恢复
+✓ 确认后旧会话401保留新号登录核对指引，不重复提交；新会话COMPLETED false不再登出
+✓ 账号切换立即清私有进度与原payload，迟到回复不能回填
+✓ 服务器Retry-After约束阻止新请求键绕过；近期登录错误明确保留申请入口
+✓ 取消结果未知后精确同申请CANCELLED可核对完成，不产生重复取消
+✓ 四新入口保持70子入口7父级唯一高亮，安全登录返回不携带手机号或假权限
+✓ 本人换号页不显示机构选择，完成的新登录展示恢复原账号而非再次退出
+
+31 invoices/phone checks passed.

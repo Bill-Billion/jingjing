@@ -1,0 +1,126 @@
+TAP version 13
+# Subtest: explicit enterprise buyer representative completes and reverses original audition bookings
+    # Subtest: ordinary or invoice-only member cannot book; explicit trade grant preserves identity and company gates
+    ok 1 - ordinary or invoice-only member cannot book; explicit trade grant preserves identity and company gates
+      ---
+      duration_ms: 176.0555
+      type: 'test'
+      ...
+    # Subtest: safety review remains independent and current representative checks out the original company order
+    ok 2 - safety review remains independent and current representative checks out the original company order
+      ---
+      duration_ms: 121.3612
+      type: 'test'
+      ...
+    # Subtest: company switching and buyer delegation cannot impersonate the artist or read their offer administration
+    not ok 3 - company switching and buyer delegation cannot impersonate the artist or read their offer administration
+      ---
+      duration_ms: 36.7109
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-representative.integration.test.cjs:16:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        409 !== 403
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 403
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-representative.integration.test.cjs:39:121
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-representative.integration.test.cjs:16:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-representative.integration.test.cjs:37:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: revocation blocks same booking reads, messages, creation and checkout replay without changing the contract
+    ok 4 - revocation blocks same booking reads, messages, creation and checkout replay without changing the contract
+      ---
+      duration_ms: 73.8296
+      type: 'test'
+      ...
+    # Subtest: company-specific sample consent and independent delivery review still precede buyer downloads
+    not ok 5 - company-specific sample consent and independent delivery review still precede buyer downloads
+      ---
+      duration_ms: 8.1613
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-representative.integration.test.cjs:16:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'AUDITION_NOT_DELIVERABLE'
+        - 'AUDITION_SAMPLE_CONSENT_REQUIRED'
+                    ^
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'AUDITION_SAMPLE_CONSENT_REQUIRED'
+      actual: 'AUDITION_NOT_DELIVERABLE'
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-representative.integration.test.cjs:52:10
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-representative.integration.test.cjs:16:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-representative.integration.test.cjs:51:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: losing representative rights during sample transport returns no bytes or viewed receipt; new grant allows actual receipt
+    not ok 6 - losing representative rights during sample transport returns no bytes or viewed receipt; new grant allows actual receipt
+      ---
+      duration_ms: 7.2381
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-representative.integration.test.cjs:16:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        409 !== 403
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 403
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-representative.integration.test.cjs:58:35
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-representative.integration.test.cjs:16:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-representative.integration.test.cjs:57:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: a second company booking can be cancelled and independently refunded by the authorized buyer with original ownership
+    ok 7 - a second company booking can be cancelled and independently refunded by the authorized buyer with original ownership
+      ---
+      duration_ms: 136.4665
+      type: 'test'
+      ...
+    1..7
+not ok 1 - explicit enterprise buyer representative completes and reverses original audition bookings
+  ---
+  duration_ms: 8448.0403
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-representative.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '3 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 8
+# suites 0
+# pass 4
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8631.1991

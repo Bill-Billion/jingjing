@@ -9,8 +9,8 @@ test('V5 customization actual HTTP: paid manual production, receipts, changes an
  try{
  await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
  const f=await require('./support/customization-delivery.cjs').seed(db),{producer,buyer,reviewer,outsider,artist}=f.people;
- server=createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.org.party_id}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
- async function call(method,url,who=producer,body,version=null,op=key(),party=who.acting_party_id){const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+who.token,...(party?{'X-Acting-Party':party}:{}),...(body===undefined?{}:{'Content-Type':Buffer.isBuffer(body)?'application/octet-stream':'application/json','Idempotency-Key':op}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body===undefined?{}:{body:Buffer.isBuffer(body)?body:JSON.stringify(body)})});const binary=!(res.headers.get('content-type')||'').includes('application/json'),value=binary?Buffer.from(await res.arrayBuffer()):await res.json();if(!binary)fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?(url.includes('/fulfillment')||['/start','/cases','/case-resolution','/refund-sync','/delivery-receipt','/reissue'].some(x=>url.endsWith(x))?'CustomizationFulfillmentResponse':url.endsWith('/story')?'ProductionStoryResponse':url.startsWith('/operations')?'OpsReadResponse':url.startsWith('/trade/')?'TradeRecordResponse':'ProductionRecordResponse'):'ErrorResponse',value});return {status:res.status,data:value.data,error:value.error,body:value};}
+ server=createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.org.party_id,CUSTOMIZATION_CONTRACT_POLICY:'CONTRACT_20261029'}}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
+ async function call(method,url,who=producer,body,version=null,op=key(),party=who.acting_party_id){const res=await fetch(base+url,{method,headers:{Authorization:'Bearer '+who.token,...(party?{'X-Acting-Party':party}:{}),...(body===undefined?{}:{'Content-Type':Buffer.isBuffer(body)?'application/octet-stream':'application/json','Idempotency-Key':op}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body===undefined?{}:{body:Buffer.isBuffer(body)?body:JSON.stringify(body)})});const binary=!(res.headers.get('content-type')||'').includes('application/json'),value=binary?Buffer.from(await res.arrayBuffer()):await res.json();if(!binary)fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?((url.startsWith('/customization-requests')||url.startsWith('/operations/customization-requests'))?'CustomizationRequestResponse':url.includes('/fulfillment')||['/start','/cases','/case-resolution','/refund-sync','/delivery-receipt','/reissue'].some(x=>url.endsWith(x))?'CustomizationFulfillmentResponse':url.endsWith('/story')?'ProductionStoryResponse':url.startsWith('/operations')?'OpsReadResponse':url.startsWith('/trade/')?'TradeRecordResponse':'ProductionRecordResponse'):'ErrorResponse',value});return {status:res.status,data:value.data,error:value.error,body:value};}
  const ok=r=>{assert.equal(r.status,200,JSON.stringify(r.body));return r.data;},bad=(r,code)=>assert.equal(r.error?.code,code,JSON.stringify(r.body));
  const get=p=>call('GET','/production/records/'+p.id).then(ok),flow=p=>call('GET','/production/projects/'+p.id+'/fulfillment').then(ok);
  async function command(p,action,who,body={},op=key()){return call('POST','/production/projects/'+p.id+'/'+action,who,body,(await get(p)).object_version,op,who===reviewer?null:who.acting_party_id);}
@@ -36,10 +36,42 @@ test('V5 customization actual HTTP: paid manual production, receipts, changes an
  await t.test('before-start cancellation refunds all, approval is not actual refund, retries do not duplicate facts',async()=>{b=await create();const payment=await f.pay(b.order,'first');ok(await command(b.project,'cases',buyer,{kind:'CANCEL',reason:'before start',evidence_asset_ids:[]}));const cid=(await flow(b.project)).cases.at(-1).id;bad(await command(b.project,'case-resolution',reviewer,{case_id:cid,decision:'CANCEL',retained_minor:1,change_order_id:null,reason:'wrong fee'}),'CUSTOMIZATION_RETAINED_AMOUNT_INVALID');ok(await command(b.project,'case-resolution',reviewer,{case_id:cid,decision:'CANCEL',retained_minor:0,change_order_id:null,reason:'full refund'}));assert.equal((await flow(b.project)).state,'REFUND_REQUIRED');ok(await command(b.project,'refund-sync',buyer));assert.equal((await flow(b.project)).state,'REFUND_REQUIRED');let refund=await f.trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:payment.id,allocations:[{line_id:'film',amount_minor:3000}],reason:'approved cancellation',operation_key:key()});refund=await f.reviewTrade(refund);await f.trade.claim(reviewer.ctx,refund.id,null,'REFUND');await f.trade.applyRefund(refund.id,{...refund.data,refund_id:refund.id,status:'SUCCEEDED'});ok(await command(b.project,'refund-sync',buyer));ok(await command(b.project,'refund-sync',buyer));assert.equal((await flow(b.project)).state,'REFUNDED');assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM ops_events WHERE record_id=? AND event_code='CUSTOMIZATION_REFUND_RESOLVED'",[b.project.id]))[0][0].n),1);});
  await t.test('refund cannot bypass customer-service review; paid legacy order remains unmodified',async()=>{await assert.rejects(()=>f.trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:first.id,allocations:[{line_id:'film',amount_minor:1}],reason:'no review',operation_key:key()}),e=>e.code==='CUSTOMIZATION_CANCELLATION_REVIEW_REQUIRED');});
  await t.test('alternate explicit prepayment policy does not deadlock preview and interim collection',async()=>{const x=await create({preview:'INTERIM_BEFORE_PREVIEW'});await f.pay(x.order,'first');ok(await command(x.project,'start',producer));const s=await deliver(x.project,'SCRIPT');await viewed(s);ok(await accept(s));const v=await deliver(x.project,'SAMPLE');bad(await content(v),'CUSTOMIZATION_INTERIM_PAYMENT_REQUIRED');await f.pay(x.order,'interim');await viewed(v);ok(await accept(v));});
+ await t.test('new contract: current accepted script unlocks 40%, production and final 30% remain gated',async()=>{
+  const x=await create({preview:'SCRIPT_BEFORE_INTERIM'}),frozen=structuredClone(x.order.data.contract);
+  assert.deepEqual(x.order.data.quote.installments.map(i=>i.allocations[0].amount_minor),[3000,4000,3000]);
+  await f.pay(x.order,'first');ok(await command(x.project,'start',producer));
+  await assert.rejects(()=>f.pay(x.order,'interim'),{code:'PAYMENT_MILESTONE_NOT_MET'});
+  let v=await deliver(x.project,'SCRIPT');await viewed(v);ok(await accept(v));
+  // A revised script invalidates the previous acceptance before collecting middle payment.
+  v=await deliver(x.project,'SCRIPT');
+  await assert.rejects(()=>f.pay(x.order,'interim'),{code:'PAYMENT_MILESTONE_NOT_MET'});
+  await viewed(v);ok(await accept(v));
+  await assert.rejects(()=>deliver(x.project,'SAMPLE'),/CUSTOMIZATION_INTERIM_PAYMENT_REQUIRED/);
+  assert.equal((await f.pay(x.order,'interim')).data.amount_minor,4000);
+  const preview=await deliver(x.project,'SAMPLE');await viewed(preview);ok(await accept(preview));
+  const rough=await deliver(x.project,'ROUGH_CUT');await viewed(rough);ok(await accept(rough));
+  const final=await deliver(x.project,'FINAL');await viewed(final);
+  await assert.rejects(()=>f.pay(x.order,'last'),{code:'PAYMENT_MILESTONE_NOT_MET'});
+  ok(await accept(final));assert.equal((await content(final,'final')).status,409);
+  assert.equal((await f.pay(x.order,'last')).data.amount_minor,3000);
+  assert.equal((await content(final,'final')).status,200);
+  assert.deepEqual((await f.trade.read(buyer.ctx,{record_id:x.order.id,party_id:buyer.personal_party_id})).data.contract,frozen);
+  assert.equal((await flow(x.project)).state,'DELIVERED');
+ });
+ await t.test('new contract cancellation has reviewed cap, not automatic forfeiture of all received money',async()=>{
+  const x=await create({preview:'SCRIPT_BEFORE_INTERIM'});await f.pay(x.order,'first');ok(await command(x.project,'start',producer));
+  const v=await deliver(x.project,'SCRIPT');await viewed(v);ok(await accept(v));await f.pay(x.order,'interim');
+  ok(await command(x.project,'cases',buyer,{kind:'CANCEL',reason:'synthetic cancellation after script',evidence_asset_ids:[]}));
+  const case_id=(await flow(x.project)).cases.at(-1).id;
+  bad(await command(x.project,'case-resolution',reviewer,{case_id,decision:'CANCEL',retained_minor:7001,change_order_id:null,reason:'exceeds confirmed and cash'}),'CUSTOMIZATION_RETAINED_AMOUNT_INVALID');
+  ok(await command(x.project,'case-resolution',reviewer,{case_id,decision:'CANCEL',retained_minor:3000,change_order_id:null,reason:'independent decision: partial completed work'}));
+  const d=await flow(x.project);assert.equal(d.cancellation.refund_minor,4000);assert.equal(d.cancellation.retained_minor,3000);
+ });
  const jobs=require('../src/infrastructure/jobs/repository').createJobRepository(db),handlers=require('../src/modules/production/acceptance-handler').createCustomizationAcceptanceHandlers(db,{storageFactory:f.storageFactory}),worker=require('../src/worker/runner').createWorker({repository:jobs,handlers});
  async function due(p){let d=(await db.execute('SELECT data_json FROM production_fulfillments WHERE project_id=?',[p.id]))[0][0].data_json;if(typeof d==='string')d=JSON.parse(d);d.receipt.deadline_at='2020-01-01T00:00:00.000Z';await db.execute('UPDATE production_fulfillments SET data_json=?,data_sha256=? WHERE project_id=?',[JSON.stringify(d),digest(d),p.id]);await db.execute('UPDATE platform_jobs SET next_run_at=CURRENT_TIMESTAMP(6) WHERE id=?',[d.receipt.job_id]);return d.receipt;}
  async function readyClock(){const x=await create();await f.pay(x.order,'first');ok(await command(x.project,'start',producer));const v=await deliver(x.project,'SCRIPT');await viewed(v);const d=await flow(x.project);ok(await call('POST','/operations/notifications/'+d.receipt.notification_event_id+'/read',buyer,{}));ok(await command(x.project,'delivery-receipt',buyer));return {...x,v};}
  await t.test('agreed timeout runs as durable job and records automatic, not fabricated manual, acceptance',async()=>{const x=await readyClock();await due(x.project);await worker.tick();assert.equal((await get(x.project)).data.accepted.SCRIPT,x.v.id);const [feedback]=await db.execute("SELECT data_json FROM production_records WHERE project_id=? AND kind='FEEDBACK'",[x.project.id]);const data=typeof feedback[0].data_json==='string'?JSON.parse(feedback[0].data_json):feedback[0].data_json;assert.equal(data.acceptance_method,'AGREED_TIMEOUT');assert.equal(data.checklist,null);});
+ await t.test('changed moderation requirements stop an already scheduled acceptance from confirming unavailable evidence',async()=>{const x=await readyClock(),id=key(),rule=require('../src/modules/governance/content').createRuleContent({id,rule_key:'media.processing',version:id,terms:{media_processing:{ai_label:'Synthetic AI',preview_label:'Synthetic preview',require_marking:false,require_moderation:true,provider_code:'aliyun-green'}}});await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[id,'media.processing',id,JSON.stringify(rule),'2020-01-01 00:00:00',producer.account_id,'EFFECTIVE']);try{await due(x.project);await worker.tick();assert.equal((await get(x.project)).data.accepted.SCRIPT,undefined);const [rows]=await db.execute("SELECT id FROM production_records WHERE project_id=? AND kind='FEEDBACK'",[x.project.id]);assert.equal(rows.length,0);}finally{await db.execute('DELETE FROM governance_rules WHERE id=?',[id]);}});
  await t.test('file failure at timeout pauses instead of auto accepting unavailable content',async()=>{const x=await readyClock();const file=await get({id:x.v.data.preview_file_id});f.files.delete(file.data.object_key);await due(x.project);await worker.tick();assert.equal((await flow(x.project)).state,'PAUSED');assert.equal((await get(x.project)).data.accepted.SCRIPT,undefined);});
  await t.test('new version invalidates old acceptance job and resets notice and viewing evidence',async()=>{const x=await readyClock();await due(x.project);const next=await deliver(x.project,'SCRIPT');await worker.tick();assert.equal((await get(x.project)).data.accepted.SCRIPT,undefined);const d=await flow(x.project);assert.equal(d.receipt.version_id,next.id);assert.equal(d.receipt.started_at,null);});
  await t.test('audit failures roll back case, state and command together',async()=>{const x=await create();await db.withConnection(c=>c.query("CREATE TRIGGER r04_audit_fail BEFORE INSERT ON production_audit FOR EACH ROW SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic'"));try{assert.equal((await command(x.project,'cases',buyer,{kind:'CANCEL',reason:'rollback',evidence_asset_ids:[]})).status,503);assert.equal((await flow(x.project)).cases.length,0);}finally{await db.withConnection(c=>c.query('DROP TRIGGER r04_audit_fail'));}});
@@ -49,6 +81,41 @@ test('V5 customization actual HTTP: paid manual production, receipts, changes an
  const y=await create();await f.pay(y.order,'first');ok(await command(y.project,'start',producer));const sv=await deliver(y.project,'SCRIPT');await viewed(sv);ok(await accept(sv));ok(await command(y.project,'cases',buyer,{kind:'PRODUCTION_FAILED',reason:'cannot deliver',evidence_asset_ids:[]}));cid=(await flow(y.project)).cases.at(-1).id;bad(await command(y.project,'case-resolution',reviewer,{case_id:cid,decision:'CANCEL',retained_minor:1000,change_order_id:null,reason:'wrong retention'}),'CUSTOMIZATION_RETAINED_AMOUNT_INVALID');ok(await command(y.project,'case-resolution',reviewer,{case_id:cid,decision:'CANCEL',retained_minor:0,change_order_id:null,reason:'failure full refund'}));assert.equal((await flow(y.project)).cancellation.refund_minor,3000);});
  await t.test('payment already in flight when cancellation occurs becomes refund obligation after trusted late receipt',async()=>{const x=await create(),config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:f.org.party_id,config_revision:'r04'};const pay=await f.trade.preparePayment(buyer.ctx,{party_id:buyer.personal_party_id,order_id:x.order.id,installment_key:'first',operation_key:key()},config);ok(await command(x.project,'cases',buyer,{kind:'CANCEL',reason:'not started',evidence_asset_ids:[]}));const cid=(await flow(x.project)).cases.at(-1).id;ok(await command(x.project,'case-resolution',reviewer,{case_id:cid,decision:'CANCEL',retained_minor:0,change_order_id:null,reason:'cancel'}));assert.equal((await flow(x.project)).state,'CANCELLED');await f.trade.applyPayment({...config,payment_id:pay.id,currency:'CNY',amount_minor:3000,transaction_id:'synthetic.'+pay.id,status:'SUCCEEDED',product_id:null,app_account_token:null});ok(await command(x.project,'refund-sync',buyer));assert.equal((await flow(x.project)).cancellation.refund_minor,3000);assert.equal((await flow(x.project)).state,'REFUND_REQUIRED');});
  await t.test('case evidence is available only to its submitting side and independent reviewer',async()=>{const x=await create(),proof=await f.upload(buyer,'REVIEW_EVIDENCE');ok(await command(x.project,'cases',buyer,{kind:'EXTENSION',reason:'synthetic request',evidence_asset_ids:[proof.id]}));const cid=(await flow(x.project)).cases.at(-1).id,url='/production/projects/'+x.project.id+'/cases/'+cid+'/evidence/'+proof.id;assert.equal((await call('GET',url,buyer)).status,200);assert.equal((await call('GET',url,reviewer,undefined,null,key(),null)).status,200);assert.equal((await call('GET',url,producer)).status,404);assert.equal((await call('GET',url,outsider)).status,404);});
+ const Calendar=require('../src/modules/production/working-calendar'),testCalendar=require('./support/working-calendar.cjs');
+ async function receipt(p){const d=await flow(p);ok(await call('POST','/operations/notifications/'+d.receipt.notification_event_id+'/read',buyer,{}));return ok(await command(p,'delivery-receipt',buyer));}
+ async function newFinal(){
+  const x=await create({preview:'SCRIPT_BEFORE_INTERIM',calendar:testCalendar()});await f.pay(x.order,'first');ok(await command(x.project,'start',producer));
+  let v=await deliver(x.project,'SCRIPT');await viewed(v);const d=await receipt(x.project);assert.equal(d.receipt.deadline_at,null);assert.equal(d.receipt.job_id,null);assert.equal(d.receipt.deadline_basis.mode,'EXPLICIT_CONFIRMATION');assert.equal(d.receipt.started_at,null);assert.equal((await receipt(x.project)).receipt.notified_at,d.receipt.notified_at);
+  await assert.rejects(()=>f.pay(x.order,'interim'),{code:'PAYMENT_MILESTONE_NOT_MET'});ok(await accept(v));await f.pay(x.order,'interim');
+  for(const stage of ['SAMPLE','ROUGH_CUT']){v=await deliver(x.project,stage);await viewed(v);ok(await accept(v));}
+  v=await deliver(x.project,'FINAL');await viewed(v);await receipt(x.project);return {...x,v};
+ }
+ async function rewindNew(p){
+  const d=await flow(p),r=d.receipt;r.started_at=new Date(Date.now()-20*86400000).toISOString();r.notified_at=r.started_at;r.view_observed_at=r.started_at;Object.assign(r,Calendar.deadline(d.terms,'FINAL',r.started_at));
+  const raw=(await db.execute('SELECT * FROM production_fulfillments WHERE project_id=?',[p.id]))[0][0],stored=typeof raw.data_json==='string'?JSON.parse(raw.data_json):raw.data_json;stored.receipt=r;
+  await db.execute('UPDATE production_fulfillments SET data_json=?,data_sha256=? WHERE project_id=?',[JSON.stringify(stored),digest(stored),p.id]);await db.execute('UPDATE platform_jobs SET next_run_at=CURRENT_TIMESTAMP(6) WHERE id=?',[r.job_id]);return r;
+ }
+ await t.test('working-day final receipt freezes deadline; repeated acknowledgement cannot extend it',async()=>{
+  const x=await newFinal(),first=(await flow(x.project)).receipt;
+  assert.deepEqual(first.deadline_basis,Calendar.deadline(x.order.data.quote.lines[0].specification.customization_delivery,'FINAL',first.started_at).deadline_basis);
+  assert.equal((await receipt(x.project)).receipt.deadline_at,first.deadline_at);
+  const j=(await db.execute('SELECT next_run_at FROM platform_jobs WHERE id=?',[first.job_id]))[0][0];assert.ok(j.next_run_at);
+  const repo=require('../src/modules/production/repository').createProductionRepository(db);
+  const fake={id:first.job_id,payload_ref:x.project.id};assert.ok(await repo.customizationAcceptanceContext(fake));
+  await rewindNew(x.project);await worker.tick();assert.equal((await get(x.project)).data.accepted.FINAL,x.v.id);
+  const [rows]=await db.execute("SELECT data_json FROM production_records WHERE project_id=? AND kind='FEEDBACK'",[x.project.id]);const feedback=rows.map(r=>typeof r.data_json==='string'?JSON.parse(r.data_json):r.data_json).find(r=>r.stage==='FINAL');assert.equal(feedback.acceptance_receipt.deadline_basis.mode,'WORKING_DAYS');
+  assert.equal((await content(x.v,'final')).status,409);assert.equal((await f.pay(x.order,'last')).data.amount_minor,3000);assert.equal((await content(x.v,'final')).status,200);
+ });
+ await t.test('working-day dispute and reissue invalidate old job; new receipt needs fresh notice and bytes',async()=>{
+  const x=await newFinal(),old=await rewindNew(x.project);
+  ok(await command(x.project,'cases',buyer,{kind:'RIGHTS_DISPUTE',reason:'synthetic pause clock',evidence_asset_ids:[]}));await worker.tick();assert.equal((await get(x.project)).data.accepted.FINAL,undefined);
+  const c=(await flow(x.project)).cases.at(-1);assert.equal(c.data.interrupted_receipt.deadline_at,old.deadline_at);ok(await command(x.project,'case-resolution',reviewer,{case_id:c.id,decision:'RESUME',retained_minor:null,change_order_id:null,reason:'synthetic independent resolution'}));
+  ok(await command(x.project,'reissue',producer,{version_id:x.v.id,reason:'fresh formal delivery'}));bad(await command(x.project,'delivery-receipt',buyer),'CUSTOMIZATION_PREVIEW_NOT_VIEWED');
+  await viewed(x.v);const fresh=(await receipt(x.project)).receipt;assert.notEqual(fresh.delivery_id,old.delivery_id);assert.notEqual(fresh.job_id,old.job_id);assert.ok(fresh.deadline_at>old.deadline_at);assert.equal(fresh.deadline_basis.calendar_version,old.deadline_basis.calendar_version);
+ });
+ await t.test('working-day deadline does not auto accept an unavailable file',async()=>{
+  const x=await newFinal(),file=await get({id:x.v.data.preview_file_id});f.files.delete(file.data.object_key);await rewindNew(x.project);await worker.tick();assert.equal((await flow(x.project)).state,'PAUSED');assert.equal((await get(x.project)).data.accepted.FINAL,undefined);
+ });
  await t.test('parallel starts and stale acceptance lease cannot duplicate business facts',async()=>{const x=await create();await f.pay(x.order,'first');const p=await get(x.project),req=()=>call('POST','/production/projects/'+p.id+'/start',producer,{},p.object_version);const results=await Promise.all([req(),req()]);assert.deepEqual(results.map(r=>r.status).sort(),[200,412]);const y=await readyClock();await due(y.project);const old=await jobs.claim('old-worker',1000);assert.ok(old);await db.execute('UPDATE platform_jobs SET lease_until=TIMESTAMPADD(SECOND,-1,CURRENT_TIMESTAMP(6)) WHERE id=?',[old.id]);const next=await jobs.claim('new-worker',30000);assert.equal(next.id,old.id);const repo=require('../src/modules/production/repository').createProductionRepository(db);await assert.rejects(async()=>repo.finishCustomizationAcceptance(old,{available:true,delivery_id:(await flow(y.project)).receipt.delivery_id}),e=>e.code==='LEASE_LOST');const outcome=await handlers.get(next.task_type).execute(next);await jobs.finish(next,outcome);assert.equal((await get(y.project)).data.accepted.SCRIPT,y.v.id);});
 
  await t.test('creative amendment is independently quoted, accepted, paid once and attached to the original production',async()=>{const x=await create({revisionLimit:0});await f.pay(x.order,'first');ok(await command(x.project,'start',producer));ok(await command(x.project,'cases',buyer,{kind:'CREATIVE_CHANGE',reason:'new ending outside original scope',evidence_asset_ids:[]}));const c=(await flow(x.project)).cases.at(-1),changeSource={project_id:x.project.id,case_id:c.id,description:'synthetic new ending and one additional correction round'},change=await f.newOrder({changeSource,sourceStory:x.story});assert.equal(change.order.data.quote.installments.length,1);ok(await call('GET','/trade/records/'+change.order.id,buyer));bad(await command(x.project,'case-resolution',reviewer,{case_id:c.id,decision:'CHANGE_ORDER',retained_minor:null,change_order_id:change.order.id,reason:'not paid'}),'CUSTOMIZATION_CHANGE_ORDER_REQUIRED');await assert.rejects(()=>f.newOrder({changeSource,sourceStory:x.story}),e=>e.code==='CUSTOMIZATION_CHANGE_ORDER_ALREADY_USED');const payment=await f.pay(change.order,'change');assert.equal(payment.data.amount_minor,10000);ok(await command(x.project,'case-resolution',reviewer,{case_id:c.id,decision:'CHANGE_ORDER',retained_minor:null,change_order_id:change.order.id,reason:'accepted and paid change'}));const d=await flow(x.project);assert.equal(d.state,'STARTED');assert.equal(d.additional_creative_changes,1);assert.equal(d.cases.at(-1).change_order_id,change.order.id);bad(await call('POST','/production/projects',producer,input(change.order)),'CUSTOMIZATION_CHANGE_USES_ORIGINAL_PROJECT');await deliver(x.project,'SCRIPT');let refund=await f.trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:payment.id,allocations:[{line_id:'film',amount_minor:10000}],reason:'synthetic reversed change',operation_key:key()});refund=await f.reviewTrade(refund);await f.trade.claim(reviewer.ctx,refund.id,null,'REFUND');await f.trade.applyRefund(refund.id,{...refund.data,refund_id:refund.id,status:'SUCCEEDED'});bad(await call('POST','/production/projects/'+x.project.id+'/files?media_type=text/plain',producer,Buffer.from('must block')),'CUSTOMIZATION_CHANGE_PAYMENT_REVERSED');});
@@ -85,6 +152,96 @@ test('V5 customization actual HTTP: paid manual production, receipts, changes an
   const stale=ok(await call('POST','/trade/quotes',producer,{...body,lines:[{line_id:'film',spec_id:y.spec.id,quantity:1}],customization_source:y.quote.data.customization,customization_change_source:{project_id:y.project.id,case_id:yc.id,description:'Later withdrawn request'}}));
   ok(await command(y.project,'case-resolution',reviewer,{case_id:yc.id,decision:'CANCEL',retained_minor:0,change_order_id:null,reason:'Cancel original commission before additional work'}));
   bad(await call('POST','/trade/records/'+stale.id+'/reviews',reviewer,{decision:'APPROVED',reason:'Stale case'},stale.object_version,key(),null),'CUSTOMIZATION_CHANGE_SOURCE_INVALID');
+ });
+
+ await t.test('prepared manual payment is rechecked at dispatch after pause, then recovers without duplicate dispatch',async()=>{
+  const x=await create(),config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:f.org.party_id,config_revision:'r04'};
+  const payment=await f.trade.preparePayment(buyer.ctx,{party_id:buyer.acting_party_id,order_id:x.order.id,installment_key:'first',operation_key:key()},config);
+  ok(await command(x.project,'cases',buyer,{kind:'RIGHTS_DISPUTE',reason:'Pause before provider dispatch',evidence_asset_ids:[]}));
+  await assert.rejects(()=>f.trade.claim(buyer.ctx,payment.id,buyer.acting_party_id,'PAYMENT'),e=>e.code==='CUSTOMIZATION_PAYMENT_PAUSED');
+  assert.equal(ok(await call('GET','/trade/records/'+payment.id,buyer)).current_status,'CREATED');
+  assert.equal(Number((await db.execute('SELECT COUNT(*) n FROM trade_journal WHERE order_id=?',[x.order.id]))[0][0].n),0);
+  const c=(await flow(x.project)).cases.at(-1);
+  ok(await command(x.project,'case-resolution',reviewer,{case_id:c.id,decision:'RESUME',retained_minor:null,change_order_id:null,reason:'Independent rights clarification'}));
+  assert.equal((await f.trade.claim(buyer.ctx,payment.id,buyer.acting_party_id,'PAYMENT')).dispatch,true);
+  assert.equal((await f.trade.claim(buyer.ctx,payment.id,buyer.acting_party_id,'PAYMENT')).dispatch,false);
+ });
+
+ await t.test('prepared amendment cannot dispatch after original case cancellation; trusted late receipts remain accountable',async()=>{
+  const x=await create();await f.pay(x.order,'first');ok(await command(x.project,'start',producer));
+  ok(await command(x.project,'cases',buyer,{kind:'CREATIVE_CHANGE',reason:'Additional ending awaiting decision',evidence_asset_ids:[]}));
+  const c=(await flow(x.project)).cases.at(-1),change=await f.newOrder({changeSource:{project_id:x.project.id,case_id:c.id,description:'Additional ending'},sourceStory:x.story});
+  const config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:f.org.party_id,config_revision:'r04'};
+  const payment=await f.trade.preparePayment(buyer.ctx,{party_id:buyer.acting_party_id,order_id:change.order.id,installment_key:'change',operation_key:key()},config);
+  ok(await command(x.project,'case-resolution',reviewer,{case_id:c.id,decision:'CANCEL',retained_minor:0,change_order_id:null,reason:'Buyer declines additional cost and cancels original commission'}));
+  await assert.rejects(()=>f.trade.claim(buyer.ctx,payment.id,buyer.acting_party_id,'PAYMENT'),e=>e.code==='CUSTOMIZATION_CHANGE_SOURCE_INVALID');
+  assert.equal(ok(await call('GET','/trade/records/'+payment.id,buyer)).current_status,'CREATED');
+  assert.equal((await flow(x.project)).additional_creative_changes,0);
+  const cancelled=(await flow(x.project)).cases.at(-1);
+  assert.equal(cancelled.change_order_id,change.order.id,'Cancellation must retain the accepted amendment order for reconciliation');
+  const proof={...config,payment_id:payment.id,currency:'CNY',amount_minor:payment.data.amount_minor,transaction_id:'synthetic.late.'+payment.id,status:'SUCCEEDED',product_id:null,app_account_token:null};
+  await f.trade.applyPayment(proof);await f.trade.applyPayment(proof);
+  assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM trade_journal WHERE order_id=? AND direction='RECEIPT'",[change.order.id]))[0][0].n),1);
+  assert.equal((await flow(x.project)).state,'REFUND_REQUIRED');
+  assert.equal((await flow(x.project)).additional_creative_changes,0);
+  bad(await command(x.project,'case-resolution',reviewer,{case_id:c.id,decision:'CHANGE_ORDER',retained_minor:null,change_order_id:change.order.id,reason:'Late receipt must not resume cancelled case'}),'CUSTOMIZATION_CASE_NOT_REVIEWABLE');
+ });
+
+ await t.test('one new story completes manual quotation and 30/40/30 delivery through the same HTTP order',async()=>{
+  const journalCount=async()=>Number((await db.execute('SELECT COUNT(*) n FROM trade_journal'))[0][0].n),journalBefore=await journalCount();
+  const answer='Synthetic complete manual request '+key();
+  let story=ok(await call('POST','/customization-requests',buyer,{template_version_id:f.template.template_version_id,answers:{story:answer}}));
+  assert.equal(story.current_status,'DRAFT');
+  assert.equal((await call('GET','/customization-requests/'+story.id,producer,undefined,null,key(),null)).status,404);
+  story=ok(await call('PATCH','/customization-requests/'+story.id,buyer,{answers:{story:answer+' saved'}},story.object_version));
+  const reopened=ok(await call('GET','/customization-requests/'+story.id,buyer));assert.deepEqual(reopened.answers,story.answers);
+  story=ok(await call('POST','/customization-requests/'+story.id+'/submissions',buyer,{},story.object_version));
+  assert.equal(await journalCount(),journalBefore,'story submission must not receive or charge money');
+  story=ok(await call('POST','/operations/customization-requests/'+story.id+'/intake',producer,{},story.object_version,key(),null));
+  // Approved catalogue/price and operating roles are synthetic prerequisites; no fixture quote/order is created.
+  let spec;const stop=new Error('stop after preparing catalogue');
+  await assert.rejects(f.newOrder({sourceStory:story,preview:'SCRIPT_BEFORE_INTERIM',calendar:require('./support/working-calendar.cjs')(),beforeQuote:async x=>{spec=x.spec;throw stop;}}),e=>e===stop);
+  const source={request_id:story.id,submission_id:story.submission.id,content_sha256:story.submission.content_sha256};
+  const body={buyer_party_id:buyer.acting_party_id,lines:[{line_id:'film',spec_id:spec.id,quantity:1}],installments:[['first','ORDER_ACCEPTED',3000],['interim','CUSTOMIZATION_SCRIPT_CONFIRMED',4000],['last','FINAL_ACCEPTED',3000]].map(([key,trigger,amount_minor])=>({key,trigger,allocations:[{line_id:'film',amount_minor}],apple_product_id:null})),channel:'ALIPAY',transaction_model:'PLATFORM_PRINCIPAL',rule_id:f.ruleId,expires_at:'2099-01-01T00:00:00.000Z',payment_window_minutes:30,license_reservation_id:null,customization_source:source};
+  let quote=ok(await call('POST','/trade/quotes',producer,body));
+  assert.equal((await call('POST','/trade/records/'+quote.id+'/reviews',producer,{decision:'APPROVED',reason:'self'},quote.object_version,key(),null)).status,403);
+  assert.equal((await call('POST','/trade/quotes/'+quote.id+'/acceptance',buyer,{quote_sha256:quote.content_sha256},quote.object_version)).status,409);
+  quote=ok(await call('POST','/trade/records/'+quote.id+'/reviews',reviewer,{decision:'APPROVED',reason:'synthetic independent quotation'},quote.object_version,key(),null));
+  const op=key(),order=ok(await call('POST','/trade/quotes/'+quote.id+'/acceptance',buyer,{quote_sha256:quote.content_sha256},quote.object_version,op));
+  assert.equal(ok(await call('POST','/trade/quotes/'+quote.id+'/acceptance',buyer,{quote_sha256:quote.content_sha256},quote.object_version,op)).id,order.id);
+  assert.equal(order.data.financial.received_minor,0);assert.equal(order.data.contract.signing_method,'NOT_SIGNED');
+  assert.deepEqual(order.data.quote.customization,source);assert.deepEqual(order.data.quote.installments.map(x=>x.allocations[0].amount_minor),[3000,4000,3000]);
+  const contract=structuredClone(order.data.contract);
+  const project=await review(ok(await call('POST','/production/projects',producer,input(order))));
+  assert.equal((await flow(project)).source.submission_id,story.submission.id);
+  bad(await command(project,'start',producer),'PRODUCTION_PAYMENT_REQUIRED');
+  const first=await f.pay(order,'first');assert.equal(first.data.amount_minor,3000);ok(await command(project,'start',producer));
+  await assert.rejects(()=>f.pay(order,'interim'),{code:'PAYMENT_MILESTONE_NOT_MET'});
+  const script=await deliver(project,'SCRIPT');await viewed(script);
+  ok(await command(project,'cases',buyer,{kind:'RIGHTS_DISPUTE',reason:'Synthetic same-order pause before script confirmation',evidence_asset_ids:[]}));
+  const pause=(await flow(project)).cases.at(-1);
+  assert.equal((await content(script)).status,409);
+  assert.notEqual((await accept(script)).status,200);
+  await assert.rejects(()=>f.pay(order,'interim'));
+  bad(await command(project,'case-resolution',producer,{case_id:pause.id,decision:'RESUME',retained_minor:null,change_order_id:null,reason:'self review rejected'}),'PRODUCTION_REVIEW_FORBIDDEN');
+  ok(await command(project,'case-resolution',reviewer,{case_id:pause.id,decision:'RESUME',retained_minor:null,change_order_id:null,reason:'Synthetic independent recovery'}));
+  assert.equal((await flow(project)).receipt,null);
+  ok(await command(project,'reissue',producer,{version_id:script.id,reason:'Fresh formal script after recovery'}));
+  assert.equal((await flow(project)).receipt.started_at,null);
+  await viewed(script);ok(await accept(script));
+  const middle=await f.pay(order,'interim');assert.equal(middle.data.amount_minor,4000);
+  for(const stage of ['SAMPLE','ROUGH_CUT']){const version=await deliver(project,stage);await viewed(version);ok(await accept(version));}
+  const final=await deliver(project,'FINAL');await viewed(final);ok(await accept(final));
+  assert.equal((await content(final,'final')).status,409);
+  const last=await f.pay(order,'last');assert.equal(last.data.amount_minor,3000);
+  const file=await get({id:final.data.file_id}),download=await content(final,'final');assert.equal(download.status,200);assert.deepEqual(download.body,f.files.get(file.data.object_key));
+  assert.notEqual((await content(final,'final',outsider)).status,200);
+  assert.equal((await flow(project)).state,'DELIVERED');
+  assert.deepEqual(ok(await call('GET','/trade/records/'+order.id,buyer)).data.contract,contract);
+  assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM ops_events WHERE record_id=? AND event_code='CUSTOMIZATION_FULFILLED'",[project.id]))[0][0].n),1);
+  const [[money]]=await db.execute("SELECT SUM(amount_minor) n FROM trade_journal WHERE order_id=? AND direction='RECEIPT'",[order.id]);assert.equal(Number(money.n),10000);
+  const record={synthetic_only:true,request_id:story.id,submission_id:story.submission.id,quote_id:quote.id,order_id:order.id,project_id:project.id,final_version_id:final.id,pause_case_id:pause.id,recovery_requires_fresh_receipt:true,payment_ids:[first.id,middle.id,last.id],amounts_minor:[3000,4000,3000],database:name,actors:{buyer:buyer.account_id,producer:producer.account_id,independent_reviewer:reviewer.account_id},surface:'api',limitations:['approved catalogue and roles are fixtures','payment preparation and trusted provider observations use isolated test helper','no App, browser, live signature or provider acceptance']};
+  const evidence=path.resolve(__dirname,'../../../../.local/manual-production-journey-20261110.json');await fs.writeFile(evidence,JSON.stringify(record,null,2));
  });
  const out=process.env.JX_CUSTOMIZATION_DELIVERY_HTTP_FIXTURES||path.resolve(__dirname,'../../../../.local/customization-delivery-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}

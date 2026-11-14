@@ -1,0 +1,127 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "64730abc4ca00cc3d37e5e51d15ef43c6c37437b",
+  "run_id": "backend-acceptance-2026-11-13T08-24-21-339Z-7c21c9",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "NOTICE-REVISIONS",
+      "acceptance_id": "ACC-DEL-10.04",
+      "result": "LOCAL_PASS",
+      "scope": "独审修订生效、原申请快照/确认、旧报价隔离、同已付款订单不变、权限/并发/回滚/历史缺快照反例",
+      "remaining": "页面入口尚未接续，真实通知、实体机和维护者独立验收未代替；不关闭W03整组",
+      "actual_checks": [
+        {
+          "name": "new applications capture exact original notice; old order and outstanding quote share the same notice",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 954.1911,
+          "error_code": null
+        },
+        {
+          "name": "pending revision is private, idempotent and does not replace published content",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 48,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 108.1933,
+          "error_code": null
+        },
+        {
+          "name": "independent rejection and withdrawal preserve live version; revoked author cannot publish",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 59,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 97.4201,
+          "error_code": null
+        },
+        {
+          "name": "publication and notifications roll back together; approved history cannot be withdrawn; competing base becomes stale",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 69,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 122.3208,
+          "error_code": null
+        },
+        {
+          "name": "new applications reject unseen revisions while retries retain their original accepted version",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 83,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 76.6356,
+          "error_code": null
+        },
+        {
+          "name": "applicant must confirm exact current version without rewriting original snapshot; recipient cannot confirm for them",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 91,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 150.201,
+          "error_code": null
+        },
+        {
+          "name": "confirmation cannot revive old quote; formed order is unchanged; new quote can be accepted",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 100,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 322.1681,
+          "error_code": null
+        },
+        {
+          "name": "new application binds revised notice and expired identity still blocks acknowledgment",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 109,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 172.5978,
+          "error_code": null
+        },
+        {
+          "name": "legacy missing snapshot is never fabricated; confirmation preserves that absence",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 118,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 89.7535,
+          "error_code": null
+        },
+        {
+          "name": "simultaneous approvals cannot overwrite each other; exactly one revision takes effect",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 125,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 97.2599,
+          "error_code": null
+        },
+        {
+          "name": "official revisions require current official author and independent reviewer",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 131,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 100.788,
+          "error_code": null
+        },
+        {
+          "name": "reviewed notice revisions retain history and fence old offers in isolated MySQL",
+          "file": "test/notices-revisions.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 32384.4476,
+          "error_code": null
+        }
+      ]
+    }
+  ]
+}

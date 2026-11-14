@@ -2,7 +2,7 @@
 const {randomUUID}=require('node:crypto');
 const {id,label,shape,version,error}=require('../party/policy');
 const {digest,verifyRuleContent}=require('../governance/content');
-const R=require('./restrictions');
+const R=require('./restrictions'),F=require('./file-targets');
 const one=async(tx,q,a=[])=>(await tx.execute(q,a))[0][0];
 const parse=v=>typeof v==='string'?JSON.parse(v):v;
 function checked(v,h){const d=parse(v);if(digest(d)!==h)throw error('STORED_CONTENT_MISMATCH',503);return d;}
@@ -39,20 +39,38 @@ async function closureBlockers(tx,account){
   // No universal zero-balance inference from a missing/unrecognized wallet row.
   const money=await require('../wallet/cash').overview(tx,p.id);
   if(money.recorded_balance_minor!==0||await one(tx,"SELECT id FROM wallet_records WHERE owner_party_id=? AND kind IN ('RECHARGE','CASH_SPEND','REFUND') AND current_status NOT IN ('SUCCEEDED','FAILED','CANCELLED','RELEASED','REFUNDED','SPENT') LIMIT 1 FOR SHARE",[p.id]))blocks.push('WALLET_SETTLEMENT_REVIEW_REQUIRED');
+  if(await one(tx,"SELECT id FROM wallet_records WHERE owner_party_id=? AND kind='RECHARGE_REFUND' AND current_status NOT IN ('SUCCEEDED','REJECTED','CANCELLED','CLOSED') LIMIT 1 FOR SHARE",[p.id]))blocks.push('WALLET_SETTLEMENT_REVIEW_REQUIRED');
  }
  return [...new Set(blocks)];
 }
-function createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode,storageDescriptor}){
+function createPrivacyExecution({db,actor,operator,load,owned,command,change,match,decode,storageDescriptor,event,resolvePrincipal,env={}}){
  const get=async(tx,key)=>{const r=await one(tx,'SELECT * FROM privacy_executions WHERE id=? FOR UPDATE',[id(key)]);if(!r)throw error('PRIVACY_EXECUTION_NOT_FOUND',404);r.payload=checked(r.payload_json,r.payload_sha256);return r;};
  async function access(tx,ctx,i,{exclusive=false}={}){
   const a=await actor(tx,ctx,exclusive?'FOR UPDATE':'FOR SHARE'),request=await load(tx,i.request_id);
   if(i.operations)await operator(tx,a);else owned(a,request);
   return {a,request};
  }
+ // Operators use the same redacted projections as the applicant, never a raw account dump.
+ async function copyRead(tx,ctx,i,read){
+  const {a,request}=await access(tx,ctx,i),spec=decode(request.request_json,request.request_sha256);
+  if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+  let subject=a;
+  if(i.operations){
+   if(a.id===request.account_id)throw error('SELF_REVIEW_FORBIDDEN');
+   if(!['PROCESSING','FOLLOW_UP','AWAITING_REVIEW'].includes(request.current_status))throw error('PRIVACY_STATE_CONFLICT',409);
+   subject=await one(tx,'SELECT * FROM identity_accounts WHERE id=? FOR SHARE',[request.account_id]);
+   if(!subject)throw error('PRIVACY_REQUEST_NOT_FOUND',404);
+  }
+  const result=await read(subject,spec);
+  if(i.operations)await event(tx,a,request,'COPY_DATA_ACCESSED',i.section==='BUSINESS_MESSAGES'?'工作人员按申请范围读取待人工脱敏的业务消息工作稿：'+i.source+'/'+i.source_id:'工作人员按申请范围读取脱敏资料：'+(i.section||i.category||'COPY_OPTIONS'));
+  return result;
+ }
  async function dto(tx,r){
   const p=r.payload||checked(r.payload_json,r.payload_sha256),j=r.job_id?await one(tx,'SELECT status,last_error FROM platform_jobs WHERE id=?',[r.job_id]):null;
   return {id:r.id,request_id:r.request_id,action:r.action_code,target_id:r.target_id,object_version:r.object_version,
    current_status:r.current_status,proposal_sha256:r.payload_sha256,policy_rule_id:p.policy.id,
+   target_summary:p.snapshot?.target_summary||null,
+   proposed_change:r.action_code==='PROFILE_CORRECTION'?{display_name:p.details.display_name}:null,
    job_status:j?.status||null,result:r.result_json?checked(r.result_json,r.result_sha256):null,
    request_completion:'NOT_CONFIRMED'};
  }
@@ -66,7 +84,60 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
   if(!f)throw error('PRIVACY_TARGET_NOT_FOUND',404);return f;
  }
  async function samePolicy(tx,p,action){const live=await policy(tx,p.policy.id,action);if(live.sha256!==p.policy.sha256)throw error('PRIVACY_POLICY_CHANGED',409);}
+ async function fileScope(tx,ctx,i){
+  const own=await access(tx,ctx,{...i,operations:false}),spec=decode(own.request.request_json,own.request.request_sha256);
+  if(!['DELETE','CLOSE_ACCOUNT'].includes(spec.type)||!spec.scopes.some(v=>['ALL','ARTIST_MATERIALS'].includes(v)))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+  return own;
+ }
  return {
+  async executionPolicyOptions(ctx,i){
+   if(!(i.operations?['RESTRICT_CONTENT','RELEASE_CONTENT']:['PROFILE_CORRECTION','FILE_ERASURE','ACCOUNT_CLOSURE']).includes(i.action))throw error('PRIVACY_ACTION_INVALID',400);
+   if(!Number.isInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIST',400);if(i.after)id(i.after);
+   return db.withTransaction(async tx=>{
+    const {request}=await access(tx,ctx,i),spec=decode(request.request_json,request.request_sha256);
+    const types={PROFILE_CORRECTION:['CORRECT'],FILE_ERASURE:['DELETE','CLOSE_ACCOUNT'],ACCOUNT_CLOSURE:['CLOSE_ACCOUNT'],RESTRICT_CONTENT:['COMPLAINT'],RELEASE_CONTENT:['COMPLAINT']};
+    const scope=i.action==='PROFILE_CORRECTION'?'PROFILE':i.action==='FILE_ERASURE'?'ARTIST_MATERIALS':'ALL';
+    if(!types[i.action].includes(spec.type)||!i.operations&&!spec.scopes.includes('ALL')&&!spec.scopes.includes(scope))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+    const [rows]=await tx.execute("SELECT * FROM governance_rules WHERE rule_key='privacy.execution' AND current_status='EFFECTIVE' AND effective_at<=CURRENT_TIMESTAMP(3) AND id>? ORDER BY id LIMIT ?",[i.after||'',i.limit+1]);
+    const items=[];
+    for(const row of rows.slice(0,i.limit))try{
+     await policy(tx,row.id,i.action);const c=parse(row.content_json),p=c.terms.privacy_execution;
+     items.push({id:row.id,version:c.version,basis:p.basis,contact_reference:p.contact_reference,retention_rule_id:p.retention_rule_id||null});
+    }catch(e){if(e.status!==409)throw e;}
+    return {request_id:request.id,action:i.action,items,next_cursor:rows.length>i.limit?rows[i.limit-1].id:null};
+   });
+  },
+  async retentionPolicyOptions(ctx,i){
+   if(i.scope==='ALL'||!require('./policy').scopes.includes(i.scope))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',400);
+   if(!Number.isInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIST',400);if(i.after)id(i.after);
+   return db.withTransaction(async tx=>{
+    const {request}=await access(tx,ctx,{...i,operations:true}),spec=decode(request.request_json,request.request_sha256);
+    if(!spec.scopes.includes('ALL')&&!spec.scopes.includes(i.scope))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+    const [rows]=await tx.execute("SELECT * FROM governance_rules WHERE rule_key='privacy.retention' AND current_status='EFFECTIVE' AND effective_at<=CURRENT_TIMESTAMP(3) AND id>? ORDER BY id LIMIT ?",[i.after||'',i.limit+1]);
+    const items=[];
+    for(const row of rows.slice(0,i.limit)){
+     const c=parse(row.content_json);verifyRuleContent(c);
+     const categories=c.terms.privacy_retention?.categories;
+     if(!Array.isArray(categories))continue;
+     const allowed=categories.filter(x=>x.scope===i.scope&&typeof x.basis==='string'&&x.basis.trim()&&Number.isSafeInteger(x.max_review_days)&&x.max_review_days>0).map(x=>({scope:x.scope,basis:x.basis,max_review_days:x.max_review_days}));
+     if(allowed.length)items.push({id:row.id,version:c.version,categories:allowed});
+    }
+    return {request_id:request.id,scope:i.scope,items,next_cursor:rows.length>i.limit?rows[i.limit-1].id:null};
+   });
+  },
+  async fileOptions(ctx,i){
+   if(!['FILE','POLICY'].includes(i.kind)||!Number.isInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIST',400);if(i.after)id(i.after);
+   return db.withTransaction(async tx=>{
+    const {request}=await fileScope(tx,ctx,i),items=[];
+    const rows=(await tx.execute(i.kind==='FILE'?"SELECT s.* FROM supply_assets s JOIN parties p ON p.id=s.owner_party_id WHERE p.kind='PERSON' AND p.personal_account_id=? AND s.purpose='AVATAR_MATERIAL' AND s.id>? ORDER BY s.id LIMIT ?":"SELECT * FROM governance_rules WHERE rule_key='privacy.execution' AND current_status='EFFECTIVE' AND effective_at<=CURRENT_TIMESTAMP(3) AND id>? ORDER BY id LIMIT ?",[...(i.kind==='FILE'?[request.account_id]:[]),i.after||'',i.limit+1]))[0];
+    for(const row of rows.slice(0,i.limit)){
+     if(i.kind==='FILE')items.push(await F.describeFile(tx,row));
+     else try{await policy(tx,row.id,'FILE_ERASURE');const c=parse(row.content_json),p=c.terms.privacy_execution;items.push({id:row.id,version:c.version,basis:p.basis,contact_reference:p.contact_reference,retention_rule_id:p.retention_rule_id});}catch(e){if(e.status!==409)throw e;}
+    }
+    return {items,next_cursor:rows.length>i.limit?rows[i.limit-1].id:null};
+   });
+  },
+  async filePreview(ctx,i){return db.withTransaction(async tx=>{const {request}=await fileScope(tx,ctx,i),f=await file(tx,request.account_id,i.asset_id);if(f.purpose!=='AVATAR_MATERIAL')throw error('PRIVACY_TARGET_NOT_FOUND',404);if(f.current_status!=='READY')throw error('PRIVATE_MATERIAL_NOT_READY',409);return f;});},
   async proposeExecution(ctx,i){
    shape(i.details,['display_name','target_kind','reason']);label(i.details.reason,1000);
    if(!actions.includes(i.action))throw error('PRIVACY_ACTION_INVALID',400);
@@ -83,14 +154,14 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
      if(i.action==='PROFILE_CORRECTION'||i.action==='ACCOUNT_CLOSURE'){
       if(id(i.target_id)!==request.account_id)throw error('PRIVACY_TARGET_NOT_FOUND',404);
       if(i.action==='PROFILE_CORRECTION')label(i.details.display_name,80);
-      snapshot={account_version:a.object_version};
+      snapshot={account_version:a.object_version};if(i.action==='ACCOUNT_CLOSURE'&&process.env.PRIVACY_CLOSURE_POLICY==='CONTRACT_20261029'){const c=await require('./closure-clock').loadClock(tx,request.id);if(!c?.verified_at)throw error('CLOSURE_VERIFICATION_REQUIRED',409);snapshot.closure_clock_policy='CONTRACT_20261029';snapshot.verified_at=c.verified_at;}
      }else if(i.action==='FILE_ERASURE'){
       const f=await file(tx,request.account_id,i.target_id);
       if(f.current_status!=='READY')throw error('PRIVATE_MATERIAL_NOT_READY',409);
       // Legal evidence and multi-party commercial works require their own reviewed
       // retention process; a personal material request cannot erase those.
-      if(f.purpose!=='AVATAR_MATERIAL')throw error('PRIVACY_FILE_RETENTION_REVIEW_REQUIRED',409);
-      snapshot={content_sha256:f.content_sha256,object_key:f.object_key,byte_size:f.byte_size,purpose:f.purpose,storage:await storageDescriptor()};
+      await F.assertDeletable(tx,f);
+      snapshot={target_summary:await F.describeFile(tx,f),content_sha256:f.content_sha256,object_key:f.object_key,byte_size:f.byte_size,purpose:f.purpose,storage:await storageDescriptor()};
      }else if(i.action==='RESTRICT_CONTENT'){
       await R.target(tx,i.details.target_kind,i.target_id);
       snapshot={target_kind:i.details.target_kind};
@@ -121,6 +192,7 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
      match(r,i.expected_version);if(r.current_status!=='PROPOSED'||i.proposal_sha256!==r.payload_sha256)throw error('CONFIRMATION_VERSION_MISMATCH',409);
      await samePolicy(tx,r.payload,r.action_code);
      if(r.action_code.includes('CONTENT')){const s=r.payload.snapshot,target=await R.target(tx,s.target_kind,s.target_id||r.target_id);if(await R.reviewConflict(tx,s.target_kind,target,a.id))throw error('SELF_REVIEW_FORBIDDEN',403);}
+     if(i.decision==='APPROVE'&&r.action_code==='FILE_ERASURE')await F.assertDeletable(tx,await file(tx,request.account_id,r.target_id));
      if(i.decision==='APPROVE'&&(i.scope_verified!==true||i.retention_verified!==true))throw error('MANUAL_VERIFICATION_REQUIRED',409);
      await tx.execute('UPDATE privacy_executions SET reviewed_by=? WHERE id=?',[a.id,r.id]);
      return save(tx,a,request,r,i.decision==='APPROVE'?'APPROVED':'REJECTED',{review_reason:i.reason});
@@ -145,8 +217,9 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
       result={effect:'ACCOUNT_DISPLAY_NAME_UPDATED',historical_records:'UNCHANGED'};
      }else if(r.action_code==='ACCOUNT_CLOSURE'){
       if(a.object_version!==s.account_version)throw error('VERSION_CONFLICT',412);
-      const blockers=await closureBlockers(tx,a);if(blockers.length)throw error(blockers[0],409);
+      if(s.closure_clock_policy){const c=await require('./closure-clock').loadClock(tx,request.id);if(!c?.verified_at||c.verified_at!==s.verified_at)throw error('CLOSURE_VERIFICATION_REQUIRED',409);}const blockers=await closureBlockers(tx,a);if(blockers.length)throw error(blockers[0],409);
       await tx.execute("UPDATE identity_accounts SET current_status='CLOSED',object_version=object_version+1 WHERE id=?",[a.id]);
+      await tx.execute('DELETE FROM privacy_usage_state WHERE account_id=?',[a.id]);
       await tx.execute('UPDATE auth_sessions SET revoked=TRUE WHERE account_id=?',[a.id]);
       await tx.execute("UPDATE parties SET current_status='CLOSED',object_version=object_version+1 WHERE kind='PERSON' AND personal_account_id=?",[a.id]);
       await tx.execute("UPDATE party_memberships SET current_status='REVOKED',object_version=object_version+1 WHERE account_id=? AND current_status<>'REVOKED'",[a.id]);
@@ -154,6 +227,7 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
      }else if(r.action_code==='FILE_ERASURE'){
       const f=await file(tx,request.account_id,r.target_id),descriptor=await storageDescriptor();
       if(f.current_status!=='READY'||f.content_sha256!==s.content_sha256||f.object_key!==s.object_key||f.byte_size!==s.byte_size)throw error('PRIVACY_TARGET_CHANGED',409);
+      await F.assertDeletable(tx,f);
       if(digest(descriptor)!==digest(s.storage))throw error('PRIVACY_STORAGE_CONFIGURATION_CHANGED',409);
       await tx.execute("INSERT INTO privacy_tombstones(asset_id,execution_id,content_sha256,object_key,current_status) VALUES (?,?,?,?,'ERASURE_PENDING')",[f.id,r.id,f.content_sha256,f.object_key]);
       await tx.execute("UPDATE supply_assets SET current_status='ERASURE_PENDING' WHERE id=?",[f.id]);
@@ -175,11 +249,28 @@ function createPrivacyExecution({db,actor,operator,load,owned,command,change,mat
   },
   async exportData(ctx,i){
    if(i.after)id(i.after);if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
-   return db.withTransaction(async tx=>{
-    const {a,request}=await access(tx,ctx,{...i,operations:false}),s=decode(request.request_json,request.request_sha256);
-    if(!['QUERY','COPY'].includes(s.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
-    return require('./personal-copy').exportPersonalCopy(tx,a,s,i);
-   });
+   return db.withTransaction(tx=>copyRead(tx,ctx,i,(a,s)=>require('./personal-copy').exportPersonalCopy(tx,a,s,i)));
+  },
+  async businessMessageCopy(ctx,i){
+   return db.withTransaction(tx=>copyRead(tx,ctx,{...i,operations:true,section:'BUSINESS_MESSAGES'},(a,s)=>require('./business-message-copy').page(tx,ctx,a,s,i,{resolvePrincipal})));
+  },
+  async copyOptions(ctx,i){return db.withTransaction(tx=>copyRead(tx,ctx,i,(_a,s)=>require('./personal-copy').copyOptions(s)));},
+  async storyCopy(ctx,i){
+   if(i.after)id(i.after);id(i.story_id);if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
+   return db.withTransaction(tx=>copyRead(tx,ctx,i,(a,s)=>require('./personal-copy').storyCopy(tx,a.id,s,i)));
+  },
+  async copyFile(ctx,i){return db.withTransaction(async tx=>{
+   id(i.asset_id);const {a,request}=await access(tx,ctx,{...i,operations:false}),spec=decode(request.request_json,request.request_sha256);
+   if(!['QUERY','COPY'].includes(spec.type))throw error('PRIVACY_ACTION_SCOPE_MISMATCH',409);
+   return require('./personal-copy').copyFile(tx,a.id,spec,i);
+  });},
+  async accountCopy(ctx,i){
+   if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
+   return db.withTransaction(tx=>copyRead(tx,ctx,i,(a,s)=>require('./account-copy').page(tx,a,s,i,env)));
+  },
+  async transactionCopy(ctx,i){
+   if(i.after)id(i.after);if(i.order_id!==undefined)id(i.order_id);if(!Number.isSafeInteger(i.limit)||i.limit<1||i.limit>100)throw error('INVALID_LIMIT',400);
+   return db.withTransaction(tx=>copyRead(tx,ctx,i,(a,s)=>require('./personal-copy').transactionCopy(tx,a.id,s,i)));
   },
  };
 }

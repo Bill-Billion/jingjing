@@ -1,0 +1,469 @@
+TAP version 13
+# Subtest: publishing and delegated avatar creation require the actual actor current identity
+    # Subtest: organization actor without a personal identity record cannot submit stock
+    not ok 1 - organization actor without a personal identity record cannot submit stock
+      ---
+      duration_ms: 102.0823
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:48:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"b1e05283-58b5-4c91-8964-ade71877873e","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"832285f8-6b9d-4dfc-95cd-c6ab71406c2d","seller_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e","current_status":"IN_REVIEW","object_version":1,"content_sha256":"005291c0728f9dd556649843f1f75c66579db8b4fa3305df0725696298ceed10","data":{"sales_publication_id":"c28eb897-5963-4fa6-8495-d961a5bcdfc3","seller_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","payment_window_minutes":30,"apple_product_id":null,"rights_hold":false,"rights_epoch":0,"title":"synthetic finished video","description":"synthetic only","city":"synthetic city","spec_id":"a2953747-e4ec-4cb5-a1e0-a4b1b3059051","spec_version":2,"spec":{"title":"synthetic finished video","review":{"reason":"synthetic","decision":"APPROVED","account_id":"33de23d9-21d1-4669-a1a8-b3499a939b84"},"currency":"CNY","line_kind":"OTHER","unit_minor":100,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"rule_id":"99b01ef3-3905-496c-a2b1-00465725deb3","rule_snapshot":{"content":{"id":"99b01ef3-3905-496c-a2b1-00465725deb3","terms":{"explicit":"synthetic stock terms"},"version":"1","rule_key":"stock.synthetic","content_sha256":"5c120eff8573f05ddccc6de34705f97e82705234f1f6019caba67585e310147b","format_version":"rule-content-v1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"file_id":"f012e138-25bc-407a-9da4-697eba05face","preview_file_id":"40cbfe85-6fff-4b69-8118-78f46fa58734","participants":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f"}],"rights_evidence_ids":["ebc3b355-16bc-4529-91dd-ee8cd40092cf"],"qualification":{"minimum_halo_level":2,"source_ref":"CONTRACT_20261029_19_ART5_23_SEC1"},"reviews":{"RIGHTS":null,"CONTENT":null},"rights_snapshot":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f","content_sha256":"bb910f373664343f0a85779a81e0ad5a2b4b0a945b11f3e5980a52e049d797e4"}],"files":{"full_sha256":"a6257167fd8a31471ae301dd5956ed8457462043c024ea0794886517abcc3c03","preview_sha256":"7bd20ef76808571508fa566d975f200a3bd4c998e15d1c78fb252bf0ff02ccb5"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:48:102)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:48:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: organization actor without a personal identity record cannot create delegated avatar
+    not ok 2 - organization actor without a personal identity record cannot create delegated avatar
+      ---
+      duration_ms: 29.7728
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:49:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"54a01034-f595-4c9a-84ed-1105e6143fe8","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"0454a375-1135-480c-a671-0267e5cc1dfc","person_id":"c2934493-2861-4bee-b7e9-902e5423da06","owner_party_id":"08fcda13-181e-4101-ace0-ad4f27591897","object_version":1,"data":{"display_name":"synthetic delegated avatar","archive_status":"EMPTY","artist_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","material_asset_ids":[],"provider_asset_ref":null,"long_lived_model_status":"NOT_ENABLED"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:49:113)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:49:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified personal identity cannot submit stock
+    not ok 3 - unverified personal identity cannot submit stock
+      ---
+      duration_ms: 37.98
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:51:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"93360a63-adf5-4a56-b334-a619fd88cf72","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"dedd29c1-25a8-4bcd-a271-5231b75f99d7","seller_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e","current_status":"IN_REVIEW","object_version":1,"content_sha256":"005291c0728f9dd556649843f1f75c66579db8b4fa3305df0725696298ceed10","data":{"sales_publication_id":"c28eb897-5963-4fa6-8495-d961a5bcdfc3","seller_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","payment_window_minutes":30,"apple_product_id":null,"rights_hold":false,"rights_epoch":0,"title":"synthetic finished video","description":"synthetic only","city":"synthetic city","spec_id":"a2953747-e4ec-4cb5-a1e0-a4b1b3059051","spec_version":2,"spec":{"title":"synthetic finished video","review":{"reason":"synthetic","decision":"APPROVED","account_id":"33de23d9-21d1-4669-a1a8-b3499a939b84"},"currency":"CNY","line_kind":"OTHER","unit_minor":100,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"rule_id":"99b01ef3-3905-496c-a2b1-00465725deb3","rule_snapshot":{"content":{"id":"99b01ef3-3905-496c-a2b1-00465725deb3","terms":{"explicit":"synthetic stock terms"},"version":"1","rule_key":"stock.synthetic","content_sha256":"5c120eff8573f05ddccc6de34705f97e82705234f1f6019caba67585e310147b","format_version":"rule-content-v1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"file_id":"f012e138-25bc-407a-9da4-697eba05face","preview_file_id":"40cbfe85-6fff-4b69-8118-78f46fa58734","participants":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f"}],"rights_evidence_ids":["ebc3b355-16bc-4529-91dd-ee8cd40092cf"],"qualification":{"minimum_halo_level":2,"source_ref":"CONTRACT_20261029_19_ART5_23_SEC1"},"reviews":{"RIGHTS":null,"CONTENT":null},"rights_snapshot":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f","content_sha256":"bb910f373664343f0a85779a81e0ad5a2b4b0a945b11f3e5980a52e049d797e4"}],"files":{"full_sha256":"a6257167fd8a31471ae301dd5956ed8457462043c024ea0794886517abcc3c03","preview_sha256":"7bd20ef76808571508fa566d975f200a3bd4c998e15d1c78fb252bf0ff02ccb5"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:51:77)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:51:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified personal identity cannot create delegated avatar
+    not ok 4 - unverified personal identity cannot create delegated avatar
+      ---
+      duration_ms: 26.1727
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:52:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"f92313af-82f6-43e2-a2a1-91bd2911683a","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"7d327d14-bd11-4825-bcd5-44be555052eb","person_id":"c2934493-2861-4bee-b7e9-902e5423da06","owner_party_id":"08fcda13-181e-4101-ace0-ad4f27591897","object_version":1,"data":{"display_name":"synthetic delegated avatar","archive_status":"EMPTY","artist_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","material_asset_ids":[],"provider_asset_ref":null,"long_lived_model_status":"NOT_ENABLED"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:52:88)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:52:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: valid actor identity allows stock listing without adding artist certification fees
+    ok 5 - valid actor identity allows stock listing without adding artist certification fees
+      ---
+      duration_ms: 38.5678
+      type: 'test'
+      ...
+    # Subtest: valid actor identity allows delegated avatar while keeping adult artist ownership
+    ok 6 - valid actor identity allows delegated avatar while keeping adult artist ownership
+      ---
+      duration_ms: 19.7228
+      type: 'test'
+      ...
+    # Subtest: expired actor identity rejects new stock
+    not ok 7 - expired actor identity rejects new stock
+      ---
+      duration_ms: 34.0151
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:64:12'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"2601898c-f071-4403-bb8a-bcf8b2f81e2d","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"e7deb78d-bab5-4646-b894-075890bb9bf9","seller_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e","current_status":"IN_REVIEW","object_version":1,"content_sha256":"005291c0728f9dd556649843f1f75c66579db8b4fa3305df0725696298ceed10","data":{"sales_publication_id":"c28eb897-5963-4fa6-8495-d961a5bcdfc3","seller_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","payment_window_minutes":30,"apple_product_id":null,"rights_hold":false,"rights_epoch":0,"title":"synthetic finished video","description":"synthetic only","city":"synthetic city","spec_id":"a2953747-e4ec-4cb5-a1e0-a4b1b3059051","spec_version":2,"spec":{"title":"synthetic finished video","review":{"reason":"synthetic","decision":"APPROVED","account_id":"33de23d9-21d1-4669-a1a8-b3499a939b84"},"currency":"CNY","line_kind":"OTHER","unit_minor":100,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"rule_id":"99b01ef3-3905-496c-a2b1-00465725deb3","rule_snapshot":{"content":{"id":"99b01ef3-3905-496c-a2b1-00465725deb3","terms":{"explicit":"synthetic stock terms"},"version":"1","rule_key":"stock.synthetic","content_sha256":"5c120eff8573f05ddccc6de34705f97e82705234f1f6019caba67585e310147b","format_version":"rule-content-v1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"file_id":"f012e138-25bc-407a-9da4-697eba05face","preview_file_id":"40cbfe85-6fff-4b69-8118-78f46fa58734","participants":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f"}],"rights_evidence_ids":["ebc3b355-16bc-4529-91dd-ee8cd40092cf"],"qualification":{"minimum_halo_level":2,"source_ref":"CONTRACT_20261029_19_ART5_23_SEC1"},"reviews":{"RIGHTS":null,"CONTENT":null},"rights_snapshot":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f","content_sha256":"bb910f373664343f0a85779a81e0ad5a2b4b0a945b11f3e5980a52e049d797e4"}],"files":{"full_sha256":"a6257167fd8a31471ae301dd5956ed8457462043c024ea0794886517abcc3c03","preview_sha256":"7bd20ef76808571508fa566d975f200a3bd4c998e15d1c78fb252bf0ff02ccb5"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:64:66)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:64:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor identity rejects stock successful replay
+    not ok 8 - expired actor identity rejects stock successful replay
+      ---
+      duration_ms: 14.9686
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:64:12'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"e8561205-c434-4c7c-b417-e91ed0a96d9d","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"0b154d67-235f-4d48-af17-56ac52a138b1","seller_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e","current_status":"IN_REVIEW","object_version":1,"content_sha256":"005291c0728f9dd556649843f1f75c66579db8b4fa3305df0725696298ceed10","data":{"sales_publication_id":"c28eb897-5963-4fa6-8495-d961a5bcdfc3","seller_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","payment_window_minutes":30,"apple_product_id":null,"rights_hold":false,"rights_epoch":0,"title":"synthetic finished video","description":"synthetic only","city":"synthetic city","spec_id":"a2953747-e4ec-4cb5-a1e0-a4b1b3059051","spec_version":2,"spec":{"title":"synthetic finished video","review":{"reason":"synthetic","decision":"APPROVED","account_id":"33de23d9-21d1-4669-a1a8-b3499a939b84"},"currency":"CNY","line_kind":"OTHER","unit_minor":100,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"rule_id":"99b01ef3-3905-496c-a2b1-00465725deb3","rule_snapshot":{"content":{"id":"99b01ef3-3905-496c-a2b1-00465725deb3","terms":{"explicit":"synthetic stock terms"},"version":"1","rule_key":"stock.synthetic","content_sha256":"5c120eff8573f05ddccc6de34705f97e82705234f1f6019caba67585e310147b","format_version":"rule-content-v1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"file_id":"f012e138-25bc-407a-9da4-697eba05face","preview_file_id":"40cbfe85-6fff-4b69-8118-78f46fa58734","participants":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f"}],"rights_evidence_ids":["ebc3b355-16bc-4529-91dd-ee8cd40092cf"],"qualification":{"minimum_halo_level":2,"source_ref":"CONTRACT_20261029_19_ART5_23_SEC1"},"reviews":{"RIGHTS":null,"CONTENT":null},"rights_snapshot":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f","content_sha256":"bb910f373664343f0a85779a81e0ad5a2b4b0a945b11f3e5980a52e049d797e4"}],"files":{"full_sha256":"a6257167fd8a31471ae301dd5956ed8457462043c024ea0794886517abcc3c03","preview_sha256":"7bd20ef76808571508fa566d975f200a3bd4c998e15d1c78fb252bf0ff02ccb5"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:64:66)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:64:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor identity rejects new avatar
+    not ok 9 - expired actor identity rejects new avatar
+      ---
+      duration_ms: 25.711
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:64:12'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"499a6e97-a891-4482-b50a-90aa10c285b0","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"98a719de-ac4c-4ab4-96ad-92a7506e45db","person_id":"c2934493-2861-4bee-b7e9-902e5423da06","owner_party_id":"08fcda13-181e-4101-ace0-ad4f27591897","object_version":1,"data":{"display_name":"synthetic delegated avatar","archive_status":"EMPTY","artist_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","material_asset_ids":[],"provider_asset_ref":null,"long_lived_model_status":"NOT_ENABLED"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:64:66)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:64:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor identity rejects avatar successful replay
+    not ok 10 - expired actor identity rejects avatar successful replay
+      ---
+      duration_ms: 16.208
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:64:12'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"092e0daf-cedb-46fb-a215-304d0a1d4744","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"31fea945-cb51-4b9b-8ef3-ad490175b65b","person_id":"c2934493-2861-4bee-b7e9-902e5423da06","owner_party_id":"08fcda13-181e-4101-ace0-ad4f27591897","object_version":1,"data":{"display_name":"synthetic delegated avatar","archive_status":"EMPTY","artist_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","material_asset_ids":[],"provider_asset_ref":null,"long_lived_model_status":"NOT_ENABLED"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:64:66)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:64:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor retains authorized existing listing and profile reads
+    ok 11 - expired actor retains authorized existing listing and profile reads
+      ---
+      duration_ms: 28.8831
+      type: 'test'
+      ...
+    # Subtest: rejected actor identity rejects new stock
+    not ok 12 - rejected actor identity rejects new stock
+      ---
+      duration_ms: 41.2665
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:72:12'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"8d63c771-f0fc-4c2e-8e3c-a40563dcaad2","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"738b6833-bf3f-4c6c-ae43-19a909d5baac","seller_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e","current_status":"IN_REVIEW","object_version":1,"content_sha256":"005291c0728f9dd556649843f1f75c66579db8b4fa3305df0725696298ceed10","data":{"sales_publication_id":"c28eb897-5963-4fa6-8495-d961a5bcdfc3","seller_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","payment_window_minutes":30,"apple_product_id":null,"rights_hold":false,"rights_epoch":0,"title":"synthetic finished video","description":"synthetic only","city":"synthetic city","spec_id":"a2953747-e4ec-4cb5-a1e0-a4b1b3059051","spec_version":2,"spec":{"title":"synthetic finished video","review":{"reason":"synthetic","decision":"APPROVED","account_id":"33de23d9-21d1-4669-a1a8-b3499a939b84"},"currency":"CNY","line_kind":"OTHER","unit_minor":100,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"rule_id":"99b01ef3-3905-496c-a2b1-00465725deb3","rule_snapshot":{"content":{"id":"99b01ef3-3905-496c-a2b1-00465725deb3","terms":{"explicit":"synthetic stock terms"},"version":"1","rule_key":"stock.synthetic","content_sha256":"5c120eff8573f05ddccc6de34705f97e82705234f1f6019caba67585e310147b","format_version":"rule-content-v1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"file_id":"f012e138-25bc-407a-9da4-697eba05face","preview_file_id":"40cbfe85-6fff-4b69-8118-78f46fa58734","participants":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f"}],"rights_evidence_ids":["ebc3b355-16bc-4529-91dd-ee8cd40092cf"],"qualification":{"minimum_halo_level":2,"source_ref":"CONTRACT_20261029_19_ART5_23_SEC1"},"reviews":{"RIGHTS":null,"CONTENT":null},"rights_snapshot":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f","content_sha256":"bb910f373664343f0a85779a81e0ad5a2b4b0a945b11f3e5980a52e049d797e4"}],"files":{"full_sha256":"a6257167fd8a31471ae301dd5956ed8457462043c024ea0794886517abcc3c03","preview_sha256":"7bd20ef76808571508fa566d975f200a3bd4c998e15d1c78fb252bf0ff02ccb5"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:72:67)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:72:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected actor identity rejects stock successful replay
+    not ok 13 - rejected actor identity rejects stock successful replay
+      ---
+      duration_ms: 12.1318
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:72:12'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"53deb84c-c4ae-46bc-9c06-a330f5b8b896","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"0b154d67-235f-4d48-af17-56ac52a138b1","seller_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e","current_status":"IN_REVIEW","object_version":1,"content_sha256":"005291c0728f9dd556649843f1f75c66579db8b4fa3305df0725696298ceed10","data":{"sales_publication_id":"c28eb897-5963-4fa6-8495-d961a5bcdfc3","seller_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","payment_window_minutes":30,"apple_product_id":null,"rights_hold":false,"rights_epoch":0,"title":"synthetic finished video","description":"synthetic only","city":"synthetic city","spec_id":"a2953747-e4ec-4cb5-a1e0-a4b1b3059051","spec_version":2,"spec":{"title":"synthetic finished video","review":{"reason":"synthetic","decision":"APPROVED","account_id":"33de23d9-21d1-4669-a1a8-b3499a939b84"},"currency":"CNY","line_kind":"OTHER","unit_minor":100,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"rule_id":"99b01ef3-3905-496c-a2b1-00465725deb3","rule_snapshot":{"content":{"id":"99b01ef3-3905-496c-a2b1-00465725deb3","terms":{"explicit":"synthetic stock terms"},"version":"1","rule_key":"stock.synthetic","content_sha256":"5c120eff8573f05ddccc6de34705f97e82705234f1f6019caba67585e310147b","format_version":"rule-content-v1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"file_id":"f012e138-25bc-407a-9da4-697eba05face","preview_file_id":"40cbfe85-6fff-4b69-8118-78f46fa58734","participants":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f"}],"rights_evidence_ids":["ebc3b355-16bc-4529-91dd-ee8cd40092cf"],"qualification":{"minimum_halo_level":2,"source_ref":"CONTRACT_20261029_19_ART5_23_SEC1"},"reviews":{"RIGHTS":null,"CONTENT":null},"rights_snapshot":[{"person_id":"c2934493-2861-4bee-b7e9-902e5423da06","avatar_id":"4e0b073e-b3fb-4dcc-9928-21d64a8fa007","consent_id":"5d6be1d1-699e-4795-86b4-ff7a4377e98f","content_sha256":"bb910f373664343f0a85779a81e0ad5a2b4b0a945b11f3e5980a52e049d797e4"}],"files":{"full_sha256":"a6257167fd8a31471ae301dd5956ed8457462043c024ea0794886517abcc3c03","preview_sha256":"7bd20ef76808571508fa566d975f200a3bd4c998e15d1c78fb252bf0ff02ccb5"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:72:67)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:72:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected actor identity rejects new avatar
+    not ok 14 - rejected actor identity rejects new avatar
+      ---
+      duration_ms: 21.5514
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:72:12'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"7e20ebf8-62fb-47c0-9698-ba437ba3df84","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"8a58350b-4a17-4a8a-9bdb-d0e7ce068b31","person_id":"c2934493-2861-4bee-b7e9-902e5423da06","owner_party_id":"08fcda13-181e-4101-ace0-ad4f27591897","object_version":1,"data":{"display_name":"synthetic delegated avatar","archive_status":"EMPTY","artist_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","material_asset_ids":[],"provider_asset_ref":null,"long_lived_model_status":"NOT_ENABLED"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:72:67)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:72:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected actor identity rejects avatar successful replay
+    not ok 15 - rejected actor identity rejects avatar successful replay
+      ---
+      duration_ms: 18.8681
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:72:12'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"75ea244c-58a5-4bea-833d-9b11b896b0a4","actor":{"account_id":"e29e7d3f-9f49-4569-a236-6b101bd97d3c"},"acting_party":"43db322c-ccbe-4947-9d8b-8da2ce72c04e"},"data":{"id":"31fea945-cb51-4b9b-8ef3-ad490175b65b","person_id":"c2934493-2861-4bee-b7e9-902e5423da06","owner_party_id":"08fcda13-181e-4101-ace0-ad4f27591897","object_version":1,"data":{"display_name":"synthetic delegated avatar","archive_status":"EMPTY","artist_person_id":"c2934493-2861-4bee-b7e9-902e5423da06","material_asset_ids":[],"provider_asset_ref":null,"long_lived_model_status":"NOT_ENABLED"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:45:29)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:72:67)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:72:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: direct stock repository also checks actor identity before a successful replay
+    not ok 16 - direct stock repository also checks actor identity before a successful replay
+      ---
+      duration_ms: 6.2892
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:74:11'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected rejection.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        code: 'VERIFIED_ADULT_REQUIRED'
+      operator: 'rejects'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:75:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:74:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: direct avatar repository also checks actor identity before a successful replay
+    not ok 17 - direct avatar repository also checks actor identity before a successful replay
+      ---
+      duration_ms: 7.6498
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:77:11'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected rejection.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        code: 'VERIFIED_ADULT_REQUIRED'
+      operator: 'rejects'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:78:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:77:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: denied identity transitions cannot create extra listings or digital people
+    not ok 18 - denied identity transitions cannot create extra listings or digital people
+      ---
+      duration_ms: 4.9666
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:80:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        
+          {
+        +   avatars: 6,
+        +   listings: 5
+        -   avatars: 4,
+        -   listings: 3
+          }
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        listings: 3
+        avatars: 4
+      actual:
+        listings: 5
+        avatars: 6
+      operator: 'deepStrictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:80:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:80:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: client cannot use identity recovery to verify another artist or submit its own age verdict
+    ok 19 - client cannot use identity recovery to verify another artist or submit its own age verdict
+      ---
+      duration_ms: 20.6595
+      type: 'test'
+      ...
+    # Subtest: trusted personal identity recovery restores both original successful operations without changing records
+    not ok 20 - trusted personal identity recovery restores both original successful operations without changing records
+      ---
+      duration_ms: 56.9939
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:86:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        
+          {
+        +   avatars: 6,
+        +   listings: 5
+        -   avatars: 4,
+        -   listings: 3
+          }
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        listings: 3
+        avatars: 4
+      actual:
+        listings: 5
+        avatars: 6
+      operator: 'deepStrictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:89:164)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-admission-initial.cjs:86:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..20
+not ok 1 - publishing and delegated avatar creation require the actual actor current identity
+  ---
+  duration_ms: 46965.1057
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-admission-initial.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '16 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 21
+# suites 0
+# pass 4
+# fail 17
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 47313.0283

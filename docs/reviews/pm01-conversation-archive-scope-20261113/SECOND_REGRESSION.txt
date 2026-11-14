@@ -1,0 +1,347 @@
+TAP version 13
+# Subtest: finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+    # Subtest: existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+    ok 1 - existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+      ---
+      duration_ms: 4677.9059
+      type: 'test'
+      ...
+    # Subtest: authentication, explicit rules and independent review are required
+    ok 2 - authentication, explicit rules and independent review are required
+      ---
+      duration_ms: 40.3299
+      type: 'test'
+      ...
+    # Subtest: rejected draft can be replaced while history stays; active agreement cannot change
+    ok 3 - rejected draft can be replaced while history stays; active agreement cannot change
+      ---
+      duration_ms: 87.8837
+      type: 'test'
+      ...
+    # Subtest: restricted finance evidence respects overlapping restrictions and restrictions activated during storage read
+    ok 4 - restricted finance evidence respects overlapping restrictions and restrictions activated during storage read
+      ---
+      duration_ms: 162.0911
+      type: 'test'
+      ...
+    # Subtest: settlement review and every party confirmation precede available balance
+    not ok 5 - settlement review and every party confirmation precede available balance
+      ---
+      duration_ms: 111.57
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:116:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"meta":{"request_id":"65a773f7-6299-41ed-ad8b-518e3ea77c37","actor":{"account_id":"3dc7bb96-ca13-4ead-a398-3e44e062a259"},"acting_party":"38cbfc31-9770-46b4-beef-edf616454163"},"error":{"code":"CONTENT_RESTRICTED","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ft (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:73:55)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:123:17)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:116:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+    not ok 6 - settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+      ---
+      duration_ms: 27.3751
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:132:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + '{"note":"synthetic","review":{"method":"INDEPENDENT_MANUAL_EVIDENCE_REVIEW","reason":"synthetic independent finance review","decision":"APPROVED","verification":{"amount_verified":true,"parties_verified":true,"contract_verified":true,"evidence_verified":true},"reviewer_account_id":"50319c3e-f3f4-4f3f-aca3-4f2a8784b9d5"},"balances":[{"party_id":"38cbfc31-9770-46b4-beef-edf616454163","paid_minor":0,"accrued_minor":1500,"balance_minor":1500,"adjustment_minor":0},{"party_id":"4c52060d-f958-4e09-ad2b-986d81591001","paid_minor":0,"accrued_minor":0,"balance_minor":0,"adjustment_minor":0},{"party_id":"61a616bb-1263-46d0-b8b6-b41aae6a9d3e","paid_minor":0,"accrued_minor":8500,"balance_minor":8500,"adjustment_minor":0}],"rule_sha256":"0644f9d167033b56056319dcbf9146dbc54b5cbc1fc7736918fd7350a288d0e4","facts_sha256":"2ee4d1e066b468ffa66d2f8855528ae11d25d04606f748265ee41bac200fb8b3","received_minor":10000,"period_reference":"initial","receivable_minor":0,"source_references":[{"id":"58312c17-8db8-4814-b483-054303289006","sha256":"148e22b504885230e8d7615293ecbe2776fb39ccebd4b3303c7678c85f95f3c1","provider":"ALIPAY","direction":"RECEIPT","record_id":"21d6e077-ce0f-428a-9ff5-33088f567082","environment":"SANDBOX","amount_minor":6000,"external_reference":"test.21d6e077-ce0f-428a-9ff5-33088f567082"},{"id":"9bbfcffc-eaf4-41f4-8b59-9c2033abdd13","sha256":"a5f2cf5bd0e0624177c00ed144289f282686585812388e0fa67fafe93f2972c0","provider":"ALIPAY","direction":"RECEIPT","record_id":"de5ea73e-556a-4562-b0d2-84f97192daa9","environment":"SANDBOX","amount_minor":4000,"external_reference":"test.de5ea73e-556a-4562-b0d2-84f97192daa9"}]}'
+        - undefined
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      actual: '{"note":"synthetic","review":{"method":"INDEPENDENT_MANUAL_EVIDENCE_REVIEW","reason":"synthetic independent finance review","decision":"APPROVED","verification":{"amount_verified":true,"parties_verified":true,"contract_verified":true,"evidence_verified":true},"reviewer_account_id":"50319c3e-f3f4-4f3f-aca3-4f2a8784b9d5"},"balances":[{"party_id":"38cbfc31-9770-46b4-beef-edf616454163","paid_minor":0,"accrued_minor":1500,"balance_minor":1500,"adjustment_minor":0},{"party_id":"4c52060d-f958-4e09-ad2b-986d81591001","paid_minor":0,"accrued_minor":0,"balance_minor":0,"adjustment_minor":0},{"party_id":"61a616bb-1263-46d0-b8b6-b41aae6a9d3e","paid_minor":0,"accrued_minor":8500,"balance_minor":8500,"adjustment_minor":0}],"rule_sha256":"0644f9d167033b56056319dcbf9146dbc54b5cbc1fc7736918fd7350a288d0e4","facts_sha256":"2ee4d1e066b468ffa66d2f8855528ae11d25d04606f748265ee41bac200fb8b3","received_minor":10000,"period_reference":"initial","receivable_minor":0,"source_references":[{"id":"58312c17-8db8-4814-b483-054303289006","sha256":"148e22b504885230e8d7615293ecbe2776fb39ccebd4b3303c7678c85f95f3c1","provider":"ALIPAY","direction":"RECEIPT","record_id":"21d6e077-ce0f-428a-9ff5-33088f567082","environment":"SANDBOX","amount_minor":6000,"external_reference":"test.21d6e077-ce0f-428a-9ff5-33088f567082"},{"id":"9bbfcffc-eaf4-41f4-8b59-9c2033abdd13","sha256":"a5f2cf5bd0e0624177c00ed144289f282686585812388e0fa67fafe93f2972c0","provider":"ALIPAY","direction":"RECEIPT","record_id":"de5ea73e-556a-4562-b0d2-84f97192daa9","environment":"SANDBOX","amount_minor":4000,"external_reference":"test.de5ea73e-556a-4562-b0d2-84f97192daa9"}]}'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:138:10)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:132:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: concurrent withdrawals reserve available amount once and exact retries reuse request
+    not ok 7 - concurrent withdrawals reserve available amount once and exact retries reuse request
+      ---
+      duration_ms: 24.9528
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:140:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        
+          [
+        -   200,
+            409,
+        +   409
+          ]
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        0: 200
+        1: 409
+      actual:
+        0: 409
+        1: 409
+      operator: 'deepStrictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:141:161)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:140:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: request approval is not paid; only independent bank evidence books actual payout
+    not ok 8 - request approval is not paid; only independent bank evidence books actual payout
+      ---
+      duration_ms: 17.0341
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:146:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:148:42)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:146:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: dispute after payout requests blocks new approval but preserves verified failure and cancellation facts
+    not ok 9 - dispute after payout requests blocks new approval but preserves verified failure and cancellation facts
+      ---
+      duration_ms: 11.1687
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:153:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"meta":{"request_id":"8bf079c4-3ff8-4fb5-85be-bbc6b56e9ca6","actor":{"account_id":"3dc7bb96-ca13-4ead-a398-3e44e062a259"},"acting_party":"38cbfc31-9770-46b4-beef-edf616454163"},"error":{"code":"CURRENT_SETTLEMENT_CONFIRMATION_REQUIRED","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ft (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:73:55)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:154:17)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:153:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: return and failed payouts keep facts and release reservation for a new request
+    not ok 10 - return and failed payouts keep facts and release reservation for a new request
+      ---
+      duration_ms: 0.4147
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:176:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:177:51)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Test.start (node:internal/test_runner/test:944:17)
+        TestContext.test (node:internal/test_runner/test:373:20)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:176:10)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: disputes notify parties, freeze new payouts, retain replies and all decisions
+    ok 11 - disputes notify parties, freeze new payouts, retain replies and all decisions
+      ---
+      duration_ms: 70.5395
+      type: 'test'
+      ...
+    # Subtest: refund reduces future entitlement, preserves old settlement and actual payout
+    not ok 12 - refund reduces future entitlement, preserves old settlement and actual payout
+      ---
+      duration_ms: 12.9884
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:192:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"meta":{"request_id":"695501c5-83f2-405f-841b-bff57901d279","actor":{"account_id":"3dc7bb96-ca13-4ead-a398-3e44e062a259"},"acting_party":"38cbfc31-9770-46b4-beef-edf616454163"},"error":{"code":"CURRENT_SETTLEMENT_CONFIRMATION_REQUIRED","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ft (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:73:55)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:193:29)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:192:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: adjustment is balanced, separately reviewed and forces new settlement confirmation
+    not ok 13 - adjustment is balanced, separately reviewed and forces new settlement confirmation
+      ---
+      duration_ms: 134.1626
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:204:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        1700 !== 100
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 100
+      actual: 1700
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:205:448)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:204:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: reconciliation compares verified facts without turning imported rows into money
+    ok 14 - reconciliation compares verified facts without turning imported rows into money
+      ---
+      duration_ms: 28.6557
+      type: 'test'
+      ...
+    # Subtest: daily books include verified refunds, actual split payments and returned split money, not reservations
+    not ok 15 - daily books include verified refunds, actual split payments and returned split money, not reservations
+      ---
+      duration_ms: 14.6561
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:212:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        0 !== 4000
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 4000
+      actual: 0
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:220:10)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:212:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: external release statement is accrued revenue, not cash received or automatic payout
+    ok 16 - external release statement is accrued revenue, not cash received or automatic payout
+      ---
+      duration_ms: 107.8164
+      type: 'test'
+      ...
+    # Subtest: same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation
+    ok 17 - same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation
+      ---
+      duration_ms: 104.2918
+      type: 'test'
+      ...
+    # Subtest: partial receipts, duplicate bank references and statement corrections never rewrite history
+    ok 18 - partial receipts, duplicate bank references and statement corrections never rewrite history
+      ---
+      duration_ms: 219.9777
+      type: 'test'
+      ...
+    # Subtest: record permissions, private proof integrity, stale membership and disabled automatic payout
+    not ok 19 - record permissions, private proof integrity, stale membership and disabled automatic payout
+      ---
+      duration_ms: 0.2856
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:267:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:268:51)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Test.start (node:internal/test_runner/test:944:17)
+        TestContext.test (node:internal/test_runner/test:373:20)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:267:10)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: late customer payment review and unaccepted delivery block payouts even with prior agreement
+    ok 20 - late customer payment review and unaccepted delivery block payouts even with prior agreement
+      ---
+      duration_ms: 35.3762
+      type: 'test'
+      ...
+    # Subtest: notification cursor can retrieve newly recorded events, and different parties keep their own feed
+    ok 21 - notification cursor can retrieve newly recorded events, and different parties keep their own feed
+      ---
+      duration_ms: 19.9594
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back adjustment and idempotency reservation; stale review fails
+    ok 22 - audit failure rolls back adjustment and idempotency reservation; stale review fails
+      ---
+      duration_ms: 19.719
+      type: 'test'
+      ...
+    # Subtest: personal income uses posted own shares including payout returns; no other party amounts or estimated revenue
+    ok 23 - personal income uses posted own shares including payout returns; no other party amounts or estimated revenue
+      ---
+      duration_ms: 101.6183
+      type: 'test'
+      ...
+    1..23
+not ok 1 - finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+  ---
+  duration_ms: 8588.1719
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:10:1'
+  failureType: 'subtestsFailed'
+  error: '10 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 24
+# suites 0
+# pass 13
+# fail 11
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8942.9448

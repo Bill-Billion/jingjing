@@ -1,0 +1,137 @@
+TAP version 13
+# Subtest: ordinary publishing and same-notice cooperation in isolated MySQL
+    # Subtest: new publishing rule requires independent approval; old rule and notices retain snapshots
+    ok 1 - new publishing rule requires independent approval; old rule and notices retain snapshots
+      ---
+      duration_ms: 157.2746
+      type: 'test'
+      ...
+    # Subtest: never-funded adult can publish all five ordinary types without changing membership
+    ok 2 - never-funded adult can publish all five ordinary types without changing membership
+      ---
+      duration_ms: 619.2948
+      type: 'test'
+      ...
+    # Subtest: membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged
+    ok 3 - membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged
+      ---
+      duration_ms: 120.8784
+      type: 'test'
+      ...
+    # Subtest: unverified, child, expired, inactive, foreign identity and official impersonation remain rejected
+    ok 4 - unverified, child, expired, inactive, foreign identity and official impersonation remain rejected
+      ---
+      duration_ms: 96.76
+      type: 'test'
+      ...
+    # Subtest: identity or ownership lost after submission is checked at review and public read
+    ok 5 - identity or ownership lost after submission is checked at review and public read
+      ---
+      duration_ms: 58.8017
+      type: 'test'
+      ...
+    # Subtest: organization scope and other project ownership cannot be bypassed with an ordinary rule
+    ok 6 - organization scope and other project ownership cannot be bypassed with an ordinary rule
+      ---
+      duration_ms: 62.0575
+      type: 'test'
+      ...
+    # Subtest: same notice receives reviewed artist submission then one support case after lost response recovery
+    ok 7 - same notice receives reviewed artist submission then one support case after lost response recovery
+      ---
+      duration_ms: 116.7862
+      type: 'test'
+      ...
+    # Subtest: suspended account or party hides publication and blocks further cooperation
+    ok 8 - suspended account or party hides publication and blocks further cooperation
+      ---
+      duration_ms: 65.5463
+      type: 'test'
+      ...
+    # Subtest: independent support links actual quote and creates the same unpaid order without membership
+    ok 9 - independent support links actual quote and creates the same unpaid order without membership
+      ---
+      duration_ms: 249.8118
+      type: 'test'
+      ...
+    # Subtest: same notice order receives payment, scoped conversation and independently reviewed full refund
+    ok 10 - same notice order receives payment, scoped conversation and independently reviewed full refund
+      ---
+      duration_ms: 770.732
+      type: 'test'
+      ...
+    # Subtest: closing ordinary notice blocks new submissions while historical quote remains unchanged
+    ok 11 - closing ordinary notice blocks new submissions while historical quote remains unchanged
+      ---
+      duration_ms: 20.9116
+      type: 'test'
+      ...
+    # Subtest: notice withdrawal notifies each historical application once without changing submission or contract
+    not ok 12 - notice withdrawal notifies each historical application once without changing submission or contract
+      ---
+      duration_ms: 65.7872
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notices-ordinary.integration.test.cjs:216:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+
+        0 !== 2
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 2
+      actual: 0
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notices-ordinary.integration.test.cjs:223:59)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notices-ordinary.integration.test.cjs:216:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: failure to record notice withdrawal notification rolls back closure and all prior events
+    not ok 13 - failure to record notice withdrawal notification rolls back closure and all prior events
+      ---
+      duration_ms: 54.6704
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notices-ordinary.integration.test.cjs:236:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+
+        200 !== 503
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 503
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notices-ordinary.integration.test.cjs:242:12)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notices-ordinary.integration.test.cjs:236:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..13
+not ok 1 - ordinary publishing and same-notice cooperation in isolated MySQL
+  ---
+  duration_ms: 9646.8672
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notices-ordinary.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 14
+# suites 0
+# pass 11
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9848.8658

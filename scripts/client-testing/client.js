@@ -1,4 +1,14 @@
 const $=id=>document.getElementById(id);let me=null,currentRoute='/',selected=null,issueData={issues:[],results:[]},imageData=null,feedbackCommand=null,resultCommand=null;
+// Apply the same allowlist as the server before displaying or sending page context.
+function safeFeedbackRoute(value){
+ if(typeof value!=='string'||value.length>600||!value.startsWith('/')||value.startsWith('//')||/[\\<>\r\n]/.test(value))return '/';
+ try{const u=new URL(value,'http://local'),clean=p=>/^[A-Za-z0-9_/.%-]*$/.test(p)?p:'/';
+  const keys=new Set(['recordId','id','requestId','projectId','section','installmentKey','view','kind','personId','agreementId','orderId','listingId','noticeId']);
+  const filter=q=>{const out=new URLSearchParams();for(const [k,v]of q)if(keys.has(k)&&/^[A-Za-z0-9_-]{1,80}$/.test(v))out.set(k,v);return out.size?'?'+out:'';};
+  const h=u.hash?new URL(u.hash.slice(1),'http://local'):null;
+  return clean(u.pathname)+filter(u.searchParams)+(h?'#'+clean(h.pathname)+filter(h.searchParams):'');
+ }catch{return '/';}
+}
 async function api(url,options={}){const response=await fetch('/__test/'+url,{...options,headers:{'Content-Type':'application/json',...options.headers}});const b=await response.json();if(!response.ok)throw Object.assign(Error(b.message||'请求失败，请保留原内容重试'),{status:response.status});return b;}
 function message(e){$('message').textContent=e.message||String(e);}
 function add(parent,tag,value,cls){const n=document.createElement(tag);n.textContent=value;if(cls)n.className=cls;parent.append(n);return n;}
@@ -8,15 +18,15 @@ function commands(form,fn){form.addEventListener('submit',async e=>{e.preventDef
 async function load(){me=await api('me');$('login').hidden=true;$('main').hidden=false;$('logout').hidden=false;$('identity').textContent=me.name+' · 测试版 '+me.version.slice(0,8)+' · 到期 '+new Date(me.expires_at).toLocaleString();$('scenario').replaceChildren();for(const r of me.routes){const o=document.createElement('option');o.value=r.id;o.textContent=r.title;$('scenario').append(o);}$('export').hidden=!me.reviewer;$('scenario').closest('label').hidden=me.reviewer;for(const id of ['start','scenario','feedback','showResult'])$(id).hidden=me.reviewer;if(me.reviewer)await showIssues();else{$('instructions').textContent='选择一条业务路线，然后打开。付款等真实外部服务不在本轮范围内。';} }
 commands($('login'),async()=>{await api('login',{method:'POST',body:JSON.stringify({code:$('code').value})});$('code').value='';await load();});
 $('logout').onclick=async()=>{try{await api('logout',{method:'POST',body:'{}'});location.reload();}catch(e){message(e);}};
-$('start').onclick=()=>{const next=me.routes.find(r=>r.id===$('scenario').value);if(!next)return;if(!$('app').hidden&&!confirm('打开另一条流程会离开当前业务页面。请先保存业务表单。'))return;selected=next;currentRoute=next.path;$('message').textContent=next.path.startsWith('/app/')?'首次打开需要下载页面和中文字库，可能较慢；请先等待加载，长时间空白时记录时间并反馈。':'';$('instructions').textContent=next.instructions;$('app').src=next.path;$('app').hidden=false;$('issues').hidden=true;};
-window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('app').contentWindow||e.data?.type!=='jx-test-context'||typeof e.data.route!=='string')return;currentRoute=e.data.route.slice(0,600);});
+$('start').onclick=()=>{const next=me.routes.find(r=>r.id===$('scenario').value);if(!next)return;if(!$('app').hidden&&!confirm('打开另一条流程会离开当前业务页面。请先保存业务表单。'))return;selected=next;currentRoute=safeFeedbackRoute(next.path);$('message').textContent=next.path.startsWith('/app/')?'首次打开需要下载页面和中文字库，可能较慢；请先等待加载，长时间空白时记录时间并反馈。':'';$('instructions').textContent=next.instructions;$('app').src=next.path;$('app').hidden=false;$('issues').hidden=true;};
+window.addEventListener('message',e=>{if(e.origin!==location.origin||e.source!==$('app').contentWindow||e.data?.type!=='jx-test-context'||typeof e.data.route!=='string')return;currentRoute=safeFeedbackRoute(e.data.route);});
 $('feedback').onclick=()=>{$('context').textContent='当前流程：'+(selected?.title||'未选择')+'；页面：'+currentRoute+'；身份：'+me.name;$('feedbackDialog').showModal();};
 for(const b of document.querySelectorAll('[data-close]'))b.onclick=()=>$(b.dataset.close).close();
 $('attachment').onchange=async()=>{imageData=null;$('imagePreview').hidden=true;$('imageConfirmed').checked=false;const file=$('attachment').files[0];if(!file)return;if(file.size>2*1024*1024||!['image/png','image/jpeg'].includes(file.type)){$('feedbackMessage').textContent='请选择2MB以内PNG或JPEG图片';$('attachment').value='';return;}imageData=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file);});$('imagePreview').src=imageData;$('imagePreview').hidden=false;};
 commands($('feedbackForm'),async()=>{
  if(imageData&&!$('imageConfirmed').checked)throw Error('请先检查并确认截图内容');
  // Keep the exact request after an uncertain response. Never silently create a second issue.
- if(!feedbackCommand)feedbackCommand={key:crypto.randomUUID(),body:{category:$('category').value,description:$('description').value,expected:$('expected').value,context:{route:currentRoute,scenario:selected?.id,reference:$('reference').value,device:navigator.userAgent.slice(0,160)},image:imageData,image_confirmed:$('imageConfirmed').checked}};
+ if(!feedbackCommand)feedbackCommand={key:crypto.randomUUID(),body:{category:$('category').value,description:$('description').value,expected:$('expected').value,context:{route:safeFeedbackRoute(currentRoute),scenario:selected?.id,reference:$('reference').value,device:navigator.userAgent.slice(0,160)},image:imageData,image_confirmed:$('imageConfirmed').checked}};
  const r=await api('issues',{method:'POST',headers:{'Idempotency-Key':feedbackCommand.key},body:JSON.stringify(feedbackCommand.body)});feedbackCommand=null;$('feedbackForm').reset();imageData=null;$('imagePreview').hidden=true;$('feedbackDialog').close();$('message').textContent=r.number+' 已记录，您可以继续原来的操作。';$('feedbackMessage').textContent='';
 });
 $('showResult').onclick=()=>{if(!selected)return message('请先打开一条流程');$('resultDialog').showModal();};

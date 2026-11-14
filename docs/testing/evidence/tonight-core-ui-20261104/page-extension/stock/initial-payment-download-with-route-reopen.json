@@ -1,0 +1,29 @@
+{
+  "at": "2026-11-04T11:13:10.681Z",
+  "version": "b0ed887871ea07f8dcaf2c5e4258042a99d7b82c",
+  "scope": "New order through real App Web UI; all external payments simulated; GET-only independent verification",
+  "checks": [
+    "从目录实际选片、阅读许可并建立全新未付款订单",
+    "同单从收银台选择模拟成功，服务器确认PAID且实收等于原单金额",
+    "同一订单的本人已购许可生效，点击私有文件下载实际取得文件"
+  ],
+  "records": [
+    {
+      "order_id": "d299d52f-fc82-472e-a7e5-4c266b56a79c",
+      "listing_id": "f9b12f20-6532-4157-8321-6710923b08b3",
+      "expected_minor": 100,
+      "received_minor": 100,
+      "order_return": "same-order route reopen; no business API writes",
+      "download_bytes": 2881323,
+      "download_sha256": "a5e259d56aa207e7c7e6fec134ed26a883a2c1acce71ee5461c41bcb87232f3b",
+      "business_post_routes": [
+        "/api/v1/stock/checkout",
+        "/api/v1/trade/payments",
+        "/api/v1/testing/payments/outcome",
+        "/api/v1/trade/payments/41f5cbd6-9887-45fb-948a-18a51dfa39be/reconciliation"
+      ]
+    }
+  ],
+  "errors": [],
+  "external": []
+}

@@ -1,3 +1,5 @@
+import '../rights/rights_models.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
@@ -77,8 +79,37 @@ class _ArtistFormState extends State<_ArtistForm> {
       voices = <ArtistRecord>[],
       serviceRecords = <ArtistRecord>[],
       relations = <GigRecord>[];
-  final features = <String>{}, purposes = <String>{}, delegated = <String>{};
+  final relationNames = <String, String>{};
+  final features = <String>{},
+      purposes = <String>{},
+      delegated = <String>{},
+      selectedCommercialUses = <String>{};
   List<String> files = [];
+  final classifiedFiles = <String, List<String>>{
+    'model_card_asset_id': [],
+    'lifestyle_asset_ids': [],
+    'full_body_asset_ids': []
+  };
+  bool replaceMaterials = false;
+  String? uploadingCategory;
+  Map<String, dynamic>? get freeOffer => services?.freeOffers
+      .where((r) => offer == 'free:${r['kind']}')
+      .firstOrNull;
+  bool get classified =>
+      mode == 'HALO' &&
+          halo == 2 &&
+          serviceRecords
+                  .where((r) => r.id == serviceId)
+                  .firstOrNull
+                  ?.data['specification']['service']['rule_version'] ==
+              'CONTRACT_20261029' ||
+      mode == 'SUPPLEMENT' &&
+          replaceMaterials &&
+          record?.data['rule_version'] == 'CONTRACT_20261029';
+  final portraitOptions = <String, String>{};
+  String? primaryPortrait, portraitError;
+  int portraitRead = 0;
+  bool portraitBusy = false;
   String? avatar,
       consent,
       previous,
@@ -128,6 +159,7 @@ class _ArtistFormState extends State<_ArtistForm> {
       }[mode];
       return '$p/$type/${widget.recordId}/$suffix';
     }
+    if (mode == 'SERVICE' && freeOffer != null) return '$p/free-services';
     return '$p/${{
       'AVATAR': 'avatars',
       'IDENTITY': 'identity',
@@ -150,7 +182,8 @@ class _ArtistFormState extends State<_ArtistForm> {
   bool get unresolvedFile =>
       detail != null &&
       api.pending('${api.personPath(detail!.person.id)}/assets') != null;
-  bool get locked => busy || fileBusy || pending != null || unresolvedFile;
+  bool get locked =>
+      busy || fileBusy || portraitBusy || pending != null || unresolvedFile;
   bool get enabled => !locked && !conflict && allowed;
   bool get allowed {
     if (!_titles.containsKey(mode)) return false;
@@ -193,11 +226,14 @@ class _ArtistFormState extends State<_ArtistForm> {
     if (mode == 'SUPPLEMENT' && record?.canSupplement != true) return false;
     if (mode == 'APPEAL' && record?.canAppeal != true) return false;
     if (mode == 'WITHDRAW' && record?.canWithdraw != true) return false;
-    if (mode == 'REMINDER' && record?.data['kind'] != 'AVATAR_HOSTING') {
+    if (mode == 'REMINDER' &&
+        (record?.data['kind'] != 'AVATAR_HOSTING' ||
+            record?.freeService == true)) {
       return false;
     }
     if (mode == 'CANCEL' &&
         (record == null ||
+            record!.freeService ||
             ['DELIVERED', 'REFUNDED', 'CANCELLED'].contains(record!.status))) {
       return false;
     }
@@ -215,6 +251,7 @@ class _ArtistFormState extends State<_ArtistForm> {
 
   @override
   void dispose() {
+    portraitRead++;
     for (final c in fields.values) {
       c.dispose();
     }
@@ -264,6 +301,12 @@ class _ArtistFormState extends State<_ArtistForm> {
                           ?.isAfter(now) ==
                       true));
         }
+        if (mode == 'DELEGATION') {
+          for (final r in relations) {
+            final names = await GigApi(widget.session).relationNames(r);
+            relationNames[r.id] = names[r.owner] ?? '机构名称暂不可读';
+          }
+        }
         if (mounted) {
           controller('grantee').text = d.person.owner;
         }
@@ -280,9 +323,55 @@ class _ArtistFormState extends State<_ArtistForm> {
         dirty = true;
         notice = null;
       });
-  String input(String key, String label, {bool required = true}) {
+
+  void clearPortrait() {
+    portraitRead++;
+    primaryPortrait = null;
+    portraitOptions.clear();
+    portraitBusy = false;
+    portraitError = null;
+  }
+
+  Future<void> readPortraitOptions() async {
+    if (mode != 'LISTING' ||
+        detail == null ||
+        !(self || actions.contains('MANAGE_MATERIALS'))) {
+      return;
+    }
+    final ticket = ++portraitRead, selected = List<String>.of(files);
+    setState(() {
+      portraitBusy = selected.isNotEmpty;
+      primaryPortrait = null;
+      portraitOptions.clear();
+      portraitError = null;
+    });
+    try {
+      final metadata = await Future.wait(selected.map(
+          (id) => api.asset(id, detail!.person, purpose: 'AVATAR_MATERIAL')));
+      if (!mounted || ticket != portraitRead) return;
+      for (var i = 0; i < metadata.length; i++) {
+        final type = metadata[i]['media_type'];
+        if (type == 'image/jpeg' || type == 'image/png') {
+          portraitOptions[selected[i]] =
+              '预览 ${i + 1} · ${type == 'image/png' ? 'PNG' : 'JPEG'} · ${shortSupplyId(selected[i])}';
+        }
+      }
+    } on AccountError catch (e) {
+      if (mounted && ticket == portraitRead) {
+        portraitError = '主肖像选项核对未完成：${artistError(e)}';
+      }
+    } finally {
+      if (mounted && ticket == portraitRead) {
+        setState(() => portraitBusy = false);
+      }
+    }
+  }
+
+  String input(String key, String label,
+      {bool required = true, int max = 8000}) {
     final v = controller(key).text.trim();
     if (required && v.isEmpty) throw FormatException('请填写$label。');
+    if (v.runes.length > max) throw FormatException('$label超出长度限制。');
     return v;
   }
 
@@ -345,16 +434,20 @@ class _ArtistFormState extends State<_ArtistForm> {
       case 'CONSENT':
         if (features.isEmpty ||
             purposes.isEmpty ||
-            purposes.length > 4 ||
+            purposes.length > 9 ||
+            purposes.contains('STOCK_COMMERCIAL') &&
+                selectedCommercialUses.isEmpty ||
             files.isEmpty ||
             purposes.contains('LONG_LIVED_MODEL')) {
-          throw const FormatException('请明确形象或声音、最多四项用途，并上传本人同意证据。');
+          throw const FormatException('请明确形象或声音、具体用途及商用范围，并上传本人同意证据。');
         }
         value = {
           'avatar_id': chosen(a, '具体数字人'),
           'consent': {
             'features': features.toList(),
             'purposes': purposes.toList(),
+            if (purposes.contains('STOCK_COMMERCIAL'))
+              'stock_commercial_uses': selectedCommercialUses.toList(),
             'grantee_party_id': idInput('grantee', '使用方主体'),
             'territories': parts('territories', '适用地区'),
             ...period(),
@@ -403,6 +496,7 @@ class _ArtistFormState extends State<_ArtistForm> {
           'level': halo,
           'ownership_promise': true,
           'evidence_asset_ids': files,
+          if (classified) 'certification_materials': classifiedBody(),
           if (halo == 2) 'service_id': chosen(serviceId, '同一笔L2审核服务')
         };
         break;
@@ -410,6 +504,11 @@ class _ArtistFormState extends State<_ArtistForm> {
         final materials = materialFiles;
         if (materials.isEmpty) throw const FormatException('请选择最多六份指定公开预览。');
         if (materials.length > 6) throw const FormatException('公开预览最多六份。');
+        if (primaryPortrait != null &&
+            (!materials.contains(primaryPortrait) ||
+                !portraitOptions.containsKey(primaryPortrait))) {
+          throw const FormatException('请重新核对本次预览中的主肖像。');
+        }
         value = {
           'avatar_id': chosen(a, '具体数字人'),
           'listing': {
@@ -423,11 +522,20 @@ class _ArtistFormState extends State<_ArtistForm> {
             'look_version_id': chosen(look, '造型版本'),
             'voice_version_id': voice,
             'audition_public': audition,
-            'preview_asset_ids': materials
+            'preview_asset_ids': materials,
+            'primary_portrait_asset_id': primaryPortrait
           }
         };
         break;
       case 'SERVICE':
+        if (freeOffer != null) {
+          value = {
+            'avatar_id': chosen(a, '具体数字人'),
+            'kind': freeOffer!['kind'],
+            'rule_version': 'CONTRACT_20261029'
+          };
+          break;
+        }
         final o =
             services?.offers.where((r) => r['spec_id'] == offer).firstOrNull;
         if (o == null || o['specification']['service']['halo_level'] == 3) {
@@ -442,7 +550,11 @@ class _ArtistFormState extends State<_ArtistForm> {
         break;
       case 'SUPPLEMENT':
         if (files.isEmpty) throw const FormatException('请上传补充材料。');
-        value = {'evidence_asset_ids': files, 'note': input('reason', '补充说明')};
+        value = {
+          'evidence_asset_ids': files,
+          'note': input('reason', '补充说明'),
+          if (classified) 'certification_materials': classifiedBody()
+        };
         break;
       case 'APPEAL':
         if (files.isEmpty) throw const FormatException('请上传异议证据。');
@@ -467,6 +579,65 @@ class _ArtistFormState extends State<_ArtistForm> {
     return value;
   }
 
+  Map<String, dynamic> classifiedBody() {
+    if (classifiedFiles['model_card_asset_id']!.length != 1 ||
+        ['lifestyle_asset_ids', 'full_body_asset_ids'].any((k) =>
+            classifiedFiles[k]!.isEmpty || classifiedFiles[k]!.length > 10)) {
+      throw const FormatException('请分别上传一份模卡、1至10张生活照及全身照。');
+    }
+    if ({...files, ...classifiedFiles.values.expand((x) => x)}.length > 30) {
+      throw const FormatException('审核文件去重后最多30份。');
+    }
+    return {
+      'model_card_asset_id': classifiedFiles['model_card_asset_id']!.single,
+      'lifestyle_asset_ids': classifiedFiles['lifestyle_asset_ids'],
+      'full_body_asset_ids': classifiedFiles['full_body_asset_ids'],
+      'personal_introduction':
+          input('personal_introduction', '个人简介', max: 2000),
+      'resume': input('resume', '文字简历', max: 8000)
+    };
+  }
+
+  List<Widget> classifiedInputs() => [
+        appNotice('分类资料仅供本人和获准审核岗位查看，上传不代表认证通过。'),
+        for (final entry in const {
+          'model_card_asset_id': '模卡（PNG、JPEG或PDF，一份）',
+          'lifestyle_asset_ids': '生活照（PNG或JPEG，1—10张）',
+          'full_body_asset_ids': '全身照（PNG或JPEG，1—10张）'
+        }.entries)
+          tradeSection(entry.value, [
+            ArtistFiles(
+                key: ValueKey(entry.key),
+                api: api,
+                person: detail!.person,
+                purpose: 'REVIEW_EVIDENCE',
+                ids: classifiedFiles[entry.key]!,
+                allowedMediaTypes: entry.key == 'model_card_asset_id'
+                    ? const ['image/png', 'image/jpeg', 'application/pdf']
+                    : const ['image/png', 'image/jpeg'],
+                maxFiles: entry.key == 'model_card_asset_id' ? 1 : 10,
+                enabled: !busy &&
+                    !fileBusy &&
+                    !conflict &&
+                    allowed &&
+                    (uploadingCategory == null ||
+                        uploadingCategory == entry.key),
+                onBusy: (v) {
+                  if (mounted) {
+                    setState(() {
+                      fileBusy = v;
+                      if (v) {
+                        uploadingCategory = entry.key;
+                      } else if (!unresolvedFile) uploadingCategory = null;
+                    });
+                  }
+                },
+                onChanged: (ids) =>
+                    change(() => classifiedFiles[entry.key] = ids))
+          ]),
+        text('personal_introduction', '个人简介', lines: 3, max: 2000),
+        text('resume', '文字简历', lines: 5, max: 8000)
+      ];
   bool get ready {
     try {
       body();
@@ -488,6 +659,14 @@ class _ArtistFormState extends State<_ArtistForm> {
         await tradeConfirm(context, retry ? '恢复上次艺人操作' : '确认这次办理内容', [
       if (detail != null) tradeFact('真人本人', detail!.person.name),
       tradeFact('办事身份', widget.session.party?['display_name']),
+      if (mode == 'SERVICE' && freeOffer != null)
+        const Text('本次免费申请无需付款；人工创建结果另行核对。'),
+      if (mode == 'SERVICE' &&
+          services?.offers
+                  .where((r) => r['spec_id'] == offer)
+                  .firstOrNull?['specification']['service']['failure_policy'] ==
+              'REVIEW_FEE_NON_REFUNDABLE')
+        const Text('10元为一次人工审核费，不支持常规退款，付款不代表通过。'),
       const Text('本次仅提交所列事项，付款、审核批准、公开展示和长期模型分别核对。'),
       ExpansionTile(
           title: const Text('核对本次完整提交内容'),
@@ -570,7 +749,9 @@ class _ArtistFormState extends State<_ArtistForm> {
               decoration: InputDecoration(
                   labelText: '$label${required ? ' · 必填' : ''}',
                   hintText: hint),
-              onChanged: (_) => change(() {})));
+              onChanged: (_) => change(() {
+                    if (key == 'existingMaterials') clearPortrait();
+                  })));
   Widget date(String key, String label, {String? hint}) => Padding(
       padding: const EdgeInsets.only(bottom: 18),
       child: KeyedSubtree(
@@ -629,11 +810,29 @@ class _ArtistFormState extends State<_ArtistForm> {
           person: detail!.person,
           purpose: purpose,
           ids: files,
-          enabled: !busy && pending == null && !conflict && allowed,
+          enabled: !busy &&
+              !fileBusy &&
+              pending == null &&
+              !conflict &&
+              allowed &&
+              (uploadingCategory == null || uploadingCategory == 'other'),
           onBusy: (b) {
-            if (mounted) setState(() => fileBusy = b);
+            if (mounted) {
+              setState(() {
+                fileBusy = b;
+                if (b) {
+                  uploadingCategory = 'other';
+                } else if (!unresolvedFile) uploadingCategory = null;
+              });
+            }
           },
-          onChanged: (ids) => change(() => files = ids));
+          onChanged: (ids) {
+            change(() {
+              files = ids;
+              clearPortrait();
+            });
+            unawaited(readPortraitOptions());
+          });
   Widget haloMaterials() => tradeSection('认证材料准备提示', [
         appNotice('按本次认证要求准备材料，统一在下方上传。以下分类是准备提示，不会新增必填项或根据文件数量认定缺项。'),
         tradeFact('形象模卡', '按认证模板提供本人模卡。'),
@@ -649,6 +848,10 @@ class _ArtistFormState extends State<_ArtistForm> {
         consent = null;
         look = null;
         voice = null;
+        if (mode == 'LISTING') {
+          clearPortrait();
+          scheduleMicrotask(readPortraitOptions);
+        }
       });
   List<ArtistRecord> get consentOptions => consents
       .where((r) =>
@@ -703,7 +906,11 @@ class _ArtistFormState extends State<_ArtistForm> {
           avatarInput(),
           tradeSection('本次允许使用什么', [
             choices(artistFeatures, features),
-            choices(artistPurposes, purposes, purpose: true)
+            choices(artistPurposes, purposes, purpose: true),
+            if (purposes.contains('STOCK_COMMERCIAL')) ...[
+              const Text('明确商用用途（须覆盖所填地域和期间）'),
+              choices(commercialUses, selectedCommercialUses)
+            ]
           ]),
           text('grantee', '使用方主体编号', max: 36),
           text('territories', '适用地区', hint: '多个地区以逗号分隔', max: 2000),
@@ -724,7 +931,7 @@ class _ArtistFormState extends State<_ArtistForm> {
                 for (final r in relations)
                   (
                     r.id,
-                    '机构 ${shortSupplyId(r.owner!)} · 关系 ${shortSupplyId(r.id)}'
+                    '${relationNames[r.id] ?? '机构名称暂不可读'} · 合作至 ${r.data['valid_until'].toString().substring(0, 10)}'
                   )
               ],
               (v) => relation = v),
@@ -789,7 +996,7 @@ class _ArtistFormState extends State<_ArtistForm> {
                 ],
                 (v) => serviceId = v),
           appNotice('L1免费。L2先核对已付款的同一笔审核服务；补件沿用原申请。L3尚不开放。'),
-          haloMaterials(),
+          if (classified) ...classifiedInputs() else haloMaterials(),
           CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               value: promise,
@@ -817,7 +1024,7 @@ class _ArtistFormState extends State<_ArtistForm> {
           select(
               '声音版本（可不选）',
               voice ?? '',
-              const [('', '不展示声音')] +
+              const [('', '不指定声音版本')] +
                   [
                     for (final r in voices.where((r) => r.avatarId == avatar))
                       (r.id, r.data['display_name'] as String)
@@ -825,6 +1032,7 @@ class _ArtistFormState extends State<_ArtistForm> {
             voice = v == '' ? null : v;
             consent = null;
           }),
+          appNotice('声音版本用于说明本次引用的版本；声音预览仍按下方指定材料随本次申请独立审核。'),
           CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               value: audition,
@@ -837,6 +1045,26 @@ class _ArtistFormState extends State<_ArtistForm> {
             else
               text('existingMaterials', '本人指定公开预览的材料编号', lines: 2, max: 300)
           ]),
+          tradeSection('公开主肖像（可不选）', [
+            if (portraitBusy) const LinearProgressIndicator(),
+            select(
+                '选择本次预览中的照片',
+                primaryPortrait ?? '',
+                [
+                  ('', '不设置主肖像'),
+                  ...portraitOptions.entries.map((e) => (e.key, e.value))
+                ],
+                (v) => primaryPortrait = v == '' ? null : v),
+            if (portraitError != null) appNotice(portraitError!),
+            if (self || actions.contains('MANAGE_MATERIALS'))
+              tradeButton('重新核对主肖像选项',
+                  enabled && files.isNotEmpty ? readPortraitOptions : null,
+                  outline: true)
+            else
+              appNotice('当前委托仅允许提交指定材料编号。选择主肖像还需本人或有材料管理权限的受托方核对照片；本次可先不设置。'),
+            appNotice(
+                '只可选择本次预览中的 JPEG 或 PNG。更换材料会清除选择；不设置时公开页保留占位。主肖像随本次新申请独立审核，提交后不会立即替换现有公开资料。'),
+          ]),
           appNotice(
               '需要独立公开同意、有效托管与审核。关闭试镜展示可提交新公开申请并取消勾选；仍需独立复核，原申请在新申请获批前保持原状态。本人也可撤回原公开申请。')
         ];
@@ -847,6 +1075,8 @@ class _ArtistFormState extends State<_ArtistForm> {
             s = o?['specification'];
         return [
           select('选择当前已审服务商品', offer, [
+            for (final r in services?.freeOffers ?? <Map<String, dynamic>>[])
+              ("free:${r['kind']}", "${artistServiceKinds[r['kind']]} · 永久免费"),
             for (final r in services?.offers ?? <Map<String, dynamic>>[])
               if (r['specification']['service']['halo_level'] != 3)
                 (
@@ -857,9 +1087,16 @@ class _ArtistFormState extends State<_ArtistForm> {
             offer = v;
             reminder = false;
           }),
+          if (freeOffer != null) ...[
+            avatarInput(),
+            appNotice('永久免费，无需付款或续费。创建等待人工交付基础档案；托管只登记权益，不代表云服务已上线或长期模型已生成。'),
+            ContractText(value: freeOffer!['specification']['terms'])
+          ],
           if (o != null) ...[
             tradeFact('服务种类', artistServiceKinds[s['service']['kind']]),
             tradeFact('商品价格', artistMoney(o['price_minor'])),
+            if (s['service']['failure_policy'] == 'REVIEW_FEE_NON_REFUNDABLE')
+              appNotice('10元为一次人工审核费，不支持常规退款。付款不代表通过；补件不重复收费。请在付款前核对。'),
             tradeFact('交付内容', (s['deliverables'] as List).join('、')),
             tradeFact('原商品重试次数', s['service']['retry_limit']),
             if (s['service']['kind'] == 'AVATAR_HOSTING')
@@ -875,9 +1112,11 @@ class _ArtistFormState extends State<_ArtistForm> {
                       ? (v) => change(() => reminder = v == true)
                       : null)
           ],
-          if (services?.offers.isEmpty == true)
+          if (services?.offers.isEmpty == true &&
+              services?.freeOffers.isEmpty == true)
             appNotice('当前没有可订的已审服务商品，不能填写默认价格创建订单。'),
-          appNotice('此步保存服务请求。平台报价、本人确认订单、实际付款和服务结果分别核对。'),
+          if (freeOffer == null)
+            appNotice('此步保存服务请求。平台报价、本人确认订单、实际付款和服务结果分别核对。'),
         ];
       case 'SUPPLEMENT':
       case 'APPEAL':
@@ -895,7 +1134,16 @@ class _ArtistFormState extends State<_ArtistForm> {
                 tradeFact('本次实际补件意见', record!.data['review']['reason']),
               supplyNote('按实际审核意见补充。当前记录未提供逐分类缺项清单，不能将下方提示当作已核定缺项。'),
             ]),
-            haloMaterials(),
+            if (record?.data['rule_version'] == 'CONTRACT_20261029') ...[
+              CheckboxListTile(
+                  title: const Text('替换分类资料，保留原版本'),
+                  value: replaceMaterials,
+                  onChanged: enabled
+                      ? (v) => change(() => replaceMaterials = v == true)
+                      : null),
+              if (classified) ...classifiedInputs()
+            ] else
+              haloMaterials(),
           ],
           text('reason', mode == 'SUPPLEMENT' ? '补充说明' : '异议原因',
               lines: 3, max: 2000),
@@ -946,9 +1194,15 @@ class _ArtistFormState extends State<_ArtistForm> {
           if (!didPop) await goBack();
         },
         child: artistEditorScaffold(
-            _titles[mode] ?? '艺人办理',
+            mode == 'WITHDRAW' && record?.kind == 'LISTING'
+                ? '撤回这份公开展示'
+                : _titles[mode] ?? '艺人办理',
             [
-              tradeHeading(_titles[mode] ?? '这个入口不存在', eyebrow: '本人档案 / 明确用途'),
+              tradeHeading(
+                  mode == 'WITHDRAW' && record?.kind == 'LISTING'
+                      ? '撤回这份公开展示'
+                      : _titles[mode] ?? '这个入口不存在',
+                  eyebrow: '本人档案 / 明确用途'),
               if (detail != null)
                 tradeSection('这次为谁办理', [
                   tradeFact('真人本人', detail!.person.name),

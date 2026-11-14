@@ -1,3 +1,4 @@
+import '../rights/rights_models.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -389,7 +390,7 @@ class V5Api extends ChangeNotifier {
   }
 }
 
-class V5Frame extends StatelessWidget {
+class V5Frame extends StatefulWidget {
   const V5Frame(
       {super.key,
       required this.api,
@@ -404,32 +405,96 @@ class V5Frame extends StatelessWidget {
   final String title;
   final List<Widget> children;
   @override
+  State<V5Frame> createState() => _V5FrameState();
+}
+
+class _V5FrameState extends State<V5Frame> {
+  final _forms = <V5FormState>{};
+  bool _confirmingLeave = false, _updateScheduled = false;
+
+  bool get locked =>
+      widget.api.writes > 0 ||
+      widget.api.pendingOperations.isNotEmpty ||
+      widget.api.session.pending('POST', '/api/v1/supply/assets',
+              actingParty: widget.api.session.partyId) !=
+          null ||
+      _forms.any((form) => form.busy || form.pending != null);
+  bool get dirty => _forms.any((form) => form.dirty);
+
+  void formChanged() {
+    if (_updateScheduled) return;
+    _updateScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateScheduled = false;
+      if (mounted) setState(() {});
+    });
+  }
+
+  Future<void> leave() async {
+    if (_confirmingLeave) return;
+    if (locked) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+      return;
+    }
+    if (dirty) {
+      _confirmingLeave = true;
+      final confirmed = await _v5DiscardChanges(context, widget.api.session);
+      _confirmingLeave = false;
+      if (!mounted || !confirmed || locked) return;
+    }
+    if (!mounted || ModalRoute.of(context)?.isCurrent != true) return;
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      Navigator.pushReplacementNamed(context, '/my');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) => AnimatedBuilder(
-      animation: api,
+      animation: widget.api,
       builder: (context, _) {
-        final locked = api.writes > 0 ||
-            api.pendingOperations.isNotEmpty ||
-            api.session.pending('POST', '/api/v1/supply/assets',
-                    actingParty: api.session.partyId) !=
-                null;
-        if (!embedded) {
-          return tradeScaffold(context, title, children,
-              locked: locked, footer: footer, plaza: plaza);
-        }
         return PopScope(
-            canPop: !locked,
+            canPop: !locked && !dirty,
             onPopInvokedWithResult: (didPop, result) {
-              if (!didPop && locked) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
-              }
+              if (!didPop) leave();
             },
-            child: AccountTheme(
-                plaza: plaza,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [...children, if (footer != null) footer!])));
+            child: widget.embedded
+                ? AccountTheme(
+                    plaza: widget.plaza,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          ...widget.children,
+                          if (widget.footer != null) widget.footer!
+                        ]))
+                : tradeScaffold(context, widget.title, widget.children,
+                    onBack: leave, footer: widget.footer, plaza: widget.plaza));
       });
+}
+
+Future<bool> _v5DiscardChanges(BuildContext context, AccountSession session,
+    {bool changingSelection = false}) async {
+  final epoch = session.epoch, party = session.partyId;
+  final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+            title: Text(changingSelection ? '更换当前选择？' : '离开当前页面？'),
+            content: Text(
+                changingSelection ? '更换后将清空尚未提交的填写内容。' : '还有尚未提交的内容，离开后将丢失。'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: const Text('继续填写')),
+              FilledButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  child: Text(changingSelection ? '放弃填写并更换' : '放弃填写并离开')),
+            ],
+          ));
+  return confirmed == true &&
+      epoch == session.epoch &&
+      party == session.partyId;
 }
 
 class V5Gate extends StatelessWidget {
@@ -442,10 +507,15 @@ class V5Gate extends StatelessWidget {
       this.personal = false,
       this.embedded = false,
       this.showExpired = false,
-      this.expiredLabel});
+      this.expiredLabel,
+      this.stateKey});
   final bool embedded, showExpired;
   final String? expiredLabel;
+  // Only public catalogue filters keep state across global-city updates.
+  // Account/party/epoch changes still discard all prior state.
   final String domain, route;
+  // A changing return query need not discard an embedded page's local filters.
+  final String? stateKey;
   final bool account, personal;
   final Widget Function(AccountSession) builder;
   @override
@@ -463,17 +533,20 @@ class V5Gate extends StatelessWidget {
       return ReadSessionExpiredPage(
           returnRoute: route, label: expiredLabel ?? '原页面', embedded: embedded);
     }
+    final expired = readSessionExpired(s);
     final unavailable = <Widget>[
-      tradeHeading('先确认办事身份', eyebrow: '本人记录 / 私有资料'),
-      appNotice(api.denied
-          ? '当前记录权限已失效，私有资料已清空。请重新核对身份。'
-          : personal
-              ? '请选择本人的个人负责人身份。'
-              : ['auditions', 'gigs'].contains(domain)
-                  ? '登录并选择有效本人、负责人或获授权机构成员身份后办理。'
-                  : '登录并选择有效负责人身份后办理。'),
+      tradeHeading(expired ? '登录状态已过期' : '先确认办事身份', eyebrow: '本人记录 / 私有资料'),
+      appNotice(expired
+          ? '请重新登录并核对原页面。私有内容已清空，不会自动继续原操作。'
+          : api.denied
+              ? '当前记录权限已失效，私有资料已清空。请重新核对身份。'
+              : personal
+                  ? '请选择本人的个人负责人身份。'
+                  : ['auditions', 'gigs'].contains(domain)
+                      ? '登录并选择有效本人、负责人或获授权机构成员身份后办理。'
+                      : '登录并选择有效负责人身份后办理。'),
       tradeButton(
-          '前往账号与身份',
+          expired ? '重新登录' : '前往账号与身份',
           () => s.isLoggedIn
               ? Navigator.pushNamed(context, '/account')
               : Navigator.push(
@@ -489,7 +562,8 @@ class V5Gate extends StatelessWidget {
     ];
     return allowed
         ? KeyedSubtree(
-            key: ValueKey('${s.epoch}:${s.partyId}:$domain:$route'),
+            key: ValueKey(
+                '${s.epoch}:${s.partyId}:$domain:${stateKey ?? route}'),
             child: builder(s))
         : embedded
             ? Column(
@@ -500,9 +574,25 @@ class V5Gate extends StatelessWidget {
 }
 
 String v5Error(AccountError e, {bool writing = false}) {
+  if ([
+    'MARKETPLACE_CONTRACT_RULE_REQUIRED',
+    'MARKETPLACE_CONTRACT_RATE_MISMATCH'
+  ].contains(e.code)) {
+    return '现货分配规则尚未就绪或费率不符，请工作人员核对18%规则后恢复原请求。暂不能进入付款。';
+  }
   if (e.status == 412) return '记录已有新版本。输入已保留，请读取最新状态并重新确认。';
+  if (const ['MCN_EMPLOYEE_SCOPE_REQUIRED', 'ARTIST_DELEGATION_REQUIRED']
+      .contains(e.code)) {
+    return '当前缺少本艺人试镜或材料管理授权，请机构负责人核对后重新读取。';
+  }
   if ([403, 404].contains(e.status)) return '当前身份不能读取或办理这份记录，私有内容已清空。';
   const messages = {
+    'CONSUMER_MONTHLY_LIMIT_EXCEEDED':
+        '本次操作超过你设置的月度额度，请到个人月度限额核对占用和待确认金额；不要重复付款。',
+    'CONSUMER_LIMIT_COOLING_PERIOD': '提高额度还需要等待，请刷新并核对最早可确认时间。',
+    'CONSUMER_LIMIT_CHANGE_NOT_PENDING': '该提额申请已处理或不存在，请读取当前记录。',
+    'CONSUMER_LIMIT_UNCHANGED': '额度与当前设置相同，请读取当前记录。',
+    'CONSUMER_USAGE_REVIEW_REQUIRED': '本月记录需要核对，暂不显示可用额度，请联系平台。',
     'AUTHENTICATION_REQUIRED': '请先登录并核对办事身份。',
     'INVALID_ID': '请选择有效记录，或核对原记录编号。',
     'INVALID_AMOUNT': '金额须为正数且最多两位小数；次数和时限须为约定范围内整数。',
@@ -511,17 +601,22 @@ String v5Error(AccountError e, {bool writing = false}) {
     'PENDING_OPERATION_CHANGED': '前一次操作尚未核实，请先恢复原内容。',
     'CUSTODY_PROVIDER_NOT_CONNECTED': '消费者资金托管服务尚未接通，本次未充值或扣款。',
     'PAYMENT_PROVIDER_NOT_ENABLED': '付款服务尚未启用，请保留原订单等待核对。',
+    ...rightsErrors,
+    'STOCK_SALES_RULE_NOT_PUBLISHED': '本商品尚无可用的已审销售说明，或说明已停用。请重新选择，或联系平台先发布。',
+    'STOCK_SALES_RULE_CHANGED': '商品或销售说明已变化，请重新读取并核对本次版本。',
+    'STOCK_REVISION_NOT_ALLOWED': '该版本已有后续修订、已被替换或正在处理权利问题。请查看最新版本与审核记录。',
     'STOCK_RIGHTS_HOLD': '作品权利已暂停，已购文件也需等待独立复核。',
     'STOCK_NOT_LISTED': '作品当前未公开销售，请重新读取商品。',
     'STOCK_LICENSE_NOT_ACTIVE': '本单许可尚未生效、已暂停或已撤回，请查看原付款和售后记录。',
-    'STOCK_L1_REQUIRED': '现货销售需要实际有效的 L1 认证；不要求先购买 L2。',
+    'STOCK_L1_REQUIRED': '这位艺人缺少有效L1记录，请到人物与认证查看。',
+    'STOCK_HALO_REVIEW_REQUIRED': '需有效的主角光环人工审核；缴费、待审或补件不等于通过。',
     'STOCK_SALE_CONSENT_REQUIRED': '全部出镜人须有覆盖现货销售与公开展示的有效同意。',
     'STOCK_SEPARATE_PREVIEW_REQUIRED': '正式文件与预览须分别上传，内容不能相同。',
     'STOCK_RECEIPT_NOT_READY': '请先成功取得本次文件、刷新通知并标记已读，再明确确认收件。',
     'STOCK_AFTERCARE_PENDING': '本单售后正在处理，暂不能继续交付或付款。',
     'NOTICE_PRIVATE_CONTACT_FORBIDDEN': '通告与投稿不填写站外联系方式或付款引导。',
     'NOTICE_SUBMISSION_CONSENT_REQUIRED': '本次投递需要本人对具体接收方的合作投稿授权。',
-    'AUDITION_L2_REQUIRED': '试镜方案需要实际有效的 L2 资格。',
+    'AUDITION_L2_REQUIRED': '试镜方案需要有效的主角光环人工审核，缴费不等于通过。',
     'AUDITION_OFFER_OWNER_CONTEXT_REQUIRED':
         '获授权机构成员可办理实际分派的预约与会话。首次方案和私人材料由负责人按实际授权办理。',
     'ARTIST_PERSONAL_CONFIRMATION_REQUIRED': '这项私人归档授权须由艺人本人单独确认。',
@@ -536,6 +631,14 @@ String v5Error(AccountError e, {bool writing = false}) {
     'MESSAGE_REQUIRES_MODERATION': '请只填写本单业务内容，不包含站外联系方式或付款引导。',
     'CONTACT_CONSENT_REQUIRED': '请明确选择本单联系卡授予或撤回；授予时填写真实有效联系电话。',
     'AUDITION_DELIVERY_COUNT_MISMATCH': '取样数量须与本单审核规则一致。',
+    'AUDITION_DELIVERY_OPTIONS_CHANGED': '本预约材料或授权已变化，请重新读取并选择。',
+    'AUDITION_DELIVERY_READ_FAILED': '未能重新核对本预约材料，本次尚未提交，请检查网络后重试。',
+    'AUDITION_DISPUTE_ALREADY_OPEN': '本单已有待处理争议，请沿原争议补交依据，不要重复发起。',
+    'AUDITION_DISPUTE_REQUIRED': '当前没有待处理争议，请刷新原预约核对。',
+    'AUDITION_DISPUTE_PARTY_REQUIRED': '请由本单当事人使用获准身份补交本人的依据。',
+    'AUDITION_EVIDENCE_REQUIRED': '请先上传本次争议的私有依据，再确认补交。',
+    'AUDITION_TRAVEL_EVIDENCE_REQUIRED': '请先上传本次真实行程的私有依据，再记录出发或到场。',
+    'AUDITION_NOT_DELIVERABLE': '本预约当前不能交付，请核对付款、接单、争议及改期状态。',
     'AUDITION_CONVERSATION_NOT_OPEN': '本单会话尚未开放或已冻结，请核对实际付款和接单状态。',
     'WALLET_ACCOUNT_REQUIRED': '尚未开立个人账本，请先阅读并接受有效规则。',
     'WALLET_NOT_FOUND': '本人的账本或订单记录尚不存在。',
@@ -627,10 +730,13 @@ class V5Form extends StatefulWidget {
       this.reload,
       this.onSuccess,
       this.canSubmit = true,
+      this.beforeSubmit,
       this.facts = const [],
+      this.factsBuilder,
       this.extra});
   final V5Api api;
   final bool canSubmit;
+  final Future<void> Function(Map<String, dynamic>)? beforeSubmit;
   final String title, action, suffix;
   final List<V5Field> fields;
   final Map<String, dynamic> initial;
@@ -641,14 +747,16 @@ class V5Form extends StatefulWidget {
   final Future<int?> Function()? reload;
   final void Function(Map<String, dynamic>)? onSuccess;
   final List<Widget> facts;
+  final List<Widget> Function(Map<String, dynamic>)? factsBuilder;
   final List<Widget> Function(
       Map<String, dynamic>, void Function(String, dynamic), bool)? extra;
   @override
-  State<V5Form> createState() => _V5FormState();
+  V5FormState createState() => V5FormState();
 }
 
-class _V5FormState extends State<V5Form> {
-  final form = GlobalKey<FormState>();
+class V5FormState extends State<V5Form>
+    with AutomaticKeepAliveClientMixin<V5Form> {
+  var form = GlobalKey<FormState>();
   final controllers = <String, TextEditingController>{};
   final values = <String, dynamic>{};
   String? error, notice;
@@ -659,7 +767,49 @@ class _V5FormState extends State<V5Form> {
       completed = false;
   int? version;
   int ticket = 0;
+  _V5FrameState? _frame;
+  late String _initialInput;
+  late (AccountSession, int, String?) _identity;
+  bool _confirmingLeave = false;
   Map<String, dynamic>? get pending => widget.api.pending(widget.suffix);
+  String get _input {
+    final input = {
+      ...values,
+      for (final field in widget.fields)
+        field.keyName: controllers[field.keyName]?.text ??
+            values[field.keyName] ??
+            (field.type == 'bool'
+                ? false
+                : field.type == 'slots'
+                    ? <dynamic>[]
+                    : null)
+    };
+    return jsonEncode(
+        {for (final key in input.keys.toList()..sort()) key: input[key]});
+  }
+
+  bool get dirty => !completed && _input != _initialInput;
+
+  /// Use before a parent changes the selection that replaces this form.
+  /// Unknown writes must be recovered even if the user wants another selection.
+  Future<bool> confirmDiscardChanges() async {
+    if (_confirmingLeave) return false;
+    if ((_frame?.locked ?? false) || busy || pending != null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+      return false;
+    }
+    if (!dirty) return true;
+    _confirmingLeave = true;
+    final discard = await _v5DiscardChanges(context, widget.api.session,
+        changingSelection: true);
+    _confirmingLeave = false;
+    return mounted && discard && !busy && pending == null;
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   void initState() {
     super.initState();
@@ -678,11 +828,88 @@ class _V5FormState extends State<V5Form> {
                 : '${values[f.keyName] ?? ''}');
       }
     }
+    _initialInput = _input;
+    _identity = (
+      widget.api.session,
+      widget.api.session.epoch,
+      widget.api.session.partyId
+    );
+    widget.api.session.addListener(_sessionChanged);
+    for (final controller in controllers.values) {
+      controller.addListener(_inputChanged);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final frame = context.findAncestorStateOfType<_V5FrameState>();
+    if (frame == _frame) return;
+    _frame?._forms.remove(this);
+    _frame?.formChanged();
+    _frame = frame;
+    _frame?._forms.add(this);
+    _frame?.formChanged();
+  }
+
+  void _inputChanged() {
+    if (!mounted) return;
+    setState(() {});
+    _frame?.formChanged();
+  }
+
+  void _sessionChanged() {
+    final identity = (
+      widget.api.session,
+      widget.api.session.epoch,
+      widget.api.session.partyId
+    );
+    if (_identity == identity) return;
+    _identity = identity;
+    ticket++;
+    form = GlobalKey<FormState>();
+    values.clear();
+    for (final controller in controllers.values) {
+      controller.clear();
+    }
+    _initialInput = _input;
+    setState(() {
+      busy = conflict = fresh = reviewed = completed = false;
+      error = notice = null;
+      version = null;
+    });
+    _frame?.formChanged();
+  }
+
+  @override
+  void didUpdateWidget(covariant V5Form oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reading private media can advance the parent record before any input.
+    // Only pristine forms follow that version; drafts and uncertain writes
+    // retain their original concurrency boundary and explicit recovery flow.
+    if (widget.api.session == oldWidget.api.session &&
+        widget.suffix == oldWidget.suffix &&
+        widget.version != oldWidget.version &&
+        !busy &&
+        !dirty &&
+        !conflict &&
+        !completed &&
+        pending == null) {
+      version = widget.version;
+    }
+    if (widget.api.session != oldWidget.api.session) {
+      oldWidget.api.session.removeListener(_sessionChanged);
+      widget.api.session.addListener(_sessionChanged);
+      _sessionChanged();
+    }
   }
 
   @override
   void dispose() {
     ticket++;
+    widget.api.session.removeListener(_sessionChanged);
+    _frame?._forms.remove(this);
+    _frame?.formChanged();
     for (final c in controllers.values) {
       c.dispose();
     }
@@ -694,6 +921,7 @@ class _V5FormState extends State<V5Form> {
       values[key] = value;
       controllers[key]?.text = value is List ? value.join(', ') : '$value';
     });
+    _frame?.formChanged();
   }
 
   Future<void> latest() async {
@@ -704,6 +932,7 @@ class _V5FormState extends State<V5Form> {
       busy = true;
       error = null;
     });
+    _frame?.formChanged();
     try {
       final v = await widget.reload!();
       widget.api.check(epoch, p);
@@ -717,6 +946,7 @@ class _V5FormState extends State<V5Form> {
       if (mounted && t == ticket) setState(() => error = v5Error(e));
     } finally {
       if (mounted && t == ticket) setState(() => busy = false);
+      _frame?.formChanged();
     }
   }
 
@@ -762,7 +992,8 @@ class _V5FormState extends State<V5Form> {
                                 .join('\n')
                             : f.choices?[values[f.keyName]] ??
                                 values[f.keyName]),
-              ...widget.facts
+              ...widget.facts,
+              ...?widget.factsBuilder?.call(values)
             ],
             theme: Theme.of(context))) {
       return;
@@ -779,8 +1010,12 @@ class _V5FormState extends State<V5Form> {
       error = null;
       notice = null;
     });
+    _frame?.formChanged();
     try {
       if (op != null) await widget.reload?.call();
+      if (op == null) await widget.beforeSubmit?.call(body);
+      widget.api.check(epoch, party);
+      if (!mounted || t != ticket) return;
       final result = await widget.api.post(widget.suffix, body, (d) {
         widget.parse(d);
         return d;
@@ -811,6 +1046,7 @@ class _V5FormState extends State<V5Form> {
       }
     } finally {
       if (mounted && t == ticket) setState(() => busy = false);
+      _frame?.formChanged();
     }
   }
 
@@ -870,83 +1106,113 @@ class _V5FormState extends State<V5Form> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final op = pending,
         locked = busy || op != null,
         enabled = !locked && !completed;
-    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      if (busy) const LinearProgressIndicator(),
-      if (error != null) appNotice(error!, icon: Icons.error_outline),
-      if (notice != null) appNotice(notice!),
-      if (op != null) appNotice('本次结果待核对，保留原内容、原版本及同一次操作标识。'),
-      Form(
-          key: form,
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-            for (final f in widget.fields)
-              Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: f.type == 'bool'
-                      ? CheckboxListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(f.label),
-                          value: values[f.keyName] == true,
-                          onChanged: enabled
-                              ? (v) => change(f.keyName, v == true)
-                              : null)
-                      : f.type == 'slots'
-                          ? v5SlotsField(context,
-                              value: values[f.keyName],
-                              enabled: enabled,
-                              onChanged: (v) => change(f.keyName, v))
-                          : f.type == 'datetime'
-                              ? v5DateField(context,
-                                  label: f.label,
-                                  value: values[f.keyName],
-                                  controller: controllers[f.keyName],
-                                  enabled: enabled,
-                                  required: f.required,
-                                  onChanged: (v) => change(f.keyName, v))
-                              : f.choices != null
-                                  ? choiceField(f, enabled)
-                                  : TextFormField(
-                                      controller: controllers[f.keyName],
+    return PopScope(
+        canPop: _frame != null || !locked && !dirty,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop || _frame != null || _confirmingLeave) return;
+          if (locked) {
+            ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('操作结果尚未确认，请先恢复原请求核对。')));
+            return;
+          }
+          _confirmingLeave = true;
+          final leave = await _v5DiscardChanges(context, widget.api.session);
+          _confirmingLeave = false;
+          if (!context.mounted || !leave || busy || pending != null) return;
+          if (Navigator.canPop(context)) {
+            Navigator.pop(context);
+          } else {
+            Navigator.pushReplacementNamed(context, '/my');
+          }
+        },
+        child:
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          if (busy) const LinearProgressIndicator(),
+          if (error != null) appNotice(error!, icon: Icons.error_outline),
+          if (notice != null) appNotice(notice!),
+          if (op != null) appNotice('本次结果待核对，保留原内容、原版本及同一次操作标识。'),
+          Form(
+              key: form,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    for (final f in widget.fields)
+                      Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: f.type == 'bool'
+                              ? CheckboxListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text(f.label),
+                                  value: values[f.keyName] == true,
+                                  onChanged: enabled
+                                      ? (v) => change(f.keyName, v == true)
+                                      : null)
+                              : f.type == 'slots'
+                                  ? v5SlotsField(context,
+                                      value: values[f.keyName],
                                       enabled: enabled,
-                                      minLines: f.type == 'multiline' ? 3 : 1,
-                                      maxLines: f.type == 'multiline' ? 8 : 1,
-                                      maxLength:
-                                          f.type == 'multiline' ? 8000 : 500,
-                                      keyboardType: ['money', 'int']
-                                              .contains(f.type)
-                                          ? const TextInputType
-                                              .numberWithOptions(decimal: true)
-                                          : TextInputType.text,
-                                      decoration: InputDecoration(
-                                          labelText: f.label,
-                                          helperText: f.hint),
-                                      validator: (v) => f.required &&
-                                              (v == null || v.trim().isEmpty)
-                                          ? '请填写${f.label}'
-                                          : null)),
-            ...?widget.extra?.call(values, change, enabled),
-          ])),
-      if (conflict && widget.reload != null) ...[
-        tradeButton('读取最新状态并保留输入', busy ? null : latest, outline: true),
-        if (fresh)
-          CheckboxListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text('我已核对最新记录，确认沿用本页输入办理'),
-              value: reviewed,
-              onChanged:
-                  busy ? null : (v) => setState(() => reviewed = v == true)),
-      ],
-      tradeButton(
-          op != null ? '恢复原请求核对' : widget.action,
-          busy ||
-                  completed ||
-                  op == null && (!widget.canSubmit || conflict && !reviewed)
-              ? null
-              : submit),
-    ]);
+                                      onChanged: (v) => change(f.keyName, v))
+                                  : f.type == 'datetime'
+                                      ? v5DateField(context,
+                                          label: f.label,
+                                          value: values[f.keyName],
+                                          controller: controllers[f.keyName],
+                                          enabled: enabled,
+                                          required: f.required,
+                                          onChanged: (v) =>
+                                              change(f.keyName, v))
+                                      : f.choices != null
+                                          ? choiceField(f, enabled)
+                                          : TextFormField(
+                                              controller:
+                                                  controllers[f.keyName],
+                                              enabled: enabled,
+                                              minLines:
+                                                  f.type == 'multiline' ? 3 : 1,
+                                              maxLines:
+                                                  f.type == 'multiline' ? 8 : 1,
+                                              maxLength: f.type == 'multiline'
+                                                  ? 8000
+                                                  : 500,
+                                              keyboardType: ['money', 'int']
+                                                      .contains(f.type)
+                                                  ? const TextInputType
+                                                      .numberWithOptions(
+                                                      decimal: true)
+                                                  : TextInputType.text,
+                                              decoration: InputDecoration(
+                                                  labelText: f.label,
+                                                  helperText: f.hint),
+                                              validator: (v) => f.required &&
+                                                      (v == null ||
+                                                          v.trim().isEmpty)
+                                                  ? '请填写${f.label}'
+                                                  : null)),
+                    ...?widget.extra?.call(values, change, enabled),
+                  ])),
+          if (conflict && widget.reload != null) ...[
+            tradeButton('读取最新状态并保留输入', busy ? null : latest, outline: true),
+            if (fresh)
+              CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('我已核对最新记录，确认沿用本页输入办理'),
+                  value: reviewed,
+                  onChanged: busy
+                      ? null
+                      : (v) => setState(() => reviewed = v == true)),
+          ],
+          tradeButton(
+              op != null ? '恢复原请求核对' : widget.action,
+              busy ||
+                      completed ||
+                      op == null && (!widget.canSubmit || conflict && !reviewed)
+                  ? null
+                  : submit),
+        ]));
   }
 }
 

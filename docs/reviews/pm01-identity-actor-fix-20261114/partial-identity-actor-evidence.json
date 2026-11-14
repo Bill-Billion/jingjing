@@ -1,0 +1,189 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "00a6a61e96cfffe63a191a5a8cd74b4fffc0f1a8",
+  "run_id": "pm01-identity-actor-fix-2026-11-14T12-43-42-570Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "frontend_run": false,
+  "real_services": false,
+  "checks": [
+    {
+      "id": "CURRENT-ACTOR-IDENTITY-PUBLICATION",
+      "acceptance_ids": [
+        "ACC-DEL-02.01"
+      ],
+      "name": "办事人当前实名与三入口重放检查",
+      "result": "LOCAL_PASS",
+      "scope": "现货上架、机构代建数字人与普通通告发布，在业务事务及成功请求重放前核实际办事人实名。未建个人身份记录、未实名/过期/拒绝均不能替代为成年艺人或已核机构；合法本人读取、身份纠正与恢复原请求已验，机构办事人不增加付费光环要求。",
+      "remaining": "仅指定三入口；其他艺人展示/形象版本、旧创建、交易付款与资格查询仍须逐条核。当前完整回归是修复前2071/7/1失败，修复后当前全量尚未跑；真实身份/端侧和维护者独审未完成。",
+      "actual_checks": {
+        "records": [
+          {
+            "name": "organization actor without a personal identity record cannot submit stock",
+            "result": "PASS"
+          },
+          {
+            "name": "organization actor without a personal identity record cannot create delegated avatar",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified personal identity cannot submit stock",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified personal identity cannot create delegated avatar",
+            "result": "PASS"
+          },
+          {
+            "name": "valid actor identity allows stock listing without adding artist certification fees",
+            "result": "PASS"
+          },
+          {
+            "name": "valid actor identity allows delegated avatar while keeping adult artist ownership",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor identity rejects new stock",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor identity rejects stock successful replay",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor identity rejects new avatar",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor identity rejects avatar successful replay",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor retains authorized existing listing and profile reads",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor identity rejects new stock",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor identity rejects stock successful replay",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor identity rejects new avatar",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor identity rejects avatar successful replay",
+            "result": "PASS"
+          },
+          {
+            "name": "direct stock repository also checks actor identity before a successful replay",
+            "result": "PASS"
+          },
+          {
+            "name": "direct avatar repository also checks actor identity before a successful replay",
+            "result": "PASS"
+          },
+          {
+            "name": "denied identity transitions cannot create extra listings or digital people",
+            "result": "PASS"
+          },
+          {
+            "name": "client cannot use identity recovery to verify another artist or submit its own age verdict",
+            "result": "PASS"
+          },
+          {
+            "name": "trusted personal identity recovery restores both original successful operations without changing records",
+            "result": "PASS"
+          },
+          {
+            "name": "publishing and delegated avatar creation require the actual actor current identity",
+            "result": "PASS"
+          },
+          {
+            "name": "new publishing rule requires independent approval; old rule and notices retain snapshots",
+            "result": "PASS"
+          },
+          {
+            "name": "never-funded adult can publish all five ordinary types without changing membership",
+            "result": "PASS"
+          },
+          {
+            "name": "membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified, child, expired, inactive, foreign identity and official impersonation remain rejected",
+            "result": "PASS"
+          },
+          {
+            "name": "identity or ownership lost after submission is checked at review and public read",
+            "result": "PASS"
+          },
+          {
+            "name": "qualified organization rejects new publication with actor UNVERIFIED",
+            "result": "PASS"
+          },
+          {
+            "name": "qualified organization rejects successful replay with actor UNVERIFIED",
+            "result": "PASS"
+          },
+          {
+            "name": "qualified organization rejects new publication with actor REJECTED",
+            "result": "PASS"
+          },
+          {
+            "name": "qualified organization rejects successful replay with actor REJECTED",
+            "result": "PASS"
+          },
+          {
+            "name": "qualified organization rejects new publication with actor 2020-01-01 00:00:00.000",
+            "result": "PASS"
+          },
+          {
+            "name": "qualified organization rejects successful replay with actor 2020-01-01 00:00:00.000",
+            "result": "PASS"
+          },
+          {
+            "name": "organization scope and other project ownership cannot be bypassed with an ordinary rule",
+            "result": "PASS"
+          },
+          {
+            "name": "same notice receives reviewed artist submission then one support case after lost response recovery",
+            "result": "PASS"
+          },
+          {
+            "name": "suspended account or party hides publication and blocks further cooperation",
+            "result": "PASS"
+          },
+          {
+            "name": "independent support links actual quote and creates the same unpaid order without membership",
+            "result": "PASS"
+          },
+          {
+            "name": "same notice order receives payment, scoped conversation and independently reviewed full refund",
+            "result": "PASS"
+          },
+          {
+            "name": "closing ordinary notice blocks new submissions while historical quote remains unchanged",
+            "result": "PASS"
+          },
+          {
+            "name": "notice withdrawal notifies each historical application once without changing submission or contract",
+            "result": "PASS"
+          },
+          {
+            "name": "failure to record notice withdrawal notification rolls back closure and all prior events",
+            "result": "PASS"
+          },
+          {
+            "name": "ordinary publishing and same-notice cooperation in isolated MySQL",
+            "result": "PASS"
+          }
+        ]
+      }
+    }
+  ]
+}

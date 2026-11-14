@@ -1,0 +1,471 @@
+TAP version 13
+# Subtest: reviewed privacy execution changes actual records and preserves unresolved boundaries
+    # Subtest: copy only returns own explicitly requested profile and cannot enumerate another account
+    ok 1 - copy only returns own explicitly requested profile and cannot enumerate another account
+      ---
+      duration_ms: 22.432
+      type: 'test'
+      ...
+    # Subtest: personal copy includes own stories and buyer order index without exposing another person or contract body
+    ok 2 - personal copy includes own stories and buyer order index without exposing another person or contract body
+      ---
+      duration_ms: 234.1526
+      type: 'test'
+      ...
+    # Subtest: paid history allows only proven completed buyer work and rejects incomplete work or pending refund
+    ok 3 - paid history allows only proven completed buyer work and rejects incomplete work or pending refund
+      ---
+      duration_ms: 178.7568
+      type: 'test'
+      ...
+    # Subtest: correction requires independent approval and actually updates profile
+    ok 4 - correction requires independent approval and actually updates profile
+      ---
+      duration_ms: 29.3571
+      type: 'test'
+      ...
+    # Subtest: deletion lists readable own materials and reviewed policies; referenced files require review
+    ok 5 - deletion lists readable own materials and reviewed policies; referenced files require review
+      ---
+      duration_ms: 192.3831
+      type: 'test'
+      ...
+    # Subtest: missing effective policy cannot authorize deletion
+    ok 6 - missing effective policy cannot authorize deletion
+      ---
+      duration_ms: 7.5129
+      type: 'test'
+      ...
+    # Subtest: file removal is bound to owner and exact storage configuration
+    ok 7 - file removal is bound to owner and exact storage configuration
+      ---
+      duration_ms: 590.0311
+      type: 'test'
+      ...
+    # Subtest: unknown deletion result remains pending; retry checks same object and records current-object-only result
+    ok 8 - unknown deletion result remains pending; retry checks same object and records current-object-only result
+      ---
+      duration_ms: 29.5523
+      type: 'test'
+      ...
+    # Subtest: queued erasure rechecks changed target before any storage call, then recovers the same approved object
+    ok 9 - queued erasure rechecks changed target before any storage call, then recovers the same approved object
+      ---
+      duration_ms: 228.1795
+      type: 'test'
+      ...
+    # Subtest: lost provider reply after deletion recovers once without claiming backups or request completion
+    ok 10 - lost provider reply after deletion recovers once without claiming backups or request completion
+      ---
+      duration_ms: 70.4066
+      type: 'test'
+      ...
+    # Subtest: complaint restricts actual download and approved release restores only that restriction
+    ok 11 - complaint restricts actual download and approved release restores only that restriction
+      ---
+      duration_ms: 53.0542
+      type: 'test'
+      ...
+    # Subtest: closing sole organization owner is blocked and leaves login intact
+    ok 12 - closing sole organization owner is blocked and leaves login intact
+      ---
+      duration_ms: 25.1583
+      type: 'test'
+      ...
+    # Subtest: zero remaining wallet balance cannot hide an unresolved original recharge refund case during closure
+    ok 13 - zero remaining wallet balance cannot hide an unresolved original recharge refund case during closure
+      ---
+      duration_ms: 41.0312
+      type: 'test'
+      ...
+    # Subtest: account closure revokes old sessions and personal identity while retaining request evidence
+    ok 14 - account closure revokes old sessions and personal identity while retaining request evidence
+      ---
+      duration_ms: 48.3147
+      type: 'test'
+      ...
+    # Subtest: lost closure response keeps sessions closed and operators can reconcile the single executed request
+    ok 15 - lost closure response keeps sessions closed and operators can reconcile the single executed request
+      ---
+      duration_ms: 603.0237
+      type: 'test'
+      ...
+    # Subtest: new closure clock requires verified identity and actual execution before completion
+    ok 16 - new closure clock requires verified identity and actual execution before completion
+      ---
+      duration_ms: 126.7868
+      type: 'test'
+      ...
+    # Subtest: stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete
+    ok 17 - stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete
+      ---
+      duration_ms: 349.487
+      type: 'test'
+      ...
+    # Subtest: HTTP exposes the same scoped proposal, review, execution and export flow
+    ok 18 - HTTP exposes the same scoped proposal, review, execution and export flow
+      ---
+      duration_ms: 165.3967
+      type: 'test'
+      ...
+    # Subtest: restoring an actual older backup requires replaying latest erasure register before access
+    ok 19 - restoring an actual older backup requires replaying latest erasure register before access
+      ---
+      duration_ms: 7270.3432
+      type: 'test'
+      ...
+    1..19
+ok 1 - reviewed privacy execution changes actual records and preserves unresolved boundaries
+  ---
+  duration_ms: 17985.7636
+  type: 'test'
+  ...
+# Subtest: durable recharge refund recovery and guardian delegation in isolated MySQL
+    # Subtest: task insert and case link are atomic; same case scheduling keeps one durable task
+    ok 1 - task insert and case link are atomic; same case scheduling keeps one durable task
+      ---
+      duration_ms: 115.8362
+      type: 'test'
+      ...
+    # Subtest: lost provider response persists UNKNOWN and worker restart only queries the original refund
+    ok 2 - lost provider response persists UNKNOWN and worker restart only queries the original refund
+      ---
+      duration_ms: 95.7683
+      type: 'test'
+      ...
+    # Subtest: expired lease cannot settle money or finish a job; a new lease queries and settles once
+    ok 3 - expired lease cannot settle money or finish a job; a new lease queries and settles once
+      ---
+      duration_ms: 78.9878
+      type: 'test'
+      ...
+    # Subtest: bad receipt blocks, never releases funds; current independent permission is required to resume
+    ok 4 - bad receipt blocks, never releases funds; current independent permission is required to resume
+      ---
+      duration_ms: 125.544
+      type: 'test'
+      ...
+    # Subtest: missing adapter and changed merchant fail closed; cancelled queued cases never send
+    ok 5 - missing adapter and changed merchant fail closed; cancelled queued cases never send
+      ---
+      duration_ms: 144.1741
+      type: 'test'
+      ...
+    # Subtest: a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+    ok 6 - a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+      ---
+      duration_ms: 63.2563
+      type: 'test'
+      ...
+    # Subtest: consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+    ok 7 - consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+      ---
+      duration_ms: 384.3643
+      type: 'test'
+      ...
+    # Subtest: guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+    ok 8 - guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+      ---
+      duration_ms: 98.7727
+      type: 'test'
+      ...
+    # Subtest: revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+    ok 9 - revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+      ---
+      duration_ms: 110.8475
+      type: 'test'
+      ...
+    1..9
+ok 2 - durable recharge refund recovery and guardian delegation in isolated MySQL
+  ---
+  duration_ms: 8540.9815
+  type: 'test'
+  ...
+# Subtest: unknown recharge refund survives encrypted restore without enabling dispatch
+    # Subtest: unknown original send is frozen with reserved funds and the same durable task
+    ok 1 - unknown original send is frozen with reserved funds and the same durable task
+      ---
+      duration_ms: 695.0114
+      type: 'test'
+      ...
+    # Subtest: restored case, task, operation keys and wallet facts match while external bytes are explicitly absent
+    ok 2 - restored case, task, operation keys and wallet facts match while external bytes are explicitly absent
+      ---
+      duration_ms: 5785.9338
+      type: 'test'
+      ...
+    # Subtest: restored quarantine blocks HTTP bootstrap and worker without changing money or sending again
+    ok 3 - restored quarantine blocks HTTP bootstrap and worker without changing money or sending again
+      ---
+      duration_ms: 653.6836
+      type: 'test'
+      ...
+    # Subtest: restoring a still-running refund invalidates its old lease while preserving original request and attempts
+    ok 4 - restoring a still-running refund invalidates its old lease while preserving original request and attempts
+      ---
+      duration_ms: 6355.0541
+      type: 'test'
+      ...
+    # Subtest: the pre-restore lease cannot heartbeat, attach a provider id, or finish in the restored database
+    ok 5 - the pre-restore lease cannot heartbeat, attach a provider id, or finish in the restored database
+      ---
+      duration_ms: 5.3643
+      type: 'test'
+      ...
+    # Subtest: the original process cannot settle the restored refund using its copied lease
+    ok 6 - the original process cannot settle the restored refund using its copied lease
+      ---
+      duration_ms: 15.014
+      type: 'test'
+      ...
+    # Subtest: latest synthetic erasure replay is atomic, suppresses the original proof and account, and still cannot release recovery
+    ok 7 - latest synthetic erasure replay is atomic, suppresses the original proof and account, and still cannot release recovery
+      ---
+      duration_ms: 185.6114
+      type: 'test'
+      ...
+    # Subtest: isolated internal recovery queries only the original request and a lost completion write cannot settle twice
+    ok 8 - isolated internal recovery queries only the original request and a lost completion write cannot settle twice
+      ---
+      duration_ms: 362.9401
+      type: 'test'
+      ...
+    # Subtest: restoration does not reset an exhausted task attempt budget
+    ok 9 - restoration does not reset an exhausted task attempt budget
+      ---
+      duration_ms: 37.0683
+      type: 'test'
+      ...
+    # Subtest: rebacking up the restored database cannot carry old privacy approval or a live lease into another recovery
+    ok 10 - rebacking up the restored database cannot carry old privacy approval or a live lease into another recovery
+      ---
+      duration_ms: 7773.7144
+      type: 'test'
+      ...
+    # Subtest: failure while invalidating restored leases rolls back all business rows and leaves quarantine
+    ok 11 - failure while invalidating restored leases rolls back all business rows and leaves quarantine
+      ---
+      duration_ms: 7134.9226
+      type: 'test'
+      ...
+    1..11
+ok 3 - unknown recharge refund survives encrypted restore without enabling dispatch
+  ---
+  duration_ms: 39196.259
+  type: 'test'
+  ...
+# Subtest: release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load
+    # Subtest: legacy inspection is read-only and retains unsafe-size integers, raw money and binary
+    ok 1 - legacy inspection is read-only and retains unsafe-size integers, raw money and binary
+      ---
+      duration_ms: 7.9237
+      type: 'test'
+      ...
+    # Subtest: source declaration and active WAL reject before unsafe copy
+    ok 2 - source declaration and active WAL reject before unsafe copy
+      ---
+      duration_ms: 2.6677
+      type: 'test'
+      ...
+    # Subtest: archiving twice preserves old facts without creating active identities, payment receipts or licenses
+    ok 3 - archiving twice preserves old facts without creating active identities, payment receipts or licenses
+      ---
+      duration_ms: 46.1955
+      type: 'test'
+      ...
+    # Subtest: concurrent archives converge and manifest tampering is detected
+    ok 4 - concurrent archives converge and manifest tampering is detected
+      ---
+      duration_ms: 120.0766
+      type: 'test'
+      ...
+    # Subtest: modified archive payload fails without partial writes
+    ok 5 - modified archive payload fails without partial writes
+      ---
+      duration_ms: 0.8133
+      type: 'test'
+      ...
+    # Subtest: backup includes immutable payment and pending-job facts
+    ok 6 - backup includes immutable payment and pending-job facts
+      ---
+      duration_ms: 766.7778
+      type: 'test'
+      ...
+    # Subtest: encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite
+    ok 7 - encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite
+      ---
+      duration_ms: 56.1009
+      type: 'test'
+      ...
+    # Subtest: restore to a fresh database matches every row while leaving runtime quarantined
+    ok 8 - restore to a fresh database matches every row while leaving runtime quarantined
+      ---
+      duration_ms: 6453.6296
+      type: 'test'
+      ...
+    # Subtest: restore never overwrites an existing database or accepts the wrong source checksum
+    ok 9 - restore never overwrites an existing database or accepts the wrong source checksum
+      ---
+      duration_ms: 34.5656
+      type: 'test'
+      ...
+    # Subtest: invalid foreign key rolls back all imported rows and preserves quarantine
+    ok 10 - invalid foreign key rolls back all imported rows and preserves quarantine
+      ---
+      duration_ms: 5728.9707
+      type: 'test'
+      ...
+    # Subtest: schema injection or renamed column is rejected without executing backup SQL
+    ok 11 - schema injection or renamed column is rejected without executing backup SQL
+      ---
+      duration_ms: 5376.5412
+      type: 'test'
+      ...
+    # Subtest: release checks do not confuse filled forms, sandbox providers or running process with launch approval
+    ok 12 - release checks do not confuse filled forms, sandbox providers or running process with launch approval
+      ---
+      duration_ms: 142.7495
+      type: 'test'
+      ...
+    # Subtest: registered provider evidence remains version-bound and never substitutes for a live check
+    ok 13 - registered provider evidence remains version-bound and never substitutes for a live check
+      ---
+      duration_ms: 270.6843
+      type: 'test'
+      ...
+    # Subtest: sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity
+    ok 14 - sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity
+      ---
+      duration_ms: 685.2354
+      type: 'test'
+      ...
+    # Subtest: concurrent duplicate writes preserve one business object and one set of receipts
+    ok 15 - concurrent duplicate writes preserve one business object and one set of receipts
+      ---
+      duration_ms: 44.0099
+      type: 'test'
+      ...
+    # Subtest: HTTP security failures never expose SQL, credentials or accept forged payment flags
+    ok 16 - HTTP security failures never expose SQL, credentials or accept forged payment flags
+      ---
+      duration_ms: 13.5419
+      type: 'test'
+      ...
+    1..16
+ok 4 - release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load
+  ---
+  duration_ms: 31614.0781
+  type: 'test'
+  ...
+# Subtest: Real MySQL durable jobs, outbox and independent worker
+    # Subtest: same business intent is idempotent; conflicting intent is rejected, case remains distinct
+    ok 1 - same business intent is idempotent; conflicting intent is rejected, case remains distinct
+      ---
+      duration_ms: 5164.9485
+      type: 'test'
+      ...
+    # Subtest: business transaction and outbox both roll back; publish requires explicit transaction
+    ok 2 - business transaction and outbox both roll back; publish requires explicit transaction
+      ---
+      duration_ms: 6357.9641
+      type: 'test'
+      ...
+    # Subtest: parallel outbox dispatch atomically creates one durable job per event, repeat is a no-op
+    ok 3 - parallel outbox dispatch atomically creates one durable job per event, repeat is a no-op
+      ---
+      duration_ms: 5435.7864
+      type: 'test'
+      ...
+    # Subtest: conflicting outbox intent is visibly blocked and does not replace the original job
+    ok 4 - conflicting outbox intent is visibly blocked and does not replace the original job
+      ---
+      duration_ms: 5166.0568
+      type: 'test'
+      ...
+    # Subtest: failure between job insertion and outbox acknowledgement rolls both back and can be replayed
+    ok 5 - failure between job insertion and outbox acknowledgement rolls both back and can be replayed
+      ---
+      duration_ms: 5099.3889
+      type: 'test'
+      ...
+    # Subtest: concurrent workers claim one job once while its lease is valid
+    ok 6 - concurrent workers claim one job once while its lease is valid
+      ---
+      duration_ms: 5382.8968
+      type: 'test'
+      ...
+    # Subtest: expired lease takeover fences old acknowledgement, heartbeat and provider-task updates
+    ok 7 - expired lease takeover fences old acknowledgement, heartbeat and provider-task updates
+      ---
+      duration_ms: 5284.9906
+      type: 'test'
+      ...
+    # Subtest: retry is delayed, capped and manually resumed without erasing attempt history
+    ok 8 - retry is delayed, capped and manually resumed without erasing attempt history
+      ---
+      duration_ms: 5040.2047
+      type: 'test'
+      ...
+    # Subtest: crashed job at its attempt limit becomes failed instead of disappearing or retrying forever
+    ok 9 - crashed job at its attempt limit becomes failed instead of disappearing or retrying forever
+      ---
+      duration_ms: 5942.3683
+      type: 'test'
+      ...
+    # Subtest: worker renews a long-running handler lease; other worker cannot take it over
+    ok 10 - worker renews a long-running handler lease; other worker cannot take it over
+      ---
+      duration_ms: 6287.9999
+      type: 'test'
+      ...
+    # Subtest: missing handlers and ambiguous handler errors block without fake success or immediate replay
+    ok 11 - missing handlers and ambiguous handler errors block without fake success or immediate replay
+      ---
+      duration_ms: 5630.5251
+      type: 'test'
+      ...
+    # Subtest: active worker aborts after lease takeover and cannot overwrite its successor result
+    ok 12 - active worker aborts after lease takeover and cannot overwrite its successor result
+      ---
+      duration_ms: 5237.3019
+      type: 'test'
+      ...
+    # Subtest: provider retry without a recovery adapter becomes blocked instead of executing again
+    ok 13 - provider retry without a recovery adapter becomes blocked instead of executing again
+      ---
+      duration_ms: 5133.5835
+      type: 'test'
+      ...
+    # Subtest: unknown provider submission is reconciled by stable key, never blindly resubmitted
+    ok 14 - unknown provider submission is reconciled by stable key, never blindly resubmitted
+      ---
+      duration_ms: 4894.5034
+      type: 'test'
+      ...
+    # Subtest: separate process crash preserves provider task ID and a new process recovers it
+    ok 15 - separate process crash preserves provider task ID and a new process recovers it
+      ---
+      duration_ms: 5370.6417
+      type: 'test'
+      ...
+    # Subtest: graceful stop signals a handler, leaves durable recovery and does not claim the next task
+    ok 16 - graceful stop signals a handler, leaves durable recovery and does not claim the next task
+      ---
+      duration_ms: 6011.5323
+      type: 'test'
+      ...
+    1..16
+ok 5 - Real MySQL durable jobs, outbox and independent worker
+  ---
+  duration_ms: 112936.7905
+  type: 'test'
+  ...
+1..5
+# tests 76
+# suites 0
+# pass 76
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 211422.1569

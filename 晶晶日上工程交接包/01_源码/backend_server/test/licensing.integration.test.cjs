@@ -15,6 +15,7 @@ test('licensing HTTP, conflict protection, conditions, binding and controlled re
   const people=[];
   for(const label of ['author','rights','content','outsider','subject']){const ctx={};principals.set(ctx,{subject_ref:'synthetic:'+key()});const p={ctx,...await parties.registerAccount(ctx,{display_name:label}),token:randomBytes(32).toString('base64url')};people.push(p);await db.execute('INSERT INTO auth_sessions(token_hash,account_id,expires_ms) VALUES (?,?,ROUND(UNIX_TIMESTAMP(CURRENT_TIMESTAMP(3))*1000)+3600000)',[auth.secure.digest('token',p.token),p.account_id]);}
   const [author,rights,content,outsider,subject]=people;
+ await require('./helpers/trusted-identity.cjs').seedAdultIdentity(db,resolvePrincipal,outsider); // Normal buyer fixture only; no paid halo.
   for(const [person,actions] of [[rights,['SUPPLY_REVIEW_PROFILE','SUPPLY_REVIEW_RIGHTS','SUPPLY_REVIEW_CONSENT','LICENSE_REVIEW']],[content,['SUPPLY_REVIEW_CONTENT']],[author,['SUPPLY_REVIEW_PROFILE','SUPPLY_REVIEW_RIGHTS','SUPPLY_REVIEW_CONSENT','LICENSE_REVIEW']]])for(const action of actions)await maintainOperatorGrant(db,{account_id:person.account_id,action,enabled:true,expires_at:null,expected_version:0,authority_ref:'synthetic:test',reason:'isolated tests only'});
   const files=new Map();let puts=0;
   const storageFactory=()=>({async put({key,body}){puts++;files.set(key,Buffer.from(body));return {key,size:body.length,sha256:createHash('sha256').update(body).digest('hex')};},async getBuffer(key){return files.get(key);}});

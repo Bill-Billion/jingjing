@@ -306,7 +306,7 @@ class _ProjectFormState extends State<_ProjectForm> {
       RegExp(r'^[A-Z]{2}$').hasMatch(_territory.text.trim()) &&
       RegExp(r'^[a-z]{2}$').hasMatch(_language.text.trim()) &&
       (int.tryParse(_episodes.text) ?? 0) > 0 &&
-      (int.tryParse(_episodes.text) ?? 100001) <= 100000;
+      (int.tryParse(_episodes.text) ?? 9007199254740992) <= 9007199254740991;
   Future<void> _submit() async {
     final epoch = widget.session.epoch, party = _api.owner();
     if (!await licenseConfirm(context, '保存项目用途', [
@@ -403,7 +403,7 @@ class _ProjectFormState extends State<_ProjectForm> {
               enabled: enabled,
               keyboardType: TextInputType.number,
               decoration:
-                  const InputDecoration(helperText: '填写 1 至 100000 之间的整数。'))),
+                  const InputDecoration(helperText: '填写正整数，是否满足原许可由当前绑定范围核对。'))),
       const SizedBox(height: 24),
       FilledButton(
           onPressed: _busy || (!_valid && pending == null) ? null : _submit,

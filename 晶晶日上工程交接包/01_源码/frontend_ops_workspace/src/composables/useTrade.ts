@@ -1,3 +1,4 @@
+import {onConsumerRecovery} from '@/consumer/recovery'
 import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 import { ApiError, asApiError, newIdempotencyKey, outcomeUnknown } from '@/api/client'
 import { getTrade, legacyBytes, listTrade, postTrade, type TradeKind, type TradeRecord, type TradeWrite } from '@/api/modules/trade'
@@ -10,7 +11,8 @@ export function useTrade(context:()=>SupplyContext){
  const busy=computed(()=>writing.value||Object.values(reading.value).some(Boolean))
  function clear(){epoch++;for(const a of aborts.values())a.abort();aborts.clear();rows.value=[];detail.value=null;related.value=[];nextCursor.value=null;pending.value=null;writing.value=false;reading.value={};error.value=null;notice.value='';retryAt.value=0;for(const u of urls)URL.revokeObjectURL(u);urls.clear();securityRevision.value++}
  watch(()=>[context().token,context().accountId,context().partyId,context().revision,context().scope],clear,{flush:'sync'})
- onScopeDispose(()=>{disposed=true;clear()})
+ const stopRecovery=onConsumerRecovery(e=>{const c=context(),p=pending.value;if(disposed||!c.token||c.accountId!==e.accountId||c.partyId!==e.partyId||p?.key!==e.key||p.command.path!==e.path)return;p.resultId=e.recordId;p.state='refresh';void checkPending()})
+ onScopeDispose(()=>{stopRecovery();disposed=true;clear()})
  function identity():SupplyIdentity{const c=context();if(!c.token||!c.accountId||c.partyId==='')throw new ApiError({status:400,code:'CLIENT_IDENTITY_REQUIRED',message:'请先读取账号并选择办理身份。'});return {token:c.token,accountId:c.accountId,partyId:c.partyId}}
  function failure(cause:unknown){const e=asApiError(cause);if([401,403,404].includes(e.status))clear();error.value=e;retryAt.value=e.retryAfterAt||0}
  function apply(r:TradeRecord){detail.value=r;rows.value=rows.value.map(x=>x.id===r.id?r:x);related.value=related.value.map(x=>x.id===r.id?r:x)}

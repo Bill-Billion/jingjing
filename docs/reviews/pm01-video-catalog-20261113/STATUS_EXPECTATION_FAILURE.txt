@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: operator video categories, holiday collections and placements use reviewed stock through real HTTP
+    # Subtest: empty catalog invents no products; authentication, actor scope and operator permission are enforced
+    ok 1 - empty catalog invents no products; authentication, actor scope and operator permission are enforced
+      ---
+      duration_ms: 74.699
+      type: 'test'
+      ...
+    # Subtest: configuration rejects executable fields, price overrides, invalid dates and duplicate codes
+    ok 2 - configuration rejects executable fields, price overrides, invalid dates and duplicate codes
+      ---
+      duration_ms: 68.6501
+      type: 'test'
+      ...
+    # Subtest: independent category publication exposes only reviewed content and never private author metadata
+    ok 3 - independent category publication exposes only reviewed content and never private author metadata
+      ---
+      duration_ms: 30.4086
+      type: 'test'
+      ...
+    # Subtest: holiday collection binds reviewed stock prices, licences and offers; seller cannot approve their own recommendation
+    ok 4 - holiday collection binds reviewed stock prices, licences and offers; seller cannot approve their own recommendation
+      ---
+      duration_ms: 168.7529
+      type: 'test'
+      ...
+    # Subtest: placement, code and category filters expose only the exact reviewed collection
+    ok 5 - placement, code and category filters expose only the exact reviewed collection
+      ---
+      duration_ms: 96.1801
+      type: 'test'
+      ...
+    # Subtest: catalog item buys through original stock checkout; removing recommendation preserves paid order and licensed download
+    ok 6 - catalog item buys through original stock checkout; removing recommendation preserves paid order and licensed download
+      ---
+      duration_ms: 99.357
+      type: 'test'
+      ...
+    # Subtest: new immutable versions require review; concurrent drafts cannot silently replace an intervening publication
+    ok 7 - new immutable versions require review; concurrent drafts cannot silently replace an intervening publication
+      ---
+      duration_ms: 108.7613
+      type: 'test'
+      ...
+    # Subtest: category revision invalidates dependent publication until freshly reviewed; withdrawn source can still be rejected
+    ok 8 - category revision invalidates dependent publication until freshly reviewed; withdrawn source can still be rejected
+      ---
+      duration_ms: 170.6791
+      type: 'test'
+      ...
+    # Subtest: source unlisting immediately hides affected product without inventing replacement prices or changing old orders
+    ok 9 - source unlisting immediately hides affected product without inventing replacement prices or changing old orders
+      ---
+      duration_ms: 25.9982
+      type: 'test'
+      ...
+    # Subtest: scheduled content stays hidden before start and cannot be reviewed after expiry
+    ok 10 - scheduled content stays hidden before start and cannot be reviewed after expiry
+      ---
+      duration_ms: 72.562
+      type: 'test'
+      ...
+    # Subtest: concurrent replay creates one version, cursor cannot cross filters and changed request keys conflict
+    ok 11 - concurrent replay creates one version, cursor cannot cross filters and changed request keys conflict
+      ---
+      duration_ms: 38.1785
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back publication and old-version retirement; retry uses the original key
+    not ok 12 - audit failure rolls back publication and old-version retirement; retry uses the original key
+      ---
+      duration_ms: 20.5475
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\product-catalog.integration.test.cjs:98:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        503 !== 500
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 500
+      actual: 503
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\product-catalog.integration.test.cjs:100:14)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\product-catalog.integration.test.cjs:98:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: revoked operator cannot replay old success or read administration; public content remains available
+    ok 13 - revoked operator cannot replay old success or read administration; public content remains available
+      ---
+      duration_ms: 76.9269
+      type: 'test'
+      ...
+    1..13
+not ok 1 - operator video categories, holiday collections and placements use reviewed stock through real HTTP
+  ---
+  duration_ms: 7648.6211
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\product-catalog.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 14
+# suites 0
+# pass 12
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7831.048

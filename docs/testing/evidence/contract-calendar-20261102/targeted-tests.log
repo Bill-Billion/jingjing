@@ -1,0 +1,518 @@
+TAP version 13
+# Subtest: contract release mode blocks new old-rule quotes but preserves approved historical promises
+    # Subtest: new old-spec quote is rejected through HTTP and creates no quote record
+    ok 1 - new old-spec quote is rejected through HTTP and creates no quote record
+      ---
+      duration_ms: 109.0012
+      type: 'test'
+      ...
+    # Subtest: pending legacy quote cannot gain approval after cutover
+    ok 2 - pending legacy quote cannot gain approval after cutover
+      ---
+      duration_ms: 25.2599
+      type: 'test'
+      ...
+    # Subtest: already approved quote can still be accepted without rewriting original hours or 30/60/10
+    ok 3 - already approved quote can still be accepted without rewriting original hours or 30/60/10
+      ---
+      duration_ms: 105.3492
+      type: 'test'
+      ...
+    # Subtest: historical specification remains publishable for old-order amendments but cannot create a new ordinary quote
+    ok 4 - historical specification remains publishable for old-order amendments but cannot create a new ordinary quote
+      ---
+      duration_ms: 751.809
+      type: 'test'
+      ...
+    # Subtest: new calendar specification quotes, independent review and contract snapshot use actual HTTP
+    ok 5 - new calendar specification quotes, independent review and contract snapshot use actual HTTP
+      ---
+      duration_ms: 159.1821
+      type: 'test'
+      ...
+    # Subtest: omitting product identity and story cannot bypass cutover through the legacy production quote path
+    ok 6 - omitting product identity and story cannot bypass cutover through the legacy production quote path
+      ---
+      duration_ms: 59.9406
+      type: 'test'
+      ...
+    # Subtest: expired reviewed calendar cannot form or approve a new quote
+    ok 7 - expired reviewed calendar cannot form or approve a new quote
+      ---
+      duration_ms: 94.3006
+      type: 'test'
+      ...
+    # Subtest: outsider cannot use the release setting to issue platform quotes
+    ok 8 - outsider cannot use the release setting to issue platform quotes
+      ---
+      duration_ms: 8.076
+      type: 'test'
+      ...
+    1..8
+ok 1 - contract release mode blocks new old-rule quotes but preserves approved historical promises
+  ---
+  duration_ms: 12054.3531
+  type: 'test'
+  ...
+# Subtest: delivery terms require explicit reviewed order and acceptance period
+ok 2 - delivery terms require explicit reviewed order and acceptance period
+  ---
+  duration_ms: 2.233
+  type: 'test'
+  ...
+# Subtest: cancellation retains only confirmed work; before start and failure refund all
+ok 3 - cancellation retains only confirmed work; before start and failure refund all
+  ---
+  duration_ms: 0.5055
+  type: 'test'
+  ...
+# Subtest: scenic work does not force the buyer to create an avatar; identifiable people need explicit bindings
+ok 4 - scenic work does not force the buyer to create an avatar; identifiable people need explicit bindings
+  ---
+  duration_ms: 1.2966
+  type: 'test'
+  ...
+# Subtest: V5 customization actual HTTP: paid manual production, receipts, changes and refunds
+    # Subtest: explicit delivery terms required; legacy accepted quote is not silently rewritten
+    ok 1 - explicit delivery terms required; legacy accepted quote is not silently rewritten
+      ---
+      duration_ms: 289.0985
+      type: 'test'
+      ...
+    # Subtest: one manual project binds immutable story and no-avatar scenic work is allowed
+    ok 2 - one manual project binds immutable story and no-avatar scenic work is allowed
+      ---
+      duration_ms: 849.5876
+      type: 'test'
+      ...
+    # Subtest: review and deposit are both required; start and old upload cannot bypass payment
+    ok 3 - review and deposit are both required; start and old upload cannot bypass payment
+      ---
+      duration_ms: 125.9356
+      type: 'test'
+      ...
+    # Subtest: manual dispatch requires current team membership; outsider cannot assign or upload
+    ok 4 - manual dispatch requires current team membership; outsider cannot assign or upload
+      ---
+      duration_ms: 38.7297
+      type: 'test'
+      ...
+    # Subtest: approved formal delivery alone does not start clock; bytes and notification required
+    ok 5 - approved formal delivery alone does not start clock; bytes and notification required
+      ---
+      duration_ms: 268.4169
+      type: 'test'
+      ...
+    # Subtest: first formal preview can be viewed before interim payment; acceptance unlocks exactly 60 percent
+    ok 6 - first formal preview can be viewed before interim payment; acceptance unlocks exactly 60 percent
+      ---
+      duration_ms: 225.0582
+      type: 'test'
+      ...
+    # Subtest: platform correction is free; creative changes use purchased quota and then require new quote
+    ok 7 - platform correction is free; creative changes use purchased quota and then require new quote
+      ---
+      duration_ms: 552.6593
+      type: 'test'
+      ...
+    # Subtest: rights dispute suspends clock and payments; independent resolution requires fresh formal receipt
+    ok 8 - rights dispute suspends clock and payments; independent resolution requires fresh formal receipt
+      ---
+      duration_ms: 238.5769
+      type: 'test'
+      ...
+    # Subtest: final acceptance is separate from paid final download; repeated access publishes one fulfillment fact
+    ok 9 - final acceptance is separate from paid final download; repeated access publishes one fulfillment fact
+      ---
+      duration_ms: 201.6169
+      type: 'test'
+      ...
+    # Subtest: before-start cancellation refunds all, approval is not actual refund, retries do not duplicate facts
+    ok 10 - before-start cancellation refunds all, approval is not actual refund, retries do not duplicate facts
+      ---
+      duration_ms: 332.9007
+      type: 'test'
+      ...
+    # Subtest: refund cannot bypass customer-service review; paid legacy order remains unmodified
+    ok 11 - refund cannot bypass customer-service review; paid legacy order remains unmodified
+      ---
+      duration_ms: 11.1411
+      type: 'test'
+      ...
+    # Subtest: alternate explicit prepayment policy does not deadlock preview and interim collection
+    ok 12 - alternate explicit prepayment policy does not deadlock preview and interim collection
+      ---
+      duration_ms: 462.8575
+      type: 'test'
+      ...
+    # Subtest: new contract: current accepted script unlocks 40%, production and final 30% remain gated
+    ok 13 - new contract: current accepted script unlocks 40%, production and final 30% remain gated
+      ---
+      duration_ms: 1104.1995
+      type: 'test'
+      ...
+    # Subtest: new contract cancellation has reviewed cap, not automatic forfeiture of all received money
+    ok 14 - new contract cancellation has reviewed cap, not automatic forfeiture of all received money
+      ---
+      duration_ms: 377.7882
+      type: 'test'
+      ...
+    # Subtest: agreed timeout runs as durable job and records automatic, not fabricated manual, acceptance
+    ok 15 - agreed timeout runs as durable job and records automatic, not fabricated manual, acceptance
+      ---
+      duration_ms: 355.8588
+      type: 'test'
+      ...
+    # Subtest: file failure at timeout pauses instead of auto accepting unavailable content
+    ok 16 - file failure at timeout pauses instead of auto accepting unavailable content
+      ---
+      duration_ms: 275.0721
+      type: 'test'
+      ...
+    # Subtest: new version invalidates old acceptance job and resets notice and viewing evidence
+    ok 17 - new version invalidates old acceptance job and resets notice and viewing evidence
+      ---
+      duration_ms: 323.642
+      type: 'test'
+      ...
+    # Subtest: audit failures roll back case, state and command together
+    ok 18 - audit failures roll back case, state and command together
+      ---
+      duration_ms: 105.8135
+      type: 'test'
+      ...
+    # Subtest: person/avatar/version/consents bind actual performer, and manual material use does not require model hosting
+    ok 19 - person/avatar/version/consents bind actual performer, and manual material use does not require model hosting
+      ---
+      duration_ms: 324.8386
+      type: 'test'
+      ...
+    # Subtest: partial work cancellation cannot retain unconfirmed value; failures override digital non-refund claims
+    ok 20 - partial work cancellation cannot retain unconfirmed value; failures override digital non-refund claims
+      ---
+      duration_ms: 614.9018
+      type: 'test'
+      ...
+    # Subtest: payment already in flight when cancellation occurs becomes refund obligation after trusted late receipt
+    ok 21 - payment already in flight when cancellation occurs becomes refund obligation after trusted late receipt
+      ---
+      duration_ms: 189.2178
+      type: 'test'
+      ...
+    # Subtest: case evidence is available only to its submitting side and independent reviewer
+    ok 22 - case evidence is available only to its submitting side and independent reviewer
+      ---
+      duration_ms: 165.5729
+      type: 'test'
+      ...
+    # Subtest: working-day final receipt freezes deadline; repeated acknowledgement cannot extend it
+    ok 23 - working-day final receipt freezes deadline; repeated acknowledgement cannot extend it
+      ---
+      duration_ms: 934.4348
+      type: 'test'
+      ...
+    # Subtest: working-day dispute and reissue invalidate old job; new receipt needs fresh notice and bytes
+    ok 24 - working-day dispute and reissue invalidate old job; new receipt needs fresh notice and bytes
+      ---
+      duration_ms: 1010.6906
+      type: 'test'
+      ...
+    # Subtest: working-day deadline does not auto accept an unavailable file
+    ok 25 - working-day deadline does not auto accept an unavailable file
+      ---
+      duration_ms: 838.4126
+      type: 'test'
+      ...
+    # Subtest: parallel starts and stale acceptance lease cannot duplicate business facts
+    ok 26 - parallel starts and stale acceptance lease cannot duplicate business facts
+      ---
+      duration_ms: 456.1756
+      type: 'test'
+      ...
+    # Subtest: creative amendment is independently quoted, accepted, paid once and attached to the original production
+    ok 27 - creative amendment is independently quoted, accepted, paid once and attached to the original production
+      ---
+      duration_ms: 502.0062
+      type: 'test'
+      ...
+    # Subtest: same-story amendment HTTP create review acceptance keeps original binding and rejects stale or duplicate cases
+    ok 28 - same-story amendment HTTP create review acceptance keeps original binding and rejects stale or duplicate cases
+      ---
+      duration_ms: 594.5537
+      type: 'test'
+      ...
+    1..28
+ok 5 - V5 customization actual HTTP: paid manual production, receipts, changes and refunds
+  ---
+  duration_ms: 21758.3622
+  type: 'test'
+  ...
+# Subtest: platform customization quote HTTP, story version and unique order transactions
+    # Subtest: enabled V5 creation refuses unclassified specifications; no failed command or spec persists
+    ok 1 - enabled V5 creation refuses unclassified specifications; no failed command or spec persists
+      ---
+      duration_ms: 55.7093
+      type: 'test'
+      ...
+    # Subtest: V5 stored specification requires story even when caller omits it and cutover is off
+    ok 2 - V5 stored specification requires story even when caller omits it and cutover is off
+      ---
+      duration_ms: 291.531
+      type: 'test'
+      ...
+    # Subtest: new specification versions retain classification; switching or removing it is refused
+    ok 3 - new specification versions retain classification; switching or removing it is refused
+      ---
+      duration_ms: 530.2112
+      type: 'test'
+      ...
+    # Subtest: cutover rejects fresh legacy quote but preserves a pre-cutover quote, replay and frozen old order
+    ok 4 - cutover rejects fresh legacy quote but preserves a pre-cutover quote, replay and frozen old order
+      ---
+      duration_ms: 145.1304
+      type: 'test'
+      ...
+    # Subtest: mixed legacy and V5 products roll back the quote; products require their dedicated source and checkout flows
+    ok 5 - mixed legacy and V5 products roll back the quote; products require their dedicated source and checkout flows
+      ---
+      duration_ms: 245.6243
+      type: 'test'
+      ...
+    # Subtest: source only accepts explicit request, submission and digest; no mutable caller reference
+    ok 6 - source only accepts explicit request, submission and digest; no mutable caller reference
+      ---
+      duration_ms: 0.4882
+      type: 'test'
+      ...
+    # Subtest: draft and merely submitted stories cannot be quoted; intake makes exact version available
+    ok 7 - draft and merely submitted stories cannot be quoted; intake makes exact version available
+      ---
+      duration_ms: 33.5503
+      type: 'test'
+      ...
+    # Subtest: open supplement blocks old quote basis; resubmission and re-intake never revive it
+    ok 8 - open supplement blocks old quote basis; resubmission and re-intake never revive it
+      ---
+      duration_ms: 72.9361
+      type: 'test'
+      ...
+    # Subtest: tampered stored story or digest is refused rather than silently quoted
+    ok 9 - tampered stored story or digest is refused rather than silently quoted
+      ---
+      duration_ms: 25.573
+      type: 'test'
+      ...
+    # Subtest: accepted binding freezes original story and prevents supplement even if order is later cancelled
+    ok 10 - accepted binding freezes original story and prevents supplement even if order is later cancelled
+      ---
+      duration_ms: 40.644
+      type: 'test'
+      ...
+    # Subtest: two competing orders serialize on story and roll back the losing order
+    ok 11 - two competing orders serialize on story and roll back the losing order
+      ---
+      duration_ms: 32.0332
+      type: 'test'
+      ...
+    # Subtest: order confirmation racing supplement allows only one winner and preserves coherent state
+    ok 12 - order confirmation racing supplement allows only one winner and preserves coherent state
+      ---
+      duration_ms: 95.8427
+      type: 'test'
+      ...
+    # Subtest: later transaction failure rolls back binding and fixture order together
+    ok 13 - later transaction failure rolls back binding and fixture order together
+      ---
+      duration_ms: 35.9867
+      type: 'test'
+      ...
+    # Subtest: primitives never create cash, signatures or production and unbound existing order remains unaffected
+    ok 14 - primitives never create cash, signatures or production and unbound existing order remains unaffected
+      ---
+      duration_ms: 6.51
+      type: 'test'
+      ...
+    # Subtest: platform quote, independent review and buyer confirmation use existing HTTP order and unsigned snapshot
+    ok 15 - platform quote, independent review and buyer confirmation use existing HTTP order and unsigned snapshot
+      ---
+      duration_ms: 154.8796
+      type: 'test'
+      ...
+    # Subtest: ordinary merchant, intake staff without platform ownership and missing platform configuration cannot quote
+    ok 16 - ordinary merchant, intake staff without platform ownership and missing platform configuration cannot quote
+      ---
+      duration_ms: 45.9537
+      type: 'test'
+      ...
+    # Subtest: replayed successful quote still checks current operator authority; malformed source cannot bypass platform gate
+    ok 17 - replayed successful quote still checks current operator authority; malformed source cannot bypass platform gate
+      ---
+      duration_ms: 63.1368
+      type: 'test'
+      ...
+    # Subtest: new quote rejects old 30/40/30 plan, wrong transaction model and mismatched buyer without altering old trade rules
+    ok 18 - new quote rejects old 30/40/30 plan, wrong transaction model and mismatched buyer without altering old trade rules
+      ---
+      duration_ms: 65.5685
+      type: 'test'
+      ...
+    # Subtest: supplement blocks both approval and accepting a previously approved quote
+    ok 19 - supplement blocks both approval and accepting a previously approved quote
+      ---
+      duration_ms: 124.3345
+      type: 'test'
+      ...
+    # Subtest: a new submitted story invalidates an approved old quote and listing identifies its old source
+    ok 20 - a new submitted story invalidates an approved old quote and listing identifies its old source
+      ---
+      duration_ms: 163.3395
+      type: 'test'
+      ...
+    # Subtest: ordinary institution member can request production but cannot confirm a financial order
+    ok 21 - ordinary institution member can request production but cannot confirm a financial order
+      ---
+      duration_ms: 104.9461
+      type: 'test'
+      ...
+    # Subtest: two separately approved quotes racing acceptance create only one linked unpaid order
+    ok 22 - two separately approved quotes racing acceptance create only one linked unpaid order
+      ---
+      duration_ms: 140.647
+      type: 'test'
+      ...
+    # Subtest: quote association failure rolls back quote, audit and idempotency entry
+    ok 23 - quote association failure rolls back quote, audit and idempotency entry
+      ---
+      duration_ms: 85.1819
+      type: 'test'
+      ...
+    # Subtest: customization quote refuses missing or mismatched approved finance terms without defaults
+    ok 24 - customization quote refuses missing or mismatched approved finance terms without defaults
+      ---
+      duration_ms: 70.5902
+      type: 'test'
+      ...
+    # Subtest: accepted quote freezes approved finance even after the governing rule content is replaced
+    ok 25 - accepted quote freezes approved finance even after the governing rule content is replaced
+      ---
+      duration_ms: 138.5633
+      type: 'test'
+      ...
+    # Subtest: unpaid order accrues nothing; synthetic receipts and refunds use frozen shares and persist platform rounding
+    ok 26 - unpaid order accrues nothing; synthetic receipts and refunds use frozen shares and persist platform rounding
+      ---
+      duration_ms: 321.925
+      type: 'test'
+      ...
+    1..26
+ok 6 - platform customization quote HTTP, story version and unique order transactions
+  ---
+  duration_ms: 13548.1033
+  type: 'test'
+  ...
+# Subtest: coupon checkout preserves original promises and real payment facts
+    # Subtest: one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases
+    ok 1 - one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases
+      ---
+      duration_ms: 1051.3634
+      type: 'test'
+      ...
+    # Subtest: new 30/40/30 coupon quote and contract preserve net amounts and script milestone
+    ok 2 - new 30/40/30 coupon quote and contract preserve net amounts and script milestone
+      ---
+      duration_ms: 216.2071
+      type: 'test'
+      ...
+    # Subtest: unaccepted hold can be released, stale preview and unauthorized access rejected
+    ok 3 - unaccepted hold can be released, stale preview and unauthorized access rejected
+      ---
+      duration_ms: 156.7228
+      type: 'test'
+      ...
+    # Subtest: unknown payment prevents cancel/reuse; trusted receipt consumes once; refund never returns used voucher
+    ok 4 - unknown payment prevents cancel/reuse; trusted receipt consumes once; refund never returns used voucher
+      ---
+      duration_ms: 313.4077
+      type: 'test'
+      ...
+    # Subtest: full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse
+    ok 5 - full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse
+      ---
+      duration_ms: 1153.695
+      type: 'test'
+      ...
+    # Subtest: co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source
+    ok 6 - co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source
+      ---
+      duration_ms: 506.6979
+      type: 'test'
+      ...
+    1..6
+ok 7 - coupon checkout preserves original promises and real payment facts
+  ---
+  duration_ms: 13910.528
+  type: 'test'
+  ...
+# Subtest: five working days excludes receipt day and ends at 23:59:59.999 Shanghai
+ok 8 - five working days excludes receipt day and ends at 23:59:59.999 Shanghai
+  ---
+  duration_ms: 3.2285
+  type: 'test'
+  ...
+# Subtest: explicit synthetic holiday and weekend makeup day are honored across a year boundary
+ok 9 - explicit synthetic holiday and weekend makeup day are honored across a year boundary
+  ---
+  duration_ms: 0.4977
+  type: 'test'
+  ...
+# Subtest: missing coverage never invents future working days or falls back to 120 hours
+ok 10 - missing coverage never invents future working days or falls back to 120 hours
+  ---
+  duration_ms: 0.7457
+  type: 'test'
+  ...
+# Subtest: calendar rejects impossible dates, duplicate/conflicting overrides, unknown fields and timezone
+ok 11 - calendar rejects impossible dates, duplicate/conflicting overrides, unknown fields and timezone
+  ---
+  duration_ms: 1.2648
+  type: 'test'
+  ...
+# Subtest: new contract only times final delivery; old hours remain unchanged
+ok 12 - new contract only times final delivery; old hours remain unchanged
+  ---
+  duration_ms: 1.3994
+  type: 'test'
+  ...
+# Subtest: frozen clock basis must match dates and calendar; pre-final stage never auto accepts
+ok 13 - frozen clock basis must match dates and calendar; pre-final stage never auto accepts
+  ---
+  duration_ms: 0.7491
+  type: 'test'
+  ...
+# Subtest: release policy requires both new payment and working days; invalid config cannot silently disable
+ok 14 - release policy requires both new payment and working days; invalid config cannot silently disable
+  ---
+  duration_ms: 0.4696
+  type: 'test'
+  ...
+# Subtest: official-source 2026 candidate includes spring-festival and national-day makeups; never guesses 2027
+ok 15 - official-source 2026 candidate includes spring-festival and national-day makeups; never guesses 2027
+  ---
+  duration_ms: 1.4084
+  type: 'test'
+  ...
+# Subtest: release guard refuses an expired calendar when creating or approving a quote
+ok 16 - release guard refuses an expired calendar when creating or approving a quote
+  ---
+  duration_ms: 0.758
+  type: 'test'
+  ...
+1..16
+# tests 84
+# suites 0
+# pass 84
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 22277.5323

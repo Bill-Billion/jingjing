@@ -1,0 +1,10 @@
+CREATE TABLE finance_daily_reports (
+ id CHAR(36) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ scope_key CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL UNIQUE,
+ created_by CHAR(36) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ current_status ENUM('DRAFT','DIFFERENCES','READY','REVIEWED') NOT NULL DEFAULT 'DRAFT',
+ object_version INT UNSIGNED NOT NULL DEFAULT 1,
+ data_json JSON NOT NULL, data_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ FOREIGN KEY(created_by) REFERENCES identity_accounts(id)
+) ENGINE=InnoDB

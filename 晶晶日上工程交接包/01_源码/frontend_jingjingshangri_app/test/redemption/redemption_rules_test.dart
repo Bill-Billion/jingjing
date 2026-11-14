@@ -17,5 +17,8 @@ void main() {
     }
     expect(redemptionKind('PRODUCTION_CREDIT'), '制作金');
     expect(redemptionKind('INTERVIEW'), '面试权益');
+    expect(redemptionKind('NONE'), '本次未获实物权益');
+    expect(redemptionKind('INTERVIEW_OPEN'), '公开面试权益');
+    expect(redemptionKind('INTERVIEW_PRIORITY'), '优先面试权益');
   });
 }

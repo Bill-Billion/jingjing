@@ -18,6 +18,9 @@ function createSettlementRouter({db,resolvePrincipal,env={},storageFactory,provi
  post("/agreements/:record_id/statements","statement",["external_reference", "period_start", "period_end", "gross_minor", "refund_minor", "channel_fee_minor", "tax_minor", "direction", "original_statement_id", "evidence_asset_id", "note"],{party:true,existing:true});
  post("/statements/:record_id/receipts","receipt",["amount_minor", "external_reference", "occurred_at", "evidence_asset_id", "note"],{party:true,existing:true});
  post("/agreements/:record_id/adjustments","adjust",["entries", "reason", "evidence_asset_id"],{party:true,existing:true});
+ post("/agreements/:record_id/recoveries","recovery",["recipient_party_id","amount_minor","reason","evidence_asset_id"],{party:true,existing:true});
+ post("/recoveries/:record_id/receipts","recoveryReceipt",["payout_evidence_id","amount_minor"],{party:true,existing:true});
+ post("/recoveries/:record_id/cancellation","cancelRecovery",["reason"],{party:false,existing:true});
  post("/agreements/:record_id/payouts","requestPayout",["recipient_party_id", "amount_minor", "destination_asset_id", "note"],{party:true,existing:true});
  post("/payouts/:record_id/evidence","payoutEvidence",["outcome", "amount_minor", "external_reference", "occurred_at", "evidence_asset_id", "note"],{party:true,existing:true});
  post("/payouts/:record_id/cancellation","cancelPayout",["reason"],{party:true,existing:true});

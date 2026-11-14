@@ -1,0 +1,1187 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/requests",
+      "schema": "PrivacyRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "e586c70a-7251-4088-ae27-b41ba13271dd",
+          "actor": {
+            "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "62af7923-ef1d-4cec-af45-789d31e870ad",
+          "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8",
+          "request": {
+            "type": "COPY",
+            "scopes": [
+              "TRANSACTIONS"
+            ],
+            "details": "Synthetic business conversation copy; third party text requires manual review"
+          },
+          "current_status": "RECEIVED",
+          "object_version": 1,
+          "response_due_on": "2026-12-01",
+          "calendar_version": null,
+          "deadline_basis": "WEEKDAY_ESTIMATE_NEEDS_CALENDAR",
+          "result": null,
+          "events": [
+            {
+              "id": "bc4422c1-67a1-49d4-b31f-67bc6d710cf4",
+              "event_code": "SUBMITTED",
+              "object_version": 1,
+              "message": "已收到申请，尚未完成实际处理",
+              "created_at": "2026-11-10T08:07:04.253Z"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "dd93126c-71d5-4c15-b3a2-2b92eaf22254",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "PRIVACY_STATE_CONFLICT",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/start",
+      "schema": "PrivacyRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "e777ab05-46dc-4ca5-8bbd-9a66d0d00f49",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "62af7923-ef1d-4cec-af45-789d31e870ad",
+          "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8",
+          "request": {
+            "type": "COPY",
+            "scopes": [
+              "TRANSACTIONS"
+            ],
+            "details": "Synthetic business conversation copy; third party text requires manual review"
+          },
+          "current_status": "PROCESSING",
+          "object_version": 2,
+          "response_due_on": "2026-12-01",
+          "calendar_version": null,
+          "deadline_basis": "WEEKDAY_ESTIMATE_NEEDS_CALENDAR",
+          "result": null,
+          "proposal": null,
+          "proposal_sha256": null,
+          "events": [
+            {
+              "id": "bc4422c1-67a1-49d4-b31f-67bc6d710cf4",
+              "event_code": "SUBMITTED",
+              "object_version": 1,
+              "message": "已收到申请，尚未完成实际处理",
+              "created_at": "2026-11-10T08:07:04.253Z"
+            },
+            {
+              "id": "1e105ce3-ed56-4215-ae4c-d858b9fb9ee5",
+              "event_code": "PROCESSING",
+              "object_version": 2,
+              "message": "工作人员已开始处理申请",
+              "created_at": "2026-11-10T08:07:04.270Z"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "664beac5-883d-4bba-8e28-2c8c6e847413",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "COMMERCIAL_SUPPORT_NOT_ASSIGNED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "PrivacyBusinessMessageDraftResponse",
+      "value": {
+        "meta": {
+          "request_id": "dd9e696e-7bb4-4c1a-b3ba-9b922b051448",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "source": "COMMERCIAL",
+          "source_id": "3748a56c-678a-45dd-8c46-18825c5228b2",
+          "copy_kind": "BUSINESS_MESSAGE_REVIEW_DRAFT",
+          "third_party_redaction": "REQUIRES_MANUAL_REVIEW",
+          "original_attachments_included": false,
+          "request_completion": "NOT_CONFIRMED",
+          "items": [
+            {
+              "id": "18af548e-3930-4c96-8258-139b209ed275",
+              "kind": "TEXT",
+              "current_status": "SENT",
+              "sender": "OTHER",
+              "at": "2026-11-10T08:07:04.120Z",
+              "body": "Synthetic assigned agency message",
+              "hidden": false,
+              "attachment_present": false
+            }
+          ],
+          "next_cursor": "18af548e-3930-4c96-8258-139b209ed275"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "PrivacyBusinessMessageDraftResponse",
+      "value": {
+        "meta": {
+          "request_id": "03d2a0e1-5fdc-49ea-8540-e60e95f193e1",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "source": "COMMERCIAL",
+          "source_id": "3748a56c-678a-45dd-8c46-18825c5228b2",
+          "copy_kind": "BUSINESS_MESSAGE_REVIEW_DRAFT",
+          "third_party_redaction": "REQUIRES_MANUAL_REVIEW",
+          "original_attachments_included": false,
+          "request_completion": "NOT_CONFIRMED",
+          "items": [
+            {
+              "id": "3d6ac3bc-a60f-4cbc-9078-d586dcdc12c2",
+              "kind": "TEXT",
+              "current_status": "SENT",
+              "sender": "APPLICANT",
+              "at": "2026-11-10T08:07:04.218Z",
+              "body": "Synthetic applicant asks for a revised delivery date",
+              "hidden": false,
+              "attachment_present": false
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "8eafac86-2747-4426-9d28-26b9a5d0107d",
+          "actor": {
+            "account_id": "66e72a37-ab5b-4322-af51-30b126f05e73"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "PRIVACY_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "cb214b75-6913-4a8b-bb15-b8ffa5488aef",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "INVALID_INPUT",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "ff26525b-5958-4be3-8bec-814dab280387",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "ACTING_PARTY_NOT_ALLOWED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "d6a5cd01-2a29-4eb7-9b9d-770ba3bfc6e9",
+          "actor": {
+            "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "SELF_REVIEW_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/requests",
+      "schema": "PrivacyRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "31459db8-0795-4963-8304-9c9aab0c1efb",
+          "actor": {
+            "account_id": "66e72a37-ab5b-4322-af51-30b126f05e73"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "9ee5ba5f-a3f8-4529-8fc3-598126978ef5",
+          "account_id": "66e72a37-ab5b-4322-af51-30b126f05e73",
+          "request": {
+            "type": "COPY",
+            "scopes": [
+              "ALL"
+            ],
+            "details": "Synthetic unrelated person"
+          },
+          "current_status": "RECEIVED",
+          "object_version": 1,
+          "response_due_on": "2026-12-01",
+          "calendar_version": null,
+          "deadline_basis": "WEEKDAY_ESTIMATE_NEEDS_CALENDAR",
+          "result": null,
+          "events": [
+            {
+              "id": "0a1c7fac-5e19-41e7-8a18-ae1518a9944d",
+              "event_code": "SUBMITTED",
+              "object_version": 1,
+              "message": "已收到申请，尚未完成实际处理",
+              "created_at": "2026-11-10T08:07:04.392Z"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/9ee5ba5f-a3f8-4529-8fc3-598126978ef5/start",
+      "schema": "PrivacyRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "24008ada-cd16-4782-adf6-ebb0e2b29d92",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "9ee5ba5f-a3f8-4529-8fc3-598126978ef5",
+          "account_id": "66e72a37-ab5b-4322-af51-30b126f05e73",
+          "request": {
+            "type": "COPY",
+            "scopes": [
+              "ALL"
+            ],
+            "details": "Synthetic unrelated person"
+          },
+          "current_status": "PROCESSING",
+          "object_version": 2,
+          "response_due_on": "2026-12-01",
+          "calendar_version": null,
+          "deadline_basis": "WEEKDAY_ESTIMATE_NEEDS_CALENDAR",
+          "result": null,
+          "proposal": null,
+          "proposal_sha256": null,
+          "events": [
+            {
+              "id": "0a1c7fac-5e19-41e7-8a18-ae1518a9944d",
+              "event_code": "SUBMITTED",
+              "object_version": 1,
+              "message": "已收到申请，尚未完成实际处理",
+              "created_at": "2026-11-10T08:07:04.392Z"
+            },
+            {
+              "id": "314651ea-7f0e-4e1e-9efd-25a169dcd30b",
+              "event_code": "PROCESSING",
+              "object_version": 2,
+              "message": "工作人员已开始处理申请",
+              "created_at": "2026-11-10T08:07:04.401Z"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/9ee5ba5f-a3f8-4529-8fc3-598126978ef5/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "925261a0-875b-43c3-966c-1a74dddcd15b",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "PRIVACY_TARGET_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/requests",
+      "schema": "PrivacyRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "21a851cb-05ea-41c1-bf27-221eca7a42e3",
+          "actor": {
+            "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "54096c56-b697-4ddd-a691-e9f7f2a2c416",
+          "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8",
+          "request": {
+            "type": "COPY",
+            "scopes": [
+              "PROFILE"
+            ],
+            "details": "Synthetic profile scope only"
+          },
+          "current_status": "RECEIVED",
+          "object_version": 1,
+          "response_due_on": "2026-12-01",
+          "calendar_version": null,
+          "deadline_basis": "WEEKDAY_ESTIMATE_NEEDS_CALENDAR",
+          "result": null,
+          "events": [
+            {
+              "id": "59064c64-33ea-4838-b033-fc4eae2d0b81",
+              "event_code": "SUBMITTED",
+              "object_version": 1,
+              "message": "已收到申请，尚未完成实际处理",
+              "created_at": "2026-11-10T08:07:04.415Z"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/54096c56-b697-4ddd-a691-e9f7f2a2c416/start",
+      "schema": "PrivacyRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "06993986-5eb3-45fa-b7d3-7b1e46a377a6",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "54096c56-b697-4ddd-a691-e9f7f2a2c416",
+          "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8",
+          "request": {
+            "type": "COPY",
+            "scopes": [
+              "PROFILE"
+            ],
+            "details": "Synthetic profile scope only"
+          },
+          "current_status": "PROCESSING",
+          "object_version": 2,
+          "response_due_on": "2026-12-01",
+          "calendar_version": null,
+          "deadline_basis": "WEEKDAY_ESTIMATE_NEEDS_CALENDAR",
+          "result": null,
+          "proposal": null,
+          "proposal_sha256": null,
+          "events": [
+            {
+              "id": "59064c64-33ea-4838-b033-fc4eae2d0b81",
+              "event_code": "SUBMITTED",
+              "object_version": 1,
+              "message": "已收到申请，尚未完成实际处理",
+              "created_at": "2026-11-10T08:07:04.415Z"
+            },
+            {
+              "id": "446108a5-973b-4b32-9669-8aeb6d97aa22",
+              "event_code": "PROCESSING",
+              "object_version": 2,
+              "message": "工作人员已开始处理申请",
+              "created_at": "2026-11-10T08:07:04.423Z"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/54096c56-b697-4ddd-a691-e9f7f2a2c416/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "6a099bae-05e1-4577-83b9-8528547dae4a",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "PRIVACY_ACTION_SCOPE_MISMATCH",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "cb325ae2-3bb5-48a9-b545-d1789d5dbc41",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "GIG_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "af8f5f81-20b1-43f1-8d52-81b7e0c48a4a",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "GIG_REVIEW_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "f187c39e-c9bf-40be-a314-91cdb920084d",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "PRIVACY_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "e262f819-6d41-4e41-9b6c-1c6ca100847d",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "SERVICE_UNAVAILABLE",
+          "message": "服务暂不可用，请稍后核对状态",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "PrivacyBusinessMessageDraftResponse",
+      "value": {
+        "meta": {
+          "request_id": "f9f932ef-a13d-4f57-874f-4c680d7dc587",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "source": "COMMERCIAL",
+          "source_id": "3748a56c-678a-45dd-8c46-18825c5228b2",
+          "copy_kind": "BUSINESS_MESSAGE_REVIEW_DRAFT",
+          "third_party_redaction": "REQUIRES_MANUAL_REVIEW",
+          "original_attachments_included": false,
+          "request_completion": "NOT_CONFIRMED",
+          "items": [
+            {
+              "id": "18af548e-3930-4c96-8258-139b209ed275",
+              "kind": "TEXT",
+              "current_status": "HIDDEN",
+              "sender": "OTHER",
+              "at": "2026-11-10T08:07:04.120Z",
+              "body": null,
+              "hidden": true,
+              "attachment_present": false
+            },
+            {
+              "id": "3d6ac3bc-a60f-4cbc-9078-d586dcdc12c2",
+              "kind": "TEXT",
+              "current_status": "SENT",
+              "sender": "APPLICANT",
+              "at": "2026-11-10T08:07:04.218Z",
+              "body": "Synthetic applicant asks for a revised delivery date",
+              "hidden": false,
+              "attachment_present": false
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/response",
+      "schema": "PrivacyRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "9d881711-d9de-430e-9115-e2934adb22ba",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "62af7923-ef1d-4cec-af45-789d31e870ad",
+          "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8",
+          "request": {
+            "type": "COPY",
+            "scopes": [
+              "TRANSACTIONS"
+            ],
+            "details": "Synthetic business conversation copy; third party text requires manual review"
+          },
+          "current_status": "AWAITING_REVIEW",
+          "object_version": 3,
+          "response_due_on": "2026-12-01",
+          "calendar_version": null,
+          "deadline_basis": "WEEKDAY_ESTIMATE_NEEDS_CALENDAR",
+          "result": null,
+          "proposal": {
+            "files": [
+              {
+                "id": "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6",
+                "byte_size": 407,
+                "media_type": "text/plain",
+                "content_sha256": "6b3bafe5287c4cad212a0fa15b4056e095983e86ef372ebdca5717ee8e3bee2e"
+              }
+            ],
+            "outcome": "INFORMATION_PROVIDED",
+            "response": "Synthetic selected applicant messages reviewed; other content still needs handling",
+            "retentions": [],
+            "remaining_actions": [
+              "Counterparty messages, original files and other fields still require review"
+            ],
+            "evidence_asset_ids": [
+              "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6"
+            ]
+          },
+          "proposal_sha256": "ab0e6250858fd580bfa2e1f27acddcccd5a4c5e548dd40e06464b914a274ef9b",
+          "events": [
+            {
+              "id": "bc4422c1-67a1-49d4-b31f-67bc6d710cf4",
+              "event_code": "SUBMITTED",
+              "object_version": 1,
+              "message": "已收到申请，尚未完成实际处理",
+              "created_at": "2026-11-10T08:07:04.253Z"
+            },
+            {
+              "id": "187dff37-158a-4811-bdc7-49a231b540e2",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2,
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.347Z"
+            },
+            {
+              "id": "1e105ce3-ed56-4215-ae4c-d858b9fb9ee5",
+              "event_code": "PROCESSING",
+              "object_version": 2,
+              "message": "工作人员已开始处理申请",
+              "created_at": "2026-11-10T08:07:04.270Z"
+            },
+            {
+              "id": "b400795d-664d-46ee-bd60-24784569300d",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2,
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.518Z"
+            },
+            {
+              "id": "b9860de3-1487-492d-a791-319a60cf6f34",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2,
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.359Z"
+            },
+            {
+              "id": "21490148-5b58-45b9-9cd9-006e7586f6ca",
+              "event_code": "REVIEW_PENDING",
+              "object_version": 3,
+              "message": "答复已拟好，正在等待另一位工作人员复核",
+              "created_at": "2026-11-10T08:07:04.547Z"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/requests/62af7923-ef1d-4cec-af45-789d31e870ad/evidence/ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6/content",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "9b3fb3e8-5264-4a09-a170-c81453a99805",
+          "actor": {
+            "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "PRIVACY_FILE_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "b4508f48-4189-4d62-8618-d199c81efd7e",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "SELF_REVIEW_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "d547e65c-2b78-4b44-980d-371d175c1b0c",
+          "actor": {
+            "account_id": "fd1d7dfa-28d3-45e2-bd2f-b026b88252c8"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "MANUAL_VERIFICATION_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/review",
+      "schema": "PrivacyRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "6bd0f071-c1c0-4ebf-a494-2daf47cbc5b9",
+          "actor": {
+            "account_id": "fd1d7dfa-28d3-45e2-bd2f-b026b88252c8"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "62af7923-ef1d-4cec-af45-789d31e870ad",
+          "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8",
+          "request": {
+            "type": "COPY",
+            "scopes": [
+              "TRANSACTIONS"
+            ],
+            "details": "Synthetic business conversation copy; third party text requires manual review"
+          },
+          "current_status": "FOLLOW_UP",
+          "object_version": 4,
+          "response_due_on": "2026-12-01",
+          "calendar_version": null,
+          "deadline_basis": "WEEKDAY_ESTIMATE_NEEDS_CALENDAR",
+          "result": {
+            "files": [
+              {
+                "id": "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6",
+                "byte_size": 407,
+                "media_type": "text/plain",
+                "content_sha256": "6b3bafe5287c4cad212a0fa15b4056e095983e86ef372ebdca5717ee8e3bee2e"
+              }
+            ],
+            "outcome": "INFORMATION_PROVIDED",
+            "response": "Synthetic selected applicant messages reviewed; other content still needs handling",
+            "retentions": [],
+            "verification": {
+              "method": "INDEPENDENT_MANUAL_REVIEW",
+              "reason": "Synthetic independent selected content review",
+              "reviewer_account_id": "fd1d7dfa-28d3-45e2-bd2f-b026b88252c8"
+            },
+            "execution_status": "MANUAL_RESPONSE_VERIFIED",
+            "remaining_actions": [
+              "Counterparty messages, original files and other fields still require review"
+            ],
+            "evidence_asset_ids": [
+              "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6"
+            ]
+          },
+          "proposal": {
+            "files": [
+              {
+                "id": "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6",
+                "byte_size": 407,
+                "media_type": "text/plain",
+                "content_sha256": "6b3bafe5287c4cad212a0fa15b4056e095983e86ef372ebdca5717ee8e3bee2e"
+              }
+            ],
+            "outcome": "INFORMATION_PROVIDED",
+            "response": "Synthetic selected applicant messages reviewed; other content still needs handling",
+            "retentions": [],
+            "remaining_actions": [
+              "Counterparty messages, original files and other fields still require review"
+            ],
+            "evidence_asset_ids": [
+              "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6"
+            ]
+          },
+          "proposal_sha256": "ab0e6250858fd580bfa2e1f27acddcccd5a4c5e548dd40e06464b914a274ef9b",
+          "events": [
+            {
+              "id": "bc4422c1-67a1-49d4-b31f-67bc6d710cf4",
+              "event_code": "SUBMITTED",
+              "object_version": 1,
+              "message": "已收到申请，尚未完成实际处理",
+              "created_at": "2026-11-10T08:07:04.253Z"
+            },
+            {
+              "id": "187dff37-158a-4811-bdc7-49a231b540e2",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2,
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.347Z"
+            },
+            {
+              "id": "1e105ce3-ed56-4215-ae4c-d858b9fb9ee5",
+              "event_code": "PROCESSING",
+              "object_version": 2,
+              "message": "工作人员已开始处理申请",
+              "created_at": "2026-11-10T08:07:04.270Z"
+            },
+            {
+              "id": "b400795d-664d-46ee-bd60-24784569300d",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2,
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.518Z"
+            },
+            {
+              "id": "b9860de3-1487-492d-a791-319a60cf6f34",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2,
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.359Z"
+            },
+            {
+              "id": "21490148-5b58-45b9-9cd9-006e7586f6ca",
+              "event_code": "REVIEW_PENDING",
+              "object_version": 3,
+              "message": "答复已拟好，正在等待另一位工作人员复核",
+              "created_at": "2026-11-10T08:07:04.547Z"
+            },
+            {
+              "id": "0d5f93a3-e5ac-4de8-b579-a36d8afdf4df",
+              "event_code": "RESPONSE_AVAILABLE",
+              "object_version": 4,
+              "message": "已有审核后的答复，请同时查看仍待处理的事项",
+              "created_at": "2026-11-10T08:07:04.580Z"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/review",
+      "schema": "PrivacyRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "87b87620-b7be-4e5d-a317-171fa85b789d",
+          "actor": {
+            "account_id": "fd1d7dfa-28d3-45e2-bd2f-b026b88252c8"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "62af7923-ef1d-4cec-af45-789d31e870ad",
+          "events": [
+            {
+              "id": "bc4422c1-67a1-49d4-b31f-67bc6d710cf4",
+              "message": "已收到申请，尚未完成实际处理",
+              "created_at": "2026-11-10T08:07:04.253Z",
+              "event_code": "SUBMITTED",
+              "object_version": 1
+            },
+            {
+              "id": "187dff37-158a-4811-bdc7-49a231b540e2",
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.347Z",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2
+            },
+            {
+              "id": "1e105ce3-ed56-4215-ae4c-d858b9fb9ee5",
+              "message": "工作人员已开始处理申请",
+              "created_at": "2026-11-10T08:07:04.270Z",
+              "event_code": "PROCESSING",
+              "object_version": 2
+            },
+            {
+              "id": "b400795d-664d-46ee-bd60-24784569300d",
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.518Z",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2
+            },
+            {
+              "id": "b9860de3-1487-492d-a791-319a60cf6f34",
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.359Z",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2
+            },
+            {
+              "id": "21490148-5b58-45b9-9cd9-006e7586f6ca",
+              "message": "答复已拟好，正在等待另一位工作人员复核",
+              "created_at": "2026-11-10T08:07:04.547Z",
+              "event_code": "REVIEW_PENDING",
+              "object_version": 3
+            },
+            {
+              "id": "0d5f93a3-e5ac-4de8-b579-a36d8afdf4df",
+              "message": "已有审核后的答复，请同时查看仍待处理的事项",
+              "created_at": "2026-11-10T08:07:04.580Z",
+              "event_code": "RESPONSE_AVAILABLE",
+              "object_version": 4
+            }
+          ],
+          "result": {
+            "files": [
+              {
+                "id": "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6",
+                "byte_size": 407,
+                "media_type": "text/plain",
+                "content_sha256": "6b3bafe5287c4cad212a0fa15b4056e095983e86ef372ebdca5717ee8e3bee2e"
+              }
+            ],
+            "outcome": "INFORMATION_PROVIDED",
+            "response": "Synthetic selected applicant messages reviewed; other content still needs handling",
+            "retentions": [],
+            "verification": {
+              "method": "INDEPENDENT_MANUAL_REVIEW",
+              "reason": "Synthetic independent selected content review",
+              "reviewer_account_id": "fd1d7dfa-28d3-45e2-bd2f-b026b88252c8"
+            },
+            "execution_status": "MANUAL_RESPONSE_VERIFIED",
+            "remaining_actions": [
+              "Counterparty messages, original files and other fields still require review"
+            ],
+            "evidence_asset_ids": [
+              "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6"
+            ]
+          },
+          "request": {
+            "type": "COPY",
+            "scopes": [
+              "TRANSACTIONS"
+            ],
+            "details": "Synthetic business conversation copy; third party text requires manual review"
+          },
+          "proposal": {
+            "files": [
+              {
+                "id": "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6",
+                "byte_size": 407,
+                "media_type": "text/plain",
+                "content_sha256": "6b3bafe5287c4cad212a0fa15b4056e095983e86ef372ebdca5717ee8e3bee2e"
+              }
+            ],
+            "outcome": "INFORMATION_PROVIDED",
+            "response": "Synthetic selected applicant messages reviewed; other content still needs handling",
+            "retentions": [],
+            "remaining_actions": [
+              "Counterparty messages, original files and other fields still require review"
+            ],
+            "evidence_asset_ids": [
+              "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6"
+            ]
+          },
+          "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8",
+          "current_status": "FOLLOW_UP",
+          "deadline_basis": "WEEKDAY_ESTIMATE_NEEDS_CALENDAR",
+          "object_version": 4,
+          "proposal_sha256": "ab0e6250858fd580bfa2e1f27acddcccd5a4c5e548dd40e06464b914a274ef9b",
+          "response_due_on": "2026-12-01",
+          "calendar_version": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/requests/62af7923-ef1d-4cec-af45-789d31e870ad/evidence/ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6/content",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "27ca945a-ef61-43c6-b2f1-6f0a270e4577",
+          "actor": {
+            "account_id": "66e72a37-ab5b-4322-af51-30b126f05e73"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "PRIVACY_REQUEST_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/privacy/requests/62af7923-ef1d-4cec-af45-789d31e870ad/reopen",
+      "schema": "PrivacyRequestResponse",
+      "value": {
+        "meta": {
+          "request_id": "aa8e4651-3978-4177-9ae8-8c75beb85449",
+          "actor": {
+            "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "62af7923-ef1d-4cec-af45-789d31e870ad",
+          "account_id": "a2aad5d5-303a-4a6c-947b-0e212b0e44c8",
+          "request": {
+            "type": "COPY",
+            "scopes": [
+              "TRANSACTIONS"
+            ],
+            "details": "Synthetic business conversation copy; third party text requires manual review"
+          },
+          "current_status": "REOPENED",
+          "object_version": 5,
+          "response_due_on": "2026-12-01",
+          "calendar_version": null,
+          "deadline_basis": "WEEKDAY_ESTIMATE_NEEDS_CALENDAR",
+          "result": {
+            "files": [
+              {
+                "id": "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6",
+                "byte_size": 407,
+                "media_type": "text/plain",
+                "content_sha256": "6b3bafe5287c4cad212a0fa15b4056e095983e86ef372ebdca5717ee8e3bee2e"
+              }
+            ],
+            "outcome": "INFORMATION_PROVIDED",
+            "response": "Synthetic selected applicant messages reviewed; other content still needs handling",
+            "retentions": [],
+            "verification": {
+              "method": "INDEPENDENT_MANUAL_REVIEW",
+              "reason": "Synthetic independent selected content review",
+              "reviewer_account_id": "fd1d7dfa-28d3-45e2-bd2f-b026b88252c8"
+            },
+            "execution_status": "MANUAL_RESPONSE_VERIFIED",
+            "remaining_actions": [
+              "Counterparty messages, original files and other fields still require review"
+            ],
+            "evidence_asset_ids": [
+              "ed194aca-fed7-4a62-bbd4-93bf1ae7e1e6"
+            ]
+          },
+          "events": [
+            {
+              "id": "bc4422c1-67a1-49d4-b31f-67bc6d710cf4",
+              "event_code": "SUBMITTED",
+              "object_version": 1,
+              "message": "已收到申请，尚未完成实际处理",
+              "created_at": "2026-11-10T08:07:04.253Z"
+            },
+            {
+              "id": "187dff37-158a-4811-bdc7-49a231b540e2",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2,
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.347Z"
+            },
+            {
+              "id": "1e105ce3-ed56-4215-ae4c-d858b9fb9ee5",
+              "event_code": "PROCESSING",
+              "object_version": 2,
+              "message": "工作人员已开始处理申请",
+              "created_at": "2026-11-10T08:07:04.270Z"
+            },
+            {
+              "id": "b400795d-664d-46ee-bd60-24784569300d",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2,
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.518Z"
+            },
+            {
+              "id": "b9860de3-1487-492d-a791-319a60cf6f34",
+              "event_code": "COPY_DATA_ACCESSED",
+              "object_version": 2,
+              "message": "工作人员按申请范围读取待人工脱敏的业务消息工作稿：COMMERCIAL/3748a56c-678a-45dd-8c46-18825c5228b2",
+              "created_at": "2026-11-10T08:07:04.359Z"
+            },
+            {
+              "id": "21490148-5b58-45b9-9cd9-006e7586f6ca",
+              "event_code": "REVIEW_PENDING",
+              "object_version": 3,
+              "message": "答复已拟好，正在等待另一位工作人员复核",
+              "created_at": "2026-11-10T08:07:04.547Z"
+            },
+            {
+              "id": "0d5f93a3-e5ac-4de8-b579-a36d8afdf4df",
+              "event_code": "RESPONSE_AVAILABLE",
+              "object_version": 4,
+              "message": "已有审核后的答复，请同时查看仍待处理的事项",
+              "created_at": "2026-11-10T08:07:04.580Z"
+            },
+            {
+              "id": "8b939723-0c6a-4752-ab95-8805d322cf4b",
+              "event_code": "REOPENED",
+              "object_version": 5,
+              "message": "Complete remaining messages and originals",
+              "created_at": "2026-11-10T08:07:04.615Z"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/62af7923-ef1d-4cec-af45-789d31e870ad/business-messages",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "29c6b002-b73f-42e4-9f04-bda6df3e4ed2",
+          "actor": {
+            "account_id": "eaf90253-9f94-4a40-9910-173f116c5ad6"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "PRIVACY_STATE_CONFLICT",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    }
+  ]
+}

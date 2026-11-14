@@ -1,0 +1,499 @@
+{
+  "result": "PASS",
+  "synthetic_only": true,
+  "database": "jx_test_explore_19196_5002e97debf8",
+  "checks": [
+    {
+      "name": "机构公开档案仍展示已审核版，新草稿不覆盖，主图能读取",
+      "result": "PASS",
+      "records": {
+        "party_id": "60f3a830-9dc4-4983-b8b2-e892b617cfce",
+        "approved_id": "b77b0fc0-d833-45bd-a259-1f01acab3d38",
+        "pending_id": "cec6ba33-6d20-46bc-bf2c-ad4bf841e98c",
+        "featured_id": "6988d891-f6d4-4538-b8fa-e64b8cf6bdb9"
+      }
+    },
+    {
+      "name": "精选艺人使用已审公开形象并标明编辑推荐",
+      "result": "PASS",
+      "records": {
+        "party_id": "60f3a830-9dc4-4983-b8b2-e892b617cfce",
+        "approved_id": "b77b0fc0-d833-45bd-a259-1f01acab3d38",
+        "pending_id": "cec6ba33-6d20-46bc-bf2c-ad4bf841e98c",
+        "featured_id": "6988d891-f6d4-4538-b8fa-e64b8cf6bdb9"
+      }
+    },
+    {
+      "name": "样片订单已付款可读取私有成片，确为视频",
+      "result": "PASS",
+      "records": {
+        "order_id": "2a2bd434-59a4-4d0b-ae87-d0f700607dd2",
+        "sha256": "2f996469337427b80f818fec711d43ce538991763b75e9d8376c1e73fd6606d2"
+      }
+    },
+    {
+      "name": "另一个身份不能读取原订单成片",
+      "result": "PASS",
+      "records": {
+        "order_id": "2a2bd434-59a4-4d0b-ae87-d0f700607dd2"
+      }
+    },
+    {
+      "name": "收藏中有真实可打开的测试作品",
+      "result": "PASS",
+      "records": {
+        "role": "stock_buyer",
+        "kind": "STOCK",
+        "target_id": "106d624f-77cc-4d14-a06a-98cbcbf80df1"
+      }
+    },
+    {
+      "name": "开启足迹、记录、清空、旧请求不能写回",
+      "result": "PASS",
+      "records": {}
+    },
+    {
+      "name": "客服补件、处理、答复、关闭、重开保留同一工单记录",
+      "result": "PASS",
+      "records": {
+        "ticket_id": "0beac4cf-7268-418b-bf2a-267b6e4e4400"
+      }
+    },
+    {
+      "name": "客服处理后本人通知可读取",
+      "result": "PASS",
+      "records": {
+        "ticket_id": "0beac4cf-7268-418b-bf2a-267b6e4e4400"
+      }
+    },
+    {
+      "name": "同一订单补全抬头、审核、独立复核、下载明确标注的模拟凭证",
+      "result": "PASS",
+      "records": {
+        "order_id": "2a2bd434-59a4-4d0b-ae87-d0f700607dd2",
+        "invoice_id": "dea585c5-82d8-4c5b-a82b-04ac683aa668",
+        "document_id": "dd3d3c8c-7de5-49b9-b900-3a111b4169d8"
+      }
+    },
+    {
+      "name": "本人合同和作品能关联原现货订单",
+      "result": "PASS",
+      "records": {
+        "order_id": "2a2bd434-59a4-4d0b-ae87-d0f700607dd2"
+      }
+    },
+    {
+      "name": "验证两号码、确认、重新登录后原订单文件、发票和工单均保留，旧登录全部失效",
+      "result": "PASS",
+      "records": {
+        "account_id": "23710466-fc0e-43a2-bf38-95bcf5f2ecd9",
+        "change_id": "dd9ffdab-941d-42ec-97c1-6b831ec2dbfb",
+        "order_id": "2a2bd434-59a4-4d0b-ae87-d0f700607dd2",
+        "invoice_id": "dea585c5-82d8-4c5b-a82b-04ac683aa668",
+        "ticket_id": "0beac4cf-7268-418b-bf2a-267b6e4e4400"
+      }
+    },
+    {
+      "name": "旧号码重新注册只能获得新账号，不能访问原订单",
+      "result": "PASS",
+      "records": {
+        "original_account_id": "23710466-fc0e-43a2-bf38-95bcf5f2ecd9",
+        "new_account_id": "dd7d241c-4d64-489b-b4a3-576e6cc5b0bc"
+      }
+    }
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "path": "/directory/organizations/60f3a830-9dc4-4983-b8b2-e892b617cfce",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/directory/organizations/60f3a830-9dc4-4983-b8b2-e892b617cfce/cover",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/directory/featured-artists",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/2a2bd434-59a4-4d0b-ae87-d0f700607dd2/content",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/2a2bd434-59a4-4d0b-ae87-d0f700607dd2/content",
+      "role": "outsider",
+      "status": 404,
+      "error": "STOCK_NOT_FOUND",
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/me/collections/favorites",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/me/collections/preferences",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/me/collections/preferences",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/me/collections/history",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/me/collections/history",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "DELETE",
+      "path": "/me/collections/history",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/me/collections/history",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/me/collections/history",
+      "role": "stock_buyer",
+      "status": 412,
+      "error": "VERSION_CONFLICT",
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/support/tickets/0beac4cf-7268-418b-bf2a-267b6e4e4400",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "0beac4cf-7268-418b-bf2a-267b6e4e4400"
+    },
+    {
+      "method": "POST",
+      "path": "/support/tickets/0beac4cf-7268-418b-bf2a-267b6e4e4400/actions",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "0beac4cf-7268-418b-bf2a-267b6e4e4400"
+    },
+    {
+      "method": "POST",
+      "path": "/support/operations/tickets/0beac4cf-7268-418b-bf2a-267b6e4e4400/actions",
+      "role": "stock_reviewer",
+      "status": 200,
+      "record_id": "0beac4cf-7268-418b-bf2a-267b6e4e4400"
+    },
+    {
+      "method": "POST",
+      "path": "/support/operations/tickets/0beac4cf-7268-418b-bf2a-267b6e4e4400/actions",
+      "role": "stock_reviewer",
+      "status": 200,
+      "record_id": "0beac4cf-7268-418b-bf2a-267b6e4e4400"
+    },
+    {
+      "method": "POST",
+      "path": "/support/tickets/0beac4cf-7268-418b-bf2a-267b6e4e4400/actions",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "0beac4cf-7268-418b-bf2a-267b6e4e4400"
+    },
+    {
+      "method": "POST",
+      "path": "/support/tickets/0beac4cf-7268-418b-bf2a-267b6e4e4400/actions",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "0beac4cf-7268-418b-bf2a-267b6e4e4400"
+    },
+    {
+      "method": "GET",
+      "path": "/support/tickets/0beac4cf-7268-418b-bf2a-267b6e4e4400/history",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/support/tickets/0beac4cf-7268-418b-bf2a-267b6e4e4400",
+      "role": "outsider",
+      "status": 404,
+      "error": "SUPPORT_NOT_FOUND",
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/operations/notifications/feed",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/invoices/requests/dea585c5-82d8-4c5b-a82b-04ac683aa668",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dea585c5-82d8-4c5b-a82b-04ac683aa668"
+    },
+    {
+      "method": "POST",
+      "path": "/invoices/requests/dea585c5-82d8-4c5b-a82b-04ac683aa668/actions",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dea585c5-82d8-4c5b-a82b-04ac683aa668"
+    },
+    {
+      "method": "POST",
+      "path": "/invoices/operations/requests/dea585c5-82d8-4c5b-a82b-04ac683aa668/actions",
+      "role": "stock_reviewer",
+      "status": 200,
+      "record_id": "dea585c5-82d8-4c5b-a82b-04ac683aa668"
+    },
+    {
+      "method": "POST",
+      "path": "/invoices/operations/requests/dea585c5-82d8-4c5b-a82b-04ac683aa668/actions",
+      "role": "stock_reviewer",
+      "status": 200,
+      "record_id": "dea585c5-82d8-4c5b-a82b-04ac683aa668"
+    },
+    {
+      "method": "GET",
+      "path": "/invoices/requests/dea585c5-82d8-4c5b-a82b-04ac683aa668/documents/dd3d3c8c-7de5-49b9-b900-3a111b4169d8/content",
+      "role": "stock_buyer",
+      "status": 404,
+      "error": "INVOICE_DOCUMENT_NOT_FOUND",
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/invoices/operations/requests/dea585c5-82d8-4c5b-a82b-04ac683aa668/actions",
+      "role": "reviewer",
+      "status": 200,
+      "record_id": "dea585c5-82d8-4c5b-a82b-04ac683aa668"
+    },
+    {
+      "method": "GET",
+      "path": "/invoices/requests/dea585c5-82d8-4c5b-a82b-04ac683aa668/documents/dd3d3c8c-7de5-49b9-b900-3a111b4169d8/content",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/invoices/requests/dea585c5-82d8-4c5b-a82b-04ac683aa668",
+      "role": "outsider",
+      "status": 404,
+      "error": "INVOICE_NOT_FOUND",
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/me/business/contracts?source=TRADE_ORDERS",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/me/business/works?source=STOCK_PURCHASES",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/me/phone-changes",
+      "role": "stock_buyer",
+      "status": 409,
+      "error": "RECENT_LOGIN_REQUIRED",
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sms-challenges",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sessions",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/me/phone-changes",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dd9ffdab-941d-42ec-97c1-6b831ec2dbfb"
+    },
+    {
+      "method": "POST",
+      "path": "/me/phone-changes/dd9ffdab-941d-42ec-97c1-6b831ec2dbfb/challenges",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dd9ffdab-941d-42ec-97c1-6b831ec2dbfb"
+    },
+    {
+      "method": "POST",
+      "path": "/me/phone-changes/dd9ffdab-941d-42ec-97c1-6b831ec2dbfb/challenges",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dd9ffdab-941d-42ec-97c1-6b831ec2dbfb"
+    },
+    {
+      "method": "POST",
+      "path": "/me/phone-changes/dd9ffdab-941d-42ec-97c1-6b831ec2dbfb/verifications",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dd9ffdab-941d-42ec-97c1-6b831ec2dbfb"
+    },
+    {
+      "method": "POST",
+      "path": "/me/phone-changes/dd9ffdab-941d-42ec-97c1-6b831ec2dbfb/challenges",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dd9ffdab-941d-42ec-97c1-6b831ec2dbfb"
+    },
+    {
+      "method": "POST",
+      "path": "/me/phone-changes/dd9ffdab-941d-42ec-97c1-6b831ec2dbfb/challenges",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dd9ffdab-941d-42ec-97c1-6b831ec2dbfb"
+    },
+    {
+      "method": "POST",
+      "path": "/me/phone-changes/dd9ffdab-941d-42ec-97c1-6b831ec2dbfb/verifications",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dd9ffdab-941d-42ec-97c1-6b831ec2dbfb"
+    },
+    {
+      "method": "POST",
+      "path": "/me/phone-changes/dd9ffdab-941d-42ec-97c1-6b831ec2dbfb/confirmation",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dd9ffdab-941d-42ec-97c1-6b831ec2dbfb"
+    },
+    {
+      "method": "GET",
+      "path": "/me",
+      "role": "stock_buyer",
+      "status": 401,
+      "error": "AUTHENTICATION_REQUIRED",
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/me",
+      "role": "stock_buyer",
+      "status": 401,
+      "error": "AUTHENTICATION_REQUIRED",
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sms-challenges",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sessions",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/me/phone-changes/current",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/2a2bd434-59a4-4d0b-ae87-d0f700607dd2/content",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/invoices/requests/dea585c5-82d8-4c5b-a82b-04ac683aa668",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "dea585c5-82d8-4c5b-a82b-04ac683aa668"
+    },
+    {
+      "method": "GET",
+      "path": "/support/tickets/0beac4cf-7268-418b-bf2a-267b6e4e4400",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": "0beac4cf-7268-418b-bf2a-267b6e4e4400"
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sms-challenges",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "POST",
+      "path": "/auth/sessions",
+      "role": "stock_buyer",
+      "status": 200,
+      "record_id": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/2a2bd434-59a4-4d0b-ae87-d0f700607dd2/content",
+      "role": "stock_buyer",
+      "status": 403,
+      "error": "ARTIST_PARTY_FORBIDDEN",
+      "record_id": null
+    }
+  ],
+  "cleanup": "SERVER_STOPPED_CODES_AND_TOKENS_REMOVED_DATA_RETAINED",
+  "limits": [
+    "接口完整办理检查，不代表前端页面或151条全部验收",
+    "内存短信、模拟付款和明确标记的凭证；真实服务均未调用"
+  ]
+}

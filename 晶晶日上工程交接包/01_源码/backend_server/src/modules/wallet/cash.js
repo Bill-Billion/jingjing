@@ -4,10 +4,26 @@ const {error}=require('../party/policy');
 const {digest}=require('../governance/content');
 const A=require('../artists/context'),C=require('./context'),P=require('./policy');
 const active=new Set(['HELD','UNKNOWN','SPENT']);
-function balances(topups,spends){
+function refundReservations(refunds){
+ const held=[];
+ for(const r of refunds){
+  if(!['IN_REVIEW','APPROVED','SUBMITTING','UNKNOWN','SUCCEEDED','REJECTED','CANCELLED','CLOSED'].includes(r.current_status))throw error('WALLET_CASH_INVARIANT',503);
+  if(['APPROVED','SUBMITTING','UNKNOWN'].includes(r.current_status)){
+   P.integer(r.data.amount_minor,1);if(r.parent_id!==r.data.recharge_id)throw error('WALLET_CASH_INVARIANT',503);
+   held.push(r);
+  }
+ }
+ return held;
+}
+function balances(topups,spends,refunds=[]){
  const used=new Map();
  for(const s of spends)if(active.has(s.current_status))for(const a of s.data.allocations){
   const n=a.amount_minor-(a.returned_minor||0);P.integer(n);used.set(a.recharge_id,P.sum([used.get(a.recharge_id)||0,n]));
+ }
+ for(const r of refundReservations(refunds)){
+  const topup=topups.find(t=>t.id===r.parent_id);
+  if(!topup||topup.current_status!=='SUCCEEDED'||digest(topup.data.binding)!==digest(r.data.binding))throw error('WALLET_CASH_INVARIANT',503);
+  used.set(r.parent_id,P.sum([used.get(r.parent_id)||0,r.data.amount_minor]));
  }
  return topups.filter(t=>t.current_status==='SUCCEEDED').map(t=>{
   const available=t.data.amount_minor-t.data.refunded_minor-(used.get(t.id)||0);
@@ -15,8 +31,8 @@ function balances(topups,spends){
   return {id:t.id,binding:t.data.binding,occurred_at:t.data.occurred_at,available_minor:available};
  });
 }
-async function snapshot(tx,party){return balances(await C.rows(tx,party,'RECHARGE'),await C.rows(tx,party,'CASH_SPEND'));}
-async function overview(tx,party){const spends=await C.rows(tx,party,'CASH_SPEND'),topups=await C.rows(tx,party,'RECHARGE'),available=P.sum(balances(topups,spends).map(l=>l.available_minor)),reserved=P.sum(spends.filter(s=>['HELD','UNKNOWN'].includes(s.current_status)).flatMap(s=>s.data.allocations.map(a=>a.amount_minor-a.returned_minor)));return {recorded_balance_minor:P.sum([available,reserved]),available_balance_minor:available,reserved_balance_minor:reserved};}
+async function snapshot(tx,party){return balances(await C.rows(tx,party,'RECHARGE'),await C.rows(tx,party,'CASH_SPEND'),await C.rows(tx,party,'RECHARGE_REFUND'));}
+async function overview(tx,party){const spends=await C.rows(tx,party,'CASH_SPEND'),topups=await C.rows(tx,party,'RECHARGE'),refunds=await C.rows(tx,party,'RECHARGE_REFUND'),available=P.sum(balances(topups,spends,refunds).map(l=>l.available_minor)),reserved=P.sum([...spends.filter(s=>['HELD','UNKNOWN'].includes(s.current_status)).flatMap(s=>s.data.allocations.map(a=>a.amount_minor-a.returned_minor)),...refundReservations(refunds).map(r=>r.data.amount_minor)]);return {recorded_balance_minor:P.sum([available,reserved]),available_balance_minor:available,reserved_balance_minor:reserved};}
 async function find(tx,payment){const r=await A.one(tx,"SELECT * FROM wallet_records WHERE kind='CASH_SPEND' AND source_key=? FOR UPDATE",[digest(['CASH_SPEND',payment])]);if(!r)throw error('WALLET_SPEND_MISSING',409);return C.checked(r);}
 // Runs inside trade.preparePayment: order lock precedes account lock. A trusted adapter supplies binding.
 async function reserve(tx,a,order,payment,config){
@@ -66,4 +82,4 @@ function createCashReconciler(db){return {async observe(proof){
  return C.insert(tx,{id:account.created_by},'CASH_RECONCILIATION',proof.party_id,account.id,balance===proof.available_minor?'MATCHED':'DIFFERENCE',{binding,statement_id:proof.statement_id,observed_at:now,occurred_at:proof.occurred_at,local_available_minor:balance,provider_available_minor:proof.available_minor,proof_sha256:digest(proof),meaning:'OBSERVATION_ONLY_NO_BALANCE_ADJUSTMENT'},source);
  });
  }};}
-module.exports={balances,snapshot,overview,reserve,payment,refund,createCashReconciler};
+module.exports={balances,refundReservations,snapshot,overview,reserve,payment,refund,createCashReconciler};

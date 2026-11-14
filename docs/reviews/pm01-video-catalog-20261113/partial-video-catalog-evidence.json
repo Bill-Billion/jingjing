@@ -1,0 +1,184 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "32992412b94868249844f6534467eaebd7dd461e",
+  "run_id": "pm01-video-catalog-2026-11-13T14-11-02-380Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "VIDEO-CATALOG-PUBLICATION-LIFECYCLE",
+      "acceptance_id": "ACC-DEL-05.04",
+      "name": "视频品类、节日商品集合与推荐位运营发布",
+      "result": "LOCAL_PASS",
+      "scope": "新增视频品类、节日/主题/模板集合、推荐位的版本提交/独审/撤下；来源现货正式价和许可、排序分页、并发单一发布、审计回滚、来源过期/撤权与原订单保留已隔离HTTP验证；同订单撤下推荐后实际HTTP读取原文件字节并校验摘要，来源同意撤回后同接口拒绝",
+      "remaining": "配置界面、真实运营资料/成片与独立签收未完成；本轮集合引用单独销售商品，不新增打包折扣；原旧库58表样本仍缺，真实服务未启用",
+      "actual_checks": [
+        {
+          "name": "empty catalog invents no products; authentication, actor scope and operator permission are enforced",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 24,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 75.8204,
+          "error_code": null
+        },
+        {
+          "name": "configuration rejects executable fields, price overrides, invalid dates and duplicate codes",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 73.7224,
+          "error_code": null
+        },
+        {
+          "name": "independent category publication exposes only reviewed content and never private author metadata",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 38,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 45.6303,
+          "error_code": null
+        },
+        {
+          "name": "holiday collection binds reviewed stock prices, licences and offers; seller cannot approve their own recommendation",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 44,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 460.8768,
+          "error_code": null
+        },
+        {
+          "name": "placement, code and category filters expose only the exact reviewed collection",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 53,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 116.0825,
+          "error_code": null
+        },
+        {
+          "name": "catalog item buys through original stock checkout; removing recommendation preserves paid order and licensed download",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 60,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 149.5044,
+          "error_code": null
+        },
+        {
+          "name": "new immutable versions require review; concurrent drafts cannot silently replace an intervening publication",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 67,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 155.886,
+          "error_code": null
+        },
+        {
+          "name": "category revision invalidates dependent publication until freshly reviewed; withdrawn source can still be rejected",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 75,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 356.1715,
+          "error_code": null
+        },
+        {
+          "name": "source unlisting immediately hides affected product without inventing replacement prices or changing old orders",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 82,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 59.849,
+          "error_code": null
+        },
+        {
+          "name": "scheduled content stays hidden before start and cannot be reviewed after expiry",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 89,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 154.8497,
+          "error_code": null
+        },
+        {
+          "name": "actual source consent withdrawal immediately hides collection and placement and retains the paid contract",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 98,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 186.4128,
+          "error_code": null
+        },
+        {
+          "name": "concurrent replay creates one version, cursor cannot cross filters and changed request keys conflict",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 106,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 99.2237,
+          "error_code": null
+        },
+        {
+          "name": "audit failure rolls back publication and old-version retirement; retry uses the original key",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 113,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 144.3271,
+          "error_code": null
+        },
+        {
+          "name": "revoked operator cannot replay old success or read administration; public content remains available",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 118,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 52.636,
+          "error_code": null
+        },
+        {
+          "name": "operator video categories, holiday collections and placements use reviewed stock through real HTTP",
+          "file": "test/product-catalog.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 16984.5852,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "case": "HOLIDAY_PUBLICATION",
+          "category_id": "642c396e-0858-4bfb-b13c-33a6b77bc8ff",
+          "collection_id": "599eee7a-c55a-41fd-8611-2685591d4390",
+          "listing_ids": [
+            "f104ec9c-f26f-4a80-8960-e53c45d1a25b",
+            "7a0fce9f-358f-4bc7-885d-9b2ca9bc8aab"
+          ],
+          "unit_minor": 100
+        },
+        {
+          "case": "ORIGINAL_CHECKOUT_PRESERVED",
+          "order_id": "5e4e966d-83e1-4631-a549-3d035c5a7888",
+          "contract_sha256": "3dbb47733195721c03ab83bd30422a809161d33b654d40c58fc52c3450e7a681",
+          "paid_minor": 100,
+          "withdrawn_placement_id": "f3c71c92-47d4-448f-8d5c-fee645f15737",
+          "download_status": 200,
+          "download_sha256": "98e552598c4c041ff006bdb1db724d7b180687b923013bc743a2dd56e28d66d7",
+          "download_bytes": 39
+        },
+        {
+          "case": "CONSENT_WITHDRAWAL_BLOCKS_DOWNLOAD",
+          "order_id": "5e4e966d-83e1-4631-a549-3d035c5a7888",
+          "collection_id": "216df5f4-51bc-4b15-b044-bedf3e46b69b",
+          "download_status": 409,
+          "error_code": "STOCK_SALE_CONSENT_REQUIRED"
+        }
+      ]
+    }
+  ]
+}

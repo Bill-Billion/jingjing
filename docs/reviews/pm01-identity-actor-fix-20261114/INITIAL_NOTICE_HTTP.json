@@ -1,0 +1,2443 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "0a770328-e797-4c17-8df2-465d3c8e375a",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": "e7e584dc-340f-4dab-9f96-1c2d804a9b69"
+        },
+        "data": {
+          "id": "bbc2f4db-d89a-4ede-a9e6-c14ebc513ef6",
+          "kind": "NOTICE",
+          "owner_party_id": "e7e584dc-340f-4dab-9f96-1c2d804a9b69",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "68ab1826-49cb-480d-8a59-20b70abdfc25",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "919778c1bfc70d1018fdd8354711776823ca364e809a8385474be4582b0aebda",
+          "data": {
+            "rule_id": "f808651e-6119-46cf-92bd-8a11fa76451b",
+            "rule_sha256": "6ef2f1dacaea2db30da43da25182cca7ad0b4ed28a6651fd135ee96370389164",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/bbc2f4db-d89a-4ede-a9e6-c14ebc513ef6/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "d7ce01e6-e569-47b0-bba8-4c5f3a3c2f7f",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "bbc2f4db-d89a-4ede-a9e6-c14ebc513ef6",
+          "kind": "NOTICE",
+          "owner_party_id": "e7e584dc-340f-4dab-9f96-1c2d804a9b69",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "68ab1826-49cb-480d-8a59-20b70abdfc25",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "b98a6a472a56e9ac016f1507eb4ba260ef9d40c5569118a28ca2df692a789787",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "f808651e-6119-46cf-92bd-8a11fa76451b",
+            "rule_sha256": "6ef2f1dacaea2db30da43da25182cca7ad0b4ed28a6651fd135ee96370389164"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/rules",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "c2bdedc2-7b51-4574-8bfe-10cfad0d9f26",
+          "actor": {
+            "account_id": "18ba3d07-d265-41af-b574-21d314303563"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "18ba3d07-d265-41af-b574-21d314303563",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "b228dd6ef1d4cadf335f4430f13f2275243a0ebf579d3fc62a1fe21fa04cbb11",
+          "data": {
+            "rule": {
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "membership_days": 365,
+              "minimum_levels": {
+                "COMMERCIAL": 1,
+                "DRAMA": 1,
+                "EVENT": 3,
+                "OFFICIAL": null,
+                "PERFORMANCE": 1,
+                "RECRUITMENT": 1
+              },
+              "publishing_policy": "VERIFIED_ADULT_20261111",
+              "submission_days": 30,
+              "terms": "synthetic only; not a published commercial rule",
+              "topup_threshold_minor": 30000,
+              "version": "PM01-20261111"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "822fadd2-125d-482f-bb79-705956e1c2cf",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "error": {
+          "code": "NOTICE_RULE_NOT_EFFECTIVE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/4c448da8-d65a-46b1-9671-87482b8dde20/reviews",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "0d93b5b9-615c-4898-ad35-3597313871c2",
+          "actor": {
+            "account_id": "18ba3d07-d265-41af-b574-21d314303563"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "SELF_REVIEW_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/4c448da8-d65a-46b1-9671-87482b8dde20/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "a76dc607-2944-4940-a2e4-cd46ebadb2ae",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "18ba3d07-d265-41af-b574-21d314303563",
+          "current_status": "EFFECTIVE",
+          "object_version": 2,
+          "content_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+          "data": {
+            "rule": {
+              "terms": "synthetic only; not a published commercial rule",
+              "version": "PM01-20261111",
+              "minimum_levels": {
+                "DRAMA": 1,
+                "EVENT": 3,
+                "OFFICIAL": null,
+                "COMMERCIAL": 1,
+                "PERFORMANCE": 1,
+                "RECRUITMENT": 1
+              },
+              "membership_days": 365,
+              "submission_days": 30,
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "publishing_policy": "VERIFIED_ADULT_20261111",
+              "topup_threshold_minor": 30000
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "business_rule_verified": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/rules",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "188c50a5-e564-4412-acce-a0621d22222c",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+              "content_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+              "rule": {
+                "terms": "synthetic only; not a published commercial rule",
+                "version": "PM01-20261111",
+                "minimum_levels": {
+                  "DRAMA": 1,
+                  "EVENT": 3,
+                  "OFFICIAL": null,
+                  "COMMERCIAL": 1,
+                  "PERFORMANCE": 1,
+                  "RECRUITMENT": 1
+                },
+                "membership_days": 365,
+                "submission_days": 30,
+                "growth_thresholds": [
+                  10000,
+                  50000,
+                  200000,
+                  500000,
+                  1000000
+                ],
+                "publishing_policy": "VERIFIED_ADULT_20261111",
+                "topup_threshold_minor": 30000
+              }
+            },
+            {
+              "id": "f808651e-6119-46cf-92bd-8a11fa76451b",
+              "content_sha256": "6ef2f1dacaea2db30da43da25182cca7ad0b4ed28a6651fd135ee96370389164",
+              "rule": {
+                "terms": "synthetic only; not a published commercial rule",
+                "version": "synthetic-v1",
+                "minimum_levels": {
+                  "DRAMA": 1,
+                  "EVENT": 3,
+                  "OFFICIAL": null,
+                  "COMMERCIAL": 1,
+                  "PERFORMANCE": 1,
+                  "RECRUITMENT": 1
+                },
+                "membership_days": 365,
+                "submission_days": 30,
+                "growth_thresholds": [
+                  10000,
+                  50000,
+                  200000,
+                  500000,
+                  1000000
+                ],
+                "topup_threshold_minor": 30000
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/eligibility",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "8bd0bb51-b905-4229-8d62-bdbb57d14cf9",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "rule_id": "f808651e-6119-46cf-92bd-8a11fa76451b",
+          "rule_sha256": "6ef2f1dacaea2db30da43da25182cca7ad0b4ed28a6651fd135ee96370389164",
+          "active": false,
+          "level": 0,
+          "valid_until": null,
+          "reason": "SCOUT_NOT_ACTIVE",
+          "types": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/eligibility",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "802942eb-d5a7-4b74-9bde-7704cca81718",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+          "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+          "active": true,
+          "level": 0,
+          "types": [
+            "DRAMA",
+            "PERFORMANCE",
+            "COMMERCIAL",
+            "EVENT",
+            "RECRUITMENT"
+          ],
+          "source_ids": [],
+          "valid_until": "2099-01-01T00:00:00.000Z",
+          "reason": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "8f0338de-2cc5-4fea-b26f-32ee43094c92",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "id": "502c101f-5926-4a6a-88c5-d71602846352",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "1506fa751f32380ea7075978f082ff6aef06bbfdf9f56f3677be6276d8855cbd",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "roles": "adult",
+                "synopsis": "synthetic"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "DRAMA",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/502c101f-5926-4a6a-88c5-d71602846352",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "d73af8ed-23a4-4930-8ff6-37f366fec18f",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "NOTICE_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/502c101f-5926-4a6a-88c5-d71602846352/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "4e65f837-8bdc-499f-90d7-0659b9203243",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "502c101f-5926-4a6a-88c5-d71602846352",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "b85b02190f069ec82631f21e9fe80707b04e3e46b71c8fbbc71617f4b803defc",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "DRAMA",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "adult",
+                "synopsis": "synthetic"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/502c101f-5926-4a6a-88c5-d71602846352",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "5156d841-d067-4edd-9ea1-09089916be1e",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "502c101f-5926-4a6a-88c5-d71602846352",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "object_version": 2,
+          "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+          "notice": {
+            "city": "synthetic-city",
+            "type": "DRAMA",
+            "title": "Synthetic film recruitment",
+            "details": {
+              "roles": "adult",
+              "synopsis": "synthetic"
+            },
+            "project_id": null,
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "description": "synthetic only",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "accept_submissions": true
+          },
+          "notice_sha256": "53d7d021eb5992de6f5c0946ecd739445cf7daa56fca88eba9d045b38727a1a3",
+          "official": false,
+          "chat_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "90eba3ba-f41a-45a3-bec1-42ce9a0b53fc",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "id": "85f518b7-2cc8-40a7-9a3b-72aa6978635c",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "9eed72da3795b7bf8dcf66db8fa2ba60d54ac12f0c98cadcb7c115e369da3e20",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": false,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "schedule": "synthetic",
+                "venue": "synthetic"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "PERFORMANCE",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/85f518b7-2cc8-40a7-9a3b-72aa6978635c",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "d41c5746-aa97-45d2-9478-1899b7591890",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "NOTICE_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/85f518b7-2cc8-40a7-9a3b-72aa6978635c/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "a331dbdd-a3aa-44d7-9a55-073466b96171",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "85f518b7-2cc8-40a7-9a3b-72aa6978635c",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "7dca2398afc91dbcfac10eff740be90dd24af4f57a8600f52be820ed0b4cfc6f",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "PERFORMANCE",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "venue": "synthetic",
+                "schedule": "synthetic",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": false
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/85f518b7-2cc8-40a7-9a3b-72aa6978635c",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "523053be-db72-45eb-910a-3a6aec4ded64",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "85f518b7-2cc8-40a7-9a3b-72aa6978635c",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "object_version": 2,
+          "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+          "notice": {
+            "city": "synthetic-city",
+            "type": "PERFORMANCE",
+            "title": "Synthetic film recruitment",
+            "details": {
+              "venue": "synthetic",
+              "schedule": "synthetic",
+              "requirements": "adult"
+            },
+            "project_id": null,
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "description": "synthetic only",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "accept_submissions": false
+          },
+          "notice_sha256": "40f363da364310d780192ace680ec0e9f05d51637a007b25b6a7412a5b1dac89",
+          "official": false,
+          "chat_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "890798df-e4bb-4c95-842a-8f8d157bba59",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "id": "b44322a8-c3a9-4f5b-a8d2-29fa105f07d4",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "200ac6b269f9bf9286b81cf91429d9184609d711b56a9466221b578ddbadf153",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": false,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "deliverables": "synthetic",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "COMMERCIAL",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/b44322a8-c3a9-4f5b-a8d2-29fa105f07d4",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "8b88ca52-4e2e-4bbd-8ad6-43518fa61623",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "NOTICE_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/b44322a8-c3a9-4f5b-a8d2-29fa105f07d4/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "54885560-fe09-43e6-bece-2d45b5b21cd7",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "b44322a8-c3a9-4f5b-a8d2-29fa105f07d4",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "ea80c91341b9a4de8f6f7502e24bc472c987118c2bdfaf2bdfdd1b040869e0e2",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "COMMERCIAL",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "deliverables": "synthetic",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": false
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/b44322a8-c3a9-4f5b-a8d2-29fa105f07d4",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "50eb51a2-d7e2-4881-a621-71596967f0d3",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "b44322a8-c3a9-4f5b-a8d2-29fa105f07d4",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "object_version": 2,
+          "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+          "notice": {
+            "city": "synthetic-city",
+            "type": "COMMERCIAL",
+            "title": "Synthetic film recruitment",
+            "details": {
+              "deliverables": "synthetic",
+              "requirements": "adult"
+            },
+            "project_id": null,
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "description": "synthetic only",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "accept_submissions": false
+          },
+          "notice_sha256": "cc947a9d1d164f377792bb360798c644ee69d0f4ffed1022f288c4765758ffef",
+          "official": false,
+          "chat_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "11a99b14-5475-4e03-afde-f1652d565b85",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "id": "96d68f15-1ee5-4921-8345-6bc0e6f77129",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "ac1dff8eebdc3e179cffe7b0655b0ffb6b8698dd44552b0cd284a72b95170f02",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": false,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "schedule": "synthetic",
+                "venue": "synthetic"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "EVENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/96d68f15-1ee5-4921-8345-6bc0e6f77129",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "5ce89827-6e1b-4b9a-9fc5-ff551826c309",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "NOTICE_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/96d68f15-1ee5-4921-8345-6bc0e6f77129/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "0e7c2ed9-8cc2-4e05-abc8-09e139a681a4",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "96d68f15-1ee5-4921-8345-6bc0e6f77129",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "c9f9ad388dec32c8c4ceccf847b949ab54c02d409c75acce938863ac46591f47",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "EVENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "venue": "synthetic",
+                "schedule": "synthetic"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": false
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/96d68f15-1ee5-4921-8345-6bc0e6f77129",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "adf06495-5172-48c8-b466-0b9ad9e16ffa",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "96d68f15-1ee5-4921-8345-6bc0e6f77129",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "object_version": 2,
+          "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+          "notice": {
+            "city": "synthetic-city",
+            "type": "EVENT",
+            "title": "Synthetic film recruitment",
+            "details": {
+              "venue": "synthetic",
+              "schedule": "synthetic"
+            },
+            "project_id": null,
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "description": "synthetic only",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "accept_submissions": false
+          },
+          "notice_sha256": "3970f5880e67a4666d8e44c2eb7df3631ff1cca1cd2f177b872d81d4960f24f8",
+          "official": false,
+          "chat_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "4babbc59-396c-45f7-98ef-8efc50c71b86",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "id": "a2a775a3-00a1-47d8-9e2a-8ba7e5849067",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/a2a775a3-00a1-47d8-9e2a-8ba7e5849067",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "7aa28b69-7f52-40ff-ba85-b4250223a1fe",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "NOTICE_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/a2a775a3-00a1-47d8-9e2a-8ba7e5849067/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "c8588377-f114-4681-8836-431485f8dca8",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "a2a775a3-00a1-47d8-9e2a-8ba7e5849067",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "06863ab9f012ea4a68a845e74e534615c1231413b301aab3ddee8825a840df05",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/a2a775a3-00a1-47d8-9e2a-8ba7e5849067",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "6fc05ead-8678-4755-9620-0a2283c84cbc",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "a2a775a3-00a1-47d8-9e2a-8ba7e5849067",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "object_version": 2,
+          "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+          "notice": {
+            "city": "synthetic-city",
+            "type": "RECRUITMENT",
+            "title": "Synthetic film recruitment",
+            "details": {
+              "roles": "lead",
+              "requirements": "adult"
+            },
+            "project_id": null,
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "description": "synthetic only",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "accept_submissions": true
+          },
+          "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+          "official": false,
+          "chat_enabled": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/eligibility",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "fb8b9602-b9e8-4e10-b196-3876c491fccc",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "rule_id": "f808651e-6119-46cf-92bd-8a11fa76451b",
+          "rule_sha256": "6ef2f1dacaea2db30da43da25182cca7ad0b4ed28a6651fd135ee96370389164",
+          "active": false,
+          "level": 0,
+          "valid_until": null,
+          "reason": "SCOUT_NOT_ACTIVE",
+          "types": [],
+          "source_ids": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/bbc2f4db-d89a-4ede-a9e6-c14ebc513ef6",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "31d06af8-fb05-4245-bd8f-de9ea0696936",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "NOTICE_PUBLISHER_NOT_ELIGIBLE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "e3dfc6e2-4205-4a30-bc02-6c95c80eca5e",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": "e7e584dc-340f-4dab-9f96-1c2d804a9b69"
+        },
+        "error": {
+          "code": "NOTICE_PUBLISHER_NOT_ELIGIBLE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "743f0814-b633-42c7-b1a7-15af805b79a0",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": "e7e584dc-340f-4dab-9f96-1c2d804a9b69"
+        },
+        "data": {
+          "id": "94a19443-9d26-4469-b673-db3994ed0a77",
+          "kind": "NOTICE",
+          "owner_party_id": "e7e584dc-340f-4dab-9f96-1c2d804a9b69",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "68ab1826-49cb-480d-8a59-20b70abdfc25",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "00686d10-e69e-4a42-b45c-917387028a37",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": "e7e584dc-340f-4dab-9f96-1c2d804a9b69"
+        },
+        "data": {
+          "id": "94a19443-9d26-4469-b673-db3994ed0a77",
+          "kind": "NOTICE",
+          "owner_party_id": "e7e584dc-340f-4dab-9f96-1c2d804a9b69",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "68ab1826-49cb-480d-8a59-20b70abdfc25",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "26e96cb9-d48f-4143-8809-7a25adfcfb0a",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": "e7e584dc-340f-4dab-9f96-1c2d804a9b69"
+        },
+        "error": {
+          "code": "IDEMPOTENCY_CONFLICT",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/records/94a19443-9d26-4469-b673-db3994ed0a77",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "da602d80-72b6-4509-ba79-6eebeddff6af",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": "e7e584dc-340f-4dab-9f96-1c2d804a9b69"
+        },
+        "data": {
+          "id": "94a19443-9d26-4469-b673-db3994ed0a77",
+          "kind": "NOTICE",
+          "owner_party_id": "e7e584dc-340f-4dab-9f96-1c2d804a9b69",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "68ab1826-49cb-480d-8a59-20b70abdfc25",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": null,
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          },
+          "next_action": "VIEW",
+          "chat_enabled": false,
+          "order_id": null,
+          "order_status": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/94a19443-9d26-4469-b673-db3994ed0a77/reviews",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "a7d3c07a-5a57-4490-9a78-3983cb501153",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "NOTICE_OPERATOR_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/94a19443-9d26-4469-b673-db3994ed0a77/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "2cf72a8d-61e5-4ab1-afa2-06b0768bc087",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "94a19443-9d26-4469-b673-db3994ed0a77",
+          "kind": "NOTICE",
+          "owner_party_id": "e7e584dc-340f-4dab-9f96-1c2d804a9b69",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "68ab1826-49cb-480d-8a59-20b70abdfc25",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "06863ab9f012ea4a68a845e74e534615c1231413b301aab3ddee8825a840df05",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/records/94a19443-9d26-4469-b673-db3994ed0a77",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "230fc15b-181a-4601-849f-5960416e781a",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": "e7e584dc-340f-4dab-9f96-1c2d804a9b69"
+        },
+        "data": {
+          "id": "94a19443-9d26-4469-b673-db3994ed0a77",
+          "kind": "NOTICE",
+          "owner_party_id": "e7e584dc-340f-4dab-9f96-1c2d804a9b69",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "68ab1826-49cb-480d-8a59-20b70abdfc25",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "06863ab9f012ea4a68a845e74e534615c1231413b301aab3ddee8825a840df05",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "method": "EXTERNAL_MANUAL_REVIEW",
+              "reason": "synthetic independent review",
+              "decision": "APPROVE",
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+            },
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          },
+          "next_action": "VIEW",
+          "chat_enabled": false,
+          "order_id": null,
+          "order_status": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "bed3cfaa-8876-4e96-880d-40933d0cf5d6",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "id": "94a19443-9d26-4469-b673-db3994ed0a77",
+              "owner_party_id": "e7e584dc-340f-4dab-9f96-1c2d804a9b69",
+              "object_version": 2,
+              "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+              "notice": {
+                "city": "synthetic-city",
+                "type": "RECRUITMENT",
+                "title": "Synthetic film recruitment",
+                "details": {
+                  "roles": "lead",
+                  "requirements": "adult"
+                },
+                "project_id": null,
+                "valid_from": "2020-01-01T00:00:00.000Z",
+                "description": "synthetic only",
+                "valid_until": "2099-01-01T00:00:00.000Z",
+                "accept_submissions": true
+              },
+              "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+              "official": false,
+              "chat_enabled": false
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/records/bbc2f4db-d89a-4ede-a9e6-c14ebc513ef6",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "16073fe5-f7b4-4e57-882f-25c39fe27fab",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": "e7e584dc-340f-4dab-9f96-1c2d804a9b69"
+        },
+        "data": {
+          "id": "bbc2f4db-d89a-4ede-a9e6-c14ebc513ef6",
+          "kind": "NOTICE",
+          "owner_party_id": "e7e584dc-340f-4dab-9f96-1c2d804a9b69",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "68ab1826-49cb-480d-8a59-20b70abdfc25",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "b98a6a472a56e9ac016f1507eb4ba260ef9d40c5569118a28ca2df692a789787",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "method": "EXTERNAL_MANUAL_REVIEW",
+              "reason": "synthetic independent review",
+              "decision": "APPROVE",
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+            },
+            "rule_id": "f808651e-6119-46cf-92bd-8a11fa76451b",
+            "rule_sha256": "6ef2f1dacaea2db30da43da25182cca7ad0b4ed28a6651fd135ee96370389164"
+          },
+          "next_action": "VIEW",
+          "chat_enabled": false,
+          "order_id": null,
+          "order_status": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "08243771-1c47-435e-975e-21a81df08528",
+          "actor": {
+            "account_id": "18ba3d07-d265-41af-b574-21d314303563"
+          },
+          "acting_party": "595d062a-d2e3-4c05-bc3c-8b1d49a6320a"
+        },
+        "error": {
+          "code": "NOTICE_VERIFIED_ADULT_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "5f322a81-7d3e-48b0-8af0-d24938622b43",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "e7e584dc-340f-4dab-9f96-1c2d804a9b69"
+        },
+        "error": {
+          "code": "ARTIST_PARTY_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "fddc356c-ca64-49f1-ba9e-543c16efb100",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "NOTICE_OPERATOR_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "3430144c-0a93-430e-b5b2-0d8dc7cc6a75",
+          "actor": {
+            "account_id": "68ab1826-49cb-480d-8a59-20b70abdfc25"
+          },
+          "acting_party": "e7e584dc-340f-4dab-9f96-1c2d804a9b69"
+        },
+        "error": {
+          "code": "NOTICE_PRIVATE_CONTACT_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "e8c8e431-9b23-4b95-ad42-ee76420cafd8",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "MINOR_OPERATION_RESTRICTED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "dee927aa-3a50-44c1-95b5-a8873ed3b39b",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "error": {
+          "code": "NOTICE_VERIFIED_ADULT_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "1372b2b2-0173-4044-a6b2-f8bc5372697a",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "error": {
+          "code": "NOTICE_VERIFIED_ADULT_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "95c7e1b3-4666-4ed2-9723-dc74ba0d3813",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "error": {
+          "code": "NOTICE_VERIFIED_ADULT_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "3bde3278-6d41-40fb-8d22-a67bffb2905a",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "id": "260bb431-0375-47ab-90fb-2447e7ee98a7",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/260bb431-0375-47ab-90fb-2447e7ee98a7/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "f1acd51a-2f46-46e0-9c73-59f9620e9fe0",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "260bb431-0375-47ab-90fb-2447e7ee98a7",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "REJECTED",
+          "object_version": 2,
+          "content_sha256": "186b283d5ea0bcd3b05f0c42bd8b1c2ad52b0fd3af7692ebab7f2bbf4000e991",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "REJECT",
+              "checks": null,
+              "reason": "synthetic rejection",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/260bb431-0375-47ab-90fb-2447e7ee98a7",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "8718b089-eada-4405-97e4-7154ceef344e",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "NOTICE_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "dbfed37d-3273-41b7-a453-7e56b73dcce6",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "id": "027d401d-6721-4c53-8de4-42cd2872c4e4",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/027d401d-6721-4c53-8de4-42cd2872c4e4/reviews",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "715f9935-f36c-433a-a2cb-e56da47e6622",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "NOTICE_VERIFIED_ADULT_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/records/027d401d-6721-4c53-8de4-42cd2872c4e4",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "30a98225-756e-4ec6-9875-5fe55d70015d",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "data": {
+          "id": "027d401d-6721-4c53-8de4-42cd2872c4e4",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": null,
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          },
+          "next_action": "VIEW",
+          "chat_enabled": false,
+          "order_id": null,
+          "order_status": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/027d401d-6721-4c53-8de4-42cd2872c4e4/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "7f614e03-6f24-4efb-94cd-aff3a321c634",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "027d401d-6721-4c53-8de4-42cd2872c4e4",
+          "kind": "NOTICE",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "06863ab9f012ea4a68a845e74e534615c1231413b301aab3ddee8825a840df05",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/027d401d-6721-4c53-8de4-42cd2872c4e4",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "682486ae-01e1-4254-a603-0bddfe3e56fb",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "ARTIST_PARTY_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/027d401d-6721-4c53-8de4-42cd2872c4e4",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "708cb680-1bc4-4bc6-8801-66f620bed568",
+          "actor": {
+            "account_id": "94be8d50-185d-49d3-bc30-effc4b8da53c"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "027d401d-6721-4c53-8de4-42cd2872c4e4",
+          "owner_party_id": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df",
+          "object_version": 2,
+          "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+          "notice": {
+            "city": "synthetic-city",
+            "type": "RECRUITMENT",
+            "title": "Synthetic film recruitment",
+            "details": {
+              "roles": "lead",
+              "requirements": "adult"
+            },
+            "project_id": null,
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "description": "synthetic only",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "accept_submissions": true
+          },
+          "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+          "official": false,
+          "chat_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "7a0b7231-7a02-4621-bd37-fa6bcaa6cac5",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "f8f107ef-627e-47bd-92bd-023c7f44f2bc"
+        },
+        "error": {
+          "code": "NOTICE_PUBLISHER_NOT_ELIGIBLE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "56c0c4a7-a664-4372-94db-b68a85928ae2",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "1e892eb9-8650-4e6b-b2fb-5cf6b0db21df"
+        },
+        "error": {
+          "code": "NOTICE_PROJECT_MISMATCH",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/e0cb3b9b-064e-41cf-97d9-f72e6b3bdbdd/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "97817079-6228-4a5b-b781-f60fbfdb12e0",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "e0cb3b9b-064e-41cf-97d9-f72e6b3bdbdd",
+          "kind": "QUALIFICATION",
+          "owner_party_id": "f8f107ef-627e-47bd-92bd-023c7f44f2bc",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "APPROVED",
+          "object_version": 2,
+          "content_sha256": "aec9b5788b154ec8162cf469de6ede2f2d566f6b375d4ee51adb1be6cef8d163",
+          "data": {
+            "terms": "synthetic scope",
+            "types": [
+              "RECRUITMENT"
+            ],
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "identity_verified": true,
+                "authority_verified": true,
+                "evidence_verified": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "evidence_asset_ids": [
+              "6e3b4419-8140-4686-a6cd-8e3ee8203b8b"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "108a84d3-c52a-4d05-ac86-69ad3a2dd19a",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "f8f107ef-627e-47bd-92bd-023c7f44f2bc"
+        },
+        "data": {
+          "id": "95371262-a4bc-491d-b2c3-5b6f85351f42",
+          "kind": "NOTICE",
+          "owner_party_id": "f8f107ef-627e-47bd-92bd-023c7f44f2bc",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/95371262-a4bc-491d-b2c3-5b6f85351f42/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "69176653-c51c-41ab-8ab7-bd408166d372",
+          "actor": {
+            "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "95371262-a4bc-491d-b2c3-5b6f85351f42",
+          "kind": "NOTICE",
+          "owner_party_id": "f8f107ef-627e-47bd-92bd-023c7f44f2bc",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "06863ab9f012ea4a68a845e74e534615c1231413b301aab3ddee8825a840df05",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "account_id": "74ea97fd-7aaf-48c1-86ec-d7b86c92db15",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "synthetic independent review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "2cdbbbb0-98fd-4885-baaa-67c2da7051d1",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "f8f107ef-627e-47bd-92bd-023c7f44f2bc"
+        },
+        "data": {
+          "id": "4285efa8-ac31-4a81-b9e2-14b1457725be",
+          "kind": "NOTICE",
+          "owner_party_id": "f8f107ef-627e-47bd-92bd-023c7f44f2bc",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "da2f239c-c32c-4627-b1e9-6350a16e471c",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "f8f107ef-627e-47bd-92bd-023c7f44f2bc"
+        },
+        "data": {
+          "id": "f4a82c96-13c8-442a-a9f8-d0606c87eb2f",
+          "kind": "NOTICE",
+          "owner_party_id": "f8f107ef-627e-47bd-92bd-023c7f44f2bc",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "1a659782-d70b-43fe-a60f-c31b968f64ca",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "f8f107ef-627e-47bd-92bd-023c7f44f2bc"
+        },
+        "data": {
+          "id": "21464a94-5731-47d3-b1b9-bfc936d0f873",
+          "kind": "NOTICE",
+          "owner_party_id": "f8f107ef-627e-47bd-92bd-023c7f44f2bc",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "39ff3658-f51c-466c-b357-2d989d10a6e5",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5",
+          "data": {
+            "rule_id": "4c448da8-d65a-46b1-9671-87482b8dde20",
+            "rule_sha256": "d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "324caa3f-f978-4f03-80b7-039befad4374",
+          "actor": {
+            "account_id": "39ff3658-f51c-466c-b357-2d989d10a6e5"
+          },
+          "acting_party": "f8f107ef-627e-47bd-92bd-023c7f44f2bc"
+        },
+        "error": {
+          "code": "NOTICE_PUBLISHER_NOT_ELIGIBLE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    }
+  ]
+}

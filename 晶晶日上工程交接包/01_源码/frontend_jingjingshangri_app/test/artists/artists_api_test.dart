@@ -11,6 +11,91 @@ import 'artists_fixtures.dart';
 Matcher accountError(String code) =>
     isA<AccountError>().having((e) => e.code, 'code', code);
 void main() {
+  test('公开媒体清单核对分类、主肖像与本次预览范围', () {
+    for (final type in artistMedia.values.toSet()) {
+      final manifest = ArtistPublicMedia.parse(
+          publicMediaData(
+              primary: type.startsWith('image/') ? assetKey : null,
+              items: [publicMediaItemData(type: type)]),
+          listingKey,
+          previewIds: [assetKey]);
+      expect(manifest.items.single.type, type);
+      expect(manifest.portrait != null, type.startsWith('image/'));
+    }
+    final wrongKind = publicMediaItemData()..['media_kind'] = 'AUDIO';
+    final tooLarge = publicMediaItemData()..['byte_size'] = maxArtistBytes + 1;
+    final noHash = publicMediaItemData()..remove('content_sha256');
+    final unknownField = publicMediaItemData()
+      ..['url'] = 'https://invalid.test';
+    for (final item in [
+      wrongKind,
+      tooLarge,
+      noHash,
+      unknownField,
+      publicMediaItemData(type: 'audio/mpeg')
+    ]) {
+      expect(
+          () => ArtistPublicMedia.parse(
+              publicMediaData(items: [item]), listingKey),
+          throwsA(accountError('INVALID_ARTIST_RESPONSE')));
+    }
+    expect(
+        () => ArtistPublicMedia.parse(publicMediaData(), listingKey,
+            previewIds: [recordKey]),
+        throwsA(isA<AccountError>()));
+    expect(
+        () => ArtistPublicMedia.parse(
+            publicMediaData(primary: recordKey), listingKey),
+        throwsA(isA<AccountError>()));
+    expect(
+        () => ArtistPublicMedia.parse(
+            publicMediaData(
+                items: [publicMediaItemData(), publicMediaItemData()]),
+            listingKey),
+        throwsA(isA<AccountError>()));
+  });
+
+  test('公开媒体按账号读取，字节大小或摘要不一致拒绝显示', () async {
+    var content = artistBytes;
+    final a = artistAdapter(override: (r) {
+      if (r.path.endsWith('/media')) return envelope(publicMediaData());
+      if (r.path.endsWith('/content')) {
+        return ResponseBody.fromBytes(content, 200, headers: {
+          'content-type': ['application/octet-stream']
+        });
+      }
+      return null;
+    });
+    final api = ArtistsApi(await artistSession(a));
+    expect(await api.publicPreview(listingKey, assetKey), artistBytes);
+    for (final bytes in [
+      Uint8List.fromList([1]),
+      Uint8List.fromList([4, 3, 2, 1])
+    ]) {
+      content = bytes;
+      await expectLater(api.publicPreview(listingKey, assetKey),
+          throwsA(accountError('PUBLIC_CONTENT_MISMATCH')));
+    }
+    expect(
+        a.requests
+            .where((r) => r.path.contains('/catalog/'))
+            .every((r) => !r.headers.containsKey('X-Acting-Party')),
+        isTrue);
+  });
+
+  test('退出后迟到的公开媒体清单被拒绝', () async {
+    final pending = Completer<ResponseBody>();
+    final a = artistAdapter(
+        override: (r) => r.path.endsWith('/media') ? pending.future : null);
+    final s = await artistSession(a), api = ArtistsApi(s);
+    final result = api.publicMedia(listingKey);
+    final rejected =
+        expectLater(result, throwsA(accountError('CONTEXT_CHANGED')));
+    await s.logout();
+    pending.complete(envelope(publicMediaData()));
+    await rejected;
+  });
+
   test('DTO核对真人、数字人、记录绑定，拒绝跨人或假长期模型', () {
     final p = ArtistPerson.parse(personData());
     expect(() => ArtistAvatar.parse({...avatarData(), 'person_id': orgId}, p),

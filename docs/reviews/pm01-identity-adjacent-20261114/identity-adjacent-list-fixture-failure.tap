@@ -1,0 +1,65 @@
+TAP version 13
+# Subtest: adjacent artist and stock operations require current actor identity
+    # Subtest: verified delegated actor can create an artist-owned look
+    ok 1 - verified delegated actor can create an artist-owned look
+      ---
+      duration_ms: 71.4415
+      type: 'test'
+      ...
+    # Subtest: verified delegated actor can submit a public listing
+    not ok 2 - verified delegated actor can submit a public listing
+      ---
+      duration_ms: 12.5962
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:63:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":400,"meta":{"request_id":"6d498c55-2e6b-467d-bc0d-b07a50c33380","actor":{"account_id":"e8e371ca-b727-454c-ad95-e2b9c59f1db2"},"acting_party":"8f7d8d3b-771b-4269-a669-d273de6af493"},"error":{"code":"INVALID_ARTIST_LIST","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        400 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 400
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:56:23)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:63:89)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:63:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..2
+not ok 1 - adjacent artist and stock operations require current actor identity
+  ---
+  duration_ms: 7576.287
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:6:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(listing)
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:63:171)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+1..1
+# tests 3
+# suites 0
+# pass 1
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7782.9326

@@ -1,0 +1,158 @@
+TAP version 13
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:05.745Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-1","time":"2026-11-14T10:36:05.768Z","level":"info","event":"provider_call_returned"}
+# Subtest: complete long-text moderation uses original private file, durable segment receipts and independent review
+    # Subtest: 600 Unicode characters retain existing single-request behavior
+    ok 1 - 600 Unicode characters retain existing single-request behavior
+      ---
+      duration_ms: 111.6634
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:05.856Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-2","time":"2026-11-14T10:36:05.857Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:05.868Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-3","time":"2026-11-14T10:36:05.868Z","level":"info","event":"provider_call_returned"}
+    # Subtest: 601 characters include the actual tail and require full-file independent review
+    ok 2 - 601 characters include the actual tail and require full-file independent review
+      ---
+      duration_ms: 114.7196
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:05.969Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-4","time":"2026-11-14T10:36:05.969Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:05.981Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-5","time":"2026-11-14T10:36:05.981Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:05.992Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-6","time":"2026-11-14T10:36:05.992Z","level":"info","event":"provider_call_returned"}
+    # Subtest: tail high risk rejects the original whole document and cannot be manually approved
+    ok 3 - tail high risk rejects the original whole document and cannot be manually approved
+      ---
+      duration_ms: 85.2637
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:06.050Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-7","time":"2026-11-14T10:36:06.051Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:06.062Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T10:36:06.062Z","level":"error","event":"provider_call_failed"}
+    # Subtest: unknown second response preserves first receipt and never resends either segment on manual retry
+    not ok 4 - unknown second response preserves first receipt and never resends either segment on manual retry
+      ---
+      duration_ms: 46.9205
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:28:11'
+      failureType: 'testCodeFailure'
+      error: '"[object Object]" is not valid JSON'
+      code: 'ERR_TEST_FAILURE'
+      name: 'SyntaxError'
+      stack: |-
+        JSON.parse (<anonymous>)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:28:465)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:28:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:06.096Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-9","time":"2026-11-14T10:36:06.098Z","level":"info","event":"provider_call_returned"}
+    # Subtest: withdrawn account stops later segments; restored authority resumes only known unsubmitted tail
+    not ok 5 - withdrawn account stops later segments; restored authority resumes only known unsubmitted tail
+      ---
+      duration_ms: 40.9739
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:29:11'
+      failureType: 'testCodeFailure'
+      error: '"[object Object]" is not valid JSON'
+      code: 'ERR_TEST_FAILURE'
+      name: 'SyntaxError'
+      stack: |-
+        JSON.parse (<anonymous>)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:29:490)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:29:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: interrupted final database write recovers all known receipts without new provider requests
+    not ok 6 - interrupted final database write recovers all known receipts without new provider requests
+      ---
+      duration_ms: 2.8524
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:30:11'
+      failureType: 'testCodeFailure'
+      error: 'ACCOUNT_NOT_ACTIVE'
+      code: 'ACCOUNT_NOT_ACTIVE'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        actor (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\repository.js:14:288)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\repository.js:133:114
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async Object.upload (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\assets.js:13:25)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:30:130)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:30:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      ...
+    # Subtest: different response identity and malformed UTF8 never yield a publishable result
+    not ok 7 - different response identity and malformed UTF8 never yield a publishable result
+      ---
+      duration_ms: 2.5526
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:31:11'
+      failureType: 'testCodeFailure'
+      error: 'ACCOUNT_NOT_ACTIVE'
+      code: 'ACCOUNT_NOT_ACTIVE'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        actor (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\repository.js:14:288)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\repository.js:133:114
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async Object.upload (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\assets.js:13:25)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:31:233)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:31:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      ...
+    # Subtest: manual approval rechecks actual original bytes and current owner, not only stored file metadata
+    not ok 8 - manual approval rechecks actual original bytes and current owner, not only stored file metadata
+      ---
+      duration_ms: 2.1109
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:32:11'
+      failureType: 'testCodeFailure'
+      error: 'ACCOUNT_NOT_ACTIVE'
+      code: 'ACCOUNT_NOT_ACTIVE'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        actor (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\repository.js:14:288)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\repository.js:133:114
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async Object.upload (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\assets.js:13:25)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:32:171)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:32:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      ...
+    1..8
+not ok 1 - complete long-text moderation uses original private file, durable segment receipts and independent review
+  ---
+  duration_ms: 7454.4454
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '5 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 9
+# suites 0
+# pass 3
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7650.9162

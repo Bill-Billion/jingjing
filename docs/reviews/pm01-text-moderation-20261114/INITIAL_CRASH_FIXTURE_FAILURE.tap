@@ -1,0 +1,151 @@
+TAP version 13
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.445Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-1","time":"2026-11-14T10:36:33.468Z","level":"info","event":"provider_call_returned"}
+# Subtest: complete long-text moderation uses original private file, durable segment receipts and independent review
+    # Subtest: 600 Unicode characters retain existing single-request behavior
+    ok 1 - 600 Unicode characters retain existing single-request behavior
+      ---
+      duration_ms: 112.9318
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.557Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-2","time":"2026-11-14T10:36:33.558Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.571Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-3","time":"2026-11-14T10:36:33.571Z","level":"info","event":"provider_call_returned"}
+    # Subtest: 601 characters include the actual tail and require full-file independent review
+    ok 2 - 601 characters include the actual tail and require full-file independent review
+      ---
+      duration_ms: 118.1383
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.674Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-4","time":"2026-11-14T10:36:33.675Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.687Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-5","time":"2026-11-14T10:36:33.687Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.697Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-6","time":"2026-11-14T10:36:33.697Z","level":"info","event":"provider_call_returned"}
+    # Subtest: tail high risk rejects the original whole document and cannot be manually approved
+    ok 3 - tail high risk rejects the original whole document and cannot be manually approved
+      ---
+      duration_ms: 87.2342
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.752Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-7","time":"2026-11-14T10:36:33.752Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.764Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T10:36:33.764Z","level":"error","event":"provider_call_failed"}
+    # Subtest: unknown second response preserves first receipt and never resends either segment on manual retry
+    ok 4 - unknown second response preserves first receipt and never resends either segment on manual retry
+      ---
+      duration_ms: 66.2263
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.819Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-9","time":"2026-11-14T10:36:33.821Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.855Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-10","time":"2026-11-14T10:36:33.855Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.865Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-11","time":"2026-11-14T10:36:33.865Z","level":"info","event":"provider_call_returned"}
+    # Subtest: withdrawn account stops later segments; restored authority resumes only known unsubmitted tail
+    ok 5 - withdrawn account stops later segments; restored authority resumes only known unsubmitted tail
+      ---
+      duration_ms: 97.6415
+      type: 'test'
+      ...
+    # Subtest: interrupted final database write recovers all known receipts without new provider requests
+    not ok 6 - interrupted final database write recovers all known receipts without new provider requests
+      ---
+      duration_ms: 12.1028
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:31:11'
+      failureType: 'testCodeFailure'
+      error: "Cannot assign to read only property 'withTransaction' of object '#<Object>'"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:31:292)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:31:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.932Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T10:36:33.932Z","level":"error","event":"provider_call_failed"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.974Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-13","time":"2026-11-14T10:36:33.974Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:36:33.984Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-14","time":"2026-11-14T10:36:33.985Z","level":"info","event":"provider_call_returned"}
+    # Subtest: different response identity and malformed UTF8 never yield a publishable result
+    not ok 7 - different response identity and malformed UTF8 never yield a publishable result
+      ---
+      duration_ms: 99.7556
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:32:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'SUCCEEDED'
+        - 'BLOCKED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'BLOCKED'
+      actual: 'SUCCEEDED'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:32:328)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:32:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: manual approval rechecks actual original bytes and current owner, not only stored file metadata
+    not ok 8 - manual approval rechecks actual original bytes and current owner, not only stored file metadata
+      ---
+      duration_ms: 22.3446
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:33:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'BLOCKED'
+        - 'SUCCEEDED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'SUCCEEDED'
+      actual: 'BLOCKED'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:33:249)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:33:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..8
+not ok 1 - complete long-text moderation uses original private file, durable segment receipts and independent review
+  ---
+  duration_ms: 7805.3406
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '3 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 9
+# suites 0
+# pass 5
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7990.4263

@@ -28,17 +28,18 @@ def render_tasks(board):
               'BLOCKED': '遇到阻碍，见具体任务记录'}
     lines = [
         '# 全部工作安排：谁做什么，怎样算做完', '',
-        '**本侧负责服务器和数据库；队友负责App和网页。** '
-        f'下面共{len(board["tasks"])}组工作，按建设顺序排列。日常看工作名称即可，不需要记编号。', '',
+        '**后端负责人 chengcongcong222负责服务器和数据库；前端负责人 Bill-Billion负责App和网页。** '
+        f'下面共{len(board["tasks"])}条历史与当前任务记录，包含早期建设和后续合同子项，不是同等数量的产品业务组。'
+        '当前完整测试版仍按产品总览的原18组交付，日常看工作名称即可，不需要记编号。', '',
         '这张表记录完整工作范围，逐次成果与待审状态以当前进度为准；各阶段完成部分不等于整组已经验收。'
-        '本侧负责后端，队友负责App与网页，按当前阶段说明协作。'
-        '用户已授权本侧主测完整流程并修复必要页面问题；具体分工以对应工作行和任务记录为准。'
+        '双方按当前阶段说明协作。'
+        '用户最新要求后端负责人 chengcongcong222连续推进后端，禁止开发或修补任何前端任务；旧页面成果保留，具体分工以当前进度和对应任务记录为准。'
         '具体操作见 [双方分工](../collaboration/TEAM_ONBOARDING.md)，'
         '最新成果和限制见 [当前进度](../status/MAINLINE_PROGRESS.md)。', '',
         '表中的“需先完成”指整项工作最后验收前需要的其他成果。'
-        '队友可先整理页面；双方约好数据格式后，可以用明确标注的测试数据做页面，'
+        '前端负责人 Bill-Billion可先整理页面；双方约好数据格式后，可以用明确标注的测试数据做页面，'
         '不必等服务器全部功能结束。测试数据不能冒充真实付款、实名或制作结果。', '',
-        '“本侧／队友”是分工，“尚未接手”是仓库中的实际登记状态。'
+        '负责人按账号明确标注；“尚未接手”是仓库中的实际登记状态，新安排不等于对方已确认。'
         '一项基础工作完成，不代表整个相关业务正式可用，也不代表原有问题都已修复。', ''
     ]
     for stage, title in enumerate(stages):
@@ -47,8 +48,7 @@ def render_tasks(board):
         for t in board['tasks']:
             if t['stage'] != stage:
                 continue
-            who = explanations[t['id']].get('responsibility',
-                '本侧：服务器和数据' if t['stream'] == 'Core' else '队友：App和网页')
+            who = ('后端负责人 ' if t['stream'] == 'Core' else '前端负责人 ') + (t['owner'] or '待认领')
             who += '；已接手' if t['owner'] else '；尚未接手'
             dependencies = '；'.join(names[d] for d in t['dependencies']) or '可独立开始'
             lines.append('|{}|{}|{}|{}|{}|'.format(names[t['id']], who,
@@ -81,6 +81,7 @@ def validate():
             errors.append(msg)
 
     def within_repo(path):
+        check('\\' not in path, 'Repository path must use forward slashes: ' + path)
         p = (ROOT / path).resolve()
         check(p.is_relative_to(ROOT), 'Path escapes repository: ' + path)
         return p
@@ -135,7 +136,12 @@ def validate():
         check(t['stream'] in ('Core', 'Experience'), 'Unknown stream: ' + t['id'])
         prefix = 'core/' if t['stream'] == 'Core' else 'ux/'
         if t['owner']:
-            check(bool(t['branch']) and t['branch'].startswith(prefix), 'Claim must have correct branch: ' + t['id'])
+            cross_stream = (t['stream'] == 'Experience' and t.get('actual_implementer') == t['owner']
+                and t.get('implementation_branch') == t['branch']
+                and bool(t.get('implementation_authority'))
+                and bool(t.get('implementation_scope')) and bool(t.get('evidence')))
+            check(bool(t['branch']) and (t['branch'].startswith(prefix) or
+                cross_stream and t['branch'].startswith('core/')), 'Claim must have correct branch: ' + t['id'])
         check(t['status'] in ('READY', 'PLANNED', 'CLAIMED', 'IN_PROGRESS', 'IN_REVIEW', 'DONE', 'BLOCKED'), 'Unknown status: ' + t['id'])
         if t['status'] in ('CLAIMED', 'IN_PROGRESS', 'IN_REVIEW', 'DONE'):
             check(bool(t['owner']), 'Missing owner: ' + t['id'])

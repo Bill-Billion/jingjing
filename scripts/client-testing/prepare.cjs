@@ -1,14 +1,15 @@
 // Create a private invitation manifest from freshly running, isolated fixtures.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),assert=require('node:assert/strict'),{execFileSync}=require('node:child_process');
-const {sha}=require('./store.cjs');const root=path.resolve(__dirname,'../..');
+const {sha}=require('./store.cjs');const {captureBuildManifest}=require('./build-manifest.cjs');const root=path.resolve(__dirname,'../..');
 const labels={buyer:'客户',outsider:'另一位客户',operator:'受理运营',merchant:'平台报价人',reviewer:'独立审核人',producer:'制作方',artist:'艺人本人',agency:'机构管理人',employee:'机构员工',moderator:'内容审核',finance:'财务审核'};
 const groupNames={story:'故事与报价',artists:'艺人与数字人',delivery:'制作与交付',r05r12:'综合业务',explore:'自由体验'};
-function prepare(files,{port=3490,origin='http://127.0.0.1:3490',folder='client-session',campaign='acceptance',durationMinutes=55}={}){
+function prepare(files,{port=3490,origin='http://127.0.0.1:3490',folder='client-session',campaign='acceptance',durationMinutes=55,expires_at,builds}={}){
  assert(Number.isInteger(durationMinutes)&&durationMinutes>=1&&durationMinutes<=4320);
+ assert(expires_at===undefined||Number.isFinite(Date.parse(expires_at)),'有效期格式无效');
  assert(/^[a-zA-Z0-9-]+$/.test(folder)&&/^[a-zA-Z0-9-]+$/.test(campaign));assert(Number.isSafeInteger(port)&&port>1024&&port<65536);
  const campaignDir=path.join(root,'.local','client-feedback',campaign);fs.mkdirSync(campaignDir,{recursive:true});assert(!fs.existsSync(path.join(campaignDir,'RESTORE_INCOMPLETE')),'恢复尚未完成');const peopleFile=path.join(campaignDir,'people.json');const people=fs.existsSync(peopleFile)?JSON.parse(fs.readFileSync(peopleFile,'utf8')):{};
  const identity=(key,name)=>{if(!people[key])people[key]={id:crypto.randomUUID(),name,code:crypto.randomBytes(24).toString('base64url')};return people[key];};
- const accounts={},routes=[],invites=[],privateInvites=[],proofs=[];let expiry=Date.now()+durationMinutes*60000;
+ const accounts={},routes=[],invites=[],privateInvites=[],proofs=[];let expiry=Math.min(Date.now()+durationMinutes*60000,expires_at===undefined?Infinity:Date.parse(expires_at));
  for(const input of files){const f=fs.realpathSync(input);assert(f.startsWith(fs.realpathSync(path.join(root,'.local'))+path.sep)&&path.basename(f)==='access.json');
    const parent=path.basename(path.dirname(f)),match=/^jx_test_(story|artists|delivery|r05r12|explore)_\d+_[0-9a-f]{12}$/.exec(parent);assert(match,'仅接入已知隔离资料');const group=match[1];
    const data=JSON.parse(fs.readFileSync(f,'utf8')),statusFile=path.join(path.dirname(f),'status.json'),state=JSON.parse(fs.readFileSync(statusFile,'utf8'));
@@ -47,10 +48,11 @@ function prepare(files,{port=3490,origin='http://127.0.0.1:3490',folder='client-
  }
  assert(expiry>Date.now()+120000,'资料即将到期，请重新准备');
  const {id,code}=identity('feedback-reviewer','测试问题负责人');invites.push({id,name:'测试问题负责人',reviewer:true,code_hash:sha(code)});privateInvites.push({name:'测试问题负责人',account:'feedback-reviewer',code});
- const dir=path.join(root,'.local',folder);fs.mkdirSync(dir,{recursive:true});const src=path.join(root,'晶晶日上工程交接包/01_源码');
- const config={synthetic_only:true,version:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),origin,port,expires_at:new Date(expiry).toISOString(),data_dir:path.join(campaignDir,'records'),fixture_files:proofs,accounts,routes,invites,builds:{app:path.join(src,'frontend_jingjingshangri_app/.local/client-web'),workspace:path.join(src,'frontend_ops_workspace/.local/client-web')}};
+ const dir=path.join(root,'.local',folder),src=path.join(root,'晶晶日上工程交接包/01_源码');
+ const config={synthetic_only:true,version:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),origin,port,expires_at:new Date(expiry).toISOString(),data_dir:path.join(campaignDir,'records'),fixture_files:proofs,accounts,routes,invites,builds:builds||{app:path.join(src,'frontend_jingjingshangri_app/.local/client-web'),workspace:path.join(src,'frontend_ops_workspace/.local/client-web')}};
+ config.build_manifest=captureBuildManifest(config.builds,config.version);fs.mkdirSync(dir,{recursive:true});
  fs.writeFileSync(peopleFile,JSON.stringify(people,null,2),{mode:0o600});
  fs.writeFileSync(path.join(dir,'config.json'),JSON.stringify(config,null,2),{flag:'wx',mode:0o600});fs.writeFileSync(path.join(dir,'invitations.json'),JSON.stringify({origin,expires_at:config.expires_at,invites:privateInvites},null,2),{flag:'wx',mode:0o600});
  return {config_file:path.relative(root,path.join(dir,'config.json')),invitations_file:path.relative(root,path.join(dir,'invitations.json')),expires_at:config.expires_at,routes:routes.length,accounts:invites.length,public_access:false};
 }
-module.exports={prepare};if(require.main===module){try{assert(process.argv.length>2);console.log(JSON.stringify(prepare(process.argv.slice(2))));}catch(e){console.error('准备失败：请核对当前隔离资料与剩余时间；已存在的会话不会覆盖。');process.exitCode=1;}}
+module.exports={prepare};if(require.main===module){try{assert(process.argv.length>2);console.log(JSON.stringify(prepare(process.argv.slice(2))));}catch(e){console.error(e.code?.startsWith('BUILD_FREEZE_')?e.message:'准备失败：请核对当前隔离资料与剩余时间；已存在的会话不会覆盖。');process.exitCode=1;}}

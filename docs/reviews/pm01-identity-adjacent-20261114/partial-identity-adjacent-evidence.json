@@ -1,0 +1,205 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "cef668364e071642a0126bc7997a75b9e5c726b0",
+  "run_id": "pm01-identity-adjacent-2026-11-14T13-02-27-743Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "frontend_run": false,
+  "real_services": false,
+  "checks": [
+    {
+      "id": "ADJACENT-ACTOR-IDENTITY-AND-STOCK-PAYMENT",
+      "acceptance_ids": [
+        "ACC-DEL-02.01"
+      ],
+      "name": "艺人相邻入口与现货付款的办事人实名",
+      "result": "LOCAL_PASS",
+      "scope": "新增形象版本、公开展示提交、旧数字人创建及现货下单重放/付款准备，在业务事务与成功重放前核当前办事人实名；指定正常、未实名/过期/拒绝、恢复模拟资格、历史读取与可信到账事实不被抹去已隔离验证。",
+      "remaining": "仅本轮5处业务动作；形象/声音共用实现，本轮新版本反例用LOOK。现货付款准备反例为直接业务仓库，其他指定操作为实际HTTP。全部其他产品付款/发布仍待逐条核，真实身份、端侧及维护者独审未完成；215文件当前完整回归实际运行中，不能计通过。",
+      "actual_checks": {
+        "records": [
+          {
+            "name": "verified delegated actor can create an artist-owned look",
+            "result": "PASS"
+          },
+          {
+            "name": "verified delegated actor can submit a public listing",
+            "result": "PASS"
+          },
+          {
+            "name": "verified organization actor can use compatible legacy creation",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified actor rejects new look",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified actor rejects look replay",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified actor rejects new public listing",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified actor rejects public listing replay",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified actor rejects new legacy avatar",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified actor rejects legacy avatar replay",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified actor retains existing artist reads",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor rejects new look",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor rejects look replay",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor rejects new public listing",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor rejects public listing replay",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor rejects new legacy avatar",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor rejects legacy avatar replay",
+            "result": "PASS"
+          },
+          {
+            "name": "expired actor retains existing artist reads",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor rejects new look",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor rejects look replay",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor rejects new public listing",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor rejects public listing replay",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor rejects new legacy avatar",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor rejects legacy avatar replay",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected actor retains existing artist reads",
+            "result": "PASS"
+          },
+          {
+            "name": "identity recovery returns original results without extra avatars",
+            "result": "PASS"
+          },
+          {
+            "name": "verified stock buyer can place and replay one order",
+            "result": "PASS"
+          },
+          {
+            "name": "verified stock buyer can prepare a payment",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified buyer rejects stock new request",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified buyer rejects stock successful replay",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified buyer cannot prepare a payment on an earlier unpaid order",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified buyer cannot replay payment preparation",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified buyer retains original order read",
+            "result": "PASS"
+          },
+          {
+            "name": "expired buyer rejects stock new request",
+            "result": "PASS"
+          },
+          {
+            "name": "expired buyer rejects stock successful replay",
+            "result": "PASS"
+          },
+          {
+            "name": "expired buyer cannot prepare a payment on an earlier unpaid order",
+            "result": "PASS"
+          },
+          {
+            "name": "expired buyer cannot replay payment preparation",
+            "result": "PASS"
+          },
+          {
+            "name": "expired buyer retains original order read",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected buyer rejects stock new request",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected buyer rejects stock successful replay",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected buyer cannot prepare a payment on an earlier unpaid order",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected buyer cannot replay payment preparation",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected buyer retains original order read",
+            "result": "PASS"
+          },
+          {
+            "name": "buyer identity recovery preserves the original order and contract",
+            "result": "PASS"
+          },
+          {
+            "name": "identity expiry cannot erase a trusted already received payment fact",
+            "result": "PASS"
+          },
+          {
+            "name": "adjacent artist and stock operations require current actor identity",
+            "result": "PASS"
+          }
+        ]
+      }
+    }
+  ]
+}

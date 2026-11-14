@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testsuite name="personal withdrawal and model deletion use real transactions and durable provider results" time="12.326507" disabled="0" errors="0" tests="16" failures="0" skipped="0" hostname="DESKTOP-CCC">
+		<testcase name="only the subject sees model targets; organization and operator cannot act as the subject" time="0.063390" classname="test"/>
+		<testcase name="scope, version, consent ownership and explicit withdrawal are required" time="0.056428" classname="test"/>
+		<testcase name="action-record failure rolls back consent, audit, request and outbox together" time="0.040683" classname="test"/>
+		<testcase name="withdrawal retries are idempotent and authorization is actually unusable" time="0.042368" classname="test"/>
+		<testcase name="deletion and privacy action are atomic; failed recording creates no external job" time="0.045188" classname="test"/>
+		<testcase name="same deletion is queued once; order need not be paid to exercise withdrawal" time="0.058998" classname="test"/>
+		<testcase name="missing provider configuration leaves a visible failure and never calls upstream" time="0.056864" classname="test"/>
+		<testcase name="changed provider account cannot receive a deletion for the former account" time="0.048686" classname="test"/>
+		<testcase name="accepted task and an unconfirmed deletion receipt do not mean deleted" time="0.095153" classname="test"/>
+		<testcase name="verified receipt completes only that model and retry recovers without resubmitting" time="0.085963" classname="test"/>
+		<testcase name="tampered result cannot be exposed as successful deletion" time="0.017421" classname="test"/>
+		<testcase name="personal creation list shows only own training tasks and paginates without exposing provider details" time="0.055815" classname="test"/>
+		<testcase name="waiting and blocked creation remain distinct from a registered or deleted model" time="0.012564" classname="test"/>
+		<testcase name="a subject can discover consent before any model exists and withdraw through the existing action" time="0.039371" classname="test"/>
+		<testcase name="registered late result keeps the model deletion state and never closes the personal request" time="0.021936" classname="test"/>
+		<testcase name="wrong task binding or foreign model cannot be exposed as a personal result" time="0.033360" classname="test"/>
+	</testsuite>
+	<testsuite name="personal copy provides bounded records and actual private bytes without claiming complete fulfilment" time="11.919503" disabled="0" errors="0" tests="9" failures="0" skipped="0" hostname="DESKTOP-CCC">
+		<testcase name="seven categories are explicit; no automatic copy request completion" time="0.101058" classname="test"/>
+		<testcase name="new and legacy authorizations paginate without leaking other people or review internals" time="0.044661" classname="test"/>
+		<testcase name="same ID in two record domains is grouped, not lost between pages" time="0.013332" classname="test"/>
+		<testcase name="model record belongs to consent subject, not to uploader or producer" time="0.141218" classname="test"/>
+		<testcase name="stored authorization corruption cannot become a trusted copy" time="0.022216" classname="test"/>
+		<testcase name="material metadata includes recorded creation and only the applicants own artist link" time="0.064838" classname="test"/>
+		<testcase name="actual file bytes match recorded hash; wrong person, purpose and request scope rejected" time="0.065795" classname="test"/>
+		<testcase name="erased file retains only metadata and cannot be downloaded as a usable original" time="0.030602" classname="test"/>
+		<testcase name="withdrawn access during storage read cannot send bytes to the client" time="0.016169" classname="test"/>
+	</testsuite>
+	<testsuite name="privacy restrictions protect commercial and release evidence across their original download routes" time="13.251287" disabled="0" errors="0" tests="11" failures="0" skipped="0" hostname="DESKTOP-CCC">
+		<testcase name="commercial-evidence becomes unreadable after independently approved restriction and restores only after release" time="0.213690" classname="test"/>
+		<testcase name="commercial-evidence restriction appearing during storage transport blocks returning stale bytes" time="0.122475" classname="test"/>
+		<testcase name="commercial-evidence releasing one of two independent restrictions cannot restore content" time="0.261171" classname="test"/>
+		<testcase name="commercial-evidence losing operator access during storage transport cannot return content" time="0.032197" classname="test"/>
+		<testcase name="release-channel-evidence becomes unreadable after independently approved restriction and restores only after release" time="0.139786" classname="test"/>
+		<testcase name="release-channel-evidence restriction appearing during storage transport blocks returning stale bytes" time="0.101404" classname="test"/>
+		<testcase name="release-channel-evidence releasing one of two independent restrictions cannot restore content" time="0.207162" classname="test"/>
+		<testcase name="release-channel-evidence losing operator access during storage transport cannot return content" time="0.028814" classname="test"/>
+		<testcase name="approved raw-material erasure rechecks a new live avatar reference and keeps stored bytes" time="0.100755" classname="test"/>
+		<testcase name="personal original copy cannot bypass restrictions or grant handlers raw evidence access" time="0.530400" classname="test"/>
+		<testcase name="revoked handling permission cannot execute an approved restriction" time="0.053064" classname="test"/>
+	</testsuite>
+	<testsuite name="reviewed privacy execution changes actual records and preserves unresolved boundaries" time="24.054981" disabled="0" errors="0" tests="16" failures="0" skipped="0" hostname="DESKTOP-CCC">
+		<testcase name="copy only returns own explicitly requested profile and cannot enumerate another account" time="0.025666" classname="test"/>
+		<testcase name="personal copy includes own stories and buyer order index without exposing another person or contract body" time="0.335155" classname="test"/>
+		<testcase name="paid history allows only proven completed buyer work and rejects incomplete work or pending refund" time="0.191289" classname="test"/>
+		<testcase name="correction requires independent approval and actually updates profile" time="0.040599" classname="test"/>
+		<testcase name="deletion lists readable own materials and reviewed policies; referenced files require review" time="0.263253" classname="test"/>
+		<testcase name="missing effective policy cannot authorize deletion" time="0.009460" classname="test"/>
+		<testcase name="file removal is bound to owner and exact storage configuration" time="0.748132" classname="test"/>
+		<testcase name="unknown deletion result remains pending; retry checks same object and records current-object-only result" time="0.032418" classname="test"/>
+		<testcase name="complaint restricts actual download and approved release restores only that restriction" time="0.069970" classname="test"/>
+		<testcase name="closing sole organization owner is blocked and leaves login intact" time="0.023492" classname="test"/>
+		<testcase name="account closure revokes old sessions and personal identity while retaining request evidence" time="0.050178" classname="test"/>
+		<testcase name="lost closure response keeps sessions closed and operators can reconcile the single executed request" time="0.607352" classname="test"/>
+		<testcase name="new closure clock requires verified identity and actual execution before completion" time="0.136189" classname="test"/>
+		<testcase name="stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete" time="0.412657" classname="test"/>
+		<testcase name="HTTP exposes the same scoped proposal, review, execution and export flow" time="0.198162" classname="test"/>
+		<testcase name="restoring an actual older backup requires replaying latest erasure register before access" time="10.497889" classname="test"/>
+	</testsuite>
+	<testsuite name="privacy responses require the actual reviewed files before publication" time="12.909436" disabled="0" errors="0" tests="11" failures="0" skipped="0" hostname="DESKTOP-CCC">
+		<testcase name="a READY metadata row without stored bytes cannot be offered as a delivered copy" time="0.214244" classname="test"/>
+		<testcase name="missing bytes at independent review do not publish; same request recovers after restoration" time="0.123728" classname="test"/>
+		<testcase name="tampered bytes cannot pass even when metadata still looks ready" time="0.054447" classname="test"/>
+		<testcase name="replacing both metadata and bytes cannot reuse the previously submitted digest" time="0.085986" classname="test"/>
+		<testcase name="restricted evidence is blocked both before submission and before approval" time="0.088750" classname="test"/>
+		<testcase name="legacy pending drafts require rejection and resubmission, not silent approval" time="0.082366" classname="test"/>
+		<testcase name="partial delivery remains follow-up; subsequent replies preserve both downloadable versions" time="0.127594" classname="test"/>
+		<testcase name="no failed approval creates a response notification, history or successful command" time="0.076662" classname="test"/>
+		<testcase name="clients cannot forge the server attachment snapshot or submit another operator evidence" time="0.047504" classname="test"/>
+		<testcase name="same application exports actual scoped records, delivers reviewed bytes and reopens without losing history" time="0.663873" classname="test"/>
+		<testsuite name="one material and trade copy stays recoverable and scoped through actual delivery" time="0.529027" disabled="0" errors="0" tests="7" failures="0" skipped="0" hostname="DESKTOP-CCC">
+			<testcase name="real selected rows form the same request file, without other people or provider internals" time="0.008681" classname="test"/>
+			<testcase name="lost submission result uses original key; an unapproved file stays private" time="0.038550" classname="test"/>
+			<testcase name="revoked operator or reviewer cannot recover an old operation or approve" time="0.028652" classname="test"/>
+			<testcase name="missing file blocks review; restoration and lost approval recover one answer only" time="0.051810" classname="test"/>
+			<testcase name="downloaded bytes match the reviewed snapshot and same business identifiers" time="0.020047" classname="test"/>
+			<testcase name="account disabled during file transport cannot receive bytes; restored account can retry" time="0.024587" classname="test"/>
+			<testcase name="reopened follow-up preserves reviewed file without claiming all personal data finished" time="0.030620" classname="test"/>
+		</testsuite>
+	</testsuite>
+	<testsuite name="personal trade copies preserve receipts, refunds and historical contracts" time="11.674545" disabled="0" errors="0" tests="8" failures="0" skipped="0" hostname="DESKTOP-CCC">
+		<testcase name="own buyer and seller paginate; organization membership gives no personal copy" time="0.104515" classname="test"/>
+		<testcase name="gross and refund facts remain separate; no provider secrets or false completion" time="0.075498" classname="test"/>
+		<testcase name="redacted contract has its own checksum; source stays unchanged and unsigned" time="0.021046" classname="test"/>
+		<testcase name="scope, account and cursor isolation apply to every request" time="0.092220" classname="test"/>
+		<testcase name="corrupt records and inconsistent journal fail closed" time="0.050840" classname="test"/>
+		<testcase name="unknown payment and requested refund never become received or refunded money" time="0.075426" classname="test"/>
+		<testcase name="creation, cancellation and payment deadline are actual recorded facts, not settlement timestamps" time="0.105904" classname="test"/>
+		<testcase name="disabled account is rechecked, reads do not complete the privacy request" time="0.011694" classname="test"/>
+	</testsuite>
+	<!-- tests 84 -->
+	<!-- suites 0 -->
+	<!-- pass 84 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 25283.0685 -->
+</testsuites>
