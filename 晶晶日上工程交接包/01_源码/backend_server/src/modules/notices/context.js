@@ -36,10 +36,17 @@ async function artist(tx,a,s,acting,action='SUBMIT_COOPERATION'){
  const p=await A.person(tx,s.person_id);require('../artists/policy').adult(p,await A.now(tx));await A.authorize(tx,a,p,acting,action);await A.avatar(tx,s.avatar_id,p);return p;
 }
 async function rights(tx,s,receiver){const p=await A.person(tx,s.person_id),now=await A.now(tx);require('../artists/policy').adult(p,now);await A.avatar(tx,s.avatar_id,p);const c=await A.load(tx,s.consent_id,'CONSENT');if(c.person_id!==p.id||c.avatar_id!==s.avatar_id||c.current_status!=='APPROVED'||!c.data.purposes.includes('COOPERATION_SUBMISSION')||c.data.grantee_party_id!==receiver||!require('../artists/policy').active(c.data,now))throw error('NOTICE_SUBMISSION_CONSENT_REQUIRED',409);return c;}
+async function buyer(tx,a,party){return require('../party/representatives').authority(tx,a,party,'TRADE');}
+async function partyAccess(tx,a,r,party){
+ if(r.kind==='CASE')return partyAccess(tx,a,await load(tx,r.parent_id,'SUBMISSION','FOR SHARE'),party);
+ const buyerParty=['NOTICE','NOTICE_REVISION'].includes(r.kind)?r.owner_party_id:r.kind==='SUBMISSION'?(r.data.submission.kind==='INVITATION'?r.owner_party_id:r.counterparty_id):null;
+ if(party===buyerParty)return buyer(tx,a,party);
+ return A.owner(tx,a,party);
+}
 async function access(tx,a,r,party){
  if(!party&&r.kind==='CASE')return require('./assignments').access(tx,a,r);
  if(!party){await operator(tx,a,['FACT'].includes(r.kind)?'FINANCE_REVIEW':r.kind==='CASE'?'NOTICE_SUPPORT':'NOTICE_REVIEW');return;}
- await A.owner(tx,a,party);if(![r.owner_party_id,r.counterparty_id].includes(party))throw error('NOTICE_NOT_FOUND',404);
+ await partyAccess(tx,a,r,party);if(![r.owner_party_id,r.counterparty_id].includes(party))throw error('NOTICE_NOT_FOUND',404);
  if(r.kind==='SUBMISSION'){
   if(party===r.counterparty_id&&['IN_REVIEW','REJECTED'].includes(r.current_status))throw error('NOTICE_NOT_FOUND',404);
   const s=r.data.submission;if(party===r.counterparty_id&&s.kind!=='INVITATION'){try{await rights(tx,s,r.counterparty_id);await artist(tx,{id:r.created_by},s,r.owner_party_id);}catch(e){if([403,404,409].includes(e.status))throw error('NOTICE_NOT_FOUND',404);throw e;}}if(s.kind!=='INVITATION'&&party===r.owner_party_id)await artist(tx,a,s,party);
@@ -82,4 +89,4 @@ async function checkQuoteAcceptance(tx,q){
  await currentSubmission(tx,s);
  if(s.parent_id){const n=await load(tx,s.parent_id,'NOTICE','FOR SHARE');if((c.data.quote.notice_revision_id||null)!==(n.data.revision_id||null))throw error('NOTICE_QUOTE_REVISION_CONFLICT',409);}
 }
-module.exports={inviter,invitationSource,checkQuoteAcceptance,checked,load,operator,audit,insert,save,command,liveRule,verifiedPerson,qualification,publisher,liveNotice,artist,rights,access,currentSubmission};
+module.exports={buyer,partyAccess,inviter,invitationSource,checkQuoteAcceptance,checked,load,operator,audit,insert,save,command,liveRule,verifiedPerson,qualification,publisher,liveNotice,artist,rights,access,currentSubmission};

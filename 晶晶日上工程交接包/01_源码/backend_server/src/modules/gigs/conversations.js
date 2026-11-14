@@ -12,7 +12,7 @@ function methods({db,actor,owner,operator,insert,save,command}) {
     if(rel.current_status==='ENDED')await require('./handover').permit(tx,a,i.party_id,o);
     else {const person=await A.one(tx,'SELECT person_id FROM artist_avatar_links WHERE avatar_id=?',[c.avatar_id]);if(person)await require('../engagement/mcn').delegated(tx,a,i.party_id,person.person_id,'COMMERCIAL_MESSAGES');else {await owner(tx,a,i.party_id);await require('../engagement/mcn').member(tx,a,i.party_id,null,'READ_INCOME');}
      const at=await A.now(tx);if(rel.current_status!=='ACTIVE'||rel.data.valid_from>at||rel.data.valid_until<=at)throw error('RELATION_NOT_APPLICABLE',403);}
-   }else await owner(tx,a,i.party_id);
+   }else if(i.party_id===o.buyer_party_id)await require('../party/representatives').authority(tx,a,i.party_id,'TRADE','GIG_PARTY_FORBIDDEN');else await owner(tx,a,i.party_id);
   }else await operator(tx,a);
   if(!await A.one(tx,'SELECT order_id FROM gig_orders WHERE order_id=?',[o.id]))throw error('COMMERCIAL_ORDER_REQUIRED',409);
   const accepted=await G.load(tx,c.offer_id,'OFFER','FOR SHARE');if(accepted.current_status!=='ACCEPTED'||!accepted.data.buyer_accepted_by)throw error('COMMERCIAL_ACCEPTANCE_REQUIRED',409);

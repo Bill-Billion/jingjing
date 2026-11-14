@@ -13,7 +13,7 @@ async function validate(tx,a,n,notice){
  if(n.kind!=='NOTICE'||n.parent_id||n.current_status!=='PUBLISHED')throw error('NOTICE_NOT_OPEN',409);
  if(notice.type!==n.data.notice.type||notice.project_id!==n.data.notice.project_id)throw error('NOTICE_REVISION_SCOPE_INVALID',409);
  if(notice.valid_until<=await A.now(tx))throw error('NOTICE_PERIOD_INVALID',409);
- if(notice.type!=='OFFICIAL')await A.owner(tx,a,n.owner_party_id);
+ if(notice.type!=='OFFICIAL')await C.buyer(tx,a,n.owner_party_id);
  else await C.publisher(tx,n);
  if(notice.project_id){const project=await A.one(tx,"SELECT * FROM project_records WHERE id=? AND kind='PROJECT' FOR SHARE",[notice.project_id]);if(!project||project.owner_party_id!==n.owner_party_id)throw error('NOTICE_PROJECT_MISMATCH',409);}
  await C.publisher(tx,{...n,created_by:notice.type==='OFFICIAL'?a.id:n.created_by,data:{...n.data,notice}});
@@ -75,7 +75,7 @@ function methods(run){return {
    const n=await C.load(tx,i.record_id,'NOTICE','FOR SHARE');await require('../privacy/restrictions').assertUnrestricted(tx,'NOTICE',n.id);
    let owner=false;
    if(!i.party_id){await C.operator(tx,a,'NOTICE_REVIEW');owner=true;}
-   else {await A.owner(tx,a,i.party_id);owner=i.party_id===n.owner_party_id;
+   else {owner=i.party_id===n.owner_party_id;if(owner)await C.buyer(tx,a,i.party_id);else await A.owner(tx,a,i.party_id);
     if(!owner){const rows=(await tx.execute("SELECT * FROM notice_records WHERE kind='SUBMISSION' AND parent_id=? AND owner_party_id=? ORDER BY id",[n.id,i.party_id]))[0];let allowed=false;for(const row of rows){try{await C.access(tx,a,C.checked(row),i.party_id);allowed=true;break;}catch(e){if(![403,404,409].includes(e.status))throw e;}}if(!allowed)throw error('NOTICE_NOT_FOUND',404);}
    }
    const rows=(await tx.execute("SELECT * FROM notice_records WHERE kind='NOTICE_REVISION' AND parent_id=? AND id>? "+(owner?'':"AND current_status='APPROVED' ")+"ORDER BY id LIMIT ?",[n.id,i.after||'',limit+1]))[0];
