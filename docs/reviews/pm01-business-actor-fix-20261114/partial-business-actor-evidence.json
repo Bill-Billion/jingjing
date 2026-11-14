@@ -1,0 +1,277 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "ba7a164eba09326f2ca89f6a7828e37d9d0ff8e5",
+  "run_id": "pm01-business-actor-2026-11-14T15-40-06-228Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "frontend_run": false,
+  "real_services": false,
+  "checks": [
+    {
+      "id": "BUSINESS-ACTOR-CURRENT-IDENTITY",
+      "acceptance_ids": [
+        "ACC-DEL-02.01",
+        "ACC-DEL-04.04",
+        "ACC-DEL-10.03"
+      ],
+      "name": "企业邀约与商单实际办事人实名",
+      "result": "LOCAL_PASS",
+      "scope": "企业邀约新提交/成功重放及独审发送，商单需求提交/重放、独审发布及买方首次接单/成功重放，检查实际办事人当前实名。机构资格及TRADE代表授权不替代本人实名。",
+      "remaining": "仅模拟后端及同次HTTP；新220文件完整仍运行，所需端/实体机、真实身份服务及业务独审未完成。不冒称供给方报价和所有身份组合都已验。",
+      "actual_checks": {
+        "records": [
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "independent support links that invitation to the exact quote, and the representative pays the original company order",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "EXPIRED actual company actor cannot use new commercial request",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "EXPIRED actual company actor cannot use successful request replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "EXPIRED actual company actor cannot use successful commercial acceptance replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "EXPIRED actual company actor may read the old commercial request",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "EXPIRED author prevents independent commercial publication",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "REJECTED actual company actor cannot use new commercial request",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "REJECTED actual company actor cannot use successful request replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "REJECTED actual company actor cannot use successful commercial acceptance replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "REJECTED actual company actor may read the old commercial request",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "REJECTED author prevents independent commercial publication",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "UNVERIFIED actual company actor cannot use new commercial request",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "UNVERIFIED actual company actor cannot use successful request replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "UNVERIFIED actual company actor cannot use successful commercial acceptance replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "UNVERIFIED actual company actor may read the old commercial request",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "UNVERIFIED author prevents independent commercial publication",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "EXPIRED actual company actor cannot freshly accept a commercial offer",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "REJECTED actual company actor cannot freshly accept a commercial offer",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "UNVERIFIED actual company actor cannot freshly accept a commercial offer",
+            "result": "PASS"
+          },
+          {
+            "file": "test/commercial-identity.integration.test.cjs",
+            "name": "commercial buyer current identity gates new requests acceptance replays and actual publication",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "EXPIRED actual representative cannot submit new invitation",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "EXPIRED actual representative cannot submit successful invitation replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "EXPIRED representative retains authorized own pending invitation read",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "EXPIRED actual representative prevents pending invitation review from sending",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "EXPIRED representative can withdraw an existing invitation without restored identity",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "EXPIRED identity recovery permits original successful invitation replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "REJECTED actual representative cannot submit new invitation",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "REJECTED actual representative cannot submit successful invitation replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "REJECTED representative retains authorized own pending invitation read",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "REJECTED actual representative prevents pending invitation review from sending",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "REJECTED representative can withdraw an existing invitation without restored identity",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "REJECTED identity recovery permits original successful invitation replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "UNVERIFIED actual representative cannot submit new invitation",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "UNVERIFIED actual representative cannot submit successful invitation replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "UNVERIFIED representative retains authorized own pending invitation read",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "UNVERIFIED actual representative prevents pending invitation review from sending",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "UNVERIFIED representative can withdraw an existing invitation without restored identity",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "UNVERIFIED identity recovery permits original successful invitation replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "independent support links that invitation to the exact quote, and the representative pays the original company order",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged",
+            "result": "PASS"
+          },
+          {
+            "file": "test/invitation-identity.integration.test.cjs",
+            "name": "current enterprise invitation identity rejects new sending and preserves original order and withdrawal",
+            "result": "PASS"
+          }
+        ]
+      }
+    }
+  ]
+}
