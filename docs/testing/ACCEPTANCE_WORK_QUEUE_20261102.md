@@ -109,7 +109,7 @@
 |ACC-DEL-23.04 偏好与申诉|后端|正常办理、取消/退款/撤回|SC-06（局部）|PARTIAL|
 |ACC-DEL-24.01 默认私有|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-24（局部）；FP-01（局部）|PARTIAL|
 |ACC-DEL-24.02 多模态审核|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
-|ACC-DEL-24.03 标识完整|后端|正常办理、取消/退款/撤回|MEDIA-LABEL-RECEIPT-AND-BYTES（局部）|PARTIAL|
+|ACC-DEL-24.03 标识完整|后端|正常办理、取消/退款/撤回|MEDIA-LABEL-RECEIPT-AND-BYTES（局部）；COVER-LABEL-HTTP-BYTES（局部）|PARTIAL|
 |ACC-DEL-24.04 治理证据|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-25.01 管理不所有|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-25（局部）|PARTIAL|
 |ACC-DEL-25.02 批量经营|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
