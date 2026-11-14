@@ -35,6 +35,12 @@ class ConfigurationTest(unittest.TestCase):
         env={'NODE_ENV':'test','OSS_ENABLED':'false','OSS_REGION':'oss-cn-test','OSS_BUCKET':'test-private-bucket','OSS_ACCESS_KEY_ID':'TESTVALUE','OSS_ACCESS_KEY_SECRET':'TESTVALUE','OSS_ENVIRONMENT':'SANDBOX'}
         storage=next(x for x in audit.audit(env,'sandbox')['groups'] if x['id']=='storage')
         self.assertTrue(storage['configuration_complete']);self.assertIsNone(storage['switch_enabled']);self.assertFalse(storage['real_service_verified'])
+    def test_sms_debug_switches_match_runtime_and_do_not_echo_values(self):
+        for key in ['DEBUG','NODE_DEBUG']:
+            env={k:'TESTVALUE' for k in audit.GROUPS['sms'][1]};env[key]='PRIVATE_SYNTHETIC_DEBUG'
+            report=audit.audit(env,'sandbox');sms=next(x for x in report['groups'] if x['id']=='sms')
+            self.assertFalse(sms['configuration_complete'],key)
+            self.assertNotIn('PRIVATE_SYNTHETIC_DEBUG',json.dumps(report))
     def test_wildcard_origin_is_not_a_valid_explicit_origin(self):
         base=audit.audit({'API_ALLOWED_ORIGINS':'https://*'},'production')['groups'][0]
         self.assertTrue(any('网页来源' in x for x in base['configuration_issues']))
