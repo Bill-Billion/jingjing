@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.74-rc.5
+  version: 0.31.74-rc.6
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -42757,6 +42757,11 @@ components:
               type: integer
               minimum: 1
               maximum: 900000000000
+            returned_minor:
+              type: integer
+              minimum: 0
+              maximum: 900000000000
+              description: Cumulative independently approved returned money. Partial returns retain PAID; RETURNED means the whole original payout was returned. Absent on legacy records.
             destination_asset_id:
               type: string
               format: uuid

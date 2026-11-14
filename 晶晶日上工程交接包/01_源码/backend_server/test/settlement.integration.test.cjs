@@ -288,6 +288,43 @@ test('finance actual HTTP: separately verified receipts, accrual, payouts and co
   assert.equal((await freview({...settlement,object_version:1})).status,412);
  });
  ft(await fc('GET','/agreements?limit=1'),'FinanceListResponse');ft(await fc('GET','/agreements/'+g.id+'/records?kind=PAYOUT&limit=1'),'FinanceListResponse');ft(await fc('GET','/agreements/'+g.id+'/entries?limit=2'),'FinanceEntriesResponse');ft(await fc('GET','/agreements/'+g.id+'/entries?limit=100'),'FinanceEntriesResponse');ft(await fc('GET','/agreements/'+revenue.id+'/entries?limit=100',buyer),'FinanceEntriesResponse');ft(await fc('GET','/records/'+g.id+'/confirmations'),'FinanceConfirmationsResponse');
+ let recoveryFirst,recoverySecond,recoveryStale,recoveryPayout,originalPaidSnapshot;
+ await t.test('refund after verified payout creates recovery due without inventing received money',async()=>{
+  const last=(await db.execute("SELECT id FROM trade_records WHERE order_id=? AND kind='PAYMENT' AND current_status='SUCCEEDED' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.installment_key'))='last'",[order.id]))[0][0];assert.ok(last);
+  let refund=await trade.requestRefund(buyer.ctx,{party_id:buyer.personal_party_id,payment_id:last.id,allocations:[{line_id:'film',amount_minor:2000}],reason:'synthetic recovery case',operation_key:key()});refund=await reviewTrade(refund);await trade.claim(reviewer.ctx,refund.id,null,'REFUND');await trade.applyRefund(refund.id,{...config,refund_id:refund.id,payment_id:last.id,transaction_id:'test.'+last.id,currency:'CNY',amount_minor:2000,status:'SUCCEEDED'});
+  await settle(g,[producer,buyer,outsider]);const row=(await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id);assert.equal(row.accrued_minor,600);assert.equal(row.adjustment_minor,200);assert.equal(row.paid_minor,1000);assert.equal(row.recovery_due_minor,200);
+  recoveryPayout=await fr(payout);assert.equal(recoveryPayout.current_status,'PAID');originalPaidSnapshot=JSON.stringify((await fr(recoveryPayout.data.last_evidence_id)).data);
+ });
+ await t.test('partial recovery remains unreceived until independent review, then posts only the received amount once',async()=>{
+  const url='/payouts/'+payout.id+'/evidence',body=evidenceBody('RETURNED',80,'synthetic.partial-recovery.80'),headers={'Idempotency-Key':key()};
+  assert.equal((await fp(url,recoveryPayout,body,buyer)).status,403);
+  recoveryFirst=ft(await fp(url,recoveryPayout,body,producer,producer.personal_party_id,headers));assert.equal(ft(await fp(url,recoveryPayout,body,producer,producer.personal_party_id,headers)).id,recoveryFirst.id);
+  assert.equal((await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).recovery_due_minor,200);assert.equal((await freview(recoveryFirst,'APPROVED',producer)).status,403);
+  const approveHeaders={'Idempotency-Key':key()},approveBody={decision:'APPROVED',reason:'synthetic independent partial recovery',verification:check};
+  const reviewed=ft(await fp('/records/'+recoveryFirst.id+'/reviews',recoveryFirst,approveBody,reviewer,null,approveHeaders));ft(await fp('/records/'+recoveryFirst.id+'/reviews',recoveryFirst,approveBody,reviewer,null,approveHeaders));
+  recoveryPayout=await fr(payout);assert.equal(recoveryPayout.current_status,'PAID');assert.equal(recoveryPayout.data.returned_minor,80);
+  const row=(await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id);assert.equal(row.paid_minor,920);assert.equal(row.recovery_due_minor,120);
+  assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM finance_entries WHERE source_id=? AND category='PAYOUT_RETURN'",[reviewed.id]))[0][0].n),1);
+ });
+ await t.test('competing partial receipts recheck cumulative amount at approval and preserve the rejected candidate',async()=>{
+  recoverySecond=ft(await fp('/payouts/'+payout.id+'/evidence',recoveryPayout,evidenceBody('RETURNED',120)));
+  recoveryStale=ft(await fp('/payouts/'+payout.id+'/evidence',recoveryPayout,evidenceBody('RETURNED',900)));
+  assert.equal((await fp('/payouts/'+payout.id+'/evidence',recoveryPayout,evidenceBody('RETURNED',921))).status,409);
+  ft(await freview(recoverySecond));const stale=await freview(recoveryStale);assert.equal(stale.status,409);assert.equal(stale.body.error.code,'PAYOUT_EVIDENCE_STALE');assert.equal((await fr(recoveryStale)).current_status,'IN_REVIEW');
+  const row=(await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id);assert.equal(row.paid_minor,800);assert.equal(row.recovery_due_minor,0);assert.equal((await fr(payout)).data.returned_minor,200);
+  ft(await freview(recoveryStale,'REJECTED'));
+ });
+ await t.test('remaining return closes original payout without changing original paid evidence or old settlement',async()=>{
+  recoveryPayout=await fr(payout);const duplicate=ft(await fp('/payouts/'+payout.id+'/evidence',recoveryPayout,evidenceBody('RETURNED',80,'synthetic.partial-recovery.80')));assert.equal((await freview(duplicate)).body.error.code,'EXTERNAL_REFERENCE_ALREADY_USED');
+  assert.equal((await fr(payout)).data.returned_minor,200);assert.equal((await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).paid_minor,800);
+  const remaining=ft(await fp('/payouts/'+payout.id+'/evidence',recoveryPayout,evidenceBody('RETURNED',800)));ft(await freview(remaining));const closed=await fr(payout);assert.equal(closed.current_status,'RETURNED');assert.equal(closed.data.returned_minor,1000);
+  assert.equal((await fp('/payouts/'+payout.id+'/evidence',closed,evidenceBody('RETURNED',1))).status,409);assert.equal((await balances(g)).items.find(x=>x.party_id===outsider.personal_party_id).paid_minor,0);assert.equal(JSON.stringify((await fr(settlement)).data),savedSettlement);
+  const paid=(await db.execute("SELECT * FROM finance_records WHERE kind='PAYOUT_EVIDENCE' AND current_status='APPROVED' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.payout_id'))=? AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.outcome'))='PAID'",[payout.id]))[0];assert.equal(paid.length,1);assert.equal(JSON.stringify(require('../src/modules/settlement/context').dto(paid[0]).data),originalPaidSnapshot);
+  const returned=(await db.execute("SELECT SUM(amount_minor) n FROM finance_entries WHERE agreement_id=? AND category='PAYOUT_RETURN'",[g.id]))[0][0];assert.equal(Number(returned.n),2000);
+  const daily=await db.withTransaction(tx=>require('../src/modules/reconciliation/sources').facts(tx,{business_date:new Date(Date.now()+8*3600000).toISOString().slice(0,10),merchant_party_id:producer.personal_party_id,...config}));
+  const returns=daily.items.filter(x=>[recoveryFirst.id,recoverySecond.id,remaining.id].includes(x.record_id));assert.deepEqual(returns.map(x=>x.amount_minor).sort((a,b)=>a-b),[80,120,800]);assert.ok(returns.every(x=>x.kind==='SPLIT'&&x.direction==='IN'));assert.ok(!daily.items.some(x=>[recoveryStale.id,duplicate.id].includes(x.record_id)));
+  await fs.writeFile(path.resolve(__dirname,'../../../..','.local/partial-recovery-records.json'),JSON.stringify({synthetic_only:true,real_services:false,frontend_run:false,order_id:order.id,agreement_id:g.id,payout_id:payout.id,first_receipt_id:recoveryFirst.id,second_receipt_id:recoverySecond.id,stale_receipt_id:recoveryStale.id,final_receipt_id:remaining.id,original_payout_minor:1000,recovery_due_before:200,first_return_minor:80,remaining_recovery_due:120,second_return_minor:120,recovery_due_after:0,additional_full_bank_return_minor:800,limits:['SANDBOX synthetic trusted payment and bank receipts; no external payment or recovery','Actual HTTP production and finance actions; no current referral commission attribution','Additional 800 return is bank-return compatibility, not an 800 debt claim']},null,2));
+ });
  await t.test('personal income uses posted own shares including payout returns; no other party amounts or estimated revenue',async()=>{
   for(const category of ['contracts','works']){for(const who of [producer,buyer]){const response=await fetch(base.replace('/production','/me/business/'+category),{headers:{Authorization:'Bearer '+who.token,'X-Acting-Party':who.personal_party_id}});const value=await response.json();assert.equal(response.status,200);assert.equal(value.data.partial,false,JSON.stringify(value));fixtures.push({name:'personal-'+category+'-'+who.account_id,schema:'PersonalCenterResponse',value});if(category==='works'){assert.ok(value.data.sections.find(x=>x.source==='PRODUCTION_PROJECTS').items.some(x=>x.record_id===project.id));if(who===producer)assert.ok(value.data.sections.find(x=>x.source==='SUPPLY_WORKS').items.some(x=>x.record_id===work.id));}}}
   for(const who of [producer,outsider,buyer]){
