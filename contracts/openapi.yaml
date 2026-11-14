@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.75-rc.2
+  version: 0.31.75-rc.3
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -4664,7 +4664,8 @@ paths:
               $ref: '#/components/schemas/ProductionProjectRequest'
     get:
       operationId: listProductionProjects
-      summary: 查看本人机构或获分配的制作项目
+      summary: 查看当前有权办理或获分配的制作项目
+      description: 企业买方非负责人须有当前已接受TRADE授权；逐条核权过滤，空页仍可能有下一页。订单代办不授予另一作者私人故事读取权。
       tags:
       - production
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS

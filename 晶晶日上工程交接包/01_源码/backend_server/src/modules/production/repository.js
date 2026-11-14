@@ -21,10 +21,12 @@ function createProductionRepository(db,{resolvePrincipal=async()=>null}={}){
   const m=await member(tx,a,party,false);
   if(![p.data.buyer_party_id,p.data.merchant_party_id,p.data.producer_party_id].includes(party))throw error('PRODUCTION_NOT_FOUND',404);
   if(party===p.data.buyer_party_id){const flow=await require('./customization-state').get(tx,p);if(flow?.manual_sample)await require('../customization/manual-sample').authority(tx,a,flow.manual_sample);}
-  if(role==='buyer'&&(party!==p.data.buyer_party_id||m.role_code!=='OWNER'))throw error('PRODUCTION_BUYER_REQUIRED');
+  const buyerAccess=party===p.data.buyer_party_id&&['read','buyer'].includes(role);
+  if(buyerAccess)await require('../party/representatives').authority(tx,a,party,'TRADE','PRODUCTION_BUYER_REQUIRED');
+  if(role==='buyer'&&party!==p.data.buyer_party_id)throw error('PRODUCTION_BUYER_REQUIRED');
   if(role==='merchant'&&(party!==p.data.merchant_party_id||m.role_code!=='OWNER'))throw error('PRODUCTION_MERCHANT_REQUIRED');
   if(role==='producer'&&(party!==p.data.producer_party_id||a.id!==p.data.assignee_account_id))throw error('PRODUCTION_ASSIGNEE_REQUIRED');
-  if(role==='read'&&m.role_code!=='OWNER'&&a.id!==p.data.assignee_account_id)throw error('PRODUCTION_PARTY_FORBIDDEN');
+  if(role==='read'&&!buyerAccess&&m.role_code!=='OWNER'&&a.id!==p.data.assignee_account_id)throw error('PRODUCTION_PARTY_FORBIDDEN');
  }
  async function audit(tx,a,r,event){const eventId=randomUUID();await tx.execute('INSERT INTO production_audit(id,record_id,actor_account_id,event_code,object_version,data_sha256,request_id) VALUES (?,?,?,?,?,?,?)',[eventId,r.id,a.id,event,r.object_version,digest(r.data),a.request_id]);await require('../operations/events').publishEvent(tx,{domain:'PRODUCTION',record_id:r.id,event_id:eventId,event_code:event,object_version:r.object_version,actor_account_id:a.id});}
  async function insert(tx,a,kind,p,order,status,data){const r={id:randomUUID(),kind,project_id:p,order_id:order,created_by:a.id,current_status:status,object_version:1,content_sha256:digest(data),data};await tx.execute('INSERT INTO production_records(id,kind,project_id,order_id,created_by,current_status,data_json,data_sha256) VALUES (?,?,?,?,?,?,?,?)',[r.id,kind,p,order,a.id,status,JSON.stringify(data),r.content_sha256]);await audit(tx,a,r,kind+'_CREATED');return r;}
@@ -64,7 +66,21 @@ function createProductionRepository(db,{resolvePrincipal=async()=>null}={}){
    try{await tx.execute('INSERT INTO production_order_lines(order_id,line_id,project_id) VALUES (?,?,?)',[order.id,input.line_id,p.id]);}catch(e){if(e.code==='ER_DUP_ENTRY')throw error('PRODUCTION_ALREADY_EXISTS',409);throw e;}return p;
   });});
  },
- async listProjects(ctx,{party_id,after='',limit=20}){if(!Number.isInteger(limit)||limit<1||limit>100)throw error('INVALID_LIST',400);if(after)id(after);return db.withTransaction(async tx=>{const a=await actor(tx,ctx),m=await member(tx,a,party_id,false);const [rows]=await tx.execute("SELECT * FROM production_records WHERE kind='PROJECT' AND id>? AND (JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.buyer_party_id'))=? OR JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.merchant_party_id'))=? OR JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.producer_party_id'))=?) "+(m.role_code==='OWNER'?'':"AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.assignee_account_id'))=? ")+"ORDER BY id LIMIT ?",[after,party_id,party_id,party_id,...(m.role_code==='OWNER'?[]:[a.id]),limit+1]);return {items:rows.slice(0,limit).map(dto),next_cursor:rows.length>limit?rows[limit-1].id:null};});},
+ async listProjects(ctx,{party_id,after='',limit=20}){
+  if(!Number.isInteger(limit)||limit<1||limit>100)throw error('INVALID_LIST',400);if(after)id(after);
+  return db.withTransaction(async tx=>{
+   const a=await actor(tx,ctx),m=await member(tx,a,party_id,false);
+   const [rows]=await tx.execute("SELECT * FROM production_records WHERE kind='PROJECT' AND id>? AND (JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.buyer_party_id'))=? OR JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.merchant_party_id'))=? OR JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.producer_party_id'))=?) "+(m.role_code==='OWNER'?'':"AND (JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.assignee_account_id'))=? OR JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.buyer_party_id'))=?) ")+"ORDER BY id LIMIT ?",[after,party_id,party_id,party_id,...(m.role_code==='OWNER'?[]:[a.id,party_id]),limit+1]);
+   const items=[];
+   for(const row of rows.slice(0,limit)){
+    const p=dto(row);
+    if(m.role_code!=='OWNER')try{await access(tx,a,p,party_id);}catch(e){if([403,404].includes(e.status)||e.code==='PARTY_NOT_ACTIVE')continue;throw e;}
+    items.push(p);
+   }
+   // Cursor advances over scanned rows even if current authority filters the entire page.
+   return {items,next_cursor:rows.length>limit?rows[limit-1].id:null};
+  });
+ },
  async read(ctx,{record_id,party_id}){return db.withTransaction(async tx=>{const a=await actor(tx,ctx),r=await locked(tx,record_id),p=await project(tx,r);await access(tx,a,p,party_id);return r;});},
  async list(ctx,{project_id,party_id,kind,after='',limit=20}){if(!['FILE','VERSION','FEEDBACK','GENERATION','DIGITAL_ASSET'].includes(kind)||!Number.isInteger(limit)||limit<1||limit>100)throw error('INVALID_LIST',400);if(after)id(after);return db.withTransaction(async tx=>{const a=await actor(tx,ctx),p=await locked(tx,project_id,'PROJECT');await access(tx,a,p,party_id);const [rows]=await tx.execute('SELECT * FROM production_records WHERE project_id=? AND kind=? AND id>? ORDER BY id LIMIT ?',[p.id,kind,after,limit+1]);return {items:rows.slice(0,limit).map(dto),next_cursor:rows.length>limit?rows[limit-1].id:null};});},
  async review(ctx,input){shape(input,['record_id','expected_version','decision','reason','verification','operation_key']);if(!Object.hasOwn(input,'verification'))throw error('INVALID_INPUT',400);if(!['APPROVED','REJECTED'].includes(input.decision))throw error('INVALID_REVIEW',400);label(input.reason,2000);return mutate(ctx,input,'REVIEW','reviewer',async(tx,a,r,p,i)=>{

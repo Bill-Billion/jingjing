@@ -31,6 +31,10 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
   const org=await parties.createOrganization(buyer.ctx,{display_name:'合成故事测试机构',operation_key:key()});
   const invite=await parties.inviteMember(buyer.ctx,{party_id:org.party_id,invitee_account_id:member.account_id,expires_at:new Date(Date.now()+3600000).toISOString(),operation_key:key()});
   await parties.respondInvitation(member.ctx,{party_id:org.party_id,invitation_id:invite.invitation_id,decision:'ACCEPT',expected_version:1,operation_key:key()});
+  // Organization story authors need current accepted order authority as well as membership.
+  await db.execute("UPDATE parties SET current_status='ACTIVE' WHERE id=?",[org.party_id]);
+  const representation=await parties.offerRepresentation(buyer.ctx,{party_id:org.party_id,account_id:member.account_id,scope:'TRADE',expires_at:new Date(Date.now()+3600000).toISOString(),operation_key:key()});
+  await parties.actRepresentation(member.ctx,{party_id:org.party_id,representation_id:representation.id,action:'ACCEPT',expected_version:representation.object_version,operation_key:key()});
   const files=new Map();let failAfterPut=false,failBeforePut=false,onRead=null;const storageFactory=()=>({async put(i){if(failBeforePut){failBeforePut=false;throw Object.assign(Error('synthetic write refused'),{code:'PROVIDER_CALL_FAILED',status:503});}files.set(i.key,Buffer.from(i.body));if(failAfterPut){failAfterPut=false;throw Object.assign(new Error('synthetic lost result'),{code:'PROVIDER_UNAVAILABLE',status:503});}},async getBuffer(k){const hook=onRead;onRead=null;if(hook)await hook();return files.get(k);}});
   server=createAccountApi({db,secret,supplyStorageFactory:storageFactory}).listen(0,'127.0.0.1');await new Promise(resolve=>server.once('listening',resolve));
   const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
@@ -129,7 +133,7 @@ test('story intake HTTP, privacy, immutable submissions and rollback in isolated
    const [[versions]]=await db.execute('SELECT COUNT(*) n FROM customization_submissions WHERE request_id=?',[row.id]);assert.equal(Number(versions.n),1);
   });
   await t.test('institution membership does not expose another member\'s private story, even to the institution owner',async()=>{
-   const ownerStory=await make(fullAnswers,buyer,org.party_id),memberStory=await make({story:'普通成员自己的草稿'},member,org.party_id);
+   const ownerStory=await make(fullAnswers,buyer,org.party_id),memberStory=await make({story:'已接受订单授权成员自己的草稿'},member,org.party_id);
    failed(await request('GET','/customization-requests/'+ownerStory.id,member,undefined,org.party_id),404);
    failed(await request('GET','/customization-requests/'+memberStory.id,buyer,undefined,org.party_id),404);
    failed(await save(ownerStory,fullAnswers,member,org.party_id),404);

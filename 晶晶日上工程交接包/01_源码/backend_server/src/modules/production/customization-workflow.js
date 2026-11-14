@@ -11,7 +11,19 @@ function createCustomizationWorkflow(C){
  async function changed(tx,a,p,d,event){await S.put(tx,p,d);return save(tx,a,p,p.current_status,p.data,event);}
  async function lineMoney(tx,p){const [rows]=await tx.execute('SELECT r.*,j.direction FROM trade_journal j JOIN trade_records r ON r.id=j.source_id WHERE j.order_id=?',[p.order_id]);let received=0,refunded=0;for(const r of rows){const d=S.decode(r),n=d.allocations.filter(a=>a.line_id===p.data.line_id).reduce((s,a)=>s+a.amount_minor,0);if(r.direction==='RECEIPT')received+=n;else refunded+=n;}return {received,refunded};}
  async function caseEvidence(tx,p,party,ids){for(const key of ids){const r=await A.one(tx,"SELECT * FROM supply_assets WHERE id=? AND current_status='READY' FOR SHARE",[key]);if(!r||r.owner_party_id!==party||!['REVIEW_EVIDENCE','RIGHTS_EVIDENCE'].includes(r.purpose))throw error('EVIDENCE_NOT_READY',409);}}
- async function storySource(tx,a,p,party){if(!party){await reviewer(tx,a,p);if(!await require('../governance/operator-access').authorizeOperator(tx,{account_id:a.id,action:'CUSTOMIZATION_INTAKE'}))throw error('CUSTOMIZATION_FORBIDDEN',403);}else await access(tx,a,p,party,party===p.data.buyer_party_id?'buyer':a.id===p.data.assignee_account_id?'producer':'merchant');const d=await requireFlow(tx,p);return require('../customization/trade-context').orderedSubmission(tx,d.source,p.data.buyer_party_id,p.order_id);}
+ async function storySource(tx,a,p,party){
+  if(!party){await reviewer(tx,a,p);if(!await require('../governance/operator-access').authorizeOperator(tx,{account_id:a.id,action:'CUSTOMIZATION_INTAKE'}))throw error('CUSTOMIZATION_FORBIDDEN',403);}
+  else await access(tx,a,p,party,party===p.data.buyer_party_id?'buyer':a.id===p.data.assignee_account_id?'producer':'merchant');
+  const d=await requireFlow(tx,p);
+  if(party===p.data.buyer_party_id){
+   const m=await A.one(tx,'SELECT role_code FROM party_memberships WHERE party_id=? AND account_id=? FOR SHARE',[party,a.id]);
+   const r=await A.one(tx,'SELECT created_by FROM customization_requests WHERE id=? FOR SHARE',[d.source.request_id]);
+   // Order delegation permits fulfillment, not another member's private source story.
+   // Preserve pre-existing owner access to the immutable contracted submission.
+   if(m?.role_code!=='OWNER'&&r?.created_by!==a.id)throw error('CUSTOMIZATION_NOT_FOUND',404);
+  }
+  return require('../customization/trade-context').orderedSubmission(tx,d.source,p.data.buyer_party_id,p.order_id);
+ }
  const api={
  async customizationCaseEvidence(ctx,i){shape(i,['record_id','case_id','asset_id','party_id']);return db.withTransaction(async tx=>{const a=await actor(tx,ctx),p=await locked(tx,i.record_id,'PROJECT');const c=(await cases(tx,p)).find(c=>c.id===id(i.case_id));if(!c||!c.data.evidence_asset_ids.includes(id(i.asset_id)))throw error('EVIDENCE_NOT_READY',404);if(i.party_id){await access(tx,a,p,i.party_id,'read');if(i.party_id!==c.data.opened_by_party_id)throw error('EVIDENCE_NOT_READY',404);}else await reviewer(tx,a,p);const asset=await A.one(tx,"SELECT * FROM supply_assets WHERE id=? AND current_status='READY' FOR SHARE",[i.asset_id]);if(!asset||asset.owner_party_id!==c.data.opened_by_party_id)throw error('EVIDENCE_NOT_READY',404);return asset;});},
 

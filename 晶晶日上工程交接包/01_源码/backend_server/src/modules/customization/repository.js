@@ -19,11 +19,12 @@ function createCustomizationRepository(db,{resolvePrincipal=async()=>null,copyri
   return {...a,request_ref:ref(principal.request_id||randomUUID())};
  }
  async function activeParty(tx,partyId){
-  const p=await one(tx,'SELECT id,current_status FROM parties WHERE id=? FOR SHARE',[id(partyId)]);
+  const p=await one(tx,'SELECT id,kind,current_status FROM parties WHERE id=? FOR SHARE',[id(partyId)]);
   if(!p||['SUSPENDED','CLOSED'].includes(p.current_status))throw error('PARTY_NOT_ACTIVE');return p;
  }
  async function member(tx,a,partyId){
-  await activeParty(tx,partyId);
+  const p=await activeParty(tx,partyId);
+  if(p.kind==='ORGANIZATION')return require('../party/representatives').authority(tx,a,partyId,'TRADE','CUSTOMIZATION_FORBIDDEN');
   const m=await one(tx,'SELECT current_status FROM party_memberships WHERE party_id=? AND account_id=? FOR SHARE',[partyId,a.id]);
   if(!m||m.current_status!=='ACTIVE')throw error('CUSTOMIZATION_FORBIDDEN');
  }
