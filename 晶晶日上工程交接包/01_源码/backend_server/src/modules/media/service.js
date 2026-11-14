@@ -11,7 +11,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
  async function actor(ctx){const principal=await resolvePrincipal(ctx);if(!principal)throw error('AUTHENTICATION_REQUIRED',401);const [[a]]=await db.execute("SELECT * FROM identity_accounts WHERE subject_ref=? AND current_status='ACTIVE'",[ref(principal.subject_ref)]);if(!a)throw error('ACCOUNT_NOT_ACTIVE',403);return a;}
  async function source(ctx,i){let r;
   if(i.source_kind==='SUPPLY_ASSET'){r=await supply.assetAccess(ctx,id(i.source_id),id(i.party_id));if(r.owner_party_id!==i.party_id||!['AVATAR_MATERIAL','WORK_CONTENT'].includes(r.purpose))throw error('MEDIA_SOURCE_FORBIDDEN',403);}
-  else if(i.source_kind==='PRODUCTION_VERSION'){const file=await production.content(ctx,{record_id:id(i.source_id),party_id:id(i.party_id),variant:i.variant});await production.assertMediaProducer(ctx,{project_id:file.project_id,party_id:i.party_id});r={id:file.id,project_id:file.project_id,...file.data};}
+  else if(['PRODUCTION_VERSION','PRODUCTION_FILE'].includes(i.source_kind)){const file=await production.processingFile(ctx,{record_id:id(i.source_id),party_id:id(i.party_id),variant:i.variant,source_kind:i.source_kind});r={id:file.id,project_id:file.project_id,...file.data};}
   else throw error('MEDIA_SOURCE_INVALID',400);
   await db.withTransaction(tx=>require('../privacy/restrictions').assertUnrestricted(tx,'ASSET',r.id));return r;
  }
@@ -41,7 +41,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
   const a=await actor(ctx);if(!['APPROVE','REJECT'].includes(i.decision)||typeof i.reason!=='string'||!i.reason.trim()||i.reason.length>1000)throw error('MEDIA_REVIEW_INVALID',400);
   return db.withTransaction(async tx=>{
    const [[r]]=await tx.execute('SELECT * FROM media_tasks WHERE id=? FOR UPDATE',[id(i.task_id)]);if(!r)throw error('MEDIA_TASK_NOT_FOUND',404);
-   const grant=r.source_kind==='PRODUCTION_VERSION'?'PRODUCTION_REVIEW':'SUPPLY_REVIEW_CONTENT';
+   const grant=r.source_kind==='SUPPLY_ASSET'?'SUPPLY_REVIEW_CONTENT':'PRODUCTION_REVIEW';
    if(!await require('../governance/operator-access').authorizeOperator(tx,{account_id:a.id,action:grant}))throw error('MEDIA_REVIEW_FORBIDDEN',403);
    const [[member]]=await tx.execute("SELECT id FROM party_memberships WHERE account_id=? AND party_id=? AND current_status='ACTIVE' FOR SHARE",[a.id,r.party_id]);if(a.id===r.account_id||member)throw error('SELF_REVIEW_FORBIDDEN',403);
    if(r.task_kind!=='MODERATE_FILE'||r.current_status!=='EXECUTED'||!r.result_json)throw error('MODERATION_RESULT_REQUIRED',409);
@@ -56,7 +56,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
    await tx.execute('UPDATE media_tasks SET result_json=?,result_sha256=? WHERE id=?',[JSON.stringify(next),digest(next),r.id]);return dto({...r,result_json:next,result_sha256:digest(next)},tx);
   });
  },
- async readForReview(ctx,key){const a=await actor(ctx);return db.withTransaction(async tx=>{const [[r]]=await tx.execute('SELECT * FROM media_tasks WHERE id=?',[id(key)]);if(!r)throw error('MEDIA_TASK_NOT_FOUND',404);const grant=r.source_kind==='PRODUCTION_VERSION'?'PRODUCTION_REVIEW':'SUPPLY_REVIEW_CONTENT';if(!await require('../governance/operator-access').authorizeOperator(tx,{account_id:a.id,action:grant}))throw error('MEDIA_REVIEW_FORBIDDEN',403);return dto(r,tx);});},
+ async readForReview(ctx,key){const a=await actor(ctx);return db.withTransaction(async tx=>{const [[r]]=await tx.execute('SELECT * FROM media_tasks WHERE id=?',[id(key)]);if(!r)throw error('MEDIA_TASK_NOT_FOUND',404);const grant=r.source_kind==='SUPPLY_ASSET'?'SUPPLY_REVIEW_CONTENT':'PRODUCTION_REVIEW';if(!await require('../governance/operator-access').authorizeOperator(tx,{account_id:a.id,action:grant}))throw error('MEDIA_REVIEW_FORBIDDEN',403);return dto(r,tx);});},
  async run(job){
   let r;
   async function fenced(tx){const [[lease]]=await tx.execute("SELECT id FROM platform_jobs WHERE id=? AND status='RUNNING' AND lease_token=? AND lease_owner=? AND lease_until>CURRENT_TIMESTAMP(6) FOR UPDATE",[job.id,job.lease_token,job.lease_owner]);if(!lease)throw error('LEASE_LOST',409);const [[row]]=await tx.execute('SELECT * FROM media_tasks WHERE id=? AND job_id=? FOR UPDATE',[job.payload_ref,job.id]);if(!row)throw error('MEDIA_TASK_NOT_FOUND',404);return row;}

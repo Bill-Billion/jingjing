@@ -28,6 +28,8 @@
 
 ## 文件处理与机审
 
+制作文件先经原上传接口保存READY，再用 `/api/v1/media/tasks` 的 `source_kind=PRODUCTION_FILE`、`source_id=文件编号` 处理；只允许当前被指派制作方，不能绕过项目、付款和授权。标识任务输出新文件编号，须审核这个实际输出文件，再分别把final/preview文件提交版本。PRODUCTION_VERSION旧入口仍限制作方处理，买方下载不能使用处理入口。需迁移0222；旧凭据不会自动补齐。交付审核、确认和下载均重核当前规则，凭据撤回或规则改变后先补有效处理证据；历史验收记录保留。
+
 后台开关MEDIA_WORKER_ENABLED。本地转码配置MEDIA_FFMPEG、MEDIA_FFPROBE、MEDIA_FONT_FILE都为绝对路径，MEDIA_PROCESSOR_REVISION用于登记此次工具配置。必须先准备可用字体及经维护的FFmpeg版本；进程只读本地协议，限制输入大小、时长、输出大小与运行时间，临时目录在退出后清理。
 
 已审核media.processing规则中，media_processing包含ai_label、preview_label、require_marking、require_moderation、provider_code。不得对不适用AI标识的视频误标，正式范围先审核。规则启用后，现货与制作提交必须拿到对应文件、规则及预览/正式类型的处理凭据；人工勾选不能替代缺少的文件凭据。
