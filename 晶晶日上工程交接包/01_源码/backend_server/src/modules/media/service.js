@@ -52,6 +52,8 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
    const rule=await P.load(tx,request.policy.id);if(rule.sha256!==result.policy_sha256)throw error('MEDIA_CONFIGURATION_CHANGED',409);
    const [[owner]]=await tx.execute("SELECT id FROM identity_accounts WHERE id=? AND current_status='ACTIVE' FOR SHARE",[r.account_id]);if(!owner)throw error('ACCOUNT_NOT_ACTIVE',403);
    const [[file]]=await tx.execute('SELECT * FROM '+(r.source_kind==='SUPPLY_ASSET'?'supply_assets':'production_records')+' WHERE id=? FOR SHARE',[result.file_id]);if(!file||file.current_status!=='READY'||(r.source_kind==='SUPPLY_ASSET'?file.content_sha256:checked(file.data_json,file.data_sha256).content_sha256)!==result.output_sha256)throw error('MEDIA_SOURCE_CHANGED',409);
+   await require('../privacy/restrictions').assertUnrestricted(tx,'ASSET',file.id);
+   await readBody(r.source_kind==='SUPPLY_ASSET'?file:{id:file.id,...checked(file.data_json,file.data_sha256)});
    const next={...result,automated_decision:'REVIEW',decision:i.decision==='APPROVE'?'PASS':'REJECT',manual_review:{account_id:a.id,decision:i.decision,reason:i.reason,operation_key:operation}};
    await tx.execute('UPDATE media_tasks SET result_json=?,result_sha256=? WHERE id=?',[JSON.stringify(next),digest(next),r.id]);return dto({...r,result_json:next,result_sha256:digest(next)},tx);
   });
@@ -63,13 +65,21 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
   try{
    r=await db.withTransaction(fenced);if(r.current_status==='EXECUTED')return {status:'SUCCEEDED',result_ref:r.id};const i=checked(r.request_json,r.request_sha256);
    // A restarted moderation task with unknown submission outcome must not submit again.
-   if(r.task_kind==='MODERATE_FILE'&&job.attempts>1&&!job.provider_task_id)throw error('MODERATION_SUBMISSION_NEEDS_REVIEW',409);
+   const textCheckpoint=r.output_checkpoint_json?checked(r.output_checkpoint_json,r.output_checkpoint_sha256):null;
+   const textProcessing=require('./moderation-text'),resumingText=textCheckpoint?.version===textProcessing.VERSION;
+   if(r.task_kind==='MODERATE_FILE'&&job.attempts>1&&!job.provider_task_id&&!resumingText)throw error('MODERATION_SUBMISSION_NEEDS_REVIEW',409);
    const ctx={media_worker_account:r.account_id},a=await actor(ctx);if(a.id!==r.account_id)throw error('MEDIA_ACTOR_MISMATCH',403);
    const f=await source(ctx,i),policy=await db.withTransaction(tx=>P.load(tx,i.policy.id));if(policy.sha256!==i.policy.sha256||f.id!==i.source_file_id||f.content_sha256!==i.source_sha256||f.byte_size!==i.source_bytes)throw error('MEDIA_SOURCE_CHANGED',409);
    if(digest(await descriptor(r.task_kind))!==digest(i.config))throw error('MEDIA_CONFIGURATION_CHANGED',409);
    const body=await readBody(f);let result;
    if(r.task_kind==='MODERATE_FILE'){
-    const reply=await moderator.run({media_type:f.media_type,body,object_key:f.object_key,data_id:r.id,provider_task_id:job.provider_task_id});
+    const textPlan=f.media_type==='text/plain'?textProcessing.plan(body):null;
+    if(resumingText&&!textPlan)throw error('MODERATION_TEXT_CHECKPOINT_MISMATCH',409);
+    const reply=textPlan?await textProcessing.execute({plan:textPlan,checkpoint:textCheckpoint,requestHash:r.request_sha256,sourceHash:f.content_sha256,taskId:r.id,
+     save:async checkpoint=>db.withTransaction(async tx=>{await fenced(tx);await tx.execute('UPDATE media_tasks SET output_checkpoint_json=?,output_checkpoint_sha256=? WHERE id=?',[JSON.stringify(checkpoint),digest(checkpoint),r.id]);}),
+     recheck:async()=>{await jobs.heartbeat(job,60000);const current=await source(ctx,i);if(current.content_sha256!==f.content_sha256||current.byte_size!==f.byte_size)throw error('MEDIA_SOURCE_CHANGED',409);const rule=await db.withTransaction(tx=>P.load(tx,i.policy.id));if(rule.sha256!==policy.sha256||digest(await descriptor(r.task_kind))!==digest(i.config))throw error('MEDIA_CONFIGURATION_CHANGED',409);},
+     inspect:input=>moderator.run(input)
+    }):await moderator.run({media_type:f.media_type,body,object_key:f.object_key,data_id:r.id,provider_task_id:job.provider_task_id});
     if(reply.pending===true){if(!reply.provider_task_id)throw error('MODERATION_RESULT_UNKNOWN',503);await jobs.saveProviderTask(job,reply.provider_task_id);return {status:'RETRY',error_code:'MODERATION_PENDING'};}
     if(reply.automated!==true||!['PASS','REVIEW','REJECT'].includes(reply.decision)||!reply.provider_request_id)throw error('MODERATION_RESULT_UNKNOWN',503);
     result={file_id:f.id,output_sha256:f.content_sha256,policy_sha256:policy.sha256,decision:reply.decision,provider_request_id:reply.provider_request_id,manual_review:'STILL_REQUIRED',...(reply.coverage?{coverage:reply.coverage}:{})};
@@ -106,6 +116,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
     result={...checkpoint.receipt,file_id:record.id};
    }
    const current=await source(ctx,i);if(current.id!==f.id||current.content_sha256!==f.content_sha256)throw error('MEDIA_SOURCE_CHANGED',409);
+   if(r.task_kind==='MODERATE_FILE'&&f.media_type==='text/plain')await readBody(current);
    await db.withTransaction(async tx=>{await fenced(tx);const [[active]]=await tx.execute("SELECT id FROM identity_accounts WHERE id=? AND current_status='ACTIVE' FOR SHARE",[r.account_id]);if(!active)throw error('ACCOUNT_NOT_ACTIVE',403);const livePolicy=await P.load(tx,i.policy.id);if(livePolicy.sha256!==i.policy.sha256)throw error('MEDIA_CONFIGURATION_CHANGED',409);await tx.execute("UPDATE media_tasks SET current_status='EXECUTED',result_json=?,result_sha256=? WHERE id=?",[JSON.stringify(result),digest(result),r.id]);});
    return {status:'SUCCEEDED',result_ref:r.id};
   }catch(e){if(e.code==='LEASE_LOST')throw e;return {status:'BLOCKED',error_code:/^(MEDIA_|MODERATION_|PRIVATE_|PROVIDER_|CONTENT_|ACCOUNT_)[A-Z_]+$/.test(e.code||'')?e.code:'MEDIA_PROCESS_NEEDS_REVIEW'};}
