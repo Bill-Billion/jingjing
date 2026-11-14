@@ -14,6 +14,7 @@ test('organization merchandise batch isolated MySQL and HTTP',{skip:!process.env
 
 
  const {outsider,seller,reviewer,buyer}=S,party=await S.parties.createOrganization(outsider.ctx,{display_name:'Synthetic batch MCN',operation_key:key()});
+ await S.person(outsider); // Free synthetic identity; artist and stock admissions remain independent.
  await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[party.party_id]);
  const relation=key(),rel={valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',accepted_by:seller.account_id};
  await db.execute("INSERT INTO gig_records(id,kind,owner_party_id,counterparty_id,created_by,current_status,data_json,data_sha256) VALUES (?,'RELATION',?,?,?,'ACTIVE',?,?)",[relation,party.party_id,seller.personal_party_id,outsider.account_id,JSON.stringify(rel),digest(rel)]);

@@ -5,7 +5,7 @@ const {digest}=require('../../src/modules/governance/content');
 // today's API. This import is test-only and cannot target the shared development DB.
 async function seedHistoricalAvatar(db,actor,input){
  return db.withTransaction(async tx=>{
-  const [[schema]]=await tx.execute('SELECT DATABASE() name');assert.match(schema.name,/^jx_test_[0-9]+_[0-9a-f]{12}$/);
+  const [[schema]]=await tx.execute('SELECT DATABASE() name');assert.match(schema.name,/^jx_test_(?:[0-9]+|privacy_cross)_[0-9a-f]{12}$/);
   const [[member]]=await tx.execute("SELECT id FROM party_memberships WHERE party_id=? AND account_id=? AND role_code='OWNER' AND current_status='ACTIVE'",[input.party_id,actor.account_id]);assert.ok(member);
   assert.ok(input.material_asset_ids.length);
   for(const asset of input.material_asset_ids){const [[row]]=await tx.execute('SELECT owner_party_id,purpose,current_status FROM supply_assets WHERE id=?',[asset]);assert.equal(row?.owner_party_id,input.party_id);assert.equal(row.purpose,'AVATAR_MATERIAL');assert.equal(row.current_status,'READY');}

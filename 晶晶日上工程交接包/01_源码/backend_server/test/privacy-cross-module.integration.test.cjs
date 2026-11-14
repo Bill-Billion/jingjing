@@ -64,13 +64,13 @@ test('privacy restrictions protect commercial and release evidence across their 
     try{const denied=await raw('GET',route,reviewer);assert.equal(denied.status,403);result.checks.push({label:label+'-revoked-during-read',record_id:record.id,expected_status:403,actual_status:denied.status});}finally{duringRead=null;await grant(true);}
    });
   }
-  await t.test('approved raw-material erasure rechecks a new live avatar reference and keeps stored bytes',async()=>{
+  await t.test('approved raw-material erasure rechecks a newly imported live legacy avatar reference and keeps stored bytes',async()=>{
    const material=await S.upload(buyer,'AVATAR_MATERIAL'),r=await request('DELETE',['ARTIST_MATERIALS']);let e=await approve(await propose(r,'FILE_ERASURE',material.id,false));
-   const avatar=await call('POST','/supply/avatars',buyer,{display_name:'Synthetic avatar added after review',material_asset_ids:[material.id]},null,buyer.personal_party_id);
+   const avatar=await require('./helpers/historical-avatar.cjs').seedHistoricalAvatar(db,buyer,{party_id:buyer.personal_party_id,display_name:'Synthetic legacy reference imported after review',material_asset_ids:[material.id]});
    const denied=await raw('POST','/privacy/requests/'+r.id+'/executions/'+e.id+'/execute',buyer,{confirmed:true},e.object_version);assert.equal(denied.status,409);assert.equal(denied.value.error.code,'PRIVACY_FILE_RETENTION_REVIEW_REQUIRED');
    const list=await call('GET','/privacy/requests/'+r.id+'/file-options?kind=FILE&limit=100',buyer),entry=list.items.find(x=>x.id===material.id);assert.equal(entry.disposition,'DEPENDENCY_REVIEW');assert(entry.dependencies.some(x=>x.code==='SUPPLY_ARCHIVE'));
    assert.equal((await raw('GET','/privacy/requests/'+r.id+'/files/'+material.id+'/content',buyer)).status,200);
-   result.checks.push({label:'new-avatar-reference-after-review',request_id:r.id,asset_id:material.id,avatar_id:avatar.id,status:denied.status,disposition:entry.disposition});
+   result.checks.push({label:'imported-legacy-avatar-reference-after-review',request_id:r.id,asset_id:material.id,avatar_id:avatar.id,status:denied.status,disposition:entry.disposition});
   });
   await t.test('personal original copy cannot bypass restrictions or grant handlers raw evidence access',async()=>{
    const material=await S.upload(buyer,'AVATAR_MATERIAL'),content=await S.upload(buyer,'WORK_CONTENT'),r=await request('COPY',['ALL']);

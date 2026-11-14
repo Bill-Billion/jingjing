@@ -9,6 +9,7 @@ test('MCN supplier and broker income: real orders, role separation and access',{
   await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
   const S=await require('./helpers/stock-seed.cjs').seedStock(db,{marketplaceFinance:{}}),{seller,buyer,buyer2:coartist,reviewer,outsider}=S;
   const parties=require('../src/modules/party/repository').createPartyRepository(db,{resolvePrincipal:S.resolvePrincipal}),G=require('../src/modules/gigs/repository').createGigsRepository(db,{resolvePrincipal:S.resolvePrincipal});
+  await S.person(outsider); // Free synthetic identity of the actual organization actor.
   const org=await parties.createOrganization(outsider.ctx,{display_name:'Synthetic multi-artist agency',operation_key:key()});
   await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[org.party_id]); // Synthetic reviewed organizational qualification, not real certification.
   const employees=[];for(let n=0;n<2;n++){
