@@ -13,7 +13,7 @@ async function validate(tx,a,n,notice){
  if(n.kind!=='NOTICE'||n.parent_id||n.current_status!=='PUBLISHED')throw error('NOTICE_NOT_OPEN',409);
  if(notice.type!==n.data.notice.type||notice.project_id!==n.data.notice.project_id)throw error('NOTICE_REVISION_SCOPE_INVALID',409);
  if(notice.valid_until<=await A.now(tx))throw error('NOTICE_PERIOD_INVALID',409);
- if(notice.type!=='OFFICIAL')await C.buyer(tx,a,n.owner_party_id);
+ if(notice.type!=='OFFICIAL')await C.publicationActor(tx,a,n.owner_party_id);
  else await C.publisher(tx,n);
  if(notice.project_id){const project=await A.one(tx,"SELECT * FROM project_records WHERE id=? AND kind='PROJECT' FOR SHARE",[notice.project_id]);if(!project||project.owner_party_id!==n.owner_party_id)throw error('NOTICE_PROJECT_MISMATCH',409);}
  await C.publisher(tx,{...n,created_by:notice.type==='OFFICIAL'?a.id:n.created_by,data:{...n.data,notice}});
@@ -45,6 +45,7 @@ function methods(run){return {
    const n=await C.load(tx,i.record_id,'NOTICE');
    if(n.data.notice.type==='OFFICIAL'){if(i.party_id)throw error('ACTING_PARTY_NOT_ALLOWED',400);await C.operator(tx,a,'NOTICE_OFFICIAL');}
    else {await C.access(tx,a,n,i.party_id);if(!i.party_id||n.owner_party_id!==i.party_id)throw error('NOTICE_OPERATOR_FORBIDDEN',403);}
+   if(n.data.notice.type!=='OFFICIAL')await C.publicationActor(tx,a,n.owner_party_id);
    return C.command(tx,a,'REVISE',i,async()=>{
     A.match(n,i.expected_version);await validate(tx,a,n,notice);
     if(digest(notice)===digest(n.data.notice))throw error('NOTICE_REVISION_UNCHANGED',409);
