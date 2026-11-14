@@ -10,6 +10,7 @@ test('personal trade copies preserve receipts, refunds and historical contracts'
  try{
   await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
   const S=await require('./support/customization-delivery.cjs').seed(db),{buyer,producer,outsider,reviewer,artist:seller}=S.people,trade=S.trade;
+  for(const payer of [buyer,outsider,producer])await require('./helpers/trusted-identity.cjs').seedAdultIdentity(db,S.resolvePrincipal,payer);
   const repo=require('../src/modules/privacy/repository').createPrivacyRepository(db,{resolvePrincipal:S.resolvePrincipal});
   const request=(who,scopes=['ALL'],type='COPY')=>repo.create(who.ctx,{request:{type,scopes,details:'Synthetic transaction copy'},operation_key:key()});
   const all=await request(buyer),onlyMoney=await request(buyer,['TRANSACTIONS']),onlyContracts=await request(buyer,['CONTRACTS']),profile=await request(buyer,['PROFILE']),deletion=await request(buyer,['ALL'],'DELETE'),sellerRequest=await request(seller),orgRequest=await request(producer);

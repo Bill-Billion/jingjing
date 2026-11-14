@@ -9,6 +9,7 @@ test('paid participation amendments: reviewed differences, refunds and separate 
  try{
  await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
  const S=await require('./support/customization-delivery.cjs').seed(db),{artist,buyer,reviewer,producer,outsider}=S.people,cast=await S.actorCast(artist);
+ await require('./helpers/trusted-identity.cjs').seedAdultIdentity(db,S.resolvePrincipal,buyer);
  for(const u of [reviewer,artist])await S.grant(u,'PROJECT_REVIEW');
  const consentProof=await S.upload(artist,'CONSENT_EVIDENCE'),proof=await S.upload(artist,'RIGHTS_EVIDENCE'),buyerProof=await S.upload(buyer,'RIGHTS_EVIDENCE');
  let consent=await S.supply.createConsent(artist.ctx,{consent:{avatar_id:cast.avatar.id,subject_party_id:artist.personal_party_id,features:['FACE'],purposes:['RELEASE'],territories:['CN'],valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',terms:'synthetic release grant',evidence_asset_ids:[consentProof.id]},operation_key:key()});consent=await S.supply.reviewConsent(reviewer.ctx,{record_id:consent.id,expected_version:consent.object_version,decision:'APPROVED',reason:'synthetic',operation_key:key()});

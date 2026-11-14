@@ -21,6 +21,7 @@ test('platform customization quote HTTP, story version and unique order transact
   const principals=new Map(),resolvePrincipal=async ctx=>principals.get(ctx),party=createPartyRepository(db,{resolvePrincipal}),stories=createCustomizationRepository(db,{resolvePrincipal});
   const people=[];for(const display_name of ['synthetic buyer','synthetic operator','synthetic merchant','synthetic reviewer','synthetic stranger']){const ctx={};principals.set(ctx,{subject_ref:'synthetic:'+key()});people.push({ctx,...await party.registerAccount(ctx,{display_name})});}
   const [buyer,operator,merchant,reviewer,stranger]=people;
+  await require('./helpers/trusted-identity.cjs').seedAdultIdentity(db,resolvePrincipal,buyer);
   for(const action of ['CUSTOMIZATION_INTAKE','CUSTOMIZATION_TEMPLATE_PUBLISH'])await maintainOperatorGrant(db,{account_id:operator.account_id,action,enabled:true,expires_at:null,expected_version:0,authority_ref:'synthetic:version-tests',reason:'isolated transaction test only'});
   const template=await stories.publishTemplate(operator.ctx,{category_code:'synthetic',template_version:1,template_snapshot:{title:'合成故事',description:'仅验证事务，不是真实客户资料',fields:[{key:'story',label:'故事',type:'TEXT',required:true,max_length:1000}]},source_ref:'synthetic:version-test',operation_key:key()});
   const create=()=>stories.create(buyer.ctx,{party_id:buyer.personal_party_id,template_version_id:template.template_version_id,answers:{story:'合成内容第一版'},operation_key:key()});

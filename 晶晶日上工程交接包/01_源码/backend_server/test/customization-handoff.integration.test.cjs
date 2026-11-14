@@ -11,6 +11,7 @@ test('company delivery handoff preserves first receipt, current authority and or
   for(const f of await fs.readdir(migrations))if(/^\d{4}_.*\.sql$/.test(f)&&f.slice(0,4)<='0224')await fs.copyFile(path.join(migrations,f),path.join(oldDirectory,f));
   await migrate(db,{directory:oldDirectory});
   const S=await require('./support/customization-delivery.cjs').seed(db),{buyer:owner,outsider:first,artist:next,producer,reviewer}=S.people;
+  await require('./helpers/trusted-identity.cjs').seedAdultIdentity(db,S.resolvePrincipal,next);
   const org=await S.parties.createOrganization(owner.ctx,{display_name:'Synthetic delivery handoff company',operation_key:key()}),future=()=>new Date(Date.now()+86400000).toISOString();
   for(const user of [first,next]){const inv=await S.parties.inviteMember(owner.ctx,{party_id:org.party_id,invitee_account_id:user.account_id,expires_at:future(),operation_key:key()});await S.parties.respondInvitation(user.ctx,{party_id:org.party_id,invitation_id:inv.invitation_id,decision:'ACCEPT',expected_version:1,operation_key:key()});}
   await db.execute("UPDATE parties SET current_status='ACTIVE' WHERE id=?",[org.party_id]);
