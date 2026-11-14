@@ -18,11 +18,12 @@ test('adjacent artist and stock operations require current actor identity',{skip
   await S.artists.createDelegation(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,delegation:{organization_party_id:org.party_id,relation_id:relation,actions:['SUBMIT_LISTING','MANAGE_AVATARS','MANAGE_MATERIALS','READ_PROFILE'],valid_from:data.valid_from,valid_until:data.valid_until,evidence_asset_ids:[S.evidence.id],terms:'synthetic existing authority'},operation_key:key()});
   let consent=await S.artists.declareConsent(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,avatar_id:S.avatar.id,consent:{features:['FACE','VOICE'],purposes:['STOCK_LICENSE','PUBLIC_DISPLAY'],grantee_party_id:org.party_id,territories:['WORLDWIDE'],valid_from:data.valid_from,valid_until:data.valid_until,terms:'synthetic organization rights',evidence_asset_ids:[S.evidence.id]},operation_key:key()});
   consent=await S.artists.review(reviewer.ctx,{person_id:seller.person.id,record_id:consent.id,expected_version:consent.object_version,decision:'APPROVE',reason:'synthetic independent',operation_key:key()});
+  let person=await S.person(outsider); // Existing positive actor prerequisite, now before specification publication.
   let spec=await trade.createSpec(outsider.ctx,{party_id:org.party_id,previous_spec_id:null,...Object.fromEntries(['title','line_kind','unit_minor','currency','specification','product_profile'].map(k=>[k,S.spec.data[k]])),provider_party_id:org.party_id,operation_key:key()});
   spec=await trade.review(reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'synthetic',operation_key:key()});await S.publishSales(org.party_id,spec.id);
   const upload=(purpose,text)=>S.supply.upload(outsider.ctx,{party_id:org.party_id,purpose,media_type:purpose==='WORK_CONTENT'?'video/mp4':'text/plain',body:Buffer.from(text),operation_key:key()});
   const full=await upload('WORK_CONTENT','synthetic organization full'),preview=await upload('WORK_CONTENT','synthetic organization preview'),proof=await upload('RIGHTS_EVIDENCE','synthetic rights');
-  let person;const fingerprint=randomBytes(32).toString('hex');
+  const fingerprint=randomBytes(32).toString('hex');
   async function identity(age,status='VERIFIED'){
    const r=await S.artists.prepareIdentity(outsider.ctx,{party_id:outsider.personal_party_id,person_id:person.id,session_ref:'synthetic:'+key(),operation_key:key()});
    if(status==='UNKNOWN'){await S.artists.applyIdentity(r.id,null);return r;}
@@ -41,7 +42,6 @@ test('adjacent artist and stock operations require current actor identity',{skip
    return {status:res.status,...value};
   }
 
-  person=await S.person(outsider); // Trusted synthetic adult; no paid artist halo.
   let ownConsent=await S.artists.declareConsent(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,avatar_id:S.avatar.id,consent:{features:['FACE','VOICE'],purposes:['PRIVATE_ARCHIVE','PUBLIC_DISPLAY'],grantee_party_id:seller.personal_party_id,territories:['WORLDWIDE'],valid_from:data.valid_from,valid_until:data.valid_until,terms:'synthetic artist-owned archive and public rights',evidence_asset_ids:[S.evidence.id]},operation_key:key()});
   ownConsent=await S.artists.review(reviewer.ctx,{person_id:seller.person.id,record_id:ownConsent.id,expected_version:ownConsent.object_version,decision:'APPROVE',reason:'synthetic independent',operation_key:key()});
   const artistAssets=require('../src/modules/works/assets').createSupplyAssets({db,repository:require('../src/modules/artists/assets').createArtistAssetsRepository(db,{resolvePrincipal:S.resolvePrincipal}),storageFactory:S.storageFactory});
