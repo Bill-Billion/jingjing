@@ -1,0 +1,247 @@
+{
+  "source_commit": "7b50815dbf483264e86a42a451af39e8cd50be39",
+  "kind": "READ_ONLY_SCOPE_AUDIT_NOT_BUSINESS_ACCEPTANCE",
+  "scope": "全部14条NOT_RUN；不表示已完整核完另外118条PARTIAL，不代表14个未开发功能。",
+  "counts": {
+    "共同版本与合入审阅": 4,
+    "后端与外部证据": 5,
+    "前端暂停": 2,
+    "整链与最终交付": 3
+  },
+  "items": [
+    {
+      "id": "ACC-DEL-00.01",
+      "category": "共同版本与合入审阅",
+      "work": "共同起点",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "复核头提交、目标分支、CI、祖先关系和机密文件；只合integration。；头或目标变化即停；不得拿预生成merge_commit_sha当实际合并。",
+      "existing_readonly_findings": "双方CURRENT、原草稿PR39和同HEAD全部事件的远端记录已存在；本轮核四个作业。",
+      "missing_or_limit": "维护者阶段末实审、最终头/目标/祖先关系与最终候选机密检查；本轮没有合入。",
+      "owner_and_dependency": "后端可准备；维护者实审",
+      "next_step_and_exit": "候选固定且相关远端结束后提交具体审阅包，维护者独立确认。",
+      "source_paths": [
+        "docs/status/CORE_CURRENT.md",
+        ".github/workflows"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-00.02",
+      "category": "共同版本与合入审阅",
+      "work": "单一执行入口",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "沿用现有docs/status与docs/tasks/board.json，建立V5完整交付登记。；不得再维护第二个CURRENT真相；旧记录只追加说明。",
+      "existing_readonly_findings": "正式树client-testing、docs/status和原board沿用；双方CURRENT写同批事实。",
+      "missing_or_limit": "维护者核单一入口及历史归档，没有由作者自签通过。",
+      "owner_and_dependency": "后端可整理；维护者实审",
+      "next_step_and_exit": "继续更新原入口，不创建第二个现行台账；阶段末实审。",
+      "source_paths": [
+        "docs/status/CORE_CURRENT.md",
+        "docs/status/EXPERIENCE_CURRENT.md",
+        "docs/tasks/board.json"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-00.03",
+      "category": "共同版本与合入审阅",
+      "work": "历史范围映射",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "旧REQ60、原型40条、V5正文与专项参数均有去向。；每个“取消/后置”保留来源和历史读路径。",
+      "existing_readonly_findings": "旧REQ与原型映射、SOURCE_TO_SYSTEM及自动检查已存在。",
+      "missing_or_limit": "映射存在不证明业务符合；取消/后置适用来源仍需逐项独审。",
+      "owner_and_dependency": "后端可核；维护者实审",
+      "next_step_and_exit": "按现有原文核去向，保留历史读路径，不用通过索引代替验收。",
+      "source_paths": [
+        "docs/baselines/v5-d1/data/legacy_req_crosswalk.json",
+        "docs/baselines/v5-d1/data/prototype40_crosswalk.json",
+        "docs/requirements/SOURCE_TO_SYSTEM_20261106.json",
+        "scripts/audit_requirement_trace.py"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-00.04",
+      "category": "共同版本与合入审阅",
+      "work": "代码与材料隔离",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "甲方含密钥ZIP、.env、真实资料不进入评审包或普通Git提交。；扫描只报告路径和类别，不回显凭证；发现泄露先隔离处置。",
+      "existing_readonly_findings": "本轮只读取代码/治理登记/合成证据，未打开实际.env或原始密钥包。",
+      "missing_or_limit": "本轮没有重跑最终候选机密扫描，不把历史扫描当本候选已验。",
+      "owner_and_dependency": "后端可独立准备",
+      "next_step_and_exit": "对最终提交范围执行既有不回显凭据的扫描并留路径/类别报告，再交独审。",
+      "source_paths": [
+        ".gitignore",
+        "docs/reviews/pm01-production-media-20261114/SOURCE_MANIFEST.json"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-07.02",
+      "category": "后端与外部证据",
+      "work": "真实收银接线",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "调用已确认的渠道产品，回跳后向服务器查单。；取消/超时/未知结果不冒充失败可重扣或成功。",
+      "existing_readonly_findings": "trade/providers含支付宝提交/查询/退款验签和Apple凭据；未知结果及同单恢复已有测试。",
+      "missing_or_limit": "各端具体支付产品/商户权限和实际收银回跳未齐，真实调用及前端暂停；不可称已真实付款。",
+      "owner_and_dependency": "后端先核已有边界；外部产品材料后联调",
+      "next_step_and_exit": "复用原适配器与后端边界；具体网页产品/商户材料到位后再实际接线，不伪造供应商协议。",
+      "source_paths": [
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/trade/providers.js",
+        "晶晶日上工程交接包/01_源码/backend_server/test/trade-providers.test.cjs",
+        "docs/operations/EXTERNAL_READINESS.md"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-23.02",
+      "category": "后端与外部证据",
+      "work": "撤回实际影响",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "立即拦新增不被允许的使用，并记录下游处理结果。；发起供应商删除不等于供应商已删除；旧合同不兜底无限使用。",
+      "existing_readonly_findings": "privacy/execution、erasure及限制门禁已实现；既有测试包含排队禁读、同对象删除/未知恢复、仅当前对象和备份未确认。",
+      "missing_or_limit": "本轮只读这些实现及测试，尚未对原23.02完成现版本专项；真实供应商删除、版本/备份结果仍缺。",
+      "owner_and_dependency": "chengcongcong222可独立补同版证据",
+      "next_step_and_exit": "下一轮按具体授权撤回→新使用拒绝→删除任务→未知恢复/结果范围复验，实际发现问题再修；外部回执另列。",
+      "source_paths": [
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/execution.js",
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/privacy/erasure.js",
+        "晶晶日上工程交接包/01_源码/backend_server/test/privacy-execution.integration.test.cjs"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-24.04",
+      "category": "后端与外部证据",
+      "work": "治理证据",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "SDK名称版本用途政策、PIA和日志留存分项登记。；等保/备案条目须适用性实证，不由标签宣布已合规。",
+      "existing_readonly_findings": "SDK登记有19个后端依赖和9条数据流；本轮逐项核锁定版本、声明及已登记源码路径吻合。",
+      "missing_or_limit": "政策、PIA、日志留存引用仍有未审缺项；未核完整运行时数据流/合规适用性，不由安装判合规。",
+      "owner_and_dependency": "后端可补事实；业务/治理责任人审定",
+      "next_step_and_exit": "继续核已实现数据流与登记差异，保留空缺；真实政策、留存依据和PIA由适当责任人审定，不编造。",
+      "source_paths": [
+        "docs/operations/SDK_AND_DATA_GOVERNANCE_REGISTER.json",
+        "scripts/check-data-governance.cjs",
+        "晶晶日上工程交接包/01_源码/backend_server/package-lock.json"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-27.03",
+      "category": "后端与外部证据",
+      "work": "发行真实性",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "内部审核与外部已发行分别有证据。；没有渠道结果不得显示已上架。",
+      "existing_readonly_findings": "projects/release将内部批准置READY_TO_SUBMIT；外部事件单列并经独审转状态，撤回允许留证。",
+      "missing_or_limit": "本轮仅读实现及既有测试，未执行当前版本发行专项；没有真实渠道发行结果。",
+      "owner_and_dependency": "chengcongcong222可独立补同版证据",
+      "next_step_and_exit": "下一轮复验无凭据不得已发行、同项目材料/权限/重提/撤权与已发行撤回；实际渠道另验。",
+      "source_paths": [
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/projects/release.js",
+        "晶晶日上工程交接包/01_源码/backend_server/test/projects.integration.test.cjs"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-28.01",
+      "category": "前端暂停",
+      "work": "导航和深链",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "新五Tab真实接线，表单详情有返回；旧地址有明确映射或禁用说明。；不能仅改标签并继续打开旧项目/作者页。",
+      "existing_readonly_findings": "历史端侧实现与证据保留，当前有导航遗留项。",
+      "missing_or_limit": "本轮禁止前端开发修补/本机App/Web，未复验新版导航。",
+      "owner_and_dependency": "前端另行接续，未代认领",
+      "next_step_and_exit": "前端恢复授权后按五Tab/返回/旧地址映射实测；后端不借此改页面。",
+      "source_paths": [
+        "docs/collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-28.02",
+      "category": "前端暂停",
+      "work": "同步规范测试",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "AGENTS导航段、旧图册映射、导航测试和实现说明同批迁移。；禁止删除测试来保住旧假成功。",
+      "existing_readonly_findings": "导航规范、映射和测试有历史记录，未因暂停删除。",
+      "missing_or_limit": "当前UI改版与最终导航同批核验未完成，本轮未运行页面。",
+      "owner_and_dependency": "前端另行接续，未代认领",
+      "next_step_and_exit": "与28.01同版核规范/映射/实现/测试，不用重命名掩盖失败。",
+      "source_paths": [
+        "AGENTS.md",
+        "docs/collaboration/client-complete-20261028/REMAINING_DELIVERY_PLAN_20261102.md"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-29.01",
+      "category": "整链与最终交付",
+      "work": "业务场景验收",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "现货/定制/试镜/投稿/共创/积分兑换/退款等端到端。；旧测试绿色不等于V5通过；跳过需明确原因。",
+      "existing_readonly_findings": "12条完整路线已有分层证据；本轮补04.03当前后端匹配与原业务入口回归。",
+      "missing_or_limit": "12路线仍PARTIAL，所需端×正常/逆向/权限/重复/变化/恢复尚未同版全部齐备。",
+      "owner_and_dependency": "后端继续补证；双方整链后续",
+      "next_step_and_exit": "保留同记录同版本标准，页面暂停部分和真实验证分列，不以测试总数关闭路线。",
+      "source_paths": [
+        "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+        "scripts/acceptance_progress.py"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-29.03",
+      "category": "后端与外部证据",
+      "work": "供应商验证",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "本次测试版验证隔离支付/实名/存储/模型/电子签模拟、失败恢复及正式环境拒绝模拟的关闭边界；真实供应商沙箱/正式产品权限、资金到账、实名/签署/模型质量和真实存储删除证据仍待外部验收，不能以本条隔离PASS宣称正式接入完成。",
+      "existing_readonly_findings": "readiness和适配器门禁已有；现行有效标准允许测试版隔离验证与正式拒绝模拟边界，真实产品验收另列。",
+      "missing_or_limit": "尚未给本条汇齐同版的支付/实名/存储/模型/签署隔离证据；实际产品权限/质量仍待。",
+      "owner_and_dependency": "chengcongcong222可独立核隔离层",
+      "next_step_and_exit": "按有效标准整理同版适配器正常/失败恢复/生产拒绝，缺实现不算通过；真实验收另立不混写。",
+      "source_paths": [
+        "晶晶日上工程交接包/01_源码/backend_server/src/modules/providers/readiness.js",
+        "晶晶日上工程交接包/01_源码/backend_server/test/provider-readiness.integration.test.cjs",
+        "docs/operations/EXTERNAL_READINESS.md"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "ACC-DEL-29.04",
+      "category": "整链与最终交付",
+      "work": "发布边界",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "main、生产部署和真实收费另授权；阶段合integration不发生产。；正式签名缺失不得回退debug；未核验外部项保持限制。",
+      "existing_readonly_findings": "release-check及release-policy验证声明/版本/时效不会自授启用；现行未合入、未启用。",
+      "missing_or_limit": "最终候选签名包/外部核验/生产授权未齐；不执行前端构建和发布。",
+      "owner_and_dependency": "后端可复验门禁；维护者与用户后续授权",
+      "next_step_and_exit": "最终候选保持缺证据即受限，不用debug兜底正式包，不自动main或生产。",
+      "source_paths": [
+        "晶晶日上工程交接包/01_源码/backend_server/src/operations/release-check.js",
+        "晶晶日上工程交接包/01_源码/backend_server/test/release-policy.test.cjs"
+      ],
+      "business_tested_in_this_round": false
+    },
+    {
+      "id": "TASK-18",
+      "category": "整链与最终交付",
+      "work": "固定交付与恢复回退",
+      "register_status_unchanged": "NOT_RUN",
+      "source_expected": "固定源代码、接口/规则、资料与两端构建摘要；候选版本CI通过；实际备份恢复及回退保留既有订单/反馈；重启不换版本、不延期，访问到期关闭；从交付产物完成冒烟与真实问题归档。",
+      "existing_readonly_findings": "既有加密备份、隔离恢复、隐私重放及应用回退工具和报告保留。",
+      "missing_or_limit": "实际旧库/私有文件样本与最终固定产物、设备冒烟和独立签收未齐；0222新库测试不是实际旧库迁移。",
+      "owner_and_dependency": "后端继续核已有隔离层；真实材料/设备后验",
+      "next_step_and_exit": "冻结最终源码/接口/规则/构建摘要；实际恢复与回退保存订单反馈；前端与真实材料未就绪不造完成。",
+      "source_paths": [
+        "晶晶日上工程交接包/01_源码/backend_server/src/operations/backup.js",
+        "晶晶日上工程交接包/01_源码/backend_server/test/release.integration.test.cjs",
+        "docs/reviews/pm01-production-media-20261114/REPORT.md"
+      ],
+      "business_tested_in_this_round": false
+    }
+  ],
+  "formal_status_change": false,
+  "frontend_run": false,
+  "real_services": false
+}
