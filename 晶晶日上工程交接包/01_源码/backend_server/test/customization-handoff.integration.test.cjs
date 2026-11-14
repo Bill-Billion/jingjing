@@ -65,7 +65,7 @@ test('company delivery handoff preserves first receipt, current authority and or
   await sub('failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version',async()=>{
    nextGrant=await grant(next);rough=await deliver('ROUGH_CUT');const old=(await flow()).receipt;
    const stored=(await db.execute('SELECT data_json FROM production_records WHERE id=?',[rough.data.preview_file_id]))[0][0].data_json,metadata=typeof stored==='string'?JSON.parse(stored):stored,original=S.files.get(metadata.object_key);
-   S.files.set(metadata.object_key,Buffer.from('Synthetic corrupted transport'));try{bad(await content(rough),'PRIVATE_CONTENT_MISMATCH');}finally{S.files.set(metadata.object_key,original);}
+   S.files.set(metadata.object_key,Buffer.from('Synthetic corrupted transport'));try{const failed=await content(rough);assert.equal(failed.status,503);bad(failed,'SERVICE_UNAVAILABLE');}finally{S.files.set(metadata.object_key,original);}
    assert.equal((await views(old.delivery_id)).length,0);
    onRead=async()=>{nextGrant=await revoke(nextGrant);};assert.equal((await content(rough)).status,403);assert.equal((await views(old.delivery_id)).length,0);
    nextGrant=await grant(next);assert.equal((await content(rough)).status,200);ok(await notice());
