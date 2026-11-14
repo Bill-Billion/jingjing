@@ -1,0 +1,345 @@
+TAP version 13
+# Subtest: commercial-supplier current identity on submission replay and review
+    # Subtest: ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing
+    ok 1 - ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing
+      ---
+      duration_ms: 257.4244
+      type: 'test'
+      ...
+    # Subtest: pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch
+    ok 2 - pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch
+      ---
+      duration_ms: 143.8537
+      type: 'test'
+      ...
+    # Subtest: representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP
+    ok 3 - representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP
+      ---
+      duration_ms: 519.0876
+      type: 'test'
+      ...
+    # Subtest: buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages
+    ok 4 - buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages
+      ---
+      duration_ms: 176.3773
+      type: 'test'
+      ...
+    # Subtest: independent support links that invitation to the exact quote, and the representative pays the original company order
+    ok 5 - independent support links that invitation to the exact quote, and the representative pays the original company order
+      ---
+      duration_ms: 168.8673
+      type: 'test'
+      ...
+    # Subtest: revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged
+    ok 6 - revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged
+      ---
+      duration_ms: 119.7708
+      type: 'test'
+      ...
+    # Subtest: EXPIRED supplier cannot use new commercial offer
+    not ok 7 - EXPIRED supplier cannot use new commercial offer
+      ---
+      duration_ms: 16.758
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-supplier-expanded.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"85e8005b-2549-4c0f-a581-dfcdfa0e3d50","actor":{"account_id":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6"},"acting_party":"84e4aa63-962b-4f88-9756-f51cb7971fd9"},"data":{"id":"4092138f-dc99-4eb8-95e2-387f55e60b85","kind":"OFFER","owner_party_id":"84e4aa63-962b-4f88-9756-f51cb7971fd9","counterparty_id":"7f7f4207-8819-4f3c-a578-d25095aa0c07","parent_id":"647295f4-8deb-497b-9ea9-81da569964f3","created_by":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6","current_status":"IN_REVIEW","object_version":1,"content_sha256":"f288f861b74c5681dab402b739d2d2931a6248233eb86eb0e4bd3c6606386222","data":{"ranking_opt_in":false,"spec_id":"6633507f-53a4-47cb-969f-96e66ccea967","avatar_id":"1bc9cff3-ecac-425d-bbe8-8a49fcb8ec91","consent_id":"9060e2de-f6a6-48ce-bfde-ee5158de4c91","relation":null,"commission":{"mcn_bps":0,"platform_bps":2000},"terms":"synthetic historical commercial test","evidence_asset_ids":["30bae3f7-6f8f-42e7-aeb7-7f4c60a943f5"],"review":null,"buyer_accepted_by":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:265
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:143)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED supplier cannot use successful commercial offer replay
+    not ok 8 - EXPIRED supplier cannot use successful commercial offer replay
+      ---
+      duration_ms: 13.3273
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-supplier-expanded.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"31619b6b-7145-45dd-97ce-27f7132bd2bf","actor":{"account_id":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6"},"acting_party":"84e4aa63-962b-4f88-9756-f51cb7971fd9"},"data":{"id":"b90fbf21-8b5b-4134-be71-ea3cfa960a1d","kind":"OFFER","owner_party_id":"84e4aa63-962b-4f88-9756-f51cb7971fd9","counterparty_id":"7f7f4207-8819-4f3c-a578-d25095aa0c07","parent_id":"647295f4-8deb-497b-9ea9-81da569964f3","created_by":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6","current_status":"IN_REVIEW","object_version":1,"content_sha256":"f288f861b74c5681dab402b739d2d2931a6248233eb86eb0e4bd3c6606386222","data":{"terms":"synthetic historical commercial test","review":null,"spec_id":"6633507f-53a4-47cb-969f-96e66ccea967","relation":null,"avatar_id":"1bc9cff3-ecac-425d-bbe8-8a49fcb8ec91","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"9060e2de-f6a6-48ce-bfde-ee5158de4c91","ranking_opt_in":false,"buyer_accepted_by":null,"evidence_asset_ids":["30bae3f7-6f8f-42e7-aeb7-7f4c60a943f5"]}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:265
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:143)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED supplier cannot pass independent offer review
+    not ok 9 - EXPIRED supplier cannot pass independent offer review
+      ---
+      duration_ms: 20.416
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-supplier-expanded.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"65469b8f-0250-49e9-83b0-4f7098cd865f","actor":{"account_id":"02e1d2ad-414d-42b2-b933-b86d862df775"},"acting_party":null},"data":{"id":"b90fbf21-8b5b-4134-be71-ea3cfa960a1d","kind":"OFFER","owner_party_id":"84e4aa63-962b-4f88-9756-f51cb7971fd9","counterparty_id":"7f7f4207-8819-4f3c-a578-d25095aa0c07","parent_id":"647295f4-8deb-497b-9ea9-81da569964f3","created_by":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6","current_status":"APPROVED","object_version":2,"content_sha256":"a5b6fa8957ba02c7de7509c45adc3343a3a06a9131af8a98580435c2bd8f23f4","data":{"terms":"synthetic historical commercial test","review":{"decision":"APPROVED","reason":"Synthetic current supplier identity review","checks":{"identity_verified":true,"authority_verified":true,"materials_reviewed":true,"content_reviewed":true,"marking_reviewed":true},"account_id":"02e1d2ad-414d-42b2-b933-b86d862df775","method":"EXTERNAL_MANUAL_REVIEW"},"spec_id":"6633507f-53a4-47cb-969f-96e66ccea967","relation":null,"avatar_id":"1bc9cff3-ecac-425d-bbe8-8a49fcb8ec91","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"9060e2de-f6a6-48ce-bfde-ee5158de4c91","ranking_opt_in":false,"buyer_accepted_by":null,"evidence_asset_ids":["30bae3f7-6f8f-42e7-aeb7-7f4c60a943f5"]}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:64:449
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:64:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED supplier may read its authorized historical offer
+    ok 10 - EXPIRED supplier may read its authorized historical offer
+      ---
+      duration_ms: 7.1666
+      type: 'test'
+      ...
+    # Subtest: EXPIRED independent reviewer may reject a pending supplier offer
+    ok 11 - EXPIRED independent reviewer may reject a pending supplier offer
+      ---
+      duration_ms: 14.5634
+      type: 'test'
+      ...
+    # Subtest: EXPIRED supplier identity recovery retains original successful offer key
+    ok 12 - EXPIRED supplier identity recovery retains original successful offer key
+      ---
+      duration_ms: 10.655
+      type: 'test'
+      ...
+    # Subtest: REJECTED supplier cannot use new commercial offer
+    not ok 13 - REJECTED supplier cannot use new commercial offer
+      ---
+      duration_ms: 29.0607
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-supplier-expanded.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"414323bb-9b01-463f-9538-efdad87c4cbd","actor":{"account_id":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6"},"acting_party":"84e4aa63-962b-4f88-9756-f51cb7971fd9"},"data":{"id":"907b55c1-faa3-4427-8bd2-da43698fd107","kind":"OFFER","owner_party_id":"84e4aa63-962b-4f88-9756-f51cb7971fd9","counterparty_id":"7f7f4207-8819-4f3c-a578-d25095aa0c07","parent_id":"647295f4-8deb-497b-9ea9-81da569964f3","created_by":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6","current_status":"IN_REVIEW","object_version":1,"content_sha256":"f288f861b74c5681dab402b739d2d2931a6248233eb86eb0e4bd3c6606386222","data":{"ranking_opt_in":false,"spec_id":"6633507f-53a4-47cb-969f-96e66ccea967","avatar_id":"1bc9cff3-ecac-425d-bbe8-8a49fcb8ec91","consent_id":"9060e2de-f6a6-48ce-bfde-ee5158de4c91","relation":null,"commission":{"mcn_bps":0,"platform_bps":2000},"terms":"synthetic historical commercial test","evidence_asset_ids":["30bae3f7-6f8f-42e7-aeb7-7f4c60a943f5"],"review":null,"buyer_accepted_by":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:265
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:143)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED supplier cannot use successful commercial offer replay
+    not ok 14 - REJECTED supplier cannot use successful commercial offer replay
+      ---
+      duration_ms: 10.7936
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-supplier-expanded.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"0ee12357-c22e-4cfd-bc24-c6629a2c3866","actor":{"account_id":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6"},"acting_party":"84e4aa63-962b-4f88-9756-f51cb7971fd9"},"data":{"id":"b5b5d217-ac0a-41dd-8d20-4c07d28210c0","kind":"OFFER","owner_party_id":"84e4aa63-962b-4f88-9756-f51cb7971fd9","counterparty_id":"7f7f4207-8819-4f3c-a578-d25095aa0c07","parent_id":"647295f4-8deb-497b-9ea9-81da569964f3","created_by":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6","current_status":"IN_REVIEW","object_version":1,"content_sha256":"f288f861b74c5681dab402b739d2d2931a6248233eb86eb0e4bd3c6606386222","data":{"terms":"synthetic historical commercial test","review":null,"spec_id":"6633507f-53a4-47cb-969f-96e66ccea967","relation":null,"avatar_id":"1bc9cff3-ecac-425d-bbe8-8a49fcb8ec91","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"9060e2de-f6a6-48ce-bfde-ee5158de4c91","ranking_opt_in":false,"buyer_accepted_by":null,"evidence_asset_ids":["30bae3f7-6f8f-42e7-aeb7-7f4c60a943f5"]}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:265
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:143)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED supplier cannot pass independent offer review
+    not ok 15 - REJECTED supplier cannot pass independent offer review
+      ---
+      duration_ms: 18.6258
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-supplier-expanded.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"c91b512f-b910-42d8-92bc-dd7fbd3994c8","actor":{"account_id":"02e1d2ad-414d-42b2-b933-b86d862df775"},"acting_party":null},"data":{"id":"b5b5d217-ac0a-41dd-8d20-4c07d28210c0","kind":"OFFER","owner_party_id":"84e4aa63-962b-4f88-9756-f51cb7971fd9","counterparty_id":"7f7f4207-8819-4f3c-a578-d25095aa0c07","parent_id":"647295f4-8deb-497b-9ea9-81da569964f3","created_by":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6","current_status":"APPROVED","object_version":2,"content_sha256":"a5b6fa8957ba02c7de7509c45adc3343a3a06a9131af8a98580435c2bd8f23f4","data":{"terms":"synthetic historical commercial test","review":{"decision":"APPROVED","reason":"Synthetic current supplier identity review","checks":{"identity_verified":true,"authority_verified":true,"materials_reviewed":true,"content_reviewed":true,"marking_reviewed":true},"account_id":"02e1d2ad-414d-42b2-b933-b86d862df775","method":"EXTERNAL_MANUAL_REVIEW"},"spec_id":"6633507f-53a4-47cb-969f-96e66ccea967","relation":null,"avatar_id":"1bc9cff3-ecac-425d-bbe8-8a49fcb8ec91","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"9060e2de-f6a6-48ce-bfde-ee5158de4c91","ranking_opt_in":false,"buyer_accepted_by":null,"evidence_asset_ids":["30bae3f7-6f8f-42e7-aeb7-7f4c60a943f5"]}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:64:449
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:64:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED supplier may read its authorized historical offer
+    ok 16 - REJECTED supplier may read its authorized historical offer
+      ---
+      duration_ms: 6.2682
+      type: 'test'
+      ...
+    # Subtest: REJECTED independent reviewer may reject a pending supplier offer
+    ok 17 - REJECTED independent reviewer may reject a pending supplier offer
+      ---
+      duration_ms: 13.7228
+      type: 'test'
+      ...
+    # Subtest: REJECTED supplier identity recovery retains original successful offer key
+    ok 18 - REJECTED supplier identity recovery retains original successful offer key
+      ---
+      duration_ms: 9.015
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED supplier cannot use new commercial offer
+    not ok 19 - UNVERIFIED supplier cannot use new commercial offer
+      ---
+      duration_ms: 123.6937
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-supplier-expanded.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"333b6b9c-df35-4082-8b90-a976c44d9bc5","actor":{"account_id":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6"},"acting_party":"84e4aa63-962b-4f88-9756-f51cb7971fd9"},"data":{"id":"af259b28-7578-4014-bd21-c3262edde865","kind":"OFFER","owner_party_id":"84e4aa63-962b-4f88-9756-f51cb7971fd9","counterparty_id":"7f7f4207-8819-4f3c-a578-d25095aa0c07","parent_id":"647295f4-8deb-497b-9ea9-81da569964f3","created_by":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6","current_status":"IN_REVIEW","object_version":1,"content_sha256":"f288f861b74c5681dab402b739d2d2931a6248233eb86eb0e4bd3c6606386222","data":{"ranking_opt_in":false,"spec_id":"6633507f-53a4-47cb-969f-96e66ccea967","avatar_id":"1bc9cff3-ecac-425d-bbe8-8a49fcb8ec91","consent_id":"9060e2de-f6a6-48ce-bfde-ee5158de4c91","relation":null,"commission":{"mcn_bps":0,"platform_bps":2000},"terms":"synthetic historical commercial test","evidence_asset_ids":["30bae3f7-6f8f-42e7-aeb7-7f4c60a943f5"],"review":null,"buyer_accepted_by":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:265
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:143)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED supplier cannot use successful commercial offer replay
+    not ok 20 - UNVERIFIED supplier cannot use successful commercial offer replay
+      ---
+      duration_ms: 12.0827
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-supplier-expanded.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"eb530787-c447-4a32-a2fa-2543b4b8a91b","actor":{"account_id":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6"},"acting_party":"84e4aa63-962b-4f88-9756-f51cb7971fd9"},"data":{"id":"8977b731-1399-4b4f-983b-a276708be3e2","kind":"OFFER","owner_party_id":"84e4aa63-962b-4f88-9756-f51cb7971fd9","counterparty_id":"7f7f4207-8819-4f3c-a578-d25095aa0c07","parent_id":"647295f4-8deb-497b-9ea9-81da569964f3","created_by":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6","current_status":"IN_REVIEW","object_version":1,"content_sha256":"f288f861b74c5681dab402b739d2d2931a6248233eb86eb0e4bd3c6606386222","data":{"terms":"synthetic historical commercial test","review":null,"spec_id":"6633507f-53a4-47cb-969f-96e66ccea967","relation":null,"avatar_id":"1bc9cff3-ecac-425d-bbe8-8a49fcb8ec91","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"9060e2de-f6a6-48ce-bfde-ee5158de4c91","ranking_opt_in":false,"buyer_accepted_by":null,"evidence_asset_ids":["30bae3f7-6f8f-42e7-aeb7-7f4c60a943f5"]}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:265
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:63:143)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED supplier cannot pass independent offer review
+    not ok 21 - UNVERIFIED supplier cannot pass independent offer review
+      ---
+      duration_ms: 27.6796
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-supplier-expanded.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"c3bde8d7-d9f1-461f-a115-9dfa70eda62a","actor":{"account_id":"02e1d2ad-414d-42b2-b933-b86d862df775"},"acting_party":null},"data":{"id":"8977b731-1399-4b4f-983b-a276708be3e2","kind":"OFFER","owner_party_id":"84e4aa63-962b-4f88-9756-f51cb7971fd9","counterparty_id":"7f7f4207-8819-4f3c-a578-d25095aa0c07","parent_id":"647295f4-8deb-497b-9ea9-81da569964f3","created_by":"9d0f0825-26d5-4dff-a65d-8537c6dda9a6","current_status":"APPROVED","object_version":2,"content_sha256":"a5b6fa8957ba02c7de7509c45adc3343a3a06a9131af8a98580435c2bd8f23f4","data":{"terms":"synthetic historical commercial test","review":{"decision":"APPROVED","reason":"Synthetic current supplier identity review","checks":{"identity_verified":true,"authority_verified":true,"materials_reviewed":true,"content_reviewed":true,"marking_reviewed":true},"account_id":"02e1d2ad-414d-42b2-b933-b86d862df775","method":"EXTERNAL_MANUAL_REVIEW"},"spec_id":"6633507f-53a4-47cb-969f-96e66ccea967","relation":null,"avatar_id":"1bc9cff3-ecac-425d-bbe8-8a49fcb8ec91","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"9060e2de-f6a6-48ce-bfde-ee5158de4c91","ranking_opt_in":false,"buyer_accepted_by":null,"evidence_asset_ids":["30bae3f7-6f8f-42e7-aeb7-7f4c60a943f5"]}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:64:449
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-supplier-expanded.cjs:64:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED supplier may read its authorized historical offer
+    ok 22 - UNVERIFIED supplier may read its authorized historical offer
+      ---
+      duration_ms: 5.4107
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED independent reviewer may reject a pending supplier offer
+    ok 23 - UNVERIFIED independent reviewer may reject a pending supplier offer
+      ---
+      duration_ms: 18.4703
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED supplier identity recovery retains original successful offer key
+    ok 24 - UNVERIFIED supplier identity recovery retains original successful offer key
+      ---
+      duration_ms: 8.6367
+      type: 'test'
+      ...
+    1..24
+not ok 1 - commercial-supplier current identity on submission replay and review
+  ---
+  duration_ms: 44814.2237
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-supplier-expanded.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '9 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 25
+# suites 0
+# pass 15
+# fail 10
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 45027.8602

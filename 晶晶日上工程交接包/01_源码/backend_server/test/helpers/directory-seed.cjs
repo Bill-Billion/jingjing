@@ -10,6 +10,7 @@ async function seedDirectory(db){
  const material=await artistAssets.upload(seller.ctx,{...artistScope,purpose:'AVATAR_MATERIAL',media_type:'image/png',body:Buffer.from('synthetic public image'),operation_key:key()});
  const look=await S.artists.createVariant(seller.ctx,{...artistScope,avatar_id:S.avatar.id,kind:'LOOK',variant:{previous_version_id:null,display_name:'synthetic public look',material_asset_ids:[material.id],consent_id:publicConsent.id},operation_key:key()});
  const halo=await reviewArtist(await S.artists.requestHalo(seller.ctx,{...artistScope,level:1,ownership_promise:true,evidence_asset_ids:[S.evidence.id],operation_key:key()}));
+ await require('./trusted-identity.cjs').seedAdultIdentity(db,S.resolvePrincipal,outsider); // Explicit normal hosting merchant, not a registration default.
  const merchant=await S.parties.createOrganization(outsider.ctx,{display_name:'synthetic hosting merchant',operation_key:key()});
  const trade=require('../../src/modules/trade/repository').createTradeRepository(db,{resolvePrincipal:S.resolvePrincipal}),services=require('../../src/modules/artists/services').createArtistServices(db,{resolvePrincipal:S.resolvePrincipal,merchantPartyId:merchant.party_id});
  const hostingRuleId=key(),hostingRule=require('../../src/modules/governance/content').createRuleContent({id:hostingRuleId,rule_key:'notices.hosting.synthetic',version:'1',terms:{explicit:'synthetic hosting only'}});
