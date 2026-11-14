@@ -3,7 +3,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 test('isolated SMS API fixture uses the actual config proof and recovers after simulated unavailability',{skip:!process.env.JX_MYSQL_TEST_ENV_FILE},async()=>{
  const root=path.resolve(__dirname,'../../../..'),dir=await fs.mkdtemp(path.join(os.tmpdir(),'jx-sms-fixture-')),state=path.join(dir,'state.json');
  const env={...process.env,PR11_UI_STATE_FILE:state,PR11_UI_API_PORT:'0',PR11_UI_CONTROL_PORT:'0'};delete env.DEBUG;delete env.NODE_DEBUG;
- const child=spawn(process.execPath,[path.join(root,'scripts/pr11-ui-test-server.cjs'),'--test-only'],{cwd:root,env,stdio:['ignore','pipe','pipe'],windowsHide:true});
+ // Keep inherited relative NODE_OPTIONS preloads in the backend test runner's directory.
+ const child=spawn(process.execPath,[path.join(root,'scripts/pr11-ui-test-server.cjs'),'--test-only'],{cwd:path.resolve(__dirname,'..'),env,stdio:['ignore','pipe','pipe'],windowsHide:true});
  let exit=null,output='';child.on('exit',(code,signal)=>{exit={code,signal};});for(const stream of [child.stdout,child.stderr])stream.on('data',b=>{output=(output+b.toString()).slice(-10000);});
  let config;
  try{
