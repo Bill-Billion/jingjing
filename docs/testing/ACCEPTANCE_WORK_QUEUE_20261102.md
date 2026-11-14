@@ -3,7 +3,7 @@
 由 scripts/acceptance_work_queue.py 从正式登记生成；不执行测试，不改变验收状态。
 后端负责人 chengcongcong222 按双方CURRENT继续独立开发、后端验证和证据登记；Bill-Billion仅既有UI工作，不代认领新页面任务。当前不开发修补前端、不运行本机App/Web。原18组和12路线不变。
 
-登记共151条；状态：{'NOT_RUN': 11, 'PARTIAL': 121, 'PASS': 19}；其中130条有显式登记的局部证据关联。
+登记共151条；状态：{'NOT_RUN': 10, 'PARTIAL': 122, 'PASS': 19}；其中131条有显式登记的局部证据关联。
 局部证据关联数不等于通过数；未挂关联也不等于未开发。历史检查未系统逐条归档，仍须按下表核完整预期。
 
 接续顺序以双方CURRENT及本轮报告为准，逐项核原文、实际实现和剩余证据；页面与设备缺口单列待后续安排，不将其重新指派给前端，不阻断独立后端工作。
@@ -110,7 +110,7 @@
 |ACC-DEL-24.01 默认私有|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-24（局部）；FP-01（局部）|PARTIAL|
 |ACC-DEL-24.02 多模态审核|后端|正常办理、取消/退款/撤回|VIDEO-MODERATION-COVERAGE（局部）；STANDALONE-AUDIO-MODERATION（局部）|PARTIAL|
 |ACC-DEL-24.03 标识完整|后端|正常办理、取消/退款/撤回|MEDIA-LABEL-RECEIPT-AND-BYTES（局部）；COVER-LABEL-HTTP-BYTES（局部）；PRODUCTION-MEDIA-DELIVERY（局部）|PARTIAL|
-|ACC-DEL-24.04 治理证据|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-24.04 治理证据|后端|正常办理、取消/退款/撤回|GOVERNANCE-INVENTORY-FACTS（局部）|PARTIAL|
 |ACC-DEL-25.01 管理不所有|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-25（局部）|PARTIAL|
 |ACC-DEL-25.02 批量经营|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|PASS|
 |ACC-DEL-25.03 解除与历史|后端|正常办理、取消/退款/撤回|SC-01（局部）|PARTIAL|
