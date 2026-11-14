@@ -94,7 +94,7 @@
 |ACC-DEL-20.01 归因|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-20（局部）|PARTIAL|
 |ACC-DEL-20.02 新合同一级直推返佣10%–15%，具体活动经审核发布；成长归因和财务分账规则须一致，从约定来源列支、不挤占艺人/MCN本金。旧7.2%/6.6%等只按历史订单快照重放，不作为新活动默认。|后端|正常办理、取消/退款/撤回|MCN-CONTROLS-20-02（局部）|PARTIAL|
 |ACC-DEL-20.03 结佣|后端|正常办理、取消/退款/撤回|REFERRAL-RISK-SETTLEMENT（局部）|PARTIAL|
-|ACC-DEL-20.04 逆向|后端|正常办理、取消/退款/撤回|REFERRAL-ORIGINAL-REFUNDS（局部）；REFERRAL-MCN-ORIGINAL-ORDER（局部）|PARTIAL|
+|ACC-DEL-20.04 逆向|后端|正常办理、取消/退款/撤回|REFERRAL-ORIGINAL-REFUNDS（局部）；REFERRAL-MCN-ORIGINAL-ORDER（局部）；UNFULFILLED-REFUND-ORIGINAL-COMMISSION（局部）|PARTIAL|
 |ACC-DEL-21.01 奖项版本|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-21（局部）|PARTIAL|
 |ACC-DEL-21.02 300与2700|后端|正常办理、取消/退款/撤回|LOTTERY-POINTS-ATOMIC-REPLAY（局部）|PARTIAL|
 |ACC-DEL-21.03 十连保底|后端|正常办理、取消/退款/撤回|LOTTERY-EFFECTIVE-ODDS-VERSION（局部）|PARTIAL|
@@ -140,7 +140,7 @@
 |E2E-07 成年资格→公开奖池→扣2700→十连→发权益→断网重复查询|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-07（局部）；FP-03（局部）；JOURNEY-UI-07（局部）；CP04（局部）|PARTIAL|
 |E2E-08 充值300→资格解锁→消费发成长→到期/续期→冻结恢复→退款冲回|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-08（局部）；JOURNEY-UI-08（局部）；WALLET-REFUND-API（局部）|PARTIAL|
 |E2E-09 曝光券绑定公开资产→生效7天→到期/下架；月投票→评分→公示→兑奖|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|AFTERNOON-EXPOSURE-NATIVE-01, AFTERNOON-EXPOSURE-WEB-02, AFTERNOON-EXPOSURE-CROSS-03, AFTERNOON-EXPOSURE-PERM-04（局部）；ROUTE-09（局部）；JOURNEY-UI-09（局部）|PARTIAL|
-|E2E-10 MCN互认→样片/商单成交→换绑→退款→旧单结算|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|SC-01（局部）；ROUTE-10（局部）；JOURNEY-UI-10（局部）；TONIGHT-10（局部）|PARTIAL|
+|E2E-10 MCN互认→样片/商单成交→换绑→退款→旧单结算|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|SC-01（局部）；ROUTE-10（局部）；JOURNEY-UI-10（局部）；TONIGHT-10（局部）；UNFULFILLED-REFUND-ORIGINAL-COMMISSION（局部）|PARTIAL|
 |E2E-11 撤回脸声→下架/禁新增任务→已有订单处置→供应商删除请求→回执→隐私工单|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|SC-05（局部）；ROUTE-11（局部）；JOURNEY-UI-11（局部）；ACCESS-GIG-01, ACCESS-PRIVACY-02（局部）；CLOSURE-LOST-RESPONSE（局部）；TEAM-A-NATIVE-CLOSE, TEAM-A-REOPEN, TEAM-A-FINAL-CLOSE（局部）；TONIGHT-11（局部）；PRIVACY-SAME-REQUEST（局部）；PRIVACY-MESSAGES-COMMERCIAL, PRIVACY-MESSAGES-AUDITION（局部）；PARTICIPATION-SAME-PROJECT-COPIES（局部）；OWN-PHONE_CHANGE_EVENTS, OWN-PARTICIPATION_CONFIRMATIONS, OWN-PARTICIPATION_MILESTONES（局部）；PERSONAL-MATERIAL-CONTEXT, PERSONAL-TRADE-CONTEXT（局部）；SAME-REQUEST-MATERIAL-TRADE-DELIVERY（局部）|PARTIAL|
 |E2E-12 独立报价合同→具体角色绑定→约定付款→版本会签→外部发行证据→账单到账→结算|后端、App、网页|正常办理、取消/退款/撤回、越权拒绝、重复操作、权限或状态变化、中断恢复|ROUTE-12（局部）；JOURNEY-UI-12（局部）；ACCESS-CAST-03（局部）；TONIGHT-12（局部）；PARTICIPATION-SAME-PROJECT-COPIES（局部）；OWN-PARTICIPATION_CONFIRMATIONS, OWN-PARTICIPATION_MILESTONES（局部）|PARTIAL|
 |ACC-DEL-19.05 月冠军投票、复合评分和奖励兑现|后端|正常办理、取消/退款/撤回|CHAMPIONSHIP-CONTRACT-SAME-EVENT（局部）；CHAMPION-DAY-MULTI-SCORES（局部）|PARTIAL|

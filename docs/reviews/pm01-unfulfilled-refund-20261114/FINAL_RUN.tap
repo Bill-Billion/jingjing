@@ -1,0 +1,791 @@
+TAP version 13
+# Subtest: audition booking, delivery, privacy and refunds in isolated MySQL
+    # Subtest: future or expired manual review cannot supply audition options or a new offer
+    ok 1 - future or expired manual review cannot supply audition options or a new offer
+      ---
+      duration_ms: 105.2568
+      type: 'test'
+      ...
+    # Subtest: first offer reads qualified rules and minimal authorizations with no prior offer
+    ok 2 - first offer reads qualified rules and minimal authorizations with no prior offer
+      ---
+      duration_ms: 53.3386
+      type: 'test'
+      ...
+    # Subtest: only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage
+    ok 3 - only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage
+      ---
+      duration_ms: 58.0854
+      type: 'test'
+      ...
+    # Subtest: visibility changes independent of public artist archive; price not leaked by catalog
+    ok 4 - visibility changes independent of public artist archive; price not leaked by catalog
+      ---
+      duration_ms: 52.846
+      type: 'test'
+      ...
+    # Subtest: accepted private invitation exposes matching offers only; revoked invitation cannot book
+    ok 5 - accepted private invitation exposes matching offers only; revoked invitation cannot book
+      ---
+      duration_ms: 103.3164
+      type: 'test'
+      ...
+    # Subtest: unsafe place refused and stale price cannot book
+    ok 6 - unsafe place refused and stale price cannot book
+      ---
+      duration_ms: 14.4104
+      type: 'test'
+      ...
+    # Subtest: unpaid order cannot accept or open conversation; independent venue review required
+    ok 7 - unpaid order cannot accept or open conversation; independent venue review required
+      ---
+      duration_ms: 97.9931
+      type: 'test'
+      ...
+    # Subtest: verified payment is idempotent and still needs artist acceptance
+    ok 8 - verified payment is idempotent and still needs artist acceptance
+      ---
+      duration_ms: 77.1491
+      type: 'test'
+      ...
+    # Subtest: accept opens conversation; duplicate decision returns same booking
+    ok 9 - accept opens conversation; duplicate decision returns same booking
+      ---
+      duration_ms: 33.9362
+      type: 'test'
+      ...
+    # Subtest: contact requires separate consent and is never embedded in booking/order
+    ok 10 - contact requires separate consent and is never embedded in booking/order
+      ---
+      duration_ms: 33.3019
+      type: 'test'
+      ...
+    # Subtest: conversation deduplicates, rejects bait, and unauthorized support cannot read
+    ok 11 - conversation deduplicates, rejects bait, and unauthorized support cannot read
+      ---
+      duration_ms: 103.7681
+      type: 'test'
+      ...
+    # Subtest: departed safety case freezes contact and settlement without credit penalty
+    ok 12 - departed safety case freezes contact and settlement without credit penalty
+      ---
+      duration_ms: 48.2767
+      type: 'test'
+      ...
+    # Subtest: delivery requires correct count, authorization and arrival
+    ok 13 - delivery requires correct count, authorization and arrival
+      ---
+      duration_ms: 96.0573
+      type: 'test'
+      ...
+    # Subtest: paid audition conversation provides a scoped working draft and reviewed personal copy
+    ok 14 - paid audition conversation provides a scoped working draft and reviewed personal copy
+      ---
+      duration_ms: 461.394
+      type: 'test'
+      ...
+    # Subtest: actual private bytes required before receipt and acceptance
+    ok 15 - actual private bytes required before receipt and acceptance
+      ---
+      duration_ms: 329.3035
+      type: 'test'
+      ...
+    # Subtest: MCN same-order income follows actual pending, accepted, declined, expired and refunded audition outcomes
+    ok 16 - MCN same-order income follows actual pending, accepted, declined, expired and refunded audition outcomes
+      ---
+      duration_ms: 680.0125
+      type: 'test'
+      ...
+    # Subtest: decline creates one refund request; verified provider refund required for refunded status
+    ok 17 - decline creates one refund request; verified provider refund required for refunded status
+      ---
+      duration_ms: 118.632
+      type: 'test'
+      ...
+    # Subtest: unaccepted expiry cannot be accepted, goes through refund request
+    ok 18 - unaccepted expiry cannot be accepted, goes through refund request
+      ---
+      duration_ms: 101.4009
+      type: 'test'
+      ...
+    # Subtest: minor cannot create offer or buy even if client says otherwise
+    ok 19 - minor cannot create offer or buy even if client says otherwise
+      ---
+      duration_ms: 5.76
+      type: 'test'
+      ...
+    # Subtest: legacy order comments cannot bypass dedicated conversation gate
+    ok 20 - legacy order comments cannot bypass dedicated conversation gate
+      ---
+      duration_ms: 8.3772
+      type: 'test'
+      ...
+    # Subtest: automated expiry is lease fenced and creates only one refund request
+    ok 21 - automated expiry is lease fenced and creates only one refund request
+      ---
+      duration_ms: 108.849
+      type: 'test'
+      ...
+    # Subtest: one accepted booking cancels before departure, freezes conversation and verifies refund once
+    ok 22 - one accepted booking cancels before departure, freezes conversation and verifies refund once
+      ---
+      duration_ms: 210.4239
+      type: 'test'
+      ...
+    # Subtest: partial and full refunds followed by payment review freeze booking and T+1 settlement
+    ok 23 - partial and full refunds followed by payment review freeze booking and T+1 settlement
+      ---
+      duration_ms: 414.1544
+      type: 'test'
+      ...
+    # Subtest: before departure cancellation is full refund even for safety reason
+    ok 24 - before departure cancellation is full refund even for safety reason
+      ---
+      duration_ms: 103.0855
+      type: 'test'
+      ...
+    # Subtest: custody channel is captured at checkout without changing old contracts or claiming real payment
+    ok 25 - custody channel is captured at checkout without changing old contracts or claiming real payment
+      ---
+      duration_ms: 52.0468
+      type: 'test'
+      ...
+    # Subtest: unpaid cancellation uses trade and preserves cancelled appointment
+    ok 26 - unpaid cancellation uses trade and preserves cancelled appointment
+      ---
+      duration_ms: 61.7061
+      type: 'test'
+      ...
+    # Subtest: concurrent accept or decline produces one winner
+    ok 27 - concurrent accept or decline produces one winner
+      ---
+      duration_ms: 136.8867
+      type: 'test'
+      ...
+    # Subtest: reschedule needs other party plus independent venue review; support join/leave controls access
+    ok 28 - reschedule needs other party plus independent venue review; support join/leave controls access
+      ---
+      duration_ms: 335.8243
+      type: 'test'
+      ...
+    # Subtest: new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights
+    ok 29 - new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights
+      ---
+      duration_ms: 55.2212
+      type: 'test'
+      ...
+    # Subtest: automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing
+    ok 30 - automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing
+      ---
+      duration_ms: 889.6029
+      type: 'test'
+      ...
+    # Subtest: same artist cannot accept two overlapping appointments and one can be rescheduled later
+    ok 31 - same artist cannot accept two overlapping appointments and one can be rescheduled later
+      ---
+      duration_ms: 209.1122
+      type: 'test'
+      ...
+    # Subtest: independent support reads only live linked dispute evidence, and access ends on resolution
+    ok 32 - independent support reads only live linked dispute evidence, and access ends on resolution
+      ---
+      duration_ms: 381.6984
+      type: 'test'
+      ...
+    # Subtest: MCN requires this persons explicit audition delegation and loses access immediately on withdrawal
+    ok 33 - MCN requires this persons explicit audition delegation and loses access immediately on withdrawal
+      ---
+      duration_ms: 48.0986
+      type: 'test'
+      ...
+    # Subtest: withdrawn sample consent closes buyer file access without deleting artist archive
+    ok 34 - withdrawn sample consent closes buyer file access without deleting artist archive
+      ---
+      duration_ms: 15.2978
+      type: 'test'
+      ...
+    # Subtest: retired offer rule blocks new publication and booking, preserving original paid record
+    ok 35 - retired offer rule blocks new publication and booking, preserving original paid record
+      ---
+      duration_ms: 47.8195
+      type: 'test'
+      ...
+    1..35
+ok 1 - audition booking, delivery, privacy and refunds in isolated MySQL
+  ---
+  duration_ms: 15357.0848
+  type: 'test'
+  ...
+# Subtest: engagement real database journey and permission boundaries
+    # Subtest: reviewed rules, self-review refusal and explicit unconfigured starlight
+    ok 1 - reviewed rules, self-review refusal and explicit unconfigured starlight
+      ---
+      duration_ms: 104.2334
+      type: 'test'
+      ...
+    # Subtest: profile belongs to verified artist, repeated interaction deduplicates
+    ok 2 - profile belongs to verified artist, repeated interaction deduplicates
+      ---
+      duration_ms: 58.6143
+      type: 'test'
+      ...
+    # Subtest: own visible ranking profile can be selected without revealing another person
+    ok 3 - own visible ranking profile can be selected without revealing another person
+      ---
+      duration_ms: 57.528
+      type: 'test'
+      ...
+    # Subtest: sandbox orders excluded; verified fixture receipts and fulfillment create rank facts
+    ok 4 - sandbox orders excluded; verified fixture receipts and fulfillment create rank facts
+      ---
+      duration_ms: 350.42
+      type: 'test'
+      ...
+    # Subtest: reward inventory reviewed independently and competition cannot over-reserve
+    ok 5 - reward inventory reviewed independently and competition cannot over-reserve
+      ---
+      duration_ms: 103.1471
+      type: 'test'
+      ...
+    # Subtest: votes debit once; concurrent daily cap, outsider access and appeal return
+    ok 6 - votes debit once; concurrent daily cap, outsider access and appeal return
+      ---
+      duration_ms: 152.4551
+      type: 'test'
+      ...
+    # Subtest: appeal return first clears debt from the very same refunded earning lot
+    ok 7 - appeal return first clears debt from the very same refunded earning lot
+      ---
+      duration_ms: 261.8697
+      type: 'test'
+      ...
+    # Subtest: candidate with operator permission cannot adjudicate votes for self; independent review retains the same spent points
+    ok 8 - candidate with operator permission cannot adjudicate votes for self; independent review retains the same spent points
+      ---
+      duration_ms: 55.8894
+      type: 'test'
+      ...
+    # Subtest: same vote appeal restoration preserves withdrawal and original debit until explicit public opt-in
+    ok 9 - same vote appeal restoration preserves withdrawal and original debit until explicit public opt-in
+      ---
+      duration_ms: 134.5146
+      type: 'test'
+      ...
+    # Subtest: appeals block finalization; confirmed award and proof-backed redemption
+    ok 10 - appeals block finalization; confirmed award and proof-backed redemption
+      ---
+      duration_ms: 102.4532
+      type: 'test'
+      ...
+    # Subtest: starlight configuration is independent, version frozen, no exchange
+    ok 11 - starlight configuration is independent, version frozen, no exchange
+      ---
+      duration_ms: 103.305
+      type: 'test'
+      ...
+    # Subtest: last valid referral is frozen at checkout and receives only platform allocation
+    ok 12 - last valid referral is frozen at checkout and receives only platform allocation
+      ---
+      duration_ms: 799.3171
+      type: 'test'
+      ...
+    # Subtest: staff need accepted membership and artist-scoped grant; revoke immediately denies access
+    ok 13 - staff need accepted membership and artist-scoped grant; revoke immediately denies access
+      ---
+      duration_ms: 93.9691
+      type: 'test'
+      ...
+    # Subtest: exact score tie blocks award until two independent operators review; exposure is dated
+    ok 14 - exact score tie blocks award until two independent operators review; exposure is dated
+      ---
+      duration_ms: 257.6548
+      type: 'test'
+      ...
+    # Subtest: same installation across accounts counts once and generic POST cannot forge a listen
+    ok 15 - same installation across accounts counts once and generic POST cannot forge a listen
+      ---
+      duration_ms: 24.2633
+      type: 'test'
+      ...
+    # Subtest: automatic growth work requires current lease and schedules continuation
+    ok 16 - automatic growth work requires current lease and schedules continuation
+      ---
+      duration_ms: 76.3511
+      type: 'test'
+      ...
+    # Subtest: front-end can discover rankings, events and remaining votes without operator access
+    ok 17 - front-end can discover rankings, events and remaining votes without operator access
+      ---
+      duration_ms: 72.5572
+      type: 'test'
+      ...
+    # Subtest: seller with operator permission cannot exclude or restore buyer review of own order
+    ok 18 - seller with operator permission cannot exclude or restore buyer review of own order
+      ---
+      duration_ms: 45.118
+      type: 'test'
+      ...
+    # Subtest: ranked artist cannot moderate own popularity evidence; independent appeal preserves original interaction
+    ok 19 - ranked artist cannot moderate own popularity evidence; independent appeal preserves original interaction
+      ---
+      duration_ms: 37.0025
+      type: 'test'
+      ...
+    # Subtest: confirmed manipulation removes order facts and independent appeal restores them
+    ok 20 - confirmed manipulation removes order facts and independent appeal restores them
+      ---
+      duration_ms: 79.642
+      type: 'test'
+      ...
+    # Subtest: city buyer list has separate organization facts; only reviewed weights enable ranking
+    ok 21 - city buyer list has separate organization facts; only reviewed weights enable ranking
+      ---
+      duration_ms: 109.5613
+      type: 'test'
+      ...
+    # Subtest: MCN can assign an actual booking only to a currently delegated employee
+    ok 22 - MCN can assign an actual booking only to a currently delegated employee
+      ---
+      duration_ms: 306.7406
+      type: 'test'
+      ...
+    # Subtest: recommendation preference does not personalize public rankings; participation withdrawal removes historic visibility
+    ok 23 - recommendation preference does not personalize public rankings; participation withdrawal removes historic visibility
+      ---
+      duration_ms: 111.7787
+      type: 'test'
+      ...
+    # Subtest: artist cannot erase operator exclusion by editing public profile
+    ok 24 - artist cannot erase operator exclusion by editing public profile
+      ---
+      duration_ms: 31.9249
+      type: 'test'
+      ...
+    # Subtest: MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation
+        # Subtest: income filters use order creation UTC boundaries, keep actual receipts separate, and count each order once
+        ok 1 - income filters use order creation UTC boundaries, keep actual receipts separate, and count each order once
+          ---
+          duration_ms: 99.7792
+          type: 'test'
+          ...
+        # Subtest: income retains gross receipts and refunds, excludes sandbox totals, and does not invent artist attribution
+        ok 2 - income retains gross receipts and refunds, excludes sandbox totals, and does not invent artist attribution
+          ---
+          duration_ms: 42.786
+          type: 'test'
+          ...
+        # Subtest: frozen multi-artist stock history filters either artist without doubling receipts or trusting assignments
+        ok 3 - frozen multi-artist stock history filters either artist without doubling receipts or trusting assignments
+          ---
+          duration_ms: 181.2155
+          type: 'test'
+          ...
+        1..3
+    ok 25 - MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation
+      ---
+      duration_ms: 675.742
+      type: 'test'
+      ...
+    # Subtest: HTTP routes require authentication and preserve response envelope
+    ok 26 - HTTP routes require authentication and preserve response envelope
+      ---
+      duration_ms: 19.3404
+      type: 'test'
+      ...
+    # Subtest: leaving public participation hides old competition result and rejoining restores its unchanged facts
+    ok 27 - leaving public participation hides old competition result and rejoining restores its unchanged facts
+      ---
+      duration_ms: 85.0983
+      type: 'test'
+      ...
+    # Subtest: operator exclusion hides the same published result; only independent recovery restores original facts
+    ok 28 - operator exclusion hides the same published result; only independent recovery restores original facts
+      ---
+      duration_ms: 101.1898
+      type: 'test'
+      ...
+    # Subtest: same interaction restoration cannot undo profile exclusion or opt-out and leaves the other winner visible
+    ok 29 - same interaction restoration cannot undo profile exclusion or opt-out and leaves the other winner visible
+      ---
+      duration_ms: 123.1834
+      type: 'test'
+      ...
+    # Subtest: withdrawing public consent immediately removes the selectable profile
+    ok 30 - withdrawing public consent immediately removes the selectable profile
+      ---
+      duration_ms: 28.3072
+      type: 'test'
+      ...
+    # Subtest: restoring an interaction after public consent withdrawal cannot restore public ranking or results
+    ok 31 - restoring an interaction after public consent withdrawal cannot restore public ranking or results
+      ---
+      duration_ms: 49.5406
+      type: 'test'
+      ...
+    1..31
+ok 2 - engagement real database journey and permission boundaries
+  ---
+  duration_ms: 14216.8725
+  type: 'test'
+  ...
+# Subtest: same commercial order: agency switch, scoped employee, withdrawal and historic refund
+    # Subtest: approved notice to artist submission and interested recipient creates one support case
+    ok 1 - approved notice to artist submission and interested recipient creates one support case
+      ---
+      duration_ms: 352.0755
+      type: 'test'
+      ...
+    # Subtest: scoped agency options hide private people and reject wrong identities or stale public sources
+    ok 2 - scoped agency options hide private people and reject wrong identities or stale public sources
+      ---
+      duration_ms: 71.3497
+      type: 'test'
+      ...
+    # Subtest: agency invitation requires artist consent; staff cannot silently accept
+    ok 3 - agency invitation requires artist consent; staff cannot silently accept
+      ---
+      duration_ms: 48.0376
+      type: 'test'
+      ...
+    # Subtest: first commercial quote is accepted and genuinely enters paid state through simulated receipt
+    ok 4 - first commercial quote is accepted and genuinely enters paid state through simulated receipt
+      ---
+      duration_ms: 306.34
+      type: 'test'
+      ...
+    # Subtest: member alone has no artist messages or income; explicit scoped staff grant is necessary
+    ok 5 - member alone has no artist messages or income; explicit scoped staff grant is necessary
+      ---
+      duration_ms: 156.1579
+      type: 'test'
+      ...
+    # Subtest: same paid commercial conversation provides independently reviewed personal message copy
+    ok 6 - same paid commercial conversation provides independently reviewed personal message copy
+      ---
+      duration_ms: 340.4889
+      type: 'test'
+      ...
+    # Subtest: reassignment changes income visibility; revocation immediately removes messages and dashboard
+    ok 7 - reassignment changes income visibility; revocation immediately removes messages and dashboard
+      ---
+      duration_ms: 140.2718
+      type: 'test'
+      ...
+    # Subtest: removing and reinviting an employee does not resurrect the old scoped artist grant
+    ok 8 - removing and reinviting an employee does not resurrect the old scoped artist grant
+      ---
+      duration_ms: 144.1309
+      type: 'test'
+      ...
+    # Subtest: same paid order enters seven-day handover with expiry, original-key recovery and bilateral acknowledgement
+    ok 9 - same paid order enters seven-day handover with expiry, original-key recovery and bilateral acknowledgement
+      ---
+      duration_ms: 123.6454
+      type: 'test'
+      ...
+    # Subtest: artist withdrawal removes old agency live access without erasing contract or old income
+    ok 10 - artist withdrawal removes old agency live access without erasing contract or old income
+      ---
+      duration_ms: 63.9968
+      type: 'test'
+      ...
+    # Subtest: changing agency cannot transfer historic order, commission or messages to new agency
+    ok 11 - changing agency cannot transfer historic order, commission or messages to new agency
+      ---
+      duration_ms: 85.5392
+      type: 'test'
+      ...
+    # Subtest: partial refund after agency switch reverses original amounts once and does not rewrite original contract
+    ok 12 - partial refund after agency switch reverses original amounts once and does not rewrite original contract
+      ---
+      duration_ms: 127.8991
+      type: 'test'
+      ...
+    # Subtest: remaining full refund archives same conversation and clears original accrual without transferring it
+    ok 13 - remaining full refund archives same conversation and clears original accrual without transferring it
+      ---
+      duration_ms: 212.6196
+      type: 'test'
+      ...
+    # Subtest: ended relationships, restricted proofs and withdrawn public sources cannot be reused; original invitation recovers
+    ok 14 - ended relationships, restricted proofs and withdrawn public sources cannot be reused; original invitation recovers
+      ---
+      duration_ms: 68.8793
+      type: 'test'
+      ...
+    1..14
+ok 3 - same commercial order: agency switch, scoped employee, withdrawal and historic refund
+  ---
+  duration_ms: 11998.0997
+  type: 'test'
+  ...
+# Subtest: V5 splits MCN from supply income and referral only from platform
+ok 4 - V5 splits MCN from supply income and referral only from platform
+  ---
+  duration_ms: 5.0634
+  type: 'test'
+  ...
+# Subtest: exact supply fractions survive refunds, tiny totals and maximum money
+ok 5 - exact supply fractions survive refunds, tiny totals and maximum money
+  ---
+  duration_ms: 6.1474
+  type: 'test'
+  ...
+# Subtest: new terms require explicit version and artists confirm the recorded supply share
+ok 6 - new terms require explicit version and artists confirm the recorded supply share
+  ---
+  duration_ms: 0.4901
+  type: 'test'
+  ...
+# Subtest: finance uses allocation without misrepresenting fractional supply shares as integer GMV percentages
+ok 7 - finance uses allocation without misrepresenting fractional supply shares as integer GMV percentages
+  ---
+  duration_ms: 1.8867
+  type: 'test'
+  ...
+# Subtest: contract cutover validates rates without rewriting historical allocations
+ok 8 - contract cutover validates rates without rewriting historical allocations
+  ---
+  duration_ms: 2.1299
+  type: 'test'
+  ...
+# Subtest: declined audition after MCN replacement closes original referral only after verified full refund
+    # Subtest: original referral and agency are captured by an independently reviewed paid booking
+    ok 1 - original referral and agency are captured by an independently reviewed paid booking
+      ---
+      duration_ms: 245.8728
+      type: 'test'
+      ...
+    # Subtest: agency replacement and later referral click cannot claim the original booking
+    ok 2 - agency replacement and later referral click cannot claim the original booking
+      ---
+      duration_ms: 92.4797
+      type: 'test'
+      ...
+    # Subtest: decline and reviewed refund request keep commission pending until money is verified returned
+    ok 3 - decline and reviewed refund request keep commission pending until money is verified returned
+      ---
+      duration_ms: 100.6712
+      type: 'test'
+      ...
+    # Subtest: verified full refund closes zero referral without inventing fulfillment or changing attribution
+    ok 4 - verified full refund closes zero referral without inventing fulfillment or changing attribution
+      ---
+      duration_ms: 47.3648
+      type: 'test'
+      ...
+    # Subtest: a payment-review hold does not become a completed refund merely because the journal net is zero
+    ok 5 - a payment-review hold does not become a completed refund merely because the journal net is zero
+      ---
+      duration_ms: 36.1359
+      type: 'test'
+      ...
+    # Subtest: original parties can reconcile zero old-order balance after verified refund
+    ok 6 - original parties can reconcile zero old-order balance after verified refund
+      ---
+      duration_ms: 139.0109
+      type: 'test'
+      ...
+    1..6
+ok 9 - declined audition after MCN replacement closes original referral only after verified full refund
+  ---
+  duration_ms: 16003.0187
+  type: 'test'
+  ...
+# Subtest: same order keeps original referrer and agency through replacement, partial refund and final reversal
+    # Subtest: accepted old agency and original referral are frozen in a purchased order
+    ok 1 - accepted old agency and original referral are frozen in a purchased order
+      ---
+      duration_ms: 205.5911
+      type: 'test'
+      ...
+    # Subtest: ending original agency and accepting replacement affects a new order, not the old referrer
+    ok 2 - ending original agency and accepting replacement affects a new order, not the old referrer
+      ---
+      duration_ms: 156.5501
+      type: 'test'
+      ...
+    # Subtest: original participants still confirm and settle old order after agency replacement
+    ok 3 - original participants still confirm and settle old order after agency replacement
+      ---
+      duration_ms: 174.0562
+      type: 'test'
+      ...
+    # Subtest: partial KEEP refund reverses original agency and referral shares, without paying replacement
+    ok 4 - partial KEEP refund reverses original agency and referral shares, without paying replacement
+      ---
+      duration_ms: 259.0636
+      type: 'test'
+      ...
+    # Subtest: remaining REVOKE refund reverses old commission and allocation exactly once
+    ok 5 - remaining REVOKE refund reverses old commission and allocation exactly once
+      ---
+      duration_ms: 150.7506
+      type: 'test'
+      ...
+    1..5
+ok 10 - same order keeps original referrer and agency through replacement, partial refund and final reversal
+  ---
+  duration_ms: 15343.618
+  type: 'test'
+  ...
+# Subtest: finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+    # Subtest: existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+    ok 1 - existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+      ---
+      duration_ms: 11405.1363
+      type: 'test'
+      ...
+    # Subtest: authentication, explicit rules and independent review are required
+    ok 2 - authentication, explicit rules and independent review are required
+      ---
+      duration_ms: 49.497
+      type: 'test'
+      ...
+    # Subtest: rejected draft can be replaced while history stays; active agreement cannot change
+    ok 3 - rejected draft can be replaced while history stays; active agreement cannot change
+      ---
+      duration_ms: 135.6641
+      type: 'test'
+      ...
+    # Subtest: restricted finance evidence respects overlapping restrictions and restrictions activated during storage read
+    ok 4 - restricted finance evidence respects overlapping restrictions and restrictions activated during storage read
+      ---
+      duration_ms: 395.6716
+      type: 'test'
+      ...
+    # Subtest: settlement review and every party confirmation precede available balance
+    ok 5 - settlement review and every party confirmation precede available balance
+      ---
+      duration_ms: 259.4055
+      type: 'test'
+      ...
+    # Subtest: settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+    ok 6 - settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+      ---
+      duration_ms: 27.526
+      type: 'test'
+      ...
+    # Subtest: concurrent withdrawals reserve available amount once and exact retries reuse request
+    ok 7 - concurrent withdrawals reserve available amount once and exact retries reuse request
+      ---
+      duration_ms: 99.4657
+      type: 'test'
+      ...
+    # Subtest: request approval is not paid; only independent bank evidence books actual payout
+    ok 8 - request approval is not paid; only independent bank evidence books actual payout
+      ---
+      duration_ms: 102.3901
+      type: 'test'
+      ...
+    # Subtest: dispute after payout requests blocks new approval but preserves verified failure and cancellation facts
+    ok 9 - dispute after payout requests blocks new approval but preserves verified failure and cancellation facts
+      ---
+      duration_ms: 235.5167
+      type: 'test'
+      ...
+    # Subtest: return and failed payouts keep facts and release reservation for a new request
+    ok 10 - return and failed payouts keep facts and release reservation for a new request
+      ---
+      duration_ms: 296.5288
+      type: 'test'
+      ...
+    # Subtest: disputes notify parties, freeze new payouts, retain replies and all decisions
+    ok 11 - disputes notify parties, freeze new payouts, retain replies and all decisions
+      ---
+      duration_ms: 90.0914
+      type: 'test'
+      ...
+    # Subtest: refund reduces future entitlement, preserves old settlement and actual payout
+    ok 12 - refund reduces future entitlement, preserves old settlement and actual payout
+      ---
+      duration_ms: 211.3951
+      type: 'test'
+      ...
+    # Subtest: adjustment is balanced, separately reviewed and forces new settlement confirmation
+    ok 13 - adjustment is balanced, separately reviewed and forces new settlement confirmation
+      ---
+      duration_ms: 147.8339
+      type: 'test'
+      ...
+    # Subtest: reconciliation compares verified facts without turning imported rows into money
+    ok 14 - reconciliation compares verified facts without turning imported rows into money
+      ---
+      duration_ms: 39.6312
+      type: 'test'
+      ...
+    # Subtest: daily books include verified refunds, actual split payments and returned split money, not reservations
+    ok 15 - daily books include verified refunds, actual split payments and returned split money, not reservations
+      ---
+      duration_ms: 26.7587
+      type: 'test'
+      ...
+    # Subtest: external release statement is accrued revenue, not cash received or automatic payout
+    ok 16 - external release statement is accrued revenue, not cash received or automatic payout
+      ---
+      duration_ms: 145.6555
+      type: 'test'
+      ...
+    # Subtest: same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation
+    ok 17 - same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation
+      ---
+      duration_ms: 131.5523
+      type: 'test'
+      ...
+    # Subtest: partial receipts, duplicate bank references and statement corrections never rewrite history
+    ok 18 - partial receipts, duplicate bank references and statement corrections never rewrite history
+      ---
+      duration_ms: 387.0721
+      type: 'test'
+      ...
+    # Subtest: record permissions, private proof integrity, stale membership and disabled automatic payout
+    ok 19 - record permissions, private proof integrity, stale membership and disabled automatic payout
+      ---
+      duration_ms: 43.582
+      type: 'test'
+      ...
+    # Subtest: late customer payment review and unaccepted delivery block payouts even with prior agreement
+    ok 20 - late customer payment review and unaccepted delivery block payouts even with prior agreement
+      ---
+      duration_ms: 49.6766
+      type: 'test'
+      ...
+    # Subtest: notification cursor can retrieve newly recorded events, and different parties keep their own feed
+    ok 21 - notification cursor can retrieve newly recorded events, and different parties keep their own feed
+      ---
+      duration_ms: 24.6532
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back adjustment and idempotency reservation; stale review fails
+    ok 22 - audit failure rolls back adjustment and idempotency reservation; stale review fails
+      ---
+      duration_ms: 130.6716
+      type: 'test'
+      ...
+    # Subtest: personal income uses posted own shares including payout returns; no other party amounts or estimated revenue
+    ok 23 - personal income uses posted own shares including payout returns; no other party amounts or estimated revenue
+      ---
+      duration_ms: 115.9233
+      type: 'test'
+      ...
+    1..23
+ok 11 - finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+  ---
+  duration_ms: 21892.5749
+  type: 'test'
+  ...
+# Subtest: isolated SMS API fixture uses the actual config proof and recovers after simulated unavailability
+ok 12 - isolated SMS API fixture uses the actual config proof and recovers after simulated unavailability
+  ---
+  duration_ms: 18055.192
+  type: 'test'
+  ...
+1..12
+# tests 129
+# suites 0
+# pass 129
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 48554.4429
