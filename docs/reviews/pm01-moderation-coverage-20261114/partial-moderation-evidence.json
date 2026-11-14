@@ -1,0 +1,182 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "d6fa71f2d039730dd7305f9d5e3f4d81a466965d",
+  "run_id": "pm01-moderation-coverage-2026-11-14T00-56-34-623Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "VIDEO-MODERATION-COVERAGE",
+      "acceptance_id": "ACC-DEL-24.02",
+      "name": "实际音轨与视频审核有效结果",
+      "result": "LOCAL_PASS",
+      "scope": "空/零帧和未知覆盖不自动通过，真实FFprobe有无音轨、SDK合成回复/原异步任务、嵌套高风险拒绝、独审原覆盖保留、本人HTTP与越权、停用无调用、文本图片dataId绑定",
+      "remaining": "供应商回复和准入证据合成，未调用真实服务；正帧数仅证明结果结构，不承诺完整逐帧覆盖；独立音频格式尚未接入，页面与正式独审未完成",
+      "actual_checks": [
+        {
+          "name": "actual file inspection distinguishes a silent video from a video with an audio track",
+          "file": "test/moderation-coverage.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 133.1556,
+          "error_code": null
+        },
+        {
+          "name": "clean SDK result retains coverage in the same persisted task and owner HTTP receipt",
+          "file": "test/moderation-coverage.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 877.2731,
+          "error_code": null
+        },
+        {
+          "name": "empty frames remain unpublished until independent manual review preserves the automated evidence",
+          "file": "test/moderation-coverage.integration.test.cjs",
+          "line": 31,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 205.3025,
+          "error_code": null
+        },
+        {
+          "name": "audio high risk is rejected despite clean overall and frame fields",
+          "file": "test/moderation-coverage.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 174.1945,
+          "error_code": null
+        },
+        {
+          "name": "missing audio cannot pass an audible file but may pass a verified silent file",
+          "file": "test/moderation-coverage.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 310.4021,
+          "error_code": null
+        },
+        {
+          "name": "pending result retries the original task and mismatched final task never gets a successful receipt",
+          "file": "test/moderation-coverage.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 245.9756,
+          "error_code": null
+        },
+        {
+          "name": "text and image adapter requests use their exact data ID, while standalone audio remains explicitly unsupported",
+          "file": "test/moderation-coverage.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 9.3374,
+          "error_code": null
+        },
+        {
+          "name": "unverified or disabled provider and invalid video never reach the SDK client",
+          "file": "test/moderation-coverage.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 44.5893,
+          "error_code": null
+        },
+        {
+          "name": "video coverage uses actual tracks, bound SDK results, persistent jobs and independent review",
+          "file": "test/moderation-coverage.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 12426.1446,
+          "error_code": null
+        },
+        {
+          "name": "empty, malformed and zero-frame results never automatically pass video review",
+          "file": "test/moderation-coverage.test.cjs",
+          "line": 7,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.1122,
+          "error_code": null
+        },
+        {
+          "name": "video with audio or unknown audio presence requires a meaningful audio result",
+          "file": "test/moderation-coverage.test.cjs",
+          "line": 12,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.1722,
+          "error_code": null
+        },
+        {
+          "name": "known high risk is never downgraded by missing coverage or a clean aggregate",
+          "file": "test/moderation-coverage.test.cjs",
+          "line": 15,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.2223,
+          "error_code": null
+        },
+        {
+          "name": "medium, low or unknown nested risks remain for review even when the aggregate says none",
+          "file": "test/moderation-coverage.test.cjs",
+          "line": 20,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.1228,
+          "error_code": null
+        },
+        {
+          "name": "complete video results pass with auditable coverage, including verified silent video",
+          "file": "test/moderation-coverage.test.cjs",
+          "line": 24,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.193,
+          "error_code": null
+        },
+        {
+          "name": "request identity and result identity are required before interpreting risk",
+          "file": "test/moderation-coverage.test.cjs",
+          "line": 29,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.6584,
+          "error_code": null
+        },
+        {
+          "name": "text and image results retain reviewed low-risk policy and exact data binding",
+          "file": "test/moderation-coverage.test.cjs",
+          "line": 33,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.231,
+          "error_code": null
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-moderation-coverage-20261114/FINAL_BACKEND.json",
+          "sha256": "bc659d7cf0a14569b609a5e95c72cb412500e7aa07c618442be9e17ab5f0f8f9"
+        },
+        {
+          "path": "docs/reviews/pm01-moderation-coverage-20261114/FINAL_CONTRACT.json",
+          "sha256": "730ef6669e9058fa62312ea018ff6fdf1c7d975de913ec6f79c67e966867c791"
+        },
+        {
+          "path": "docs/reviews/pm01-moderation-coverage-20261114/BUSINESS_RECORDS.json",
+          "sha256": "a7add11c826626cddc8ebfbff01299a11ff401576e6937dafc7fa2d61c4896a7"
+        },
+        {
+          "path": "docs/reviews/pm01-moderation-coverage-20261114/SOURCE_MANIFEST.json",
+          "sha256": "155964b5a3831c1fd8735a55a7a4c5c8625ee57d2c90f6440415031309eae4db"
+        }
+      ]
+    }
+  ]
+}
