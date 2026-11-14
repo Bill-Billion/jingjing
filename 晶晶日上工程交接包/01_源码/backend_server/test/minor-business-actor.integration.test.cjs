@@ -78,8 +78,7 @@ test('known minor business actor cannot bypass age restriction by acting for an 
    const identityResult=await call('POST','/artists/people/'+person.id+'/identity',{session_ref:'synthetic:correction'},outsider.personal_party_id);assert.equal(identityResult.status,200,JSON.stringify(identityResult));assert.equal(identityResult.data.current_status,'VERIFIED');
    const r=await call('POST','/stock/listings',input,org.party_id,op);assert.equal(r.status,200,JSON.stringify(r));assert.equal(r.data.id,listed.id);assert.equal(r.data.content_sha256,listed.content_sha256);
   });
-  await fs.mkdir(path.resolve(__dirname,'../../../../.local'),{recursive:true});await fs.writeFile(path.resolve(__dirname,'../../../../.local/minor-business-actor-http.json'),JSON.stringify(fixtures,null,2)+'\n');
+  await fs.mkdir(path.resolve(__dirname,'../../../../.local'),{recursive:true});await fs.writeFile(path.resolve(__dirname,'../../../../.local/minor-business-actor-http.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2)+'\n');
   await fs.writeFile(path.resolve(__dirname,'../../../../.local/minor-business-actor-records.json'),JSON.stringify({synthetic_only:true,real_services:false,records},null,2)+'\n');
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });
-
