@@ -1,3 +1,7 @@
+# 当前增量：本人交稿办理摘要
+
+第69轮接口0.31.76-rc.2/0225；两个分类已接原申请且选定文件独审交付已验，不代替整份资料完成。无前端/真实服务。详细见[报告](../../reviews/pm01-production-copy-20261114/REPORT.md)。下表已修正旧待接状态，其他历史覆盖说明保留。
+
 # 本人资料提供：实际覆盖和剩余工作
 
 2026-11-14第68轮当前：企业正式交付新增逐账号读取事实，旧签收/工作日期限保留；新事实本人摘要和同申请交付尚待接入，不自动开放公司整单或他人故事。第66轮追偿摘要/选定文件交付等既有成果保留，不能当全库字段完成。接口0.31.76-rc.1/0225，无前端。151为19通过/124部分/8证据不足、18组0/18、12整链部分。见[本轮报告](../../reviews/pm01-delivery-handoff-20261114/REPORT.md)，原表见docs/archive/pm01-delivery-handoff-before-20261114。
@@ -12,7 +16,7 @@
 |素材与作品|supply_assets、artist_asset_links|本人可访问素材/作品原件与记录|其他授权证据、他人资料、衍生材料须核权脱敏|
 |私人故事|customization_requests及版本附件|正式历史、补件草稿、文字和本人附件|原机构故事不当个人所有；新页面完整办理待验|
 |交易与钱账|trade_records/journal、wallet_records、finance_entries/records|本人买卖单、付款退款、钱包和清分记录；第66轮新增FINANCE_RECOVERIES个人申请方/原收款方案件摘要，含驳回/关闭历史及已关联回款，并实际交付选定同申请文件|自由文本理由、审核身份及银行原件按具体申请核权脱敏；机构经办不当本人所有；未关联案件金额不等于当前欠款，关闭不免债；其他账务资料继续核对|
-|正式交付读取/签收|production_delivery_views、production_fulfillments、production_records/FEEDBACK|第68轮新增逐交付/账号的已核字节读取，兼容旧首读，原签收/期限保留；记录有公司业务参与语境|本人摘要/按申请交付尚待接入；须按actor事实核权，不能把公司整单/其他账号/私人故事自动归给本人；见第68轮报告|
+|正式交付读取/签收及本人反馈|production_delivery_views、production_fulfillments、production_records/FEEDBACK|PRODUCTION_DELIVERY_VIEWS与PRODUCTION_FEEDBACK按TRANSACTIONS申请提供本人摘要；新表优先、保留旧快照去重，撤交易权/离职仍保留本人事实|第69轮同申请JSON文本独审下载/重开已验；不含其他签收人、公司合同、私人故事、原始媒体或反馈自由文本；完整资料继续核权脱敏，历史不完整|
 |许可/参演/经纪等协议|privacy/agreement-copy等|本人当事人脱敏历史约定、本人个人身份会签与阶段确认|其他合同和真实签署原件；封存不等于签完|
 |数字人模型|production_records DIGITAL_ASSET|本人关联制作模型记录|真实供应商长期资产、源文件/可携带/退出删除仍待工程与产品落实|
 |反馈和投诉|support_tickets/events/asset_refs|SUPPORT_TICKETS/SUPPORT_MESSAGES及原受控附件下载|其他纠纷域证据继续核对，机构经办不混入本人|
