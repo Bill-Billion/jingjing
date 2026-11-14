@@ -136,6 +136,7 @@ test('lottery actual HTTP: immutable odds, independent review, stock and atomic 
     await fs.writeFile(path.resolve(__dirname,'../../../../.local/pm01-lottery-remedy.json'),JSON.stringify({synthetic_only:true,pool_id:p.id,draw_id:d.id,grant_id:grantId,remedy_id:remedy.id,stake_points:300,fallback_points:600,grant_status:granted.current_status,original_draw_unchanged:true,duplicate_reward:false,limits:['synthetic guaranteed pool and fallback amounts','isolated expiry clock','no actual exposure delivery or frontend']},null,2));
    }finally{A.now=previous;}
   });
+  await require('./support/lottery-interview-nonselection.cjs')({t,db,S,W,wr,request,config,review,draw,ageNotice,evidence});
   await fs.writeFile(path.resolve(__dirname,'../../../../.local/redemption-lottery-http-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });

@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.76-rc.2
+  version: 0.31.77-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -65901,6 +65901,9 @@ components:
           type: string
           minLength: 1
           maxLength: 100
+        completed_delivery:
+          $ref: '#/components/schemas/RedemptionGrantData/properties/delivery'
+          description: 已完成但未入选的原面试记录；顺延后仍保留，旧补救案件可不包含。
         resolution:
           type: object
           additionalProperties: false

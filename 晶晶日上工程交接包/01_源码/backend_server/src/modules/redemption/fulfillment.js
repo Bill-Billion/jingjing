@@ -84,9 +84,11 @@ function methods({db,actor}){return {
   shape(i,['record_id','party_id','expected_version','reason','operation_key']);label(i.reason,2000);
   return db.withTransaction(async tx=>{const a=await actor(tx,ctx),r=await C.load(tx,i.record_id,'GRANT');await own(tx,a,r,i.party_id);
    return C.command(tx,a,'REMEDY_REQUEST',i,async()=>{A.match(r,i.expected_version);
-    if(!['INTERVIEW','EXPOSURE'].includes(r.data.template.kind)||!['AVAILABLE','BOUND','SCHEDULED','CONFIRMED'].includes(r.current_status))throw error('REWARD_REMEDY_NOT_AVAILABLE',409);
+    const notSelected=r.data.template.kind==='INTERVIEW'&&r.current_status==='FULFILLED'&&r.data.delivery?.outcome==='NOT_SELECTED'&&r.data.delivery?.completed_at;
+    if(!['INTERVIEW','EXPOSURE'].includes(r.data.template.kind)||(!['AVAILABLE','BOUND','SCHEDULED','CONFIRMED'].includes(r.current_status)&&!notSelected))throw error('REWARD_REMEDY_NOT_AVAILABLE',409);
     if(await A.one(tx,"SELECT id FROM redemption_records WHERE kind='REMEDY' AND parent_id=? AND current_status='IN_REVIEW'",[r.id]))throw error('REWARD_REMEDY_PENDING',409);
-    const c=await C.insert(tx,a,'REMEDY',r.owner_party_id,r.id,'IN_REVIEW',{reason:i.reason,previous_status:r.current_status});
+    // Extending clears the active delivery; retain the completed attempt in its own remedy record.
+    const c=await C.insert(tx,a,'REMEDY',r.owner_party_id,r.id,'IN_REVIEW',{reason:i.reason,previous_status:r.current_status,...(notSelected?{completed_delivery:structuredClone(r.data.delivery)}:{})});
     await C.save(tx,a,r,'REMEDY_PENDING',r.data,'REWARD_REMEDY_PENDING');return c;});});
  },
  async reviewRemedy(ctx,i){
@@ -109,7 +111,14 @@ function methods({db,actor}){return {
     if(i.decision!=='REJECT'){
      // A proposed slot has no delivery pointer yet. Resolve every live slot for this grant.
      const schedules=(await tx.execute("SELECT * FROM redemption_records WHERE kind='SCHEDULE' AND parent_id=? AND current_status IN ('IN_REVIEW','APPROVED','CONFIRMED') ORDER BY id FOR UPDATE",[r.id]))[0].map(C.checked);
-     for(const s of schedules)await C.save(tx,a,s,'CANCELLED',s.data,'REWARD_SCHEDULE_CANCELLED');
+     const cases=(await tx.execute("SELECT * FROM redemption_records WHERE kind='REMEDY' AND parent_id=? ORDER BY id FOR SHARE",[r.id]))[0].map(C.checked);
+     const completed=new Set(cases.map(c=>c.data.completed_delivery?.schedule_id).filter(Boolean));
+     if(r.data.delivery?.completed_at)completed.add(r.data.delivery.schedule_id);
+     for(const s of schedules){
+      // Historical schedules remain CONFIRMED after finish; preserve every completed attempt across extensions.
+      if(completed.has(s.id))continue;
+      await C.save(tx,a,s,'CANCELLED',s.data,'REWARD_SCHEDULE_CANCELLED');
+     }
     }
     await C.save(tx,a,r,status,data,'REWARD_REMEDY_APPLIED');
     return C.save(tx,a,c,i.decision==='REJECT'?'REJECTED':'RESOLVED',{...c.data,resolution:{decision:i.decision,reason:i.reason,evidence_asset_id:i.evidence_asset_id,by:a.id}},'REWARD_REMEDY_REVIEWED');});});
