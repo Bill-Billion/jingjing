@@ -1,5 +1,5 @@
 {
-  "version": "0.31.75-rc.3",
+  "version": "0.31.76-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -1578,5 +1578,12 @@
     "scope": "TRANSACTIONS",
     "migration": "0224 unchanged",
     "meaning": "Personal claimant/recipient summaries; retained cancelled/rejected cases; no raw reasons, bank files, company ownership or reviewer identifiers"
+  },
+  "production_delivery_handoff": {
+    "migration": "0225",
+    "test": "test/customization-handoff.integration.test.cjs",
+    "meaning": "Per-delivery verified-byte observations; current actor authority and own observation required; original notified receipt/deadline immutable across handoff; legacy first-reader observation retained",
+    "frontend_run": false,
+    "real_services": false
   }
 }
