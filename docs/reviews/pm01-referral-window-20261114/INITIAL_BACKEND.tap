@@ -1,0 +1,123 @@
+TAP version 13
+# Subtest: seven-day referral survives unrelated clicks and exact timestamp page boundaries
+    # Subtest: HTTP checkout retains the valid original referral beyond 100 other-merchant clicks
+    not ok 1 - HTTP checkout retains the valid original referral beyond 100 other-merchant clicks
+      ---
+      duration_ms: 1663.7303
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-window.integration.test.cjs:52:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + undefined
+        - '70adb33a-9b50-4924-aa92-cfd68b229ea2'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: '70adb33a-9b50-4924-aa92-cfd68b229ea2'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\referral-window.integration.test.cjs:56:11)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\referral-window.integration.test.cjs:52:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: other categories and excluded supplier referrals cannot conceal the eligible earlier click
+    not ok 2 - other categories and excluded supplier referrals cannot conceal the eligible earlier click
+      ---
+      duration_ms: 791.3666
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-window.integration.test.cjs:59:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + undefined
+        - '70adb33a-9b50-4924-aa92-cfd68b229ea2'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: '70adb33a-9b50-4924-aa92-cfd68b229ea2'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\referral-window.integration.test.cjs:63:11)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\referral-window.integration.test.cjs:59:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: 202 tied microsecond timestamps preserve id ordering through multiple pages
+    not ok 3 - 202 tied microsecond timestamps preserve id ordering through multiple pages
+      ---
+      duration_ms: 340.2563
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-window.integration.test.cjs:65:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + undefined
+        - '00375526-bcc6-46ff-b84f-ff4d07724a40'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: '00375526-bcc6-46ff-b84f-ff4d07724a40'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\referral-window.integration.test.cjs:69:11)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\referral-window.integration.test.cjs:65:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: latest eligible click applies only to new orders; replay creates no second commission
+    ok 4 - latest eligible click applies only to new orders; replay creates no second commission
+      ---
+      duration_ms: 85.6814
+      type: 'test'
+      ...
+    # Subtest: the seven-day cutoff is inclusive and one millisecond older is ineligible
+    ok 5 - the seven-day cutoff is inclusive and one millisecond older is ineligible
+      ---
+      duration_ms: 60.1256
+      type: 'test'
+      ...
+    # Subtest: exhausting several pages without an eligible link returns an unattributed order
+    ok 6 - exhausting several pages without an eligible link returns an unattributed order
+      ---
+      duration_ms: 308.8351
+      type: 'test'
+      ...
+    # Subtest: corrupted retained click content still fails instead of silently skipping evidence
+    ok 7 - corrupted retained click content still fails instead of silently skipping evidence
+      ---
+      duration_ms: 46.7566
+      type: 'test'
+      ...
+    1..7
+not ok 1 - seven-day referral survives unrelated clicks and exact timestamp page boundaries
+  ---
+  duration_ms: 10360.2959
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-window.integration.test.cjs:8:1'
+  failureType: 'subtestsFailed'
+  error: '3 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 8
+# suites 0
+# pass 4
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10580.6846
