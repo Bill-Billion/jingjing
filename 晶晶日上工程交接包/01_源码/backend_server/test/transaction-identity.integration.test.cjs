@@ -13,7 +13,7 @@ test('current-contract customization buyer identity on acceptance and payment',{
   const S=await require('./support/customization-delivery.cjs').seed(db),{buyer,producer,reviewer}=S.people;
   const artists=require('../src/modules/artists/repository').createArtistRepository(db,{resolvePrincipal:S.resolvePrincipal});
   async function verified(user){const p=await artists.createPerson(user.ctx,{party_id:user.personal_party_id,display_name:'synthetic verified actor',operation_key:key()}),r=await artists.prepareIdentity(user.ctx,{party_id:user.personal_party_id,person_id:p.id,session_ref:'synthetic:'+key(),operation_key:key()});await artists.applyIdentity(r.id,{request_key:r.data.request_key,person_id:p.id,status:'VERIFIED',issuer:'synthetic-probe',subject_fingerprint:randomBytes(32).toString('hex'),age_band:'ADULT',valid_until:'2099-01-01T00:00:00.000Z',evidence_ref:'synthetic:identity',liveness_verified:true,phone_verified:true});return p;}
-  const person=await verified(buyer);await verified(producer);
+  const person=await verified(buyer);await db.withTransaction(tx=>require('../src/modules/artists/context').verifiedAdultActor(tx,{id:producer.account_id})); // Normal producer is already prepared by seed; buyer negative identities below stay unchanged.
   const currentTrade=require('../src/modules/trade/repository').createTradeRepository(db,{resolvePrincipal:S.resolvePrincipal,customizationMerchantPartyId:S.org.party_id,customizationContractPolicy:'CONTRACT_20261029',fulfillmentGate:require('../src/modules/production/payment-gate').productionPaymentGate});
   let sends=0,failDispatch=false,onReady=null,lastPaymentId=null;
   const providerFactory=()=>({get:()=>({config,assertReady:async()=>{if(onReady)await onReady();},call:async(method,p)=>{
