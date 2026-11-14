@@ -166,7 +166,9 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    const provider=createSmsProvider(db,config,{request:transport});
    await withApi({sms:provider},async()=>{
     const blocked=await challenge();assert.equal(blocked.response.status,503);assert.equal(dispatches,0);
-    await readiness.record({...provider.identity,current_status:'SANDBOX_VERIFIED',config_revision:config.SMS_CONFIG_REVISION,expected_version:0,evidence_ref:'synthetic-transport-only'},{actor_ref:'test-only'});
+    await readiness.record({...provider.identity,current_status:'SANDBOX_VERIFIED',config_revision:config.SMS_CONFIG_REVISION,expected_version:0,evidence_ref:'synthetic-legacy-label-only'},{actor_ref:'test-only'});
+    await assert.rejects(provider.call('send',{phone:nextPhone(),code:'123456'}),{code:'PROVIDER_CONFIGURATION_CHANGED'});assert.equal(dispatches,0);
+    await readiness.record({...provider.identity,current_status:'SANDBOX_VERIFIED',config_revision:(await provider.inspect()).config_revision,expected_version:1,evidence_ref:'synthetic-transport-only'},{actor_ref:'test-only'});
     const c=await challenge();assert.equal(c.response.status,200);c.code=received.get(c.phone);const k=key(),a=await login(c,k);assert.equal(a.status,200);assert.equal((await login(c,k)).body.data.access_token,a.body.data.access_token);assert.equal(dispatches,1);
     assert.equal((await request('GET','/api/v1/me',undefined,a.body.data.access_token)).status,200);
     fail=true;const broken=await challenge();assert.equal(broken.response.status,503);assert.equal(dispatches,2);
@@ -176,6 +178,10 @@ test('real MySQL and HTTP account lifecycle',{skip:!process.env.JX_MYSQL_TEST_EN
    });
    const changed=createSmsProvider(db,{...config,SMS_CONFIG_REVISION:'http-sms-v2'},{request:transport});
    await assert.rejects(changed.call('send',{phone:nextPhone(),code:'123456'}),{code:'PROVIDER_CONFIGURATION_CHANGED'});assert.equal(dispatches,2);
+   for(const field of ['SMS_ACCOUNT','SMS_SIGN_NAME','SMS_LOGIN_TEMPLATE_ID','VOLC_ACCESS_KEY_ID','VOLC_SECRET_ACCESS_KEY','SMS_REGION']){
+    const different=createSmsProvider(db,{...config,[field]:'changed-synthetic'},{request:transport});
+    await assert.rejects(different.call('send',{phone:nextPhone(),code:'123456'}),{code:'PROVIDER_CONFIGURATION_CHANGED'});assert.equal(dispatches,2);
+   }
    }finally{for(const k of debugKeys){if(savedDebug[k]===undefined)delete process.env[k];else process.env[k]=savedDebug[k];}}
   });
   await t.test('HTTP invitations require the intended recipient; removal preserves personal identity',async()=>{
