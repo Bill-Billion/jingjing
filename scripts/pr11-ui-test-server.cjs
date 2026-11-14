@@ -100,7 +100,7 @@ async function main() {
     authorizeChange: async () => true, verifyEvidence: async () => true,
   });
   await readiness.record({ ...provider.identity, current_status: 'SANDBOX_VERIFIED',
-    config_revision: smsConfig.SMS_CONFIG_REVISION, expected_version: 0,
+    config_revision: (await provider.inspect()).config_revision, expected_version: 0,
     evidence_ref: 'local-browser-synthetic-only' }, { actor_ref: 'synthetic-test' });
   const sms = { async call(operation, input, context) {
     if (!smsEnabled) throw Object.assign(new Error('Test SMS unavailable'), { code: 'SMS_NOT_READY', status: 503 });
