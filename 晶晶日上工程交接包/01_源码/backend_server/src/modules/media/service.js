@@ -72,7 +72,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
     const reply=await moderator.run({media_type:f.media_type,body,object_key:f.object_key,data_id:r.id,provider_task_id:job.provider_task_id});
     if(reply.pending===true){if(!reply.provider_task_id)throw error('MODERATION_RESULT_UNKNOWN',503);await jobs.saveProviderTask(job,reply.provider_task_id);return {status:'RETRY',error_code:'MODERATION_PENDING'};}
     if(reply.automated!==true||!['PASS','REVIEW','REJECT'].includes(reply.decision)||!reply.provider_request_id)throw error('MODERATION_RESULT_UNKNOWN',503);
-    result={file_id:f.id,output_sha256:f.content_sha256,policy_sha256:policy.sha256,decision:reply.decision,provider_request_id:reply.provider_request_id,manual_review:'STILL_REQUIRED'};
+    result={file_id:f.id,output_sha256:f.content_sha256,policy_sha256:policy.sha256,decision:reply.decision,provider_request_id:reply.provider_request_id,manual_review:'STILL_REQUIRED',...(reply.coverage?{coverage:reply.coverage}:{})};
    }else{
     let checkpoint=r.output_checkpoint_json?checked(r.output_checkpoint_json,r.output_checkpoint_sha256):null;
     if(!checkpoint){
