@@ -5304,7 +5304,7 @@
         "docs/collaboration/DECISIONS.md",
         "docs/collaboration/client-complete-20261028/PROVISIONAL_RULES.md"
       ],
-      "status": "NOT_RUN",
+      "status": "PARTIAL",
       "evidence": [],
       "required_cases": [
         "normal",
@@ -5313,7 +5313,19 @@
       "required_surfaces": [
         "operations"
       ],
-      "effective_expected": "本次测试版验证隔离支付/实名/存储/模型/电子签模拟、失败恢复及正式环境拒绝模拟的关闭边界；真实供应商沙箱/正式产品权限、资金到账、实名/签署/模型质量和真实存储删除证据仍待外部验收，不能以本条隔离PASS宣称正式接入完成。"
+      "effective_expected": "本次测试版验证隔离支付/实名/存储/模型/电子签模拟、失败恢复及正式环境拒绝模拟的关闭边界；真实供应商沙箱/正式产品权限、资金到账、实名/签署/模型质量和真实存储删除证据仍待外部验收，不能以本条隔离PASS宣称正式接入完成。",
+      "partial_evidence": [
+        {
+          "artifact": {
+            "path": "docs/reviews/pm01-provider-config-20261114/partial-provider-config-evidence.json",
+            "sha256": "7e56c5fed175454084428edb6485c2f9fcd43d0d79339d0417a28114d6ed2d18"
+          },
+          "checks": [
+            "PROVIDER-CONFIG-VERIFICATION"
+          ],
+          "scope": "隔离后端核供应商默认拒绝、环境/实际配置/证据历史绑定、持久化与并发；支付原配置快照和短信实际参数变更阻断，私有OSS、制作/模型删除与签署启用门禁现版复验。 真实供应商仍未验证，非正式通过。"
+        }
+      ]
     },
     {
       "id": "ACC-DEL-29.04",
@@ -7948,7 +7960,7 @@
   ],
   "release": {
     "code_sha": null,
-    "contract_version": "0.31.73-rc.2",
+    "contract_version": "0.31.73-rc.3",
     "rules_version": "TEST-20261028-2",
     "dataset_id": null,
     "builds": {},

@@ -2,7 +2,7 @@
 
 此表由验收登记生成；不将测试个数当功能数，不把未登记证据当未开发。来源条款和已批准更新都保留，不能通过修改标准凑通过。
 
-当前151条：单条通过 **19**，部分验证 **120**，未登记足够证据 **12**，明确受阻 **0**。这不是开发完成率。
+当前151条：单条通过 **19**，部分验证 **121**，未登记足够证据 **11**，明确受阻 **0**。这不是开发完成率。
 
 单条通过只覆盖该条登记的端和场景；接口条款通过不等于App页面通过。完整交付还需18组双方交付与共享规则实审、12条同版本同记录整链，以及固定包和上线条件。
 
@@ -27,9 +27,9 @@
 |13|更换登录手机号：服务器与接口|5|0|5|0|后端：进行中／待审；前端：交付待审／待审|
 |14|累计晶钻与记录说明：服务器与接口|9|0|9|0|后端：进行中／待审；前端：进行中／待审|
 |15|故事草稿与共创发起：服务器与接口|16|7|9|0|后端：进行中／待审；前端：进行中／待审|
-|16|全流程模拟服务及测试资料：服务器与接口|22|1|17|4|后端：进行中／待审；前端：进行中／待审|
-|17|12条完整业务跨端测试：服务器与接口|134|19|104|11|后端：进行中／待审；前端：进行中／待审|
-|18|甲方完整测试版定版交付：服务器与接口|9|0|1|8|后端：已认领／待审；前端：受阻／待审|
+|16|全流程模拟服务及测试资料：服务器与接口|22|1|18|3|后端：进行中／待审；前端：进行中／待审|
+|17|12条完整业务跨端测试：服务器与接口|134|19|105|10|后端：进行中／待审；前端：进行中／待审|
+|18|甲方完整测试版定版交付：服务器与接口|9|0|2|7|后端：已认领／待审；前端：受阻／待审|
 
 ## 12条完整办理路线
 
@@ -174,7 +174,7 @@
 |ACC-DEL-28.04|状态与视觉<br>正常/空/失败/失权/待核验/版本冲突和小屏/大字实测。；不能把占位页计成功能完成；截图素材不默认商用。|部分验证|app、web × 正常办理、失败分支|[证据1](../../../docs/testing/evidence/mac-mini-pr39-four-pages-20261103/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/mac-mini-pr39-consumer-protection-20261103/PARTIAL_ACCEPTANCE.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-29.01|场景不按页数<br>现货/定制/试镜/投稿/共创/积分兑换/退款等端到端。；旧测试绿色不等于V5通过；跳过需明确原因。|未登记足够证据|operations × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
 |ACC-DEL-29.02|迁移和恢复<br>增量迁移保留旧规则、备份、恢复和账实校验。；不重建已跑MySQL、不强制删除旧记录。|部分验证|operations × 正常办理、失败分支|[证据1](../../../docs/reviews/pm01-private-objects-20261113/partial-operations-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
-|ACC-DEL-29.03|供应商验证<br>本次测试版验证隔离支付/实名/存储/模型/电子签模拟、失败恢复及正式环境拒绝模拟的关闭边界；真实供应商沙箱/正式产品权限、资金到账、实名/签署/模型质量和真实存储删除证据仍待外部验收，不能以本条隔离PASS宣称正式接入完成。|未登记足够证据|operations × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
+|ACC-DEL-29.03|供应商验证<br>本次测试版验证隔离支付/实名/存储/模型/电子签模拟、失败恢复及正式环境拒绝模拟的关闭边界；真实供应商沙箱/正式产品权限、资金到账、实名/签署/模型质量和真实存储删除证据仍待外部验收，不能以本条隔离PASS宣称正式接入完成。|部分验证|operations × 正常办理、失败分支|[证据1](../../../docs/reviews/pm01-provider-config-20261114/partial-provider-config-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |ACC-DEL-29.04|发布边界<br>main、生产部署和真实收费另授权；阶段合integration不发生产。；正式签名缺失不得回退debug；未核验外部项保持限制。|未登记足够证据|operations × 正常办理、失败分支|尚无合格登记|先核已有实现/历史检查；补登记或测试；确有缺口再开发|
 |E2E-01|公开已审视频→查看非独家许可→真实测试付款确认→一次发权→播放下载→退款限制或侵权处置<br>现货不进故事卡；跨买家拒绝；重复回调不重复发权|部分验证|api、app、web × 正常办理、失败分支、越权、重复提交、状态变化、中断恢复|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/core-finance-closure-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据3](../../../docs/testing/evidence/mac-mini-pr39-six-contract-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据4](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据5](../../../docs/testing/evidence/mac-mini-pr39-four-pages-20261103/PARTIAL_ACCEPTANCE.json)<br>[证据6](../../../docs/testing/evidence/business-journeys-20261103/acceptance-links.json)<br>[证据7](../../../docs/testing/evidence/tonight-complete-20261104/acceptance-links.json)<br>[证据8](../../../docs/reviews/stock-finance-acceptance-20261110/partial-api-evidence.json)<br>[证据9](../../../docs/reviews/recovery-refund-review-20261110/partial-api-evidence.json)<br>[证据10](../../../docs/reviews/privacy-matching-journey-20261110/partial-api-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|
 |E2E-02|选婚礼等品类→动态故事→报价合同→30%→派单→预览/补至90%→10%→最终验收<br>新合同已审规格采用签约30%、脚本/图纸确认40%、最终验收30%；未确认脚本不能支付中款，未完成最终确认和付款不能取得正式文件。比例须明确写入报价及合同；历史订单按原冻结快照，不追改30/60/10。|部分验证|api、app、web × 正常办理、失败分支、越权、重复提交、状态变化、中断恢复|[证据1](../../../docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据2](../../../docs/testing/evidence/core-finance-closure-20261102/PARTIAL_ACCEPTANCE.json)<br>[证据3](../../../docs/testing/evidence/backend-closure-20261103/acceptance-links.json)<br>[证据4](../../../docs/testing/evidence/business-journeys-20261103/acceptance-links.json)<br>[证据5](../../../docs/testing/evidence/tonight-complete-20261104/acceptance-links.json)<br>[证据6](../../../docs/reviews/manual-production-acceptance-20261110/partial-api-evidence.json)|按有效预期核现有证据，补齐所列端与场景；同版后登记结果|

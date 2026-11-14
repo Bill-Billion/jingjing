@@ -341,15 +341,15 @@
         "src/modules/providers/sms-transport.js",
         "src/modules/auth/repository.js"
       ],
-      "recipient": "已配置短信供应商",
+      "recipient": "当前实现：火山引擎短信 sms.volcengineapi.com；正式主体签名/模板及权限未验",
       "fields": [
         "测试或登录手机号",
         "审核通过的签名和模板编号",
         "短期验证码参数"
       ],
-      "gate": "服务配置与验证记录；发送频率限制；测试授权另管理",
+      "gate": "启用开关、实际账号/密钥/签名/模板/区域/环境摘要与验证历史一致；发送频率限制；配置变化或旧手填版本不能沿用验证",
       "retention": "验证码哈希、会话与限流分开；正式保留期限待甲方",
-      "live_status": "本轮未发送短信"
+      "live_status": "隔离HTTPS传输替身与实际登录HTTP已验；未发送真实短信"
     },
     {
       "name": "私有文件存储",
@@ -371,16 +371,17 @@
       "name": "文件内容机审",
       "sources": [
         "src/modules/media/moderation-provider.js",
-        "src/modules/media/service.js"
+        "src/modules/media/service.js",
+        "src/modules/media/moderation-audio.js"
       ],
       "recipient": "可选阿里云内容审核，未代替甲方选定产品",
       "fields": [
         "文本内容或私有OSS桶/对象/地域",
-        "合成任务编号",
+        "服务器生成的任务关联编号",
         "服务代码"
       ],
       "gate": "默认关闭；生效规则明确供应商；配置与服务验证均一致",
-      "retention": "本地只保存判定和请求编号，不保存原始风险正文；第三方保留待产品条款确认",
+      "retention": "本地保留精简判定、请求/任务编号和覆盖数量/时长等结构，不保存原始风险正文；供应商保留待产品条款确认",
       "live_status": "未开通实测；请求和返回使用合成替身测试"
     },
     {
@@ -414,7 +415,7 @@
       ],
       "gate": "原授权、账号及规则再次检查；撤回后只核对原任务/登记删除",
       "retention": "具体模型删除证据不等于所有供应商副本已清理",
-      "live_status": "真实产品权限另验"
+      "live_status": "默认binding为空，尚未绑定具体厂商协议；隔离合成任务/删除回复不等于真实产品已接通"
     },
     {
       "name": "账号及隐私处理",
@@ -486,6 +487,52 @@
       "gate": "草稿只本人；正式提交后受理人员可读；每次下载及存储读取后重查权限；不得公开链接或自动授予人物使用授权",
       "retention": "未提交附件可撤回访问；正式版本引用返回保留待审。未宣称物理删除或备份删除，正式保留期限和处理联系人待甲方",
       "live_status": "仅隔离存储实测，真实OSS和正式法律依据未核验"
+    },
+    {
+      "name": "订单支付、查单与退款",
+      "sources": [
+        "src/modules/trade/providers.js",
+        "src/modules/providers/readiness.js"
+      ],
+      "recipient": "已实现支付宝App支付、Apple服务端；正式商户与各端产品权限未验证",
+      "fields": [
+        "订单/交易/退款编号",
+        "金额和币种",
+        "商品标题或产品编号",
+        "商户/应用标识",
+        "Apple订单关联token或签名回执"
+      ],
+      "gate": "配置快照、当前环境/配置摘要/验证历史、原订单金额与商户/产品绑定；回调签名核验，未知查原单",
+      "retention": "业务钱账与精简验证凭据保留，实际期限和供应商政策待审；不在日志输出密钥/原始错误",
+      "live_status": "本机RSA签名与合成SDK/验签回复复验；无真实支付退款。网页收银产品、托管与自动分账未接通"
+    },
+    {
+      "name": "实名与活体绑定入口",
+      "sources": [
+        "src/modules/artists/identity-provider.js",
+        "src/modules/governance/business-gate.js"
+      ],
+      "recipient": "尚未选定并绑定具体实名/活体产品",
+      "fields": [
+        "尚未落实供应商请求字段，不能据通用verify接口声称已提交身份资料"
+      ],
+      "gate": "默认未实现；受信服务端绑定、同环境/配置验证、原请求恢复能力是前提；HTTP请求不能自选绑定",
+      "retention": "具体产品、授权及回执保留规则待确认；不填写虚构期限",
+      "live_status": "默认拒绝与合成绑定隔离检查；未调用真实实名/活体"
+    },
+    {
+      "name": "自动电子签启用检查",
+      "sources": [
+        "src/modules/providers/adapter.js",
+        "src/modules/governance/business-gate.js"
+      ],
+      "recipient": "电子签厂商产品未绑定",
+      "fields": [
+        "门禁只检查内部主体与合同快照等；真实签署请求字段尚未落实"
+      ],
+      "gate": "当前只有ESignProvider接口和业务启用检查；SERVICE_READY不代表签署成功，线下材料归档不升级自动电子签状态",
+      "retention": "真实原件取回、供应商回执与保留依据待具体产品确认",
+      "live_status": "缺真实任务/查询/回调/原件绑定；隔离门禁测试不等于实际签署"
     }
   ],
   "client_inventory": {
@@ -528,5 +575,6 @@
         "分享和文件导出明确用户动作触发"
       ]
     }
-  }
+  },
+  "updated_at": "2026-11-14"
 }
