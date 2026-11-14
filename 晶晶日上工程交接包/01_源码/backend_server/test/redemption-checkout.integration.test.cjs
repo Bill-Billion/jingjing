@@ -115,6 +115,7 @@ test('coupon checkout preserves original promises and real payment facts',{skip:
    await db.withTransaction(async tx=>{const r=await Co.load(tx,room.id,'ROOM');await Co.save(tx,{id:buyer.account_id},r,'CANCELLED',{...r.data,cancellation:{reason:'synthetic source cancelled'}},'SYNTHETIC_CANCEL');});
    await assert.rejects(hold(await get(g),a.quote),{code:'SERVICE_CREDIT_SOURCE_REVOKED'});assert.equal((await get(g)).current_status,'USED');await assert.rejects(db.withTransaction(tx=>require('../src/modules/production/eligibility').productionUsable(tx,project)),{code:'SERVICE_CREDIT_SOURCE_REVOKED'});
   });
+  await require('./support/lottery-credit-completion.cjs')({t,db,S,W,request,offer,hold,accept,get,base});
   await t.test('same 30/40/30 coupon order completes, earns net-consumption points and refunds without restoring a used coupon',async()=>{
    const a=await offer({preview:'SCRIPT_BEFORE_INTERIM'}),grant=await grantFor([a.spec.id]),held=await hold(grant,a.quote),order=await accept(a.quote,held);
    const payments=[await S.pay(order,'first')],Prod=require('../src/modules/production/repository').createProductionRepository(db,{resolvePrincipal:S.resolvePrincipal});
