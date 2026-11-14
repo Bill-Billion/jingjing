@@ -56,7 +56,7 @@ test('audition publication requires current agent identity while withdrawal and 
    for(const invoke of [()=>publish(),()=>visibility(true)]){const r=await invoke();assert.equal(r.status,403,JSON.stringify(r));assert.equal(r.error.code,'ARTIST_DELEGATION_REQUIRED');}
   });
  }finally{
-  await fs.mkdir(path.resolve(__dirname,'../../../../.local'),{recursive:true});await fs.writeFile(path.resolve(__dirname,'../../../../.local/audition-publisher-identity-http.json'),JSON.stringify(fixtures,null,2));
+  await fs.mkdir(path.resolve(__dirname,'../../../../.local'),{recursive:true});await fs.writeFile(path.resolve(__dirname,'../../../../.local/audition-publisher-identity-http.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2)+'\n');
   if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();
  }
 });
