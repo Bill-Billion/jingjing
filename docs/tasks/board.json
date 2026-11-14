@@ -7867,7 +7867,8 @@
         "docs/reviews/pm01-identity-admission-20261114/REPORT.md",
         "docs/reviews/pm01-identity-actor-fix-20261114/REPORT.md",
         "docs/reviews/pm01-identity-adjacent-20261114/REPORT.md",
-        "docs/reviews/pm01-transaction-identity-audit-20261114/REPORT.md"
+        "docs/reviews/pm01-transaction-identity-audit-20261114/REPORT.md",
+        "docs/reviews/pm01-transaction-identity-fix-20261114/REPORT.md"
       ],
       "blockers": [],
       "updated_on": "2026-11-14",
@@ -7883,7 +7884,7 @@
         "CORE-CLIENT-COMPLETE-18"
       ],
       "production_enabled": false,
-      "next_step": "先实际轮询exec64612终态归档全失败，再修定制接受/付款及机构正常实名/隐私引用fixture，保留原断言；关联/最终全量HTTP成功后上传PR39",
+      "next_step": "实际收当前完整终态与同次HTTP/离线检查，失败保留并终态后修，成功后集中同步原PR39",
       "implementation": "IMPLEMENTED_ISOLATED_TESTS",
       "historical_next_steps": [
         {
@@ -7892,12 +7893,12 @@
           "reason": "阶段收尾对账，旧接续已被后续批次覆盖"
         }
       ],
-      "active_batch": "docs/reviews/pm01-transaction-identity-audit-20261114/REPORT.md",
-      "active_batch_status": "CUSTOMIZATION_IDENTITY_GAP_CONFIRMED_FULL_RUNNING_FAILED_CHECK",
+      "active_batch": "docs/reviews/pm01-transaction-identity-fix-20261114/REPORT.md",
+      "active_batch_status": "TRANSACTION_IDENTITY_FIXED_LINKED_PASS_FULL_RUNNING",
       "business_commit": "64730abc4ca00cc3d37e5e51d15ef43c6c37437b",
       "local_verification_run": "pm01-identity-adjacent-2026-11-14T13-02-27-743Z",
-      "remote_check_status": "PR39_6065F37F_FOUR_SUCCESS_LOCAL_GAP_CONFIRMED_FULL_RUNNING",
-      "current_evidence_scope": "当前合同定制探针6/13确认12放行；完整215实际运行且3类资料准备问题6失败含父/连带，未修",
+      "remote_check_status": "PR39_6065F37F_FOUR_SUCCESS_LOCAL_FIXED_LINKED_PASS_FULL_RUNNING",
+      "current_evidence_scope": "当前实名三处已修；21文件496、21HTTP2379通过；216完整exec96618运行中",
       "previous_delivery_candidate": "9a005105827c1956a8cad2b7ec4a1fb5bb419183",
       "previous_delivery_receipt": "docs/reviews/pm01-business-reconciliation-20261113/CURRENT_REMOTE.json",
       "delivery_candidate": null,
@@ -7974,6 +7975,20 @@
         "full_session": 64612,
         "full_run_state": "RUNNING_WHEN_POLLED_WITH_FAILURE",
         "full_run_id": "pm01-current-backend-2026-11-14T13-04-41-169Z"
+      },
+      "transaction_identity_fix_20261114": {
+        "owner": "chengcongcong222",
+        "source_commit": "655d9ff4c53c3f66a9c3b09adadc13eae92dc423",
+        "pass": 496,
+        "fail": 0,
+        "http_files": 21,
+        "http_responses": 2379,
+        "runtime_changed": true,
+        "frontend": false,
+        "uploaded": false,
+        "full_session": 96618,
+        "full_run_state": "RUNNING_WHEN_STARTED",
+        "full_run_id": "pm01-current-backend-2026-11-14T13-39-14-624Z"
       }
     },
     {
@@ -8300,17 +8315,18 @@
         "docs/reviews/pm01-identity-admission-20261114/REPORT.md",
         "docs/reviews/pm01-identity-actor-fix-20261114/REPORT.md",
         "docs/reviews/pm01-identity-adjacent-20261114/REPORT.md",
-        "docs/reviews/pm01-transaction-identity-audit-20261114/REPORT.md"
+        "docs/reviews/pm01-transaction-identity-audit-20261114/REPORT.md",
+        "docs/reviews/pm01-transaction-identity-fix-20261114/REPORT.md"
       ],
-      "next_step": "先实际轮询exec64612终态归档全失败，再修定制接受/付款及机构正常实名/隐私引用fixture，保留原断言；关联/最终全量HTTP成功后上传PR39",
+      "next_step": "实际收当前完整终态与同次HTTP/离线检查，失败保留并终态后修，成功后集中同步原PR39",
       "implementation": "PARTIAL",
       "pm01_work_items": [
         "W10"
       ],
-      "current_evidence_scope": "当前合同定制探针6/13确认12放行；完整215实际运行且3类资料准备问题6失败含父/连带，未修",
-      "remote_check_status": "PR39_6065F37F_FOUR_SUCCESS_LOCAL_GAP_CONFIRMED_FULL_RUNNING",
-      "active_batch": "docs/reviews/pm01-transaction-identity-audit-20261114/REPORT.md",
-      "active_batch_status": "CUSTOMIZATION_IDENTITY_GAP_CONFIRMED_FULL_RUNNING_FAILED_CHECK",
+      "current_evidence_scope": "当前实名三处已修；21文件496、21HTTP2379通过；216完整exec96618运行中",
+      "remote_check_status": "PR39_6065F37F_FOUR_SUCCESS_LOCAL_FIXED_LINKED_PASS_FULL_RUNNING",
+      "active_batch": "docs/reviews/pm01-transaction-identity-fix-20261114/REPORT.md",
+      "active_batch_status": "TRANSACTION_IDENTITY_FIXED_LINKED_PASS_FULL_RUNNING",
       "frontend_execution": "PAUSED_BY_USER_20261112",
       "local_verification_run": "pm01-identity-adjacent-2026-11-14T13-02-27-743Z",
       "business_commit": "532c1b996549e7911a6ca24d354864002b4be5b9",
@@ -9064,6 +9080,20 @@
         "full_session": 64612,
         "full_run_state": "RUNNING_WHEN_POLLED_WITH_FAILURE",
         "full_run_id": "pm01-current-backend-2026-11-14T13-04-41-169Z"
+      },
+      "transaction_identity_fix_20261114": {
+        "owner": "chengcongcong222",
+        "source_commit": "655d9ff4c53c3f66a9c3b09adadc13eae92dc423",
+        "pass": 496,
+        "fail": 0,
+        "http_files": 21,
+        "http_responses": 2379,
+        "runtime_changed": true,
+        "frontend": false,
+        "uploaded": false,
+        "full_session": 96618,
+        "full_run_state": "RUNNING_WHEN_STARTED",
+        "full_run_id": "pm01-current-backend-2026-11-14T13-39-14-624Z"
       }
     },
     {

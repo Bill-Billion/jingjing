@@ -1,0 +1,117 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "655d9ff4c53c3f66a9c3b09adadc13eae92dc423",
+  "run_id": "pm01-transaction-identity-fix-2026-11-14T13-34-55-570Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "frontend_run": false,
+  "real_services": false,
+  "checks": [
+    {
+      "id": "TRANSACTION-ACTOR-IDENTITY-AND-DISPATCH",
+      "acceptance_ids": [
+        "ACC-DEL-02.01"
+      ],
+      "name": "交易当前实名与发送付款前再核",
+      "result": "LOCAL_PASS",
+      "scope": "接受报价、准备付款及首次发送付款前检查实际办事人当前实名；未实名/过期/拒绝的新办与重放阻断，准备后失效不调用渠道；旧合同读取、恢复同键及未知付款查询到账保留。",
+      "remaining": "新反例为当前人工定制合同；接受和发送/恢复使用HTTP，付款准备直接业务仓库。关联21文件不是所有交易产品实名状态组合，真实身份/资金、端侧、维护者独审及最终216完整回归仍待。",
+      "actual_checks": {
+        "records": [
+          {
+            "name": "verified buyer accepts a current-contract script-first quote",
+            "result": "PASS"
+          },
+          {
+            "name": "verified buyer prepares the current-contract first payment",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified buyer cannot accept a new current-contract quote",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified buyer cannot replay quote acceptance",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified buyer cannot prepare a new payment on an earlier order",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified buyer cannot replay payment preparation",
+            "result": "PASS"
+          },
+          {
+            "name": "unverified buyer retains original order read and contract",
+            "result": "PASS"
+          },
+          {
+            "name": "expired buyer cannot accept a new current-contract quote",
+            "result": "PASS"
+          },
+          {
+            "name": "expired buyer cannot replay quote acceptance",
+            "result": "PASS"
+          },
+          {
+            "name": "expired buyer cannot prepare a new payment on an earlier order",
+            "result": "PASS"
+          },
+          {
+            "name": "expired buyer cannot replay payment preparation",
+            "result": "PASS"
+          },
+          {
+            "name": "expired buyer retains original order read and contract",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected buyer cannot accept a new current-contract quote",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected buyer cannot replay quote acceptance",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected buyer cannot prepare a new payment on an earlier order",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected buyer cannot replay payment preparation",
+            "result": "PASS"
+          },
+          {
+            "name": "rejected buyer retains original order read and contract",
+            "result": "PASS"
+          },
+          {
+            "name": "restored identity returns the original successful acceptance and payment",
+            "result": "PASS"
+          },
+          {
+            "name": "identity expiry after payment preparation but before dispatch stops the provider call",
+            "result": "PASS"
+          },
+          {
+            "name": "restored identity dispatches the original prepared payment exactly once",
+            "result": "PASS"
+          },
+          {
+            "name": "unknown payment outcome is retained rather than creating a second charge",
+            "result": "PASS"
+          },
+          {
+            "name": "identity expiry still permits trusted reconciliation and reading original payment facts",
+            "result": "PASS"
+          },
+          {
+            "name": "current-contract customization buyer identity on acceptance and payment",
+            "result": "PASS"
+          }
+        ]
+      }
+    }
+  ]
+}
