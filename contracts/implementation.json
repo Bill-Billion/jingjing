@@ -1,5 +1,5 @@
 {
-  "version": "0.31.74-rc.7",
+  "version": "0.31.75-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -673,7 +673,10 @@
     "getDiscoveryRecommendedMatches",
     "listPartyRepresentatives",
     "offerPartyRepresentation",
-    "actPartyRepresentation"
+    "actPartyRepresentation",
+    "requestRecoveryFinanceOperation",
+    "linkRecoveryReceiptFinanceOperation",
+    "cancelRecoveryFinanceOperation"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -1563,5 +1566,11 @@
     ],
     "scope": "Own issued/received retained grant summaries under CONTRACTS; unrelated accounts redacted, business loss does not remove own copy. Invoice representatives upload/read only their own REVIEW_EVIDENCE, permission rechecked after transport.",
     "production_enabled": false
+  },
+  "finance_recovery_cases": {
+    "migration": "0224",
+    "meaning": "Independent claim review and links to already posted returns; no new money entry, automatic debit or debt writeoff",
+    "frontend_run": false,
+    "real_services": false
   }
 }
