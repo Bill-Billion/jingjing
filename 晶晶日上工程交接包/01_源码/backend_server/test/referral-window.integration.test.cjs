@@ -95,7 +95,7 @@ test('seven-day referral survives unrelated clicks and exact timestamp page boun
    assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM trade_records WHERE kind='ORDER' AND buyer_party_id=?",[buyer.personal_party_id]))[0][0].n),before);
   });
  }finally{
-  await fs.writeFile(path.resolve(__dirname,'../../../..','.local/referral-window-http.json'),JSON.stringify(fixtures,null,2));
+  await fs.writeFile(path.resolve(__dirname,'../../../..','.local/referral-window-http.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
   if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();if(created)await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();
  }
 });
