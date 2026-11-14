@@ -31,13 +31,23 @@ function decision(body,{dataId,taskId,video=false,hasAudio}={}){
 }
 function createModerationProvider(db,env={},clientFactory){
  const environment=env.MODERATION_ENVIRONMENT==='PRODUCTION'?'PRODUCTION':'SANDBOX';
- const config={result_revision:'VIDEO_FRAME_AUDIO_V1',ffprobe:env.MEDIA_FFPROBE||null,environment,region:env.MODERATION_REGION,accessKeyId:env.MODERATION_ACCESS_KEY_ID,accessKeySecret:env.MODERATION_ACCESS_KEY_SECRET,text:env.MODERATION_TEXT_SERVICE,image:env.MODERATION_IMAGE_SERVICE,video:env.MODERATION_VIDEO_SERVICE,bucket:env.OSS_BUCKET,ossRegion:env.OSS_REGION};
+ const config={result_revision:'VIDEO_FRAME_AUDIO_V1_AUDIO_SLICES_V1',ffprobe:env.MEDIA_FFPROBE||null,environment,region:env.MODERATION_REGION||null,accessKeyId:env.MODERATION_ACCESS_KEY_ID||null,accessKeySecret:env.MODERATION_ACCESS_KEY_SECRET||null,text:env.MODERATION_TEXT_SERVICE||null,image:env.MODERATION_IMAGE_SERVICE||null,video:env.MODERATION_VIDEO_SERVICE||null,audio:env.MODERATION_AUDIO_SERVICE||null,bucket:env.OSS_BUCKET||null,ossRegion:env.OSS_REGION||null};
  const configured=env.MEDIA_MODERATION_ENABLED==='true'&&['cn-shanghai','cn-beijing','cn-hangzhou','cn-shenzhen','cn-chengdu'].includes(config.region)&&!!config.accessKeyId&&!!config.accessKeySecret&&environment===(env.NODE_ENV==='production'?'PRODUCTION':'SANDBOX');
  const inspect=()=>({implemented:true,configured,config_revision:digest(config)});let client;
  const get=()=>{if(!client){const SDK=require('@alicloud/green20220302'),OpenAPI=require('@alicloud/openapi-client');client=clientFactory?clientFactory():new SDK.default(new OpenAPI.Config({accessKeyId:config.accessKeyId,accessKeySecret:config.accessKeySecret,regionId:config.region,endpoint:'green-cip.'+config.region+'.aliyuncs.com',protocol:'HTTPS',connectTimeout:5000,readTimeout:10000}));}return client;};
  const adapter=createAdapter({provider:{provider_kind:'ModerationProvider',provider_code:'aliyun-green',capability_code:'file_review',environment},repository:require('../providers/readiness').createReadinessRepository(db),inspect,operations:{async inspect(i){
   const SDK=require('@alicloud/green20220302');let response;
-  if(i.provider_task_id&&i.media_type!=='video/mp4')throw error('MODERATION_FORMAT_UNSUPPORTED',409);
+  const audio=['audio/wav','audio/mpeg'].includes(i.media_type);
+  if(i.provider_task_id&&i.media_type!=='video/mp4'&&!audio)throw error('MODERATION_FORMAT_UNSUPPORTED',409);
+  if(audio){
+   if(!['audio_media_detection','audio_media_detection_pro'].includes(config.audio))throw error('MODERATION_FORMAT_UNSUPPORTED',409);
+   const {inspectAudio,audioDecision}=require('./moderation-audio'),checked=await inspectAudio(i.body,{ffprobe:config.ffprobe,mediaType:i.media_type});
+   if(i.provider_task_id){
+    response=await get().voiceModerationResult(new SDK.VoiceModerationResultRequest({service:config.audio,serviceParameters:JSON.stringify({taskId:i.provider_task_id})}));
+    if(Number(response.body?.code)===280){const d=response.body?.data;if(!nonempty(response.body?.requestId)||d?.taskId!==undefined&&d.taskId!==i.provider_task_id||d?.dataId!==undefined&&d.dataId!==i.data_id)throw error('MODERATION_RESULT_MISMATCH',503);return {pending:true,provider_task_id:i.provider_task_id};}
+    return audioDecision(response.body,{dataId:i.data_id,taskId:i.provider_task_id,inspection:checked});
+   }
+  }
   const inspection=i.media_type==='video/mp4'?await require('./moderation-video').inspectVideo(i.body,{ffprobe:config.ffprobe}):null;
   if(i.provider_task_id){if(!config.video)throw error('MODERATION_FORMAT_UNSUPPORTED',409);response=await get().videoModerationResult(new SDK.VideoModerationResultRequest({service:config.video,serviceParameters:JSON.stringify({taskId:i.provider_task_id})}));if(Number(response.body?.code)===280){if(response.body?.data?.taskId&&response.body.data.taskId!==i.provider_task_id||response.body?.data?.dataId&&response.body.data.dataId!==i.data_id)throw error('MODERATION_RESULT_MISMATCH',503);return {pending:true,provider_task_id:i.provider_task_id};}return decision(response.body,{dataId:i.data_id,taskId:i.provider_task_id,video:true,hasAudio:inspection.has_audio});}
   if(i.media_type==='text/plain'){
@@ -46,6 +56,7 @@ function createModerationProvider(db,env={},clientFactory){
   }
   if(!config.bucket||!/^oss-cn-[a-z]+$/.test(config.ossRegion||''))throw error('MODERATION_OSS_NOT_CONFIGURED',503);
   const params={ossRegionId:config.ossRegion.slice(4),ossBucketName:config.bucket,ossObjectName:i.object_key,dataId:i.data_id};
+  if(audio){response=await get().voiceModeration(new SDK.VoiceModerationRequest({service:config.audio,serviceParameters:JSON.stringify(params)}));const b=response.body;if(Number(b?.code)!==200||!nonempty(b.requestId)||!nonempty(b.data?.taskId)||b.data?.dataId!==i.data_id)throw error('MODERATION_RESULT_UNKNOWN',503);return {pending:true,provider_task_id:b.data.taskId,provider_request_id:b.requestId};}
   if(['image/png','image/jpeg'].includes(i.media_type)&&config.image){response=await get().imageModeration(new SDK.ImageModerationRequest({service:config.image,serviceParameters:JSON.stringify(params)}));return decision(response.body,{dataId:i.data_id});}
   if(i.media_type==='video/mp4'&&config.video){response=await get().videoModeration(new SDK.VideoModerationRequest({service:config.video,serviceParameters:JSON.stringify(params)}));const b=response.body;if(Number(b?.code)!==200||!nonempty(b.requestId)||!nonempty(b.data?.taskId)||b.data?.dataId!==i.data_id)throw error('MODERATION_RESULT_UNKNOWN',503);return {pending:true,provider_task_id:b.data.taskId,provider_request_id:b.requestId};}
   throw error('MODERATION_FORMAT_UNSUPPORTED',409);

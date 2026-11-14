@@ -32,9 +32,11 @@
 
 已审核media.processing规则中，media_processing包含ai_label、preview_label、require_marking、require_moderation、provider_code。不得对不适用AI标识的视频误标，正式范围先审核。规则启用后，现货与制作提交必须拿到对应文件、规则及预览/正式类型的处理凭据；人工勾选不能替代缺少的文件凭据。
 
-候选机审采用已安装的阿里云SDK。仅在MEDIA_MODERATION_ENABLED=true、MODERATION_ENVIRONMENT、MODERATION_REGION、MODERATION_ACCESS_KEY_ID、MODERATION_ACCESS_KEY_SECRET以及所需MODERATION_TEXT_SERVICE/IMAGE_SERVICE/VIDEO_SERVICE齐备，且ModerationProvider / aliyun-green / file_review有同配置的服务验证记录时允许调用。密钥放受限配置，不写文档或Git。图片/视频另需OSS授权与匹配地域，不能为机审把私有文件改成公开。
+候选机审采用已安装的阿里云SDK。仅在MEDIA_MODERATION_ENABLED=true、MODERATION_ENVIRONMENT、MODERATION_REGION、MODERATION_ACCESS_KEY_ID、MODERATION_ACCESS_KEY_SECRET以及所需MODERATION_TEXT_SERVICE/IMAGE_SERVICE/VIDEO_SERVICE/AUDIO_SERVICE齐备，且ModerationProvider / aliyun-green / file_review有同配置的服务验证记录时允许调用。密钥放受限配置，不写文档或Git。图片/视频/独立音频另需OSS授权与匹配地域，不能为机审把私有文件改成公开。
 
 参考：[文本请求范围](https://help.aliyun.com/en/document_detail/434034.html)、[图片私有OSS接法](https://help.aliyun.com/en/document_detail/467829.html)、[视频提交与结果查询](https://help.aliyun.com/en/document_detail/2505810.html)。本轮未对真实产品调用收费接口，不能据SDK存在宣布开通。视频提交成功只说明已受理，原任务查询得到完整判定后才记录；未知提交不自动重发。
+
+独立音频候选使用MODERATION_AUDIO_SERVICE=audio_media_detection或audio_media_detection_pro，须核实际地域和授权，不自动选择或开通。仅处理单音轨WAV/MP3，输入不超过50MB、30分钟；嵌入封面等额外流目前拒绝。实际FFprobe与内容摘要重核，异步查询原taskId，严格返回dataId，可选taskId若有须相同。空切片、未知或低中风险交独立复核，高风险拒绝；精简覆盖记录不含转写文本/临时URL，也不保证连续时段覆盖。配置修订变化后必须重新验证；SDK合成测试不代表真实审核能力。参考[官方语音接口](https://help.aliyun.com/zh/document_detail/604973.html)。
 
 后台任务失败会保留BLOCKED和原因。恢复删除任务可由授权运维用原任务编号核对后重试；视频若已取得供应商任务号，只查询原号。转码在上传后中断须先核对具体产物，当前没有面向普通用户的“忽略错误继续”入口。
 
