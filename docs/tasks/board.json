@@ -8241,7 +8241,7 @@
       "review_status": "PENDING",
       "test_status": "PASS_WITH_LIMITS",
       "blockers": [],
-      "updated_on": "2026-11-14",
+      "updated_on": "2026-11-15",
       "original_group_refs": [
         "CORE-CLIENT-COMPLETE-16",
         "CORE-CLIENT-COMPLETE-17",
@@ -8360,15 +8360,15 @@
         "docs/reviews/pm01-supplier-identity-audit-20261114/REPORT.md",
         "docs/reviews/pm01-supplier-identity-fix-20261114/REPORT.md"
       ],
-      "next_step": "供给报价及交易规格/报价两组正式反例和关联回归；保留旧读取/驳回/恢复及原财务，收同次HTTP后当前完整",
+      "next_step": "45167真实终态后归档，恢复平台开价权限403优先、补明确正常商户前置，身份负例保留无档案；整批复验后同次HTTP/新完整",
       "implementation": "PARTIAL",
       "pm01_work_items": [
         "W10"
       ],
-      "current_evidence_scope": "独立副本商单9/交易18实名拒绝失败；当前220完整运行；本轮无运行时修改",
+      "current_evidence_scope": "rc.9完整2266/0/1及126HTTP9445已终态；新rc.10关联43运行，商单25已观察通过，其余待",
       "remote_check_status": "PRIOR_6905_ALL_TERMINAL_WEB_PREPARATION_FAILURE",
       "active_batch": "docs/reviews/pm01-supplier-identity-fix-20261114/REPORT.md",
-      "active_batch_status": "SUPPLIER_IDENTITY_FIX_VALIDATION_PENDING",
+      "active_batch_status": "SUPPLIER_IDENTITY_LINKED_RUNNING",
       "frontend_execution": "PAUSED_BY_USER_20261112",
       "local_verification_run": "pm01-identity-adjacent-2026-11-14T13-02-27-743Z",
       "business_commit": "532c1b996549e7911a6ca24d354864002b4be5b9",
@@ -9275,7 +9275,93 @@
         "claimed": true,
         "runtime_changed": true,
         "frontend": false,
-        "uploaded": false
+        "uploaded": false,
+        "source_commit": "4949ddf152bca6f39d10591c8d83e94dd3cab08d",
+        "test_files": 43,
+        "expected_http_files": 35,
+        "actual_session": 45167,
+        "run_id": "pm01-supplier-identity-2026-11-14T16-12-21-659Z",
+        "observed": {
+          "PASS": 196,
+          "FAIL": 4,
+          "SKIP": 0,
+          "TODO": 0
+        },
+        "full_backend_run": false,
+        "observed_failures": [
+          {
+            "name": "outsider cannot use the release setting to issue platform quotes",
+            "file": "test/customization-contract-cutover.integration.test.cjs",
+            "line": 47,
+            "nesting": 1,
+            "status": "FAIL",
+            "duration_ms": 7.3383,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "contract release mode blocks new old-rule quotes but preserves approved historical promises",
+            "file": "test/customization-contract-cutover.integration.test.cjs",
+            "line": 4,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 24763.7915,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "platform customization quote HTTP, story version and unique order transactions",
+            "file": "test/customization-trade.integration.test.cjs",
+            "line": 13,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 24961.1455,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "gigs historical platform-share isolated MySQL and real HTTP cooperation, commissions and rankings",
+            "file": "test/gigs.integration.test.cjs",
+            "line": 9,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 25800.7576,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "gigs 20261029 supply-share isolated MySQL and real HTTP cooperation, commissions and rankings",
+            "file": "test/gigs.integration.test.cjs",
+            "line": 9,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 25769.264,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "publishing and delegated avatar creation require the actual actor current identity",
+            "file": "test/identity-admission.integration.test.cjs",
+            "line": 5,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 26755.7837,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "known minor business actor cannot bypass age restriction by acting for an adult artist organization",
+            "file": "test/minor-business-actor.integration.test.cjs",
+            "line": 5,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 25988.4294,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "notices and one-way submissions in isolated MySQL",
+            "file": "test/notices.integration.test.cjs",
+            "line": 5,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 27054.3005,
+            "error_code": "ERR_TEST_FAILURE"
+          }
+        ]
       }
     },
     {
@@ -9564,7 +9650,7 @@
       "review_status": "PENDING",
       "test_status": "PASS",
       "blockers": [],
-      "updated_on": "2026-11-14",
+      "updated_on": "2026-11-15",
       "original_group_refs": [
         "CORE-CLIENT-COMPLETE-06",
         "CORE-CLIENT-COMPLETE-10",
@@ -9591,14 +9677,14 @@
         "docs/reviews/pm01-supplier-identity-audit-20261114/REPORT.md",
         "docs/reviews/pm01-supplier-identity-fix-20261114/REPORT.md"
       ],
-      "next_step": "供给报价及交易规格/报价两组正式反例和关联回归；保留旧读取/驳回/恢复及原财务，收同次HTTP后当前完整",
+      "next_step": "45167真实终态后归档，恢复平台开价权限403优先、补明确正常商户前置，身份负例保留无档案；整批复验后同次HTTP/新完整",
       "implementation": "PARTIAL",
       "pm01_work_items": [
         "W14"
       ],
-      "current_evidence_scope": "独立副本商单9/交易18实名拒绝失败；当前220完整运行；本轮无运行时修改",
+      "current_evidence_scope": "rc.9完整2266/0/1及126HTTP9445已终态；新rc.10关联43运行，商单25已观察通过，其余待",
       "active_batch": "docs/reviews/pm01-supplier-identity-fix-20261114/REPORT.md",
-      "active_batch_status": "SUPPLIER_IDENTITY_FIX_VALIDATION_PENDING",
+      "active_batch_status": "SUPPLIER_IDENTITY_LINKED_RUNNING",
       "frontend_execution": "PAUSED_BY_USER_20261112",
       "remote_check_status": "PRIOR_6905_ALL_TERMINAL_WEB_PREPARATION_FAILURE",
       "local_verification_run": "backend-acceptance-2026-11-12T01-15-47-778Z-389d42",
@@ -9709,7 +9795,93 @@
         "claimed": true,
         "runtime_changed": true,
         "frontend": false,
-        "uploaded": false
+        "uploaded": false,
+        "source_commit": "4949ddf152bca6f39d10591c8d83e94dd3cab08d",
+        "test_files": 43,
+        "expected_http_files": 35,
+        "actual_session": 45167,
+        "run_id": "pm01-supplier-identity-2026-11-14T16-12-21-659Z",
+        "observed": {
+          "PASS": 196,
+          "FAIL": 4,
+          "SKIP": 0,
+          "TODO": 0
+        },
+        "full_backend_run": false,
+        "observed_failures": [
+          {
+            "name": "outsider cannot use the release setting to issue platform quotes",
+            "file": "test/customization-contract-cutover.integration.test.cjs",
+            "line": 47,
+            "nesting": 1,
+            "status": "FAIL",
+            "duration_ms": 7.3383,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "contract release mode blocks new old-rule quotes but preserves approved historical promises",
+            "file": "test/customization-contract-cutover.integration.test.cjs",
+            "line": 4,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 24763.7915,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "platform customization quote HTTP, story version and unique order transactions",
+            "file": "test/customization-trade.integration.test.cjs",
+            "line": 13,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 24961.1455,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "gigs historical platform-share isolated MySQL and real HTTP cooperation, commissions and rankings",
+            "file": "test/gigs.integration.test.cjs",
+            "line": 9,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 25800.7576,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "gigs 20261029 supply-share isolated MySQL and real HTTP cooperation, commissions and rankings",
+            "file": "test/gigs.integration.test.cjs",
+            "line": 9,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 25769.264,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "publishing and delegated avatar creation require the actual actor current identity",
+            "file": "test/identity-admission.integration.test.cjs",
+            "line": 5,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 26755.7837,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "known minor business actor cannot bypass age restriction by acting for an adult artist organization",
+            "file": "test/minor-business-actor.integration.test.cjs",
+            "line": 5,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 25988.4294,
+            "error_code": "ERR_TEST_FAILURE"
+          },
+          {
+            "name": "notices and one-way submissions in isolated MySQL",
+            "file": "test/notices.integration.test.cjs",
+            "line": 5,
+            "nesting": 0,
+            "status": "FAIL",
+            "duration_ms": 27054.3005,
+            "error_code": "ERR_TEST_FAILURE"
+          }
+        ]
       }
     },
     {
