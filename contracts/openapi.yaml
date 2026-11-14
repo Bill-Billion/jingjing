@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.75-rc.1
+  version: 0.31.75-rc.2
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -34004,6 +34004,7 @@ paths:
           - PARTICIPATION_AGREEMENTS
           - AGENCY_AGREEMENTS
           - ENTERPRISE_REPRESENTATIONS
+          - FINANCE_RECOVERIES
           - SESSION_RECORDS
           - PHONE_CHANGES
           - PHONE_CHANGE_EVENTS
@@ -34675,6 +34676,7 @@ paths:
           - PARTICIPATION_AGREEMENTS
           - AGENCY_AGREEMENTS
           - ENTERPRISE_REPRESENTATIONS
+          - FINANCE_RECOVERIES
           - SESSION_RECORDS
           - PHONE_CHANGES
           - PHONE_CHANGE_EVENTS
@@ -75071,6 +75073,7 @@ components:
         data:
           oneOf:
           - $ref: '#/components/schemas/PrivacyRepresentativeCopyPage'
+          - $ref: '#/components/schemas/PrivacyRecoveryCopyPage'
           - type: object
             additionalProperties: false
             properties:
@@ -83408,3 +83411,127 @@ components:
       - object_version
       - content_sha256
       - data
+    PrivacyRecoveryCopyPage:
+      type: object
+      additionalProperties: false
+      properties:
+        section:
+          const: FINANCE_RECOVERIES
+        items:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              agreement_id:
+                type: string
+                format: uuid
+              relationship:
+                enum:
+                - CLAIMANT
+                - RECIPIENT
+              current_status:
+                enum:
+                - IN_REVIEW
+                - APPROVED
+                - REJECTED
+                - CANCELLED
+                - RECOVERED
+              object_version:
+                type: integer
+                minimum: 1
+              created_at:
+                type: string
+                format: date-time
+              source_content_sha256:
+                type: string
+                pattern: ^[0-9a-f]{64}$
+              source_type:
+                const: ORDER
+              source_id:
+                type: string
+                format: uuid
+              environment:
+                enum:
+                - SANDBOX
+                - PRODUCTION
+              currency:
+                const: CNY
+              amount_minor:
+                type: integer
+                minimum: 1
+                maximum: 900000000000
+              received_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              unlinked_claim_minor:
+                type: integer
+                minimum: 0
+                maximum: 900000000000
+              review_decision:
+                enum:
+                - APPROVED
+                - REJECTED
+                - null
+              administratively_closed:
+                type: boolean
+              receipts:
+                type: array
+                items:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    payout_evidence_id:
+                      type: string
+                      format: uuid
+                    amount_minor:
+                      type: integer
+                      minimum: 1
+                      maximum: 900000000000
+                  required:
+                  - payout_evidence_id
+                  - amount_minor
+              meaning:
+                const: HISTORICAL_CLAIM_AND_LINKED_RECEIPTS_NOT_CURRENT_DEBT_OR_BANK_VERIFICATION
+            required:
+            - id
+            - agreement_id
+            - relationship
+            - current_status
+            - object_version
+            - created_at
+            - source_content_sha256
+            - source_type
+            - source_id
+            - environment
+            - currency
+            - amount_minor
+            - received_minor
+            - unlinked_claim_minor
+            - review_decision
+            - administratively_closed
+            - receipts
+            - meaning
+        next_cursor:
+          anyOf:
+          - type: string
+            format: uuid
+          - type: 'null'
+        coverage:
+          const: OWN_ACCOUNT_RECORDS_ONLY
+        request_completion:
+          const: NOT_CONFIRMED
+        original_documents_included:
+          const: false
+      required:
+      - section
+      - items
+      - next_cursor
+      - coverage
+      - request_completion
+      - original_documents_included
