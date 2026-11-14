@@ -5,6 +5,7 @@ const os = require('node:os');
 const { createHash } = require('node:crypto');
 const { run } = require('./marking');
 const { error } = require('../party/policy');
+const { previewMarking, embedComment, readComment } = require('./cover-marking');
 const sha = value => createHash('sha256').update(value).digest('hex');
 const inputOptions = ['-protocol_whitelist', 'file,pipe', '-format_whitelist', 'mov', '-enable_drefs', '0'];
 function videoInfo(info) {
@@ -43,18 +44,21 @@ async function describeVideo(full, preview, { ffmpeg, ffprobe } = {}) {
       let data;
       try { data = JSON.parse((await run(ffprobe, ['-v', 'error', ...inputOptions, '-show_streams', '-show_format', '-of', 'json', file], { cwd: dir, timeout: 15000 })).toString('utf8')); }
       catch (err) { if (err.code === 'MEDIA_PROCESS_FAILED' || err instanceof SyntaxError) throw error('MEDIA_FORMAT_UNSUPPORTED', 409); throw err; }
-      return videoInfo(data);
+      return { ...videoInfo(data), ...(file === 'preview.mp4' ? { marking: previewMarking(data.format?.tags) } : {}) };
     }
     const source = await probe('full.mp4'), sample = await probe('preview.mp4');
     await run(ffmpeg, ['-nostdin', '-v', 'error', ...inputOptions, '-threads', '2', '-i', 'preview.mp4',
       '-map', '0:v:0', '-frames:v', '1', '-an', '-map_metadata', '-1', '-filter_threads', '1',
       '-vf', 'scale=' + sample.cover_width + ':' + sample.cover_height + ',setsar=1',
       '-c:v', 'mjpeg', '-q:v', '3', '-threads', '2', '-fs', '2097152', '-f', 'image2', '-update', '1', 'cover.jpg'], { cwd: dir, timeout: 30000 });
-    const body = await fs.readFile(path.join(dir, 'cover.jpg'));
+    let body = await fs.readFile(path.join(dir, 'cover.jpg'));
+    const comment = sample.marking ? JSON.stringify({ ...sample.marking, derived_media: 'preview_cover', source_preview_sha256: sha(preview) }) : null;
+    if (comment) { body = embedComment(body, comment); await fs.writeFile(path.join(dir, 'cover.jpg'), body); }
     if (body.length < 4 || body.length >= 2 * 1024 * 1024 || body[0] !== 255 || body[1] !== 216 || body.at(-2) !== 255 || body.at(-1) !== 217) throw error('MEDIA_OUTPUT_NOT_VERIFIED', 503);
     // Decode the result independently before claiming that a usable cover exists.
-    const checked = JSON.parse((await run(ffprobe, ['-v', 'error', '-protocol_whitelist', 'file,pipe', '-show_streams', '-of', 'json', 'cover.jpg'], { cwd: dir, timeout: 15000 })).toString('utf8'));
+    const checked = JSON.parse((await run(ffprobe, ['-v', 'error', '-protocol_whitelist', 'file,pipe', '-show_streams', '-show_format', '-of', 'json', 'cover.jpg'], { cwd: dir, timeout: 15000 })).toString('utf8'));
     const image = checked.streams?.[0];
+    if (comment && readComment(await fs.readFile(path.join(dir, 'cover.jpg'))) !== comment) throw error('MEDIA_OUTPUT_NOT_VERIFIED', 503);
     if (checked.streams?.length !== 1 || image.codec_name !== 'mjpeg' || !Number.isInteger(image.width) || !Number.isInteger(image.height) || image.width < 1 || image.height < 1 || image.width > 640 || image.height > 640) throw error('MEDIA_OUTPUT_NOT_VERIFIED', 503);
     return { body, metadata: { source_sha256: sha(full), preview_sha256: sha(preview), duration_ms: source.duration_ms,
       preview_duration_ms: sample.duration_ms, preview_width: sample.width, preview_height: sample.height,
