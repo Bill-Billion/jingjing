@@ -10,6 +10,8 @@ test('privacy restrictions protect commercial and release evidence across their 
  try{
   await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
   const S=await require('./support/customization-delivery.cjs').seed(db),{buyer,producer,reviewer,outsider}=S.people;
+  // Normal commercial publication prerequisite; privacy and invalid-identity assertions stay unchanged.
+  await require('./helpers/trusted-identity.cjs').seedAdultIdentity(db,S.resolvePrincipal,buyer);
   for(const u of [producer,reviewer])for(const action of ['PRIVACY_HANDLE','PRIVACY_REVIEW','GIG_REVIEW','PROJECT_REVIEW'])await S.grant(u,action);
   await S.grant(buyer,'PROJECT_REVIEW');
   let duringRead=null;
