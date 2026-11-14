@@ -21,3 +21,6 @@
 原文仍依PM01 W14“报价到订单、会话开通、四阶段制作与验收”，以及20261029合同00号第二条、19号第二章第四条和10号第四条的免费实名及交易准入。检查顺序、失败后的恢复和测试前置是实施修正，未新增商业收费规则或真实启用授权。
 
 [归因与改动](DIAGNOSIS.md) · [素材准备调整](SECOND_FAILURE.md) · [受影响结果](AFFECTED_BACKEND.json) · [接口格式](AFFECTED_CONTRACT.json) · [当前完整观察](FULL_RUNNING_OBSERVED.json) · [平台规则原文](../../sources/contracts-20261029/extracted/19.md)。
+
+
+[完整回归只读排查及待应用范围](FULL_PREFLIGHT_REVIEW.md)：仍在同一运行中；不是修复已应用或新一批通过。
