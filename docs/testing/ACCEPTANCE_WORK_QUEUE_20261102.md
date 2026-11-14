@@ -98,7 +98,7 @@
 |ACC-DEL-21.01 奖项版本|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-21（局部）|PARTIAL|
 |ACC-DEL-21.02 300与2700|后端|正常办理、取消/退款/撤回|LOTTERY-POINTS-ATOMIC-REPLAY（局部）|PARTIAL|
 |ACC-DEL-21.03 十连保底|后端|正常办理、取消/退款/撤回|LOTTERY-EFFECTIVE-ODDS-VERSION（局部）|PARTIAL|
-|ACC-DEL-21.04 真实奖品|后端|正常办理、取消/退款/撤回|PRIZE-FULFILLMENT（局部）；INTERVIEW-NOT-SELECTED-REMEDY（局部）；INTERVIEW-NO-AVATAR-REMEDY（局部）|PARTIAL|
+|ACC-DEL-21.04 真实奖品|后端|正常办理、取消/退款/撤回|PRIZE-FULFILLMENT（局部）；INTERVIEW-NOT-SELECTED-REMEDY（局部）；INTERVIEW-NO-AVATAR-REMEDY（局部）；DRAWN-CREDIT-COMPLETE-REFUND（局部）|PARTIAL|
 |ACC-DEL-22.01 固定兑换|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-22（局部）；BENEFIT-WEB-01（局部）|PARTIAL|
 |ACC-DEL-22.02 制作金仅用于人工承制定制片和做剧；不用于现货、人工样片、数字人创建或托管；按券后应付金额计算分期。新合同已审规格采用签约30%、脚本/图纸确认40%、最终验收30%；未确认脚本不能支付中款，未完成最终确认和付款不能取得正式文件。比例须明确写入报价及合同；历史订单按原冻结快照，不追改30/60/10。|后端|正常办理、取消/退款/撤回|BENEFIT-WEB-01（局部）|PARTIAL|
 |ACC-DEL-22.03 有现金应付的制作金在首笔付款确认后核销，退款不返券且不超实付；全额服务权益现金为0，确认具体服务及免付金额后下单，开工核销、开工前取消释放，开工后按已公布规则处理且不退现金。|后端|正常办理、取消/退款/撤回|BENEFIT-WEB-01（局部）|PARTIAL|
