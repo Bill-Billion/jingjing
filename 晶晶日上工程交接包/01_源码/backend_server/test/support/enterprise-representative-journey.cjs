@@ -1,11 +1,11 @@
 'use strict';
 const assert=require('node:assert/strict'),{randomUUID:key}=require('node:crypto');
 module.exports=async function({t,db,S,parties,listing,base,fixtures}){
- const {buyer,buyer2,outsider,trade}=S,records=[];let org,grant,invoiceGrant,order,invoice,pay,second,checkoutKey=key(),invoiceKey=key(),acceptInput;
+ const {buyer,buyer2,outsider,trade}=S,records=[];let org,grant,invoiceGrant,order,invoice,pay,second,checkoutKey=key(),invoiceKey=key(),acceptInput,evidenceAsset;const uploadKey=key(),uploadBytes=Buffer.from('Synthetic invoice applicant attachment');
  const future=()=>new Date(Date.now()+86400000).toISOString();
  const sub=(name,fn)=>t.test(name,async()=>{await fn();records.push({name,result:'PASS'});});
  async function call(method,url,{user=buyer2,party=org?.party_id,body,version,op=key(),schema}={}){
-  const r=await fetch(base+url,{method,headers:{Authorization:'Bearer '+user.token,...(party?{'X-Acting-Party':party}:{}),...(body?{'Content-Type':'application/json'}:{}),...(method==='POST'?{'Idempotency-Key':op}:{}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body?{body:JSON.stringify(body)}:{})});
+  const r=await fetch(base+url,{method,headers:{Authorization:'Bearer '+user.token,...(party?{'X-Acting-Party':party}:{}),...(body?{'Content-Type':Buffer.isBuffer(body)?'application/octet-stream':'application/json'}:{}),...(method==='POST'?{'Idempotency-Key':op}:{}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body?{body:Buffer.isBuffer(body)?body:JSON.stringify(body)}:{})});
   if(!r.headers.get('content-type')?.includes('json'))return {status:r.status,bytes:Buffer.from(await r.arrayBuffer())};
   const value=await r.json();fixtures.push({method,path:new URL(base+url).pathname,schema:r.ok?schema:'ErrorResponse',value});return {status:r.status,...value};
  }
@@ -14,7 +14,7 @@ module.exports=async function({t,db,S,parties,listing,base,fixtures}){
  const offer=(scope,extra={})=>call('POST',prefix(),{user:buyer,body:{account_id:buyer2.account_id,scope,expires_at:future(),...extra},schema:'RepresentativeResponse'});
  const act=(r,action,extra={})=>call('POST',prefix()+'/'+r.id+'/actions',{body:{action},version:r.object_version,schema:'RepresentativeResponse',...extra});
  const checkout=()=>({listing_id:listing.id,offer_sha256:listing.content_sha256,channel:'ALIPAY'});
- const invBody=()=>({order_id:order.id,amount_minor:50000,header:{kind:'ORGANIZATION',title:'Synthetic represented company',tax_id:'SYNTHETIC-NOT-A-TAX-ID'},text:'Synthetic delegated application',asset_ids:[]});
+ const invBody=()=>({order_id:order.id,amount_minor:50000,header:{kind:'ORGANIZATION',title:'Synthetic represented company',tax_id:'SYNTHETIC-NOT-A-TAX-ID'},text:'Synthetic delegated application',asset_ids:evidenceAsset?[evidenceAsset.id]:[]});
  await sub('explicit representative offer requires reviewed organization, existing member and owner; no authority before acceptance',async()=>{
   org=await parties.createOrganization(buyer.ctx,{display_name:'Synthetic represented company',operation_key:key()});
   const inv=await parties.inviteMember(buyer.ctx,{party_id:org.party_id,invitee_account_id:buyer2.account_id,expires_at:future(),operation_key:key()});await parties.respondInvitation(buyer2.ctx,{party_id:org.party_id,invitation_id:inv.invitation_id,decision:'ACCEPT',expected_version:1,operation_key:key()});
@@ -41,7 +41,13 @@ module.exports=async function({t,db,S,parties,listing,base,fixtures}){
  });
  await sub('accepted invoice grant creates and recovers the same request; delegates cannot manage membership or self-review',async()=>{
   invoiceGrant=ok(await offer('INVOICES'));invoiceGrant=ok(await act(invoiceGrant,'ACCEPT'));
+  evidenceAsset=ok(await call('POST','/supply/assets?purpose=REVIEW_EVIDENCE&media_type=text/plain',{body:uploadBytes,op:uploadKey,schema:'SupplyAssetResponse'}));
+  assert.equal(ok(await call('POST','/supply/assets?purpose=REVIEW_EVIDENCE&media_type=text/plain',{body:uploadBytes,op:uploadKey,schema:'SupplyAssetResponse'})).id,evidenceAsset.id);
+  for(const purpose of ['WORK_CONTENT','CONSENT_EVIDENCE','AVATAR_MATERIAL','RIGHTS_EVIDENCE'])assert.equal((await call('POST','/supply/assets?purpose='+purpose+'&media_type=text/plain',{body:uploadBytes})).status,403);
+  const ownFile=await call('GET','/supply/assets/'+evidenceAsset.id+'/content');assert.equal(ownFile.status,200);assert.deepEqual(ownFile.bytes,uploadBytes);
+  const ownersFile=await S.supply.upload(buyer.ctx,{party_id:org.party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from('Synthetic owner private unrelated attachment'),operation_key:key()});assert.equal((await call('GET','/supply/assets/'+ownersFile.id+'/content')).status,403);
   invoice=ok(await call('POST','/invoices/requests',{body:invBody(),op:invoiceKey,schema:'InvoiceResponse'}));assert.equal(invoice.buyer_party_id,org.party_id);
+  assert.deepEqual((await call('GET','/invoices/requests/'+invoice.id+'/assets/'+evidenceAsset.id+'/content')).bytes,uploadBytes);
   assert.equal(ok(await call('GET','/invoices/command-results/'+invoiceKey+'?operation=CREATE&order_id='+order.id,{schema:'InvoiceCommandResultResponse'})).invoice.id,invoice.id);
   await assert.rejects(parties.inviteMember(buyer2.ctx,{party_id:org.party_id,invitee_account_id:outsider.account_id,expires_at:future(),operation_key:key()}),{code:'PARTY_ACTION_FORBIDDEN'});
   await require('../../src/modules/governance/operator-access').maintainOperatorGrant(db,{account_id:buyer2.account_id,action:'INVOICE_HANDLE',enabled:true,expires_at:null,expected_version:0,authority_ref:'synthetic:representative',reason:'isolated self review denial'});
@@ -93,6 +99,16 @@ module.exports=async function({t,db,S,parties,listing,base,fixtures}){
   for(const url of [file,'/invoices/requests/'+invoice.id,'/invoices/command-results/'+invoiceKey+'?operation=CREATE&order_id='+order.id])assert.equal((await call('GET',url)).status,403,url);
   assert.equal((await call('POST','/invoices/requests',{body:invBody(),op:invoiceKey})).status,403);
   assert.equal((await call('GET',file,{user:buyer})).status,200);
+  assert.equal((await call('POST','/supply/assets?purpose=REVIEW_EVIDENCE&media_type=text/plain',{body:uploadBytes,op:uploadKey})).status,403);
+  for(const url of ['/supply/assets/'+evidenceAsset.id+'/content','/invoices/requests/'+invoice.id+'/assets/'+evidenceAsset.id+'/content'])assert.equal((await call('GET',url)).status,403);
+  assert.deepEqual((await call('GET','/invoices/requests/'+invoice.id+'/assets/'+evidenceAsset.id+'/content',{user:buyer})).bytes,uploadBytes);
  });
- assert.equal(records.length,8);return {checks:records,order_id:order?.id,invoice_id:invoice?.id,party_id:org.party_id,representative_account_id:buyer2.account_id,limits:['Synthetic organization qualification, identity and payment receipt; no real service, UI, legal representative replacement or independent acceptance.','Acceptance and grants are HTTP; payment preparation/receipt and membership transitions are repositories; expiry and suspensions are isolated administrative fixtures.']};
+ await sub('revocation during private attachment transport prevents returning already-read bytes',async()=>{
+  invoiceGrant=ok(await offer('INVOICES'));invoiceGrant=ok(await act(invoiceGrant,'ACCEPT'));
+  const repo=require('../../src/modules/works/repository').createSupplyRepository(db,{resolvePrincipal:S.resolvePrincipal});let reads=0;
+  const files=require('../../src/modules/works/assets').createSupplyAssets({db,repository:repo,storageFactory:()=>({getBuffer:async objectKey=>{reads++;invoiceGrant=await parties.actRepresentation(buyer.ctx,{party_id:org.party_id,representation_id:invoiceGrant.id,action:'REVOKE',expected_version:invoiceGrant.object_version,operation_key:key()});return S.bytes.get(objectKey);}})});
+  await assert.rejects(files.download(buyer2.ctx,evidenceAsset.id,org.party_id),{code:'SUPPLY_PARTY_FORBIDDEN'});assert.equal(reads,1);
+  assert.deepEqual((await S.supply.download(buyer.ctx,evidenceAsset.id,org.party_id)).body,uploadBytes);
+ });
+ assert.equal(records.length,9);return {checks:records,order_id:order?.id,invoice_id:invoice?.id,party_id:org.party_id,representative_account_id:buyer2.account_id,limits:['Synthetic organization qualification, identity and payment receipt; no real service, UI, legal representative replacement or independent acceptance.','Acceptance and grants are HTTP; payment preparation/receipt and membership transitions are repositories; expiry and suspensions are isolated administrative fixtures.']};
 };

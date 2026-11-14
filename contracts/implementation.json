@@ -1,5 +1,5 @@
 {
-  "version": "0.31.74-rc.1",
+  "version": "0.31.74-rc.2",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -1552,6 +1552,16 @@
     "migration": "0223",
     "test": "test/stock-commercial.integration.test.cjs",
     "scope": "Explicit expiring TRADE/INVOICES grants, member acceptance, current grantor and membership versions; trade and stock buyer plus applicant invoices. Other wrappers, legal owner replacement and frontend remain pending.",
+    "production_enabled": false
+  },
+  "enterprise_representative_copy": {
+    "status": "IMPLEMENTED_ISOLATED_TESTS",
+    "migration": "0223 unchanged",
+    "tests": [
+      "test/privacy-representative-copy.integration.test.cjs",
+      "test/stock-commercial.integration.test.cjs"
+    ],
+    "scope": "Own issued/received retained grant summaries under CONTRACTS; unrelated accounts redacted, business loss does not remove own copy. Invoice representatives upload/read only their own REVIEW_EVIDENCE, permission rechecked after transport.",
     "production_enabled": false
   }
 }

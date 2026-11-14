@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.74-rc.1
+  version: 0.31.74-rc.2
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -34002,6 +34002,7 @@ paths:
           - LICENSE_AGREEMENTS
           - PARTICIPATION_AGREEMENTS
           - AGENCY_AGREEMENTS
+          - ENTERPRISE_REPRESENTATIONS
           - SESSION_RECORDS
           - PHONE_CHANGES
           - PHONE_CHANGE_EVENTS
@@ -34672,6 +34673,7 @@ paths:
           - LICENSE_AGREEMENTS
           - PARTICIPATION_AGREEMENTS
           - AGENCY_AGREEMENTS
+          - ENTERPRISE_REPRESENTATIONS
           - SESSION_RECORDS
           - PHONE_CHANGES
           - PHONE_CHANGE_EVENTS
@@ -36661,6 +36663,81 @@ components:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
   schemas:
+    PrivacyRepresentativeCopyPage:
+      type: object
+      additionalProperties: false
+      properties:
+        section:
+          const: ENTERPRISE_REPRESENTATIONS
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              id:
+                type: string
+                format: uuid
+              party_id:
+                type: string
+                format: uuid
+              relationship:
+                enum:
+                - GRANTEE
+                - GRANTOR
+              scope:
+                enum:
+                - TRADE
+                - INVOICES
+              current_status:
+                enum:
+                - OFFERED
+                - ACTIVE
+                - DECLINED
+                - REVOKED
+              object_version:
+                type: integer
+                minimum: 1
+              expires_at:
+                type: string
+                format: date-time
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+              effective_now:
+                type: boolean
+            required:
+            - id
+            - party_id
+            - relationship
+            - scope
+            - current_status
+            - object_version
+            - expires_at
+            - created_at
+            - updated_at
+            - effective_now
+          maxItems: 100
+        next_cursor:
+          type:
+          - string
+          - 'null'
+        coverage:
+          const: OWN_ACCOUNT_RECORDS_ONLY
+        request_completion:
+          const: NOT_CONFIRMED
+        original_documents_included:
+          const: false
+      required:
+      - section
+      - items
+      - next_cursor
+      - coverage
+      - request_completion
+      - original_documents_included
     Representative:
       type: object
       additionalProperties: false
@@ -74827,6 +74904,7 @@ components:
           $ref: '#/components/schemas/Meta'
         data:
           oneOf:
+          - $ref: '#/components/schemas/PrivacyRepresentativeCopyPage'
           - type: object
             additionalProperties: false
             properties:
