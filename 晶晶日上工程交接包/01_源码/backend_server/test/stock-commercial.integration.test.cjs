@@ -51,6 +51,7 @@ test('commercial stock independent product, scoped personal rights, business buy
  });
  const enterpriseRecords=await require('./support/enterprise-invoice-journey.cjs')({t,db,S,parties,org,order,base,fixtures});
  const evidence=require('node:path').resolve(__dirname,'../../../..','.local/enterprise-invoice-result.json');await fs.mkdir(require('node:path').dirname(evidence),{recursive:true});await fs.writeFile(evidence,JSON.stringify({result:'PASS',checks:enterpriseRecords,limits:['Synthetic reviewed organization capability and operator grants; no real invoice or owner-transfer workflow.']},null,2));
+ const representativeRecords=await require('./support/enterprise-representative-journey.cjs')({t,db,S,parties,listing,base,fixtures});await fs.writeFile(require('node:path').resolve(__dirname,'../../../..','.local/enterprise-representative-result.json'),JSON.stringify(representativeRecords,null,2));
  await t.test('consent withdrawal stops downloads, restoration does not silently expand the license',async()=>{
   await db.execute("UPDATE artist_records SET current_status='WITHDRAWN' WHERE id=?",[consent.id]);assert.equal((await get('/stock/purchases/'+order.id+'/content')).error.code,'STOCK_SALE_CONSENT_REQUIRED');
   await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[consent.id]);

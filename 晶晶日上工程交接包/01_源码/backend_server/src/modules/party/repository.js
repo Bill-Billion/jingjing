@@ -72,6 +72,7 @@ function createPartyRepository(db,{resolvePrincipal=async()=>null}={}) {
   return row;
  }
  return Object.freeze({
+  ...require('./representatives').methods({db,actor,party,active,owner,command,audit,membership}),
   async registerAccount(context,input) {
    shape(input,['display_name']);label(input.display_name,80);const p=await principal(context);
    return db.withTransaction(async tx=>{

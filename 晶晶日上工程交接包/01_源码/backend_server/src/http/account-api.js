@@ -114,6 +114,15 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
  app.get('/api/v1/parties/:party_id/members',wrap(async(req,res)=>{
   const partyId=acting(req),scope='members:'+partyId,p=page(req,scope),rows=await party.listMembers(req,partyId,{after:p.after,limit:p.limit+1});reply(req,res,pageData(req,scope,rows,p.limit,x=>x.id));
  }));
+ app.get('/api/v1/parties/:party_id/representatives',wrap(async(req,res)=>{
+  const partyId=acting(req),scope='representatives:'+partyId,p=page(req,scope),rows=await party.listRepresentations(req,partyId,{after:p.after,limit:p.limit+1});reply(req,res,pageData(req,scope,rows,p.limit,x=>x.id));
+ }));
+ app.post('/api/v1/parties/:party_id/representatives',wrap(async(req,res)=>{
+  const partyId=acting(req);shape(req.body,['account_id','scope','expires_at']);reply(req,res,await party.offerRepresentation(req,{party_id:partyId,...req.body,operation_key:key(req)}));
+ }));
+ app.post('/api/v1/parties/:party_id/representatives/:representation_id/actions',wrap(async(req,res)=>{
+  const partyId=acting(req);shape(req.body,['action']);reply(req,res,await party.actRepresentation(req,{party_id:partyId,representation_id:id(req.params.representation_id),action:req.body.action,expected_version:expected(req),operation_key:key(req)}));
+ }));
  app.post('/api/v1/parties/:party_id/invitations',wrap(async(req,res)=>{
   const partyId=acting(req);shape(req.body,['invitee_account_id','expires_at']);reply(req,res,await party.inviteMember(req,{party_id:partyId,...req.body,operation_key:key(req)}));
  }));
