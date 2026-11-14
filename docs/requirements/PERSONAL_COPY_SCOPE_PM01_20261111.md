@@ -13,6 +13,7 @@
 |订单、付款、退款、流水|trade_records/journal；本人买卖方，不能借机构成员身份|原快照只读；transaction-data六分区；正式留存依据待补|已有金额/分期/状态/时间；本批来源报价补齐；未知时间不伪造|
 |商品特定约定|订单冻结合同commitments.quote；本人为买卖方|CONTRACT脱敏副本有独立摘要；原合同摘要另保留|下表逐类型定位；不可换成现行规格。封存不等于电子签署完成|
 |钱包、清分、成长、星光、佣金及兑换|wallet/finance/engagement；本人关联记录|待依据；account-data分类|已有历史与状态；应收/计提不当到账，运营底稿及其他收益人私密资料不整批提供|
+|追偿案件|finance_records RECOVERY；本人是个人申请方或原收款方，机构经办不构成本人所有|待依据；account-data/FINANCE_RECOVERIES摘要及同申请独审文件|第66轮已补金额/状态/已关联回款和驳回/关闭历史；未关联金额非当前欠款，关闭不免债；自由文本/银行原件另按申请核权脱敏，见[报告](../reviews/pm01-recovery-copy-20261114/REPORT.md)|
 |许可、参演、经纪、会签、阶段确认|agreement/participation副本；本人直接当事人|待依据；account-data脱敏约定与原受控文件|已有约定/本人确认；未知旧时间明示；真实签署原件另核|
 |客服、投诉、发票|support/invoice；本人申请与当前可见附件|待依据；account-data及既有附件下载|已有历史/已签发或替换文件；待审/他人证明不自动提供；模拟票据不称真实发票|
 |收藏、浏览、通知、提醒|personal collections/notification/usage；本人账号|按实际留存；account-data；原内容再核权|已有记录及当前提醒状态；不是全量行为轨迹，不新增跟踪；旧受限内容不随记录泄露|
