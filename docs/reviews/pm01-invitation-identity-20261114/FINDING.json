@@ -1,0 +1,33 @@
+{
+  "kind": "CONFIRMED_BACKEND_GAP",
+  "formal_pass": false,
+  "source_commit": "247b5dd59b7375701bb9159d97c45f2f6e8da867",
+  "probe_session": 88966,
+  "probe_exit_code": 1,
+  "pass": 9,
+  "fail": 10,
+  "actual_failed_subtests": 9,
+  "parent_failure": 1,
+  "runtime_changed": false,
+  "formal_test_changed": false,
+  "frontend": false,
+  "real_services": false,
+  "affected_methods": [
+    "notices.repository.submit INVITATION",
+    "notices.repository.review INVITATION APPROVE"
+  ],
+  "states": [
+    "EXPIRED",
+    "REJECTED",
+    "UNVERIFIED"
+  ],
+  "actions": [
+    "new invitation",
+    "successful invitation replay",
+    "pending review sending"
+  ],
+  "expected": "409 VERIFIED_ADULT_REQUIRED before new write/send",
+  "observed": "200 accepted in all nine cases",
+  "normal_controls": "Original six company invitation/order steps and three authorized pending-record reads pass",
+  "next": "Wait for exact full91433 terminal; preserve full result, then repair invitation write/review actor guard and rerun scoped controls"
+}
