@@ -35,13 +35,9 @@ test('enterprise customization: current trade authority, fulfillment and private
   const projectPath=()=>'/production/projects/'+project.id,storyPath=()=>projectPath()+'/story',attachmentPath=()=>storyPath()+'/attachments/'+asset.id+'/content';
   async function projectCommand(action,body,extra={}){const p=ok(await projectRead(merchant));return call('POST',projectPath()+'/'+action,{body,version:p.object_version,schema:'CustomizationFulfillmentResponse',...extra});}
   async function review(r){return ok(await call('POST','/production/records/'+r.id+'/reviews',{...operator,body:{decision:'APPROVED',reason:'Synthetic independent review',verification:r.kind==='PROJECT'?{contract_sha256:r.data.contract_sha256,identity_verified:true,signatures_verified:true,rights_verified:true}:{script_reviewed:true}},version:r.object_version,schema:'ProductionRecordResponse'}));}
-  await sub('ordinary member and invoice-only authority cannot create a company customization request',async()=>{
-   assert.equal((await create()).status,403);const invoice=ok(await offer('INVOICES'));ok(await act(invoice,'ACCEPT'));assert.equal((await create()).status,403);
-  });
-  await sub('offered authority is insufficient; accepted current trade authority creates one author-owned request',async()=>{
-   grant=ok(await offer());assert.equal((await create()).status,403);grant=ok(await act(grant,'ACCEPT'));
-   await db.execute("UPDATE parties SET current_status='PENDING_REVIEW' WHERE id=?",[org.party_id]);try{assert.equal((await create()).status,403);}finally{await db.execute("UPDATE parties SET current_status='ACTIVE' WHERE id=?",[org.party_id]);}
-   story=ok(await create());assert.equal(ok(await create()).id,story.id);assert.equal(story.created_by,delegate.account_id);
+  await sub('ordinary member may author a private request without financial order authority',async()=>{
+   story=ok(await create());assert.equal(story.created_by,delegate.account_id);
+   const invoice=ok(await offer('INVOICES'));ok(await act(invoice,'ACCEPT'));assert.equal(ok(await create()).id,story.id);
   });
   await sub('author uploads and submits private bytes; a second trade delegate and owner cannot read raw request drafts',async()=>{
    otherGrant=ok(await offer('TRADE',colleague));otherGrant=ok(await act(otherGrant,'ACCEPT',colleague));
@@ -53,8 +49,15 @@ test('enterprise customization: current trade authority, fulfillment and private
    story=await S.stories.intake(producer.ctx,{request_id:story.id,expected_version:story.object_version,operation_key:key()});
    submissionBefore=story.submission.content_sha256;
   });
+  await sub('invoice-only and offered trade grants cannot accept a quote; accepted current trade grant confirms the same company order',async()=>{
+   let quote;
+   await assert.rejects(()=>S.newOrder({sourceStory:story,preview:'SCRIPT_BEFORE_INTERIM',commissioner:{...delegate,acting_party_id:org.party_id},beforeAccept:async r=>{quote=r.quote;}}),{code:'TRADE_PARTY_FORBIDDEN'});
+   const args={body:{quote_sha256:quote.content_sha256},version:quote.object_version,op:key(),schema:'TradeRecordResponse'},url='/trade/quotes/'+quote.id+'/acceptance';
+   assert.equal((await call('POST',url,args)).status,403);grant=ok(await offer());assert.equal((await call('POST',url,args)).status,403);grant=ok(await act(grant,'ACCEPT'));
+   await db.execute("UPDATE parties SET current_status='PENDING_REVIEW' WHERE id=?",[org.party_id]);try{assert.equal((await call('POST',url,args)).status,403);}finally{await db.execute("UPDATE parties SET current_status='ACTIVE' WHERE id=?",[org.party_id]);}
+   order=ok(await call('POST',url,args));assert.equal(ok(await call('POST',url,args)).id,order.id);contractBefore=structuredClone(order.data.contract);
+  });
   await sub('original company order proceeds to independently reviewed manual project without granting producer powers',async()=>{
-   ({order}=await S.newOrder({sourceStory:story,preview:'SCRIPT_BEFORE_INTERIM',commissioner:{...delegate,acting_party_id:org.party_id}}));contractBefore=structuredClone(order.data.contract);
    assert.equal(ok(await call('GET','/trade/records/'+order.id,{schema:'TradeRecordResponse'})).id,order.id);
    project=ok(await call('POST','/production/projects',{...merchant,body:{order_id:order.id,line_id:'film',script_version_id:S.work.id,license_project_id:null,assignee_account_id:producer.account_id,purpose:'PRIVATE',territory:'CN',consent_ids:[],evidence_asset_id:S.proof.id,fulfillment:{uses_identifiable_people:false,cast:[]}},schema:'ProductionRecordResponse'}));project=await review(project);
    await S.pay(order,'first',{...delegate,acting_party_id:org.party_id});ok(await projectCommand('start',{},merchant));
@@ -95,13 +98,22 @@ test('enterprise customization: current trade authority, fulfillment and private
   });
   await sub('revocation during original attachment download blocks bytes; reads, lists and successful write replays recheck current authority',async()=>{
    onRead=async()=>{grant=ok(await act(grant,'REVOKE',owner));};assert.equal((await call('GET',attachmentPath())).status,403);
-   for(const url of ['/customization-requests/'+story.id,'/customization-requests/'+story.id+'/attachments/'+asset.id+'/content','/production/records/'+project.id,projectPath()+'/fulfillment','/production/versions/'+version.id+'/content?variant=preview'])assert.equal((await call('GET',url,{schema:'ProductionRecordResponse'})).status,403,url);
-   assert.equal((await create()).status,403);assert.equal((await call('POST','/production/versions/'+version.id+'/feedback',feedbackInput)).status,403);
+   for(const url of ['/trade/records/'+order.id,'/production/records/'+project.id,projectPath()+'/fulfillment','/production/versions/'+version.id+'/content?variant=preview'])assert.equal((await call('GET',url,{schema:'ProductionRecordResponse'})).status,403,url);
+   // Revoking order delegation does not erase a still-active member's own story access.
+   assert.equal(ok(await create()).id,story.id);assert.deepEqual((await call('GET','/customization-requests/'+story.id+'/attachments/'+asset.id+'/content')).bytes,bytes);
+   assert.equal((await call('POST','/production/versions/'+version.id+'/feedback',feedbackInput)).status,403);
    assert.equal(ok(await call('GET','/production/projects',{schema:'ProductionListResponse'})).items.some(r=>r.id===project.id),false);
    const empty=ok(await call('GET','/production/projects?limit=1',{schema:'ProductionListResponse'}));assert.deepEqual(empty.items,[]);assert.ok(empty.next_cursor);
    const last=ok(await call('GET','/production/projects?limit=1&cursor='+encodeURIComponent(empty.next_cursor),{schema:'ProductionListResponse'}));assert.deepEqual(last.items,[]);assert.equal(last.next_cursor,null);
    assert.equal(ok(await projectRead({user:colleague})).id,project.id);
    assert.deepEqual(ok(await call('GET','/trade/records/'+order.id,{user:owner,schema:'TradeRecordResponse'})).data.contract,contractBefore);
+   assert.equal((await S.stories.get(producer.ctx,{request_id:story.id,party_id:null})).submission.content_sha256,submissionBefore);
+  });
+  await sub('removing current membership blocks author request and original bytes while preserving the submitted version',async()=>{
+   const m=(await S.parties.listMembers(owner.ctx,org.party_id)).find(x=>x.account_id===delegate.account_id);
+   onRead=async()=>{await S.parties.removeMember(owner.ctx,{party_id:org.party_id,account_id:delegate.account_id,expected_version:m.object_version,operation_key:key()});};
+   assert.equal((await call('GET','/customization-requests/'+story.id+'/attachments/'+asset.id+'/content')).status,403);
+   assert.equal((await create()).status,403);assert.equal((await call('GET','/customization-requests/'+story.id,{schema:'CustomizationRequestResponse'})).status,403);
    assert.equal((await S.stories.get(producer.ctx,{request_id:story.id,party_id:null})).submission.content_sha256,submissionBefore);
   });
   await sub('expired grants and changed owner membership block delegates without deleting original records',async()=>{
