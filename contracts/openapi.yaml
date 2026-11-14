@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.76-rc.1
+  version: 0.31.76-rc.2
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -34006,6 +34006,8 @@ paths:
           - AGENCY_AGREEMENTS
           - ENTERPRISE_REPRESENTATIONS
           - FINANCE_RECOVERIES
+          - PRODUCTION_DELIVERY_VIEWS
+          - PRODUCTION_FEEDBACK
           - SESSION_RECORDS
           - PHONE_CHANGES
           - PHONE_CHANGE_EVENTS
@@ -34678,6 +34680,8 @@ paths:
           - AGENCY_AGREEMENTS
           - ENTERPRISE_REPRESENTATIONS
           - FINANCE_RECOVERIES
+          - PRODUCTION_DELIVERY_VIEWS
+          - PRODUCTION_FEEDBACK
           - SESSION_RECORDS
           - PHONE_CHANGES
           - PHONE_CHANGE_EVENTS
@@ -75075,6 +75079,8 @@ components:
           oneOf:
           - $ref: '#/components/schemas/PrivacyRepresentativeCopyPage'
           - $ref: '#/components/schemas/PrivacyRecoveryCopyPage'
+          - $ref: '#/components/schemas/PrivacyProductionDeliveryViewsPage'
+          - $ref: '#/components/schemas/PrivacyProductionFeedbackPage'
           - type: object
             additionalProperties: false
             properties:
@@ -83535,4 +83541,183 @@ components:
       - next_cursor
       - coverage
       - request_completion
+      - original_documents_included
+
+    PrivacyProductionDeliveryViewsPage:
+      type: object
+      additionalProperties: false
+      properties:
+        section:
+          const: PRODUCTION_DELIVERY_VIEWS
+        items:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              copy_ref:
+                type: string
+                pattern: ^[a-f0-9]{64}$
+              delivery_id:
+                type: string
+                format: uuid
+              project_id:
+                type: string
+                format: uuid
+              order_id:
+                type: string
+                format: uuid
+              version_id:
+                type: string
+                format: uuid
+              stage:
+                enum:
+                - SCRIPT
+                - SAMPLE
+                - ROUGH_CUT
+                - FINAL
+              viewed_at:
+                type: string
+                format: date-time
+              source_code:
+                enum:
+                - HTTP_PRIVATE_BYTES
+                - LEGACY_RECEIPT
+              acknowledged_at:
+                type:
+                - string
+                - 'null'
+                format: date-time
+              acceptance_started_at:
+                type:
+                - string
+                - 'null'
+                format: date-time
+              deadline_at:
+                type:
+                - string
+                - 'null'
+                format: date-time
+              receipt_source:
+                enum:
+                - CURRENT
+                - FEEDBACK
+                - null
+            required:
+            - copy_ref
+            - delivery_id
+            - project_id
+            - order_id
+            - version_id
+            - stage
+            - viewed_at
+            - source_code
+            - acknowledged_at
+            - acceptance_started_at
+            - deadline_at
+            - receipt_source
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          pattern: ^[a-f0-9]{64}$
+        coverage:
+          const: OWN_ACCOUNT_RECORDS_ONLY
+        request_completion:
+          const: NOT_CONFIRMED
+        history_complete:
+          const: false
+        original_documents_included:
+          const: false
+      required:
+      - section
+      - items
+      - next_cursor
+      - coverage
+      - request_completion
+      - history_complete
+      - original_documents_included
+    PrivacyProductionFeedbackPage:
+      type: object
+      additionalProperties: false
+      properties:
+        section:
+          const: PRODUCTION_FEEDBACK
+        items:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              copy_ref:
+                type: string
+                pattern: ^[a-f0-9]{64}$
+              feedback_id:
+                type: string
+                format: uuid
+              project_id:
+                type: string
+                format: uuid
+              order_id:
+                type: string
+                format: uuid
+              version_id:
+                type: string
+                format: uuid
+              stage:
+                enum:
+                - SCRIPT
+                - SAMPLE
+                - ROUGH_CUT
+                - FINAL
+              decision:
+                enum:
+                - ACCEPT
+                - REQUEST_CHANGES
+              change_kind:
+                enum:
+                - CREATIVE_CHANGE
+                - PLATFORM_CORRECTION
+                - null
+              acceptance_method:
+                enum:
+                - BUYER_EXPLICIT
+                - AGREED_TIMEOUT
+                - null
+              created_at:
+                type: string
+                format: date-time
+            required:
+            - copy_ref
+            - feedback_id
+            - project_id
+            - order_id
+            - version_id
+            - stage
+            - decision
+            - change_kind
+            - acceptance_method
+            - created_at
+        next_cursor:
+          type:
+          - string
+          - 'null'
+          pattern: ^[a-f0-9]{64}$
+        coverage:
+          const: OWN_ACCOUNT_RECORDS_ONLY
+        request_completion:
+          const: NOT_CONFIRMED
+        history_complete:
+          const: false
+        original_documents_included:
+          const: false
+      required:
+      - section
+      - items
+      - next_cursor
+      - coverage
+      - request_completion
+      - history_complete
       - original_documents_included
