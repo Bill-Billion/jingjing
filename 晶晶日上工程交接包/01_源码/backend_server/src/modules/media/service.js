@@ -1,4 +1,5 @@
 "use strict";
+const {completeMarkingReceipt}=require('./marking-receipt');
 const {randomUUID,createHash}=require('node:crypto');
 const {id,ref,error}=require('../party/policy'),{digest}=require('../governance/content'),P=require('./policy');
 const parse=v=>typeof v==='string'?JSON.parse(v):v,sha=b=>createHash('sha256').update(b).digest('hex');
@@ -77,7 +78,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
     if(!checkpoint){
      if(job.attempts>1)throw error('MEDIA_OUTPUT_RECONCILIATION_REQUIRED',409);
      const processed=await (marking||require('./marking').markVideo)(body,{ffmpeg:env.MEDIA_FFMPEG,ffprobe:env.MEDIA_FFPROBE,fontFile:env.MEDIA_FONT_FILE,ai_label:policy.rules.ai_label,preview_label:policy.rules.preview_label,variant:i.variant,policy_sha256:policy.sha256});
-     if(!Buffer.isBuffer(processed.body)||processed.receipt?.output_sha256!==sha(processed.body)||processed.receipt?.source_sha256!==sha(body)||processed.receipt?.policy_sha256!==policy.sha256||processed.receipt?.variant!==i.variant)throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
+     if(!Buffer.isBuffer(processed.body)||!completeMarkingReceipt(processed.receipt,i.variant,processed.body.length)||processed.receipt?.output_sha256!==sha(processed.body)||processed.receipt?.source_sha256!==sha(body)||processed.receipt?.policy_sha256!==policy.sha256||processed.receipt?.variant!==i.variant)throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
      await source(ctx,i);await db.withTransaction(fenced);
      const reserved=r.source_kind==='SUPPLY_ASSET'
       ?await supply.reserveAsset(ctx,{party_id:i.party_id,purpose:f.purpose,media_type:'video/mp4',body:processed.body,operation_key:r.id})
@@ -90,7 +91,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
      const saved=await call('put',out.object_key,c=>storage.put({key:out.object_key,body:processed.body,contentType:'video/mp4',isPrivate:true},c));
      if(saved.key!==out.object_key||saved.sha256!==sha(processed.body)||saved.size!==processed.body.length)throw error('PRIVATE_CONTENT_MISMATCH',503);
     }
-    if(checkpoint.request_sha256!==r.request_sha256||checkpoint.receipt.source_sha256!==f.content_sha256||checkpoint.receipt.policy_sha256!==policy.sha256||checkpoint.receipt.variant!==i.variant)throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
+    if(!completeMarkingReceipt(checkpoint.receipt,i.variant,checkpoint.byte_size)||checkpoint.request_sha256!==r.request_sha256||checkpoint.receipt.source_sha256!==f.content_sha256||checkpoint.receipt.policy_sha256!==policy.sha256||checkpoint.receipt.variant!==i.variant)throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
     const [[record]]=await db.execute('SELECT * FROM '+(r.source_kind==='SUPPLY_ASSET'?'supply_assets':'production_records')+' WHERE id=?',[checkpoint.file_id]);
     if(!record||!['UPLOADING','READY'].includes(record.current_status))throw error('MEDIA_OUTPUT_RECONCILIATION_REQUIRED',409);
     const out=r.source_kind==='SUPPLY_ASSET'?record:checked(record.data_json,record.data_sha256);
