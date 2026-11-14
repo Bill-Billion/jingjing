@@ -51,12 +51,18 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
    if(result.decision!=='REVIEW'||typeof result.manual_review!=='string')throw error('MEDIA_REVIEW_NOT_PENDING',409);
    const rule=await P.load(tx,request.policy.id);if(rule.sha256!==result.policy_sha256)throw error('MEDIA_CONFIGURATION_CHANGED',409);
    const [[owner]]=await tx.execute("SELECT id,subject_ref FROM identity_accounts WHERE id=? AND current_status='ACTIVE' FOR SHARE",[r.account_id]);if(!owner)throw error('ACCOUNT_NOT_ACTIVE',403);
-   if(r.source_kind!=='SUPPLY_ASSET'){
-    // Reuse the original producer's current business permissions inside this same transaction.
+   {
+    // Reuse the original actor's current business permissions inside this same transaction.
     // The private context cannot be supplied by a request or grant authority to the reviewer.
-    const ownerContext={},repository=require('../production/repository').createProductionRepository(db,{resolvePrincipal:async ctx=>ctx===ownerContext?{subject_ref:owner.subject_ref}:null});
-    const current=await repository.processingFile(ownerContext,{record_id:r.source_id,party_id:r.party_id,variant:request.variant,source_kind:r.source_kind},tx);
-    if(current.id!==result.file_id||current.data.content_sha256!==result.output_sha256||current.data.content_sha256!==request.source_sha256||current.data.byte_size!==request.source_bytes)throw error('MEDIA_SOURCE_CHANGED',409);
+    const ownerContext={},resolveOwner=async ctx=>ctx===ownerContext?{subject_ref:owner.subject_ref}:null;
+    let current,metadata;
+    if(r.source_kind==='SUPPLY_ASSET'){
+     current=await require('../works/repository').createSupplyRepository(db,{resolvePrincipal:resolveOwner}).assetAccess(ownerContext,r.source_id,r.party_id,tx);metadata=current;
+     if(current.owner_party_id!==r.party_id||!['AVATAR_MATERIAL','WORK_CONTENT'].includes(current.purpose))throw error('MEDIA_SOURCE_CHANGED',409);
+    }else{
+     current=await require('../production/repository').createProductionRepository(db,{resolvePrincipal:resolveOwner}).processingFile(ownerContext,{record_id:r.source_id,party_id:r.party_id,variant:request.variant,source_kind:r.source_kind},tx);metadata=current.data;
+    }
+    if(current.id!==result.file_id||metadata.content_sha256!==result.output_sha256||metadata.content_sha256!==request.source_sha256||metadata.byte_size!==request.source_bytes)throw error('MEDIA_SOURCE_CHANGED',409);
    }
    const [[file]]=await tx.execute('SELECT * FROM '+(r.source_kind==='SUPPLY_ASSET'?'supply_assets':'production_records')+' WHERE id=? FOR SHARE',[result.file_id]);if(!file||file.current_status!=='READY'||(r.source_kind==='SUPPLY_ASSET'?file.content_sha256:checked(file.data_json,file.data_sha256).content_sha256)!==result.output_sha256)throw error('MEDIA_SOURCE_CHANGED',409);
    await require('../privacy/restrictions').assertUnrestricted(tx,'ASSET',file.id);
