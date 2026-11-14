@@ -3,7 +3,7 @@
 由 scripts/acceptance_work_queue.py 从正式登记生成；不执行测试，不改变验收状态。
 后端负责人 chengcongcong222 按双方CURRENT继续独立开发、后端验证和证据登记；Bill-Billion仅既有UI工作，不代认领新页面任务。当前不开发修补前端、不运行本机App/Web。原18组和12路线不变。
 
-登记共151条；状态：{'NOT_RUN': 14, 'PARTIAL': 118, 'PASS': 19}；其中127条有显式登记的局部证据关联。
+登记共151条；状态：{'NOT_RUN': 12, 'PARTIAL': 120, 'PASS': 19}；其中129条有显式登记的局部证据关联。
 局部证据关联数不等于通过数；未挂关联也不等于未开发。历史检查未系统逐条归档，仍须按下表核完整预期。
 
 接续顺序以双方CURRENT及本轮报告为准，逐项核原文、实际实现和剩余证据；页面与设备缺口单列待后续安排，不将其重新指派给前端，不阻断独立后端工作。
@@ -104,7 +104,7 @@
 |ACC-DEL-22.03 有现金应付的制作金在首笔付款确认后核销，退款不返券且不超实付；全额服务权益现金为0，确认具体服务及免付金额后下单，开工核销、开工前取消释放，开工后按已公布规则处理且不退现金。|后端|正常办理、取消/退款/撤回|BENEFIT-WEB-01（局部）|PARTIAL|
 |ACC-DEL-22.04 奖品履行|后端|正常办理、取消/退款/撤回|AFTERNOON-EXPOSURE-PERM-04（局部）；BENEFIT-API-08（局部）|PARTIAL|
 |ACC-DEL-23.01 查询、复制、更正、删除、注销按请求范围分别办理。复制须覆盖本人个人资料、数字人资产、订单与授权记录，提供机器可读副本；类别索引或部分导出不等于完整提供。其他人资料、供应商凭据和受限文件不直接导出，剩余范围及人工答复必须明示，不因未结订单无限期拒绝全部权利。|后端|正常办理、取消/退款/撤回|SC-04, SC-05（局部）；SOURCE-BACKEND-23（局部）；ACCESS-PRIVACY-02（局部）；TEAM-A-NATIVE-CLOSE, TEAM-A-NATIVE-CORRECT, TEAM-A-REOPEN, TEAM-A-FINAL-CLOSE, TEAM-A-FINAL-CORRECT（局部）；TEAM-B-DELETION-03（局部）；PRIVACY-SAME-REQUEST（局部）；PRIVACY-MESSAGES-COMMERCIAL, PRIVACY-MESSAGES-AUDITION（局部）；PARTICIPATION-SAME-PROJECT-COPIES（局部）；OWN-PHONE_CHANGE_EVENTS, OWN-PARTICIPATION_CONFIRMATIONS, OWN-PARTICIPATION_MILESTONES（局部）；PERSONAL-MATERIAL-CONTEXT, PERSONAL-TRADE-CONTEXT（局部）；SAME-REQUEST-MATERIAL-TRADE-DELIVERY（局部）|PARTIAL|
-|ACC-DEL-23.02 撤回实际影响|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-23.02 撤回实际影响|后端|正常办理、取消/退款/撤回|REVOCATION-ACTUAL-EFFECT（局部）|PARTIAL|
 |ACC-DEL-23.03 年龄与消费|后端|正常办理、取消/退款/撤回|SC-04（局部）|PARTIAL|
 |ACC-DEL-23.04 偏好与申诉|后端|正常办理、取消/退款/撤回|SC-06（局部）|PARTIAL|
 |ACC-DEL-24.01 默认私有|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-24（局部）；FP-01（局部）|PARTIAL|
@@ -121,7 +121,7 @@
 |ACC-DEL-26.04 数据与审计|后端|正常办理、取消/退款/撤回|CP07（局部）|PARTIAL|
 |ACC-DEL-27.01 非标参与|后端|正常办理、取消/退款/撤回|SOURCE-BACKEND-27（局部）|PARTIAL|
 |ACC-DEL-27.02 角色绑定|后端|正常办理、取消/退款/撤回|CAST-BINDING-HISTORY（局部）|PARTIAL|
-|ACC-DEL-27.03 发行真实性|后端|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
+|ACC-DEL-27.03 发行真实性|后端|正常办理、取消/退款/撤回|RELEASE-CURRENT-EVIDENCE（局部）|PARTIAL|
 |ACC-DEL-27.04 未来收入|后端|正常办理、取消/退款/撤回|RELEASE-ACTUAL-CASH（局部）|PARTIAL|
 |ACC-DEL-28.01 导航和深链|App、网页|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
 |ACC-DEL-28.02 同步规范测试|App、网页|正常办理、取消/退款/撤回|尚待按完整预期整理|NOT_RUN|
