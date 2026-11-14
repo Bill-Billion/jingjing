@@ -75,7 +75,7 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
    const fields=[['age_band','MINOR','ADULT'],['identity_status','FAILED','VERIFIED'],['current_status','WITHDRAWN','ACTIVE'],['identity_valid_until','2020-01-01 00:00:00.000','2099-01-01 00:00:00.000']];
    for(const [field,value,restore]of fields){
     await db.execute('UPDATE artist_people SET '+field+'=? WHERE id=?',[value,buyer2.person.id]);
-    try{bad(await create(rule,buyer2),'NOTICE_VERIFIED_ADULT_REQUIRED');}finally{await db.execute('UPDATE artist_people SET '+field+'=? WHERE id=?',[restore,buyer2.person.id]);}
+    try{bad(await create(rule,buyer2),field==='age_band'?'MINOR_OPERATION_RESTRICTED':'NOTICE_VERIFIED_ADULT_REQUIRED');}finally{await db.execute('UPDATE artist_people SET '+field+'=? WHERE id=?',[restore,buyer2.person.id]);}
    }
    const rejected=ok(await create(rule,buyer2));
    const out=ok(await call('POST','/notices/records/'+rejected.id+'/reviews',reviewer,{decision:'REJECT',reason:'synthetic rejection',checks:null},null,headers(rejected)));
@@ -92,14 +92,24 @@ test('ordinary publishing and same-notice cooperation in isolated MySQL',{skip:!
    finally{await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE party_id=? AND account_id=?",[buyer2.personal_party_id,buyer2.account_id]);}
    assert.equal(ok(await call('GET','/notices/catalog/'+live.id,seller,undefined,null)).id,live.id);
   });
-  await t.test('organization scope and other project ownership cannot be bypassed with an ordinary rule',async()=>{
+  await t.test('organization scope and other project ownership cannot be bypassed with an ordinary rule',async orgT=>{
    const org=await S.parties.createOrganization(buyer2.ctx,{display_name:'synthetic ordinary organization',operation_key:key()});
    bad(await create(rule,buyer2,S.body,headers(),org.party_id),'NOTICE_PUBLISHER_NOT_ELIGIBLE');
    bad(await create(rule,buyer2,{...S.body,project_id:key()}),'NOTICE_PROJECT_MISMATCH');
    const proof=await S.supply.upload(buyer2.ctx,{party_id:org.party_id,purpose:'RIGHTS_EVIDENCE',media_type:'text/plain',body:Buffer.from('synthetic qualification'),operation_key:key()});
    const q=await N.applyQualification(buyer2.ctx,{party_id:org.party_id,types:['RECRUITMENT'],valid_from:S.body.valid_from,valid_until:S.body.valid_until,evidence_asset_ids:[proof.id],terms:'synthetic scope',operation_key:key()});
    ok(await approve(q,reviewer,{identity_verified:true,authority_verified:true,evidence_verified:true}));
-   assert.equal(ok(await approve(ok(await create(rule,buyer2,S.body,headers(),org.party_id)))).current_status,'PUBLISHED');
+   const originalKey=key(),originalHeaders=headers(null,originalKey);
+   const organizationNotice=ok(await create(rule,buyer2,S.body,originalHeaders,org.party_id));
+   assert.equal(ok(await approve(organizationNotice)).current_status,'PUBLISHED');
+   for(const [field,value,restore] of [['identity_status','UNVERIFIED','VERIFIED'],['identity_status','REJECTED','VERIFIED'],['identity_valid_until','2020-01-01 00:00:00.000','2099-01-01 00:00:00.000']]){
+    for(const [kind,h] of [['new publication',headers()],['successful replay',originalHeaders]])await orgT.test('qualified organization rejects '+kind+' with actor '+value,async()=>{
+     await db.execute('UPDATE artist_people SET '+field+'=? WHERE id=?',[value,buyer2.person.id]);
+     try{const r=await create(rule,buyer2,S.body,h,org.party_id);assert.equal(r.status,409,JSON.stringify(r));assert.equal(r.error.code,'VERIFIED_ADULT_REQUIRED');}
+     finally{await db.execute('UPDATE artist_people SET '+field+'=? WHERE id=?',[restore,buyer2.person.id]);}
+    });
+   }
+   assert.equal(ok(await create(rule,buyer2,S.body,originalHeaders,org.party_id)).id,organizationNotice.id);
    bad(await create(rule,buyer2,{...S.body,type:'EVENT',details:{venue:'synthetic',schedule:'synthetic'},accept_submissions:false},headers(),org.party_id),'NOTICE_PUBLISHER_NOT_ELIGIBLE');
   });
   await t.test('same notice receives reviewed artist submission then one support case after lost response recovery',async()=>{

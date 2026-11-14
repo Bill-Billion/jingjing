@@ -48,7 +48,7 @@ test('fixed redemption through actual HTTP and isolated MySQL transactions',{ski
    const costly=await review(await call('createStock',seller,stockInput({exchange_points:1000000,capacity:1})));
    await assert.rejects(exchange(costly),{code:'WALLET_POINTS_INSUFFICIENT'});
    assert.equal((await call('catalog',buyer)).items.find(x=>x.id===costly.id).remaining,1);
-   await db.execute("UPDATE artist_people SET age_band='MINOR' WHERE id=?",[buyer2.person.id]);await assert.rejects(exchange(stock,buyer2),{code:'VERIFIED_ADULT_REQUIRED'});await db.execute("UPDATE artist_people SET age_band='ADULT' WHERE id=?",[buyer2.person.id]);
+   await db.execute("UPDATE artist_people SET age_band='MINOR' WHERE id=?",[buyer2.person.id]);try{await assert.rejects(exchange(stock,buyer2),{code:'MINOR_OPERATION_RESTRICTED'});}finally{await db.execute("UPDATE artist_people SET age_band='ADULT' WHERE id=?",[buyer2.person.id]);}
   });
   await t.test('retired inventory prevents new exchange but preserves prior entitlement',async()=>{
    const current=(await call('queue',reviewer,{kind:'STOCK',limit:100})).items.find(x=>x.id===stock.id);await review(current,reviewer,'RETIRE');await assert.rejects(exchange(stock),{code:'REWARD_STOCK_UNAVAILABLE'});assert.equal((await get(grant)).current_status,'AVAILABLE');

@@ -1,0 +1,259 @@
+TAP version 13
+# Subtest: publishing and delegated avatar creation require the actual actor current identity
+    # Subtest: organization actor without a personal identity record cannot submit stock
+    ok 1 - organization actor without a personal identity record cannot submit stock
+      ---
+      duration_ms: 66.6146
+      type: 'test'
+      ...
+    # Subtest: organization actor without a personal identity record cannot create delegated avatar
+    ok 2 - organization actor without a personal identity record cannot create delegated avatar
+      ---
+      duration_ms: 20.9357
+      type: 'test'
+      ...
+    # Subtest: unverified personal identity cannot submit stock
+    ok 3 - unverified personal identity cannot submit stock
+      ---
+      duration_ms: 11.6624
+      type: 'test'
+      ...
+    # Subtest: unverified personal identity cannot create delegated avatar
+    ok 4 - unverified personal identity cannot create delegated avatar
+      ---
+      duration_ms: 16.8598
+      type: 'test'
+      ...
+    # Subtest: valid actor identity allows stock listing without adding artist certification fees
+    ok 5 - valid actor identity allows stock listing without adding artist certification fees
+      ---
+      duration_ms: 48.1985
+      type: 'test'
+      ...
+    # Subtest: valid actor identity allows delegated avatar while keeping adult artist ownership
+    ok 6 - valid actor identity allows delegated avatar while keeping adult artist ownership
+      ---
+      duration_ms: 25.9985
+      type: 'test'
+      ...
+    # Subtest: expired actor identity rejects new stock
+    ok 7 - expired actor identity rejects new stock
+      ---
+      duration_ms: 8.8653
+      type: 'test'
+      ...
+    # Subtest: expired actor identity rejects stock successful replay
+    ok 8 - expired actor identity rejects stock successful replay
+      ---
+      duration_ms: 9.7688
+      type: 'test'
+      ...
+    # Subtest: expired actor identity rejects new avatar
+    ok 9 - expired actor identity rejects new avatar
+      ---
+      duration_ms: 13.0116
+      type: 'test'
+      ...
+    # Subtest: expired actor identity rejects avatar successful replay
+    ok 10 - expired actor identity rejects avatar successful replay
+      ---
+      duration_ms: 11.5402
+      type: 'test'
+      ...
+    # Subtest: expired actor retains authorized existing listing and profile reads
+    ok 11 - expired actor retains authorized existing listing and profile reads
+      ---
+      duration_ms: 19.6712
+      type: 'test'
+      ...
+    # Subtest: rejected actor identity rejects new stock
+    ok 12 - rejected actor identity rejects new stock
+      ---
+      duration_ms: 8.0309
+      type: 'test'
+      ...
+    # Subtest: rejected actor identity rejects stock successful replay
+    ok 13 - rejected actor identity rejects stock successful replay
+      ---
+      duration_ms: 9.7342
+      type: 'test'
+      ...
+    # Subtest: rejected actor identity rejects new avatar
+    ok 14 - rejected actor identity rejects new avatar
+      ---
+      duration_ms: 13.5889
+      type: 'test'
+      ...
+    # Subtest: rejected actor identity rejects avatar successful replay
+    ok 15 - rejected actor identity rejects avatar successful replay
+      ---
+      duration_ms: 10.6696
+      type: 'test'
+      ...
+    # Subtest: direct stock repository also checks actor identity before a successful replay
+    ok 16 - direct stock repository also checks actor identity before a successful replay
+      ---
+      duration_ms: 4.3848
+      type: 'test'
+      ...
+    # Subtest: direct avatar repository also checks actor identity before a successful replay
+    ok 17 - direct avatar repository also checks actor identity before a successful replay
+      ---
+      duration_ms: 4.7494
+      type: 'test'
+      ...
+    # Subtest: denied identity transitions cannot create extra listings or digital people
+    ok 18 - denied identity transitions cannot create extra listings or digital people
+      ---
+      duration_ms: 2.1688
+      type: 'test'
+      ...
+    # Subtest: client cannot use identity recovery to verify another artist or submit its own age verdict
+    ok 19 - client cannot use identity recovery to verify another artist or submit its own age verdict
+      ---
+      duration_ms: 13.367
+      type: 'test'
+      ...
+    # Subtest: trusted personal identity recovery restores both original successful operations without changing records
+    ok 20 - trusted personal identity recovery restores both original successful operations without changing records
+      ---
+      duration_ms: 60.8939
+      type: 'test'
+      ...
+    1..20
+ok 1 - publishing and delegated avatar creation require the actual actor current identity
+  ---
+  duration_ms: 10135.048
+  type: 'test'
+  ...
+# Subtest: ordinary publishing and same-notice cooperation in isolated MySQL
+    # Subtest: new publishing rule requires independent approval; old rule and notices retain snapshots
+    ok 1 - new publishing rule requires independent approval; old rule and notices retain snapshots
+      ---
+      duration_ms: 204.8135
+      type: 'test'
+      ...
+    # Subtest: never-funded adult can publish all five ordinary types without changing membership
+    ok 2 - never-funded adult can publish all five ordinary types without changing membership
+      ---
+      duration_ms: 365.7778
+      type: 'test'
+      ...
+    # Subtest: membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged
+    ok 3 - membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged
+      ---
+      duration_ms: 234.1667
+      type: 'test'
+      ...
+    # Subtest: unverified, child, expired, inactive, foreign identity and official impersonation remain rejected
+    ok 4 - unverified, child, expired, inactive, foreign identity and official impersonation remain rejected
+      ---
+      duration_ms: 420.5623
+      type: 'test'
+      ...
+    # Subtest: identity or ownership lost after submission is checked at review and public read
+    ok 5 - identity or ownership lost after submission is checked at review and public read
+      ---
+      duration_ms: 64.1037
+      type: 'test'
+      ...
+    # Subtest: organization scope and other project ownership cannot be bypassed with an ordinary rule
+        # Subtest: qualified organization rejects new publication with actor UNVERIFIED
+        ok 1 - qualified organization rejects new publication with actor UNVERIFIED
+          ---
+          duration_ms: 10.5359
+          type: 'test'
+          ...
+        # Subtest: qualified organization rejects successful replay with actor UNVERIFIED
+        ok 2 - qualified organization rejects successful replay with actor UNVERIFIED
+          ---
+          duration_ms: 10.3375
+          type: 'test'
+          ...
+        # Subtest: qualified organization rejects new publication with actor REJECTED
+        ok 3 - qualified organization rejects new publication with actor REJECTED
+          ---
+          duration_ms: 10.4394
+          type: 'test'
+          ...
+        # Subtest: qualified organization rejects successful replay with actor REJECTED
+        ok 4 - qualified organization rejects successful replay with actor REJECTED
+          ---
+          duration_ms: 11.0986
+          type: 'test'
+          ...
+        # Subtest: qualified organization rejects new publication with actor 2020-01-01 00:00:00.000
+        ok 5 - qualified organization rejects new publication with actor 2020-01-01 00:00:00.000
+          ---
+          duration_ms: 9.2907
+          type: 'test'
+          ...
+        # Subtest: qualified organization rejects successful replay with actor 2020-01-01 00:00:00.000
+        ok 6 - qualified organization rejects successful replay with actor 2020-01-01 00:00:00.000
+          ---
+          duration_ms: 9.714
+          type: 'test'
+          ...
+        1..6
+    ok 6 - organization scope and other project ownership cannot be bypassed with an ordinary rule
+      ---
+      duration_ms: 147.0914
+      type: 'test'
+      ...
+    # Subtest: same notice receives reviewed artist submission then one support case after lost response recovery
+    ok 7 - same notice receives reviewed artist submission then one support case after lost response recovery
+      ---
+      duration_ms: 167.6385
+      type: 'test'
+      ...
+    # Subtest: suspended account or party hides publication and blocks further cooperation
+    ok 8 - suspended account or party hides publication and blocks further cooperation
+      ---
+      duration_ms: 64.1053
+      type: 'test'
+      ...
+    # Subtest: independent support links actual quote and creates the same unpaid order without membership
+    ok 9 - independent support links actual quote and creates the same unpaid order without membership
+      ---
+      duration_ms: 293.225
+      type: 'test'
+      ...
+    # Subtest: same notice order receives payment, scoped conversation and independently reviewed full refund
+    ok 10 - same notice order receives payment, scoped conversation and independently reviewed full refund
+      ---
+      duration_ms: 1217.3327
+      type: 'test'
+      ...
+    # Subtest: closing ordinary notice blocks new submissions while historical quote remains unchanged
+    ok 11 - closing ordinary notice blocks new submissions while historical quote remains unchanged
+      ---
+      duration_ms: 26.9768
+      type: 'test'
+      ...
+    # Subtest: notice withdrawal notifies each historical application once without changing submission or contract
+    ok 12 - notice withdrawal notifies each historical application once without changing submission or contract
+      ---
+      duration_ms: 543.7455
+      type: 'test'
+      ...
+    # Subtest: failure to record notice withdrawal notification rolls back closure and all prior events
+    ok 13 - failure to record notice withdrawal notification rolls back closure and all prior events
+      ---
+      duration_ms: 80.5376
+      type: 'test'
+      ...
+    1..13
+ok 2 - ordinary publishing and same-notice cooperation in isolated MySQL
+  ---
+  duration_ms: 12830.8524
+  type: 'test'
+  ...
+1..2
+# tests 41
+# suites 0
+# pass 41
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13038.6318

@@ -77,7 +77,7 @@ test('contract championship: actual HTTP votes, same-event appeal and earned rew
   await t.test('minor, expired identity, unrelated payer and insufficient points cannot create or debit votes',async()=>{
    const v={party_id:buyer2.personal_party_id,event_id:event.id,candidate_id:candidate.id};
    const before=Number((await db.execute("SELECT COUNT(*) n FROM engagement_records WHERE kind='VOTE'"))[0][0].n);
-   await db.execute("UPDATE artist_people SET age_band='MINOR' WHERE id=?",[buyer2.person.id]);try{await assert.rejects(invoke('vote',buyer2,v),{code:'VERIFIED_ADULT_REQUIRED'});}finally{await db.execute("UPDATE artist_people SET age_band='ADULT' WHERE id=?",[buyer2.person.id]);}
+   await db.execute("UPDATE artist_people SET age_band='MINOR' WHERE id=?",[buyer2.person.id]);try{await assert.rejects(invoke('vote',buyer2,v),{code:'MINOR_OPERATION_RESTRICTED'});}finally{await db.execute("UPDATE artist_people SET age_band='ADULT' WHERE id=?",[buyer2.person.id]);}
    await db.execute("UPDATE artist_people SET identity_valid_until='2020-01-01' WHERE id=?",[buyer2.person.id]);try{await assert.rejects(invoke('vote',buyer2,v),{code:'VERIFIED_ADULT_REQUIRED'});}finally{await db.execute("UPDATE artist_people SET identity_valid_until='2099-01-01' WHERE id=?",[buyer2.person.id]);}
    await assert.rejects(invoke('vote',buyer,{...v,party_id:seller.personal_party_id}));
    await W.open(buyer2.ctx,{party_id:buyer2.personal_party_id,rule_id:wr.id,rule_sha256:wr.content_sha256,operation_key:key()});await assert.rejects(invoke('vote',buyer2,v));
