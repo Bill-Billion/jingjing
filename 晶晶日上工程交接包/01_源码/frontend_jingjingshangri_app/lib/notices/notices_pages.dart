@@ -982,6 +982,13 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                     'sourceRecordId': r.id,
                   }).toString()), outline: true),
 
+        if (r.kind == 'SUBMISSION' &&
+            r.raw['owner_party_id'] == widget.session.partyId &&
+            v5Id(r.data['submission']['notice_id']) &&
+            r.raw['parent_id'] == r.data['submission']['notice_id'])
+          tradeButton('阅读通告新版并明确确认',
+              busy || api.writes > 0 ? null : () => go(
+                  '/notices/notice-confirmation?recordId=${r.id}'), outline: true),
         if (r.kind == 'SUBMISSION') ...[
           Text(r.status == 'SENT' ? '待回应投稿' : '本次投稿进度',
               style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),

@@ -7,6 +7,9 @@ class NoticesApi extends V5Api {
   NoticesApi(AccountSession s) : super(s, 'notices');
   String? recoveryLabel(String path) {
     final suffix = path.startsWith(base) ? path.substring(base.length) : '';
+    if (RegExp(r'^/submissions/[0-9a-fA-F-]{36}/notice-confirmation$').hasMatch(suffix)) {
+      return '本人投稿新版确认';
+    }
     return switch (suffix) {
       '/announcements' => '通告发布',
       '/qualifications' => '机构资格',
@@ -25,6 +28,20 @@ class NoticesApi extends V5Api {
     final suffix = path.substring(base.length),
         p = owner(),
         parts = path.substring(base.length).split('/');
+    if (parts.length == 4 && parts[1] == 'submissions' &&
+        parts[3] == 'notice-confirmation') {
+      final op = pending(suffix);
+      if (op == null) throw const AccountError(409, 'NO_PENDING_OPERATION');
+      final original = v5Map(op['body']);
+      return (await retry(suffix, (d) => validateConfirmation(d, parts[2],
+          noticeVersion: original['notice_version'],
+          noticeSha256: original['notice_sha256']), reread: () async {
+        final source = await record(parts[2]);
+        v5Require(source.kind == 'SUBMISSION' && source.raw['owner_party_id'] == p &&
+            v5Id(source.data['submission']['notice_id']) &&
+            source.raw['parent_id'] == source.data['submission']['notice_id']);
+      })).raw;
+    }
     return (await retry(suffix, (d) => NoticeRecord(d, p), reread: () async {
       if (parts.length == 4) {
         await record(parts[2]);
@@ -82,6 +99,18 @@ class NoticesApi extends V5Api {
   Future<NoticeRecord> record(String id) {
     final p = owner();
     return get('/records/${key(id)}', (d) => NoticeRecord(d, p, id: id));
+  }
+
+  NoticeRecord validateConfirmation(dynamic value, String id,
+      {required int noticeVersion, required String noticeSha256}) {
+    final party = owner();
+    final record = NoticeRecord(value, party, id: id, kind: 'SUBMISSION');
+    v5Require(record.raw['owner_party_id'] == party);
+    final ack = record.acknowledgedNoticeSnapshot;
+    v5Require(ack != null &&
+        ack!.raw['object_version'] == noticeVersion &&
+        ack.raw['notice_sha256'] == noticeSha256);
+    return record;
   }
 
   Future<NoticeHistoryPage> history(String noticeId,

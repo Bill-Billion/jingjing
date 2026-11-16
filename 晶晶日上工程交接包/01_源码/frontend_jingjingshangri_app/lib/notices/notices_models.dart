@@ -139,6 +139,15 @@ class NoticeRecord {
           s['purpose'] is String &&
           v5Date(data['expires_at']));
       v5Ids(s['material_asset_ids'], max: 6);
+      for (final field in ['notice_snapshot', 'notice_acknowledgement']) {
+        if (data[field] != null) {
+          v5Require(v5Id(s['notice_id']) && raw['parent_id'] == s['notice_id']);
+          NoticeHistorySnapshot(data[field], s['notice_id']);
+          if (field == 'notice_acknowledgement') {
+            v5Require(v5Id(v5Map(data[field])['account_id']));
+          }
+        }
+      }
     }
     if (raw['kind'] == 'CASE') {
       v5Require(data['submission_id'] == raw['parent_id']);
@@ -156,6 +165,14 @@ class NoticeRecord {
   final Map<String, dynamic> raw;
   late final Map<String, dynamic> data;
   String get id => raw['id'];
+  NoticeHistorySnapshot? get originalNoticeSnapshot =>
+      kind == 'SUBMISSION' && data['notice_snapshot'] != null
+          ? NoticeHistorySnapshot(data['notice_snapshot'], data['submission']['notice_id'])
+          : null;
+  NoticeHistorySnapshot? get acknowledgedNoticeSnapshot =>
+      kind == 'SUBMISSION' && data['notice_acknowledgement'] != null
+          ? NoticeHistorySnapshot(data['notice_acknowledgement'], data['submission']['notice_id'])
+          : null;
   String get kind => raw['kind'];
   String get status => raw['current_status'];
   int get version => raw['object_version'];

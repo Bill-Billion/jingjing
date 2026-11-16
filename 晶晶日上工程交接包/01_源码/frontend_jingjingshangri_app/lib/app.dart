@@ -44,6 +44,7 @@ import 'operations/operation_pages.dart';
 import 'stock/stock_pages.dart';
 import 'notices/notices_pages.dart';
 import 'notices/notices_history.dart';
+import 'notices/notices_confirmation.dart';
 import 'engagement/engagement_pages.dart';
 import 'cocreation/cocreation_pages.dart';
 import 'redemption/redemption_pages.dart';
@@ -394,6 +395,8 @@ class JingjingShangriApp extends StatelessWidget {
               '/notices/records' || '/notices/submissions' => NoticesPage(
                   mode: 'records',
                   kind: uri.queryParameters['kind'] ?? 'SUBMISSION'),
+              '/notices/notice-confirmation' => NoticeConfirmationPage(
+                  recordId: uri.queryParameters['recordId'] ?? ''),
               '/notices/history' => NoticeHistoryPageView(
                   noticeId: uri.queryParameters['noticeId'] ?? '',
                   sourceRecordId: uri.queryParameters['sourceRecordId'] ?? ''),
