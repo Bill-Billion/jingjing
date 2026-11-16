@@ -10,6 +10,9 @@ class NoticesApi extends V5Api {
     if (RegExp(r'^/submissions/[0-9a-fA-F-]{36}/notice-confirmation$').hasMatch(suffix)) {
       return '本人投稿新版确认';
     }
+    if (RegExp(r'^/announcements/[0-9a-fA-F-]{36}/revisions$').hasMatch(suffix)) {
+      return '已发布通告修改申请';
+    }
     return switch (suffix) {
       '/announcements' => '通告发布',
       '/qualifications' => '机构资格',
@@ -28,6 +31,17 @@ class NoticesApi extends V5Api {
     final suffix = path.substring(base.length),
         p = owner(),
         parts = path.substring(base.length).split('/');
+    if (parts.length == 4 && parts[1] == 'announcements' &&
+        parts[3] == 'revisions') {
+      final op = pending(suffix);
+      if (op == null) throw const AccountError(409, 'NO_PENDING_OPERATION');
+      return (await retry(suffix, (d) => NoticeRevisionResponse(d, parts[2], p,
+          version: op['version'], body: v5Map(op['body'])), reread: () async {
+        final source = await record(parts[2]);
+        v5Require(source.kind == 'NOTICE' && source.id == parts[2] &&
+            source.raw['owner_party_id'] == p && source.raw['parent_id'] == null);
+      })).raw;
+    }
     if (parts.length == 4 && parts[1] == 'submissions' &&
         parts[3] == 'notice-confirmation') {
       final op = pending(suffix);

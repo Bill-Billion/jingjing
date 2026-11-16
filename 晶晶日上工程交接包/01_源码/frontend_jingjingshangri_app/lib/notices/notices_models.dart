@@ -266,3 +266,30 @@ class NoticeHistoryPage {
   late final List<NoticeRevisionItem> items;
   late final String? cursor;
 }
+
+
+// A revision application is not a NOTICE and never changes its public content.
+class NoticeRevisionResponse {
+  NoticeRevisionResponse(dynamic value, String noticeId, String party,
+      {required int version, required Map<String, dynamic> body})
+      : raw = v5Map(value) {
+    final item = NoticeRevisionItem(raw, noticeId, publisher: true, party: party);
+    v5Require(item.status == 'IN_REVIEW' &&
+        item.base.raw['object_version'] == version &&
+        _sameNoticeValue(item.notice, body['notice']) &&
+        item.reason == body['reason']);
+  }
+  final Map<String, dynamic> raw;
+}
+
+bool _sameNoticeValue(dynamic a, dynamic b) {
+  if (a is Map && b is Map) {
+    return a.length == b.length && a.keys.every((k) =>
+        b.containsKey(k) && _sameNoticeValue(a[k], b[k]));
+  }
+  if (a is List && b is List) {
+    return a.length == b.length && List.generate(a.length, (i) => i)
+        .every((i) => _sameNoticeValue(a[i], b[i]));
+  }
+  return a == b;
+}

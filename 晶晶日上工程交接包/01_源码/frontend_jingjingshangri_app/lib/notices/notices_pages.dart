@@ -564,7 +564,12 @@ class _NoticeScreenState extends State<_NoticeScreen> {
               api: api,
               label: api.recoveryLabel,
               restore: api.restoreOperation,
-              onRestored: (r) => go('/notices/record?recordId=${r['id']}')),
+              onRestored: (r) => go(r['kind'] == 'NOTICE_REVISION'
+                  ? Uri(path: '/notices/history', queryParameters: {
+                      'noticeId': r['parent_id'] as String,
+                      'sourceRecordId': r['parent_id'] as String,
+                    }).toString()
+                  : '/notices/record?recordId=${r['id']}')),
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (widget.mode == 'catalog') ...[
@@ -982,6 +987,12 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                     'sourceRecordId': r.id,
                   }).toString()), outline: true),
 
+        if (r.kind == 'NOTICE' && r.status == 'PUBLISHED' &&
+            r.raw['owner_party_id'] == widget.session.partyId &&
+            r.raw['parent_id'] == null && r.data['notice']['type'] != 'OFFICIAL')
+          tradeButton('申请修改已发布通告',
+              busy || api.writes > 0 ? null : () => go(
+                  '/notices/revision-request?recordId=${r.id}'), outline: true),
         if (r.kind == 'SUBMISSION' &&
             r.raw['owner_party_id'] == widget.session.partyId &&
             v5Id(r.data['submission']['notice_id']) &&
