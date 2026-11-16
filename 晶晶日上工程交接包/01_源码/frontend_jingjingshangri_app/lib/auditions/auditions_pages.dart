@@ -168,6 +168,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   }
 
   void setRecord(AuditionRecord r) {
+    if (record?.id == r.id && record!.version > r.version) return;
     if (record == null ||
         jsonEncode(record!.data['delivery']) !=
             jsonEncode(r.data['delivery'])) {
@@ -181,9 +182,24 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   }
 
   Future<int?> latest() async {
-    final r = await api.record(widget.id ?? '');
-    if (mounted) setState(() => setRecord(r));
-    return r.version;
+    final t = ticket, epoch = widget.session.epoch, p = widget.session.partyId;
+    final id = widget.id ?? '';
+    final r = await api.record(id);
+    api.check(epoch, p);
+    if (!mounted || t != ticket || widget.id != id) {
+      throw const AccountError(0, 'CONTEXT_CHANGED');
+    }
+    setState(() => setRecord(r));
+    return record!.version;
+  }
+
+  void mergeMessages(List<AuditionRecord> incoming) {
+    final merged = {for (final row in messages) row.id: row};
+    for (final row in incoming) {
+      final old = merged[row.id];
+      if (old == null || row.version >= old.version) merged[row.id] = row;
+    }
+    messages..clear()..addAll(merged.values);
   }
 
   Future<void> load({bool more = false}) async {
@@ -201,6 +217,11 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         cursor = null;
         contacts = null;
         itinerary = null;
+        if (widget.mode == 'booking') supplements.clear();
+        if (widget.mode == 'messages') {
+          messages.clear();
+          messageCursor = null;
+        }
       }
     });
     try {
@@ -215,32 +236,54 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           offers.addAll(r.items);
           cursor = r.cursor;
         case 'book':
-          offer = await api.offer(widget.id ?? '',
+          final loadedOffer = await api.offer(widget.id ?? '',
               invitationId: widget.invitationId);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          offer = loadedOffer;
         case 'bookings':
         case 'offers':
           final r = await api.records(
               widget.mode == 'offers' ? 'OFFER' : 'BOOKING',
               cursor: more ? cursor : null);
-          records.addAll(r.items);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          final merged = {for (final row in records) row.id: row};
+          for (final row in r.items) {
+            final old = merged[row.id];
+            if (old == null || row.version >= old.version) merged[row.id] = row;
+          }
+          records..clear()..addAll(merged.values);
           cursor = r.cursor;
         case 'offer':
-          setRecord(await api.record(widget.id ?? ''));
+          final loaded = await api.record(widget.id ?? '');
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          setRecord(loaded);
         case 'booking':
         case 'messages':
-          setRecord(await api.record(widget.id ?? ''));
-          if (record!.kind != 'BOOKING') {
+          final loaded = await api.record(widget.id ?? '');
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          if (loaded.kind != 'BOOKING') {
             throw const AccountError(400, 'INVALID_ACTION');
           }
+          setRecord(loaded);
+          final booking = record!;
           if (widget.mode == 'booking') {
-            supplements.clear();
-            supplements.addAll(await api.supplements(record!.id));
-          } else if (['OPEN', 'FROZEN', 'ARCHIVED']
-              .contains(record!.conversation)) {
-            final r = await api.messages(record!.id);
+            final loadedSupplements = await api.supplements(booking.id);
+            if (!mounted || t != ticket) return;
+            api.check(epoch, p);
+            if (record?.id != booking.id || record?.version != booking.version) return;
+            supplements..clear()..addAll(loadedSupplements);
+          } else if (['OPEN', 'FROZEN', 'ARCHIVED'].contains(booking.conversation)) {
+            final page = await api.messages(booking.id);
+            if (!mounted || t != ticket) return;
+            api.check(epoch, p);
+            if (record?.id != booking.id || record?.version != booking.version) return;
             messages.clear();
-            messages.addAll(r.items);
-            messageCursor = r.cursor;
+            mergeMessages(page.items);
+            messageCursor = page.cursor;
           }
         default:
           throw const AccountError(400, 'INVALID_PATH');
@@ -249,27 +292,36 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           widget.mode == 'catalog' && widget.invitationId == null ? null : p);
       if (mounted && t == ticket) setState(() {});
     } on AccountError catch (e) {
-      if (mounted && t == ticket) setState(() => error = v5Error(e));
+      if (mounted && t == ticket && widget.session.epoch == epoch &&
+          widget.session.partyId == p) setState(() => error = v5Error(e));
     } finally {
-      if (mounted && t == ticket) setState(() => busy = false);
+      if (mounted && t == ticket && widget.session.epoch == epoch &&
+          widget.session.partyId == p) setState(() => busy = false);
     }
   }
 
   Future<void> moreMessages() async {
-    if (messageCursor == null || record == null) return;
-    setState(() => busy = true);
+    if (busy || messageCursor == null || record == null) return;
+    final booking = record!, before = messageCursor!;
+    final t = ++ticket, epoch = widget.session.epoch, p = widget.session.partyId;
+    setState(() { busy = true; error = null; });
+    bool sameRequest() => mounted && t == ticket &&
+        widget.session.epoch == epoch && widget.session.partyId == p;
+    bool current() => sameRequest() &&
+        record?.id == booking.id && record?.version == booking.version &&
+        messageCursor == before;
     try {
-      final r = await api.messages(record!.id, cursor: messageCursor);
-      if (mounted) {
-        setState(() {
-          messages.addAll(r.items);
-          messageCursor = r.cursor;
-        });
-      }
+      final page = await api.messages(booking.id, cursor: before);
+      if (!current()) return;
+      api.check(epoch, p);
+      setState(() {
+        mergeMessages(page.items);
+        messageCursor = page.cursor;
+      });
     } on AccountError catch (e) {
-      if (mounted) setState(() => error = v5Error(e));
+      if (current()) setState(() => error = v5Error(e));
     } finally {
-      if (mounted) setState(() => busy = false);
+      if (sameRequest()) setState(() => busy = false);
     }
   }
 

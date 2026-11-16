@@ -151,6 +151,13 @@ class NoticeRecord {
     }
     if (raw['kind'] == 'CASE') {
       v5Require(data['submission_id'] == raw['parent_id']);
+      if (data['support_assignment'] != null) {
+        final assignment = v5Map(data['support_assignment']);
+        v5Require(assignment.keys.every(const {'account_id', 'assigned_at', 'mode'}.contains) &&
+            v5Id(assignment['account_id']) &&
+            v5Date(assignment['assigned_at']) &&
+            ['ASSIGNED', 'QUOTE_CLAIM'].contains(assignment['mode']));
+      }
       if (data['quote'] != null) {
         final q = v5Map(data['quote']);
         v5Require(v5Id(q['id']) &&

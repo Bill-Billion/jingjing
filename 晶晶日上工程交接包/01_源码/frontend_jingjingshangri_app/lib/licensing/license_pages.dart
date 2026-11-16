@@ -481,6 +481,7 @@ class _LicenseDetailState extends State<_LicenseDetail> {
 
   Future<void> _operate(String path, Map<String, dynamic> body,
       {int? version, String? kind}) async {
+    if (_busy) return;
     final pending = _api.pending(path);
     final actual =
         pending == null ? body : Map<String, dynamic>.from(pending['body']);
@@ -503,7 +504,7 @@ class _LicenseDetailState extends State<_LicenseDetail> {
     ])) {
       return;
     }
-    if (!mounted ||
+    if (!mounted || _busy ||
         epoch != widget.session.epoch ||
         party != widget.session.partyId) {
       return;

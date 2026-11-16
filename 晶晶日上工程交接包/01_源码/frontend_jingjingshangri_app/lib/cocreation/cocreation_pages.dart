@@ -135,6 +135,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
       if (widget.view == 'new' && !personalCreator) return;
       Map<String, dynamic>? d, m;
       List<Map<String, dynamic>> r = [], rs = [], cs = [], ms = [];
+      List<ArtistPerson> loadedPeople = [];
       String? next;
       if (widget.view == 'new') {
         final list = <StorySummary>[], seen = <String>{};
@@ -199,7 +200,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
             c = page.cursor;
             communityRequire(c == null || seen.add(c));
           } while (c != null);
-          if (mounted && t == ticket) people = list;
+          loadedPeople = list;
         }
 
         if (acts.contains('REQUEST_CANCEL')) {
@@ -229,6 +230,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
       if (mounted && t == ticket) {
         setState(() {
           room = d;
+          people = loadedPeople;
           member = m;
           if (widget.view != 'new') rules = rs;
           rows = r;

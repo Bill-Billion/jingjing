@@ -161,7 +161,10 @@ class _ProjectsListState extends State<_ProjectsList> {
     setState(() {
       busy = true;
       error = null;
-      if (!more) rows = [];
+      if (!more) {
+        rows = [];
+        cursor = null;
+      }
     });
     try {
       final d = await api.page(cursor: more ? cursor : null);
@@ -282,20 +285,30 @@ class _ProjectsListState extends State<_ProjectsList> {
               })),
         if (!busy && error == null && rows.isEmpty)
           tradeSection('暂时没有参与项目', [supplyNote('只展示当前主体获准参与的项目。')]),
-        if (cursor != null)
+        if (error == null && cursor != null)
           tradeButton('加载更多', busy ? null : () => load(more: true),
               outline: true),
         tradeButton('重新读取', busy ? null : load, outline: true),
         const SizedBox(height: 16),
-        Row(children: [
-          Expanded(child: tradeButton('查看业务草稿',
+        LayoutBuilder(builder: (context, constraints) {
+          final drafts = tradeButton('查看业务草稿',
               busy || widget.session.projectsPending.isNotEmpty
-                  ? null : () => Navigator.pushNamed(context, '/customization'), outline: true)),
-          const SizedBox(width: 12),
-          Expanded(child: tradeButton('发起制作需求',
+                  ? null : () => Navigator.pushNamed(context, '/customization'),
+              outline: true);
+          final create = tradeButton('发起制作需求',
               busy || widget.session.projectsPending.isNotEmpty
-                  ? null : () => Navigator.pushNamed(context, '/customization/new'))),
-        ])
+                  ? null : () => Navigator.pushNamed(context, '/customization/new'));
+          if (constraints.maxWidth < 340 ||
+              MediaQuery.textScalerOf(context).scale(14) > 18) {
+            return Column(mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [drafts, const SizedBox(height: 12), create]);
+          }
+          return Row(children: [
+            Expanded(child: drafts), const SizedBox(width: 12),
+            Expanded(child: create),
+          ]);
+        })
       ],
       locked: busy || widget.session.projectsPending.isNotEmpty);
 }

@@ -1088,6 +1088,18 @@ class _NoticeScreenState extends State<_NoticeScreen> {
           const Text('以下是本次客服记录的实际进展；关联报价或合同不代表已经签署，正式订单的沟通权限另行核对。',
               style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
           const SizedBox(height: 16),
+          if (r.data['support_assignment'] != null)
+            tradeSection('当前办理分派', [
+              tradeFact('分派时间', tradeDate(r.data['support_assignment']['assigned_at'])),
+              tradeFact('分派方式', r.data['support_assignment']['mode'] == 'ASSIGNED'
+                  ? '已分派办理者' : '关联报价时认领'),
+              const Text('分派不等于已经处理或客服已入会；不表示在线状态。'),
+              ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: const Text('查看办理者记录编号'),
+                children: [SelectableText(r.data['support_assignment']['account_id'])],
+              ),
+            ]),
           tradeSection('本次对接', [
             Text(r.status == 'WAITING_SUPPORT'
                 ? '等待有权客服核对双方、具体数字人和已审商单报价。'
