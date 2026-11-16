@@ -166,6 +166,8 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
               kind: 'MEMBER');
           d = communityRecord(await api.read('rooms/${m['parent_id']}'),
               id: m['parent_id']);
+          // Do not restore a superseded response into draft controllers.
+          if (!mounted || t != ticket) return;
           if (member == null) {
             story.text = communityText(communityMap(m['data'])['private_story'],
                 empty: '');
@@ -383,6 +385,26 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
               if (kind == 'snippets') ...[
                 communityFact('片段说明', communityMap(r['data'])['note']),
                 communityFact('本份记录版本', r['object_version']),
+                communityFact('绑定成片版本',
+                    communityMap(r['data'])['final_version_id']),
+                communityFact('片段所属真人',
+                    communityMap(r['data'])['person_id']),
+                communityFact('原参与记录',
+                    communityMap(r['data'])['member_id']),
+                communityFact('本份已记录的分享选择',
+                    communityMap(r['data'])['sharing_allowed'] == true
+                        ? '原参与时同意分享'
+                        : communityMap(r['data'])['sharing_allowed'] == false
+                            ? '原参与时未同意分享'
+                            : '本份记录未提供'),
+                const Text('以上为本片段保存的参与依据，不是当前授权已全部有效的证明。分享选择也不等于当前可公开发布。',
+                    style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+                if (communityMap(r['data'])['member_id'] is String &&
+                    (communityMap(r['data'])['member_id'] as String).isNotEmpty)
+                  tradeButton('核对本人的原参与资料',
+                      enabled ? () => open('member',
+                          communityMap(r['data'])['member_id'] as String) : null,
+                      outline: true),
                 tradeSection('领取与分享边界', [
                   const Text('仅本人片段：有效验收、整包付款及本人许可等实际条件须在领取时重新核对。审核通过不等于立即可下载。',
                       style: TextStyle(color: AccountTheme.muted, height: 1.6)),
@@ -672,6 +694,20 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     return [
       tradeHeading('一起完成这部戏',
           eyebrow: '共创计划 / 每人独立确认', fontSize: 28),
+      Container(
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.only(bottom: 20),
+          decoration: BoxDecoration(color: AccountTheme.surface,
+              borderRadius: BorderRadius.circular(16)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            const Icon(Icons.movie_outlined, size: 48, color: AccountTheme.muted),
+            const SizedBox(height: 16),
+            Text(communityText(r['title']),
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            const Text('本房间未提供可展示封面，原故事与授权在各自记录核对。',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          ])),
       appNotice('参加人数、有效人数和已核定成团依据分别展示。'),
       if (count['people_remaining'] is int && count['people_remaining'] > 0)
         Container(
@@ -690,13 +726,16 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
 
       cocreationGuide(communityText(r['title']),
           '当前：${communityState(r['current_status'])}。${r['current_status'] == 'OPEN' ? '招募期间，由每位参与者独立填写资料并确认授权。' : '按当前阶段核对人数、订单及制作记录；不是所有阶段都可以继续邀请或修改资料。'}'),
-      const Text('已参加人数',
-          style: TextStyle(color: AccountTheme.muted, fontSize: 13)),
-      const SizedBox(height: 8),
-      Text('${count['joined_count']}人',
-          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
-      const SizedBox(height: 16),
-      communityFact('招募截止', communityDate(r['deadline'])),
+      cocreationSection('已参加人数', [
+        Text('${count['joined_count']}',
+            style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w700,
+                color: AccountTheme.accent)),
+        const SizedBox(height: 8),
+        const Text('人已报名 · 不等于全部授权及开工条件齐备',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        const Divider(height: 24),
+        communityFact('招募截止', communityDate(r['deadline'])),
+      ]),
       if (eligible is int &&
           joined is int &&
           joined > 0 &&
@@ -732,6 +771,12 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           communityFact(
               '20人服务权益', communityMap(snapshot['benefit'])['description'])
       ]),
+      if (ownMembers.any((m) => m['parent_id'] == r['id']))
+        cocreationSection('本人的参加记录', [
+          for (final m in ownMembers.where((m) => m['parent_id'] == r['id']))
+            tradeButton('查看我的参加资料 · ${m['id']}',
+                enabled ? () => open('member', m['id']) : null, outline: true),
+        ]),
       if (actions.contains('INVITE'))
         CocreationInvitePanel(
             session: session, room: r['id'], version: r['object_version']),
@@ -762,10 +807,6 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
                   : null,
               outline: true)
         ]),
-      if (r['current_status'] == 'OPEN')
-        tradeButton('填写我本人的参加资料', () => open('join', r['id'])),
-      for (final m in ownMembers.where((m) => m['parent_id'] == r['id']))
-        tradeButton('查看我的参加资料', () => open('member', m['id']), outline: true),
       if (actions.contains('CLOSE'))
         tradeButton(
             '按截止条件核定人数',
@@ -876,6 +917,20 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     return [
       tradeHeading(editing ? '我的参演资料' : '确认我的参演',
           eyebrow: '本人确认 / 仅限本次范围', fontSize: 28),
+      cocreationSection('本次参与人', [
+        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(width: 60, height: 80, color: AccountTheme.surface,
+              child: const Icon(Icons.person_outline, color: AccountTheme.muted)),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(person?.name ?? '尚未选择本人档案',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Text(materialReady ? '本人档案已匹配 · 仍需本次范围确认' : '请先核对本人身份与档案',
+                style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          ])),
+        ]),
+      ]),
       appNotice('只提交本人的资料。其他人的故事、素材和授权不会在此开放。'),
       cocreationGuide(canEdit ? '先选本人，再确认参与' : '当前房间不开放参加资料修改',
           canEdit ? '核对本人形象与用途授权，补齐私有故事和素材后再确认。领取邀请不等于已参加，人数条件齐备也不等于开工。'
@@ -885,6 +940,14 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
         communityFact('用途', r['purpose']),
         communityFact('地域', r['territory']),
         appNotice('本次确认仅代表本人，不能代替其他人的独立授权、合同签署或开工前核对。'),
+      ]),
+      cocreationSection('报酬与参与约定', [
+        const Text('本页未提供可单独核实的本人报酬或分配金额，按下方原参与条款核对，不把报名人数换算成收入。',
+            style: TextStyle(fontSize: 13, height: 1.6)),
+        ExpansionTile(tilePadding: EdgeInsets.zero,
+            title: const Text('查看原参与约定'),
+            children: [SelectableText(communityText(
+                communityMap(r['rule_snapshot'])['participation_terms']))]),
       ]),
       communityFact('截止时间', communityDate(r['deadline'])),
       if (member != null)
@@ -953,7 +1016,42 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
             enabled && canEdit
                 ? (v) => setState(() => agreed = v == true)
                 : null),
-        tradeButton(
+
+      ]),
+      if (editing && member!['current_status'] == 'ACTIVE')
+        cocreationSection('退出本次共创', [
+          communityField(why, '退出原因', lines: 3, enabled: enabled),
+          communityCheck(
+              '我知道退出会停止自己的资料和旧片段继续使用，退款另按原约定处理',
+              withdrawAgreed,
+              enabled
+                  ? (v) => setState(() => withdrawAgreed = v == true)
+                  : null),
+          tradeButton(
+              '确认本人退出',
+              enabled && withdrawAgreed
+                  ? () => submit(() async {
+                        await act('members/${member!['id']}/withdraw',
+                            {'reason': communityRequired(why.text, '退出原因')},
+                            version: member!['object_version']);
+                        setState(() => withdrawAgreed = false);
+                      })
+                  : null,
+              outline: true)
+        ]),
+      if (editing) communityRecordId(member!)
+    ];
+  }
+
+  Widget? participationFooter() {
+    final r = room;
+    if (r == null) return null;
+    final editing = widget.view == 'member';
+    final person = casts.isEmpty ? null : casts.first.selectedPerson;
+    final materialReady = person != null &&
+        person.id == casts.first.person.text && person.owner == session.partyId;
+    final canEdit = r['current_status'] == 'OPEN';
+    return tradeButton(
             editing ? '确认修订自己的参加资料' : '确认本次参演授权',
             enabled && agreed && canEdit && materialReady
                 ? () => submit(() async {
@@ -986,31 +1084,14 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
                         open('member', out['id']);
                       }
                     })
-                : null)
-      ]),
-      if (editing && member!['current_status'] == 'ACTIVE')
-        cocreationSection('退出本次共创', [
-          communityField(why, '退出原因', lines: 3, enabled: enabled),
-          communityCheck(
-              '我知道退出会停止自己的资料和旧片段继续使用，退款另按原约定处理',
-              withdrawAgreed,
-              enabled
-                  ? (v) => setState(() => withdrawAgreed = v == true)
-                  : null),
-          tradeButton(
-              '确认本人退出',
-              enabled && withdrawAgreed
-                  ? () => submit(() async {
-                        await act('members/${member!['id']}/withdraw',
-                            {'reason': communityRequired(why.text, '退出原因')},
-                            version: member!['object_version']);
-                        setState(() => withdrawAgreed = false);
-                      })
-                  : null,
-              outline: true)
-        ]),
-      if (editing) communityRecordId(member!)
-    ];
+                : null);
+  }
+
+  Widget? roomFooter() {
+    final r = room;
+    if (r == null || r['current_status'] != 'OPEN') return null;
+    return tradeButton('填写我本人的参加资料',
+        enabled ? () => open('join', r['id']) : null);
   }
 
   @override
@@ -1043,5 +1124,8 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
             tradeButton('重新读取当前记录', busy || checking ? null : load,
                 outline: true)
           ],
+          footer: ['join', 'member'].contains(widget.view)
+              ? participationFooter()
+              : widget.view == 'room' ? roomFooter() : null,
           onBack: () => draftGuard.currentState?.back()));
 }

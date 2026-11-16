@@ -52,12 +52,25 @@ class FinanceGate extends StatelessWidget {
   }
 }
 
-Widget financeIdFact(String label, String id) => Row(children: [
-      Expanded(child: tradeFact(label, '尾号 ${shortSupplyId(id)}')),
-      IconButton(
-          tooltip: '复制$label',
-          onPressed: () => Clipboard.setData(ClipboardData(text: id)),
-          icon: const Icon(Icons.copy_outlined, size: 20))
+Widget financeIdFact(String label, String id) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Row(children: [
+        Expanded(child: tradeFact(label, '尾号 ${shortSupplyId(id)}')),
+        IconButton(
+            tooltip: '复制$label',
+            onPressed: () => Clipboard.setData(ClipboardData(text: id)),
+            icon: const Icon(Icons.copy_outlined, size: 20))
+      ]),
+      ExpansionTile(
+          key: ValueKey('finance-full-id:$label:$id'),
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: const EdgeInsets.only(bottom: 12),
+          title: Text('查看完整$label', style: const TextStyle(fontSize: 12)),
+          children: [
+            Align(alignment: Alignment.centerLeft,
+                child: SelectableText(id, style: const TextStyle(fontSize: 13, height: 1.5))),
+          ]),
     ]);
 Widget financeEditorialBanner(String title, String body) => Container(
     margin: const EdgeInsets.only(bottom: 24),

@@ -203,7 +203,7 @@ class _BusinessLibraryState extends State<_BusinessLibrary> {
       decoration: const BoxDecoration(border: Border(
           bottom: BorderSide(color: AccountTheme.border))),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(width: 44, height: 60,
+        Container(width: 60, height: 80,
             decoration: BoxDecoration(color: AccountTheme.surface,
                 borderRadius: BorderRadius.circular(8)),
             child: const Icon(Icons.description_outlined,
@@ -214,6 +214,9 @@ class _BusinessLibraryState extends State<_BusinessLibrary> {
           Text(item['title'], style: const TextStyle(
               fontSize: 16, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
+          Text(businessSources[source]!.label, style: const TextStyle(
+              fontSize: 12, color: Color(0xFF387344))),
+          const SizedBox(height: 6),
           Text('记录版本 ${item['object_version']} · ${communityDate(item['created_at'])}',
               style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
           const SizedBox(height: 6),
@@ -222,11 +225,11 @@ class _BusinessLibraryState extends State<_BusinessLibrary> {
           const SizedBox(height: 6),
           Text(item['notice'], style: const TextStyle(
               fontSize: 12, color: AccountTheme.muted, height: 1.5)),
-          TextButton(
-              onPressed: () => open(source,
-                  personalBusinessRoute(item, source: source)),
-              child: const Text('查看原约定')),
         ])),
+        const SizedBox(width: 8),
+        SizedBox(width: 72, child: TextButton(
+            onPressed: () => open(source, personalBusinessRoute(item, source: source)),
+            child: const Text('查看原约定', textAlign: TextAlign.center))),
       ]));
 
   Widget record(String source, Map<String, dynamic> item) =>

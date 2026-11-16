@@ -72,7 +72,7 @@ class _AgreementsState extends State<_Agreements> {
       context,
       '我的收入',
       [
-        tradeHeading('我的收入', eyebrow: '艺人经营收入 / 独立记账'),
+        tradeHeading('我的收入', eyebrow: '艺人经营收入 / 独立记账', fontSize: 28),
         tradeSection('按账户分别查看', [
           financeParagraph('当前为经营结算约定。消费者余额及消费流水单独记账，不与本页金额相加。'),
           tradeButton('查看消费余额与流水',
@@ -208,16 +208,34 @@ class _OverviewState extends State<_Overview> {
         context,
         '我的收入',
         [
-          tradeHeading('我的收入', eyebrow: '本人结算约定 / 独立记账'),
+          tradeHeading('我的收入', eyebrow: '本人结算约定 / 独立记账', fontSize: 28),
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (g != null) ...[
             if (mine != null)
               tradeSection('本人金额', [
                 supplyNote('仅展示当前约定下本人的结算金额。'),
-                financeAmounts(financeMap(mine)),
-                const SizedBox(height: 12),
-                tradeFact('已核实调整', financeMoneyText(mine['adjustment_minor'])),
+                for (final item in [
+                  ('尚未付款', 'balance_minor'),
+                  ('当前可申请', 'available_minor'),
+                  ('本约定累计已核实付款', 'paid_minor'),
+                ])
+                  Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                          color: const Color(0xFF202320),
+                          borderRadius: BorderRadius.circular(16)),
+                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                        Text(item.$1, style: const TextStyle(color: Color(0xFFDDDFDA), fontSize: 13)),
+                        const SizedBox(height: 12),
+                        Text(financeMoneyText(mine[item.$2]),
+                            style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700)),
+                      ])),
+                financeEditorialFact('本人应得', financeMoneyText(mine['accrued_minor']),
+                    description: '仅当前结算约定，不合并其他业务'),
+                financeEditorialFact('已核实调整', financeMoneyText(mine['adjustment_minor']),
+                    description: '原始调整明细请查看本约定流水；不将所有调整称为退款'),
                 if (mine['recovery_due_minor'] > 0)
                   tradeFact('待追回', financeMoneyText(mine['recovery_due_minor']),
                       accent: true),

@@ -507,8 +507,15 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
               outline: true),
           appNotice('材料须先由本人上传并关联到艺人；本次选择不授予后续出演或商用权。'),
           tradeButton('前往艺人素材管理', () => Navigator.pushNamed(context, '/artists'), outline: true),
-          tradeBanner('按本单真实规则取样',
-              '${r.data['rules']['photo_count']} 张照片、${r.data['rules']['video_count']} 段视频；${r.data['rules']['acceptance_policy'] == 'CONTRACT_20261029' ? '交付审核通过起' : '明确收讫后'} ${r.data['rules']['acceptance_hours']} 小时。'),
+          tradeSection('本单默认交付规则', [
+            tradeFact('照片', '${r.data['rules']['photo_count']} 张'),
+            tradeFact('视频', '${r.data['rules']['video_count']} 段'),
+            tradeFact('验收期限',
+                '${r.data['rules']['acceptance_policy'] == 'CONTRACT_20261029' ? '交付审核通过起' : '明确收讫后'} ${r.data['rules']['acceptance_hours']} 小时'),
+            tradeFact('本单真人档案', r.data['offer']['person_id']),
+            const Text('本页只提交本次试镜取样。私人造型归档须由本人另给同意，不随选择或交付自动建立。',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+          ]),
           if (consents.isEmpty) appNotice('当前没有本预约可用的取样授权，请核对本人、买方与授权状态后重新读取。')
         ],
         if (!widget.session.isOwner &&
@@ -529,6 +536,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
         if (!allowed(r))
           appNotice('当前记录不满足本项办理条件。保留本页输入，按最新原记录核对；不通过更改技术编号绕过。'),
         V5Form(
+            actionInFooter: a == 'delivery',
             key: a == 'delivery' ? deliveryFormKey : ValueKey('${r.id}:$a'),
             api: api,
             title: titles[a]!,

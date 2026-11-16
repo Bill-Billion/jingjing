@@ -555,9 +555,18 @@ class _EngagementState extends CommunityPageState<_Engagement> {
     if (d == null) return [];
     final rules = communityMap(d['rules']),
         result = communityMaybeMap(d['result']);
-    return [
+    final candidateSection = GlobalKey(),
+        progressSection = GlobalKey(),
+        resultSection = GlobalKey(),
+        rulesSection = GlobalKey();
+    void scrollTo(GlobalKey key) {
+      final target = key.currentContext;
+      if (target != null) Scrollable.ensureVisible(target,
+          duration: const Duration(milliseconds: 240));
+    }
+    return [Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       tradeHeading(communityText(d['title']),
-          eyebrow: '本期评选 / 候选与真实进度', fontSize: 28),
+          eyebrow: '月冠评选 / 已发布活动', fontSize: 24),
       Container(
           padding: const EdgeInsets.all(18),
           margin: const EdgeInsets.only(bottom: 20),
@@ -577,10 +586,23 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                     : '当前不可投票，请核对真实状态、时间及本人剩余次数。',
                 style: const TextStyle(color: AccountTheme.muted, height: 1.6)),
           ])),
-      communityFact('开始时间', communityDate(d['starts_at'])),
-      communityFact('投票截止', communityDate(d['ends_at'])),
-      communityFact('异议截止', communityDate(d['appeal_until'])),
-      tradeSection('本次规则', [
+      Wrap(spacing: 8, runSpacing: 8, children: [
+        OutlinedButton(onPressed: () => scrollTo(candidateSection),
+            child: const Text('候选艺人')),
+        OutlinedButton(onPressed: () => scrollTo(progressSection),
+            child: const Text('评选进度')),
+        OutlinedButton(onPressed: result.isEmpty ? null : () => scrollTo(resultSection),
+            child: const Text('本期结果')),
+      ]),
+      const SizedBox(height: 20),
+      Container(key: progressSection, child: tradeSection('评选时间与进度', [
+        communityFact('01 · 开始时间', communityDate(d['starts_at'])),
+        communityFact('02 · 投票截止', communityDate(d['ends_at'])),
+        communityFact('03 · 异议截止', communityDate(d['appeal_until'])),
+        const Text('以上为本期实际时间；不以步骤样式推定某阶段已经完成。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+      ])),
+      Container(key: rulesSection, child: tradeSection('本次规则', [
         communityFact('每次投票', '${rules['vote_cost']} 晶钻'),
         communityFact('每日上限', '${rules['daily_cap']}次'),
         if (voteUsage != null) ...[
@@ -600,16 +622,33 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         communityFact('榜单 / 投票 / 专业评分权重',
             '${rules['ranking_bps']} / ${rules['vote_bps']} / ${rules['official_bps']}（万分比）'),
         appNotice('每日次数、可用晶钻、候选状态和活动时间由服务器重新核对。')
-      ]),
-      tradeHeading('本期候选', fontSize: 22),
+      ])),
+      Container(key: candidateSection, child: tradeHeading('本期候选', fontSize: 22)),
       if (communityRows(d['candidates']).isEmpty)
         appNotice('本期尚未返回候选名单，不展示示例艺人或推算名次。'),
       for (final r in communityRows(d['candidates']))
-        tradeSection('候选艺人 · ${artistName(r['person_id'])}', [
-          communityFact('榜单分值', r['ranking_score']),
-          tradeButton('确认本次扣分投票', enabled && votingOpen ? () => vote(r) : null,
-              outline: true)
-        ]),
+        Container(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: AccountTheme.border))),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              Row(children: [
+                Container(width: 60, height: 80,
+                    decoration: BoxDecoration(color: AccountTheme.surface,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.person_outline, color: AccountTheme.muted)),
+                const SizedBox(width: 14),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(artistName(r['person_id']),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 6),
+                  const Text('本期候选', style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                  communityFact('榜单分值', r['ranking_score']),
+                ])),
+              ]),
+              tradeButton('确认本次扣分投票', enabled && votingOpen ? () => vote(r) : null,
+                  outline: true),
+            ])),
       tradeSection('我的投票记录', [
         if (secondary.isEmpty) const Text('尚无本次投票记录。'),
         for (final r in secondary)
@@ -617,13 +656,13 @@ class _EngagementState extends CommunityPageState<_Engagement> {
               '${communityMaybeMap(r['data'])['points']} 晶钻')
       ]),
       if (result.isNotEmpty)
-        tradeSection('已核定结果', [
+        Container(key: resultSection, child: tradeSection('已核定结果', [
           communityFact('核定时间', communityDate(result['at'])),
           communityFact('冠军艺人', artistName(result['winner_person_id'])),
           for (final r in communityRows(result['scores']))
             communityFact('艺人 ${artistName(r['person_id'])}',
                 '总分 ${r['total']} · 有效票 ${r['votes']}')
-        ]),
+        ])),
       if (!canVote) appNotice('投票按本人个人身份与实际晶钻办理，请先切换到本人身份再核对。'),
       if (!appealsOpen) appNotice('仅公示期间且在异议截止前可提交说明，请核对当前状态与截止时间。'),
       communityField(reason, '异议说明', lines: 3, enabled: enabled && appealsOpen),
@@ -641,6 +680,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                   })
               : null,
           outline: true),
+      tradeButton('返回本期规则', () => scrollTo(rulesSection), outline: true),
       tradeSection('结果、异议与兑现', [
         const Text('核定结果与奖项兑现分别办理。异议仅在公示及截止条件满足时提交；争议不自动退款，按原规则与复核结果处理。',
             style: TextStyle(color: AccountTheme.muted, height: 1.6)),
@@ -649,21 +689,35 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             style: TextStyle(color: AccountTheme.muted, height: 1.6)),
       ]),
       communityRecordId(d)
-    ];
+    ])];
   }
 
   List<Widget> growthView() {
     final account = communityMaybeMap(detail?['account']),
         g = communityMaybeMap(account['data']);
+    final rule = communityMaybeMap(
+        communityMaybeMap(communityMaybeMap(g['rule_snapshot'])['data'])['rule']);
+    final thresholds = rule['thresholds'];
+    final points = g['growth_points'];
+    num? nextThreshold;
+    if (points is num && points.isFinite && points >= 0 &&
+        thresholds is List && thresholds.isNotEmpty &&
+        thresholds.every((value) => value is num && value.isFinite && value >= 0)) {
+      final ordered = thresholds.cast<num>().toList()..sort();
+      for (final value in ordered) {
+        if (value > points) {
+          nextThreshold = value;
+          break;
+        }
+      }
+    }
     final delegated = widget.id != null &&
         (!session.isOwner ||
             people
                 .any((p) => p.id == person.text && p.owner != session.partyId));
     return [
       tradeHeading(delegated ? '受托艺人成长' : '成长与好评',
-          eyebrow: '成长轨迹 / 服务评价', fontSize: 28),
-      const Text('认证光环、业务成长与服务评价是三个独立维度，不能互相代替。',
-          style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+          eyebrow: '成长轨迹 / 服务评价', fontSize: 24),
       menu(),
       const SizedBox(height: 20),
       communitySelect(
@@ -672,7 +726,9 @@ class _EngagementState extends CommunityPageState<_Engagement> {
           [for (final p in people) (p.id, '${p.name} · 版本${p.version}')],
           enabled ? (v) => setState(() => person.text = v ?? '') : null),
       tradeButton('读取本人成长', enabled ? () => submit(load) : null),
-      if (detail != null)
+      if (detail != null && account.isEmpty)
+        appNotice('本艺人尚无已核算成长账户，不展示示例等级或进度。'),
+      if (account.isNotEmpty)
         Container(
             padding: const EdgeInsets.all(20),
             margin: const EdgeInsets.symmetric(vertical: 16),
@@ -687,9 +743,28 @@ class _EngagementState extends CommunityPageState<_Engagement> {
               const Divider(height: 28),
               communityFact('累计成长', g['growth_points']),
               communityFact('近期成长', g['recent_growth_points']),
+              if (nextThreshold != null && points is num) ...[
+                const SizedBox(height: 12),
+                LinearProgressIndicator(value: (points / nextThreshold).clamp(0.0, 1.0).toDouble()),
+                const SizedBox(height: 8),
+                Text('$points / $nextThreshold · 下一累计成长门槛',
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                const Text('按本账户原规则门槛展示；实际等级仍以服务器核定及保级规则为准。',
+                    style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              ],
+              const SizedBox(height: 12),
               const Text('仅来自服务器已记录的业务事实，不等于认证等级、钱包晶钻或可提现收入。',
                   style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
             ])),
+      if (account.isNotEmpty)
+        tradeSection('成长核算记录', [
+          communityFact('核算时间', communityDate(g['at'])),
+          communityFact('已取得等级', g['earned_level']),
+          communityFact('当前核定等级', g['level']),
+          communityRecordId(account),
+          const Text('这是当前成长账户记录，不是独立考核报告，也不代表累计完成订单数。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        ]),
       if (detail != null)
         tradeSection('成长规则与星光', [
           communityFact('星光值',
@@ -750,8 +825,8 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                   : null,
               outline: true)
         ]),
-      tradeSection('认证与服务评价', [
-        const Text('认证申请与本人订单评价在各自页面办理；这里不以成长值估算评分或完成订单数。',
+      tradeSection('认证、成长与服务评价', [
+        const Text('认证光环核对身份与材料；业务成长依据实际业务记录；服务评价反映具体订单体验。三个维度独立，不能互相替代。',
             style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
         tradeButton('查看本人认证档案',
             enabled ? () => Navigator.pushNamed(context, '/artists') : null,
@@ -1033,8 +1108,10 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         tradeHeading('谁在找戏', eyebrow: '同城出品人与机构 / 公开选择', fontSize: 28),
         menu(),
         const SizedBox(height: 20),
-        const Text('个人与机构分别按真实公开记录展示。投稿是单向合作意向，不开放陌生主体间自由私信。',
-            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        tradeSection('本城公开出品人与机构', [
+          const Text('个人与机构分别按真实公开记录展示。是否排名及核算数值以本次返回的有效规则为准，不把当前名单当高消费筛选结果。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        ]),
         const SizedBox(height: 16),
         communityField(city, '所在城市'),
         tradeButton('读取同城名单', enabled ? load : null),
@@ -1051,9 +1128,23 @@ class _EngagementState extends CommunityPageState<_Engagement> {
               if (communityRows(detail![group.$1]).isEmpty)
                 const Text('当前没有已同意公开的相关主体。'),
               for (final (i, r) in communityRows(detail![group.$1]).indexed)
-                tradeSection(
-                    '${detail!['ranking_enabled'] == true ? '第${i + 1}名 · ' : ''}${r['party_id'] == session.partyId ? communityText(session.party?['display_name']) : '已公开主体 ${communityShort(r['party_id'])}'}',
-                    [
+                Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: const BoxDecoration(border: Border(
+                        bottom: BorderSide(color: AccountTheme.border))),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                      Row(children: [
+                        Container(width: 60, height: 80, color: AccountTheme.surface,
+                            child: Icon(group.$1 == 'personal' ? Icons.person_outline : Icons.business_outlined,
+                                color: AccountTheme.muted)),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(
+                            '${r['party_id'] == session.partyId ? communityText(session.party?['display_name']) : '已公开主体 ${communityShort(r['party_id'])}'}',
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700))),
+                        if (detail!['ranking_enabled'] == true)
+                          Text('第${i + 1}名', style: const TextStyle(color: AccountTheme.accent)),
+                      ]),
+                      const SizedBox(height: 12),
                       communityFact(
                           '核实的完成订单',
                           r['facts_available'] == true
@@ -1086,9 +1177,13 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                                 'city': city.text.trim()
                               }).toString()),
                           outline: true)
-                    ])
+                    ]))
             ])
         ],
+        tradeSection('投稿与沟通', [
+          const Text('投稿是单向合作意向。请先进入主体的公开通告，核对具体用途、接收条件和本人授权；不开放陌生主体间自由私信。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        ]),
         if (session.isOwner)
           tradeSection('本人公开选择', [
             communityCheck('同意当前办事身份在所选城市名单中公开', buyerOptIn,
@@ -1112,13 +1207,56 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             appNotice('未勾选后保存表示不参加公开名单。本人选择不会替其他人或机构授权。')
           ])
       ];
+  Widget reviewSubmitAction() => tradeButton(
+            '发布本次订单评价',
+            enabled &&
+                    reviewAgreed &&
+                    realism != null &&
+                    fit != null &&
+                    completeness != null &&
+                    reviewMedia.length <= 10 &&
+                    reviewResult == null &&
+                    orders.any((o) => o.id == order.text)
+                ? () => submit(() async {
+                      final selected = communityRequiredId(order.text, '本人原订单');
+                      final body = {
+                        'order_id': selected,
+                        'realism': realism,
+                        'fit': fit,
+                        'completeness': completeness,
+                        'body': communityRequired(reviewBody.text, '本次评价',
+                            max: 2000),
+                        'media_asset_ids': List<String>.from(reviewMedia)
+                      };
+                      final result = await act('reviews', body, reload: false,
+                          validate: (r) {
+                        communityRecord(r, kind: 'ORDER_REVIEW');
+                        final d = communityMap(r['data']);
+                        communityRequire(r['parent_id'] == selected &&
+                            d['free_points_awarded'] == 0 &&
+                            communityDigest({
+                                  for (final key in body.keys) key: d[key]
+                                }) ==
+                                communityDigest(body));
+                      });
+                      if (result != null && mounted) {
+                        setState(() {
+                          reviewResult = result;
+                          reviewAgreed = false;
+                          notice = '本次评价已按原订单发布；评价奖励仍未开放。';
+                        });
+                      }
+                    })
+                : null);
+
   List<Widget> reviewsView() => [
         tradeHeading('写下这次体验', eyebrow: '完成一次合作 / 按原订单评价', fontSize: 28),
         menu(),
         const SizedBox(height: 20),
         appNotice(
             '仅可评价正式环境、已履约、无争议、净付款大于0的本人订单。提交时服务器重新核对，已付款选项本身不代表履约条件已经满足。评价奖励尚未开放，不发放评价晶钻，也不要求先开通钱包。'),
-        communitySelect(
+        tradeSection('本次原订单', [
+          communitySelect(
             '本人已付款原订单',
             order.text,
             [
@@ -1137,6 +1275,17 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                 : null),
         if (orders.isEmpty && !checking && error == null)
           const Text('当前没有可选择的本人已付款业务订单。'),
+          for (final selected in orders.where((item) => item.id == order.text)) ...[
+            const SizedBox(height: 12),
+            Text(selected.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+            communityFact('净付款', communityMoney(communityMaybeMap(selected.data['financial'])['net_minor'])),
+            communityFact('原单版本', selected.version),
+          ],
+        ]),
+        const SizedBox(height: 8),
+        const Text('这次合作的三个维度', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+        const Text('逐项选择星级，认证等级与成长不代替服务评价。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
         for (final x in [
           ('realism', '真实感'),
           ('fit', '契合度'),
@@ -1181,47 +1330,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         ]),
         communityCheck('我已完成本订单的实际验收，以上评分和内容反映这次真实体验', reviewAgreed,
             enabled ? (v) => setState(() => reviewAgreed = v == true) : null),
-        tradeButton(
-            '发布本次订单评价',
-            enabled &&
-                    reviewAgreed &&
-                    realism != null &&
-                    fit != null &&
-                    completeness != null &&
-                    reviewMedia.length <= 10 &&
-                    reviewResult == null &&
-                    orders.any((o) => o.id == order.text)
-                ? () => submit(() async {
-                      final selected = communityRequiredId(order.text, '本人原订单');
-                      final body = {
-                        'order_id': selected,
-                        'realism': realism,
-                        'fit': fit,
-                        'completeness': completeness,
-                        'body': communityRequired(reviewBody.text, '本次评价',
-                            max: 2000),
-                        'media_asset_ids': List<String>.from(reviewMedia)
-                      };
-                      final result = await act('reviews', body, reload: false,
-                          validate: (r) {
-                        communityRecord(r, kind: 'ORDER_REVIEW');
-                        final d = communityMap(r['data']);
-                        communityRequire(r['parent_id'] == selected &&
-                            d['free_points_awarded'] == 0 &&
-                            communityDigest({
-                                  for (final key in body.keys) key: d[key]
-                                }) ==
-                                communityDigest(body));
-                      });
-                      if (result != null && mounted) {
-                        setState(() {
-                          reviewResult = result;
-                          reviewAgreed = false;
-                          notice = '本次评价已按原订单发布；评价奖励仍未开放。';
-                        });
-                      }
-                    })
-                : null),
+        if (widget.embedded) reviewSubmitAction(),
         if (reviewResult != null)
           tradeSection('本次已发布评价', [
             communityFact(
@@ -1341,7 +1450,9 @@ class _EngagementState extends CommunityPageState<_Engagement> {
     ];
     return widget.embedded
         ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: body)
-        : tradeScaffold(context, '成长与合作', body, locked: recovery != null);
+        : tradeScaffold(context, '成长与合作', body,
+            locked: recovery != null || widget.view == 'reviews' && busy,
+            footer: widget.view == 'reviews' ? reviewSubmitAction() : null);
   }
 }
 

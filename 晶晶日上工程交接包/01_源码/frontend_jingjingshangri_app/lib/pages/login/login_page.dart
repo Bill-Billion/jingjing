@@ -251,7 +251,7 @@ class _LoginPageState extends State<LoginPage> {
                   const Text('登录晶晶日上',
                       style: TextStyle(
                           fontFamily: AccountTheme.sans,
-                          fontSize: 28,
+                          fontSize: 24,
                           fontWeight: FontWeight.w900,
                           height: 1.25)),
                   const SizedBox(height: 20),
@@ -272,6 +272,8 @@ class _LoginPageState extends State<LoginPage> {
                       enabled:
                           !_sending && !busy && !_pendingSms && !_pendingLogin,
                       controller: _phoneCtrl,
+                      style: const TextStyle(color: Colors.white),
+                      cursorColor: Colors.white,
                       focusNode: _phoneFocus,
                       keyboardType: TextInputType.phone,
                       autofillHints: const [
@@ -280,7 +282,10 @@ class _LoginPageState extends State<LoginPage> {
                       maxLength: 11,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: const InputDecoration(
-                          hintText: '请输入11位手机号', counterText: ''),
+                          hintText: '请输入11位手机号', counterText: '',
+                          filled: true, fillColor: Color(0xFF202320),
+                          hintStyle: TextStyle(color: Color(0xFFBCC3BA)),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 18)),
                       onChanged: (_) => setState(() {
                         if (_challengePhone != _phoneCtrl.text.trim()) {
                           _challengeId = null;
@@ -305,6 +310,8 @@ class _LoginPageState extends State<LoginPage> {
                     child: TextField(
                       enabled: !_sending && !busy && !_pendingLogin,
                       controller: _codeCtrl,
+                      style: const TextStyle(color: Colors.white),
+                      cursorColor: Colors.white,
                       focusNode: _codeFocus,
                       keyboardType: TextInputType.number,
                       autofillHints: const [AutofillHints.oneTimeCode],
@@ -312,7 +319,10 @@ class _LoginPageState extends State<LoginPage> {
                       maxLength: 6,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: const InputDecoration(
-                          hintText: '输入6位验证码', counterText: ''),
+                          hintText: '输入6位验证码', counterText: '',
+                          filled: true, fillColor: Color(0xFF202320),
+                          hintStyle: TextStyle(color: Color(0xFFBCC3BA)),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 18)),
                     ),
                   ),
                   const SizedBox(height: 10),

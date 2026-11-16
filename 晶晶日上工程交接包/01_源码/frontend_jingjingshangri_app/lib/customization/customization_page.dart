@@ -82,6 +82,19 @@ Widget _eyebrow(String text) => Padding(
     );
 Widget _section(String title, List<Widget> children) =>
     tradeSection(title, children);
+Widget _storyPanel(String title, List<Widget> children) => Container(
+    margin: const EdgeInsets.only(bottom: 18),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AccountTheme.border)),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      if (title.isNotEmpty) ...[
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 12),
+      ],
+      ...children,
+    ]));
 Widget _note(String text) => Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
@@ -792,15 +805,16 @@ class _StoryEditorState extends State<_StoryEditor> {
     final pendingOperation = pending;
     final children = <Widget>[
       _eyebrow('人工定制 / 故事需求'),
-      _heading(
+      tradeHeading(
         supplementOpen
             ? '还需要你补充一些内容'
             : record != null && record!.status != 'DRAFT'
                 ? '故事已交给平台'
                 : '写下你的故事',
+        fontSize: 24,
       ),
       if (!denied && (record == null || record!.status == 'DRAFT'))
-        _section('先留下想法，再形成约定', [
+        _storyPanel('先留下想法，再形成约定', [
           const Wrap(spacing: 8, runSpacing: 8, children: [
             Chip(label: Text('仅本人可见')),
             Chip(label: Text('分享未开放')),
@@ -808,7 +822,19 @@ class _StoryEditorState extends State<_StoryEditor> {
           _note('把创作方向与故事片段写进下方本品类的问题。此处保存的是现有定制需求草稿，不是通用AI生成器，也不会直接生成或交付影片。'),
           _note('参考素材请仅使用已获权的内容。AI生成或氛围参考应在说明中注明，不作为正式成片或交付承诺。上传前须先保存草稿，上传成功不代表授权通过。'),
         ]),
-      if (!denied) _section('本次办理', [
+      if (!denied && (record == null || record!.status == 'DRAFT'))
+        _storyPanel('本次制作需求', [
+          const ListTile(contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.edit_note_outlined),
+              title: Text('先写下故事需求'),
+              subtitle: Text('本页保存和提交真实业务故事，不直接生成制作订单。')),
+          const Divider(),
+          const ListTile(contentPadding: EdgeInsets.zero,
+              leading: Icon(Icons.people_outline),
+              title: Text('多人共创另行办理'),
+              subtitle: Text('先提交故事，再在共创流程按真实条件开房；这里不切换为房间或付款。')),
+        ]),
+      if (!denied) _storyPanel('本次办理', [
         Wrap(spacing: 8, runSpacing: 8, children: [
           Chip(label: Text(record == null ? '填写需求' : storyStatuses[record!.status]!)),
           if (supplementOpen) const Chip(label: Text('需要补充')),
@@ -948,14 +974,14 @@ class _StoryEditorState extends State<_StoryEditor> {
         const SizedBox(height: 8),
         KeyedSubtree(
             key: const ValueKey('story-form-section'),
-            child: _section(template!.title, [
+            child: _storyPanel(template!.title, [
               if (template!.description.isNotEmpty)
                 _note(template!.description),
               if (fieldErrors['answers'] != null)
                 appNotice(fieldErrors['answers']!, icon: Icons.error_outline),
               for (final item in template!.fields
                   .where((f) => f.type != 'PRIVATE_ATTACHMENT'))
-                field(item),
+                _storyPanel('', [field(item)]),
               if (template!.fields.any((f) => f.type == 'PRIVATE_ATTACHMENT'))
                 if (record == null)
                   appNotice('先保存故事草稿，再选择文件并上传。附件不会随文字自动提交；上传后仍须保存绑定并确认正式提交。')
@@ -1048,7 +1074,10 @@ class _StoryEditorState extends State<_StoryEditor> {
                               requestId: record!.id))),
               child: const Text('查看这份需求的报价与订单')),
         ]),
-      _note('故事提交后由平台对接。报价、合同、授权和制作将在后续步骤分别确认。'),
+      _storyPanel('提交之后', [
+        _note('故事提交后由平台对接。报价、合同、授权和制作将在后续步骤分别确认。'),
+        _note('保存草稿不会正式提交、开房或产生付款。参考素材不是交付成片，私人故事不会因保存自动开放协作分享。'),
+      ]),
     ];
     Future<void> goBack() async {
       if (!await leave() || !context.mounted) return;
@@ -1100,19 +1129,15 @@ class _StoryEditorState extends State<_StoryEditor> {
                         constraints: const BoxConstraints(maxWidth: 560),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(18, 10, 18, 12),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton(
+                          child: LayoutBuilder(builder: (context, constraints) {
+                            final actions = <Widget>[
+                              OutlinedButton(
                                   key: const ValueKey('story-save'),
                                   onPressed: locked || conflict ? null : save,
                                   child: Text(
                                       supplementOpen ? '保存补充草稿' : '保存个人草稿'),
                                 ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: FilledButton(
+                              FilledButton(
                                   key: const ValueKey('story-submit'),
                                   onPressed: locked ||
                                           conflict ||
@@ -1127,9 +1152,23 @@ class _StoryEditorState extends State<_StoryEditor> {
                                   child: Text(
                                       supplementOpen ? '正式重提补充' : '提交制作需求'),
                                 ),
-                              ),
-                            ],
-                          ),
+                            ];
+                            if (constraints.maxWidth < 340 ||
+                                MediaQuery.textScalerOf(context).scale(14) > 20) {
+                              return Column(mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    actions[0],
+                                    const SizedBox(height: 10),
+                                    actions[1],
+                                  ]);
+                            }
+                            return Row(children: [
+                              Expanded(child: actions[0]),
+                              const SizedBox(width: 12),
+                              Expanded(child: actions[1]),
+                            ]);
+                          }),
                         ),
                       ),
                     ),

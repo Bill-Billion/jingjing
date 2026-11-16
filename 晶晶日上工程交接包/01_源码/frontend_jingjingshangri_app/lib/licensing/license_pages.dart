@@ -9,6 +9,7 @@ import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import '../contracts/contract_text.dart';
+import '../trade/trade_widgets.dart';
 import '../supply/supply_widgets.dart';
 import 'license_api.dart';
 import 'license_models.dart';
@@ -123,7 +124,7 @@ class _LicenseListState extends State<_LicenseList> {
       decoration: const BoxDecoration(
           border: Border(bottom: BorderSide(color: AccountTheme.border))),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(width: 44, height: 60,
+        Container(width: 60, height: 80,
             decoration: BoxDecoration(color: AccountTheme.surface,
                 borderRadius: BorderRadius.circular(8)),
             child: const Icon(Icons.description_outlined,
@@ -135,7 +136,7 @@ class _LicenseListState extends State<_LicenseList> {
               fontSize: 16, fontWeight: FontWeight.w700, height: 1.4)),
           const SizedBox(height: 6),
           Text('${licenseKinds[r.kind]} · ${shortSupplyId(r.id)}',
-              style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF387344))),
           if (r.terms != null)
             Text(r.terms!.summary, style: const TextStyle(
                 fontSize: 12, color: AccountTheme.muted, height: 1.5)),
@@ -157,9 +158,12 @@ class _LicenseListState extends State<_LicenseList> {
           const SizedBox(height: 6),
           Text(r.statusText, style: const TextStyle(
               fontSize: 12, color: AccountTheme.accent)),
-          TextButton(onPressed: _busy ? null : () => _open(r),
-              child: Text(r.kind == 'GRANT' ? '查看许可凭证' : '查看原记录')),
         ])),
+        const SizedBox(width: 8),
+        SizedBox(width: 72, child: TextButton(
+            onPressed: _busy ? null : () => _open(r),
+            child: Text(r.kind == 'GRANT' ? '查看许可凭证' : '查看原记录',
+                textAlign: TextAlign.center))),
       ]));
 
   Widget _recordCard(LicenseRecord r) => !widget.catalog
@@ -1050,30 +1054,54 @@ class _ControlledReaderState extends State<_ControlledReader>
     }
   }
 
+  Widget _readingSection(String label) => Container(
+      margin: const EdgeInsets.only(top: 20, bottom: 12),
+      padding: const EdgeInsets.only(left: 12),
+      decoration: const BoxDecoration(
+          border: Border(left: BorderSide(color: AccountTheme.accent, width: 3))),
+      child: Text(label,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)));
+
   @override
-  Widget build(BuildContext context) => licenseScaffold(context, '受控阅读', [
-        const Text('内容阅读', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 8),
-        const Text('仅限当前指定账号与有效授权，授权失效后清空正文。阅读不等于签署。'),
-        const SizedBox(height: 20),
+  Widget build(BuildContext context) => tradeScaffold(context, '受控阅读', [
+        tradeHeading('内容阅读', eyebrow: '受控原文 / 指定账号授权', fontSize: 24),
+        const Text('阅读不等于签署，返回本页不会自动同意条款或新增授权。',
+            style: TextStyle(color: AccountTheme.muted, fontSize: 13, height: 1.6)),
+        _readingSection('阅读范围'),
         appNotice('有效期内的指定账号可阅读此文本。此授权仅限评估阅读，正文包含读者、授权编号和读取时间水印，不授予生成或训练。',
             icon: Icons.description_outlined),
-        if (_record != null)
-          supplyCard('本次阅读授权', [
+        if (_record != null) ...[
+          _readingSection('本次阅读授权'),
+          supplyCard('以原记录为准', [
+            supplyFact('授权编号', _record!.id),
+            supplyFact('授权记录版本', _record!.version),
             supplyFact('授权截止', licenseDate(_record!.data['valid_until'])),
             supplyFact('当前状态', _record!.statusText),
-            supplyNote('页面会重新核对授权；读取成功不延长有效期，也不授予改编、生成或训练。'),
+            supplyNote('记录版本不是协议签署版本。页面会重新核对授权；读取成功不延长有效期，也不授予改编、生成或训练。'),
           ]),
+        ],
         if (_error != null) supplyNote(_error!, error: true),
         if (_busy) const Center(child: CircularProgressIndicator()),
-        if (_text != null)
-          Card(
-              child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: SelectionArea(child: Text(_text!,
-                      style: const TextStyle(fontSize: 16, height: 1.9))))),
+        if (_text != null) ...[
+          _readingSection('授权原文'),
+          Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                  color: AccountTheme.surface,
+                  borderRadius: BorderRadius.circular(16)),
+              child: SelectionArea(child: Text(_text!,
+                  style: const TextStyle(fontSize: 16, height: 1.9)))),
+        ],
         const SizedBox(height: 20),
         FilledButton(
             onPressed: _busy ? null : _read, child: const Text('重新核对授权并读取')),
-      ]);
+      ], footer: TextButton(
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, '/licensing');
+            }
+          },
+          child: const Text('返回 · 不作签署或同意')));
 }

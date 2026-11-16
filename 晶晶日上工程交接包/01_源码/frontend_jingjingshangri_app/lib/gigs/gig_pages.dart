@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
+import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import '../supply/supply_widgets.dart';
 import '../trade/trade_api.dart';
@@ -12,6 +13,28 @@ import '../trade/trade_widgets.dart';
 import 'gig_api.dart';
 import 'gig_models.dart';
 import 'gig_widgets.dart';
+
+Widget _mcnPanel(String title, List<Widget> children) => Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AccountTheme.border),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(title,
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.w700, height: 1.35)),
+        const SizedBox(height: 14),
+        ...children,
+      ]),
+    );
+
+Widget _gigRecordPanel(GigRecord record, List<Widget> children) =>
+    record.kind == 'RELATION'
+        ? _mcnPanel(record.title, children)
+        : tradeSection(record.title, children);
 
 // Gallery APP-19-01-v2; the photograph is decorative, with no artist claims.
 class GigCataloguePage extends StatelessWidget {
@@ -339,7 +362,7 @@ class _RecordsState extends State<_Records> {
       widget.kind == 'RELATION' ? '我的合作' : gigKinds[widget.kind]!,
       [
         if (widget.kind == 'RELATION')
-          tradeHeading('我的合作', eyebrow: '本人确认 / 直接合作', fontSize: 28)
+          tradeHeading('我的合作', eyebrow: '本人确认 / 真实合作', fontSize: 24)
         else
           gigHeading(gigKinds[widget.kind]!),
         tradeFact('当前身份', widget.session.party?['display_name'] ?? api.owner()),
@@ -372,7 +395,7 @@ class _RecordsState extends State<_Records> {
         if (error != null) supplyNote(error!, error: true),
         if (!busy && data.isEmpty && error == null) appNotice('当前身份没有这类记录。'),
         for (final r in data)
-          tradeSection(r.title, [
+          _gigRecordPanel(r, [
             tradeFact('记录编号', r.id),
             tradeFact('当前状态', gigStatuses[r.status]),
             if (r.kind == 'RELATION') ...[
@@ -537,10 +560,11 @@ class _RecordState extends State<_Record> {
         context: context,
         builder: (c) => AlertDialog(
                 title: Text(labels[value]!),
-                content: Column(mainAxisSize: MainAxisSize.min, children: [
-                  gigParagraph(r.data['terms']),
-                  gigTextField(reason, '办理原因', lines: 3, max: 2000)
-                ]),
+                content: SingleChildScrollView(
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      gigParagraph(r.data['terms']),
+                      gigTextField(reason, '办理原因', lines: 3, max: 2000)
+                    ])),
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(c, false),
@@ -650,7 +674,8 @@ class _RecordState extends State<_Record> {
                 busy || widget.session.gigsPending.isNotEmpty ? null : accept)
         ],
       'RELATION' => [
-          tradeSection('合作双方', [
+          _mcnPanel(relationNames[r.owner] ?? 'MCN 合作主体', [
+            tradeFact('当前状态', gigStatuses[r.status]),
             tradeFact('MCN 显示名称', relationNames[r.owner] ?? '名称暂未提供，请结合编号核对'),
             tradeFact(
                 '合作本人显示名称', relationNames[r.counterparty] ?? '名称暂未提供，请结合编号核对'),
@@ -667,11 +692,17 @@ class _RecordState extends State<_Record> {
           tradeSection('约定代管范围', [
             supplyNote('按本份明确条款核对，不默认包含代签或超范围使用。未约定事项由本人另行确认；合作关系不转移本人的数字人与素材所有权。'),
           ]),
-          tradeSection('原合作条款', [
-            gigParagraph(d['terms']),
+          tradeSection('本份合作分成', [
             gigCommissionFacts(gigMap(d['commission']),
-                marketplace: d['marketplace_terms'], v5: d['v5_terms'])
+                marketplace: d['marketplace_terms'], v5: d['v5_terms']),
+            supplyNote('分成按本份原约定核对；旧订单仍按各自保存的规则结算，不因关系变更重算。'),
           ]),
+          Container(
+            child: _mcnPanel('原合作条款', [
+              gigParagraph(d['terms']),
+              supplyNote('这里展示已读取记录的原约定，不代表新增电子签署，也不替代各方独立确认。'),
+            ]),
+          ),
           if (d['ended_reason'] != null) tradeFact('结束原因', d['ended_reason']),
           if (d['handover'] != null) ...[
             tradeFact('七日旧单交接截止', tradeDate(d['handover']['deadline_at'])),
@@ -697,13 +728,9 @@ class _RecordState extends State<_Record> {
                     : () => decide('REJECT'),
                 outline: true)
           ],
-          if (['ACTIVE', 'INVITED'].contains(r.status))
-            tradeButton(
-                '结束合作',
-                busy || widget.session.gigsPending.isNotEmpty
-                    ? null
-                    : () => decide('END'),
-                outline: true)
+          _mcnPanel('资产仍属于本人', [
+            supplyNote('合作不转移本人的数字人与素材所有权。解除或结束关系不自动废止旧订单的有效授权，仍须按原记录核对交接。'),
+          ]),
         ],
       'COMMISSION' => [
           tradeSection('核算依据', [
@@ -763,6 +790,52 @@ class _RecordState extends State<_Record> {
     };
   }
 
+  Widget? relationFooter() {
+    final r = data;
+    if (r == null || r.kind != 'RELATION') return null;
+    final locked = busy || widget.session.gigsPending.isNotEmpty;
+    final actions = <Widget>[
+      if (['ACTIVE', 'INVITED'].contains(r.status))
+        tradeButton('结束合作', locked ? null : () => decide('END'),
+            outline: true),
+      tradeButton('查看原合作约定', locked ? null : () {
+        showDialog<void>(
+            context: context,
+            builder: (c) => AlertDialog(
+                  title: const Text('原合作约定'),
+                  content: SingleChildScrollView(
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      tradeFact('记录编号', r.id),
+                      tradeFact('记录版本', r.version),
+                      gigParagraph(r.data['terms']),
+                      gigCommissionFacts(gigMap(r.data['commission']),
+                          marketplace: r.data['marketplace_terms'],
+                          v5: r.data['v5_terms']),
+                      supplyNote('只读展示本次读取的约定，不发起签署或代替各方确认。'),
+                    ]),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(c),
+                        child: const Text('返回合作记录')),
+                  ],
+                ));
+      }),
+    ];
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth < 340 ||
+          MediaQuery.textScalerOf(context).scale(14) > 20) {
+        return Column(mainAxisSize: MainAxisSize.min, children: actions);
+      }
+      return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        for (var i = 0; i < actions.length; i++) ...[
+          if (i > 0) const SizedBox(width: 10),
+          Expanded(child: actions[i]),
+        ],
+      ]);
+    });
+  }
+
   @override
   Widget build(BuildContext c) => tradeScaffold(
       c,
@@ -782,7 +855,7 @@ class _RecordState extends State<_Record> {
           ]),
         if (data != null) ...[
           if (data!.kind == 'RELATION')
-            tradeHeading('我的合作', eyebrow: '原合作记录 / 各方独立确认', fontSize: 28),
+            tradeHeading('我的合作', eyebrow: '本人确认 / 真实合作', fontSize: 24),
           gigStatus(data!),
           gigNextStep(data!),
           const SizedBox(height: 16),
@@ -818,6 +891,7 @@ class _RecordState extends State<_Record> {
         ],
         tradeButton('重新读取', busy ? null : load, outline: true)
       ],
+      footer: relationFooter(),
       locked: busy || widget.session.gigsPending.isNotEmpty);
 }
 

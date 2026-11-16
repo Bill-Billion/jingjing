@@ -202,8 +202,17 @@ class _PublicProducerState extends State<_PublicProducer> {
             Chip(label: Text(widget.city)),
           ]),
           const SizedBox(height: 12),
-          Text('已公开主体 ${communityShort(current['party_id'])}',
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          Row(children: [
+            Expanded(child: Text('已公开主体 ${communityShort(current['party_id'])}',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700))),
+            const SizedBox(width: 16),
+            Container(width: 72, height: 96,
+                decoration: BoxDecoration(color: AccountTheme.selectedSurface,
+                    borderRadius: BorderRadius.circular(10)),
+                child: Icon(current['party_kind'] == 'PERSON'
+                    ? Icons.person_outline : Icons.business_outlined,
+                    color: AccountTheme.muted)),
+          ]),
           const SizedBox(height: 10),
           const Text('本接口未提供公开姓名、肖像或封面。这里只呈现已经公开的业务事实。',
               style: TextStyle(fontSize: 13, color: AccountTheme.muted, height: 1.6)),
@@ -278,13 +287,10 @@ class _PublicProducerState extends State<_PublicProducer> {
         ]),
       ],
       tradeButton('重新核对公开名单', busy || noticesBusy ? null : load, outline: true),
-      tradeButton(
-          '查看本城通告目录',
-          () => Navigator.pushNamed(
-              context,
-              discoveryDirectoryRoute(DiscoveryKind.notices,
-                  city: widget.city)),
-          outline: true),
-    ]);
+    ], footer: current == null ? null : OutlinedButton(
+        onPressed: busy || noticesBusy ? null
+            : () => Navigator.pushNamed(context,
+                discoveryDirectoryRoute(DiscoveryKind.notices, city: widget.city)),
+        child: const Text('查看本城通告目录')));
   }
 }

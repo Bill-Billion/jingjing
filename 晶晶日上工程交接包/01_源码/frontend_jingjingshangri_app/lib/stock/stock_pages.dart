@@ -1,4 +1,5 @@
 import '../rights/rights_widgets.dart';
+import '../rights/rights_models.dart' show commercialUses;
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../support/collections.dart';
@@ -158,19 +159,32 @@ class _StockScreenState extends State<_StockScreen> {
           offers.addAll(r.items);
           cursor = r.cursor;
         case 'video':
-          offer = await api.offer(widget.id ?? '');
+          final r = await api.offer(widget.id ?? '');
+          if (!mounted || t != ticket) return;
+          api.check(epoch, null);
+          offer = r;
         case 'listings':
           final r = await api.listings(cursor: more ? cursor : null);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
           listings.addAll(r.items);
           cursor = r.cursor;
         case 'listing':
-          listing = await api.listing(widget.id ?? '');
+          final r = await api.listing(widget.id ?? '');
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          listing = r;
         case 'purchases':
           final r = await api.purchases(cursor: more ? cursor : null);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
           purchases.addAll(r.items);
           cursor = r.cursor;
         case 'purchase':
-          purchase = await api.purchase(widget.id ?? '');
+          final r = await api.purchase(widget.id ?? '');
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          purchase = r;
         default:
           throw const AccountError(400, 'INVALID_PATH');
       }
@@ -411,19 +425,14 @@ class _StockScreenState extends State<_StockScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(children: [
-                const Expanded(child: Text('本版许可价格',
-                    style: TextStyle(color: AccountTheme.muted, fontSize: 12))),
-                Text(v5Money(o.price), style: const TextStyle(
-                    color: AccountTheme.accent, fontSize: 24,
-                    fontWeight: FontWeight.w700)),
-              ]),
-              const SizedBox(height: 8),
-              FilledButton(
-                  onPressed: busy || (!licenseRead || channel == 'CUSTODY') && api.pending('/checkout') == null
-                      ? null : checkout,
-                  child: Text(api.pending('/checkout') == null
-                      ? '立即购买 · 确认本版许可' : '恢复原购买请求核对')),
+              CollectionDetailActions(
+                  key: ValueKey('stock-save:${o.id}'),
+                  session: widget.session, kind: 'STOCK', targetId: o.id,
+                  purchaseAction: FilledButton(
+                      onPressed: busy || (!licenseRead || channel == 'CUSTODY') && api.pending('/checkout') == null
+                          ? null : checkout,
+                      child: Text(api.pending('/checkout') == null
+                          ? '立即购买' : '恢复原购买请求'))),
               const SizedBox(height: 6),
               const Text('建立订单不等于付款成功',
                   textAlign: TextAlign.center,
@@ -436,6 +445,11 @@ class _StockScreenState extends State<_StockScreen> {
                     ? '现成成片 / 本单独立商用许可 · 非独家'
                     : '现成成片 / 个人非商用许可 · 非独家',
                 fontSize: 28),
+            Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: BoxDecoration(color: AccountTheme.surface,
+                  borderRadius: BorderRadius.circular(16)),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             StockPublicMediaView(
                 session: widget.session,
                 offer: o,
@@ -461,15 +475,23 @@ class _StockScreenState extends State<_StockScreen> {
                                   const TextStyle(fontSize: 14, height: 1.6)),
                         ])),
                 load: () => readOfferPreview(o)),
-            const SizedBox(height: 12),
-            tradeSection('购买前请确认', [
+              ])),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(color: AccountTheme.selectedSurface,
+                  borderRadius: BorderRadius.circular(16)),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              const Text('购买前请确认',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 10),
               Text(o.license.data['acceptance_policy'] == 'CONTRACT_20261029'
                   ? '本版按原下单起点核对，约定期限为${o.license.hours}小时；未付款、未交付或存在争议时不得自动结算。'
                   : '本版在明确收讫后按${o.license.hours}小时核对验收；以该版完整许可与售后约定为准。'),
               const SizedBox(height: 8),
               const Text('当前仅为预览。下单、付款、许可生效和正式文件可用分别核实。',
                   style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
-            ]),
+            ])),
           ],
           if (widget.mode == 'catalog')
             Padding(
@@ -530,26 +552,60 @@ class _StockScreenState extends State<_StockScreen> {
             tradeButton('我上架的作品', () => go('/stock/listings'), outline: true),
           ],
           if (o != null) ...[
-            CollectionDetailActions(
-                key: ValueKey('stock-save:${o.id}'),
-                session: widget.session,
-                kind: 'STOCK',
-                targetId: o.id),
-            tradeSection('价格与本版许可', [
+            const Text('本版许可价格',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+            const SizedBox(height: 8),
+            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               Text(v5Money(o.price), style: const TextStyle(
-                  color: AccountTheme.accent, fontSize: 32,
+                  color: AccountTheme.accent, fontSize: 28,
                   fontWeight: FontWeight.w700)),
               const SizedBox(height: 12),
               Text(o.license.data['scope'] == 'COMMERCIAL_LIMITED'
                   ? '一次购买 · 本单明确列出的有限商用用途'
                   : '一次购买 · 本人收藏与个人社交分享'),
+              const SizedBox(height: 12),
+              if (o.license.data['scope'] == 'COMMERCIAL_LIMITED') ...[
+                tradeFact('本版许可地域', o.license.data['territory']),
+                tradeFact('本版许可期间',
+                    '${o.license.data['valid_from']} 至 ${o.license.data['valid_until']}（UTC）'),
+              ],
+              const Divider(height: 32),
+              const Text('包含的许可',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
               const SizedBox(height: 8),
-              ExpansionTile(
+              Text(o.license.data['scope'] == 'COMMERCIAL_LIMITED'
+                  ? (o.license.data['commercial_uses'] as List)
+                      .map((use) => commercialUses[use] ?? use).join('、')
+                  : '本人收藏与个人社交分享',
+                  style: const TextStyle(fontSize: 14, height: 1.6)),
+              const SizedBox(height: 20),
+              const Text('不包含',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 8),
+              Text((o.license.data['excluded'] as List).map((item) => const {
+                    'COMMERCIAL_ADVERTISING': '商业广告',
+                    'ADAPTATION': '改编',
+                    'DISTRIBUTION': '发行',
+                    'VOICE_SEPARATELY': '声音单独使用',
+                    'AI_REGENERATION': 'AI 再生成',
+                    'SOURCE_OR_MODEL_FILES': '源文件或模型文件',
+                    'NEW_AVATAR_CONTENT': '新数字人内容生成',
+                    'EXCLUSIVE_BUYOUT': '独家买断',
+                  }[item] ?? item).join('、'),
+                  style: const TextStyle(fontSize: 14, height: 1.6,
+                      color: AccountTheme.muted)),
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                    border: Border.all(color: AccountTheme.border),
+                    borderRadius: BorderRadius.circular(12)),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: ExpansionTile(
                   tilePadding: EdgeInsets.zero,
                   childrenPadding: const EdgeInsets.only(bottom: 12),
                   title: const Text('查看完整许可说明'),
                   subtitle: const Text('包含与不包含的用途、地域、期间及售后'),
-                  children: stockLicenseFacts(o.license)),
+                  children: stockLicenseFacts(o.license))),
             ]),
             CheckboxListTile(
                 controlAffinity: ListTileControlAffinity.leading,
@@ -576,6 +632,10 @@ class _StockScreenState extends State<_StockScreen> {
                     }),
             const SizedBox(height: 16),
             appNotice('确认只建立原订单。是否付款及许可是否生效，以原订单实际核实结果为准；不开私人联系卡。'),
+            tradeButton('我的收藏与浏览记录', () => go('/saved'), outline: true),
+            tradeButton('反馈或举报这份作品',
+                () => go('/support/new?domain=STOCK_PUBLIC&recordId=${o.id}'),
+                outline: true),
             tradeSection('作品客服暂未开放', [
               const Text('购买咨询入口仅为预留，不提供私人联系方式。点击购买、收藏或打开详情不会开放沟通；正式订单沟通仍需核对本次付款与订单权限。'),
             ]),
@@ -592,17 +652,35 @@ class _StockScreenState extends State<_StockScreen> {
               Container(
                   decoration: const BoxDecoration(
                       border: Border(bottom: BorderSide(color: AccountTheme.border))),
-                  child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                      title: Text(r.data['title'], style: const TextStyle(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Container(width: 60, height: 80,
+                        decoration: BoxDecoration(color: AccountTheme.surface,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.movie_outlined, color: AccountTheme.muted)),
+                    const SizedBox(width: 12),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text(r.data['title'], style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w600)),
-                      subtitle: Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text('${r.data['city']} · 第 ${r.version} 版\n${stockStatuses[r.status]}',
-                              style: const TextStyle(color: AccountTheme.muted, height: 1.6))),
-                      trailing: const Icon(Icons.chevron_right, color: AccountTheme.muted),
-                      onTap: busy || api.writes > 0 || api.pendingOperations.isNotEmpty
-                          ? null : () => go('/stock/listing?listingId=${r.id}'))),
+                      const SizedBox(height: 8),
+                      Text('${r.data['city']} · 第 ${r.version} 版',
+                          style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                      const SizedBox(height: 6),
+                      Text(stockStatuses[r.status] ?? r.status,
+                          style: TextStyle(fontSize: 12, height: 1.5,
+                              color: r.status == 'LISTED' ? AccountTheme.accent
+                                  : r.status == 'IN_REVIEW' ? const Color(0xFFE5C66B)
+                                  : r.status == 'REJECTED' || r.status == 'RIGHTS_HOLD'
+                                      ? AccountTheme.danger : AccountTheme.muted)),
+                    ])),
+                    const SizedBox(width: 8),
+                    SizedBox(width: 76, child: TextButton(
+                        onPressed: busy || api.writes > 0 || api.pendingOperations.isNotEmpty
+                            ? null : () => go('/stock/listing?listingId=${r.id}'),
+                        child: Text(r.status == 'IN_REVIEW' ? '查看进度'
+                            : r.status == 'REJECTED' ? '核对退回' : '查看商品',
+                            textAlign: TextAlign.center))),
+                  ])),
             if (!busy && listings.isEmpty && error == null)
               appNotice('本人当前没有上架材料。'),
             tradeSection('上架前请确认', [
@@ -720,7 +798,7 @@ class _StockScreenState extends State<_StockScreen> {
                   decoration: const BoxDecoration(border: Border(
                       bottom: BorderSide(color: AccountTheme.border))),
                   child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Container(width: 56, height: 72,
+                    Container(width: 60, height: 80,
                         decoration: BoxDecoration(color: AccountTheme.surface,
                             borderRadius: BorderRadius.circular(10)),
                         child: const Icon(Icons.movie_outlined,
@@ -734,14 +812,21 @@ class _StockScreenState extends State<_StockScreen> {
                       Text(stockStatuses[r.status] ?? r.status,
                           style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
                       const SizedBox(height: 4),
+                      Text(r.license.data['scope'] == 'COMMERCIAL_LIMITED'
+                          ? '本单有限商用许可 · 非独家'
+                          : '本单个人非商用许可 · 非独家',
+                          style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                      const SizedBox(height: 6),
                       Text(r.usable ? '当前许可可读取 · 打开后重新核对'
                           : '尚不可读取正式文件 · 核对原单',
                           style: TextStyle(fontSize: 11,
                               color: r.usable ? AccountTheme.accent : AccountTheme.muted)),
-                      TextButton(
-                          onPressed: busy ? null : () => go('/stock/purchase?orderId=${r.orderId}'),
-                          child: Text(r.usable ? '播放 / 下载与许可' : '查看原订单与处理进度')),
                     ])),
+                    const SizedBox(width: 8),
+                    SizedBox(width: 82, child: TextButton(
+                        onPressed: busy ? null : () => go('/stock/purchase?orderId=${r.orderId}'),
+                        child: Text(r.usable ? '播放 / 下载' : '核对原单',
+                            textAlign: TextAlign.center))),
                   ])),
             tradeSection('每份作品保留使用范围', [
               const Text('播放、保存和后续使用都以原单有效许可为准。下载不自动授予商用、改编或再分发权限。'),
@@ -752,6 +837,7 @@ class _StockScreenState extends State<_StockScreen> {
               appNotice('当前身份没有现货订单。付款及资格核实后按原单发放许可。'),
           ],
           if (p != null) ...[
+            tradeHeading('已购作品阅览', eyebrow: '原现货订单 / 受控媒体', fontSize: 24),
             StockPurchaseSummary(purchase: p),
             Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
@@ -760,31 +846,19 @@ class _StockScreenState extends State<_StockScreen> {
             const Text('原付款成功不等于永久可用。播放与保存以当前许可、有效期及售后结果为准；本页不是制作验收。',
                 style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
 
-            tradeSection('本次许可与交付', [
-              if (p.data['current_case_id'] != null)
-                appNotice('本单售后处理中，正式文件下载已暂停。原许可记录保留，等待独立客服核对。'),
-              tradeFact('许可状态', stockStatuses[p.status]),
-              tradeFact('原订单状态',
-                  tradeStatuses[p.raw['order_status']] ?? '当前状态待核对，请查看原订单'),
-              ExpansionTile(
-                  tilePadding: EdgeInsets.zero,
-                  childrenPadding: const EdgeInsets.only(bottom: 12),
-                  title: const Text('查看当前许可范围'),
-                  children: stockLicenseFacts(p.license)),
-              ExpansionTile(
-                  tilePadding: EdgeInsets.zero,
-                  childrenPadding: const EdgeInsets.only(bottom: 12),
-                  title: const Text('原合同依据'),
-                  children: [tradeFact('原合同指纹', p.raw['contract_sha256'])])
-            ]),
             if (p.usable) ...[
               const Text('有权查看的媒体',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
               const SizedBox(height: 8),
               const Text('播放与保存均须核对当前权限。文件保存到本机后仍受许可约束。',
                   style: TextStyle(color: AccountTheme.muted, fontSize: 13, height: 1.5)),
               const SizedBox(height: 12),
-              V5Media(
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(color: AccountTheme.surface,
+                    borderRadius: BorderRadius.circular(16)),
+                child: V5Media(
                   key: ValueKey('${p.orderId}:$ticket'),
                   api: api,
                   label: '受控播放已购作品',
@@ -808,7 +882,31 @@ class _StockScreenState extends State<_StockScreen> {
                       });
                     }
                   }),
+              ),
             ],
+            tradeSection('媒体使用边界', [
+              const Text('作品仅按本订单当前有效许可读取与保存。页面未提供独立分享授权，不应转发受控文件或临时访问地址。',
+                  style: TextStyle(fontSize: 14, height: 1.7)),
+              const Text('本页没有单独声音试听或声音单用授权；播放不代表确认交付。',
+                  style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+            ]),
+            tradeSection('本次许可与交付', [
+              if (p.data['current_case_id'] != null)
+                appNotice('本单售后处理中，正式文件下载已暂停。原许可记录保留，等待独立客服核对。'),
+              tradeFact('许可状态', stockStatuses[p.status]),
+              tradeFact('原订单状态',
+                  tradeStatuses[p.raw['order_status']] ?? '当前状态待核对，请查看原订单'),
+              ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  childrenPadding: const EdgeInsets.only(bottom: 12),
+                  title: const Text('查看当前许可范围'),
+                  children: stockLicenseFacts(p.license)),
+              ExpansionTile(
+                  tilePadding: EdgeInsets.zero,
+                  childrenPadding: const EdgeInsets.only(bottom: 12),
+                  title: const Text('原合同依据'),
+                  children: [tradeFact('原合同指纹', p.raw['contract_sha256'])])
+            ]),
             if (!p.usable) appNotice('当前不可读取正式文件。请核对原付款、本人许可或售后处理；不能回退为公开文件。'),
             if (p.data['accepted_at'] == null && p.usable) ...[
               tradeButton(

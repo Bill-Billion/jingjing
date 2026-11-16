@@ -522,11 +522,17 @@ class _AftercareState extends State<_Aftercare> {
                     appNotice(error!, icon: Icons.error_outline),
                   if (notice != null) appNotice(notice!),
                   if (f != null) ...[
-                    tradeBanner(
-                        f.cases.any((issue) => issue.status == 'OPEN')
-                            ? '平台正在核对原问题' : fulfillmentStates[f.state]!,
-                        '提交、独立处理决定、执行与实际到账分别核对；批准取消或退款不代表资金已到账。',
-                        icon: Icons.support_agent),
+                    tradeSection('售后处理状态', [
+                      Text(f.cases.any((issue) => issue.status == 'OPEN')
+                          ? '等待平台核对与决定' : fulfillmentStates[f.state]!,
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 12),
+                      const Text('提交、独立决定、执行与实际到账分别核对。批准取消或退款不代表资金已到账。',
+                          style: TextStyle(fontSize: 13, height: 1.6)),
+                      const Divider(height: 28),
+                      tradeFact('已提交问题', f.cases.length),
+                      tradeFact('仍待决定', f.cases.where((issue) => issue.status == 'OPEN').length),
+                    ]),
                     tradeSection('关联原项目与订单', [
                       tradeFact('项目编号', project?.id),
                       tradeFact('项目版本', project?.version),
@@ -546,10 +552,16 @@ class _AftercareState extends State<_Aftercare> {
                       tradeSection(fulfillmentCaseKinds[issue.data['kind']]!, [
                         tradeFact('平台核对进度',
                             issue.status == 'OPEN' ? '等待平台核对与决定' : '独立决定已记录'),
-                        const Text('原申请诉求与说明'),
+                        const Divider(height: 24),
+                        const Text('原申请诉求与说明', style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 10),
                         SelectableText(issue.data['reason'],
                             style: const TextStyle(height: 1.7)),
                         tradeFact('提交时间', tradeDate(issue.data['opened_at'])),
+                        const Divider(height: 24),
+                        if (issue.data['resolution'] == null)
+                          const Text('提交已记录，核对与独立决定尚待完成；不推定已受理或正在执行。'),
                         if (issue.data['resolution'] != null) ...[
                           tradeFact(
                               '已记录方案 · 不等于执行到账',
@@ -569,6 +581,12 @@ class _AftercareState extends State<_Aftercare> {
                                   : () => Navigator.pushNamed(context,
                                       '/trade/record?recordId=${issue.changeOrderId}'),
                               outline: true),
+                        const Divider(height: 24),
+                        const Text('本次问题证据', style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 8),
+                        if (issue.data['evidence_asset_ids'].isEmpty)
+                          const Text('本记录未附证据材料。'),
                         if (issue.data['opened_by_party_id'] ==
                             widget.session.partyId)
                           for (final id in issue.data['evidence_asset_ids'])

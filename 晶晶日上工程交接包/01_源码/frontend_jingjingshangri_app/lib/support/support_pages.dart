@@ -110,6 +110,8 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
             child: ExpansionTile(
                 tilePadding: const EdgeInsets.symmetric(vertical: 12),
                 childrenPadding: const EdgeInsets.only(bottom: 16),
+                trailing: const Text('阅读',
+                    style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
                 title: Text(topic.title,
                     style: const TextStyle(
                         fontSize: 14, fontWeight: FontWeight.w600)),
@@ -141,6 +143,13 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
             () => Navigator.pushNamed(context, '/privacy?view=complaint'),
             outline: true),
       ]),
-    ]);
+    ], footer: Wrap(spacing: 12, children: [
+      TextButton(
+          onPressed: () => Navigator.pushNamed(context, '/support'),
+          child: const Text('我的反馈记录')),
+      FilledButton(
+          onPressed: () => Navigator.pushNamed(context, '/support/new'),
+          child: const Text('向平台提交问题')),
+    ]));
   }
 }

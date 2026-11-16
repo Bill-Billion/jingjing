@@ -167,11 +167,9 @@ class _PlazaPageState extends State<PlazaPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                         title,
-                        Row(children: [
-                          tools.first,
-                          const Spacer(),
-                          ...tools.skip(1)
-                        ])
+                        Wrap(spacing: 8, runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: tools)
                       ])
                 : Row(children: [Expanded(child: title), ...tools]));
       });
@@ -231,7 +229,8 @@ class _PlazaPageState extends State<PlazaPage> {
                       child: Column(mainAxisSize: MainAxisSize.min, children: [
                         Icon(item.$2, size: 24),
                         const SizedBox(height: 9),
-                        Text(item.$1, style: const TextStyle(fontSize: 12)),
+                        Text(item.$1, textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 12)),
                       ]))))
       ]));
 
@@ -371,9 +370,12 @@ class _PlazaPageState extends State<PlazaPage> {
           List<T> items, int columns, double gap, Widget Function(T) card) =>
       LayoutBuilder(builder: (context, box) {
         final enlarged = MediaQuery.textScalerOf(context).scale(14) > 19;
-        final count = enlarged ? 2 : columns;
+        final preferred = enlarged || box.maxWidth < 300 ? 2 : columns;
+        final count = box.maxWidth < 190 ||
+                MediaQuery.textScalerOf(context).scale(14) > 28
+            ? 1 : preferred;
         final width = (box.maxWidth - gap * (count - 1)) / count;
-        return Wrap(spacing: gap, runSpacing: 14, children: [
+        return Wrap(spacing: gap, runSpacing: enlarged ? 18 : 12, children: [
           for (final item in items) SizedBox(width: width, child: card(item))
         ]);
       });
@@ -398,7 +400,7 @@ class _PlazaPageState extends State<PlazaPage> {
                             data.removeUnavailableArtist(row['listing_id'])),
                     const SizedBox(height: 6),
                     Text(row['display_name'],
-                        maxLines: 1,
+                        maxLines: MediaQuery.textScalerOf(context).scale(14) > 19 ? 2 : 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                             fontFamily: AccountTheme.serif,

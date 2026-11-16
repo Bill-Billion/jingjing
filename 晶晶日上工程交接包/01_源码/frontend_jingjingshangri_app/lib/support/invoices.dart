@@ -672,17 +672,32 @@ class _InvoicesState extends State<_Invoices> {
     _ => '请重新读取申请状态。',
   };
 
+  bool get createSubmitLocked => eligibility == null || locked ||
+                          amountInputError != null ||
+                          amount.text.trim().isEmpty ||
+                          title.text.trim().isEmpty ||
+                          text.text.trim().isEmpty ||
+                          kind == 'ORGANIZATION' && tax.text.trim().isEmpty ||
+                          eligibility!['available_minor'] <= 0 ||
+                          eligibility!['environment'] == null;
+
   List<Widget> headerFields() => [
-        communitySelect(
-            '抬头类型',
-            kind,
-            [('PERSON', '个人'), ('ORGANIZATION', '单位')],
-            locked
-                ? null
-                : (v) => setState(() {
-                      kind = v!;
-                      headerDirty = true;
-                    })),
+        for (final option in const {'PERSON': '个人', 'ORGANIZATION': '企业/单位'}.entries)
+          Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Material(
+                  color: kind == option.key ? AccountTheme.selectedSurface : AccountTheme.surface,
+                  borderRadius: BorderRadius.circular(14),
+                  child: ListTile(
+                      title: Text(option.value),
+                      trailing: Icon(kind == option.key
+                          ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                          color: AccountTheme.accent),
+                      onTap: locked ? null : () => setState(() {
+                        kind = option.key;
+                        headerDirty = true;
+                      })))),
+        const SizedBox(height: 8),
         TextField(
             controller: title,
             enabled: !locked,
@@ -824,18 +839,11 @@ class _InvoicesState extends State<_Invoices> {
                   maxLines: 4,
                   decoration: const InputDecoration(labelText: '申请说明')),
               ...attachmentFields(),
-              tradeButton(
-                  '确认提交开票申请',
-                  locked ||
-                          amountInputError != null ||
-                          amount.text.trim().isEmpty ||
-                          title.text.trim().isEmpty ||
-                          text.text.trim().isEmpty ||
-                          kind == 'ORGANIZATION' && tax.text.trim().isEmpty ||
-                          eligibility!['available_minor'] <= 0 ||
-                          eligibility!['environment'] == null
-                      ? null
-                      : submit),
+              const Divider(height: 24),
+              const Text('确认抬头、申请金额和原订单后再提交；申请成功不代表发票已开具。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+              tradeButton('查看历史开票申请',
+                  locked ? null : () => leave(route: '/invoices'), outline: true),
             ],
             if (!create && widget.invoiceId == null) ...[
               const Text('从原订单进入可核对额度并新建申请。这里展示当前购买身份的全部申请。'),
@@ -975,5 +983,18 @@ class _InvoicesState extends State<_Invoices> {
                   outline: true),
           ],
           locked: busy || uploading,
+          footer: create
+              ? Column(mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    OutlinedButton(
+                        onPressed: locked ? null
+                            : () => leave(route: invoiceBusinessRoute(widget.orderId)),
+                        child: const Text('核对原订单')),
+                    const SizedBox(height: 8),
+                    FilledButton(
+                        onPressed: createSubmitLocked ? null : submit,
+                        child: const Text('确认提交开票申请')),
+                  ])
+              : null,
           onBack: leave));
 }

@@ -73,6 +73,7 @@ class _ProjectListState extends State<_ProjectList> {
     });
     try {
       final result = await api.page(cursor: more ? cursor : null);
+      final loadedOrders = <String, TradeRecord>{};
       final eligible = result.items
           .where((r) =>
               (widget.orderId == null || r.orderId == widget.orderId) &&
@@ -84,7 +85,7 @@ class _ProjectListState extends State<_ProjectList> {
             project.data['buyer_party_id'],
             project.data['merchant_party_id']
           ].contains(p)) {
-            orders[project.orderId] =
+            loadedOrders[project.orderId] =
                 await TradeApi(widget.session).record(project.orderId);
           }
         }
@@ -92,6 +93,7 @@ class _ProjectListState extends State<_ProjectList> {
       api.check(epoch, p);
       if (!mounted || t != ticket) return;
       setState(() {
+        orders.addAll(loadedOrders);
         rows = [...(more ? rows : <ProductionRecord>[]), ...eligible];
         cursor = result.nextCursor;
         hasRead = true;
@@ -364,6 +366,18 @@ class _ProjectDetailState extends State<_ProjectDetail> {
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 11, color: AccountTheme.muted)))),
                 ])),
+            Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(color: const Color(0xFF202320),
+                    borderRadius: BorderRadius.circular(16)),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  Text(productionStatuses[p.status] ?? p.status,
+                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 10),
+                  const Text('当前进度以本项目记录为准。版本确认、合同许可、付款与正式交付分别核对。',
+                      style: TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+                ])),
             productionCurrentTasks(p, versions,
                 flow: fulfillment,
                 order: order,
@@ -544,6 +558,51 @@ class _VersionReviewState extends State<_VersionReview> {
   bool busy = false, reading = false, opened = false, stale = false;
   String decision = 'REQUEST_CHANGES';
   int ticket = 0;
+  bool changesOnly = false;
+  String recordPanel = 'CURRENT';
+  List<ProductionRecord> versionRows = [];
+  String? versionCursor, versionError;
+  bool versionsBusy = false, versionsLoaded = false;
+  int versionsTicket = 0;
+  final seenVersionCursors = <String>{};
+
+  Future<void> loadVersionHistory({bool more = false}) async {
+    final p = project;
+    if (p == null || locked || versionsBusy || more && versionCursor == null) return;
+    final t = ++versionsTicket, parentTicket = ticket;
+    final epoch = widget.session.epoch, party = widget.session.partyId;
+    setState(() {
+      versionsBusy = true;
+      versionError = null;
+      if (!more) { versionRows = []; versionCursor = null; versionsLoaded = false; seenVersionCursors.clear(); }
+    });
+    try {
+      final page = await api.page(projectId: p.id, kind: 'VERSION',
+          cursor: more ? versionCursor : null);
+      if (!mounted || t != versionsTicket || parentTicket != ticket ||
+          epoch != widget.session.epoch || party != widget.session.partyId) return;
+      productionRequire(page.nextCursor == null || seenVersionCursors.add(page.nextCursor!));
+      setState(() {
+        final merged = <String, ProductionRecord>{};
+        for (final row in [...versionRows, ...page.items]) {
+          final previous = merged[row.id];
+          if (previous == null || row.version > previous.version) merged[row.id] = row;
+        }
+        versionRows = merged.values.toList();
+        versionCursor = page.nextCursor;
+        versionsLoaded = true;
+      });
+    } on AccountError catch (e) {
+      if (mounted && t == versionsTicket && parentTicket == ticket) {
+        setState(() => versionError = productionError(e));
+      }
+    } finally {
+      if (mounted && t == versionsTicket && parentTicket == ticket) {
+        setState(() => versionsBusy = false);
+      }
+    }
+  }
+
   String get path => '/api/v1/production/versions/${widget.versionId}/feedback';
   bool get locked =>
       busy ||
@@ -568,6 +627,7 @@ class _VersionReviewState extends State<_VersionReview> {
   @override
   void dispose() {
     ticket++;
+    versionsTicket++;
     video?.dispose();
     note.dispose();
     changeNote.dispose();
@@ -596,6 +656,13 @@ class _VersionReviewState extends State<_VersionReview> {
       fulfillment = null;
       notificationRead = false;
       history = [];
+      versionsTicket++;
+      versionRows = [];
+      versionCursor = null;
+      versionError = null;
+      versionsBusy = false;
+      versionsLoaded = false;
+      seenVersionCursors.clear();
     });
     try {
       final v = await api.record(widget.versionId, kind: 'VERSION');
@@ -1234,7 +1301,7 @@ class _VersionReviewState extends State<_VersionReview> {
                             Text(v.stage == 'FINAL' ? '成片验收' : '样片审阅',
                                 style: const TextStyle(
                                     fontFamily: AccountTheme.sans,
-                                    fontSize: 28,
+                                    fontSize: 24,
                                     height: 1.15,
                                     fontWeight: FontWeight.w900)),
                           ])),
@@ -1255,34 +1322,97 @@ class _VersionReviewState extends State<_VersionReview> {
                         busy ? null : () => submit(decision, note.text))
                   ]),
                 if (v != null && p != null) ...[
-                  Wrap(spacing: 12, runSpacing: 8, children: [
-                    Chip(label: Text(widget.feedbackOnly ? '本版意见' : '当前版本')),
-                    TextButton(
-                        onPressed: locked ? null : () => Navigator.pushNamed(
-                            context, '/production/project?projectId=${p.id}'),
-                        child: const Text('版本历史与修改记录')),
-                  ]),
+                  if (!widget.feedbackOnly) ...[
+                    Wrap(spacing: 8, runSpacing: 8, children: [
+                      for (final panel in const [
+                        ('CURRENT', '本页绑定版本'),
+                        ('VERSIONS', '版本历史'),
+                        ('FEEDBACK', '本版修改记录'),
+                      ])
+                        ChoiceChip(
+                            label: Text(panel.$2),
+                            selected: recordPanel == panel.$1,
+                            onSelected: (_) => setState(() => recordPanel = panel.$1)),
+                    ]),
+                    const SizedBox(height: 12),
+                    const Text('仅切换只读记录区。下方原验收表单始终保留，提交仍绑定本页版本。',
+                        style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                    if (recordPanel == 'CURRENT')
+                      supplyNote('下方显示本页绑定版本；查看其他记录不会切换验收对象。'),
+                    if (recordPanel == 'VERSIONS')
+                      tradeSection('本项目版本历史', [
+                      supplyNote('按需分页读取当前身份可查看的版本；不假定列表顺序或默认第一条为当前成片。'),
+                      if (versionsBusy) const LinearProgressIndicator(),
+                      if (versionError != null) appNotice(versionError!),
+                      if (!versionsLoaded && !versionsBusy && versionError == null)
+                        supplyNote('尚未读取版本历史，不代表没有版本。'),
+                      for (final row in versionRows)
+                        tradeSection(productionVersionTitle(row), [
+                          tradeFact('状态', productionVersionState(row, p)),
+                          tradeFact('记录编号', row.id),
+                          tradeFact('版本说明', row.data['note']),
+                          if (row.id == v.id) supplyNote('本页正在核对这一版本。'),
+                        ]),
+                      if (versionsLoaded && versionRows.isEmpty)
+                        supplyNote(versionCursor == null ? '本次读取没有可见版本。' : '本页暂无可见版本，可继续读取。'),
+                      tradeButton('重新读取版本历史',
+                          locked || versionsBusy ? null : () => loadVersionHistory(), outline: true),
+                      if (versionCursor != null)
+                        tradeButton('继续读取版本历史',
+                            locked || versionsBusy ? null : () => loadVersionHistory(more: true), outline: true),
+                    ]),
+                    if (recordPanel == 'FEEDBACK')
+                      tradeSection('本版记录', [
+                      Wrap(spacing: 8, children: [
+                        ChoiceChip(label: const Text('本版全部反馈'),
+                            selected: !changesOnly,
+                            onSelected: locked ? null : (_) => setState(() => changesOnly = false)),
+                        ChoiceChip(label: const Text('本版修改请求'),
+                            selected: changesOnly,
+                            onSelected: locked ? null : (_) => setState(() => changesOnly = true)),
+                      ]),
+                      const SizedBox(height: 12),
+                      supplyNote('仅筛选已读取且绑定本版本的反馈；其他版本请进入项目版本历史。'),
+                      if (!history.any((f) => f.data['version_id'] == v.id &&
+                          (!changesOnly || f.data['decision'] == 'REQUEST_CHANGES')))
+                        supplyNote(changesOnly ? '本版暂无已读取的修改请求。' : '本版暂无已读取的买方反馈。'),
+                      for (final f in history
+                          .where((f) => f.data['version_id'] == v.id &&
+                              (!changesOnly || f.data['decision'] == 'REQUEST_CHANGES'))) ...[
+                        tradeFact(
+                            f.data['acceptance_method'] == 'AGREED_TIMEOUT'
+                                ? '按原约定期限处理'
+                                : f.data['decision'] == 'ACCEPT'
+                                    ? '确认本版'
+                                    : '请求修改',
+                            f.data['acceptance_method'] == 'AGREED_TIMEOUT'
+                                ? '服务器按收讫后的原约定期限处理，不是本人点击确认。'
+                                : f.data['note']),
+                        const Divider()
+                      ]
+                    ]),
+                  ],
                   const SizedBox(height: 16),
                   Container(
                       margin: const EdgeInsets.only(bottom: 18),
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                          color: AccountTheme.selectedSurface,
+                          color: const Color(0xFF202320),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(color: AccountTheme.border)),
                       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Icon(v.accepted(p) ? Icons.check_circle_outline : Icons.movie_outlined,
-                            color: AccountTheme.accent, size: 28),
+                            color: Colors.white, size: 28),
                         const SizedBox(width: 14),
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Text(productionVersionTitle(v), style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w700)),
+                              color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700)),
                           const SizedBox(height: 8),
                           Text(productionVersionState(v, p), style: const TextStyle(
-                              color: AccountTheme.muted, height: 1.5)),
+                              color: Color(0xFFDDDFDA), height: 1.5)),
                           const SizedBox(height: 8),
                           const Text('本页只处理当前绑定版本，不代表付款或最终下载已完成。',
-                              style: TextStyle(color: AccountTheme.muted, fontSize: 12, height: 1.5)),
+                              style: TextStyle(color: Color(0xFFDDDFDA), fontSize: 12, height: 1.5)),
                         ])),
                       ])),
                   tradeSection(widget.feedbackOnly ? '绑定版本' : '阶段与版本', [
@@ -1325,24 +1455,6 @@ class _VersionReviewState extends State<_VersionReview> {
                   if (v.stage == 'FINAL')
                     tradeSection('验收后的下一步', [
                       appNotice('仅确认当前绑定的成片版本。尾款、正式交付、当前许可与下载条件仍分别核对；补片或中间版本不能冒充最终成片验收。'),
-                    ]),
-                  if (!widget.feedbackOnly)
-                    tradeSection('本版反馈历史', [
-                      if (!history.any((f) => f.data['version_id'] == v.id))
-                        supplyNote('本版尚无买方反馈。'),
-                      for (final f in history
-                          .where((f) => f.data['version_id'] == v.id)) ...[
-                        tradeFact(
-                            f.data['acceptance_method'] == 'AGREED_TIMEOUT'
-                                ? '按原约定期限处理'
-                                : f.data['decision'] == 'ACCEPT'
-                                    ? '确认本版'
-                                    : '请求修改',
-                            f.data['acceptance_method'] == 'AGREED_TIMEOUT'
-                                ? '服务器按收讫后的原约定期限处理，不是本人点击确认。'
-                                : f.data['note']),
-                        const Divider()
-                      ]
                     ]),
                   tradeSection('版本留言', [
                     operationCommentLink(context, 'PRODUCTION', v.id, '版本留言',

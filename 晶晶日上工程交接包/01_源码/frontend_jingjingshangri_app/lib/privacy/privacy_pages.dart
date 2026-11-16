@@ -739,6 +739,32 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
     }
   }
 
+  Widget _quietTimeField(TextEditingController controller, String label) {
+    final parsed = int.tryParse(controller.text);
+    final value = parsed != null && parsed >= 0 && parsed < 1440 ? parsed : null;
+    final text = value == null
+        ? '请选择时间'
+        : '${(value ~/ 60).toString().padLeft(2, '0')}:${(value % 60).toString().padLeft(2, '0')}';
+    return ListTile(
+        contentPadding: EdgeInsets.zero,
+        title: Text(label),
+        subtitle: Text(text),
+        trailing: const Icon(Icons.schedule),
+        enabled: enabled,
+        onTap: !enabled ? null : () async {
+          final epoch = widget.session.epoch, currentTicket = ticket;
+          final picked = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay(hour: (value ?? 0) ~/ 60, minute: (value ?? 0) % 60),
+              builder: (context, child) => MediaQuery(
+                  data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                  child: child!));
+          if (!mounted || picked == null || !enabled ||
+              widget.session.epoch != epoch || ticket != currentTicket) return;
+          setState(() => controller.text = '${picked.hour * 60 + picked.minute}');
+        });
+  }
+
   List<Widget> preferenceView() => [
         communityHeading('资料与设置', '个性化与营销初始关闭，选择会保存为本人账号偏好。',
             eyebrow: '你的资料与使用偏好'),
@@ -762,14 +788,11 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
               enabled ? (v) => setState(() => nightEnabled = v) : null),
           _preferenceSwitch('夜间推送免打扰', '此时段暂停非必要推送，不隐藏站内业务通知', quietEnabled,
               enabled ? (v) => setState(() => quietEnabled = v) : null),
-          communityField(quietStart, '夜间开始：距北京时间零点分钟数',
-              keyboard: TextInputType.number, enabled: enabled),
-          communityField(quietEnd, '夜间结束：距北京时间零点分钟数',
-              keyboard: TextInputType.number, enabled: enabled),
-          const Text('0—1439，起止不能相同。跨午夜可设置开始大于结束。'),
+          _quietTimeField(quietStart, '夜间开始（北京时间）'),
+          _quietTimeField(quietEnd, '夜间结束（北京时间）'),
+          const Text('按北京时间保存，起止不能相同；开始晚于结束表示跨午夜。'),
         ],
-        tradeButton(
-            '保存本次偏好', enabled ? () => submit(() => savePreferences()) : null),
+
         if (remotePreferences?['marketing'] == true)
           tradeButton(
               '关闭营销通知',
@@ -1489,6 +1512,9 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             scopes.toList()..sort(),
             personalization,
             marketing,
+            pushEnabled,
+            nightEnabled,
+            quietEnabled,
             agreed,
             selectedFile,
             selectedPolicy,
@@ -1509,5 +1535,9 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             tradeButton('重新读取当前记录', busy || checking ? null : load,
                 outline: true)
           ],
+          footer: widget.view == 'preferences'
+              ? tradeButton('保存本次偏好',
+                  enabled ? () => submit(() => savePreferences()) : null)
+              : null,
           onBack: () => draftGuard.currentState?.back()));
 }

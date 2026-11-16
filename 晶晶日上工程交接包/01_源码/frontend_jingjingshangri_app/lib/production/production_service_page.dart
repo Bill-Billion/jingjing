@@ -20,34 +20,25 @@ class ProductionServicePage extends StatelessWidget {
               child: const Text('把故事拍成片',
                   style: TextStyle(
                       fontFamily: AccountTheme.sans,
-                      fontSize: 28,
+                      fontSize: 24,
                       fontWeight: FontWeight.w900,
                       height: 1.15))),
           const SizedBox(height: 24),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: AspectRatio(
-              aspectRatio: 5 / 3,
-              child: Image.asset('assets/images/editorial-rain.webp',
-                  fit: BoxFit.cover, semanticLabel: '巷景视觉示意，不代表在售作品或制作结果'))),
-          const ColoredBox(
-              color: AccountTheme.selectedSurface,
-              child: Padding(
-                  padding: EdgeInsets.all(18),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text('从一个念头开始',
-                            style: TextStyle(
-                                color: AccountTheme.text,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w700)),
-                        SizedBox(height: 6),
-                        Text('制作氛围视觉示意，非已成交作品',
-                            style: TextStyle(color: AccountTheme.muted)),
-                      ]))),
+          Container(
+              constraints: const BoxConstraints(minHeight: 190),
+              padding: const EdgeInsets.all(20),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(color: AccountTheme.selectedSurface,
+                  borderRadius: BorderRadius.circular(20)),
+              child: const Column(mainAxisSize: MainAxisSize.min, children: [
+                Icon(Icons.movie_outlined, size: 36, color: AccountTheme.muted),
+                SizedBox(height: 12),
+                Text('本页尚未提供可播放的服务介绍媒体',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AccountTheme.muted)),
+              ])),
           const SizedBox(height: 20),
-          _service('定制片', '从制作需求开始核对本次约定', selected: true),
+          _service('定制片', '从制作需求开始核对本次约定'),
           _service('代做样片', '须从本人原需求核对专用约定'),
           _service('付费精修', '须从原制作项目核对追加约定'),
           const SizedBox(height: 16),
@@ -79,15 +70,22 @@ class ProductionServicePage extends StatelessWidget {
             const Text('按原合同约定使用成片。数字人、原始素材与第三方作品的权利仍由各自权利人持有；制作服务不替代相关授权。'),
           ]),
         ],
-        footer: Row(children: [
-          Expanded(child: OutlinedButton(
+        footer: LayoutBuilder(builder: (context, constraints) {
+          final help = OutlinedButton(
               onPressed: () => Navigator.pushNamed(context, '/help'),
-              child: const Text('平台帮助与反馈'))),
-          const SizedBox(width: 10),
-          Expanded(child: FilledButton(
+              child: const Text('平台帮助与反馈'));
+          final create = FilledButton(
               onPressed: () => Navigator.pushNamed(context, '/customization/new'),
-              child: const Text('填写制作需求'))),
-        ]),
+              child: const Text('填写制作需求'));
+          if (constraints.maxWidth < 360 ||
+              MediaQuery.textScalerOf(context).scale(14) > 18) {
+            return Column(mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [help, const SizedBox(height: 8), create]);
+          }
+          return Row(children: [Expanded(child: help),
+              const SizedBox(width: 10), Expanded(child: create)]);
+        }),
         onBack: () => Navigator.canPop(context)
             ? Navigator.pop(context)
             : Navigator.pushReplacementNamed(context, '/square'),
@@ -102,7 +100,7 @@ class ProductionServicePage extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               border: Border.all(color: selected ? AccountTheme.accent : AccountTheme.border)),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Icon(selected ? Icons.check : Icons.add,
+            Icon(selected ? Icons.check : Icons.movie_outlined,
                 color: selected ? AccountTheme.accent : AccountTheme.muted),
             const SizedBox(width: 12),
             Expanded(

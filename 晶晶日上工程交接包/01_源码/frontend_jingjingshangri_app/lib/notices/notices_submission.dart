@@ -33,6 +33,7 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
       rules = <NoticeRule>[],
       consents = <ArtistRecord>[];
   final delegatedRefs = <String, Map<String, dynamic>>{};
+  var submissionFormKey = GlobalKey<V5FormState>();
   ArtistDetail? detail;
   NoticePublic? notice;
   NoticeRecord? source;
@@ -109,6 +110,7 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
       busy = true;
       error = null;
       personId = id;
+      submissionFormKey = GlobalKey<V5FormState>();
       detail = null;
       consents.clear();
       delegatedRefs.clear();
@@ -166,6 +168,21 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
     }
   }
 
+  Future<void> selectSubmissionKind(String next) async {
+    if (busy || next == widget.kind || api.writes > 0 ||
+        api.pendingOperations.isNotEmpty) return;
+    final epoch = widget.session.epoch, party = widget.session.partyId;
+    if (!(await submissionFormKey.currentState?.confirmDiscardChanges() ?? true)) return;
+    if (!mounted || busy || epoch != widget.session.epoch ||
+        party != widget.session.partyId || api.pendingOperations.isNotEmpty) return;
+    Navigator.pushReplacementNamed(context, Uri(
+        path: '/notices/submit',
+        queryParameters: {
+          'kind': next,
+          if (widget.noticeId != null) 'noticeId': widget.noticeId!,
+        }).toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     final d = detail;
@@ -218,6 +235,24 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
           ],
           if (invitation && source != null) _invitationForm(source!.data),
           if (!invitation) ...[
+            const Text('选择投稿方式',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 12),
+            for (final option in ['PROFILE', 'ROLE', 'CREATE_DRAMA'])
+              Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Material(
+                      color: option == widget.kind
+                          ? AccountTheme.selectedSurface : AccountTheme.surface,
+                      borderRadius: BorderRadius.circular(14),
+                      child: ListTile(
+                          title: Text(submissionKinds[option]!),
+                          trailing: Icon(option == widget.kind
+                              ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                              color: AccountTheme.accent),
+                          onTap: busy || api.pendingOperations.isNotEmpty
+                              ? null : () => selectSubmissionKind(option)))),
+            const SizedBox(height: 16),
             if (notice != null)
               tradeSection('明确接收的通告', [
                 Text(notice!.notice['title']),
@@ -236,7 +271,13 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
                     ? null
                     : (v) => choose(v!)),
             if (d != null) ...[
-              tradeFact('本人档案', d.person.name),
+              tradeSection('本次选择的真人档案', [
+                Text(d.person.name, style: const TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 8),
+                const Text('投稿仅包含本次选择并取得授权的数字人与材料。',
+                    style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+              ]),
               if (!permitted) appNotice('当前机构未取得本人的合作投稿委托。请先由本人明确授权。'),
               if (permitted && delegated && notice == null)
                 appNotice('机构代艺人投稿，请先打开具体通告，再选择本次投稿的艺人。'),
@@ -285,6 +326,8 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
         appNotice('仅向当前获准公开的艺人发送本次合作意向；提交、审核与回应时重新核对有效范围，不直接取得出演权。')
       ]),
       V5Form(
+          actionInFooter: true,
+          canSubmit: !busy,
           api: api,
           title: '这次拍摄的目的与说明',
           action: '提交本次邀约审核',
@@ -333,7 +376,13 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
                   enabled: enabled,
                   onChanged: (ids) => set('material_asset_ids', ids.join(', '))),
             ]),
-            appNotice('对方可表示感兴趣或婉拒；感兴趣后由客服对接。提交意向不等于授权、签约或开放双向聊天。'),
+            tradeSection('提交后的联系与处理', [
+              const Text('对方可表示感兴趣或婉拒；感兴趣后由客服对接。',
+                  style: TextStyle(fontSize: 15, height: 1.6)),
+              const Divider(height: 24),
+              const Text('提交意向不等于授权、签约或开放双向聊天。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+            ]),
             appNotice('当前仅保护本页未提交内容，离开时会提示确认；尚无邀约草稿保存接口，不会把提交审核冒充保存个人草稿。'),
           ],
           onSuccess: (r) => Navigator.pushReplacementNamed(
@@ -342,7 +391,9 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
   }
 
   Widget _submissionForm(ArtistDetail d) => V5Form(
-      key: ValueKey(d.person.id),
+      actionInFooter: true,
+      canSubmit: !busy,
+      key: submissionFormKey,
       api: api,
       title: '本次具体投稿',
       action: '提交本次单向投稿审核',
@@ -415,6 +466,13 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
                   ids: v5InputIds(v['material_asset_ids'] ?? ''),
                   enabled: enabled,
                   onChanged: (ids) => set('material_asset_ids', ids.join(', ')))
-            ])
+            ]),
+            tradeSection('单向投稿说明', [
+              const Text('本次材料经独立审核后单向递交；接收方表示感兴趣仅生成客服待办。',
+                  style: TextStyle(fontSize: 14, height: 1.6)),
+              const Divider(height: 24),
+              const Text('没有自动付款、签约、授角或自由聊天。未提交内容只保留在本页，暂不提供独立草稿保存。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+            ]),
           ]);
 }

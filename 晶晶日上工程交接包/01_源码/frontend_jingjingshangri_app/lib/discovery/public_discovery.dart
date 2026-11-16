@@ -342,32 +342,57 @@ class _PublicSearchState extends State<_PublicSearch> {
   Widget result(Map<String, dynamic> r) {
     final data = activeKind == 'NOTICE' ? communityMap(r['notice']) : r;
     final id = (activeKind == 'ARTIST' ? r['listing_id'] : r['id']) as String;
-    return tradeSection('${data['display_name'] ?? data['title'] ?? '试镜方案'}', [
-      Wrap(spacing: 8, runSpacing: 8, children: [
-        Chip(label: Text(discoveryKinds[activeKind]!)),
-        if (activeMatching) const Chip(label: Text('按所选条件匹配')),
-      ]),
-      const SizedBox(height: 10),
-      tradeFact('城市', data['city']),
-      if (activeMatching)
-        tradeFact(
-            '符合原因', (reasons[id] ?? []).map((r) => matchReasons[r]).join('、')),
-      if (activeKind == 'AUDITION')
-        tradeFact(
-            '服务费用',
-            r['unit_minor'] == null
-                ? '价格未公开'
-                : communityMoney(r['unit_minor'])),
-      if (activeKind == 'STOCK')
-        tradeFact('本版许可价格', communityMoney(r['unit_minor'])),
-      if (data['introduction'] is String || data['description'] is String)
-        Text('${data['introduction'] ?? data['description']}',
-            maxLines: 3, overflow: TextOverflow.ellipsis),
-      tradeButton(activeKind == 'ARTIST' ? '查看资料' : '查看${discoveryKinds[activeKind]}', () async {
-        await Navigator.pushNamed(context, publicContentRoute(activeKind, id));
-        if (mounted) await load();
-      }, outline: true),
-    ]);
+    final title = data['display_name'] ?? data['title'] ?? '试镜方案';
+    final cityLabel = data['city'] is String ? (data['city'] as String).trim() : '';
+    final metadata = [discoveryKinds[activeKind]!, if (cityLabel.isNotEmpty) cityLabel].join(' · ');
+    return Container(
+        padding: const EdgeInsets.symmetric(vertical: 18),
+        decoration: const BoxDecoration(border: Border(
+            bottom: BorderSide(color: AccountTheme.border))),
+        child: LayoutBuilder(builder: (context, constraints) {
+          final details = Column(
+              crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('$title', style: const TextStyle(fontSize: 18,
+                fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            Text(metadata,
+                style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+            if (activeMatching) ...[
+              const SizedBox(height: 6),
+              Text('符合所选条件：${(reasons[id] ?? []).map((r) => matchReasons[r]).join('、')}',
+                  style: const TextStyle(fontSize: 12, color: AccountTheme.accent)),
+            ],
+            if (activeKind == 'AUDITION' || activeKind == 'STOCK') ...[
+              const SizedBox(height: 6),
+              Text(r['unit_minor'] == null ? '价格未公开'
+                  : '${activeKind == 'STOCK' ? '本版许可' : '服务费用'} · ${communityMoney(r['unit_minor'])}',
+                  style: const TextStyle(fontSize: 14)),
+            ],
+            if (data['introduction'] is String || data['description'] is String) ...[
+              const SizedBox(height: 8),
+              Text('${data['introduction'] ?? data['description']}',
+                  maxLines: 3, overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12, height: 1.5,
+                      color: AccountTheme.muted)),
+            ],
+          ]);
+          final action = OutlinedButton(
+              onPressed: busy ? null : () async {
+                await Navigator.pushNamed(context, publicContentRoute(activeKind, id));
+                if (mounted) await load();
+              },
+              child: Text(activeKind == 'ARTIST' ? '查看资料'
+                  : '查看${discoveryKinds[activeKind]}'));
+          if (constraints.maxWidth < 340 ||
+              MediaQuery.textScalerOf(context).scale(14) > 20) {
+            return Column(crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [details, const SizedBox(height: 12), action]);
+          }
+          return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Expanded(child: details), const SizedBox(width: 16),
+            SizedBox(width: 104, child: action),
+          ]);
+        }));
   }
 
   void chooseKind(String value) {
@@ -534,22 +559,38 @@ class _PublicSearchState extends State<_PublicSearch> {
                     })),
           const Text('按你明确选择的条件匹配，不计算AI匹配率，不按个人身份改价。进入详情后仍须核对当前授权、有效期与办理资格。'),
         ],
-        tradeButton(matching ? '开始匹配' : '开始查找', busy ? null : load),
-        tradeButton('清空条件', busy ? null : () {
-          setState(() {
-            city.clear();
-            query.clear();
-            budget.clear();
-            tag.clear();
-            purpose = '';
-            commercialUse = '';
-            halo = '';
-            auditionMode = '';
-            noticeType = '';
-            clearResults();
-          });
-          load();
-        }, outline: true),
+        LayoutBuilder(builder: (context, constraints) {
+          final search = FilledButton(
+              onPressed: busy ? null : load,
+              child: Text(matching ? '开始匹配' : '开始查找'));
+          final clear = OutlinedButton(
+              onPressed: busy ? null : () {
+                setState(() {
+                  city.clear();
+                  query.clear();
+                  budget.clear();
+                  tag.clear();
+                  purpose = '';
+                  commercialUse = '';
+                  halo = '';
+                  auditionMode = '';
+                  noticeType = '';
+                  clearResults();
+                });
+                load();
+              },
+              child: const Text('清空条件'));
+          if (constraints.maxWidth < 300 ||
+              MediaQuery.textScalerOf(context).scale(14) > 20) {
+            return Column(crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [clear, const SizedBox(height: 10), search]);
+          }
+          return Row(children: [
+            Expanded(child: clear), const SizedBox(width: 12),
+            Expanded(flex: 2, child: search),
+          ]);
+        }),
+        const SizedBox(height: 16),
         if (busy) const LinearProgressIndicator(),
         if (error != null)
           Text(error!, style: const TextStyle(color: AccountTheme.danger)),
@@ -624,7 +665,7 @@ class _DirectoryState extends State<_Directory> {
   List<Map<String, dynamic>> rows = [];
   List<NoticePublic> notices = [];
   String? cursor, noticeCursor, error, noticeError;
-  bool busy = false, noticesBusy = false;
+  bool busy = false, noticesBusy = false, hasRead = false;
   int ticket = 0;
   final seen = <String>{}, noticeSeen = <String>{};
   @override
@@ -640,6 +681,7 @@ class _DirectoryState extends State<_Directory> {
       busy = true;
       error = null;
       if (!more) {
+        hasRead = false;
         rows = [];
         cursor = null;
         seen.clear();
@@ -689,6 +731,7 @@ class _DirectoryState extends State<_Directory> {
       setState(() {
         rows = [...rows, ...result];
         cursor = next;
+        hasRead = true;
       });
       if (widget.partyId != null) await loadNotices();
     } catch (e) {
@@ -754,6 +797,7 @@ class _DirectoryState extends State<_Directory> {
 
   void clearFilters() {
     ticket++;
+    hasRead = false;
     rows = [];
     cursor = null;
     seen.clear();
@@ -841,7 +885,9 @@ class _DirectoryState extends State<_Directory> {
                   if (mounted) load();
                 }, outline: true),
             ]),
-        if (!busy && error == null && rows.isEmpty)
+        if (!busy && error == null && !hasRead)
+          const Text('筛选条件尚未读取，请点击查找。'),
+        if (!busy && error == null && hasRead && rows.isEmpty)
           Text(cursor == null ? '当前没有可公开的资料。' : '本页暂无可显示资料，可继续读取。'),
         if (cursor != null)
           tradeButton('继续读取', busy ? null : () => load(more: true),
@@ -861,7 +907,7 @@ class _DirectoryState extends State<_Directory> {
                         context, publicContentRoute('NOTICE', n.id));
                     if (mounted) load();
                   }),
-            if (!noticesBusy && notices.isEmpty)
+            if (!busy && !noticesBusy && noticeError == null && notices.isEmpty)
               Text(noticeCursor == null ? '当前没有公开通告。' : '本页暂无可显示通告，可继续读取。'),
             if (noticeCursor != null)
               tradeButton('继续读取机构通告',

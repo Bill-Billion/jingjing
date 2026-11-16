@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
+import '../wallet/wallet_api.dart';
+import '../wallet/wallet_models.dart';
+import '../stock/v5_support.dart';
 import '../auditions/auditions_pages.dart';
 import '../notices/notices_pages.dart';
 import '../operations/identity_notifications.dart';
@@ -234,6 +237,11 @@ class _AppShellState extends State<AppShell> {
             ]),
           ),
         ],
+        if (session.isLoggedIn && session.isOwner &&
+            session.party?['kind'] == 'PERSON')
+          _PersonalWalletSummary(
+              key: ValueKey((session.epoch, session.account?['id'], session.partyId)),
+              session: session),
         Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _myDirectory()),
@@ -600,8 +608,8 @@ class AppHelpPage extends StatelessWidget {
         const SizedBox(height: 12),
         _entry(context, '个人资料与账号', '查看本人资料、绑定手机号与账号安全。',
             '/account', action: '编辑'),
-        _entry(context, '业务消息与使用偏好',
-            '管理通知、个性化和休息设置；必要业务记录仍保留在消息中心。',
+        _entry(context, '推荐、通知与休息偏好',
+            '读取并保存本人偏好；系统推送是否可设以实际支持为准，必要站内业务通知保留。',
             '/privacy?view=preferences'),
         _entry(context, '账号、安全与隐私权利',
             '本人资料申请、信息副本、删除与注销。',
@@ -690,4 +698,84 @@ class _ChildPage extends StatelessWidget {
                       child: ListView(
                           padding: const EdgeInsets.all(16),
                           children: children))))));
+}
+
+// Read-only account summary. A new session/party gets a fresh widget instance.
+class _PersonalWalletSummary extends StatefulWidget {
+  const _PersonalWalletSummary({super.key, required this.session});
+  final AccountSession session;
+  @override
+  State<_PersonalWalletSummary> createState() => _PersonalWalletSummaryState();
+}
+
+class _PersonalWalletSummaryState extends State<_PersonalWalletSummary> {
+  WalletSummary? summary;
+  bool busy = false;
+  String? error;
+  int ticket = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    load();
+  }
+
+  @override
+  void dispose() {
+    ticket++;
+    summary = null;
+    super.dispose();
+  }
+
+  Future<void> load() async {
+    final s = widget.session, epoch = widget.session.epoch,
+        party = widget.session.partyId, t = ++ticket;
+    setState(() { busy = true; error = null; summary = null; });
+    try {
+      final result = await WalletApi(s).summary();
+      v5Require(result.raw['account_id'] == s.account?['id']);
+      if (!mounted || t != ticket || s.epoch != epoch ||
+          s.partyId != party || !s.isLoggedIn ||
+          !s.isOwner || s.party?['kind'] != 'PERSON') return;
+      setState(() { summary = result; busy = false; });
+    } catch (_) {
+      if (!mounted || t != ticket || s.epoch != epoch || s.partyId != party) return;
+      setState(() {
+        busy = false;
+        error = '暂未读到本人钱包记录，请重试或进入钱包核对。';
+      });
+    }
+  }
+
+  Future<void> openWallet() async {
+    await Navigator.pushNamed(context, '/wallet');
+    if (mounted) await load();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final d = summary?.raw;
+    return Padding(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const Text('本人钱包', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 12),
+          if (busy) const Text('正在读取本人钱包…'),
+          if (error != null) ...[
+            Text(error!),
+            TextButton(onPressed: load, child: const Text('重新读取')),
+          ],
+          if (d != null) ...[
+            Text('账面可用余额  ${v5Money(d['available_balance_minor'] as int)}',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            Text('待核对或锁定  ${v5Money(d['reserved_balance_minor'] as int)}'),
+            Text('可用晶钻  ${d['available_points']}'),
+          ],
+          const SizedBox(height: 8),
+          const Text('本人账本摘要，不代表可提现、转账或渠道已开放支付。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          TextButton(onPressed: openWallet, child: const Text('查看钱包与原始流水')),
+        ]));
+  }
 }

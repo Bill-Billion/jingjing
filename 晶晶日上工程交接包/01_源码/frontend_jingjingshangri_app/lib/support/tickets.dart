@@ -457,7 +457,7 @@ class _SupportState extends State<_Support> {
           [
             tradeHeading(
                 widget.create
-                    ? '说说遇到的问题'
+                    ? '我们来帮你'
                     : widget.ticketId == null
                         ? '我的反馈'
                         : '查看处理进度',
@@ -479,11 +479,18 @@ class _SupportState extends State<_Support> {
                   label: '新反馈', value: '保留问题现场',
                   icon: Icons.edit_note_outlined,
                   description: '说明发生在哪一步、预期结果与实际情况，并按需附上材料。提交后在同一记录里跟进，不代替退款或隐私业务申请。'),
-              communitySelect(
-                  '问题类型',
-                  kind,
-                  [('FEEDBACK', '意见反馈'), ('REPORT', '内容举报')],
-                  locked ? null : (v) => setState(() => kind = v!)),
+              const Text('问题类型',
+                  style: TextStyle(fontWeight: FontWeight.w700)),
+              for (final option in [('FEEDBACK', '意见反馈'), ('REPORT', '内容举报')])
+                Container(
+                    decoration: const BoxDecoration(
+                        border: Border(bottom: BorderSide(color: AccountTheme.border))),
+                    child: RadioListTile<String>(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(option.$2),
+                        value: option.$1,
+                        groupValue: kind,
+                        onChanged: locked ? null : (v) => setState(() => kind = v!))),
               TextField(
                   controller: title,
                   enabled: !locked,
@@ -499,10 +506,22 @@ class _SupportState extends State<_Support> {
                   decoration: const InputDecoration(
                       labelText: '问题说明',
                       hintText: '发生在哪一步？预期结果与实际情况是什么？请勿填写无关个人信息。')),
-              ...attachmentFields(),
+              Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: AccountTheme.border),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    const Text('补充截图与材料',
+                        style: TextStyle(fontWeight: FontWeight.w700)),
+                    ...attachmentFields(),
+                  ])),
               const Text('举报作为待核查线索，不代表已认定违规。退款、争议和隐私请求仍在原业务办理。',
                   style: TextStyle(color: AccountTheme.muted, height: 1.6)),
-              tradeButton('确认提交', locked ? null : submit),
+              const Text('平台将通过这条反馈记录答复，不是即时私聊。可在我的反馈查看处理进度。'),
+              TextButton(
+                  onPressed: locked ? null : () => leave(route: '/support'),
+                  child: const Text('我的反馈记录')),
             ] else if (widget.ticketId == null) ...[
               communitySelect(
                   '处理状态',
@@ -598,6 +617,13 @@ class _SupportState extends State<_Support> {
                 '查看原订单与售后', () => Navigator.pushNamed(context, '/orders'),
                 outline: true),
           ],
+          footer: widget.create ? Wrap(spacing: 12, children: [
+            TextButton(
+                onPressed: locked ? null : () => leave(route: '/help'),
+                child: const Text('阅读帮助')),
+            FilledButton(onPressed: locked ? null : submit,
+                child: const Text('提交反馈')),
+          ]) : null,
           locked: busy || uploading,
           onBack: leave));
 }

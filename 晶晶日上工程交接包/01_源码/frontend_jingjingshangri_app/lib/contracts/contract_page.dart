@@ -75,7 +75,16 @@ class _ContractPageState extends State<ContractPage> {
             const SizedBox(height: 16),
             ...children,
           ]));
-  Widget _fact(String label, dynamic value) => supplyFact(label, value);
+  Widget _fact(String label, dynamic value) => Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: AccountTheme.border))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(label, style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        const SizedBox(height: 6),
+        SelectableText(value == null ? '未提供' : '$value',
+            style: const TextStyle(fontSize: 14, height: 1.5)),
+      ]));
   Widget _notice(String message, {bool error = false}) => Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Text(message,
@@ -196,8 +205,20 @@ class _ContractPageState extends State<ContractPage> {
                                   if (reader.error != null)
                                     _notice(reader.error!, error: true),
                                   if (snapshot != null) ...[
-                                    tradeBanner('合同内容已保存',
-                                        '保存时尚未签署，留存原约定。实际签署与付款须另行核验。'),
+                                    Container(
+                                        padding: const EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                            color: const Color(0xFF202320),
+                                            borderRadius: BorderRadius.circular(16)),
+                                        child: const Column(
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                                            children: [
+                                              Text('合同内容已保存', style: TextStyle(
+                                                  color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700)),
+                                              SizedBox(height: 12),
+                                              Text('保存时尚未签署，留存原约定。实际签署与付款须另行核验。',
+                                                  style: TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+                                            ])),
                                     const SizedBox(height: 16),
                                     _card(
                                         '合同信息',

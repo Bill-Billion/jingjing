@@ -57,9 +57,11 @@ class CollectionDetailActions extends StatefulWidget {
       {super.key,
       required this.session,
       required this.kind,
-      required this.targetId});
+      required this.targetId,
+      this.purchaseAction});
   final AccountSession session;
   final String kind, targetId;
+  final Widget? purchaseAction;
   @override
   State<CollectionDetailActions> createState() =>
       _CollectionDetailActionsState();
@@ -142,6 +144,38 @@ class _CollectionDetailActionsState extends State<CollectionDetailActions> {
   @override
   Widget build(BuildContext context) {
     final pending = api.pending('favorites', account: true);
+    if (widget.purchaseAction != null) {
+      return Column(mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        if (error != null)
+          Text(error!, style: const TextStyle(color: AccountTheme.danger)),
+        LayoutBuilder(builder: (context, constraints) {
+          final favorite = OutlinedButton(
+              onPressed: busy || saved == null || pending != null ? null : toggle,
+              child: Text(saved == true ? '已收藏' : '收藏'));
+          if (constraints.maxWidth < 340 ||
+              MediaQuery.textScalerOf(context).scale(14) > 20) {
+            return Column(mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              favorite,
+              const SizedBox(height: 8),
+              widget.purchaseAction!,
+            ]);
+          }
+          return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Expanded(flex: 4, child: favorite),
+            const SizedBox(width: 10),
+            Expanded(flex: 6, child: widget.purchaseAction!),
+          ]);
+        }),
+        if (pending != null)
+          tradeButton('核对并恢复原收藏操作',
+              busy ? null : () => toggle(recover: true), outline: true),
+        if (saved == null)
+          TextButton(onPressed: busy ? null : load,
+              child: const Text('重读收藏状态')),
+      ]);
+    }
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       if (error != null)
         Text(error!, style: const TextStyle(color: AccountTheme.danger)),
@@ -330,7 +364,7 @@ class _CollectionsState extends State<_Collections> {
               bottom: BorderSide(color: AccountTheme.border))),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(width: 56, height: 68,
+              Container(width: 60, height: 80,
                   decoration: BoxDecoration(color: AccountTheme.surface,
                       borderRadius: BorderRadius.circular(10)),
                   child: Icon(item['kind'] == 'ARTIST'
@@ -339,9 +373,31 @@ class _CollectionsState extends State<_Collections> {
                           ? Icons.movie_outlined : Icons.description_outlined,
                       color: AccountTheme.muted)),
               const SizedBox(width: 12),
-              Expanded(child: Text(item['availability'] == 'AVAILABLE'
-                      ? item['title'] : '内容已不可用',
-                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+              Expanded(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(item['availability'] == 'AVAILABLE'
+                    ? item['title'] : '内容已不可用',
+                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 8),
+                Text(item['availability'] == 'AVAILABLE'
+                    ? '${collectionKinds[item['kind']]} · ${item['city'] is String && (item['city'] as String).trim().isNotEmpty ? item['city'] : '城市未提供'}'
+                    : '${collectionKinds[item['kind']]} · 当前不可用',
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.accent)),
+                const SizedBox(height: 6),
+                Text('${history ? "浏览" : "收藏"}于 ${communityDate(item['recorded_at'])}',
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              ])),
+              if (item['availability'] == 'AVAILABLE') ...[
+                const SizedBox(width: 8),
+                SizedBox(width: 72, child: TextButton(
+                    onPressed: locked ? null : () async {
+                      await Navigator.pushNamed(context,
+                          publicContentRoute(item['kind'], item['target_id']));
+                      if (mounted) load();
+                    },
+                    child: Text(item['kind'] == 'ARTIST' ? '查看档案' : '查看',
+                        textAlign: TextAlign.center))),
+              ],
             ]),
             const SizedBox(height: 10),
             ...actions,
@@ -429,27 +485,9 @@ class _CollectionsState extends State<_Collections> {
           ]),
         for (final r in rows)
           savedRow(r, [
-            Wrap(spacing: 8, runSpacing: 8, children: [
-              Chip(label: Text(collectionKinds[r['kind']]!)),
-              if (r['availability'] != 'AVAILABLE')
-                const Chip(label: Text('当前不可用')),
-            ]),
             if (r['availability'] != 'AVAILABLE')
               const Text('原内容已不能打开。清单记录仍保留，可按需移除，不会删除原订单。',
                   style: TextStyle(color: AccountTheme.muted, height: 1.6)),
-            if (r['availability'] == 'AVAILABLE') tradeFact('城市', r['city']),
-            tradeFact(
-                history ? '浏览时间' : '收藏时间', communityDate(r['recorded_at'])),
-            if (r['availability'] == 'AVAILABLE')
-              tradeButton(
-                  '重新查看当前内容',
-                  locked
-                      ? null
-                      : () async {
-                          await Navigator.pushNamed(context,
-                              publicContentRoute(r['kind'], r['target_id']));
-                          if (mounted) load();
-                        }),
             tradeButton(
                 history ? '删除这条浏览记录' : '取消收藏',
                 locked

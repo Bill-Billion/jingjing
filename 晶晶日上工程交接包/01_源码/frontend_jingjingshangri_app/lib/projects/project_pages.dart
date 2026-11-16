@@ -243,13 +243,10 @@ class _ProjectsListState extends State<_ProjectsList> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: const BoxDecoration(border: Border(
                   bottom: BorderSide(color: AccountTheme.border))),
-              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Container(width: 56, height: 76,
-                    decoration: BoxDecoration(color: AccountTheme.surface,
-                        borderRadius: BorderRadius.circular(10)),
-                    child: const Icon(Icons.movie_outlined, color: AccountTheme.muted)),
-                const SizedBox(width: 12),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+              child: LayoutBuilder(builder: (context, constraints) {
+                final compact = constraints.maxWidth < 360 ||
+                    MediaQuery.textScalerOf(context).scale(14) > 18;
+                final details = Column(crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                   Text(r.data['title'], style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w700)),
@@ -262,10 +259,27 @@ class _ProjectsListState extends State<_ProjectsList> {
                   ExpansionTile(tilePadding: EdgeInsets.zero,
                       title: const Text('查看项目范围', style: TextStyle(fontSize: 12)),
                       children: [projectScopeFacts(projectMap(r.data['scope']))]),
-                  TextButton(onPressed: busy || widget.session.projectsPending.isNotEmpty
-                      ? null : () => open(r), child: const Text('进入原项目')),
-                ])),
-              ])),
+                ]);
+                final action = TextButton(
+                    onPressed: busy || widget.session.projectsPending.isNotEmpty
+                        ? null : () => open(r),
+                    child: const Text('进入原项目', textAlign: TextAlign.center));
+                final media = Container(width: 60, height: 80,
+                    decoration: BoxDecoration(color: AccountTheme.surface,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.movie_outlined, color: AccountTheme.muted));
+                if (compact) {
+                  return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    Align(alignment: Alignment.centerLeft, child: media),
+                    const SizedBox(height: 12), details,
+                    const SizedBox(height: 8), action,
+                  ]);
+                }
+                return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  media, const SizedBox(width: 12), Expanded(child: details),
+                  const SizedBox(width: 8), SizedBox(width: 70, child: action),
+                ]);
+              })),
         if (!busy && rows.isEmpty)
           tradeSection('暂时没有参与项目', [supplyNote('只展示当前主体获准参与的项目。')]),
         if (cursor != null)

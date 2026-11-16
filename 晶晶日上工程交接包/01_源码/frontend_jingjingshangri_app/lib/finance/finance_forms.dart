@@ -153,11 +153,20 @@ class _FormState extends State<_Form> {
   }
 
   List<Widget> payout() => [
-        financeEditorialBanner(
-            mine == null
-                ? '当前可申请金额待核对'
-                : '当前可申请 ${financeMoneyText(mine!['available_minor'])}',
-            '这是当前约定下本人的可付金额，不包含消费钱包余额。'),
+        Container(
+            margin: const EdgeInsets.only(bottom: 24),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(color: const Color(0xFF202320),
+                borderRadius: BorderRadius.circular(16)),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              const Text('当前可申请', style: TextStyle(color: Color(0xFFDDDFDA))),
+              const SizedBox(height: 12),
+              Text(mine == null ? '金额待核对' : financeMoneyText(mine!['available_minor']),
+                  style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 12),
+              const Text('仅当前约定下本人额度，不包含消费钱包余额。申请通过不等于到账。',
+                  style: TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+            ])),
         tradeSection('收款主体', [
           financeIdFact('当前主体', api.owner()),
           supplyNote('本次申请的收款主体为当前登录身份，收款资料另行核验。')
@@ -235,11 +244,10 @@ class _FormState extends State<_Form> {
       [
         tradeHeading(widget.mode == 'PAYOUT' ? '收益收款申请' : '提出结算异议',
             eyebrow: widget.mode == 'PAYOUT'
-                ? '仅限已具备可付条件的收益' : '本人确认 / 按原约定办理'),
-        financeEditorialBanner(widget.mode == 'PAYOUT' ? '核对金额与收款资料' : '说明异议并提供依据',
-            widget.mode == 'PAYOUT'
-                ? '仅按本约定当前可申请金额办理。提交后等待独立审核，自动出款未启用，申请成功不表示到账。'
-                : '明确涉及的原记录、问题与私有证据。提交后等待处理，补救结果另行核实。'),
+                ? '仅限已具备可付条件的收益' : '本人确认 / 按原约定办理', fontSize: 28),
+        if (widget.mode != 'PAYOUT')
+          financeEditorialBanner('说明异议并提供依据',
+              '明确涉及的原记录、问题与私有证据。提交后等待处理，补救结果另行核实。'),
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         if (api.pending(path) != null)

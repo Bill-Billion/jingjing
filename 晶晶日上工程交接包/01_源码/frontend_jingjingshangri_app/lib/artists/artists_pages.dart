@@ -81,7 +81,7 @@ class _PeopleState extends State<_People> {
       artistPendingNotice(c, widget.session),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
-      for (final p in rows)
+      for (final p in rows) ...[
         Container(
             key: ValueKey('artist-person-${p.id}'),
             margin: const EdgeInsets.only(bottom: 12),
@@ -99,6 +99,26 @@ class _PeopleState extends State<_People> {
                     Navigator.pushNamed(c, artistPersonRoute(p.id)).then((_) {
                       if (mounted) load();
                     }))),
+        for (final entry in [
+          ('我的数字形象', artistPersonRoute(p.id)),
+          if (p.owner == widget.session.partyId)
+            ('认证申请与审核', '/artists/records?personId=${p.id}&kind=HALO'),
+          if (p.owner == widget.session.partyId)
+            ('本人授权材料', '/artists/records?personId=${p.id}&kind=CONSENT'),
+        ])
+          Container(
+              decoration: const BoxDecoration(border: Border(
+                  bottom: BorderSide(color: AccountTheme.border))),
+              child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                  title: Text(entry.$1, style: const TextStyle(fontSize: 14)),
+                  trailing: const Icon(Icons.chevron_right, size: 18),
+                  onTap: busy || widget.session.artistsPending.isNotEmpty
+                      ? null : () => Navigator.pushNamed(c, entry.$2).then((_) {
+                          if (mounted) load();
+                        }))),
+        const SizedBox(height: 20),
+      ],
       tradeBanner(
           '让每一次出场有据可查',
           personal
@@ -712,6 +732,20 @@ class _RecordState extends State<_Record> {
                 const Text('以本申请真实审核结果和有效期为准。认证光环、业务成长、服务评价分别记录；支付成功不代表审核通过。',
                     style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
               ])),
+        if (r.kind == 'HALO' && r.status == 'REJECTED')
+          Container(
+              margin: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(color: AccountTheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AccountTheme.danger)),
+              child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('这份认证申请未通过',
+                    style: TextStyle(color: AccountTheme.danger, fontSize: 20, fontWeight: FontWeight.w700)),
+                SizedBox(height: 8),
+                Text('请阅读本申请的真实审核意见。付款不改变审核结果，可办理事项仍以原记录权限为准。',
+                    style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+              ])),
         if (r.kind == 'HALO' && r.status == 'NEEDS_MATERIAL')
           Container(
               margin: const EdgeInsets.symmetric(vertical: 16),
@@ -1176,7 +1210,7 @@ class _PublicArtistDetails extends StatefulWidget {
 class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
   late final api = ArtistsApi(widget.session);
   ArtistPublicMedia? media;
-  bool busy = false, available = false;
+  bool busy = false, available = false, readFailed = false;
   int read = 0;
   Map<String, dynamic>? current;
   String? error;
@@ -1202,6 +1236,8 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
     setState(() {
       busy = false;
       available = false;
+      readFailed = false;
+      error = null;
       current = null;
       media = null;
     });
@@ -1212,6 +1248,8 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
     read++;
     setState(() {
       available = false;
+      readFailed = false;
+      error = null;
       current = null;
       media = null;
       busy = false;
@@ -1223,6 +1261,7 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
     setState(() {
       busy = true;
       available = false;
+      readFailed = false;
       error = null;
       current = null;
       media = null;
@@ -1240,7 +1279,13 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
         });
       }
     } on AccountError catch (e) {
-      if (mounted && ticket == read) setState(() => error = artistError(e));
+      if (mounted && ticket == read) {
+        setState(() {
+          error = artistError(e);
+          // Auth/access/not-found/gone remain unavailable, not transient retry UI.
+          readFailed = ![401, 403, 404, 410].contains(e.status);
+        });
+      }
     } finally {
       if (mounted && ticket == read) setState(() => busy = false);
     }
@@ -1309,6 +1354,13 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
   Widget build(BuildContext context) {
     final r = current ?? widget.listing;
     final items = media?.items ?? <ArtistPublicMediaItem>[];
+    if (readFailed && !busy && error != null) {
+      return tradeScaffold(context, '公开资料', [
+        ReadFailureContent(reason: error!),
+      ], footer: ReadFailureActions(
+          onBack: () => Navigator.pop(context),
+          onRetry: reload), plaza: true);
+    }
     return tradeScaffold(
         context,
         available ? '艺人详情' : '公开资料',
@@ -1381,20 +1433,29 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
             tradeButton('返回目录重新读取', () => Navigator.pop(context)),
           ],
         ],
-        footer: available ? Row(children: [
-          Expanded(child: OutlinedButton(
+        footer: available ? LayoutBuilder(builder: (context, constraints) {
+          final actions = <Widget>[
+          OutlinedButton(
               onPressed: busy ? null : () => Navigator.pushNamed(context,
                   Uri(path: '/auditions/catalog', queryParameters: {
                     if ((r['city'] as String).trim().isNotEmpty)
                       'city': (r['city'] as String).trim(),
                   }).toString()),
-              child: const Text('查看试镜方案'))),
-          const SizedBox(width: 12),
-          Expanded(child: FilledButton(
+              child: const Text('查看试镜方案')),
+          FilledButton(
               onPressed: busy ? null : () => Navigator.pushNamed(context,
                   '/notices/submit?kind=INVITATION&listingId=${r['listing_id']}'),
-              child: const Text('发起合作意向'))),
-        ]) : null,
+              child: const Text('发起合作意向')),
+          ];
+          if (constraints.maxWidth < 320 ||
+              MediaQuery.textScalerOf(context).scale(14) > 20) {
+            return Column(mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [actions[0], const SizedBox(height: 8), actions[1]]);
+          }
+          return Row(children: [Expanded(child: actions[0]),
+              const SizedBox(width: 12), Expanded(child: actions[1])]);
+        }) : null,
         plaza: true);
   }
 }
@@ -1482,9 +1543,6 @@ class _AvatarDetailsState extends State<_AvatarDetails> {
                   : '尚未交付'),
         ]),
         tradeSection('当前授权与委托', [
-          if (self)
-            tradeButton('查看本人同意与用途', busy ? null : () => records('CONSENT'),
-                outline: true),
           tradeButton('查看当前委托范围', busy ? null : () => records('DELEGATION'),
               outline: true),
           appNotice('授权按具体用途、期限和作品逐份核对；已建档不代表允许公开、商用或重新生成。'),
@@ -1512,12 +1570,28 @@ class _AvatarDetailsState extends State<_AvatarDetails> {
         ]),
         tradeBanner('长期模型未启用', '数字人档案与已保存的造型、声音版本不表示长期模型已训练或可调用。',
             icon: Icons.lock_outline),
-        if (self)
-          tradeButton('管理创建与托管服务', busy ? null : () => records('SERVICE'),
-              outline: true),
         tradeButton('返回本人档案', () => Navigator.pop(context), outline: true),
       ],
       tradeButton('重新读取数字人档案', busy ? null : load, outline: true),
-    ]);
+    ], footer: d != null && avatar != null && self
+        ? LayoutBuilder(builder: (context, constraints) {
+            final authorization = OutlinedButton(
+                onPressed: busy ? null : () => records('CONSENT'),
+                child: const Text('查看授权材料'));
+            final hosting = FilledButton(
+                onPressed: busy ? null : () => records('SERVICE'),
+                child: const Text('管理创建与托管'));
+            if (constraints.maxWidth < 320 ||
+                MediaQuery.textScalerOf(context).scale(14) > 20) {
+              return Column(mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                authorization, const SizedBox(height: 10), hosting,
+              ]);
+            }
+            return Row(children: [
+              Expanded(child: authorization), const SizedBox(width: 12),
+              Expanded(child: hosting),
+            ]);
+          }) : null);
   }
 }

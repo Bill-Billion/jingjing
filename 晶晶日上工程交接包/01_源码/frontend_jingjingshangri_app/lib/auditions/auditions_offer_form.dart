@@ -181,10 +181,6 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
               const V5Field('title', '方案名称'),
               V5Field('context', '具体数字人与已审公开同意', choices: contextNames),
               V5Field('rule_id', '当前生效的试镜规则', choices: rules),
-              const V5Field('public_booking', '公开接试镜',
-                  type: 'bool', required: false),
-              const V5Field('public_price', '公开一口价',
-                  type: 'bool', required: false),
               const V5Field('city', '试镜城市'),
               const V5Field('service_area', '明确服务范围'),
               const V5Field('mode', '试镜形式',
@@ -194,6 +190,26 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
               const V5Field('terms', '具体服务与费用约定', type: 'multiline'),
               const V5Field('transport', '我确认已把适用交通条件计入一口价，付款前明确全部条件',
                   type: 'bool')
+            ],
+            factsBuilder: (v) => [
+              tradeFact('公开接试镜', v['public_booking'] == true ? '开启' : '关闭'),
+              tradeFact('公开一口价', v['public_price'] == true ? '开启' : '关闭'),
+            ],
+            extra: (v, set, enabled) => [
+              tradeSection('公开选择', [
+                SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('公开接试镜'),
+                    value: v['public_booking'] == true,
+                    onChanged: enabled ? (value) => set('public_booking', value) : null),
+                SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('公开一口价'),
+                    value: v['public_price'] == true,
+                    onChanged: enabled ? (value) => set('public_price', value) : null),
+                const Text('本次选择随方案提交审核，不表示已公开；关闭预约不撤销其他授权。',
+                    style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              ]),
             ],
             restore: (b) {
               final o = v5Map(b['offer']);
