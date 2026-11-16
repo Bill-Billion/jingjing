@@ -495,17 +495,28 @@ class _ProjectDetailState extends State<_ProjectDetail> {
           ],
           tradeButton('重新读取项目', busy ? null : load, outline: true)
         ],
-        footer: p == null ? null : Row(children: [
-          Expanded(child: operationCommentLink(
-              context, 'PRODUCTION', p.id, '项目留言',
-              enabled: !locked, returned: load)),
-          const SizedBox(width: 10),
-          Expanded(child: tradeButton(
-              currentVersion == null ? '暂无当前版本' :
-                  '审阅当前${productionStages[currentVersion.stage]}',
-              locked || currentVersion == null ? null :
-                  () => openVersion(currentVersion))),
-        ]),
+        footer: p == null ? null : LayoutBuilder(
+            builder: (context, constraints) {
+              final comment = operationCommentLink(
+                  context, 'PRODUCTION', p.id, '项目留言',
+                  enabled: !locked, returned: load);
+              final review = tradeButton(
+                  currentVersion == null ? '暂无当前版本' :
+                      '审阅当前${productionStages[currentVersion.stage]}',
+                  locked || currentVersion == null ? null :
+                      () => openVersion(currentVersion));
+              if (constraints.maxWidth < 340 ||
+                  MediaQuery.textScalerOf(context).scale(14) > 18) {
+                return Column(mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [comment, const SizedBox(height: 10), review]);
+              }
+              return Row(children: [
+                Expanded(child: comment),
+                const SizedBox(width: 10),
+                Expanded(child: review),
+              ]);
+            }),
         locked: locked);
   }
 }
@@ -1528,10 +1539,12 @@ class _PrivateWorkState extends State<_PrivateWork> {
   }
 
   Future<void> load() async {
-    final t = ++ticket, epoch = widget.session.epoch, p = api.participant();
-    await video?.dispose();
-    video = null;
     if (!mounted) return;
+    final t = ++ticket, epoch = widget.session.epoch, p = api.participant();
+    bool currentRequest() => mounted && t == ticket &&
+        epoch == widget.session.epoch && p == widget.session.partyId;
+    final previousVideo = video;
+    video = null;
     setState(() {
       busy = true;
       project = null;
@@ -1542,6 +1555,8 @@ class _PrivateWorkState extends State<_PrivateWork> {
       notice = null;
     });
     try {
+      await previousVideo?.dispose();
+      if (!currentRequest()) return;
       final pr = await api.record(widget.projectId, kind: 'PROJECT');
       final f = fulfillmentProject(pr) ? await api.fulfillment(pr) : null;
       final id = pr.data['current']['FINAL'];
@@ -1553,7 +1568,7 @@ class _PrivateWorkState extends State<_PrivateWork> {
         o = await TradeApi(widget.session).record(pr.orderId);
       }
       api.check(epoch, p);
-      if (!mounted || t != ticket) return;
+      if (!currentRequest()) return;
       setState(() {
         project = pr;
         version = v;
@@ -1561,30 +1576,35 @@ class _PrivateWorkState extends State<_PrivateWork> {
         fulfillment = f;
       });
     } on AccountError catch (e) {
-      if (mounted && t == ticket) setState(() => error = productionError(e));
+      if (currentRequest()) setState(() => error = productionError(e));
     } finally {
-      if (mounted && t == ticket) setState(() => busy = false);
+      if (currentRequest()) setState(() => busy = false);
     }
   }
 
   Future<void> media({bool download = false}) async {
+    if (busy) return;
     final v = version;
     if (v == null) return;
     final t = ticket, epoch = widget.session.epoch, p = api.participant();
+    bool currentRequest() => mounted && t == ticket &&
+        epoch == widget.session.epoch && p == widget.session.partyId;
     setState(() {
       busy = true;
       error = null;
       notice = null;
     });
     try {
-      await video?.dispose();
+      final previousVideo = video;
       video = null;
+      await previousVideo?.dispose();
+      if (!currentRequest()) return;
       // Re-read acceptance and finance immediately before requesting original bytes.
       if (download) {
         final pr = await api.record(widget.projectId, kind: 'PROJECT');
         final o = await TradeApi(widget.session).record(pr.orderId);
         final f = fulfillmentProject(pr) ? await api.fulfillment(pr) : null;
-        if (!mounted || t != ticket) return;
+        if (!currentRequest()) return;
         setState(() {
           project = pr;
           order = o;
@@ -1597,12 +1617,12 @@ class _PrivateWorkState extends State<_PrivateWork> {
       final content =
           await api.content(v, variant: download ? 'final' : 'preview');
       api.check(epoch, p);
-      if (!mounted || t != ticket) return;
+      if (!currentRequest()) return;
       if (download) {
         final saved = await FilePicker.saveFile(
             fileName: '${v.id}.mp4', bytes: content.bytes);
         api.check(epoch, p);
-        if (!mounted || t != ticket) return;
+        if (!currentRequest()) return;
         setState(() => notice = kIsWeb
             ? '原片已通过本次权限核验，已交给浏览器保存。'
             : saved == null
@@ -1613,7 +1633,7 @@ class _PrivateWorkState extends State<_PrivateWork> {
           try {
             final current = await api.fulfillment(pr);
             api.check(epoch, p);
-            if (!mounted || t != ticket) return;
+            if (!currentRequest()) return;
             setState(() => fulfillment = current);
           } catch (_) {
             if (mounted &&
@@ -1626,26 +1646,27 @@ class _PrivateWorkState extends State<_PrivateWork> {
         }
       } else {
         final local = await PrivateVideo.create(content.bytes);
-        if (!mounted || t != ticket || epoch != widget.session.epoch) {
+        if (!currentRequest()) {
           await local.dispose();
           return;
         }
         video = local;
         await local.controller.initialize();
         api.check(epoch, p);
-        if (!mounted || t != ticket || video != local) return;
+        if (!currentRequest() || video != local) return;
         await local.controller.play();
+        if (!currentRequest() || video != local) return;
         setState(() {});
       }
     } on AccountError catch (e) {
-      if (mounted && t == ticket) setState(() => error = productionError(e));
+      if (currentRequest()) setState(() => error = productionError(e));
     } catch (_) {
-      if (mounted && t == ticket) {
+      if (currentRequest()) {
         setState(
             () => error = download ? '保存未完成，请重试本次受控下载。' : '私有成片暂不能播放，请重新读取。');
       }
     } finally {
-      if (mounted && t == ticket) setState(() => busy = false);
+      if (currentRequest()) setState(() => busy = false);
     }
   }
 
@@ -1704,6 +1725,8 @@ class _PrivateWorkState extends State<_PrivateWork> {
                   '付款',
                   order?.status == 'PAID'
                       ? '约定款项已付清'
+                      : order?.status == 'REWARD_FUNDED' && order?.amount == 0
+                          ? '本单为零金额奖励订单，交付条件另行核对'
                       : order == null
                           ? '请由买方负责人核对订单款项'
                           : '尚未付清或财务状态不满足交付'),
