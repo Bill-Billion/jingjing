@@ -8,7 +8,6 @@ import '../supply/supply_api.dart';
 import '../supply/supply_files.dart';
 import '../trade/trade_widgets.dart';
 import 'wallet_api.dart';
-import '../engagement/activity_summary_card.dart';
 import 'wallet_models.dart';
 
 class WalletPage extends StatelessWidget {
@@ -74,11 +73,11 @@ class _WalletScreenState extends State<_WalletScreen> {
     try {
       switch (widget.mode) {
         case 'summary':
-        case 'points':
         case 'recharge':
         case 'level-six':
           summary = await api.summary();
           missing = false;
+        case 'points':
         case 'scout':
           summary = await api.summary();
           missing = false;
@@ -143,7 +142,7 @@ class _WalletScreenState extends State<_WalletScreen> {
           'scout' => '星探中心',
           'rules' => '阅读个人账本规则',
           'recharge' => '余额充值',
-          'records' => walletKinds[kind] ?? '本人账本明细',
+          'records' => '资金流水',
           'level-six' => '六级独立资质',
           'sync' => '核对原订单晶钻',
           _ => '消费钱包'
@@ -156,11 +155,12 @@ class _WalletScreenState extends State<_WalletScreen> {
                 ? _footer()
                 : null,
         children: [
-          tradeButton('个人月度限额', () => go('/wallet/limits'), outline: true),
-          tradeHeading(widget.mode == 'scout' ? '进阶星探' : title,
+          tradeHeading(widget.mode == 'scout' ? '进阶星探' : widget.mode == 'points' ? '我的晶钻' : title,
               eyebrow: switch (widget.mode) {
                 'summary' => '当前托管渠道暂未接通',
-                'points' => '每次创作，都留下光',
+                'points' => '消费成长 / 权益使用',
+                'recharge' => '充值到你的消费余额',
+                'records' => '每一笔，都有来处',
                 'scout' => '消费成长 / 认真出品',
                 _ => '每一笔有来处 / 消费余额与艺人收入分开',
               }),
@@ -180,15 +180,20 @@ class _WalletScreenState extends State<_WalletScreen> {
             tradeButton('阅读规则并开立本人账本', () => go('/wallet/rules'))
           ],
           if (widget.mode == 'summary' && s != null) ...[
-            tradeSection('我的消费者余额', [
-              _metric('可消费余额', v5Money(s.raw['available_balance_minor'])),
+            _metric('可消费余额', v5Money(s.raw['available_balance_minor']),
+                description: '用于平台内符合条件的消费'),
+            _metric('冻结金额', v5Money(s.raw['reserved_balance_minor']),
+                description: '付款中预留，查看相关订单与解除条件'),
+            tradeSection('余额用于消费', [
+              const Text('充值余额不可提现、不可转让；与艺人经营收入分开。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
               tradeFact('账面余额', v5Money(s.raw['recorded_balance_minor'])),
-              tradeFact('付款中预留', v5Money(s.raw['reserved_balance_minor'])),
-              appNotice('充值托管与余额付款服务尚未接通。这里按服务器展示真实账本，不提供提现或转账。')
+              appNotice('充值托管与余额付款服务尚未接通。这里按服务器展示真实账本。')
             ]),
-            tradeButton('查看晶钻与来源', () => go('/wallet/points'), outline: true),
-            tradeButton('星探会员年与成长进度', () => go('/wallet/scout'), outline: true),
-            tradeButton('艺人收入与收益收款', () => go('/finance'), outline: true),
+            _entry('消费与退款记录', '按关联订单查看资金变化', '/wallet/records?kind=CASH_SPEND'),
+            _entry('星探会员年充值', '本会员年累计充值与实际资格', '/wallet/scout'),
+            _entry('艺人收入', '查看经营结算与收益收款，单独记账', '/finance'),
+            _entry('我的晶钻', '消费成长与晶钻来源分别核对', '/wallet/points'),
             tradeButton('阅读规则与本次充值限制', () => go('/wallet/rules'),
                 outline: true),
             tradeButton('核对某笔原订单的晶钻', () => go('/wallet/sync'), outline: true),
@@ -196,19 +201,22 @@ class _WalletScreenState extends State<_WalletScreen> {
                 outline: true),
           ],
           if (widget.mode == 'points' && s != null) ...[
-            tradeSection('我的晶钻与消费成长', [
-              _metric('当前可用晶钻', s.raw['available_points']),
-              if (s.raw['cumulative_points'] != null) ...[
-                tradeFact(
-                    '累计获得（已扣除撤回）', s.raw['cumulative_points']['net_issued']),
+            if (s.raw['cumulative_points'] != null)
+              _metric('累计获得晶钻', s.raw['cumulative_points']['net_issued'],
+                  description: '累计含各类来源；使用不影响累计，退款撤回按原批次核对。')
+            else
+              appNotice('当前服务器尚未提供累计获得晶钻，暂不以可用余额代替。'),
+            _metric('当前可用晶钻', s.raw['available_points'],
+                description: '可用于符合条件的抽奖和兑换，实际资格以专用规则为准。'),
+            ..._scoutProgress(s).take(1),
+            _entry('星探权益', '查看真实会员年与成长门槛', '/wallet/scout'),
+            tradeSection('晶钻与消费成长', [
+              if (s.raw['cumulative_points'] != null)
                 tradeFact('历史已发放 / 已撤回',
                     '${s.raw['cumulative_points']['issued']} / ${s.raw['cumulative_points']['withdrawn']}'),
-                appNotice('累计获得不因使用或到期减少；退款撤回只扣一次。可用晶钻、消费成长与待冲回分别计算。'),
-              ] else
-                appNotice('当前服务器尚未提供累计获得金额，暂不以可用余额代替。'),
               tradeFact('退款待冲回', s.raw['points_pending_reversal']),
               tradeFact('消费成长', s.raw['qualifying_growth']),
-              appNotice('使用、过期和免费奖励不会冒算消费成长；退款才按原消费承诺冲回成长。不足晶钻由未来奖励抵扣，不追收现金。'),
+              appNotice('充值不是消费。使用、过期和免费奖励不会增加消费成长；退款按原消费承诺冲回，不追收现金。'),
               tradeFact('当前用途限制原因',
                   _reason(s.raw['points_block_reason'], '当前已接用途按具体业务规则核对'))
             ]),
@@ -234,19 +242,70 @@ class _WalletScreenState extends State<_WalletScreen> {
                 }),
             appNotice(
                 '评价与分享奖励尚未开放。兑换、抽奖和投票须各自读取专用业务规则与资格，不用钱包旧汇总标志冒充已开放或永久关闭。'),
+            tradeSection('晶钻办理入口', [
+              const Text('先读取各业务当前规则，不以钱包余额推断已经取得参加资格。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+              const SizedBox(height: 12),
+              Wrap(spacing: 8, runSpacing: 8, children: [
+                for (final entry in [
+                  ('兑换与制作金', '/redemption'),
+                  ('我的权益', '/redemption?view=grants'),
+                  ('已审抽奖活动', '/redemption?view=pools'),
+                  ('原次抽奖结果', '/redemption?view=draws'),
+                  ('榜单与月冠军', '/engagement?view=rankings'),
+                ])
+                  OutlinedButton(
+                      onPressed: busy || api.pendingOperations.isNotEmpty
+                          ? null : () => go(entry.$2),
+                      child: Text(entry.$1)),
+              ]),
+            ]),
             tradeButton('查看实际通告发布资格', () => go('/notices/new'), outline: true),
           ],
           if (widget.mode == 'scout' && s != null) ...[
-            tradeBanner(
-                s.membership['active'] == true
-                    ? '${s.membership['level']}级 · 星探会员'
-                    : '星探特权暂未生效',
-                s.membership['valid_until'] == null
-                    ? _reason(s.membership['reason'], '请核对当前会员年资格')
-                    : '会员有效至 ${tradeDate(s.membership['valid_until'])}'),
+            if (s.membership['active'] != true)
+              Container(
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: AccountTheme.danger),
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    const Text('会员特权当前未生效',
+                        style: TextStyle(color: AccountTheme.danger, fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 8),
+                    Text(_reason(s.membership['reason'], '请核对服务器当前资格')),
+                    const Text('成长记录仍按真实账本保留；成年实名普通通告不以星探等级为门槛。'),
+                  ]))
+            else
+              appNotice('服务器当前会员资格有效；这不表示本次充值刚恢复，也不增加成长等级。'),
+
+            Container(
+                padding: const EdgeInsets.all(18),
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                    color: AccountTheme.selectedSurface,
+                    borderRadius: BorderRadius.circular(18)),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(s.membership['active'] == true
+                      ? '${s.membership['level']}级 · 星探会员'
+                      : '星探特权暂未生效',
+                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 8),
+                  Text(s.membership['valid_until'] == null
+                      ? _reason(s.membership['reason'], '请核对当前会员年资格')
+                      : '会员有效至 ${tradeDate(s.membership['valid_until'])}',
+                      style: const TextStyle(color: AccountTheme.muted, fontSize: 12)),
+                  const SizedBox(height: 8),
+                  Text('本人 · ${widget.session.party?['display_name'] ?? '当前个人身份'}',
+                      style: const TextStyle(color: AccountTheme.muted, fontSize: 12)),
+                ])),
             _metric('合格消费成长', s.raw['qualifying_growth']),
             ..._scoutProgress(s),
-            tradeSection('星探会员年与实际资格', [
+            ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: const Text('查看会员年与实际资格'),
+                children: [
               tradeFact(
                   '当前有效会员', s.membership['active'] == true ? '有效' : '未生效或已到期'),
               tradeFact('当前有效等级', s.membership['level']),
@@ -262,9 +321,24 @@ class _WalletScreenState extends State<_WalletScreen> {
               if (s.membership['level_six_review_required'] == true)
                 appNotice('成长门槛已达到六级所需条件，仍须另行独立资质审核。')
             ]),
-            appNotice('等级由真实消费成长，不提供付费升级；充值余额与成长、可用晶钻分别记账。'),
-            tradeButton('六级独立资质申请与进度', () => go('/wallet/level-six'),
-                outline: true),
+            tradeSection('权益与参加条件', [
+              const Text('普通通告：成年实名即可按业务规则提交，不要求星探等级。',
+                  style: TextStyle(color: AccountTheme.text, height: 1.6)),
+              const SizedBox(height: 10),
+              const Text('投递、合作与平台活动仍按对应业务核对资格；会员身份不代替本人授权或业务审核。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+            ]),
+            _entry('普通通告发布资格', '读取本人真实资格，不以星探等级拦截', '/notices/new'),
+            _entry('核对原充值记录', '充值进入消费余额，不是会费；是否恢复由服务器核定', '/wallet/records?kind=RECHARGE'),
+            _entry('查看成长等级与会员规则', '按本人当前有效规则核对权益与活动要求', '/wallet/rules'),
+            _entry('六级独立资质', '成长达到门槛后仍须独立审核', '/wallet/level-six'),
+            tradeSection('充值与续期', [
+              const Text('充值进入消费余额，不直接奖励晶钻，也不增加消费成长。续期按本人规则的充值门槛核对，不购买等级。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+              const SizedBox(height: 10),
+              const Text('会员特权冻结不等于失去普通通告资格；成年实名用户仍可按普通通告规则办理。实际活动资格请在对应业务核对。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+            ]),
           ],
           if (widget.mode == 'rules') ...[
             if (!busy && rules.isEmpty && error == null)
@@ -300,6 +374,22 @@ class _WalletScreenState extends State<_WalletScreen> {
                     : '核对充值服务状态',
                 suffix: '/recharges',
                 fields: const [V5Field('amount', '本次申请充值金额（元）', type: 'money')],
+                extra: (values, change, enabled) => [
+                  const SizedBox(height: 12),
+                  const Text('快捷填写金额（仍需核对并提交）',
+                      style: TextStyle(color: AccountTheme.muted, fontSize: 12)),
+                  Wrap(spacing: 8, runSpacing: 8, children: [
+                    for (final amount in ['100', '300'])
+                      OutlinedButton(
+                          onPressed: enabled ? () => change('amount', amount) : null,
+                          child: Text('¥$amount')),
+                    TextButton(
+                        onPressed: enabled ? () => change('amount', '') : null,
+                        child: const Text('其他金额')),
+                  ]),
+                  const Text('快捷项只填写申请金额，不表示已充值或已到账。',
+                      style: TextStyle(color: AccountTheme.muted, fontSize: 12, height: 1.5)),
+                ],
                 restore: (b) => {
                       'amount':
                           '${(b['amount_minor'] as int) ~/ 100}.${((b['amount_minor'] as int) % 100).toString().padLeft(2, '0')}'
@@ -310,21 +400,29 @@ class _WalletScreenState extends State<_WalletScreen> {
                 onSuccess: (_) => go('/wallet/records?kind=RECHARGE')),
           ],
           if (widget.mode == 'records') ...[
-            DropdownButtonFormField<String>(
-                initialValue: kind,
-                isExpanded: true,
-                decoration: const InputDecoration(labelText: '本人明细类别'),
-                items: walletKinds.entries
-                    .map((e) =>
-                        DropdownMenuItem(value: e.key, child: Text(e.value)))
-                    .toList(),
-                onChanged: busy
-                    ? null
-                    : (v) {
-                        setState(() => kind = v!);
-                        load();
-                      }),
-            for (final r in rows) ..._recordBody(r),
+            Row(children: [
+              const Expanded(child: Text('消费钱包',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: AccountTheme.vermilion, fontWeight: FontWeight.w700))),
+              Expanded(child: TextButton(
+                  onPressed: busy ? null : () => go('/finance'),
+                  child: const Text('艺人收益'))),
+            ]),
+            const Divider(),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              for (final entry in walletKinds.entries)
+                ChoiceChip(
+                    label: Text(entry.value),
+                    selected: kind == entry.key,
+                    onSelected: busy ? null : (selected) {
+                      if (!selected || kind == entry.key) return;
+                      setState(() => kind = entry.key);
+                      load();
+                    }),
+            ]),
+            const SizedBox(height: 16),
+            appNotice('按账户与类别分别查询，不合并两类余额。查看记录核对真实状态、关联订单和付款凭证。'),
+            for (final r in rows) _recordTile(r),
             if (!busy && rows.isEmpty && error == null) appNotice('本类当前没有本人可读的真实记账记录。'),
           ],
           if (widget.mode == 'sync') ...[
@@ -410,6 +508,7 @@ class _WalletScreenState extends State<_WalletScreen> {
           if (cursor != null)
             tradeButton('继续读取下一页', busy ? null : () => load(more: true),
                 outline: true),
+          _entry('个人月度限额', '查看本人当前限额与使用情况', '/wallet/limits'),
           tradeButton('重新核对本页', busy ? null : () => load(), outline: true),
         ]);
   }
@@ -434,7 +533,7 @@ class _WalletScreenState extends State<_WalletScreen> {
           LinearProgressIndicator(
               value: (growth / next).clamp(0, 1).toDouble()),
           const SizedBox(height: 10),
-          Text('距下一成长门槛还差 ${next - growth} 消费成长',
+          Text('下一门槛 $next · 还差 ${next - growth} 消费成长',
               style: const TextStyle(fontSize: 13, color: AccountTheme.muted)),
         ],
       ]),
@@ -442,6 +541,8 @@ class _WalletScreenState extends State<_WalletScreen> {
         LinearProgressIndicator(
             value: (renewal / threshold).clamp(0, 1).toDouble()),
         const SizedBox(height: 10),
+        tradeFact('本规则会员年充值门槛', v5Money(threshold)),
+        tradeFact('距本规则充值门槛', v5Money(renewal >= threshold ? 0 : threshold - renewal)),
         Text(
             '${v5Money(renewal)} / ${v5Money(threshold)} · ${renewal >= threshold ? '已达本版门槛' : '尚未达到本版门槛'}',
             style: const TextStyle(fontSize: 13, color: AccountTheme.muted)),
@@ -460,10 +561,10 @@ class _WalletScreenState extends State<_WalletScreen> {
             busy || api.writes > 0 || api.pendingOperations.isNotEmpty;
         final actions = switch (widget.mode) {
           'points' => [
-              ('晶钻明细', '/wallet/records?kind=EARNING'),
-              ('晶钻权益', '/redemption')
+              ('查看晶钻明细', '/wallet/records?kind=EARNING'),
+              ('去权益商城', '/redemption')
             ],
-          'scout' => [('星探规则', '/wallet/rules'), ('充值与续年', '/wallet/recharge')],
+          'scout' => [('星探规则', '/wallet/rules'), ('充值到消费余额', '/wallet/recharge')],
           _ => [
               ('资金流水', '/wallet/records?kind=RECHARGE'),
               ('余额充值', '/wallet/recharge')
@@ -482,16 +583,41 @@ class _WalletScreenState extends State<_WalletScreen> {
         ]);
       });
 
-  Widget _metric(String label, Object value) => ActivitySummaryCard(
-      label: label,
-      value: '$value',
-      icon: widget.mode == 'points'
-          ? Icons.diamond_outlined : Icons.account_balance_wallet_outlined,
-      description: widget.mode == 'points'
-          ? '晶钻、消费成长和退款待冲回分别记账，使用前仍按对应规则核对。'
-          : widget.mode == 'scout'
-              ? '成长与会员年分别计算，实际资格以服务器核验结果为准。'
-              : '账本金额不等于渠道已接通，不提供提现或转账。');
+  // V5 46–49: quiet rounded metric surfaces, not generic icon banners.
+  // Values always come from the validated wallet summary, never canvas examples.
+  Widget _metric(String label, Object value, {String? description}) => Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+          color: AccountTheme.surface,
+          borderRadius: BorderRadius.circular(18)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(label, style: const TextStyle(color: AccountTheme.muted, fontSize: 12)),
+        const SizedBox(height: 8),
+        Text('$value', style: const TextStyle(
+            color: AccountTheme.text, fontSize: 32, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        Text(description ?? (widget.mode == 'scout'
+            ? '等级由真实消费成长，不提供付费升级。'
+            : '金额按服务器实际账本核对，不提供提现或转账。'),
+            style: const TextStyle(color: AccountTheme.muted, fontSize: 12, height: 1.6)),
+        const Divider(height: 20),
+      ]));
+
+  Widget _entry(String title, String detail, String route) => AnimatedBuilder(
+      animation: api,
+      builder: (context, _) => Column(children: [
+        ListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(title, style: const TextStyle(fontSize: 15)),
+            subtitle: Text(detail,
+                style: const TextStyle(color: AccountTheme.muted, fontSize: 12, height: 1.6)),
+            trailing: const Icon(Icons.chevron_right, size: 18, color: AccountTheme.muted),
+            onTap: busy || api.writes > 0 || api.pendingOperations.isNotEmpty
+                ? null : () => go(route)),
+        const Divider(height: 1),
+      ]));
 
   String _reason(dynamic code, String whenNone) => code == null
       ? whenNone
@@ -561,6 +687,31 @@ class _WalletScreenState extends State<_WalletScreen> {
             onSuccess: (_) =>
                 Navigator.pushReplacementNamed(context, '/wallet')),
       ];
+  Widget _recordTile(WalletRecord r) {
+    final d = r.data;
+    final amount = d['amount_minor'];
+    final points = d['points'];
+    return ExpansionTile(
+        key: ValueKey('wallet-record-${r.raw['id']}'),
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: const EdgeInsets.only(bottom: 12),
+        title: Text(walletKinds[r.kind] ?? '个人账本',
+            style: const TextStyle(fontSize: 15)),
+        subtitle: Text([
+          walletStates[r.status] ?? r.status,
+          if (d['occurred_at'] != null) tradeDate(d['occurred_at']),
+        ].join(' · '),
+            style: const TextStyle(color: AccountTheme.muted, fontSize: 12)),
+        trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+          if (amount is int || points is int)
+            Text(amount is int ? v5Money(amount) : '$points 晶钻',
+                style: const TextStyle(fontSize: 13)),
+          const SizedBox(width: 8),
+          const Icon(Icons.expand_more, size: 18),
+        ]),
+        children: _recordBody(r));
+  }
+
   List<Widget> _recordBody(WalletRecord r) {
     final d = r.data;
     return [

@@ -308,8 +308,16 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     return out;
   }
 
-  void open(String view, [Object? id]) => Navigator.pushNamed(
-      context, '/cocreation?view=$view${id == null ? '' : '&recordId=$id'}');
+  Future<void> open(String view, [Object? id]) async {
+    await Navigator.pushNamed(
+        context, '/cocreation?view=$view${id == null ? '' : '&recordId=$id'}');
+    // Refresh read-only parent views after participation/invitation changes.
+    // Never reload a parent form containing the user's unsaved private draft.
+    if (mounted && !busy && !checking && recovery == null &&
+        !['new', 'join', 'member'].contains(widget.view)) {
+      await load();
+    }
+  }
   Widget menu() => Wrap(spacing: 8, runSpacing: 8, children: [
         for (final x in [
           ('rooms', '我的共创'),
@@ -374,7 +382,15 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
               ],
               if (kind == 'snippets') ...[
                 communityFact('片段说明', communityMap(r['data'])['note']),
-                appNotice('每次领取都会重新核对本人、授权、退款和当前成片。'),
+                communityFact('本份记录版本', r['object_version']),
+                tradeSection('领取与分享边界', [
+                  const Text('仅本人片段：有效验收、整包付款及本人许可等实际条件须在领取时重新核对。审核通过不等于立即可下载。',
+                      style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+                  const SizedBox(height: 8),
+                  const Text('按原许可保留署名、水印与AI标识；不提供无标识原片或模型，不允许成员领取他人的个人版。分享仍须本人有效授权。',
+                      style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+                ]),
+                appNotice('每次领取都会重新核对本人、授权、退款和当前成片；未获服务端授权时不产生可下载文件。'),
                 tradeButton(
                     '明确领取本人片段',
                     enabled && r['current_status'] == 'APPROVED'
@@ -654,8 +670,24 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
         eligible = count['eligible_count'],
         benefitRemaining = count['benefit_remaining'];
     return [
-      communityHeading('一起完成这部戏', '参加人数、有效人数和已核定成团依据分别展示。',
-          eyebrow: '共创计划 / 每人独立确认'),
+      tradeHeading('一起完成这部戏',
+          eyebrow: '共创计划 / 每人独立确认', fontSize: 28),
+      appNotice('参加人数、有效人数和已核定成团依据分别展示。'),
+      if (count['people_remaining'] is int && count['people_remaining'] > 0)
+        Container(
+            padding: const EdgeInsets.all(16),
+            margin: const EdgeInsets.only(bottom: 16),
+            decoration: BoxDecoration(
+                border: Border.all(color: AccountTheme.danger),
+                borderRadius: BorderRadius.circular(16)),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              const Text('有效人数尚未达到成团条件',
+                  style: TextStyle(color: AccountTheme.danger, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 8),
+              Text('当前有效 ${count['eligible_count']} 人 · 还差 ${count['people_remaining']} 人'),
+              const Text('发起人与原已付订单保留。不会自动延期或自动退款；到期后按本人权限申请独立处理。'),
+            ])),
+
       cocreationGuide(communityText(r['title']),
           '当前：${communityState(r['current_status'])}。${r['current_status'] == 'OPEN' ? '招募期间，由每位参与者独立填写资料并确认授权。' : '按当前阶段核对人数、订单及制作记录；不是所有阶段都可以继续邀请或修改资料。'}'),
       const Text('已参加人数',
@@ -671,10 +703,9 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           eligible >= 0 &&
           eligible <= joined)
         roomProgress('资料授权及付款齐备', eligible, joined),
-      cocreationSection('当前条件', [
+      cocreationSection('报名与开工条件', [
         communityFact('资料授权及付款齐备', count['eligible_count']),
         communityFact('距成团还差', count['people_remaining']),
-        communityFact('距服务额度还差', count['benefit_remaining']),
         communityFact(
             '原订单首款', count['payment_confirmed'] == true ? '已核实' : '尚未核实'),
         if (r['cutoff'] != null) ...[
@@ -682,14 +713,18 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           communityFact(
               '核定依据时间', communityDate(communityMap(r['cutoff'])['at']))
         ],
-        appNotice('达到人数不代表自动开工；仍需原订单付款、有效授权及制作审核。')
+        appNotice('同一真人只计一人。达到人数不代表自动开工；仍需原订单付款、有效授权及制作审核。20人服务权益不等于全部制作免费。')
       ]),
       if (eligible is int &&
           benefitRemaining is int &&
           eligible >= 0 &&
           benefitRemaining >= 0 &&
           eligible + benefitRemaining > 0)
-        roomProgress('服务额度人数进度', eligible, eligible + benefitRemaining),
+        cocreationSection('共创服务权益', [
+          roomProgress('服务额度人数进度', eligible, eligible + benefitRemaining),
+          communityFact('距服务额度还差', benefitRemaining),
+          appNotice('服务权益人数与开工条件独立核对；达到人数不代表已下单、付款或开工。'),
+        ]),
       cocreationSection('每人独立确认的条款', [
         SelectableText(communityText(snapshot['participation_terms'])),
         communityFact('用途 / 地域', '${r['purpose']} / ${r['territory']}'),
@@ -792,7 +827,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
                       version: r['object_version'])
                   : null,
               outline: true),
-          appNotice('取消批准不等于资金已退。恢复需要独立复核，退出后旧验收不会继续作为新交付依据。')
+          appNotice('申请延期或取消不自动生效，取消批准不等于资金已退；变更后的参与条件仍须参与方重新确认。恢复需要独立复核，退出后旧验收不会继续作为新交付依据。')
         ]),
         for (final c in cases)
           cocreationSection(
@@ -839,12 +874,18 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
         person.owner == session.partyId;
     final canEdit = r['current_status'] == 'OPEN';
     return [
-      communityHeading(
-          editing ? '我的参加资料' : '本人参加与授权', '只提交本人的资料。其他人的故事、素材和授权不会在此开放。'),
+      tradeHeading(editing ? '我的参演资料' : '确认我的参演',
+          eyebrow: '本人确认 / 仅限本次范围', fontSize: 28),
+      appNotice('只提交本人的资料。其他人的故事、素材和授权不会在此开放。'),
       cocreationGuide(canEdit ? '先选本人，再确认参与' : '当前房间不开放参加资料修改',
           canEdit ? '核对本人形象与用途授权，补齐私有故事和素材后再确认。领取邀请不等于已参加，人数条件齐备也不等于开工。'
               : '可核对已保存资料与当前状态；其他人的私有资料不会向你开放。'),
-      communityFact('共创名称', r['title']),
+      cocreationSection('本次参演范围', [
+        communityFact('共创名称', r['title']),
+        communityFact('用途', r['purpose']),
+        communityFact('地域', r['territory']),
+        appNotice('本次确认仅代表本人，不能代替其他人的独立授权、合同签署或开工前核对。'),
+      ]),
       communityFact('截止时间', communityDate(r['deadline'])),
       if (member != null)
         communityFact('本人参加状态', communityState(member!['current_status'])),
@@ -913,7 +954,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
                 ? (v) => setState(() => agreed = v == true)
                 : null),
         tradeButton(
-            editing ? '确认修订自己的参加资料' : '确认本人参加',
+            editing ? '确认修订自己的参加资料' : '确认本次参演授权',
             enabled && agreed && canEdit && materialReady
                 ? () => submit(() async {
                       final cast = casts.map((c) => c.value()).toList();

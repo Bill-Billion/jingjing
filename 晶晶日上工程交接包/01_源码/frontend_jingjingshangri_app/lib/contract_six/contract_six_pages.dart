@@ -201,6 +201,35 @@ class _SixState extends CommunityPageState<_Six> {
           record = r;
           nextCursor = r['next_cursor'] as String?;
         });
+      } else if (['handover', 'closure'].contains(widget.kind)) {
+        final closure = widget.kind == 'closure';
+        final page = await api.read(closure ? '${ops}requests' : 'records',
+            account: account,
+            query: {
+              'limit': 20,
+              if (!closure) 'kind': 'RELATION',
+              if (cursor != null) 'cursor': cursor,
+            });
+        final list = communityItems(page);
+        for (final item in list) {
+          communityRequire(communityId(item['id']) &&
+              item['current_status'] is String);
+          if (closure) {
+            communityRequire(item['request'] is Map &&
+                (widget.operations || item['account_id'] == session.account?['id']));
+          } else {
+            communityRequire(item['kind'] == 'RELATION' && item['data'] is Map);
+          }
+        }
+        final next = page['next_cursor'];
+        communityRequire(next == null || communityId(next) && next != cursor);
+        if (!mounted || t != ticket) return;
+        setState(() {
+          rows = list.where((item) => closure
+              ? communityMap(item['request'])['type'] == 'CLOSE_ACCOUNT'
+              : communityMap(item['data'])['handover'] is Map).toList();
+          nextCursor = next as String?;
+        });
       } else if (['guardians', 'infringement'].contains(widget.kind)) {
         final page = await api.read(collection,
             account: account,
@@ -899,11 +928,36 @@ class _SixState extends CommunityPageState<_Six> {
           ],
         ]),
         tradeButton('刷新当前记录', busy || checking ? null : load, outline: true),
-        if (['guardians', 'infringement'].contains(widget.kind))
-          tradeButton('返回我的记录列表', enabled ? () => open(null) : null,
+        if (id != null)
+          tradeButton('返回获准记录列表', enabled ? () => open(null) : null,
               outline: true),
         if (id == null) ...[
-          text('open_id', widget.kind == 'handover' ? '原直接合作编号' : '已知记录编号'),
+          if (['handover', 'closure'].contains(widget.kind)) ...[
+            appNotice(widget.kind == 'closure'
+                ? '从获准的注销申请中选择，答复状态与执行期限在详情分别核对。'
+                : '仅列出已产生交接范围的合作记录；到期记录仍可核对，不恢复已停止的权限。'),
+            if (!checking && error == null && rows.isEmpty)
+              appNotice(nextCursor == null
+                  ? '本页没有符合条件的获准记录。'
+                  : '本页没有符合条件的记录，可继续读取下一页。'),
+            for (final row in rows)
+              sixSection(widget.kind == 'closure' ? '注销申请' : '旧单交接', [
+                if (widget.kind == 'closure') ...[
+                  communityFact('申请说明', communityMap(row['request'])['details']),
+                  communityFact('答复目标日期', row['response_due_on']),
+                ] else ...[
+                  communityFact('合作约定', communityMap(row['data'])['terms']),
+                  communityFact('交接截止', communityDate(
+                      communityMap(communityMap(row['data'])['handover'])['deadline_at'])),
+                  communityFact('原订单数',
+                      communityMap(communityMap(row['data'])['handover'])['order_count']),
+                ],
+                communityFact('原记录状态', sixState(row['current_status'])),
+                tradeButton('选择并查看办理进度',
+                    enabled ? () => open(row['id'] as String) : null),
+              ]),
+          ] else ...[
+          text('open_id', '已知记录编号'),
           tradeButton(
               '打开获准记录',
               enabled
@@ -934,6 +988,7 @@ class _SixState extends CommunityPageState<_Six> {
                       enabled ? () => open(row['id'] as String) : null,
                       outline: true),
                 ]),
+          ],
         ],
         ...facts(),
         if (nextCursor != null)

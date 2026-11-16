@@ -306,7 +306,15 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
     }
   }
 
-  void go(String path) => Navigator.pushNamed(context, path);
+  Future<void> go(String path) async {
+    await Navigator.pushNamed(context, path);
+    // Actions and original-order payment run on child routes. Re-read on
+    // return instead of leaving the parent at its pre-action status.
+    if (mounted && !busy && api.pendingOperations.isEmpty &&
+        !['book', 'messages'].contains(widget.mode)) {
+      await load();
+    }
+  }
   void action(AuditionRecord r, String action) =>
       go('/auditions/action?bookingId=${r.id}&action=$action');
   @override
@@ -316,7 +324,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
       'catalog' => '可约艺人',
       'book' => '约一次试镜',
       'offers' => '我的试镜方案',
-      'offer' => '试镜方案与开关',
+      'offer' => '试镜设置',
       'bookings' => '我的试镜',
       'messages' => '本单会话',
       _ => '试镜进度与取样'
@@ -334,7 +342,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                       child: const Text('试镜',
                           style: TextStyle(
                               fontFamily: AccountTheme.sans,
-                              fontSize: 32,
+                              fontSize: 28,
                               height: 1.1,
                               fontWeight: FontWeight.w900)))),
               TextButton(
@@ -347,7 +355,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                     fontSize: 12, height: 1.6, color: AccountTheme.muted)),
             const SizedBox(height: 22),
           ] else
-            tradeHeading(title, eyebrow: '真实用途 / 正规场地 / 一口价含交通'),
+            tradeHeading(title, eyebrow: '真实用途 / 正规场地 / 一口价含交通', fontSize: 28),
           V5RecoveryPanel(
               api: api,
               label: api.recoveryLabel,
@@ -374,18 +382,15 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             ],
             for (final x in offers)
               Container(
-                margin: const EdgeInsets.only(bottom: 14),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                    color: AccountTheme.surface,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: AccountTheme.border)),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: const BoxDecoration(
+                    border: Border(bottom: BorderSide(color: AccountTheme.border))),
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                          width: 76,
-                          height: 120,
+                          width: 112,
+                          height: 176,
                           decoration: BoxDecoration(
                               color: AccountTheme.selectedSurface,
                               borderRadius: BorderRadius.circular(14)),
@@ -425,7 +430,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                                     fontSize: 11, color: AccountTheme.muted)),
                             const SizedBox(height: 12),
                             tradeButton(
-                                '查看与预约',
+                                '约试镜 ↗',
                                 busy
                                     ? null
                                     : () => go(
@@ -478,8 +483,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             if (r.status == 'PUBLISHED')
               V5Form(
                   api: api,
-                  title: '分别控制公开预约与公开价格',
-                  action: '保存本方案公开选择',
+                  title: '公开选择',
+                  action: '保存试镜公开设置',
                   suffix: '/offers/${r.id}/visibility',
                   version: r.version,
                   initial: {
@@ -487,9 +492,9 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                     'public_price': r.data['offer']['public_price']
                   },
                   fields: const [
-                    V5Field('public_booking', '允许公开预约',
+                    V5Field('public_booking', '公开接试镜',
                         type: 'bool', required: false),
-                    V5Field('public_price', '公开本方案价格',
+                    V5Field('public_price', '公开一口价',
                         type: 'bool', required: false)
                   ],
                   buildBody: (v) => {
@@ -515,17 +520,35 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
 
   Widget _bookingForm(AuditionOffer o) =>
       Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(16)),
+            child: Row(children: [
+              Container(width: 64, height: 80,
+                  decoration: BoxDecoration(color: AccountTheme.selectedSurface,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: const Icon(Icons.person_outline, color: AccountTheme.muted)),
+              const SizedBox(width: 16),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(o.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 8),
+                Text('${o.raw['city']} · ${o.raw['service_area']}',
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              ])),
+            ])),
+        const Text('试镜一口价', style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        const SizedBox(height: 6),
+        Text(o.raw['unit_minor'] == null ? '价格未公开' : v5Money(o.raw['unit_minor']),
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        const Text('含交通；以本次完整约定为准，不在站外追加现金收取。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        const SizedBox(height: 20),
         auditionGuide('先说明用途，再确认约定',
             '填写真实场地、时间与用途，提交安全核查。通过后再确认订单和付款，之后等待艺人接单。', label: '预约准备'),
-        tradeSection(o.title, [
-          tradeFact(
-              '价格',
-              o.raw['unit_minor'] == null
-                  ? '此方案未公开价格，安全核查后核对本次完整约定'
-                  : v5Money(o.raw['unit_minor'])),
-          tradeFact('交通', '含在一口价内；不在站外追加现金收取'),
-          tradeFact('服务范围', o.raw['service_area'])
-        ]),
         if (!widget.session.isOwner)
           appNotice('当前机构成员可办理获授权的试镜预约，发起新的买方预约须由有效负责人确认。'),
         V5Form(
@@ -603,6 +626,35 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         d = r.data;
     return [
       auditionGuide(auditionStates[r.status]!, auditionNextStep(r), label: '本单当前进度'),
+      if (['REFUND_REQUIRED', 'REFUNDED'].contains(r.status)) ...[
+        tradeBanner(
+            r.status == 'REFUNDED' && r.raw['refund_is_verified'] == true
+                ? '全额退款已核实' : '退款处理中 · 等待核验',
+            r.status == 'REFUNDED' && r.raw['refund_is_verified'] == true
+                ? '本次原单退款已由渠道核实。退款详情与凭证请查看原退款记录，本次未约成的试镜不因此重新开放。'
+                : '原单退款要求已记录，尚不能称为款项已退回。实际到账以原渠道核实为准，不承诺固定退款周期。',
+            icon: Icons.receipt_long_outlined),
+        tradeFact(r.status == 'REFUNDED' && r.raw['refund_is_verified'] == true
+                ? '本次核实退款金额' : '本次应退金额',
+            v5Money(d['refund_minor'])),
+        const Text('未约成不开放双方自由会话。其他预约需另行确认，不沿用本单沟通权限。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        tradeButton('看看其他可约艺人',
+            busy ? null : () => go('/auditions/catalog'), outline: true),
+      ],
+
+      if (r.status == 'DELIVERED') ...[
+        const Text('试镜交付待确认',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        Text('原记录版本 ${r.version} · ${d['rules']['photo_count']} 照 / ${d['rules']['video_count']} 视频',
+            style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        const SizedBox(height: 12),
+        const Text('确认只针对本次试镜履约，不代表最终录用或后续参演授权。对现场或素材有异议，请使用本单争议入口。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        const SizedBox(height: 16),
+      ],
+
       tradeSection(r.title, [
         tradeFact('实际状态', auditionStates[r.status]),
         ...auditionAppointmentFacts(v5Map(d['appointment'])),
@@ -613,7 +665,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             '${d['rules']['acceptance_hours']} 小时'),
         SelectableText(d['rules']['terms'])
       ]),
-      appNotice('试镜完成不授予买家出演、发行或重新生成权。付款、接受、联系方式与取样许可分别核对。'),
+      appNotice('试镜完成不授予买家出演、发行或重新生成权。付款、接受、联系方式与取样许可分别核对。评价不能代替取样验收、实际付款或争议处理。'),
       if (d['order_id'] != null)
         tradeButton(
             '原订单、真实付款与退款', () => go('/trade/record?recordId=${d['order_id']}'),
@@ -703,7 +755,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
               }),
         if (isBuyer && r.status == 'DELIVERED') ...[
           appNotice(d['rules']['acceptance_policy'] == 'CONTRACT_20261029'
-              ? '本单从交付审核通过起计48小时；文件不可用或争议时不能自动完成。本人收讫仍须实际取得全部取样，不会重置服务器期限。'
+              ? '本单从交付审核通过起，按原规则${d['rules']['acceptance_hours']}小时核对；实际截止以服务器记录为准。文件不可用或争议时不能自动完成。本人收讫仍须实际取得全部取样，不会重置服务器期限。'
               : '须逐项成功查看或保存本次全部取样，再明确收讫；上传或付款时间不能启动验收计时。'),
           _receiptForm(r, 'receipt', allOpened, '明确确认本次全部取样已收到'),
           _receiptForm(r, 'confirm', allOpened, '明确确认本次试镜履约完成'),
@@ -871,26 +923,41 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           onSuccess: (d) => setState(
               () => setRecord(AuditionRecord(d, id: r.id, kind: 'BOOKING'))));
   List<Widget> _messageBody(AuditionRecord r) => [
+        if (r.conversation == 'ARCHIVED')
+          tradeBanner('会话已归档 · 只读',
+              '按当前权限保留历史消息。本页不再发送消息、附件或改价申请；售后请回到原订单处理，不重开双方聊天。'),
+
         auditionGuide(auditionConversations[r.conversation]!,
             '会话只服务这一笔原订单；联系方式另行同意，争议或改期时冻结，完成后归档。', label: '本单沟通', icon: Icons.forum_outlined),
         for (final m in messages)
-          tradeSection(
-              m.data['account_id'] == widget.session.account?['id']
-                  ? '我发出的消息'
-                  : '本单参与方消息',
-              [
-                if (m.data['kind'] == 'TEXT')
-                  Text(m.data['body'])
-                else if (m.data['kind'] == 'ORDER_CARD')
-                  tradeButton('查看本单订单卡',
-                      () => go('/trade/record?recordId=${m.data['order_id']}'),
-                      outline: true)
-                else
-                  Text('引用本单已交取样；可回试镜进度按权限读取。'),
-                tradeFact('时间', tradeDate(m.data['at'])),
-                tradeFact(
-                    '本人阅读状态', m.raw['is_read'] == true ? '我已读' : '我尚未标记已读')
-              ]),
+          Align(
+              alignment: m.data['account_id'] == widget.session.account?['id']
+                  ? Alignment.centerRight : Alignment.centerLeft,
+              child: Container(
+                  constraints: const BoxConstraints(maxWidth: 320),
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                      color: m.data['account_id'] == widget.session.account?['id']
+                          ? AccountTheme.selectedSurface : AccountTheme.surface,
+                      borderRadius: BorderRadius.circular(14)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(m.data['account_id'] == widget.session.account?['id']
+                        ? '我' : '本单参与方',
+                        style: const TextStyle(fontSize: 11, color: AccountTheme.muted)),
+                    const SizedBox(height: 8),
+                    if (m.data['kind'] == 'TEXT')
+                      Text(m.data['body'])
+                    else if (m.data['kind'] == 'ORDER_CARD')
+                      tradeButton('查看本单订单卡',
+                          () => go('/trade/record?recordId=${m.data['order_id']}'),
+                          outline: true)
+                    else
+                      const Text('引用本单已交取样；回试镜进度按权限读取。'),
+                    const SizedBox(height: 8),
+                    Text('${tradeDate(m.data['at'])} · ${m.raw['is_read'] == true ? '我已读' : '我尚未标记已读'}',
+                        style: const TextStyle(fontSize: 10, color: AccountTheme.muted)),
+                  ]))),
         if (messageCursor != null)
           tradeButton('继续读取后续消息', busy ? null : moreMessages, outline: true),
         if (['OPEN', 'FROZEN', 'ARCHIVED'].contains(r.conversation) &&
@@ -980,7 +1047,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                 appNotice('双方当前均未开放联系卡。')
             ]),
         ],
-        tradeButton('请求平台客服加入本单', () => action(r, 'support'), outline: true),
+        if (r.conversation != 'ARCHIVED')
+          tradeButton('请求平台客服加入本单', () => action(r, 'support'), outline: true),
         tradeButton(
             '返回本次试镜与取样', () => go('/auditions/booking?bookingId=${r.id}'),
             outline: true),

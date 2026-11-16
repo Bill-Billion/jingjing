@@ -326,11 +326,11 @@ class _PlazaPageState extends State<PlazaPage> {
                   : '本页暂无资料，可继续读取。'),
         _grid(
             data.featured.items,
-            3,
+            4,
             10,
             (row) =>
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  _artistCard(communityMap(row['artist'])),
+                  _artistCard(communityMap(row['artist']), featured: true),
                   Text(row['recommendation'],
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -349,10 +349,15 @@ class _PlazaPageState extends State<PlazaPage> {
           TextButton(
               onPressed: data.featured.busy ? null : () => data.loadFeatured(),
               child: const Text('重读精选')),
-        const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: Text('运营推荐，不代表明星认证或成绩排名。',
-                style: TextStyle(fontSize: 12, color: AccountTheme.muted))),
+        Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(children: [
+              Text('当前城市 · ${plazaCityLabel(data.city)}',
+                  style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              const SizedBox(height: 4),
+              const Text('运营推荐，不代表明星认证或成绩排名。',
+                  style: TextStyle(fontSize: 11, color: AccountTheme.muted)),
+            ])),
         const Divider(height: 1),
       ]);
 
@@ -373,7 +378,7 @@ class _PlazaPageState extends State<PlazaPage> {
         ]);
       });
 
-  Widget _artistCard(Map<String, dynamic> row) => Semantics(
+  Widget _artistCard(Map<String, dynamic> row, {bool featured = false}) => Semantics(
       button: true,
       label: '查看艺人详情，${row['display_name']}，${row['city']}',
       child: Material(
@@ -386,6 +391,7 @@ class _PlazaPageState extends State<PlazaPage> {
                     ArtistPublicPortrait(
                         key: ValueKey(
                             '${data.artists.revision}:${row['listing_id']}'),
+                        circular: featured,
                         session: widget.session,
                         listing: row,
                         onUnavailable: () =>

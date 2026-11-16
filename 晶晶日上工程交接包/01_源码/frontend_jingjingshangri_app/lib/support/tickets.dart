@@ -461,7 +461,7 @@ class _SupportState extends State<_Support> {
                     : widget.ticketId == null
                         ? '我的反馈'
                         : '查看处理进度',
-                eyebrow: '本人反馈 / 当前办事身份'),
+                eyebrow: '本人反馈 / 当前办事身份', fontSize: 28),
             tradeFact('办事身份', widget.session.party?['display_name']),
             if (busy) const LinearProgressIndicator(),
             if (error != null)
@@ -496,7 +496,9 @@ class _SupportState extends State<_Support> {
                   enabled: !locked,
                   maxLength: 4000,
                   maxLines: 5,
-                  decoration: const InputDecoration(labelText: '具体情况')),
+                  decoration: const InputDecoration(
+                      labelText: '问题说明',
+                      hintText: '发生在哪一步？预期结果与实际情况是什么？请勿填写无关个人信息。')),
               ...attachmentFields(),
               const Text('举报作为待核查线索，不代表已认定违规。退款、争议和隐私请求仍在原业务办理。',
                   style: TextStyle(color: AccountTheme.muted, height: 1.6)),

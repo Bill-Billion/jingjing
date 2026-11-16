@@ -359,40 +359,56 @@ class _PublicSearchState extends State<_PublicSearch> {
                 ? '价格未公开'
                 : communityMoney(r['unit_minor'])),
       if (activeKind == 'STOCK')
-        tradeFact('个人许可价格', communityMoney(r['unit_minor'])),
+        tradeFact('本版许可价格', communityMoney(r['unit_minor'])),
       if (data['introduction'] is String || data['description'] is String)
         Text('${data['introduction'] ?? data['description']}',
             maxLines: 3, overflow: TextOverflow.ellipsis),
-      tradeButton('查看${discoveryKinds[activeKind]}', () async {
+      tradeButton(activeKind == 'ARTIST' ? '查看资料' : '查看${discoveryKinds[activeKind]}', () async {
         await Navigator.pushNamed(context, publicContentRoute(activeKind, id));
         if (mounted) await load();
       }, outline: true),
     ]);
   }
 
+  void chooseKind(String value) {
+    if (busy || value == kind) return;
+    setState(() {
+      kind = value;
+      purpose = '';
+      commercialUse = '';
+      halo = '';
+      auditionMode = '';
+      noticeType = '';
+      budget.clear();
+      tag.clear();
+      clearResults();
+    });
+    load();
+  }
+
   @override
   Widget build(BuildContext context) => tradeScaffold(context, '查找公开内容', [
-        tradeHeading('找到感兴趣的内容', eyebrow: '公开目录 / 当前可用内容'),
-        communitySelect('内容类型', kind,
-            discoveryKinds.entries.map((e) => (e.key, e.value)).toList(), (v) {
-          setState(() {
-            kind = v!;
-            purpose = '';
-            commercialUse = '';
-            halo = '';
-            auditionMode = '';
-            noticeType = '';
-            budget.clear();
-            tag.clear();
-            clearResults();
-          });
-          load();
-        }),
+        tradeHeading('找一张合适的脸', eyebrow: '从角色找到合适的人', fontSize: 28),
+        const SizedBox(height: 16),
+        TextField(
+            controller: query,
+            maxLength: 100,
+            minLines: 1,
+            maxLines: 3,
+            decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                labelText: '关键词或需求片段',
+                hintText: '如：悬疑女主、雨巷年轻记者',
+                helperText: '按公开名称、介绍等字段作字面查找，不自动理解剧情或拆解需求',
+                helperMaxLines: 3),
+            onChanged: (_) => setState(clearResults),
+            onSubmitted: (_) => load()),
+        const SizedBox(height: 8),
         TextField(
             controller: city,
             maxLength: 100,
             decoration: const InputDecoration(
-                labelText: '城市', hintText: '留空查看全部城市，也可输入其他城市'),
+                labelText: '城市', hintText: '如：上海；留空查看全部城市'),
             onChanged: (_) => setState(clearResults)),
         Wrap(spacing: 8, children: [
           for (final c in cities)
@@ -410,13 +426,20 @@ class _PublicSearchState extends State<_PublicSearch> {
           Text('快捷城市读取失败，仍可手动输入。$cityError'),
           tradeButton('重读快捷城市', loadCities, outline: true)
         ],
-        TextField(
-            controller: query,
-            maxLength: 100,
-            decoration:
-                const InputDecoration(prefixIcon: Icon(Icons.search), labelText: '关键词', hintText: '按公开名称、介绍查找'),
-            onChanged: (_) => setState(clearResults),
-            onSubmitted: (_) => load()),
+        const SizedBox(height: 12),
+        Row(children: [
+          for (final item in const <String, String>{
+            'ARTIST': '艺人', 'STOCK': '视频', 'NOTICE': '通告',
+          }.entries)
+            Expanded(child: Container(
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(
+                    color: kind == item.key ? AccountTheme.accent : Colors.transparent,
+                    width: 2))),
+                child: TextButton(onPressed: busy ? null : () => chooseKind(item.key),
+                    child: Text(item.value, style: TextStyle(
+                        color: kind == item.key ? AccountTheme.accent : AccountTheme.muted))))),
+        ]),
+        const SizedBox(height: 16),
         SwitchListTile(
             title: const Text('按明确条件匹配'),
             value: matching,
@@ -511,8 +534,8 @@ class _PublicSearchState extends State<_PublicSearch> {
                     })),
           const Text('按你明确选择的条件匹配，不计算AI匹配率，不按个人身份改价。进入详情后仍须核对当前授权、有效期与办理资格。'),
         ],
-        tradeButton('查找', busy ? null : load),
-        tradeButton('清空条件', () {
+        tradeButton(matching ? '开始匹配' : '开始查找', busy ? null : load),
+        tradeButton('清空条件', busy ? null : () {
           setState(() {
             city.clear();
             query.clear();
@@ -530,6 +553,9 @@ class _PublicSearchState extends State<_PublicSearch> {
         if (busy) const LinearProgressIndicator(),
         if (error != null)
           Text(error!, style: const TextStyle(color: AccountTheme.danger)),
+        const Padding(padding: EdgeInsets.symmetric(vertical: 16),
+            child: Text('按公开资料筛选，不代表接受邀约或授予使用权。关闭个性化推荐仍可搜索；这里只按明确条件查找，不生成虚构AI匹配率。',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6))),
         if (rows.isNotEmpty) ...[
           Row(children: [
             const Expanded(child: Text('已读取的结果', style: TextStyle(
@@ -550,7 +576,10 @@ class _PublicSearchState extends State<_PublicSearch> {
               outline: true),
         if (error != null)
           tradeButton('重新查找', busy ? null : load, outline: true),
-        const Text('结果按目录顺序展示。进入详情时会重新核对公开状态和办理权限。',
+        TextButton(
+            onPressed: busy ? null : () => chooseKind('AUDITION'),
+            child: Text(kind == 'AUDITION' ? '当前正在查找试镜方案' : '另外查找试镜方案')),
+        const Text('这里只按公开资料和明确条件筛选，不使用个性化推荐；关闭个性化仍可搜索。结果不代表邀约、出演授权或成交，进入详情后仍须核对权限。',
             style: TextStyle(color: AccountTheme.muted, height: 1.6)),
       ]);
 }

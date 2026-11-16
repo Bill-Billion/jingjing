@@ -118,7 +118,53 @@ class _LicenseListState extends State<_LicenseList> {
     if (mounted && !widget.catalog) _load();
   }
 
-  Widget _recordCard(LicenseRecord r) => r.kind == 'GRANT'
+  Widget _privateRecordRow(LicenseRecord r) => Container(
+      padding: const EdgeInsets.symmetric(vertical: 18),
+      decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: AccountTheme.border))),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(width: 44, height: 60,
+            decoration: BoxDecoration(color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(8)),
+            child: const Icon(Icons.description_outlined,
+                color: AccountTheme.muted)),
+        const SizedBox(width: 12),
+        Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(r.title, style: const TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w700, height: 1.4)),
+          const SizedBox(height: 6),
+          Text('${licenseKinds[r.kind]} · ${shortSupplyId(r.id)}',
+              style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          if (r.terms != null)
+            Text(r.terms!.summary, style: const TextStyle(
+                fontSize: 12, color: AccountTheme.muted, height: 1.5)),
+          if (r.data['preview_text'] != null)
+            Text(r.data['preview_text'], style: const TextStyle(
+                fontSize: 12, color: AccountTheme.muted)),
+          if (r.data['price'] != null)
+            Text(licenseMoney(Map<String, dynamic>.from(r.data['price']))),
+          if (r.data['expires_at'] != null)
+            Text('预留截止 ${licenseDate(r.data['expires_at'])}'),
+          if (r.data['valid_until'] != null)
+            Text('截止时间 ${licenseDate(r.data['valid_until'])}'),
+          if (r.kind == 'GRANT') ...[
+            Text('作品版本 ${shortSupplyId(r.data['work_version_id'])}'),
+            Text('有效至 ${licenseDate(r.terms!.data['valid_until'])}'),
+          ],
+          if (r.kind == 'PROJECT')
+            Text('用途 ${licensePurposes[r.data['purpose']]}'),
+          const SizedBox(height: 6),
+          Text(r.statusText, style: const TextStyle(
+              fontSize: 12, color: AccountTheme.accent)),
+          TextButton(onPressed: _busy ? null : () => _open(r),
+              child: Text(r.kind == 'GRANT' ? '查看许可凭证' : '查看原记录')),
+        ])),
+      ]));
+
+  Widget _recordCard(LicenseRecord r) => !widget.catalog
+      ? _privateRecordRow(r)
+      : r.kind == 'GRANT'
       ? _grantCard(r)
       : Card(
           child: Padding(
@@ -269,26 +315,24 @@ class _LicenseListState extends State<_LicenseList> {
             : _kind == 'READING'
                 ? '只展示当前身份的阅稿记录。指定账号获批且未到期后可受控阅读。'
                 : '这里保存剧本许可办理与历史记录。报价、付款和退款请前往订单与付款。'),
-        const Text('查看记录',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-            isExpanded: true,
-            itemHeight: null,
-            initialValue: _kind,
-            decoration: const InputDecoration(),
-            items: licenseKinds.entries
-                .map(
-                    (e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
-                .toList(),
-            onChanged: _busy
-                ? null
-                : (v) {
-                    if (v != null) {
-                      setState(() => _kind = v);
-                      _load();
-                    }
-                  }),
+        const Text('合同与许可',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 16),
+        SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(children: [
+              for (final entry in licenseKinds.entries)
+                Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ChoiceChip(
+                        label: Text(entry.value),
+                        selected: _kind == entry.key,
+                        onSelected: _busy ? null : (selected) {
+                          if (!selected || _kind == entry.key) return;
+                          setState(() => _kind = entry.key);
+                          _load();
+                        })),
+            ])),
         const SizedBox(height: 20),
         if (_kind == 'PROJECT')
           OutlinedButton.icon(
@@ -313,6 +357,13 @@ class _LicenseListState extends State<_LicenseList> {
               : '请从选剧本、登记项目或已有办理记录开始。')
         ]),
       for (final r in _items) _recordCard(r),
+      if (!widget.catalog) ...[
+        const SizedBox(height: 24),
+        const Text('保留当时的约定', style: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 8),
+        supplyNote('这里按原记录类别读取剧本许可；当前状态不等于真实签署完成。新报价或新版本不会替换已保存的原约定。'),
+      ],
       if (_cursor != null)
         OutlinedButton(
             onPressed: _busy ? null : () => _load(more: true),
@@ -1001,18 +1052,26 @@ class _ControlledReaderState extends State<_ControlledReader>
 
   @override
   Widget build(BuildContext context) => licenseScaffold(context, '受控阅读', [
+        const Text('内容阅读', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        const Text('仅限当前指定账号与有效授权，授权失效后清空正文。阅读不等于签署。'),
+        const SizedBox(height: 20),
         appNotice('有效期内的指定账号可阅读此文本。此授权仅限评估阅读，正文包含读者、授权编号和读取时间水印，不授予生成或训练。',
             icon: Icons.description_outlined),
         if (_record != null)
-          supplyFact('授权截止', licenseDate(_record!.data['valid_until'])),
+          supplyCard('本次阅读授权', [
+            supplyFact('授权截止', licenseDate(_record!.data['valid_until'])),
+            supplyFact('当前状态', _record!.statusText),
+            supplyNote('页面会重新核对授权；读取成功不延长有效期，也不授予改编、生成或训练。'),
+          ]),
         if (_error != null) supplyNote(_error!, error: true),
         if (_busy) const Center(child: CircularProgressIndicator()),
         if (_text != null)
           Card(
               child: Padding(
                   padding: const EdgeInsets.all(20),
-                  child: SelectableText(_text!,
-                      style: const TextStyle(fontSize: 16, height: 1.9)))),
+                  child: SelectionArea(child: Text(_text!,
+                      style: const TextStyle(fontSize: 16, height: 1.9))))),
         const SizedBox(height: 20),
         FilledButton(
             onPressed: _busy ? null : _read, child: const Text('重新核对授权并读取')),

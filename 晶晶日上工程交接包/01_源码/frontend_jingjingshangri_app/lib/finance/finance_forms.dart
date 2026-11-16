@@ -231,10 +231,11 @@ class _FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) => tradeScaffold(
       context,
-      widget.mode == 'PAYOUT' ? '申请付款' : '结算或权利异议',
+      widget.mode == 'PAYOUT' ? '收益收款申请' : '结算或权利异议',
       [
         tradeHeading(widget.mode == 'PAYOUT' ? '收益收款申请' : '提出结算异议',
-            eyebrow: '本人确认 / 按原约定办理'),
+            eyebrow: widget.mode == 'PAYOUT'
+                ? '仅限已具备可付条件的收益' : '本人确认 / 按原约定办理'),
         financeEditorialBanner(widget.mode == 'PAYOUT' ? '核对金额与收款资料' : '说明异议并提供依据',
             widget.mode == 'PAYOUT'
                 ? '仅按本约定当前可申请金额办理。提交后等待独立审核，自动出款未启用，申请成功不表示到账。'
@@ -263,7 +264,7 @@ class _FormState extends State<_Form> {
               Expanded(
                   child: FilledButton(
                       onPressed: canSubmit ? submit : null,
-                      child: const Text('提交付款申请')))
+                      child: const Text('提交收款申请')))
             ])
           : null);
 }

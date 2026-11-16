@@ -72,7 +72,7 @@ class CustomizationPage extends StatelessWidget {
   }
 }
 
-Widget _heading(String text) => tradeHeading(text);
+Widget _heading(String text) => tradeHeading(text, fontSize: 28);
 Widget _eyebrow(String text) => Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Text(
@@ -799,6 +799,15 @@ class _StoryEditorState extends State<_StoryEditor> {
                 ? '故事已交给平台'
                 : '写下你的故事',
       ),
+      if (!denied && (record == null || record!.status == 'DRAFT'))
+        _section('先留下想法，再形成约定', [
+          const Wrap(spacing: 8, runSpacing: 8, children: [
+            Chip(label: Text('仅本人可见')),
+            Chip(label: Text('分享未开放')),
+          ]),
+          _note('把创作方向与故事片段写进下方本品类的问题。此处保存的是现有定制需求草稿，不是通用AI生成器，也不会直接生成或交付影片。'),
+          _note('参考素材请仅使用已获权的内容。AI生成或氛围参考应在说明中注明，不作为正式成片或交付承诺。上传前须先保存草稿，上传成功不代表授权通过。'),
+        ]),
       if (!denied) _section('本次办理', [
         Wrap(spacing: 8, runSpacing: 8, children: [
           Chip(label: Text(record == null ? '填写需求' : storyStatuses[record!.status]!)),
@@ -1098,7 +1107,7 @@ class _StoryEditorState extends State<_StoryEditor> {
                                   key: const ValueKey('story-save'),
                                   onPressed: locked || conflict ? null : save,
                                   child: Text(
-                                      supplementOpen ? '保存补充草稿' : '保存业务草稿'),
+                                      supplementOpen ? '保存补充草稿' : '保存个人草稿'),
                                 ),
                               ),
                               const SizedBox(width: 12),
@@ -1116,7 +1125,7 @@ class _StoryEditorState extends State<_StoryEditor> {
                                       ? null
                                       : () => save(submit: true),
                                   child: Text(
-                                      supplementOpen ? '正式重提补充' : '正式提交需求'),
+                                      supplementOpen ? '正式重提补充' : '提交制作需求'),
                                 ),
                               ),
                             ],

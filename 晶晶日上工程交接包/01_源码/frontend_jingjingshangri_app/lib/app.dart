@@ -23,6 +23,7 @@ import 'licensing/license_pages.dart';
 import 'licensing/license_forms.dart';
 import 'licensing/license_models.dart';
 import 'trade/trade_pages.dart';
+import 'trade/aftercare_entry_page.dart';
 import 'trade/participation_checkout_page.dart';
 import 'auditions/auditions_pages.dart';
 import 'wallet/wallet_pages.dart';
@@ -404,9 +405,7 @@ class JingjingShangriApp extends StatelessWidget {
                   kind: uri.queryParameters['kind']),
               '/ai-create' => const CustomizationPage(
                   createNew: true, initialCategory: 'blessing_manual'),
-              '/after-sales' || '/review' => const AppUnavailablePage(
-                  title: '反馈与售后',
-                  description: '制作反馈与售后页面暂未开放。反馈会围绕明确的订单或制作版本办理。'),
+              '/after-sales' || '/review' => const AftercareEntryPage(),
               _ => const AppUnknownPage(),
             };
     }

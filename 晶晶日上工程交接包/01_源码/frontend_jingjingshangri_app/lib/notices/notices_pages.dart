@@ -345,10 +345,10 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   Widget build(BuildContext context) {
     final r = record, n = publicNotice;
     final title = switch (widget.mode) {
-      'new' => '发布通告',
+      'new' => '发布一条通告',
       'public' => '通告详情',
       'record' => '投稿与客服进度',
-      'records' => '我的通告与投稿',
+      'records' => recordKind == 'NOTICE' ? '我的通告' : recordKind == 'SUBMISSION' ? '投稿与意向' : '我的通告与投稿',
       'qualification' => '机构发布资格',
       _ => '通告现场'
     };
@@ -397,10 +397,10 @@ class _NoticeScreenState extends State<_NoticeScreen> {
               Expanded(
                   child: Semantics(
                       header: true,
-                      child: const Text('找到下一次合作',
+                      child: const Text('通告',
                           style: TextStyle(
                               fontFamily: AccountTheme.sans,
-                              fontSize: 24,
+                              fontSize: 28,
                               height: 1.1,
                               fontWeight: FontWeight.w900)))),
               OutlinedButton(
@@ -410,10 +410,29 @@ class _NoticeScreenState extends State<_NoticeScreen> {
             const SizedBox(height: 16),
             const Text('六类公开通告，按城市与有效时间浏览。',
                 style: TextStyle(fontSize: 14, color: AccountTheme.muted)),
+            const SizedBox(height: 12),
+            ExpansionTile(
+                tilePadding: EdgeInsets.zero,
+                title: const Text('活动与权益'),
+                subtitle: const Text('共创、晶钻兑换与本人参演记录'),
+                leading: const Icon(Icons.redeem_outlined, size: 20),
+                children: [
+                  for (final entry in [
+                    ('多人共创', '/cocreation'),
+                    ('晶钻权益兑换', '/redemption?view=catalog'),
+                    ('月度评选与榜单', '/engagement?view=rankings'),
+                    ('我的演出与参演', '/projects/list'),
+                  ])
+                    ListTile(
+                        title: Text(entry.$1),
+                        trailing: const Icon(Icons.chevron_right, size: 18),
+                        onTap: busy || api.pendingOperations.isNotEmpty
+                            ? null : () => go(entry.$2)),
+                ]),
             const SizedBox(height: 20),
           ] else if (n == null)
             tradeHeading(r == null ? title : noticeStates[r.status] ?? title,
-                fontSize: widget.mode == 'record' ? 24 : 32,
+                fontSize: 28,
                 eyebrow: '通告与合作 · 每一步有据可查'),
           V5RecoveryPanel(
               api: api,
@@ -423,26 +442,23 @@ class _NoticeScreenState extends State<_NoticeScreen> {
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (widget.mode == 'catalog') ...[
-            Wrap(spacing: 8, runSpacing: 8, children: [
-              for (final e
-                  in <String, String>{'': '全部', ...noticeTypes}.entries)
-                OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                        foregroundColor: (type ?? '') == e.key
-                            ? AccountTheme.accent
-                            : AccountTheme.text,
-                        side: BorderSide(
-                            color: (type ?? '') == e.key
-                                ? AccountTheme.accent
-                                : AccountTheme.border)),
-                    onPressed: busy
-                        ? null
-                        : () {
-                            setState(() => type = e.key.isEmpty ? null : e.key);
-                            load();
-                          },
-                    child: Text(e.value)),
-            ]),
+            SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(children: [
+                  for (final e in <String, String>{'': '全部', ...noticeTypes}.entries)
+                    Container(
+                        decoration: BoxDecoration(border: Border(bottom: BorderSide(
+                            color: (type ?? '') == e.key ? AccountTheme.accent : Colors.transparent,
+                            width: 2))),
+                        child: TextButton(
+                            onPressed: busy ? null : () {
+                              setState(() => type = e.key.isEmpty ? null : e.key);
+                              load();
+                            },
+                            child: Text(e.value, style: TextStyle(
+                                color: (type ?? '') == e.key
+                                    ? AccountTheme.accent : AccountTheme.text)))),
+                ])),
             const SizedBox(height: 20),
             cityScope(),
             TextField(
@@ -484,7 +500,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
             Text(n.notice['title'],
                 style: const TextStyle(
                     fontFamily: AccountTheme.sans,
-                    fontSize: 24,
+                    fontSize: 28,
                     fontWeight: FontWeight.w900,
                     height: 1.45)),
             const SizedBox(height: 16),
@@ -505,7 +521,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                     outline: k != 'PROFILE')
           ],
           if (widget.mode == 'new') ...[
-            _stageCard('发布准备', '先核对资格，再填写通告',
+            _stageCard('发布权限', '成年实名可提交普通通告',
                 '选择已生效规则后，由服务器核对成年实名、账号状态及可发布类型。普通实名发布不要求充值星探；机构资格和历史规则分别核验。',
                 icon: Icons.campaign_outlined),
             appNotice('提交后仍需独立审核，不会立即公开。平台官方事项仅由有权运营在网页办理。'),
@@ -556,18 +572,21 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                     outline: true)
             ],
             if (eligibility != null) ...[
-              DropdownButtonFormField<String>(
-                  key: typeField,
-                  initialValue:
-                      eligibility!.canPublish(type ?? '') ? type : null,
-                  isExpanded: true,
-                  decoration: const InputDecoration(labelText: '本次可发布类型'),
-                  items: (eligibility!.raw['types'] as List)
-                      .where((x) => x != 'OFFICIAL')
-                      .map((x) => DropdownMenuItem<String>(
-                          value: x, child: Text(noticeTypes[x]!)))
-                      .toList(),
-                  onChanged: busy ? null : chooseType),
+              const Text('本次可发布类型',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 10),
+              Wrap(spacing: 8, runSpacing: 8, children: [
+                for (final value in (eligibility!.raw['types'] as List)
+                    .where((x) => x != 'OFFICIAL'))
+                  ChoiceChip(
+                      label: Text(noticeTypes[value]!),
+                      selected: type == value,
+                      onSelected: busy ? null : (selected) {
+                        if (selected && type != value) chooseType(value);
+                      }),
+              ]),
+              const SizedBox(height: 16),
+              appNotice('提交后先进入审核，审核通过前不会公开。本页不提供独立草稿保存；离开时会核对未提交内容。'),
               if (type != null && eligibility!.canPublish(type!))
                 _noticeForm(type!)
             ],
@@ -627,7 +646,7 @@ class _NoticeScreenState extends State<_NoticeScreen> {
           ],
           if (widget.mode == 'records') ...[
             _stageCard('我的办理记录', '查看结果，接续下一步',
-                '按记录类型查看当前身份发出或收到的通告与意向。审核、客服和订单分别办理，不以提交代替完成。',
+                '按记录类型分页读取当前身份发出或收到的通告与意向。状态显示以每条真实记录为准，不将当前页当作全部记录。',
                 icon: Icons.inbox_outlined),
             DropdownButtonFormField<String>(
                 initialValue: recordKind,
@@ -648,19 +667,44 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                         load();
                       }),
             for (final x in rows)
-              tradeSection(x.title, [
-                tradeFact('状态', noticeStates[x.status]),
-                Text(_nextStep(x), style: const TextStyle(
-                    color: AccountTheme.muted, height: 1.6)),
-                tradeFact(
-                    '方向',
-                    x.raw['owner_party_id'] == widget.session.partyId
-                        ? '我发出'
-                        : '我接收'),
-                tradeButton(
-                    '查看具体进度', () => go('/notices/record?recordId=${x.id}'),
-                    outline: true)
+              Container(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: const BoxDecoration(border: Border(
+                      bottom: BorderSide(color: AccountTheme.border))),
+                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Container(width: 48, height: 64,
+                        decoration: BoxDecoration(color: AccountTheme.surface,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.campaign_outlined,
+                            color: AccountTheme.muted)),
+                    const SizedBox(width: 12),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                      Text(x.title, style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 6),
+                      Text(noticeStates[x.status] ?? x.status,
+                          style: const TextStyle(fontSize: 12, color: AccountTheme.accent)),
+                      Text(x.raw['owner_party_id'] == widget.session.partyId
+                          ? '我发出' : '我接收',
+                          style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                      const SizedBox(height: 6),
+                      Text(_nextStep(x), style: const TextStyle(
+                          fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+                      TextButton(onPressed: busy ? null
+                          : () => go('/notices/record?recordId=${x.id}'),
+                          child: const Text('查看具体进度')),
+                    ])),
+                  ])),
+            if (recordKind == 'NOTICE') ...[
+              const SizedBox(height: 20),
+              tradeSection('关联业务', [
+                tradeButton('查看收到的投稿与意向',
+                    busy ? null : () => go('/notices/records?kind=SUBMISSION'),
+                    outline: true),
+                tradeButton('发布新通告', busy ? null : () => go('/notices/new')),
               ]),
+            ],
             if (!busy && error == null && rows.isEmpty)
               appNotice('当前没有本类型的可读记录。'),
           ],
@@ -675,16 +719,16 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   Widget _noticeForm(String type) => V5Form(
       key: noticeForm,
       api: api,
-      title: '按类型填写',
+      title: '${noticeTypes[type]} · 通告内容',
       action: '提交正式通告审核',
       suffix: '/announcements',
       initial: {'type': type},
       restore: (b) => {...v5Map(b['notice']), ...v5Map(b['notice']['details'])},
       fields: [
         const V5Field('title', '通告标题'),
-        const V5Field('description', '通告说明', type: 'multiline'),
-        const V5Field('city', '城市'),
+        const V5Field('city', '发生城市'),
         const V5Field('valid_from', '开始时间', type: 'datetime'),
+        const V5Field('description', '通告内容与合作要求', type: 'multiline'),
         const V5Field('valid_until', '截止时间', type: 'datetime'),
         for (final e in noticeDetailFields[type]!.entries)
           V5Field(e.key, e.value, type: 'multiline'),
@@ -724,6 +768,13 @@ class _NoticeScreenState extends State<_NoticeScreen> {
         if (r.kind == 'NOTICE')
           tradeSection('本次通告内容', noticeFacts(v5Map(r.data['notice']))),
         if (r.kind == 'SUBMISSION') ...[
+          Text(r.status == 'SENT' ? '待回应投稿' : '本次投稿进度',
+              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 12),
+          if (r.data['submission']['notice_id'] != null)
+            tradeButton('查看关联通告',
+                () => go('/notices/public?noticeId=${r.data['submission']['notice_id']}'),
+                outline: true),
           tradeSection('本次单向投稿', [
             tradeFact('具体真人', '本次指定真人'),
             tradeFact('具体数字人', '本次指定数字人'),
@@ -783,6 +834,12 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                 outline: true),
         ],
         if (r.kind == 'CASE') ...[
+          const Text('正在为你对接',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 12),
+          const Text('以下是本次客服记录的实际进展；关联报价或合同不代表已经签署，正式订单的沟通权限另行核对。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+          const SizedBox(height: 16),
           appNotice(r.status == 'WAITING_SUPPORT'
               ? '等待有权客服核对双方、具体数字人和已审商单报价。'
               : '客服办理状态以本记录为准；报价另由买家确认。'),

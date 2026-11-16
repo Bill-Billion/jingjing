@@ -4,7 +4,6 @@ import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../discovery/public_discovery.dart';
 import '../engagement/community_support.dart';
-import '../engagement/activity_summary_card.dart';
 import '../trade/trade_widgets.dart';
 
 const collectionKinds = {'ARTIST': '艺人', 'STOCK': '作品', 'NOTICE': '通告'};
@@ -324,43 +323,66 @@ class _CollectionsState extends State<_Collections> {
     super.dispose();
   }
 
+  Widget savedRow(Map<String, dynamic> item, List<Widget> actions) =>
+      Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: const BoxDecoration(border: Border(
+              bottom: BorderSide(color: AccountTheme.border))),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(width: 56, height: 68,
+                  decoration: BoxDecoration(color: AccountTheme.surface,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Icon(item['kind'] == 'ARTIST'
+                      ? Icons.person_outline
+                      : item['kind'] == 'STOCK'
+                          ? Icons.movie_outlined : Icons.description_outlined,
+                      color: AccountTheme.muted)),
+              const SizedBox(width: 12),
+              Expanded(child: Text(item['availability'] == 'AVAILABLE'
+                      ? item['title'] : '内容已不可用',
+                  style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700))),
+            ]),
+            const SizedBox(height: 10),
+            ...actions,
+          ]));
+
   @override
   Widget build(BuildContext context) => tradeScaffold(context, '我的收藏与浏览记录', [
-        tradeHeading('留住感兴趣的内容', eyebrow: '只属于当前登录账号'),
-        ActivitySummaryCard(
-            label: '当前账号的私人清单',
-            value: history ? '浏览记录' : '我的收藏',
-            icon: history ? Icons.history : Icons.bookmark_border,
-            description: '个人与机构身份共用这份账号私人清单，不属于机构资产。重新打开内容时仍须核对当前可用性。'),
+        tradeHeading('留住喜欢的', eyebrow: '留给下次相遇', fontSize: 28),
+        Row(children: [
+          for (final tab in const [(false, '我的收藏'), (true, '浏览足迹')])
+            Expanded(child: DecoratedBox(
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(
+                    color: history == tab.$1 ? AccountTheme.accent : AccountTheme.border,
+                    width: history == tab.$1 ? 3 : 1))),
+                child: TextButton(
+                    onPressed: locked ? null : () {
+                      setState(() => history = tab.$1);
+                      load();
+                    },
+                    style: TextButton.styleFrom(
+                        foregroundColor: history == tab.$1
+                            ? AccountTheme.text : AccountTheme.muted),
+                    child: Text(tab.$2)))),
+        ]),
         const SizedBox(height: 16),
-        SegmentedButton<bool>(
-            segments: const [
-              ButtonSegment(value: false, label: Text('我的收藏')),
-              ButtonSegment(value: true, label: Text('浏览记录'))
-            ],
-            selected: {
-              history
-            },
-            onSelectionChanged: locked
-                ? null
-                : (v) {
-                    setState(() => history = v.single);
-                    load();
-                  }),
-        const SizedBox(height: 16),
-        communitySelect(
-            '内容类型',
-            kind ?? '',
-            [
-              ('', '全部'),
-              ...collectionKinds.entries.map((e) => (e.key, e.value))
-            ],
-            locked
-                ? null
-                : (v) {
-                    kind = v == '' ? null : v;
-                    load();
-                  }),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          for (final option in [
+            const MapEntry<String, String>('', '全部'),
+            ...collectionKinds.entries
+          ])
+            ChoiceChip(
+                label: Text(option.value),
+                selected: (kind ?? '') == option.key,
+                onSelected: locked ? null : (_) {
+                  kind = option.key.isEmpty ? null : option.key;
+                  load();
+                }),
+        ]),
+        const SizedBox(height: 12),
+        const Text('仅当前账号可见；收藏不锁定价格、授权或内容可用性。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
         if (preferences != null) ...[
           SwitchListTile(
               contentPadding: EdgeInsets.zero,
@@ -406,8 +428,7 @@ class _CollectionsState extends State<_Collections> {
                         recovery: true)),
           ]),
         for (final r in rows)
-          tradeSection(
-              r['availability'] == 'AVAILABLE' ? r['title'] : '内容已不可用', [
+          savedRow(r, [
             Wrap(spacing: 8, runSpacing: 8, children: [
               Chip(label: Text(collectionKinds[r['kind']]!)),
               if (r['availability'] != 'AVAILABLE')
@@ -457,6 +478,10 @@ class _CollectionsState extends State<_Collections> {
         if (cursor != null)
           tradeButton('继续读取', locked ? null : () => load(more: true),
               outline: true),
-        tradeButton('刷新清单', busy ? null : load, outline: true),
+        tradeButton('刷新清单', locked ? null : load, outline: true),
+        const SizedBox(height: 16),
+        tradeSection('足迹只为你保留', [
+          const Text('清空足迹只影响浏览记录，不删除原作品、收藏、订单或许可；不可用内容不显示旧标题或缩略图。'),
+        ]),
       ]);
 }

@@ -12,15 +12,15 @@ class ProductionServicePage extends StatelessWidget {
         context,
         '平台制作服务详情',
         [
-          const Text('平台制作 / 从本人的故事开始',
+          const Text('平台制作 / 自营对接',
               style: TextStyle(color: AccountTheme.accent, fontSize: 12)),
           const SizedBox(height: 22),
           Semantics(
               header: true,
               child: const Text('把故事拍成片',
                   style: TextStyle(
-                      fontFamily: AccountTheme.serif,
-                      fontSize: 42,
+                      fontFamily: AccountTheme.sans,
+                      fontSize: 28,
                       fontWeight: FontWeight.w900,
                       height: 1.15))),
           const SizedBox(height: 24),
@@ -72,13 +72,22 @@ class ProductionServicePage extends StatelessWidget {
                 '查看我的制作', () => Navigator.pushNamed(context, '/production'),
                 outline: true),
           ]),
+          tradeSection('由平台对接本次制作', [
+            const Text('提交后沿原需求查看受理与补充要求。具体制作人、进度和办理条件以本单记录为准；不从参考素材直接生成或交付成片。'),
+          ]),
           tradeSection('成片与素材归属', [
             const Text('按原合同约定使用成片。数字人、原始素材与第三方作品的权利仍由各自权利人持有；制作服务不替代相关授权。'),
           ]),
         ],
-        footer: FilledButton(
-            onPressed: () => Navigator.pushNamed(context, '/customization/new'),
-            child: const Text('填写制作需求')),
+        footer: Row(children: [
+          Expanded(child: OutlinedButton(
+              onPressed: () => Navigator.pushNamed(context, '/help'),
+              child: const Text('平台帮助与反馈'))),
+          const SizedBox(width: 10),
+          Expanded(child: FilledButton(
+              onPressed: () => Navigator.pushNamed(context, '/customization/new'),
+              child: const Text('填写制作需求'))),
+        ]),
         onBack: () => Navigator.canPop(context)
             ? Navigator.pop(context)
             : Navigator.pushReplacementNamed(context, '/square'),

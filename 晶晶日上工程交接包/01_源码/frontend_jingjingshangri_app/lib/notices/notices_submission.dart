@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
+import '../account/account_theme.dart';
 import '../artists/artists_api.dart';
 import '../artists/artists_models.dart';
 import '../stock/v5_support.dart';
@@ -174,8 +175,8 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
         api: api,
         title: submissionKinds[widget.kind] ?? '单向投稿',
         children: [
-          tradeHeading(invitation ? '把意向交给对方' : '投递这一次可能',
-              fontSize: 24, eyebrow: '本人授权 / 单向递交 / 平台客服跟进'),
+          tradeHeading(invitation ? '说说这次邀约' : '递上你的角色',
+              fontSize: 28, eyebrow: '本人授权 / 单向递交 / 平台客服跟进'),
           V5RecoveryPanel(
               api: api,
               label: api.recoveryLabel,
@@ -266,19 +267,31 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
     final s = v5Map(original['submission']);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       tradeSection('确认本次邀约对象', [
-        tradeFact('具体真人', s['display_name'] ?? s['person_id']),
-        tradeFact('具体数字人', s['avatar_id']),
-        tradeFact('接收方原引用', s['target_party_id']),
+        Row(children: [
+          const Icon(Icons.person_outline, color: AccountTheme.accent, size: 32),
+          const SizedBox(width: 12),
+          Expanded(child: Text(s['display_name'] ?? '已选择公开艺人',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700))),
+        ]),
+        const SizedBox(height: 12),
+        ExpansionTile(
+            tilePadding: EdgeInsets.zero,
+            title: const Text('核对本次公开资料引用'),
+            children: [
+              tradeFact('具体真人', s['person_id']),
+              tradeFact('具体数字人', s['avatar_id']),
+              tradeFact('接收方原引用', s['target_party_id']),
+            ]),
         appNotice('仅向当前获准公开的艺人发送本次合作意向；提交、审核与回应时重新核对有效范围，不直接取得出演权。')
       ]),
       V5Form(
           api: api,
-          title: '结构化邀约意向',
+          title: '这次拍摄的目的与说明',
           action: '提交本次邀约审核',
           suffix: '/submissions',
           fields: const [
-            V5Field('purpose', '本次真实用途'),
-            V5Field('content', '本次意向内容', type: 'multiline')
+            V5Field('purpose', '拍摄目的与本次用途', hint: '最多200字'),
+            V5Field('content', '意向内容说明', type: 'multiline', hint: '最多4000字')
           ],
           restore: (b) => v5Map(b['submission']),
           buildBody: (v) => {
@@ -295,10 +308,34 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
                   'purpose': v['purpose'],
                   'content': v['content'],
                   'role': null,
-                  'material_asset_ids': []
+                  'material_asset_ids': v5InputIds(v['material_asset_ids'] ?? '')
                 }
               },
           parse: api.validateRecord,
+          beforeSubmit: (body) async {
+            final submission = v5Map(body['submission']);
+            if ('${submission['purpose']}'.trim().length > 200 ||
+                '${submission['content']}'.trim().length > 4000 ||
+                (submission['material_asset_ids'] as List).length > 6) {
+              throw const AccountError(400, 'NOTICE_SUBMISSION_INVALID');
+            }
+          },
+          extra: (v, set, enabled) => [
+            tradeSection('本次参考材料（可选）', [
+              const Text('最多6份，只提交本次选取且有权使用的材料，不开放完整私有素材库。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+              const SizedBox(height: 12),
+              SupplyFiles(
+                  api: SupplyApi(widget.session),
+                  purpose: 'AVATAR_MATERIAL',
+                  maxFiles: 6,
+                  ids: v5InputIds(v['material_asset_ids'] ?? ''),
+                  enabled: enabled,
+                  onChanged: (ids) => set('material_asset_ids', ids.join(', '))),
+            ]),
+            appNotice('对方可表示感兴趣或婉拒；感兴趣后由客服对接。提交意向不等于授权、签约或开放双向聊天。'),
+            appNotice('当前仅保护本页未提交内容，离开时会提示确认；尚无邀约草稿保存接口，不会把提交审核冒充保存个人草稿。'),
+          ],
           onSuccess: (r) => Navigator.pushReplacementNamed(
               context, '/notices/record?recordId=${r['id']}'))
     ]);
@@ -370,6 +407,8 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
           context, '/notices/record?recordId=${r['id']}'),
       extra: (v, set, enabled) => [
             tradeSection('本次私有模卡或材料', [
+              const Text('仅递交本次明确选择的材料，不授予训练、商用或后续参演权。'),
+              const SizedBox(height: 12),
               SupplyFiles(
                   api: SupplyApi(widget.session),
                   purpose: 'AVATAR_MATERIAL',

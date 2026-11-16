@@ -6,6 +6,7 @@ import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../engagement/community_support.dart';
+import '../engagement/activity_summary_card.dart';
 import '../supply/supply_models.dart';
 import '../trade/trade_widgets.dart';
 
@@ -417,6 +418,13 @@ class _InvoicesState extends State<_Invoices> {
     }
   }
 
+  String maskedTaxId(String value) {
+    final original = value.trim();
+    return original.length <= 4
+        ? '••••'
+        : '•••• ${original.substring(original.length - 4)}';
+  }
+
   Map<String, dynamic> headerInput() => {
         'kind': kind,
         'title': communityRequired(title.text, '抬头名称', max: 200),
@@ -429,6 +437,19 @@ class _InvoicesState extends State<_Invoices> {
         uploading ||
         recovery == null && (pending.isNotEmpty || pendingUpload != null)) {
       return;
+    }
+    if (create && recovery == null) {
+      if (eligibility == null || eligibility!['available_minor'] <= 0 ||
+          eligibility!['environment'] == null || amountInputError != null) return;
+      final confirmed = await tradeConfirm(context, '核对本次开票申请', [
+        tradeFact('原订单', widget.orderId),
+        tradeFact('抬头类型', kind == 'PERSON' ? '个人' : '企业'),
+        tradeFact('抬头名称', title.text.trim()),
+        if (kind == 'ORGANIZATION') tradeFact('纳税人识别号（末四位）', maskedTaxId(tax.text)),
+        tradeFact('申请金额（元）', amount.text.trim()),
+        const Text('我确认本次信息用于这笔原订单的开票申请。提交后仍须审核，不代表已开票或已送达。'),
+      ]);
+      if (!mounted || !confirmed || locked) return;
     }
     setState(() {
       busy = true;
@@ -626,6 +647,31 @@ class _InvoicesState extends State<_Invoices> {
     }
   }
 
+  String? get amountInputError {
+    if (amount.text.trim().isEmpty) return null;
+    try {
+      final value = communityMinor(amount.text, '申请金额');
+      if (eligibility != null && value > eligibility!['available_minor']) {
+        return '超过当前可申请金额，请调整或重新读取额度。';
+      }
+      return null;
+    } catch (_) {
+      return '请输入大于0且最多两位小数的金额。';
+    }
+  }
+
+  String nextStep(String status) => switch (status) {
+    'REQUESTED' => '等待审核；如需撤回，可使用下方申请操作。',
+    'NEEDS_INFO' => '先阅读处理历史中的补件要求，再修改抬头或补充材料。',
+    'APPROVED' => '申请已审核，仍须开票方录入票据，当前不代表已经开票。',
+    'DOCUMENT_REVIEW' => '等待独立复核，未获准的票据不能下载。',
+    'ISSUED' => '请核对下方获准票据及模拟标识；有问题可申请更正。',
+    'CORRECTION_REQUESTED' => '更正已申请，等待核查；历史票据仍保留。',
+    'REJECTED' => '请查看处理历史中的原因，再回到原订单核对可申请额度。',
+    'WITHDRAWN' => '申请已撤回；再次申请前请在原订单重新读取额度。',
+    _ => '请重新读取申请状态。',
+  };
+
   List<Widget> headerFields() => [
         communitySelect(
             '抬头类型',
@@ -712,7 +758,7 @@ class _InvoicesState extends State<_Invoices> {
                     : widget.invoiceId == null
                         ? '我的开票申请'
                         : '申请与票据进度',
-                eyebrow: '本人办理 / 当前购买身份'),
+                eyebrow: '本人办理 / 当前购买身份', fontSize: 28),
             tradeFact('办事身份', s.party?['display_name']),
             const Text('申请获批不等于票据已开具。获准票据需由开票方录入并独立复核，真实开票服务未开放时不会显示完成。'),
             if (busy) const LinearProgressIndicator(),
@@ -727,7 +773,23 @@ class _InvoicesState extends State<_Invoices> {
                     outline: true),
               ]),
             if (create && eligibility != null) ...[
-              tradeSection('当前可申请额度', [
+              tradeSection('本订单当前可申请', [
+                Text(communityMoney(eligibility!['available_minor']),
+                    style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 12),
+                Text(eligibility!['environment'] == 'SANDBOX'
+                    ? '模拟环境，仅形成模拟凭证，不是真实发票。'
+                    : '额度来自当前收退款及申请占用记录，提交时会重新核对。'),
+                const Divider(height: 24),
+                tradeFact('原订单', widget.orderId),
+                tradeButton('核对原订单与付款',
+                    locked ? null : () => leave(route: invoiceBusinessRoute(widget.orderId)),
+                    outline: true),
+              ]),
+              tradeSection('开票范围与办理结果', [
+                const Text('仅按本订单真实可申请额度办理，不把订单总价或平台全额收入当作可开票金额。提交申请不是票据已开具；后续可在申请记录读取获准票据。'),
+              ]),
+              tradeSection('额度构成', [
                 tradeFact(
                     '环境',
                     eligibility!['environment'] == 'SANDBOX'
@@ -745,14 +807,16 @@ class _InvoicesState extends State<_Invoices> {
                   tradeFact(
                       entry.value, communityMoney(eligibility![entry.key])),
               ]),
-              ...headerFields(),
+              tradeSection('本次抬头', headerFields()),
               TextField(
                   controller: amount,
                   enabled: !locked,
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
-                  decoration:
-                      const InputDecoration(labelText: '申请金额（元 / CNY）')),
+                  decoration: InputDecoration(
+                      labelText: '申请金额（元 / CNY）',
+                      helperText: '按当前可申请额度填写，提交时服务器会重新核对。',
+                      errorText: amountInputError)),
               TextField(
                   controller: text,
                   enabled: !locked,
@@ -763,6 +827,11 @@ class _InvoicesState extends State<_Invoices> {
               tradeButton(
                   '确认提交开票申请',
                   locked ||
+                          amountInputError != null ||
+                          amount.text.trim().isEmpty ||
+                          title.text.trim().isEmpty ||
+                          text.text.trim().isEmpty ||
+                          kind == 'ORGANIZATION' && tax.text.trim().isEmpty ||
                           eligibility!['available_minor'] <= 0 ||
                           eligibility!['environment'] == null
                       ? null
@@ -770,6 +839,8 @@ class _InvoicesState extends State<_Invoices> {
             ],
             if (!create && widget.invoiceId == null) ...[
               const Text('从原订单进入可核对额度并新建申请。这里展示当前购买身份的全部申请。'),
+              tradeButton('选择原订单申请', locked ? null : () => leave(route: '/orders'),
+                  outline: true),
               communitySelect(
                   '申请状态',
                   filter ?? '',
@@ -785,7 +856,10 @@ class _InvoicesState extends State<_Invoices> {
                         }),
               for (final r in rows)
                 tradeSection(invoiceHeader(r['header'])['title'], [
-                  tradeFact('处理进度', invoiceStates[r['current_status']]),
+                  Align(alignment: Alignment.centerLeft,
+                      child: Chip(label: Text(invoiceStates[r['current_status']]!))),
+                  Text(nextStep(r['current_status']),
+                      style: const TextStyle(color: AccountTheme.muted, height: 1.6)),
                   tradeFact('申请金额', communityMoney(r['requested_minor'])),
                   if (r['environment'] == 'SANDBOX') const Text('模拟环境，非真实发票'),
                   tradeButton(
@@ -805,10 +879,15 @@ class _InvoicesState extends State<_Invoices> {
               sectionControls('list'),
             ],
             if (record != null) ...[
-              tradeSection(invoiceStates[record!['current_status']]!, [
+              ActivitySummaryCard(
+                  label: '开票办理进度',
+                  value: invoiceStates[record!['current_status']]!,
+                  icon: Icons.receipt_long_outlined,
+                  description: nextStep(record!['current_status'])),
+              tradeSection('本次申请', [
                 tradeFact('抬头', invoiceHeader(record!['header'])['title']),
                 if (record!['header']['kind'] == 'ORGANIZATION')
-                  tradeFact('纳税人识别号', record!['header']['tax_id']),
+                  tradeFact('纳税人识别号（末四位）', maskedTaxId(record!['header']['tax_id'] as String)),
                 tradeFact('申请金额', communityMoney(record!['requested_minor'])),
                 tradeFact('当前占用额度', communityMoney(record!['occupied_minor'])),
                 tradeFact(

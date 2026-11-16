@@ -176,7 +176,11 @@ class _ConversationState extends State<_Conversation>
 
   void go(String path) => Navigator.pushNamed(context, path);
   List<Widget> message(CommercialMessage m, CommercialConversation c) => [
-        tradeSection(
+        Padding(
+            padding: EdgeInsets.only(
+                left: m.raw['owner_party_id'] == widget.session.partyId ? 16 : 0,
+                right: m.raw['owner_party_id'] == widget.session.partyId ? 0 : 16),
+            child: tradeSection(
             m.hidden
                 ? '本条内容已隐藏'
                 : m.kind == 'ORDER_CARD'
@@ -218,7 +222,7 @@ class _ConversationState extends State<_Conversation>
                         onChanged: hidden, onSnapshot: snapshot)),
               tradeFact('发送时间', tradeDate(m.data['at'])),
               if (c.raw['read_until'] == m.id) appNotice('本人已读进度到此；不代表其他参与方已读。')
-            ])
+            ]))
       ];
   @override
   Widget build(BuildContext context) {

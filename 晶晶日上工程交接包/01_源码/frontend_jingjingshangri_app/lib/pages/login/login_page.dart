@@ -242,30 +242,20 @@ class _LoginPageState extends State<LoginPage> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 40, 20, 24),
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                 children: [
-                  Align(
-                      alignment: Alignment.centerLeft,
-                      child: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                              color: AccountTheme.selectedSurface,
-                              borderRadius: BorderRadius.circular(20)),
-                          child: const Icon(Icons.movie_creation_outlined,
-                              size: 32, color: AccountTheme.accent))),
-                  const SizedBox(height: 24),
                   const Text('返回你的片场',
                       style:
-                          TextStyle(fontSize: 12, color: AccountTheme.accent)),
-                  const SizedBox(height: 24),
+                          TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                  const SizedBox(height: 20),
                   const Text('登录晶晶日上',
                       style: TextStyle(
-                          fontFamily: AccountTheme.serif,
-                          fontSize: 32,
+                          fontFamily: AccountTheme.sans,
+                          fontSize: 28,
                           fontWeight: FontWeight.w900,
                           height: 1.25)),
                   const SizedBox(height: 20),
-                  Text(widget.reason ?? '新的角色，新的故事。从这里开始。',
+                  Text(widget.reason ?? '登录后返回刚才的业务；仅恢复页面，不自动继续提交。',
                       style: const TextStyle(
                           fontSize: 14,
                           color: AccountTheme.muted,
@@ -301,7 +291,7 @@ class _LoginPageState extends State<LoginPage> {
                       }),
                     ),
                   ),
-                  const Divider(height: 14),
+                  const SizedBox(height: 10),
                   const Text('用于接收登录验证码',
                       style:
                           TextStyle(fontSize: 12, color: AccountTheme.muted)),
@@ -325,7 +315,7 @@ class _LoginPageState extends State<LoginPage> {
                           hintText: '输入6位验证码', counterText: ''),
                     ),
                   ),
-                  const Divider(height: 14),
+                  const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton(

@@ -336,14 +336,18 @@ class _RecordsState extends State<_Records> {
   @override
   Widget build(BuildContext c) => tradeScaffold(
       c,
-      gigKinds[widget.kind]!,
+      widget.kind == 'RELATION' ? '我的合作' : gigKinds[widget.kind]!,
       [
-        gigHeading(gigKinds[widget.kind]!),
+        if (widget.kind == 'RELATION')
+          tradeHeading('我的合作', eyebrow: '本人确认 / 直接合作', fontSize: 28)
+        else
+          gigHeading(gigKinds[widget.kind]!),
         tradeFact('当前身份', widget.session.party?['display_name'] ?? api.owner()),
         if (widget.kind == 'RELATION') ...[
-          appNotice('只办理直接合作，不设置上下级或多级分佣。'),
+          appNotice('一人一直接 MCN，生效以原记录及各方确认结果为准；不设置上下级或多级分佣。'),
+          supplyNote('本页按真实记录分别列出邀请、有效与历史关系，不把当前页第一条当作唯一有效关系。'),
           tradeButton(
-              '发起直接合作',
+              '合作邀请与申请',
               busy || widget.session.gigsPending.isNotEmpty
                   ? null
                   : () => Navigator.pushNamed(c, '/gigs/relations/new'),
@@ -371,12 +375,21 @@ class _RecordsState extends State<_Records> {
           tradeSection(r.title, [
             tradeFact('记录编号', r.id),
             tradeFact('当前状态', gigStatuses[r.status]),
+            if (r.kind == 'RELATION') ...[
+              tradeFact('MCN 主体', r.owner),
+              tradeFact('合作本人', r.counterparty),
+              tradeFact('合作开始', tradeDate(r.data['valid_from'])),
+              tradeFact('合作截止', tradeDate(r.data['valid_until'])),
+              gigCommissionFacts(gigMap(r.data['commission']),
+                  marketplace: r.data['marketplace_terms'], v5: r.data['v5_terms']),
+              supplyNote('代管范围以本份合作条款为准，不默认包含代签；超出范围须本人另行确认。'),
+            ],
             if (r.kind == 'GIG') gigParagraph(r.data['brief']),
             if (r.kind == 'COMMISSION')
               tradeFact('核实净额', tradeMoney(r.data['facts']['net_minor']),
                   accent: true),
             tradeButton(
-                '查看详情',
+                r.kind == 'RELATION' ? '查看合作协议与办理事项' : '查看详情',
                 busy || widget.session.gigsPending.isNotEmpty
                     ? null
                     : () async {
@@ -386,6 +399,14 @@ class _RecordsState extends State<_Records> {
                       },
                 outline: true)
           ]),
+        if (widget.kind == 'RELATION') ...[
+          tradeSection('历史合作订单', [
+            supplyNote('结束或更换合作不改写旧订单的费用、分配与授权。进入具体合作记录核对旧单交接，不将其他关系的订单合并。'),
+          ]),
+          tradeSection('资产仍属于本人', [
+            supplyNote('直接合作不转移数字人与素材的所有权。使用与代管按明确授权范围办理，解除合作不自动改变已保存的原合同。'),
+          ]),
+        ],
         tradeButton('重新读取', busy ? null : () => load(), outline: true),
         if (cursor != null)
           tradeButton('加载更多', busy ? null : () => load(more: true),
@@ -643,6 +664,9 @@ class _RecordState extends State<_Record> {
             tradeFact('结束时间', tradeDate(d['valid_until'])),
             tradeFact('排他约定', d['exclusive'] ? '排他' : '不排他')
           ]),
+          tradeSection('约定代管范围', [
+            supplyNote('按本份明确条款核对，不默认包含代签或超范围使用。未约定事项由本人另行确认；合作关系不转移本人的数字人与素材所有权。'),
+          ]),
           tradeSection('原合作条款', [
             gigParagraph(d['terms']),
             gigCommissionFacts(gigMap(d['commission']),
@@ -757,6 +781,8 @@ class _RecordState extends State<_Record> {
                 busy ? null : () => perform(() => api.retry(p['path'])))
           ]),
         if (data != null) ...[
+          if (data!.kind == 'RELATION')
+            tradeHeading('我的合作', eyebrow: '原合作记录 / 各方独立确认', fontSize: 28),
           gigStatus(data!),
           gigNextStep(data!),
           const SizedBox(height: 16),

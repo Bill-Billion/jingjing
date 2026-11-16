@@ -103,8 +103,8 @@ Widget projectSelect(String label, String? value, List<(String, String)> values,
             container: true,
             explicitChildNodes: true,
             child: DropdownButtonFormField<String>(
-                key: ValueKey('$label:$value'),
-                initialValue: value,
+                key: ValueKey('$label:$value:${values.map((v) => v.$1).join(',')}'),
+                initialValue: values.any((v) => v.$1 == value) ? value : null,
                 decoration: InputDecoration(labelText: label),
                 isExpanded: true,
                 items: [

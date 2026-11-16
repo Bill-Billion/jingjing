@@ -328,18 +328,42 @@ class _ProjectDetailState extends State<_ProjectDetail> {
   @override
   Widget build(BuildContext context) {
     final p = project;
+    final locked = busy || widget.session.productionPending.isNotEmpty;
+    final currentVersion = p == null ? null : productionStages.keys
+        .toList().reversed
+        .map((stage) => versions.where(
+            (v) => v.id == p.data['current'][stage]).firstOrNull)
+        .whereType<ProductionRecord>().firstOrNull;
     return tradeScaffold(
         context,
-        '制作项目',
+        '制作任务详情',
         [
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (p != null) ...[
-            EditorialFeature(
-                title: productionProjectTitle(p, order),
-                eyebrow: '平台制作任务 / ${productionStatuses[p.status]}',
-                description:
-                    '${p.data['specification']['final_seconds']}秒 · ${p.data['specification']['service_tier']}'),
+            Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text('平台制作任务 / ${productionStatuses[p.status]}',
+                        style: const TextStyle(fontSize: 11, color: AccountTheme.accent)),
+                    const SizedBox(height: 18),
+                    Text(productionProjectTitle(p, order),
+                        style: const TextStyle(fontSize: 28,
+                            fontWeight: FontWeight.w700, height: 1.25)),
+                    const SizedBox(height: 10),
+                    Text('${p.data['specification']['final_seconds']}秒 · ${p.data['specification']['service_tier']}',
+                        style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                  ])),
+                  const SizedBox(width: 16),
+                  Container(width: 108, height: 144,
+                      decoration: BoxDecoration(color: AccountTheme.surface,
+                          borderRadius: BorderRadius.circular(12)),
+                      child: const Center(child: Text('当前未提供封面',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 11, color: AccountTheme.muted)))),
+                ])),
             productionCurrentTasks(p, versions,
                 flow: fulfillment,
                 order: order,
@@ -457,7 +481,18 @@ class _ProjectDetailState extends State<_ProjectDetail> {
           ],
           tradeButton('重新读取项目', busy ? null : load, outline: true)
         ],
-        locked: busy || widget.session.productionPending.isNotEmpty);
+        footer: p == null ? null : Row(children: [
+          Expanded(child: operationCommentLink(
+              context, 'PRODUCTION', p.id, '项目留言',
+              enabled: !locked, returned: load)),
+          const SizedBox(width: 10),
+          Expanded(child: tradeButton(
+              currentVersion == null ? '暂无当前版本' :
+                  '审阅当前${productionStages[currentVersion.stage]}',
+              locked || currentVersion == null ? null :
+                  () => openVersion(currentVersion))),
+        ]),
+        locked: locked);
   }
 }
 
@@ -1136,7 +1171,7 @@ class _VersionReviewState extends State<_VersionReview> {
             maxLength: 4000,
             decoration: InputDecoration(
                 labelText: decision == 'ACCEPT' ? '确认说明' : '本版修改意见',
-                hintText: '请围绕这一个具体版本填写说明。'))
+                hintText: '请注明本版时间点、画面或声音问题，以及希望如何调整。'))
       ]),
       tradeSection('3 · 核对本次影响', [
         tradeFact('按本单约定记录',
@@ -1198,14 +1233,14 @@ class _VersionReviewState extends State<_VersionReview> {
                             const SizedBox(height: 20),
                             Text(v.stage == 'FINAL' ? '成片验收' : '样片审阅',
                                 style: const TextStyle(
-                                    fontFamily: AccountTheme.serif,
-                                    fontSize: 52,
+                                    fontFamily: AccountTheme.sans,
+                                    fontSize: 28,
                                     height: 1.15,
                                     fontWeight: FontWeight.w900)),
                           ])),
                 ] else
                   tradeHeading(widget.feedbackOnly ? '写下本版意见' : '确认这一版',
-                      eyebrow: '正式版本 / 先查看，再确认'),
+                      eyebrow: '正式版本 / 先查看，再确认', fontSize: 28),
                 if (busy) const LinearProgressIndicator(),
                 if (error != null) appNotice(error!, icon: Icons.error_outline),
                 if (pending != null)
@@ -1220,6 +1255,14 @@ class _VersionReviewState extends State<_VersionReview> {
                         busy ? null : () => submit(decision, note.text))
                   ]),
                 if (v != null && p != null) ...[
+                  Wrap(spacing: 12, runSpacing: 8, children: [
+                    Chip(label: Text(widget.feedbackOnly ? '本版意见' : '当前版本')),
+                    TextButton(
+                        onPressed: locked ? null : () => Navigator.pushNamed(
+                            context, '/production/project?projectId=${p.id}'),
+                        child: const Text('版本历史与修改记录')),
+                  ]),
+                  const SizedBox(height: 16),
                   Container(
                       margin: const EdgeInsets.only(bottom: 18),
                       padding: const EdgeInsets.all(20),
@@ -1279,6 +1322,10 @@ class _VersionReviewState extends State<_VersionReview> {
                             subtitle: const Text('查看本单规格与修改约定'),
                             children: [productionSpecification(p)])),
                   ...feedbackForm(v, p),
+                  if (v.stage == 'FINAL')
+                    tradeSection('验收后的下一步', [
+                      appNotice('仅确认当前绑定的成片版本。尾款、正式交付、当前许可与下载条件仍分别核对；补片或中间版本不能冒充最终成片验收。'),
+                    ]),
                   if (!widget.feedbackOnly)
                     tradeSection('本版反馈历史', [
                       if (!history.any((f) => f.data['version_id'] == v.id))

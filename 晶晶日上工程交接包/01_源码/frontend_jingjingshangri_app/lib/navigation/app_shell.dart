@@ -188,67 +188,51 @@ class _AppShellState extends State<AppShell> {
           const SizedBox(height: 24),
         ] else ...[
           Container(
-              decoration: BoxDecoration(
-                  color: AccountTheme.selectedSurface,
-                  borderRadius: BorderRadius.circular(24)),
-              padding: const EdgeInsets.fromLTRB(20, 22, 16, 22),
-              child:
-                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                const Text('我',
-                    style: TextStyle(
-                        fontFamily: AccountTheme.serif,
-                        color: AccountTheme.text,
-                        fontSize: 48,
-                        fontWeight: FontWeight.w900,
-                        height: 1.15)),
-                const SizedBox(width: 20),
-                Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      Text(session.account?['display_name'] ?? '我的账号',
-                          style: const TextStyle(
-                              color: AccountTheme.text,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 8),
-                      const Text('把每一次出场，留成作品。',
-                          style: TextStyle(
-                              color: AccountTheme.text,
-                              fontSize: 11,
-                              height: 1.7)),
-                    ])),
+            color: AccountTheme.surface,
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                Container(
+                    width: 56, height: 56,
+                    decoration: BoxDecoration(
+                        color: AccountTheme.selectedSurface,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.person_outline,
+                        size: 32, color: AccountTheme.text)),
+                const SizedBox(width: 12),
+                Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(session.account?['display_name'] ?? '我的账号',
+                      style: const TextStyle(fontSize: 20,
+                          fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 4),
+                  const Text('认证与成长以本人记录为准',
+                      style: TextStyle(fontSize: 11, color: AccountTheme.muted)),
+                ])),
                 IconButton(
                     tooltip: '复制账号编号',
                     onPressed: () => Clipboard.setData(
                         ClipboardData(text: session.account?['id'] ?? '')),
-                    icon: const Icon(Icons.copy_outlined,
-                        size: 18, color: AccountTheme.text)),
-              ])),
-          Card(
-              child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(children: [
-                    const Icon(Icons.badge_outlined,
-                        size: 32, color: AccountTheme.accent),
-                    const SizedBox(width: 12),
-                    Expanded(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          const Text('当前操作身份',
-                              style: TextStyle(
-                                  fontSize: 12, color: AccountTheme.muted)),
-                          const SizedBox(height: 6),
-                          Text(session.party?['display_name'] ?? '尚未选择办事身份',
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
-                        ])),
-                    const SizedBox(width: 8),
-                    FilledButton(
-                        onPressed: () => _open('/account'),
-                        child: const Text('切换身份')),
-                  ]))),
+                    icon: const Icon(Icons.copy_outlined, size: 18)),
+              ]),
+              const SizedBox(height: 10),
+              TextButton(
+                  style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 32),
+                      alignment: Alignment.centerLeft,
+                      foregroundColor: AccountTheme.text),
+                  onPressed: () => _open('/account'),
+                  child: const Text('个人资料与身份 ↗')),
+              Row(children: [
+                Expanded(child: Text(
+                    '当前身份 · ${session.party?['display_name'] ?? '尚未选择办事身份'}',
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.muted))),
+                TextButton(onPressed: () => _open('/account'),
+                    child: const Text('切换身份')),
+              ]),
+            ]),
+          ),
         ],
         Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -272,12 +256,18 @@ class _AppShellState extends State<AppShell> {
           ('参演条款与会签', '/projects/participation'),
           ('独立发行收入约定', '/projects/income'),
           ('合同与原约定', '/library?section=contracts'),
+          ('多人共创', '/cocreation'),
+          ('我的许可办理', '/licensing'),
+          ('我的许可项目', '/licensing?kind=PROJECT'),
+          ('我的预约', '/auditions/bookings'),
+          ('我的通告与投稿', '/notices/records?kind=SUBMISSION'),
         ]
       ),
       (
         '艺人与商品',
         '我的艺人 · 数字人 · 视频 · 试镜设置',
         [
+          ('管理我的艺人', '/artists'),
           ('数字人资料', '/my-humans'),
           ('我的现成作品上架', '/stock/listings'),
           ('试镜服务与接单', '/auditions/offers'),
@@ -288,10 +278,13 @@ class _AppShellState extends State<AppShell> {
       ),
       (
         '认证与成长',
-        '实名 · 授权 · 成长与合作',
+        '实名 · 主角光环 · 晶钻 · 星探',
         [
           ('账号与机构', '/account'),
           ('成长与推荐', '/engagement?view=growth'),
+          ('晶钻中心', '/wallet/points'),
+          ('星探中心', '/wallet/scout'),
+          ('权益兑换与抽奖', '/redemption'),
           ('MCN 直接合作', '/mcn'),
           ('MCN 经营与委派', '/engagement?view=mcn'),
         ]
@@ -300,9 +293,7 @@ class _AppShellState extends State<AppShell> {
         '资金与收益',
         '消费余额 · 晶钻 · 艺人收入',
         [
-          ('钱包、晶钻与会员', '/wallet'),
-          ('晶钻中心', '/wallet/points'),
-          ('星探中心', '/wallet/scout'),
+          ('消费钱包、晶钻与会员', '/wallet'),
           ('发票与票据', '/invoices'),
           ('我的结算', '/finance'),
           ('佣金核算', '/gigs/records?kind=COMMISSION'),
@@ -310,24 +301,9 @@ class _AppShellState extends State<AppShell> {
         ]
       ),
       (
-        '共创与权益',
-        '参与记录 · 制作金 · 活动规则',
-        [
-          ('多人共创', '/cocreation'),
-          ('权益兑换与抽奖', '/redemption'),
-          ('我的许可办理', '/licensing'),
-          ('我的许可项目', '/licensing?kind=PROJECT'),
-        ]
-      ),
-      (
-        '业务通知',
-        '系统通知 · 商单与履约变化',
-        [
-          ('系统与业务通知', '/operations/notifications'),
-          ('商单通知', '/gigs/notifications'),
-          ('我的预约', '/auditions/bookings'),
-          ('我的通告与投稿', '/notices/records?kind=SUBMISSION'),
-        ]
+        '收藏与足迹',
+        '收藏的艺人、作品与通告',
+        [('收藏与足迹', '/saved')]
       ),
       (
         '账号与帮助',
@@ -338,6 +314,8 @@ class _AppShellState extends State<AppShell> {
           ('侵权通知与反通知', '/contract-six/infringement'),
           ('设置与帮助', '/settings'),
           ('帮助与反馈', '/help'),
+          ('系统与业务通知', '/operations/notifications'),
+          ('商单通知', '/gigs/notifications'),
         ]
       ),
     ];
@@ -354,11 +332,19 @@ class _AppShellState extends State<AppShell> {
                 title: Text(g.$1,
                     style: const TextStyle(
                         fontFamily: AccountTheme.serif,
-                        fontSize: 23,
+                        fontSize: 21,
                         height: 1.3,
                         fontWeight: FontWeight.w700)),
-                subtitle: Text(g.$2,
-                    style: const TextStyle(
+                subtitle: g.$1 == '资金与收益'
+                    ? Row(children: [
+                        Expanded(child: TextButton(
+                            onPressed: () => _open('/wallet'),
+                            child: const Text('消费余额\n查看本人钱包'))),
+                        Expanded(child: TextButton(
+                            onPressed: () => _open('/finance'),
+                            child: const Text('收入与结算\n查看获准记录'))),
+                      ])
+                    : Text(g.$2, style: const TextStyle(
                         fontSize: 11, color: AccountTheme.muted)),
                 trailing: const Icon(Icons.north_east, size: 22),
                 children: [
@@ -428,33 +414,23 @@ class _AppShellState extends State<AppShell> {
     final session = context.watch<AccountSession>();
     return AccountTheme(
         child: Scaffold(
-      appBar: _selected == 0 || session.isLoggedIn && [1, 2].contains(_selected)
+      appBar: _selected == 0 || _selected == 3 || session.isLoggedIn && [1, 2].contains(_selected)
           ? null
           : AppBar(
               backgroundColor: _selected == 4 && session.isLoggedIn
-                  ? AccountTheme.text
+                  ? AccountTheme.surface
                   : AccountTheme.canvas,
-              foregroundColor: _selected == 4 && session.isLoggedIn
-                  ? AccountTheme.canvas
-                  : AccountTheme.text,
+              foregroundColor: AccountTheme.text,
               automaticallyImplyLeading: false,
               centerTitle: false,
               titleSpacing: 16,
-              toolbarHeight: _selected > 0 && _selected < 4 ? 78 : 44,
+              toolbarHeight: 64,
               title: Text(_selected == 0 ? '晶晶日上' : _labels[_selected],
                   style: TextStyle(
-                      color: _selected == 4 && session.isLoggedIn
-                          ? AccountTheme.canvas
-                          : AccountTheme.text,
-                      fontFamily: AccountTheme.serif,
-                      fontSize: _selected > 0 && _selected < 4
-                          ? 52
-                          : _selected == 0
-                              ? 27
-                              : 14,
-                      fontWeight: _selected > 0 && _selected < 4
-                          ? FontWeight.w900
-                          : FontWeight.w700)),
+                      color: AccountTheme.text,
+                      fontFamily: AccountTheme.sans,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700)),
               actions: [
                   IconButton(
                       tooltip: _selected == 4 ? '设置与帮助' : '通知',
@@ -591,63 +567,60 @@ class AppUnknownPage extends StatelessWidget {
 
 class AppHelpPage extends StatelessWidget {
   const AppHelpPage({super.key});
-  Widget _section(String title, String description, IconData icon,
-          List<Widget> actions) =>
-      Card(
-          child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(icon, size: 32, color: AccountTheme.accent),
-                          const SizedBox(width: 16),
-                          Expanded(
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                Text(title,
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700)),
-                                const SizedBox(height: 8),
-                                Text(description,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        color: AccountTheme.muted,
-                                        height: 1.5))
-                              ])),
-                        ]),
-                    if (actions.isNotEmpty) const SizedBox(height: 16),
-                    ...actions,
-                  ])));
+  Widget _entry(BuildContext context, String title, String description,
+          String route, {String action = '管理'}) =>
+      InkWell(
+          onTap: () => Navigator.pushNamed(context, route),
+          child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: AccountTheme.border))),
+              child: Row(children: [
+                Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(title, style: const TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 6),
+                  Text(description, style: const TextStyle(
+                      fontSize: 12, color: AccountTheme.muted, height: 1.5)),
+                ])),
+                const SizedBox(width: 16),
+                Text(action, style: const TextStyle(fontSize: 12)),
+                const SizedBox(width: 4),
+                const Icon(Icons.chevron_right, size: 16),
+              ])));
   @override
-  Widget build(BuildContext context) => _ChildPage(title: '设置与帮助', children: [
-        const Text('设置与帮助',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+  Widget build(BuildContext context) =>
+      _ChildPage(title: '个人资料与账号设置', children: [
+        const Text('你的资料与使用偏好',
+            style: TextStyle(color: AccountTheme.accent, fontSize: 12)),
+        const SizedBox(height: 16),
+        const Text('资料与设置',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 12),
+        _entry(context, '个人资料与账号', '查看本人资料、绑定手机号与账号安全。',
+            '/account', action: '编辑'),
+        _entry(context, '业务消息与使用偏好',
+            '管理通知、个性化和休息设置；必要业务记录仍保留在消息中心。',
+            '/privacy?view=preferences'),
+        _entry(context, '账号、安全与隐私权利',
+            '本人资料申请、信息副本、删除与注销。',
+            '/privacy?view=requests', action: '查看'),
+        _entry(context, '机构经营与平台工作',
+            '查看已授权的办事身份与机构成员；批量经营使用独立工作台。',
+            '/account', action: '进入'),
+        _entry(context, '用户协议', '查看当前保留的协议文本与更新说明。',
+            '/agreement', action: '阅读'),
+        _entry(context, '隐私政策', '查看隐私文本与适用范围说明。',
+            '/privacy', action: '阅读'),
+        _entry(context, '帮助与反馈', '查找办理问题、提交问题并查看处理进度。',
+            '/help', action: '打开'),
+        const SizedBox(height: 20),
+        const Text('各项偏好在对应页面读取并保存；本页不显示尚未读取的开关状态。退出账号请进入账号管理。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
         const SizedBox(height: 24),
-        _section('隐私与协议', '查看保存的条款文本与当前说明。', Icons.description_outlined, [
-          OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, '/agreement'),
-              child: const Text('用户协议')),
-          const SizedBox(height: 12),
-          OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, '/privacy'),
-              child: const Text('隐私政策')),
-        ]),
-        _section('账号与机构', '管理本人账号、办事身份与机构成员。', Icons.person_outline, [
-          FilledButton(
-              onPressed: () => Navigator.pushNamed(context, '/account'),
-              child: const Text('管理账号与机构'))
-        ]),
-        _section('帮助与反馈', '查找常见办理问题与当前可用入口。', Icons.help_outline, [
-          OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, '/help'),
-              child: const Text('打开帮助与反馈'))
-        ]),
-        _section('产品工作名', '晶晶日上', Icons.info_outline, []),
+        const Text('晶晶日上', style: TextStyle(
+            color: AccountTheme.muted, fontSize: 12)),
       ]);
 }
 

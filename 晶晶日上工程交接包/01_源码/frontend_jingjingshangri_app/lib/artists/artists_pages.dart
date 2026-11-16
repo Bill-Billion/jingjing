@@ -76,20 +76,29 @@ class _PeopleState extends State<_People> {
     final personal = widget.session.party?['kind'] == 'PERSON';
     return tradeScaffold(c, '我的艺人', [
       tradeHeading(personal ? '我的艺人' : '获托艺人',
-          eyebrow: personal ? '真人本人档案 / 本人所有' : '机构工作 / 仅有效委托'),
+          eyebrow: personal ? '本人档案 / 本人所有' : '受托管理 / 须核对当前身份',
+          fontSize: 28),
       artistPendingNotice(c, widget.session),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
       for (final p in rows)
-        artistIdentityCover(p.name,
-            '实名：${artistStatus(p.raw['identity_status'])} · 归属本人 ${shortSupplyId(p.owner)}',
-            onTap: busy
-                ? null
-                : () =>
+        Container(
+            key: ValueKey('artist-person-${p.id}'),
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(16)),
+            child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                leading: const Icon(Icons.person_outline, color: AccountTheme.muted),
+                title: Text(p.name, style: const TextStyle(
+                    fontSize: 18, fontWeight: FontWeight.w600)),
+                subtitle: Text('实名：${artistStatus(p.raw['identity_status'])} · 归属本人 ${shortSupplyId(p.owner)}',
+                    style: const TextStyle(fontSize: 12, height: 1.6)),
+                trailing: const Icon(Icons.chevron_right, size: 20),
+                onTap: busy ? null : () =>
                     Navigator.pushNamed(c, artistPersonRoute(p.id)).then((_) {
                       if (mounted) load();
-                    }),
-            key: ValueKey('artist-person-${p.id}')),
+                    }))),
       tradeBanner(
           '让每一次出场有据可查',
           personal
@@ -200,7 +209,7 @@ class _PersonState extends State<_Person> {
         can = d?.person.adultVerified == true &&
             widget.session.artistsPending.isEmpty;
     return tradeScaffold(c, '艺人档案', [
-      tradeHeading(d?.person.name ?? '读取本人档案', eyebrow: '艺人 / 真人与数字人'),
+      tradeHeading(d?.person.name ?? '读取本人档案', eyebrow: '艺人资料 / 真人与数字形象分别管理', fontSize: 28),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
       artistPendingNotice(c, widget.session),
@@ -518,6 +527,11 @@ class _RecordState extends State<_Record> {
         ],
       'HALO' => [
           tradeFact('申请等级', 'L${d['level']}'),
+          if (d['service_id'] != null)
+            tradeButton('查看本申请原审核费用与服务',
+                busy ? null : () => Navigator.pushNamed(context,
+                    artistRecordRoute(widget.personId, d['service_id'])),
+                outline: true),
           tradeFact(
               '关联审核服务',
               d['service_id'] == null
@@ -536,7 +550,7 @@ class _RecordState extends State<_Record> {
                 d['certification_materials']['lifestyle_asset_ids'].join('、')),
             tradeFact('全身照',
                 d['certification_materials']['full_body_asset_ids'].join('、')),
-            appNotice('新版10元人工审核费不支持常规退款；撤回保留费用与原材料事实。')
+            appNotice('审核费用与退款条件以本申请关联的原审核服务及原订单为准；撤回保留费用与原材料事实。')
           ]
         ],
       'APPEAL' => [
@@ -563,6 +577,24 @@ class _RecordState extends State<_Record> {
   List<Widget> serviceFacts(ArtistRecord r) {
     final d = r.data, s = d['specification'], order = r.raw['order'];
     return [
+      if (d['kind'] == 'AVATAR_HOSTING')
+        Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(18)),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(r.freeService ? '基础托管永久免费' : '按原托管约定核对',
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+              const SizedBox(height: 10),
+              Text(r.freeService
+                  ? '无需续期，不自动扣费。长期模型服务尚未开放；人工精修服务另行约定。'
+                  : '本记录保留历史服务价格、期限和原合同，不用新版免费说明覆盖原单。',
+                  style: const TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+              const SizedBox(height: 10),
+              const Text('托管仅提供约定服务，不改变资产所有权或扩大本人授权。',
+                  style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+            ])),
       tradeFact('服务', artistServiceKinds[d['kind']]),
       tradeFact('服务请求编号', r.id),
       tradeFact('本人买方主体', detail?.person.owner),
@@ -648,18 +680,53 @@ class _RecordState extends State<_Record> {
           r == null
               ? '读取原记录'
               : r.kind == 'SERVICE'
-                  ? '创建与托管'
-                  : artistKinds[r.kind]!,
+                  ? r.data['kind'] == 'AVATAR_HOSTING' ? '托管管理' : '创建与托管'
+                  : r.kind == 'HALO' ? '认证申请详情' : artistKinds[r.kind]!,
           eyebrow: r == null
               ? '本人档案 / 原记录'
-              : '${artistKinds[r.kind]} / 版本 ${r.version}'),
+              : '${artistKinds[r.kind]} / 版本 ${r.version}',
+          fontSize: 28),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
       artistPendingNotice(c, widget.session),
       if (r != null && p != null) ...[
-        tradeBanner(
-            artistStatus(r.status), '${p.name} · 记录 ${shortSupplyId(r.id)}',
-            icon: Icons.description_outlined),
+        if (!(r.kind == 'HALO' && r.status == 'APPROVED'))
+          tradeBanner(
+              artistStatus(r.status), '${p.name} · 记录 ${shortSupplyId(r.id)}',
+              icon: Icons.description_outlined),
+        if (r.kind == 'HALO' && r.status == 'APPROVED')
+          Container(
+              margin: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(color: AccountTheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AccountTheme.accent)),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text('这份认证申请已通过',
+                    style: TextStyle(color: AccountTheme.accent,
+                        fontSize: 18, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 8),
+                Text('${p.name} · 记录 ${shortSupplyId(r.id)}',
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                const SizedBox(height: 8),
+                const Text('以本申请真实审核结果和有效期为准。认证光环、业务成长、服务评价分别记录；支付成功不代表审核通过。',
+                    style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+              ])),
+        if (r.kind == 'HALO' && r.status == 'NEEDS_MATERIAL')
+          Container(
+              margin: const EdgeInsets.symmetric(vertical: 16),
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(color: AccountTheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AccountTheme.danger)),
+              child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('这份申请需要补充材料',
+                    style: TextStyle(color: AccountTheme.danger,
+                        fontSize: 18, fontWeight: FontWeight.w600)),
+                SizedBox(height: 8),
+                Text('按下方真实审核意见补充，继续沿用本申请与原审核服务，不重复购买或收费。',
+                    style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+              ])),
         artistNextStep(r),
         ...facts(r),
         if (r.data['review'] != null)
@@ -1181,14 +1248,15 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
 
   Widget portrait(Map<String, dynamic> listing) => SizedBox(
       key: const ValueKey('artist-public-portrait'),
-      width: 180,
-      height: 228,
-      child: ClipRect(
+      width: 96,
+      height: 120,
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
           child: ArtistPublicPortrait(
               session: widget.session,
               listing: listing,
               media: media,
-              aspectRatio: 180 / 228,
+              aspectRatio: 96 / 120,
               onUnavailable: unavailable)));
 
   @override
@@ -1206,22 +1274,22 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
             children: [
               Text(listing['display_name'],
                   style: const TextStyle(
-                      fontFamily: AccountTheme.serif,
-                      fontSize: 32,
-                      fontWeight: FontWeight.w900,
+                      fontFamily: AccountTheme.sans,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
                       height: 1.2)),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               Text(
                   '${listing['city']} · ${(listing['tags'] as List).join(' · ')}',
                   style: const TextStyle(
-                      fontSize: 14, height: 1.5, color: AccountTheme.muted)),
-              const SizedBox(height: 20),
-              Text('当前认证 L${listing['halo_level']}',
+                      fontSize: 12, height: 1.5, color: AccountTheme.muted)),
+              const SizedBox(height: 12),
+              Text(listing['halo_level'] == 0 ? '暂无有效光环认证' : '当前认证 L${listing['halo_level']}',
                   style:
                       const TextStyle(fontSize: 12, color: AccountTheme.muted)),
             ]);
         if (constraints.maxWidth < 280 ||
-            MediaQuery.textScalerOf(context).scale(32) > 44) {
+            MediaQuery.textScalerOf(context).scale(28) > 44) {
           return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -1233,8 +1301,7 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
         return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
           Expanded(child: caption),
           const SizedBox(width: 12),
-          SizedBox(
-              width: constraints.maxWidth * .5085, child: portrait(listing)),
+          portrait(listing),
         ]);
       });
 
@@ -1249,18 +1316,39 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!),
           if (available) ...[
-            presentation(r),
+            Text('公开艺人 · ${r['city']}',
+                style: const TextStyle(fontSize: 12, color: AccountTheme.accent)),
+            const SizedBox(height: 16),
+            Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                    color: AccountTheme.surface,
+                    borderRadius: BorderRadius.circular(18)),
+                child: presentation(r)),
+            const SizedBox(height: 20),
+            Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: const BoxDecoration(border: Border(
+                    bottom: BorderSide(color: AccountTheme.border))),
+                child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('公开展示与使用许可',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  SizedBox(height: 8),
+                  Text('公开预览不授予形象、声音或作品的商用许可。具体用途、地域、期限和费用须按原商品或本次合作约定另行确认。',
+                      style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+                ])),
             CollectionDetailActions(
                 key: ValueKey('artist-save:${r['listing_id']}'),
                 session: widget.session,
                 kind: 'ARTIST',
                 targetId: r['listing_id']),
             const SizedBox(height: 32),
-            tradeHeading('关于这位艺人', fontSize: 24),
+            tradeHeading('关于这位艺人', fontSize: 18),
             Text(r['introduction'],
                 style: const TextStyle(fontSize: 14, height: 1.6)),
             const SizedBox(height: 32),
-            tradeHeading('作品与声音', fontSize: 24),
+            tradeHeading('作品与声音', fontSize: 18),
             const Text('每份预览在读取时重新核对公开授权。公开展示不授予形象、声音或作品商用许可。',
                 style: TextStyle(
                     fontSize: 14, height: 1.6, color: AccountTheme.muted)),
@@ -1274,23 +1362,8 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
                   item: items[i],
                   index: i + 1,
                   onUnavailable: unavailable),
-            tradeButton(
-                '查看公开试镜方案',
-                busy
-                    ? null
-                    : () => Navigator.pushNamed(
-                        context,
-                        Uri(path: '/auditions/catalog', queryParameters: {
-                          if ((r['city'] as String).trim().isNotEmpty)
-                            'city': (r['city'] as String).trim(),
-                        }).toString())),
-            appNotice('试镜方案按本人已审核并公开的目录展示；预约前请核对具体艺人与本单用途。'),
-            tradeButton(
-                '向这位艺人发起合作邀约',
-                busy
-                    ? null
-                    : () => Navigator.pushNamed(context,
-                        '/notices/submit?kind=INVITATION&listingId=${r['listing_id']}')),
+            const SizedBox(height: 16),
+            appNotice('试镜方案按本人已审核并公开的目录展示；预约前请核对具体艺人与本单用途。合作意向不直接形成订单，也不解锁私有联系方式。'),
             tradeButton('重新核对公开资料', busy ? null : reload, outline: true),
           ] else if (!busy) ...[
             Container(
@@ -1308,6 +1381,20 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
             tradeButton('返回目录重新读取', () => Navigator.pop(context)),
           ],
         ],
+        footer: available ? Row(children: [
+          Expanded(child: OutlinedButton(
+              onPressed: busy ? null : () => Navigator.pushNamed(context,
+                  Uri(path: '/auditions/catalog', queryParameters: {
+                    if ((r['city'] as String).trim().isNotEmpty)
+                      'city': (r['city'] as String).trim(),
+                  }).toString()),
+              child: const Text('查看试镜方案'))),
+          const SizedBox(width: 12),
+          Expanded(child: FilledButton(
+              onPressed: busy ? null : () => Navigator.pushNamed(context,
+                  '/notices/submit?kind=INVITATION&listingId=${r['listing_id']}'),
+              child: const Text('发起合作意向'))),
+        ]) : null,
         plaza: true);
   }
 }
@@ -1373,12 +1460,21 @@ class _AvatarDetailsState extends State<_AvatarDetails> {
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
       if (d != null && avatar != null) ...[
-        tradeHeading(avatar.name, eyebrow: '形象资产 / 本人所有'),
-        artistIdentityCover(avatar.name, '形象与声音 · 数字人档案',
-            imageLabel: '未提供数字人肖像封面'),
+        tradeHeading(avatar.name, eyebrow: '形象资产 / 本人所有', fontSize: 28),
+        Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(16)),
+            child: const Row(children: [
+              Icon(Icons.perm_media_outlined, size: 40, color: AccountTheme.muted),
+              SizedBox(width: 16),
+              Expanded(child: Text('形象与声音私档\n尚未提供可读取的数字人封面',
+                  style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted))),
+            ])),
         tradeSection('资产所有人', [
           tradeFact('真人本人', d.person.name),
           tradeFact('所有权主体', shortSupplyId(d.person.owner)),
+          tradeFact('当前管理', self ? '本人管理' : '仅当前有效委托范围'),
           tradeFact(
               '私人档案',
               avatar.raw['data']['archive_status'] == 'DELIVERED'
@@ -1406,6 +1502,13 @@ class _AvatarDetailsState extends State<_AvatarDetails> {
                 purpose: 'AVATAR_MATERIAL',
                 ids: artistStrings(avatar.raw['data']['material_asset_ids'],
                     ids: true)),
+        ]),
+        tradeSection('基础创建与托管', [
+          const Text('基础创建与托管永久免费；历史服务按原单保留，人工服务另行报价。',
+              style: TextStyle(fontSize: 13, height: 1.6)),
+          const SizedBox(height: 8),
+          const Text('权益与交付状态须查看本人的实际服务记录，不因显示本说明视为已开通。',
+              style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
         ]),
         tradeBanner('长期模型未启用', '数字人档案与已保存的造型、声音版本不表示长期模型已训练或可调用。',
             icon: Icons.lock_outline),

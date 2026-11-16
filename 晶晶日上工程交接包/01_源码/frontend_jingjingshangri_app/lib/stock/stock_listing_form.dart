@@ -291,8 +291,8 @@ class _StockListingFormState extends State<StockListingForm> {
   @override
   Widget build(BuildContext context) {
     final d = person;
-    return V5Frame(api: api, title: '现成作品上架', children: [
-      tradeHeading('让完成的作品被看见', eyebrow: '具体艺人 / 本版明确许可'),
+    return V5Frame(api: api, title: '编辑视频商品', children: [
+      tradeHeading('编辑视频商品', eyebrow: '正式文件 / 独立预览 / 本版明确许可', fontSize: 28),
       V5RecoveryPanel(
           api: api,
           label: api.recoveryLabel,
@@ -353,7 +353,7 @@ class _StockListingFormState extends State<StockListingForm> {
           V5Form(
               key: formKey,
               api: api,
-              title: '本版上架材料',
+              title: '本版商品与授权材料',
               action: '提交内容与权利双审核',
               suffix: suffix,
               version: previous?.version,
@@ -442,7 +442,17 @@ class _StockListingFormState extends State<StockListingForm> {
                   context, '/stock/listing?listingId=${r['id']}'),
               extra: (v, set, enabled) => [
                     if (publications[v['publication_id']] != null)
-                      appNotice(publications[v['publication_id']]!['terms']),
+                      tradeSection('本版商品与销售许可', [
+                        tradeFact('商品名称', publications[v['publication_id']]!['spec_title']),
+                        tradeFact('本版售价',
+                            v5Money(publications[v['publication_id']]!['unit_minor'])),
+                        appNotice(publications[v['publication_id']]!['terms']),
+                        appNotice('名称、售价与销售条款来自已审商品版本。改价需采用新版本，不改写历史订单。'),
+                      ]),
+                    tradeBanner(
+                        v['file_id'] == null || v['preview_file_id'] == null
+                            ? '正式文件与独立预览待补' : '本次视频已选择，提交后仍需双审核',
+                        '正式与预览必须是不同文件；AI 标识和水印须保留在实际提交文件中，上传不等于授权通过。'),
                     tradeFact('已选正式文件',
                         v['file_id'] == null ? '尚未上传或选择' : '本次已上传的私有正式文件'),
                     tradeFact(
@@ -454,7 +464,8 @@ class _StockListingFormState extends State<StockListingForm> {
                         api: api,
                         enabled: enabled,
                         onUploaded: (id, role) => set(role, id)),
-                    tradeSection('权利证据（私有）', [
+                    tradeSection('权利证明与相关授权（私有）', [
+                      appNotice('逐人核对画面、声音与使用范围。提交证明不替代本人授权，也不等于内容或权利审核通过。'),
                       SupplyFiles(
                           api: SupplyApi(widget.session),
                           purpose: 'RIGHTS_EVIDENCE',

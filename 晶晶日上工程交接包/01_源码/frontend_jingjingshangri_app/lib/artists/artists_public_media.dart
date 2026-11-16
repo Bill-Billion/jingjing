@@ -41,11 +41,13 @@ class ArtistPublicPortrait extends StatefulWidget {
       required this.listing,
       this.media,
       this.aspectRatio = 1,
+      this.circular = false,
       this.onUnavailable});
   final AccountSession session;
   final Map<String, dynamic> listing;
   final ArtistPublicMedia? media;
   final double aspectRatio;
+  final bool circular;
   final VoidCallback? onUnavailable;
 
   @override
@@ -167,7 +169,9 @@ class _ArtistPublicPortraitState extends State<ArtistPublicPortrait> {
       child: ColoredBox(
           color: AccountTheme.surface,
           child: _image != null
-              ? Image(
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(widget.circular ? 999 : 0),
+                  child: Image(
                   image: _image!,
                   fit: BoxFit.cover,
                   semanticLabel: '${widget.listing['display_name']}的获准公开主肖像',
@@ -180,7 +184,7 @@ class _ArtistPublicPortraitState extends State<ArtistPublicPortrait> {
                       });
                     });
                     return _placeholder();
-                  })
+                  }))
               : _busy
                   ? const Center(
                       child: SizedBox(

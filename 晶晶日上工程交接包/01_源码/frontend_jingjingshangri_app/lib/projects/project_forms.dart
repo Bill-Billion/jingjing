@@ -187,6 +187,7 @@ class _ProjectFormState extends State<_ProjectForm> {
       (['APPLY', 'INVITATION'].contains(widget.mode)
           ? role != null &&
               avatar != null &&
+              avatars.any((a) => a['id'] == avatar) &&
               consent != null &&
               eligibleConsents.any((c) => c['id'] == consent) &&
               money != null &&
@@ -203,8 +204,12 @@ class _ProjectFormState extends State<_ProjectForm> {
                   occurred != null &&
                   !occurred!.isAfter(DateTime.now()) &&
                   assets.length == 1);
+  bool get canDecline => !locked && widget.mode == 'INVITATION' &&
+      target?.kind == 'CANDIDATE' && target?.status == 'INVITED' &&
+      target?.owner == api.owner() && note.text.trim().isNotEmpty;
+
   Future<void> submit({bool decline = false, bool retry = false}) async {
-    if (!retry && (decline ? locked || note.text.trim().isEmpty : !canSubmit)) {
+    if (!retry && (decline ? !canDecline : !canSubmit)) {
       return;
     }
     if (!retry &&
@@ -297,7 +302,7 @@ class _ProjectFormState extends State<_ProjectForm> {
 
   List<Widget> casting() => [
         if (role != null)
-          supplyCard('项目与角色', [
+          tradeSection('项目与角色', [
             projectHeading(publicProject?['title'] ?? project!.data['title']),
             projectScopeFacts(scope!),
             tradeFact('角色', role!['title']),
@@ -305,11 +310,11 @@ class _ProjectFormState extends State<_ProjectForm> {
             if (widget.mode == 'INVITATION')
               appNotice('接受邀请仅进入报名状态；获选后仍需你最终确认入组。')
           ]),
-        supplyCard('本人主体', [
+        tradeSection('本人主体', [
           tradeFact('演员主体', shortSupplyId(api.owner())),
           supplyNote('数字人资料与同意须来自当前身份，并覆盖该项目的公开用途、地区及完整期间。私人同意不能替代。')
         ]),
-        supplyCard('数字人资料', [
+        tradeSection('数字人资料', [
           projectSelect(
               '数字人资料',
               avatar,
@@ -323,9 +328,12 @@ class _ProjectFormState extends State<_ProjectForm> {
                         avatar = v;
                         consent = null;
                       })),
-          if (avatars.isEmpty) supplyNote('当前身份没有可选的已登记资料。请先在资料工作台办理真实记录。')
+          if (avatars.isEmpty) ...[
+            supplyNote('当前身份没有可选的已登记资料。请先管理本人数字人与同意。'),
+            tradeButton('管理本人数字人与授权', locked ? null : () => Navigator.pushNamed(context, '/my-humans'), outline: true),
+          ]
         ]),
-        supplyCard('本人同意', [
+        tradeSection('本人同意', [
           projectSelect(
               '本人同意',
               consent,
@@ -340,7 +348,7 @@ class _ProjectFormState extends State<_ProjectForm> {
           if (eligibleConsents.isEmpty)
             supplyNote('请选择资料，并准备已审核、未到期且完整覆盖项目公开用途的本人同意。')
         ]),
-        supplyCard('本次报价', [
+        tradeSection('本次报价', [
           if (role?['pricing'] == 'FIXED')
             tradeFact('固定价', tradeMoney(role!['amount_minor'])),
           projectField(amount, '本次报价（元）',
@@ -350,7 +358,7 @@ class _ProjectFormState extends State<_ProjectForm> {
               changed: (_) => setState(() {})),
           supplyNote('金额精确到分。0 元也须有明确约定，未知报价不默认填写。')
         ]),
-        supplyCard('申请说明', [
+        tradeSection('申请说明', [
           projectField(note, '申请说明',
               lines: 3, enabled: !locked, changed: (_) => setState(() {}))
         ]),
@@ -359,14 +367,12 @@ class _ProjectFormState extends State<_ProjectForm> {
         if (widget.mode == 'INVITATION')
           tradeButton(
               '谢绝邀请',
-              locked || note.text.trim().isEmpty
-                  ? null
-                  : () => submit(decline: true),
+              canDecline ? () => submit(decline: true) : null,
               outline: true)
       ];
   List<Widget> releasing() => [
         if (project != null)
-          supplyCard('最终成片', [
+          tradeSection('最终成片', [
             tradeFact('项目名称', project!.data['title']),
             tradeFact(
                 '当前成片材料',
@@ -375,7 +381,7 @@ class _ProjectFormState extends State<_ProjectForm> {
                     : shortSupplyId(project!.data['current_edition_id'])),
             supplyNote('使用当前已审核且各方确认的成片材料版本。最终制作需已验收、付清且权利有效，提交时由服务器再次核对。')
           ]),
-        supplyCard('发行渠道', [
+        tradeSection('发行渠道', [
           projectSelect(
               '发行渠道',
               channel,
@@ -394,14 +400,14 @@ class _ProjectFormState extends State<_ProjectForm> {
                     (c) => c['id'] == channel)['channel_reference']),
           supplyNote('目录只提供渠道摘要。请按实际获知的渠道要求准备材料，平台没有自动提交接入。')
         ]),
-        supplyCard('上一申请', [
+        tradeSection('上一申请', [
           tradeFact(
               '申请关联', prior == null ? '首次申请无上一记录' : shortSupplyId(prior!.id)),
           if (prior != null && prior!.data['review'] != null)
             projectParagraph(prior!.data['review']['reason']),
           supplyNote('补件与重提建立新记录，保留旧申请与意见。')
         ]),
-        supplyCard('材料', [
+        tradeSection('材料', [
           SupplyFiles(
               api: supply,
               purpose: 'REVIEW_EVIDENCE',
@@ -409,7 +415,7 @@ class _ProjectFormState extends State<_ProjectForm> {
               enabled: !locked,
               onChanged: (ids) => setState(() => assets = ids))
         ]),
-        supplyCard('说明', [
+        tradeSection('说明', [
           projectField(note, '发行申请说明',
               lines: 3, enabled: !locked, changed: (_) => setState(() {}))
         ]),
@@ -432,24 +438,24 @@ class _ProjectFormState extends State<_ProjectForm> {
 
   List<Widget> external() => [
         if (target != null)
-          supplyCard('本次发行申请', [
+          tradeSection('本次发行申请', [
             tradeFact('项目名称', project!.data['title']),
             tradeFact('发行申请', shortSupplyId(target!.id)),
             tradeFact('当前渠道进度', projectStatuses[target!.status])
           ]),
         projectParagraph('登记实际发生的事实，提交后将进入独立核验流程。'),
-        supplyCard('真实结果', [
+        tradeSection('真实结果', [
           projectSelect(
               '真实结果',
               outcome,
               [for (final e in projectOutcomes.entries) (e.key, e.value)],
               locked ? null : (v) => setState(() => outcome = v))
         ]),
-        supplyCard('外部编号', [
+        tradeSection('外部编号', [
           projectField(reference, '外部编号',
               max: 1000, enabled: !locked, changed: (_) => setState(() {}))
         ]),
-        supplyCard('发生时间', [
+        tradeSection('发生时间', [
           tradeButton(
               occurred == null
                   ? '选择实际发生时间'
@@ -458,7 +464,7 @@ class _ProjectFormState extends State<_ProjectForm> {
               outline: true),
           supplyNote('请填写真实发生的日期和时间，不可填写未来时间。')
         ]),
-        supplyCard('凭据', [
+        tradeSection('凭据', [
           SupplyFiles(
               api: supply,
               purpose: 'REVIEW_EVIDENCE',
@@ -467,7 +473,7 @@ class _ProjectFormState extends State<_ProjectForm> {
               enabled: !locked,
               onChanged: (ids) => setState(() => assets = ids))
         ]),
-        supplyCard('说明', [
+        tradeSection('说明', [
           projectField(note, '外部结果说明',
               lines: 3,
               max: 4000,
@@ -487,10 +493,23 @@ class _ProjectFormState extends State<_ProjectForm> {
         'EXTERNAL': '登记外部结果'
       }[widget.mode]!,
       [
+        tradeHeading({
+          'APPLY': '为这个角色报名',
+          'INVITATION': '核对这次角色邀请',
+          'RELEASE': '准备本次发行材料',
+          'EXTERNAL': '登记真实渠道回执',
+        }[widget.mode]!, eyebrow: '项目办理 / 保留原记录与版本'),
+        tradeSection('办理前核对', [
+          supplyNote(['APPLY', 'INVITATION'].contains(widget.mode)
+              ? '选择本人数字人与覆盖项目用途的有效同意，核对片酬与申请说明。报名不是已入组。'
+              : widget.mode == 'RELEASE'
+                  ? '选择已保存的成片、真实发行渠道和对应材料，提交后等待独立核验。'
+                  : '只登记已发生的外部结果与凭据。登记成功不等于核验通过。'),
+        ]),
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         if (path != null && api.pending(path!) != null)
-          supplyCard('原请求结果待核实', [
+          tradeSection('原请求结果待核实', [
             supplyNote('原内容、版本及请求编号已保留，请先恢复核对。'),
             tradeButton('恢复原请求核对', busy ? null : () => submit(retry: true))
           ]),

@@ -9,6 +9,7 @@ import '../trade/trade_widgets.dart';
 import 'contract_api.dart';
 import 'contract_reader.dart';
 import 'contract_text.dart';
+import 'contract_signing_boundary.dart';
 
 class ContractPage extends StatefulWidget {
   const ContractPage({super.key, this.snapshotId});
@@ -58,11 +59,10 @@ class _ContractPageState extends State<ContractPage> {
   Widget _card(String title, List<Widget> children, {IconData? icon}) =>
       Container(
           margin: const EdgeInsets.only(bottom: 16),
-          padding: const EdgeInsets.all(18),
+          padding: const EdgeInsets.symmetric(vertical: 18),
           decoration: BoxDecoration(
-              color: AccountTheme.surface,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AccountTheme.border)),
+              border: const Border(
+                  bottom: BorderSide(color: AccountTheme.border))),
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(children: [
               if (icon != null) ...[
@@ -95,7 +95,7 @@ class _ContractPageState extends State<ContractPage> {
               final snapshot = reader.snapshot;
               return Scaffold(
                 appBar: AppBar(
-                    title: const Text('合同与原约定'),
+                    title: const Text('合同与许可凭证'),
                     leading: BackButton(onPressed: () {
                       if (Navigator.canPop(context)) {
                         Navigator.pop(context);
@@ -111,7 +111,8 @@ class _ContractPageState extends State<ContractPage> {
                               padding:
                                   const EdgeInsets.fromLTRB(20, 40, 20, 24),
                               children: [
-                                tradeHeading('合同与许可', eyebrow: '每次使用都有依据'),
+                                tradeHeading(snapshot == null ? '合同与许可' : '核对当前版本',
+                                    eyebrow: '原合同内容 / 签署与许可分别核对', fontSize: 28),
                                 _notice('按合同编号读取当时保存的内容。能否查看，由当前账号和办事身份的授权决定。'),
                                 if (!session.isLoggedIn ||
                                     session.partyId == null) ...[
@@ -153,7 +154,8 @@ class _ContractPageState extends State<ContractPage> {
                                                     Icons.description_outlined),
                                                 label: Text(source.$1))),
                                     ]),
-                                  _card('指定合同', [
+                                  _card('按编号核对原合同', [
+                                    _notice('通常从订单、许可或参演记录直接进入；仅在需要核对指定记录时填写编号，不会创建新合同。'),
                                     _fact(
                                         '当前办事身份',
                                         session.party?['display_name'] ??
@@ -226,6 +228,8 @@ class _ContractPageState extends State<ContractPage> {
                                     _card('当时保存的承诺',
                                         [_text(snapshot['commitments'])],
                                         icon: Icons.fact_check_outlined),
+                                    ContractSigningBoundary(key: ValueKey(
+                                        '${session.epoch}:${session.partyId}:${snapshot['id']}:${snapshot['content_sha256']}')),
                                     _card(
                                         '这份合同采用的规则',
                                         [

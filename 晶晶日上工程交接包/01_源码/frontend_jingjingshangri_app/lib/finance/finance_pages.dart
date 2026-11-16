@@ -212,20 +212,6 @@ class _OverviewState extends State<_Overview> {
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (g != null) ...[
-            tradeSection('当前约定', [
-              financeIdFact('约定', g!.id),
-              tradeFact('当前身份', widget.session.party?['display_name']),
-              supplyNote('已选择一份结算约定，以下为本人结算信息。'),
-              tradeButton('切换结算约定', locked ? null : () => open('/finance'),
-                  outline: true)
-            ]),
-            tradeSection('来源与环境', [
-              tradeFact(
-                  '结算来源', g!.data['source_type'] == 'ORDER' ? '订单结算' : '发行结算'),
-              financeIdFact('来源', g!.data['source_id']),
-              tradeFact(
-                  '环境', balance!['environment'] == 'SANDBOX' ? '测试数据' : '正式环境')
-            ]),
             if (mine != null)
               tradeSection('本人金额', [
                 supplyNote('仅展示当前约定下本人的结算金额。'),
@@ -240,6 +226,20 @@ class _OverviewState extends State<_Overview> {
               ])
             else
               tradeSection('本人金额', [supplyNote('服务器本次没有返回本人余额，不能推算或合并其他主体的金额。')]),
+            tradeSection('当前约定', [
+              financeIdFact('约定', g!.id),
+              tradeFact('当前身份', widget.session.party?['display_name']),
+              supplyNote('已选择一份结算约定，本页仅展示本人结算信息。'),
+              tradeButton('切换结算约定', locked ? null : () => open('/finance'),
+                  outline: true)
+            ]),
+            tradeSection('来源与环境', [
+              tradeFact(
+                  '结算来源', g!.data['source_type'] == 'ORDER' ? '订单结算' : '发行结算'),
+              financeIdFact('来源', g!.data['source_id']),
+              tradeFact(
+                  '环境', balance!['environment'] == 'SANDBOX' ? '测试数据' : '正式环境')
+            ]),
             if (mine?['reason_code'] != null)
               tradeSection('当前限制原因', [
                 appNotice(financeError(AccountError(409, mine['reason_code'])))
@@ -312,7 +312,7 @@ class _OverviewState extends State<_Overview> {
                     outline: true)
               ],
               tradeButton(
-                  '申请付款',
+                  '申请收益收款',
                   locked ||
                           mine == null ||
                           mine['available_minor'] <= 0 ||
@@ -325,7 +325,21 @@ class _OverviewState extends State<_Overview> {
           ],
           tradeButton('刷新本人结算', locked ? null : load, outline: true)
         ],
-        locked: locked);
+        locked: locked,
+        footer: g == null ? null : Row(children: [
+          Expanded(child: OutlinedButton(
+              onPressed: locked ? null
+                  : () => open('/finance/entries?agreementId=${g!.id}'),
+              child: const Text('收益流水'))),
+          const SizedBox(width: 10),
+          Expanded(child: FilledButton(
+              onPressed: locked || mine == null ||
+                      mine['available_minor'] <= 0 ||
+                      mine['meaning'] == 'MERCHANT_RETAINED_NOT_TRANSFER'
+                  ? null
+                  : () => open('/finance/payout/new?agreementId=${g!.id}'),
+              child: const Text('申请收益收款'))),
+        ]));
   }
 }
 
@@ -983,7 +997,7 @@ class _RecordState extends State<_Record> {
   Widget build(BuildContext context) => tradeScaffold(
       context,
       r?.kind == 'SETTLEMENT'
-          ? '确认结算单'
+          ? '结算单详情'
           : r?.kind == 'PAYOUT'
               ? '付款申请详情'
               : r?.kind == 'DISPUTE'

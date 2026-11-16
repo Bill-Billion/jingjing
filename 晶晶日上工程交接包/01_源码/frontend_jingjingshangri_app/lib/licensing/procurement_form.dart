@@ -83,6 +83,7 @@ class _FormState extends State<_Form> {
       error = null;
       projectTitles = {};
       projectReadNotice = null;
+      confirmed = false;
     });
     try {
       final epoch = widget.session.epoch, party = api.owner();
@@ -136,8 +137,9 @@ class _FormState extends State<_Form> {
   }
 
   String iso(String key) {
-    final v = DateTime.tryParse(fields[key]!.text.trim());
-    if (v == null) {
+    final input = fields[key]!.text.trim();
+    final v = DateTime.tryParse(input);
+    if (v == null || !RegExp(r'(?:[zZ]|[+-]\d{2}:?\d{2})$').hasMatch(input)) {
       throw const FormatException('请填写带时区的准确时间，例如 2026-11-02T10:00:00+08:00。');
     }
     return v.toUtc().toIso8601String();
@@ -300,7 +302,10 @@ class _FormState extends State<_Form> {
                           maxLines: 3, overflow: TextOverflow.ellipsis))
               ],
               onChanged:
-                  locked ? null : (v) => setState(() => project = v ?? '')),
+                  locked ? null : (v) => setState(() {
+                    project = v ?? '';
+                    confirmed = false;
+                  })),
         if (kind != 'WITHDRAWAL_REQUEST' && projectReadNotice != null) ...[
           const SizedBox(height: 12),
           supplyNote(projectReadNotice!),

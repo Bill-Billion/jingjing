@@ -481,13 +481,15 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
       padding: const EdgeInsets.only(bottom: 8),
       child: Wrap(spacing: 8, runSpacing: 8, children: [
         for (final x in [
-          ('catalog', '兑换目录'), ('pools', '已审活动'),
+          ('pools', '已审活动'), ('catalog', '兑换目录'),
           ('grants', '我的券包'), ('draws', '开奖记录')
         ])
           ChoiceChip(
               label: Text(x.$2),
               selected: widget.view == x.$1,
-              onSelected: (_) { if (widget.view != x.$1) open(x.$1); }),
+              onSelected: !enabled || checking ? null : (_) {
+                if (widget.view != x.$1) open(x.$1);
+              }),
       ]));
   List<Widget> templateFacts(Map<String, dynamic> t) => [
         communityFact('权益类型', redemptionKind(t['kind'])),
@@ -603,9 +605,28 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
           ])
       ];
   List<Widget> grantsView() => [
-        communityHeading(widget.quoteId == null ? '我的券包' : '选择本次报价可用的制作权益',
+        communityHeading(widget.quoteId == null ? '我的权益' : '选择本次报价可用的制作权益',
             '占用、核销、排期和实际兑现分别记录。'),
-        if (widget.quoteId == null) menu(),
+        if (widget.quoteId == null) ...[
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            for (final entry in [
+              ('grants', '我的券包'), ('draws', '开奖记录'),
+              ('catalog', '兑换目录'), ('pools', '已审活动'),
+            ])
+              ChoiceChip(
+                  label: Text(entry.$2), selected: entry.$1 == 'grants',
+                  onSelected: !enabled || checking || entry.$1 == 'grants'
+                      ? null : (_) => open(entry.$1)),
+          ]),
+          const SizedBox(height: 16),
+          tradeSection('核销与释放', [
+            const Text('占用不等于核销。普通抵扣在首次真实付款确认后核销；全额抵扣在开工时核销，现金实付 0 元。',
+                style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+            const SizedBox(height: 8),
+            const Text('未下单的占用可按原操作释放；已经下单先核对原订单。排期、面试与实际兑现分别记录，不代表取得出演权。',
+                style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+          ]),
+        ],
         const SizedBox(height: 20),
         if (rows.isEmpty && !checking && error == null)
           appNotice('暂无属于当前身份的权益。'),
@@ -919,11 +940,26 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     ];
   }
 
+  // V5 24 uses a quiet status hierarchy. This is a reserved feature,
+  // not an available pool; no entry action or fabricated opening date.
+  Widget _statusFact(String label, String value, String description) => Container(
+      padding: const EdgeInsets.symmetric(vertical: 20),
+      decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: AccountTheme.border))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(label, style: const TextStyle(color: AccountTheme.muted, fontSize: 12)),
+        const SizedBox(height: 8),
+        Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        Text(description,
+            style: const TextStyle(color: AccountTheme.muted, fontSize: 13, height: 1.5)),
+      ]));
+
   List<Widget> roleView() => [
         communityHeading('角色机会', '功能预留，当前不接受参与。', eyebrow: '角色机会 / 预留功能'),
         tradeBanner('角色摇奖尚未开放', '开放条件与正式规则发布后再办理。'),
-        communityFact('功能状态', '暂未开放'),
-        communityFact('开放时间', '待发布'),
+        _statusFact('功能状态', '暂未开放', '开放条件与正式规则发布后再办理'),
+        _statusFact('开放时间', '待发布', '以正式活动公告为准'),
         tradeSection('参与条件与后续办理', [
           const Text('正式开放前公示规则与兑现办法。开放后仍须核对实名、本人授权与独立演出约定；取得权益不等于取得出演权。'),
         ]),
@@ -933,23 +969,30 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         tradeButton('暂未开放', null),
       ];
 
+  bool get _emptyPools => widget.view == 'pools' &&
+      rows.isEmpty && !checking && error == null;
+
   List<Widget> poolsView() => [
-        communityHeading('晶钻活动', '先读已审核规则、真实概率和库存条件，再决定是否参加。',
+        if (_emptyPools)
+          tradeHeading('晶钻活动', fontSize: 28,
+              eyebrow: '已审晶钻活动 / 当前无开放活动')
+        else
+          communityHeading('晶钻活动', '先读已审核规则、真实概率和库存条件，再决定是否参加。',
             eyebrow: '本期活动 / 规则与奖品'),
         menu(),
         const SizedBox(height: 20),
         if (rows.isEmpty && !checking && error == null) ...[
           tradeBanner('暂无已审开放活动', '当前不接受抽取，不扣用晶钻。'),
-          tradeSection('参加方式与实际概率', [
-            communityFact('参加方式', '单抽 / 十连'),
-            communityFact('本期扣用晶钻', '待已审活动规则公示'),
-            communityFact('实际概率与保底', '待公示'),
+          _statusFact('当前状态', '暂无开放活动', '当前不接受抽取，不扣用晶钻'),
+          _statusFact('参加方式', '单抽 / 十连', '扣用晶钻以本期已审活动规则公示为准'),
+          _statusFact('实际概率与保底', '待公示', '规则发布前不推算中奖概率或承诺保底结果'),
+          tradeSection('参加前核对', [
+            const Text('先核对本期条款、实际概率、库存和扣用晶钻。结果未知时先查询原次记录，沿用原请求核对，不重复抽取。',
+                style: TextStyle(color: AccountTheme.muted, height: 1.6)),
             appNotice('十连的前九次与第十次保底分支分别核对；十次并非独立同概率。库存不足暂停整次抽取。'),
           ]),
           communityCheck('核对本期条款、实际概率与扣用晶钻', false, null),
           communityCheck('结果未知先查原次记录，沿用原请求核对', false, null),
-          tradeButton('查询原次结果', () => open('draws'), outline: true),
-          tradeButton('暂无开放活动', null),
         ],
         for (final r in rows)
           tradeSection(
@@ -1085,7 +1128,15 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
   @override
   Widget build(BuildContext context) => tradeScaffold(
       context,
-      '晶钻与权益',
+      switch (widget.view) {
+        'catalog' => '晶钻权益中心',
+        'role' => '角色摇奖预留',
+        'pools' || 'pool' => '晶钻活动',
+        'grant' || 'checkout' => '兑换权益详情',
+        'grants' => '我的权益',
+        'draws' || 'draw' => '开奖记录',
+        _ => '晶钻与权益',
+      },
       [
         ...feedback,
         ...switch (widget.view) {
@@ -1102,5 +1153,36 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         tradeButton('重新读取当前记录', busy ? null : load, outline: true)
       ],
       locked: recovery != null ||
-          widget.view == 'checkout' && hold?['current_status'] == 'HELD');
+          widget.view == 'checkout' && hold?['current_status'] == 'HELD',
+      footer: widget.view == 'catalog'
+          ? Row(children: [
+              Expanded(child: OutlinedButton(
+                  onPressed: !enabled || checking ? null
+                      : () => Navigator.pushNamed(context, '/wallet/records?kind=EARNING'),
+                  child: const Text('晶钻明细'))),
+              const SizedBox(width: 10),
+              Expanded(child: FilledButton(
+                  onPressed: !enabled || checking ? null : () => open('grants'),
+                  child: const Text('查看券包与记录'))),
+            ])
+          : widget.view == 'grants' && widget.quoteId == null
+              ? Row(children: [
+                  Expanded(child: OutlinedButton(
+                      onPressed: !enabled || checking ? null : () => open('draws'),
+                      child: const Text('查询原次结果'))),
+                  const SizedBox(width: 10),
+                  Expanded(child: FilledButton(
+                      onPressed: !enabled || checking ? null : () => open('catalog'),
+                      child: const Text('查看兑换目录'))),
+                ])
+          : _emptyPools
+              ? Row(children: [
+                  Expanded(child: OutlinedButton(
+                      onPressed: !enabled || checking ? null : () => open('draws'),
+                      child: const Text('查询原次结果'))),
+                  const SizedBox(width: 10),
+                  const Expanded(child: FilledButton(
+                      onPressed: null, child: Text('暂无开放活动'))),
+                ])
+              : null);
 }

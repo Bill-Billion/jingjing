@@ -90,12 +90,13 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
     final topics = helpTopics.where((t) =>
         '${t.title} ${t.summary} ${t.answer}'.toLowerCase().contains(keyword));
     return tradeScaffold(context, '帮助与反馈', [
-      tradeHeading('我们来帮你', eyebrow: '平台帮助 / 有事在这里说'),
+      tradeHeading('我们来帮你', eyebrow: '平台帮助 / 有事在这里说', fontSize: 28),
       TextField(
           controller: query,
           maxLength: 80,
           decoration: const InputDecoration(
-              labelText: '查找帮助', hintText: '付款、下载、投稿、认证或试镜'),
+              labelText: '查找帮助', hintText: '付款、下载、投稿、认证或试镜',
+              counterText: '', prefixIcon: Icon(Icons.search)),
           onChanged: (_) => setState(() {})),
       const SizedBox(height: 24),
       if (topics.isEmpty)
@@ -104,20 +105,17 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
             child: Text('没有找到相关帮助。可清空条件，查看现行流程说明。')),
       for (final topic in topics)
         Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-                color: AccountTheme.surface,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AccountTheme.border)),
+            decoration: const BoxDecoration(
+                border: Border(bottom: BorderSide(color: AccountTheme.border))),
             child: ExpansionTile(
-                tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                tilePadding: const EdgeInsets.symmetric(vertical: 12),
+                childrenPadding: const EdgeInsets.only(bottom: 16),
                 title: Text(topic.title,
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w700)),
+                        fontSize: 14, fontWeight: FontWeight.w600)),
                 subtitle: Text(topic.summary,
                     style: const TextStyle(
-                        color: AccountTheme.muted, height: 1.6)),
+                        fontSize: 12, color: AccountTheme.muted, height: 1.6)),
                 children: [
                   Text(topic.answer, style: const TextStyle(height: 1.7)),
                   const SizedBox(height: 16),
