@@ -1,3 +1,4 @@
+import 'auditions_visual.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
@@ -123,6 +124,8 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
     final d = detail;
     return V5Frame(api: api, title: '本人试镜方案', children: [
       tradeHeading('约见之前，先约定清楚', eyebrow: '本人或明确受托 / L2 / 独立审核'),
+      auditionGuide('人物与授权 → 服务约定 → 独立审核',
+          '先选择有权办理的真人及形象，再填写价格、服务范围和可约时间。提交后等待审核，不会直接公开。', label: '发布试镜方案'),
       V5RecoveryPanel(
           api: api,
           label: api.recoveryLabel,

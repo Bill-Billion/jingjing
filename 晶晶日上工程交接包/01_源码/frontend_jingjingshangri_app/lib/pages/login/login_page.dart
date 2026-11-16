@@ -244,6 +244,16 @@ class _LoginPageState extends State<LoginPage> {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 40, 20, 24),
                 children: [
+                  Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                              color: AccountTheme.selectedSurface,
+                              borderRadius: BorderRadius.circular(20)),
+                          child: const Icon(Icons.movie_creation_outlined,
+                              size: 32, color: AccountTheme.accent))),
+                  const SizedBox(height: 24),
                   const Text('返回你的片场',
                       style:
                           TextStyle(fontSize: 12, color: AccountTheme.accent)),

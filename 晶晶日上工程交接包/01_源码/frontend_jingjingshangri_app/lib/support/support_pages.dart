@@ -103,12 +103,15 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
             padding: EdgeInsets.symmetric(vertical: 20),
             child: Text('没有找到相关帮助。可清空条件，查看现行流程说明。')),
       for (final topic in topics)
-        DecoratedBox(
-            decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: AccountTheme.border))),
+        Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+                color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AccountTheme.border)),
             child: ExpansionTile(
-                tilePadding: EdgeInsets.zero,
-                childrenPadding: const EdgeInsets.only(bottom: 16),
+                tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                 title: Text(topic.title,
                     style: const TextStyle(
                         fontSize: 16, fontWeight: FontWeight.w700)),

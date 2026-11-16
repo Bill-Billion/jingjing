@@ -6,6 +6,7 @@ import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../engagement/community_support.dart';
+import '../engagement/activity_summary_card.dart';
 import '../supply/supply_models.dart';
 import '../trade/trade_widgets.dart';
 
@@ -25,6 +26,15 @@ const supportActions = {
   'CLOSE': '结束本次反馈',
   'REOPEN': '重新提出问题'
 };
+String supportNextStep(String state) => switch (state) {
+  'SUBMITTED' => '问题已提交，等待客服受理。可在本页核对后续记录，不必重复提交。',
+  'PROCESSING' => '客服正在处理，请留意本页答复和补充材料要求。',
+  'NEEDS_INFO' => '请阅读客服要求，在下方补充说明与附件，原材料不会被覆盖。',
+  'ANSWERED' => '请阅读答复；确认解决可结束本次反馈，仍有问题可重新提出。',
+  'CLOSED' => '本次反馈已关闭，处理记录保留。如仍有问题，可使用下方重新提出入口。',
+  _ => '请重新读取当前处理状态。',
+};
+
 Map<String, dynamic> supportTicket(Map<String, dynamic> d, AccountSession s) {
   communityRequire(communityId(d['id']) &&
       d['party_id'] == s.partyId &&
@@ -465,6 +475,10 @@ class _SupportState extends State<_Support> {
                     busy || uploading ? null : () => submit(recovery: op)),
               ]),
             if (widget.create) ...[
+              const ActivitySummaryCard(
+                  label: '新反馈', value: '保留问题现场',
+                  icon: Icons.edit_note_outlined,
+                  description: '说明发生在哪一步、预期结果与实际情况，并按需附上材料。提交后在同一记录里跟进，不代替退款或隐私业务申请。'),
               communitySelect(
                   '问题类型',
                   kind,
@@ -511,7 +525,10 @@ class _SupportState extends State<_Support> {
                           })),
               for (final r in rows)
                 tradeSection(r['title'], [
-                  tradeFact('当前进度', supportStates[r['current_status']]),
+                  Align(alignment: Alignment.centerLeft,
+                      child: Chip(label: Text(supportStates[r['current_status']]!))),
+                  Text(supportNextStep(r['current_status']),
+                      style: const TextStyle(color: AccountTheme.muted, height: 1.6)),
                   tradeFact('更新时间', communityDate(r['updated_at'])),
                   tradeButton(
                       '查看处理记录',
@@ -528,6 +545,11 @@ class _SupportState extends State<_Support> {
                 tradeButton('继续读取', busy ? null : () => load(more: true),
                     outline: true),
             ] else if (record != null) ...[
+              ActivitySummaryCard(
+                  label: '反馈办理进度',
+                  value: supportStates[record!['current_status']]!,
+                  icon: Icons.support_agent_outlined,
+                  description: supportNextStep(record!['current_status'])),
               tradeSection(record!['title'], [
                 tradeFact('当前进度', supportStates[record!['current_status']]),
                 tradeFact('类型', record!['kind'] == 'REPORT' ? '内容举报' : '意见反馈'),

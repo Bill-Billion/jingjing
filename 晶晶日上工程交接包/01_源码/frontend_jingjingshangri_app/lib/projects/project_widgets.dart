@@ -129,3 +129,26 @@ Widget projectReadiness(Map<String, dynamic> d) => supplyCard('开工条件', [
           : projectError(AccountError(409, d['reason_code']))),
       supplyNote('显示服务器本次核对的当前原因；完成相关准备后请刷新条件。')
     ]);
+
+Widget projectNextStep(ProjectRecord record) {
+  final message = switch (record.status) {
+    'INVITED' => '请本人先核对角色、用途与约定，再回应邀请；邀请不是已入组。',
+    'APPLIED' => '报名已记录，等待筛选结果；不要把报名当作获选或签约。',
+    'SELECTED' => '获选后仍需本人明确确认入组，再办理对应授权和约定。',
+    'CONFIRMED' => '本人入组已确认；制作、付款和发行仍按各自条件与记录办理。',
+    'CHANGES_REQUESTED' || 'EXTERNAL_CHANGES_REQUESTED' => '按当前补件意见处理原版本，再核对新的审核结果。',
+    'READY_TO_SUBMIT' => '内部审核已通过，仍需办理外部提交并核对真实回执。',
+    'EXTERNAL_SUBMITTED' => '外部提交已核实，等待外部结果；不等于已经发行。',
+    'EXTERNAL_PUBLISHED' => '外部发行已核实，继续按原约定核对收入、权限与后续渠道事件。',
+    'IN_REVIEW' || 'INTERNAL_PENDING' => '等待独立审核，当前提交或内部受理不代表制作、外部发行完成。',
+    'CANCELLED' || 'WITHDRAWN' || 'DECLINED' || 'SUPERSEDED' => '本记录保留供追溯；后续办理请核对当前有效版本与权限。',
+    _ => '按本次服务器记录核对角色、方案、授权和发行条件，再执行页面开放的操作。',
+  };
+  return tradeSection('当前进度与下一步', [
+    Text(projectStatuses[record.status] ?? '状态待核对',
+        style: const TextStyle(color: AccountTheme.accent,
+            fontSize: 18, fontWeight: FontWeight.w700)),
+    const SizedBox(height: 10),
+    Text(message, style: const TextStyle(fontSize: 14, height: 1.6)),
+  ]);
+}

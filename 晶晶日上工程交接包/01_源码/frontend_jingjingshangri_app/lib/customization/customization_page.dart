@@ -207,12 +207,15 @@ class _StoryListState extends State<_StoryList> {
           ]),
         for (final row in rows)
           Container(
-            decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: AccountTheme.border))),
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+                color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AccountTheme.border)),
             child: ListTile(
               key: ValueKey('story-open-${row.id}'),
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 0,
+                horizontal: 16,
                 vertical: 14,
               ),
               title: Text(
@@ -796,6 +799,19 @@ class _StoryEditorState extends State<_StoryEditor> {
                 ? '故事已交给平台'
                 : '写下你的故事',
       ),
+      if (!denied) _section('本次办理', [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          Chip(label: Text(record == null ? '填写需求' : storyStatuses[record!.status]!)),
+          if (supplementOpen) const Chip(label: Text('需要补充')),
+        ]),
+        _note(supplementOpen
+            ? '请按平台提出的问题补充本次需求，再提交原记录。'
+            : record == null || record!.status == 'DRAFT'
+                ? '先选品类与真实用途，再完善内容；保存草稿不会提交或收费。'
+                : record!.status == 'SUBMITTED'
+                    ? '需求已提交，等待平台查看。报价、付款和制作开工分别确认。'
+                    : '平台正在受理，请查看本单的材料、补充要求及后续报价。'),
+      ]),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!, icon: Icons.error_outline),
       if (notice != null) appNotice(notice!, icon: Icons.check_circle_outline),
@@ -830,8 +846,10 @@ class _StoryEditorState extends State<_StoryEditor> {
             padding: const EdgeInsets.only(bottom: 8),
             child: Material(
               color: selected?.id == category.id
-                  ? AccountTheme.text
+                  ? AccountTheme.selectedSurface
                   : AccountTheme.surface,
+              borderRadius: BorderRadius.circular(18),
+              clipBehavior: Clip.antiAlias,
               child: ListTile(
                 key: ValueKey('customization-category-${category.code}'),
                 contentPadding:
@@ -840,13 +858,13 @@ class _StoryEditorState extends State<_StoryEditor> {
                   selected?.id == category.id ? Icons.check : Icons.add,
                   size: 20,
                   color: selected?.id == category.id
-                      ? AccountTheme.canvas
+                      ? AccountTheme.accent
                       : AccountTheme.text,
                 ),
                 title: Text(category.template.title,
                     style: TextStyle(
                         color: selected?.id == category.id
-                            ? AccountTheme.canvas
+                            ? AccountTheme.accent
                             : AccountTheme.text,
                         fontSize: 15,
                         fontWeight: FontWeight.w600)),
@@ -854,7 +872,7 @@ class _StoryEditorState extends State<_StoryEditor> {
                   '${category.template.description}${category.submissionAvailable ? '' : '\n可保存草稿，当前暂不可正式提交'}',
                   style: TextStyle(
                       color: selected?.id == category.id
-                          ? const Color(0xFFD9D5CB)
+                          ? AccountTheme.text
                           : AccountTheme.muted,
                       fontSize: 12,
                       height: 1.5),

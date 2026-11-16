@@ -208,16 +208,20 @@ Widget productionProgressStep(ProductionRecord project, String stage) {
         Container(
             width: 24,
             height: 24,
-            color: accepted
-                ? AccountTheme.text
-                : current != null
-                    ? AccountTheme.vermilion
-                    : AccountTheme.border,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: accepted
+                    ? AccountTheme.accent
+                    : current != null
+                        ? AccountTheme.selectedSurface
+                        : AccountTheme.surface,
+                border: Border.all(color: current != null
+                    ? AccountTheme.accent : AccountTheme.border)),
             child: Icon(accepted ? Icons.check : Icons.circle,
                 size: accepted ? 18 : 4,
-                color: current != null
-                    ? AccountTheme.canvas
-                    : AccountTheme.muted)),
+                color: accepted
+                    ? AccountTheme.onAccent
+                    : current != null ? AccountTheme.accent : AccountTheme.muted)),
         const SizedBox(width: 12),
         Expanded(
             child:
@@ -228,7 +232,7 @@ Widget productionProgressStep(ProductionRecord project, String stage) {
           const SizedBox(height: 4),
           Text(
               current == null
-                  ? '未开始'
+                  ? '尚无已提交版本'
                   : accepted
                       ? '当前版本已确认'
                       : '当前版本待审阅',

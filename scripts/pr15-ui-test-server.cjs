@@ -23,7 +23,7 @@ const apiUrl = `http://127.0.0.1:${apiPort}`, controlUrl = `http://127.0.0.1:${c
 let mysql, db, connection, apiServer, controlServer, startupPromise, cleanupPromise, stateOwned = false;
 let schemaCreated = false, phase = 'configuration', storageAvailable = true, nextCreate = 'ACCEPT';
 let providers, tradeEnv, organization, ruleId, grantMaintainer, readiness;
-let syntheticBuyerVerified = false;
+let syntheticBuyerVerified = false, syntheticBuyerIdentity = null, syntheticBuyerProviderStatus = 'VERIFIED';
 const reviewerGrants = new Map(), readinessStates = new Map();
 
 function cleanup() {
@@ -159,12 +159,10 @@ async function main() {
   const allowedOrigins = [5199, 5200, 5201, 5202, 5203, 5204, 8769, 8770, 8771, 8772, 8773].flatMap(p => [`http://127.0.0.1:${p}`, `http://localhost:${p}`]);
   const app = createAccountApi({ db, secret: crypto.randomBytes(32).toString('base64'), sms,
     supplyStorageFactory: storageFactory, governanceEnvironment: 'SANDBOX',
-    artistIdentityProviderFactory: () => ({ async assertReady() {}, async verify(input) {
-      assert.equal(input.account_id, people.buyer.accountId, 'Only this isolated synthetic buyer may be verified');
-      return { request_key: input.request_key, person_id: input.person_id, status: 'VERIFIED', issuer: 'synthetic.pr15.identity',
-        subject_fingerprint: crypto.createHash('sha256').update('synthetic:'+input.account_id).digest('hex'), age_band: 'ADULT',
-        valid_until: new Date(Date.now()+86400000).toISOString(), evidence_ref: 'synthetic:pr15-identity', liveness_verified: true, phone_verified: true };
-    } }),
+    artistIdentityProviderFactory: () => require('./support/synthetic-identity-provider.cjs')({
+      namespace: 'synthetic.pr15.identity', allowedAccounts: () => [people.buyer?.accountId, people.seller?.accountId],
+      statusForAccount: accountId => accountId === people.buyer?.accountId ? syntheticBuyerProviderStatus : 'VERIFIED',
+    }),
     tradeProvidersFactory: () => ({ get(code) { assert(providers, 'Fixture providers not initialized'); return providers.get(code); } }),
     authSettings: { resendMs: 1000, phoneSendsPerHour: 1000, ipSendsPerHour: 1000, totalSendsPerHour: 1000, ipLoginsPerMinute: 1000 }, allowedOrigins,
   });
@@ -188,15 +186,24 @@ async function main() {
     assert.equal(syntheticBuyerVerified, false);
     const unverifiedPreview = await request('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr15-precheck', { person: buyer, party: buyer.personalPartyId, status: 409 });
     assert.equal(unverifiedPreview.body.error.code, 'VERIFIED_ADULT_REQUIRED');
-    const buyerIdentity = await call('POST', '/artists/people', { person: buyer, party: buyer.personalPartyId, body: { display_name: 'PR15合成成年买家（非真实核验）' } });
-    assert.equal((await call('POST', `/artists/people/${buyerIdentity.id}/identity`, { person: buyer, party: buyer.personalPartyId, body: { session_ref: 'synthetic:pr15-identity' } })).current_status, 'VERIFIED');
+    syntheticBuyerProviderStatus = 'VERIFIED';
+    syntheticBuyerIdentity ||= await call('POST', '/artists/people', { person: buyer, party: buyer.personalPartyId, body: { display_name: 'PR15合成成年买家（非真实核验）' } });
+    assert.equal((await call('POST', `/artists/people/${syntheticBuyerIdentity.id}/identity`, { person: buyer, party: buyer.personalPartyId, body: { session_ref: 'synthetic:pr15-identity' } })).current_status, 'VERIFIED');
     assert.equal((await call('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr15-precheck', { person: buyer, party: buyer.personalPartyId })).required, false);
     syntheticBuyerVerified = true;
     checks.push('Consumer preflight rejects unverified buyer; synthetic adult verification uses real API before payment UI tests');
   }
-  // Default CI keeps the colleague's real-API synthetic identity setup. Only
-  // the dedicated old-payment regression delays it to check the unverified UI.
-  if (process.env.PR15_TEST_UNVERIFIED_LEGACY !== '1') await verifySyntheticBuyer();
+  // Create historical payments with valid identity under today's rules. The optional
+  // regression rejects a later identity recheck only after the browser has its order.
+  await verifySyntheticBuyer();
+  // Current specifications also require the actual seller to be a verified adult.
+  // Keep the buyer's later identity-loss regression independent of this prerequisite.
+  const unverifiedSeller = await request('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr15-seller-precheck', { person: seller, party: seller.personalPartyId, status: 409 });
+  assert.equal(unverifiedSeller.body.error.code, 'VERIFIED_ADULT_REQUIRED');
+  const sellerIdentity = await call('POST', '/artists/people', { person: seller, party: seller.personalPartyId, body: { display_name: 'PR15合成成年卖家（非真实核验）' } });
+  assert.equal((await call('POST', `/artists/people/${sellerIdentity.id}/identity`, { person: seller, party: seller.personalPartyId, body: { session_ref: 'synthetic:pr15-seller-identity' } })).current_status, 'VERIFIED');
+  assert.equal((await call('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr15-seller-precheck', { person: seller, party: seller.personalPartyId })).required, false);
+  checks.push('Normal seller rejects unverified consumer preflight then obtains synthetic adult identity through real API before specification creation; buyer later identity-loss regression remains independent');
   organization = await call('POST', '/organizations', { person: seller, body: { display_name: '晴川制作工作室（隔离测试）' } });
   const invitation = await call('POST', `/parties/${organization.party_id}/invitations`, { person: seller, party: organization.party_id,
     body: { invitee_account_id: member.accountId, expires_at: new Date(Date.now() + 86400000).toISOString() } });
@@ -506,6 +513,16 @@ async function main() {
         else refundQueries.set(r.id, result); out = { refundId: r.id, result };
       } else if (req.method === 'POST' && url.pathname === '/payment-create') {
         assert(['ACCEPT', 'TIMEOUT'].includes(get('result'))); nextCreate = get('result'); out = { nextPaymentCreate: nextCreate };
+      } else if (req.method === 'POST' && url.pathname === '/synthetic-reject-buyer') {
+        assert.equal(process.env.PR15_TEST_UNVERIFIED_LEGACY, '1');
+        assert.equal(syntheticBuyerVerified, true);
+        syntheticBuyerProviderStatus = 'REJECTED';
+        const result = await call('POST', `/artists/people/${syntheticBuyerIdentity.id}/identity`, { person: buyer, party: buyer.personalPartyId,
+          body: { session_ref: 'synthetic:pr15-buyer-recheck-rejected' } });
+        assert.equal(result.current_status, 'REJECTED'); syntheticBuyerVerified = false;
+        const denied = await request('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr15-rejected-precheck', { person: buyer, party: buyer.personalPartyId, status: 409 });
+        assert.equal(denied.body.error.code, 'VERIFIED_ADULT_REQUIRED');
+        out = { synthetic_only: true, status: 'REJECTED' };
       } else if (req.method === 'POST' && url.pathname === '/synthetic-verify-buyer') {
         assert.equal(process.env.PR15_TEST_UNVERIFIED_LEGACY, '1');
         await verifySyntheticBuyer();

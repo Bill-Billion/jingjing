@@ -19,7 +19,7 @@ import '../production/production_models.dart';
 import '../production/fulfillment_api.dart';
 import '../production/fulfillment_models.dart';
 
-// Film editorial, pages 54–56. Details return to the shared five-tab shell.
+// V5 order and cashier pages. Details return to the shared five-tab shell.
 class TradeRecordsPage extends StatelessWidget {
   const TradeRecordsPage({super.key, this.kind = 'ORDER'});
   final String kind;
@@ -987,15 +987,26 @@ class _TradeDetailState extends State<_TradeDetail> {
     final channel = order.quote['channel'];
     return [
       tradeHeading('确认付款', eyebrow: '${order.title} / 原订单付款节点'),
-      const Text('本次节点金额',
-          style: TextStyle(fontSize: 16, color: AccountTheme.muted)),
-      const SizedBox(height: 10),
-      Text(tradeMoney(installmentAmount(installment)),
-          key: const Key('trade-cashier-amount'),
-          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w700)),
-      const SizedBox(height: 10),
-      Text(tradeTriggers[installment['trigger']]!,
-          style: const TextStyle(fontSize: 14, color: AccountTheme.muted)),
+      Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          margin: const EdgeInsets.only(bottom: 20),
+          decoration: BoxDecoration(
+              color: AccountTheme.surface,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AccountTheme.border)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('本次节点金额',
+                style: TextStyle(fontSize: 14, color: AccountTheme.muted)),
+            const SizedBox(height: 12),
+            Text(tradeMoney(installmentAmount(installment)),
+                key: const Key('trade-cashier-amount'),
+                style: const TextStyle(fontSize: 40,
+                    color: AccountTheme.accent, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 12),
+            Text(tradeTriggers[installment['trigger']]!,
+                style: const TextStyle(fontSize: 14, color: AccountTheme.muted)),
+          ])),
       tradeSection('对应原订单', [
         Text(order.title,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
@@ -1008,15 +1019,18 @@ class _TradeDetailState extends State<_TradeDetail> {
         tradeFact('合同服务方', shortSupplyId(order.merchant)),
       ]),
       Container(
-          color: AccountTheme.text,
+          decoration: BoxDecoration(
+              color: AccountTheme.selectedSurface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AccountTheme.accent)),
           padding: const EdgeInsets.all(16),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Icon(Icons.check, color: AccountTheme.canvas),
+            const Icon(Icons.check, color: AccountTheme.accent),
             const SizedBox(width: 12),
             Expanded(
                 child: Text('${tradeChannel(channel)} · 原订单已固定',
                     style: const TextStyle(
-                        color: AccountTheme.canvas,
+                        color: AccountTheme.accent,
                         fontSize: 18,
                         fontWeight: FontWeight.w700))),
           ])),

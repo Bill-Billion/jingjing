@@ -8,6 +8,7 @@ import '../supply/supply_api.dart';
 import '../supply/supply_files.dart';
 import '../trade/trade_widgets.dart';
 import 'wallet_api.dart';
+import '../engagement/activity_summary_card.dart';
 import 'wallet_models.dart';
 
 class WalletPage extends StatelessWidget {
@@ -324,7 +325,7 @@ class _WalletScreenState extends State<_WalletScreen> {
                         load();
                       }),
             for (final r in rows) ..._recordBody(r),
-            if (!busy && rows.isEmpty) appNotice('本类当前没有本人可读的真实记账记录。'),
+            if (!busy && rows.isEmpty && error == null) appNotice('本类当前没有本人可读的真实记账记录。'),
           ],
           if (widget.mode == 'sync') ...[
             appNotice('仅补查本人已有消费晶钻承诺对应的原订单。须同时满足真实付款、履约和售后条件；未符合时保留原等待原因。'),
@@ -481,19 +482,16 @@ class _WalletScreenState extends State<_WalletScreen> {
         ]);
       });
 
-  Widget _metric(String label, Object value) => Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        Text(label,
-            style: const TextStyle(color: AccountTheme.muted, height: 1.5)),
-        const SizedBox(height: 4),
-        FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text('$value',
-                style: const TextStyle(
-                    fontSize: 28, height: 1.2, fontWeight: FontWeight.w700)))
-      ]));
+  Widget _metric(String label, Object value) => ActivitySummaryCard(
+      label: label,
+      value: '$value',
+      icon: widget.mode == 'points'
+          ? Icons.diamond_outlined : Icons.account_balance_wallet_outlined,
+      description: widget.mode == 'points'
+          ? '晶钻、消费成长和退款待冲回分别记账，使用前仍按对应规则核对。'
+          : widget.mode == 'scout'
+              ? '成长与会员年分别计算，实际资格以服务器核验结果为准。'
+              : '账本金额不等于渠道已接通，不提供提现或转账。');
 
   String _reason(dynamic code, String whenNone) => code == null
       ? whenNone
@@ -567,7 +565,11 @@ class _WalletScreenState extends State<_WalletScreen> {
     final d = r.data;
     return [
       tradeSection(walletKinds[r.kind] ?? '个人账本', [
-        tradeFact('实际状态', walletStates[r.status]),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          Chip(label: Text(walletStates[r.status] ?? r.status)),
+          if (r.raw['pending_reason'] != null)
+            const Chip(label: Text('仍有条件待核对')),
+        ]),
         if (r.kind == 'EARNING') ...[
           tradeFact(
               '来源',

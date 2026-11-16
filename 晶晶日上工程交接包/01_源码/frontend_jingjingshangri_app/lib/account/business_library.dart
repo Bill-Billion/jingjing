@@ -265,7 +265,17 @@ class _BusinessLibraryState extends State<_BusinessLibrary> {
   @override
   Widget build(BuildContext context) => tradeScaffold(context, '我的业务目录', [
         tradeHeading('约定、作品与收入', eyebrow: '从原业务继续办理'),
-        tradeFact('当前办事身份', widget.session.party?['display_name']),
+        tradeSection('当前办事身份', [
+          Row(children: [
+            const Icon(Icons.badge_outlined, color: AccountTheme.accent, size: 28),
+            const SizedBox(width: 12),
+            Expanded(child: Text(widget.session.party?['display_name'] ?? '尚未选择身份',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
+          ]),
+          const SizedBox(height: 8),
+          const Text('目录只展示当前身份可读取的记录，切换身份后会重新读取。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        ]),
         Wrap(spacing: 8, runSpacing: 8, children: [
           for (final category in businessCategories.entries)
             ChoiceChip(

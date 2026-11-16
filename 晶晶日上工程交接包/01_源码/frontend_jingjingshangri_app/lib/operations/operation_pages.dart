@@ -9,6 +9,7 @@ import '../trade/trade_widgets.dart';
 import 'operation_api.dart';
 import 'operation_models.dart';
 import 'operation_widgets.dart';
+import 'notification_identity_card.dart';
 
 class OperationsNotificationsPage extends StatelessWidget {
   const OperationsNotificationsPage({super.key, this.eventId});
@@ -143,12 +144,12 @@ class _NotificationsState extends State<_Notifications> {
 
   List<Widget> pending() => [
         for (final op in widget.session.operationsPending)
-          supplyCard('原请求结果待核实', [
+          tradeSection('原请求结果待核实', [
             supplyNote('原请求、内容与版本已保留。核对完成前请留在本页。'),
             tradeButton('恢复原请求核对', busy ? null : () => restore(op['path']))
           ])
       ];
-  Widget card(OperationNotice n) => supplyCard(operationDomains[n.domain]!, [
+  Widget card(OperationNotice n) => tradeSection(operationDomains[n.domain]!, [
         Row(children: [
           Icon(n.read ? Icons.check_circle_outline : Icons.circle,
               size: 12,
@@ -191,7 +192,8 @@ class _NotificationsState extends State<_Notifications> {
       [
         if (widget.eventId == null)
           tradeHeading('系统通知', eyebrow: '消息 / 真实业务变化'),
-        tradeFact('当前身份', widget.session.party?['display_name']),
+        NotificationIdentityCard(
+            identity: widget.session.party?['display_name'] as String? ?? '待核对身份'),
         if (widget.eventId == null)
           Padding(
               padding: const EdgeInsets.only(bottom: 16),
@@ -215,7 +217,7 @@ class _NotificationsState extends State<_Notifications> {
         ...pending(),
         for (final n in rows) card(n),
         if (!busy && error == null && rows.isEmpty)
-          supplyCard('本页暂无获准查看的通知', [
+          tradeSection('本页暂无获准查看的通知', [
             supplyNote(cursor == null
                 ? '本次没有更多记录。通知从本阶段真实业务变更开始保存。'
                 : '本页经过权限或已读筛选后为空，可继续读取更早记录。')
@@ -224,7 +226,7 @@ class _NotificationsState extends State<_Notifications> {
           tradeButton('加载更多', locked ? null : () => load(more: true),
               outline: true),
         if (widget.eventId == null)
-          supplyCard('收到的机构邀请', [
+          tradeSection('收到的机构邀请', [
             tradeButton('查看账号邀请',
                 locked ? null : () => Navigator.pushNamed(context, '/account'),
                 outline: true)
@@ -240,7 +242,7 @@ class OperationsCommentsEntryPage extends StatelessWidget {
   Widget build(BuildContext context) => OperationsGate(
       returnRoute: '/chat',
       builder: (s) => tradeScaffold(context, '业务留言', [
-            supplyCard('选择具体业务', [
+            tradeSection('选择具体业务', [
               projectParagraph('留言围绕当前获准的订单、制作项目或具体版本、创作项目保存。请先打开对应业务，再进入留言。'),
               tradeButton(
                   '查看我的订单', () => Navigator.pushNamed(context, '/orders'),
@@ -408,7 +410,7 @@ class _CommentsState extends State<_Comments> {
   Widget card(ObjectComment c) {
     final withdrawing = widget.session.operationsPending
         .any((o) => o['path'] == '/api/v1/operations/comments/${c.id}/actions');
-    return supplyCard('账号 · ${shortSupplyId(c.author)}', [
+    return tradeSection('账号 · ${shortSupplyId(c.author)}', [
       Text(tradeDate(c.createdAt),
           style: const TextStyle(fontSize: 16, color: AccountTheme.muted)),
       const SizedBox(height: 12),
@@ -502,12 +504,12 @@ class _CommentsState extends State<_Comments> {
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         for (final op in widget.session.operationsPending)
-          supplyCard('原请求结果待核实', [
+          tradeSection('原请求结果待核实', [
             supplyNote('原内容、请求编号与版本已保留。请先恢复核对，避免重复留言或撤回。'),
             tradeButton('恢复原请求核对', busy ? null : () => restore(op['path']))
           ]),
         if (source != null)
-          supplyCard(
+          tradeSection(
               '关联${source!.domain == 'TRADE' ? '订单' : source!.kind == 'VERSION' ? '版本' : '项目'}',
               [
                 projectHeading(source!.title),

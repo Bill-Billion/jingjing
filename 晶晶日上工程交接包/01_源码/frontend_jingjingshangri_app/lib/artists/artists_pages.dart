@@ -208,6 +208,18 @@ class _PersonState extends State<_Person> {
         tradeBanner(self ? '本人档案' : '当前为机构获托办理',
             self ? '你的形象、声音与数字人始终归你本人所有。' : '仅能办理下列有效委托事项，不能代签或替本人作出形象、声音同意。',
             icon: Icons.person_outline),
+        tradeSection('档案概览', [
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            Chip(label: Text('数字人 ${d.avatars.length}')),
+            Chip(label: Text(artistStatus(d.person.raw['identity_status']))),
+            Chip(label: Text(self ? '本人管理' : '机构获托')),
+          ]),
+          const SizedBox(height: 12),
+          Text(self
+              ? '先核对本人身份，再分别管理数字人、本人同意与公开展示。'
+              : '先核对本人的有效委托范围，再选择对应艺人和数字人办理。',
+              style: const TextStyle(fontSize: 14, height: 1.6)),
+        ]),
         tradeSection('本人核验与归属', [
           tradeFact('真人本人', d.person.name),
           tradeFact('所有权主体', shortSupplyId(d.person.owner)),
@@ -648,6 +660,7 @@ class _RecordState extends State<_Record> {
         tradeBanner(
             artistStatus(r.status), '${p.name} · 记录 ${shortSupplyId(r.id)}',
             icon: Icons.description_outlined),
+        artistNextStep(r),
         ...facts(r),
         if (r.data['review'] != null)
           tradeSection('独立审核意见', [
@@ -1282,7 +1295,7 @@ class _PublicArtistDetailsState extends State<_PublicArtistDetails> {
           ] else if (!busy) ...[
             Container(
                 height: 170,
-                color: const Color(0xFFE5E1D7),
+                color: AccountTheme.surface,
                 alignment: Alignment.center,
                 child: const Icon(Icons.description_outlined,
                     size: 44, color: AccountTheme.muted)),

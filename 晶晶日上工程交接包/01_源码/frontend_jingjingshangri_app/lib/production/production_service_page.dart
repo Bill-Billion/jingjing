@@ -24,12 +24,14 @@ class ProductionServicePage extends StatelessWidget {
                       fontWeight: FontWeight.w900,
                       height: 1.15))),
           const SizedBox(height: 24),
-          AspectRatio(
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: AspectRatio(
               aspectRatio: 5 / 3,
               child: Image.asset('assets/images/editorial-rain.webp',
-                  fit: BoxFit.cover, semanticLabel: '巷景视觉示意，不代表在售作品或制作结果')),
+                  fit: BoxFit.cover, semanticLabel: '巷景视觉示意，不代表在售作品或制作结果'))),
           const ColoredBox(
-              color: AccountTheme.text,
+              color: AccountTheme.selectedSurface,
               child: Padding(
                   padding: EdgeInsets.all(18),
                   child: Column(
@@ -37,12 +39,12 @@ class ProductionServicePage extends StatelessWidget {
                       children: [
                         Text('从一个念头开始',
                             style: TextStyle(
-                                color: AccountTheme.canvas,
+                                color: AccountTheme.text,
                                 fontSize: 22,
                                 fontWeight: FontWeight.w700)),
                         SizedBox(height: 6),
                         Text('制作氛围视觉示意，非已成交作品',
-                            style: TextStyle(color: AccountTheme.canvas)),
+                            style: TextStyle(color: AccountTheme.muted)),
                       ]))),
           const SizedBox(height: 20),
           _service('定制片', '从制作需求开始核对本次约定', selected: true),
@@ -86,10 +88,13 @@ class ProductionServicePage extends StatelessWidget {
       Container(
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(16),
-          color: selected ? AccountTheme.text : const Color(0xFFE7E4DA),
+          decoration: BoxDecoration(
+              color: selected ? AccountTheme.selectedSurface : AccountTheme.surface,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: selected ? AccountTheme.accent : AccountTheme.border)),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Icon(selected ? Icons.check : Icons.add,
-                color: selected ? AccountTheme.canvas : AccountTheme.muted),
+                color: selected ? AccountTheme.accent : AccountTheme.muted),
             const SizedBox(width: 12),
             Expanded(
                 child: Column(
@@ -98,7 +103,7 @@ class ProductionServicePage extends StatelessWidget {
                   Text(title,
                       style: TextStyle(
                           color: selected
-                              ? AccountTheme.canvas
+                              ? AccountTheme.accent
                               : AccountTheme.text,
                           fontSize: 18,
                           fontWeight: FontWeight.w700)),
@@ -106,7 +111,7 @@ class ProductionServicePage extends StatelessWidget {
                   Text(body,
                       style: TextStyle(
                           color: selected
-                              ? AccountTheme.canvas
+                              ? AccountTheme.text
                               : AccountTheme.muted)),
                 ])),
           ]));

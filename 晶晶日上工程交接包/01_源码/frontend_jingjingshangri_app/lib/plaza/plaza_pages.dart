@@ -13,7 +13,7 @@ import '../stock/stock_public_card.dart';
 import '../widgets/editorial_icons.dart';
 import 'plaza_data.dart';
 
-const _wash = Color(0xFFE5E1D7);
+const _wash = AccountTheme.surface;
 
 String plazaCityLabel(String value) => value.isEmpty
     ? '全部城市'
@@ -262,7 +262,8 @@ class _PlazaPageState extends State<PlazaPage> {
   Widget _panel(String title, String message,
           {String? action, VoidCallback? onTap, bool busy = false}) =>
       Container(
-          color: _wash,
+          decoration: BoxDecoration(
+              color: _wash, borderRadius: BorderRadius.circular(20)),
           padding: const EdgeInsets.all(14),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -530,9 +531,12 @@ class _PlazaPageState extends State<PlazaPage> {
         if (mounted && widget.active) await data.loadNotices();
       },
       child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: AccountTheme.border))),
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+              color: AccountTheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AccountTheme.border)),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Padding(
                 padding: EdgeInsets.only(top: 7),

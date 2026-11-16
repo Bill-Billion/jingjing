@@ -1,3 +1,4 @@
+import 'auditions_visual.dart';
 import '../contract_six/contract_six_models.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -332,8 +333,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                       header: true,
                       child: const Text('试镜',
                           style: TextStyle(
-                              fontFamily: AccountTheme.serif,
-                              fontSize: 56,
+                              fontFamily: AccountTheme.sans,
+                              fontSize: 32,
                               height: 1.1,
                               fontWeight: FontWeight.w900)))),
               TextButton(
@@ -373,17 +374,21 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             ],
             for (final x in offers)
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                decoration: const BoxDecoration(
-                    border:
-                        Border(bottom: BorderSide(color: AccountTheme.border))),
+                margin: const EdgeInsets.only(bottom: 14),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                    color: AccountTheme.surface,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AccountTheme.border)),
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                          width: 104,
-                          height: 170,
-                          color: const Color(0xFFE7E4DA),
+                          width: 76,
+                          height: 120,
+                          decoration: BoxDecoration(
+                              color: AccountTheme.selectedSurface,
+                              borderRadius: BorderRadius.circular(14)),
                           alignment: Alignment.center,
                           child: const Padding(
                               padding: EdgeInsets.all(10),
@@ -400,7 +405,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                               children: [
                             Text(x.title,
                                 style: const TextStyle(
-                                    fontFamily: AccountTheme.serif,
+                                    fontFamily: AccountTheme.sans,
                                     fontSize: 24,
                                     height: 1.25,
                                     fontWeight: FontWeight.w700)),
@@ -420,7 +425,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                                     fontSize: 11, color: AccountTheme.muted)),
                             const SizedBox(height: 12),
                             tradeButton(
-                                '约试镜 ↗',
+                                '查看与预约',
                                 busy
                                     ? null
                                     : () => go(
@@ -436,11 +441,17 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           ],
           if (o != null) _bookingForm(o),
           if (['offers', 'bookings'].contains(widget.mode)) ...[
+            auditionGuide(widget.mode == 'offers' ? '我的发布方案' : '接续本次试镜',
+                widget.mode == 'offers'
+                    ? '核对方案审核和公开设置；发布方案不等于收到预约。'
+                    : '在同一记录内核对付款、接单、取样与售后。身份改变后可办理动作仍由服务器核验。'),
             if (widget.mode == 'offers')
               tradeButton('提交本人试镜方案审核', () => go('/auditions/new')),
             for (final x in records)
               tradeSection(x.title, [
                 tradeFact('状态', auditionStates[x.status]),
+                Text(auditionNextStep(x), style: const TextStyle(
+                    color: AccountTheme.muted, height: 1.6)),
                 if (x.kind == 'BOOKING')
                   ...auditionAppointmentFacts(v5Map(x.data['appointment'])),
                 tradeButton(
@@ -452,6 +463,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             if (!busy && records.isEmpty) appNotice('本人当前没有可读的本类试镜记录。'),
           ],
           if (r != null && r.kind == 'OFFER') ...[
+            auditionGuide(auditionStates[r.status]!, auditionNextStep(r), label: '方案进度'),
             tradeSection(r.title, [
               tradeFact('状态', auditionStates[r.status]),
               tradeFact('价格', v5Money(r.data['offer']['unit_minor'])),
@@ -503,6 +515,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
 
   Widget _bookingForm(AuditionOffer o) =>
       Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        auditionGuide('先说明用途，再确认约定',
+            '填写真实场地、时间与用途，提交安全核查。通过后再确认订单和付款，之后等待艺人接单。', label: '预约准备'),
         tradeSection(o.title, [
           tradeFact(
               '价格',
@@ -588,6 +602,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         allOpened = r.mediaIds.isNotEmpty && r.mediaIds.every(opened.contains),
         d = r.data;
     return [
+      auditionGuide(auditionStates[r.status]!, auditionNextStep(r), label: '本单当前进度'),
       tradeSection(r.title, [
         tradeFact('实际状态', auditionStates[r.status]),
         ...auditionAppointmentFacts(v5Map(d['appointment'])),
@@ -856,8 +871,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           onSuccess: (d) => setState(
               () => setRecord(AuditionRecord(d, id: r.id, kind: 'BOOKING'))));
   List<Widget> _messageBody(AuditionRecord r) => [
-        tradeBanner(auditionConversations[r.conversation]!,
-            '会话只服务这一笔原订单；联系方式另行同意，争议或改期时冻结，完成后归档。'),
+        auditionGuide(auditionConversations[r.conversation]!,
+            '会话只服务这一笔原订单；联系方式另行同意，争议或改期时冻结，完成后归档。', label: '本单沟通', icon: Icons.forum_outlined),
         for (final m in messages)
           tradeSection(
               m.data['account_id'] == widget.session.account?['id']

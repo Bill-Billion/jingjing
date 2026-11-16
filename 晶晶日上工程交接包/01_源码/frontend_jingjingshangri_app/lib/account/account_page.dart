@@ -349,8 +349,12 @@ class _AccountPageState extends State<AccountPage> {
         !_busy && !['SUSPENDED', 'CLOSED'].contains(value['current_status']);
     void choose() => session.select(row);
     return Card(
+        color: selected ? AccountTheme.selectedSurface : AccountTheme.surface,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: selected ? AccountTheme.accent : AccountTheme.border)),
         child: InkWell(
-            borderRadius: BorderRadius.zero,
+            borderRadius: BorderRadius.circular(20),
             onTap: enabled ? choose : null,
             child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -361,12 +365,14 @@ class _AccountPageState extends State<AccountPage> {
                         Container(
                             width: 48,
                             height: 48,
-                            color: AccountTheme.text,
+                            decoration: BoxDecoration(
+                                color: AccountTheme.selectedSurface,
+                                borderRadius: BorderRadius.circular(14)),
                             child: Icon(
                                 value['kind'] == 'ORGANIZATION'
                                     ? Icons.apartment_outlined
                                     : Icons.person_outline,
-                                color: AccountTheme.canvas,
+                                color: AccountTheme.accent,
                                 size: 24)),
                         const SizedBox(width: 12),
                         Expanded(

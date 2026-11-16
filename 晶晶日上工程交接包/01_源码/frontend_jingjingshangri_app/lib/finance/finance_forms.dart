@@ -197,27 +197,27 @@ class _FormState extends State<_Form> {
       ];
   List<Widget> dispute() => [
         if (target != null)
-          supplyCard('本次结算记录', [
+          tradeSection('本次结算记录', [
             tradeFact('记录类型', financeKinds[target!.kind]),
             financeIdFact('异议对象', target!.id),
             tradeFact('当前版本', '第 ${target!.version} 版')
           ]),
         financeParagraph('如对结算、权利或相关约定有异议，请提交真实说明与材料。处理结果保留历史，退款另走原付款记录。'),
-        supplyCard('问题类型', [
+        tradeSection('问题类型', [
           projectSelect(
               '问题类型',
               category,
               [for (final e in financeCategories.entries) (e.key, e.value)],
               locked ? null : (v) => setState(() => category = v))
         ]),
-        supplyCard('原因', [
+        tradeSection('原因', [
           projectField(note, '原因',
               lines: 4,
               max: 8000,
               enabled: !locked,
               changed: (_) => setState(() {}))
         ]),
-        supplyCard('证据', [
+        tradeSection('证据', [
           supplyNote('上传相关私有证据，如合同、截图或沟通记录。'),
           SupplyFiles(
               api: supply,
@@ -235,10 +235,14 @@ class _FormState extends State<_Form> {
       [
         tradeHeading(widget.mode == 'PAYOUT' ? '收益收款申请' : '提出结算异议',
             eyebrow: '本人确认 / 按原约定办理'),
+        financeEditorialBanner(widget.mode == 'PAYOUT' ? '核对金额与收款资料' : '说明异议并提供依据',
+            widget.mode == 'PAYOUT'
+                ? '仅按本约定当前可申请金额办理。提交后等待独立审核，自动出款未启用，申请成功不表示到账。'
+                : '明确涉及的原记录、问题与私有证据。提交后等待处理，补救结果另行核实。'),
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         if (api.pending(path) != null)
-          supplyCard('原请求结果待核实', [
+          tradeSection('原请求结果待核实', [
             supplyNote('原内容、版本和请求编号已保留。恢复会先读取目标与获准结果，再原样核对。'),
             tradeButton('恢复原请求核对', busy ? null : () => submit(retry: true))
           ]),

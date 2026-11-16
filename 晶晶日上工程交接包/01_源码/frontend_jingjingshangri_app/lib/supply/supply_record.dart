@@ -7,6 +7,7 @@ import 'supply_api.dart';
 import 'supply_files.dart';
 import 'supply_models.dart';
 import 'supply_widgets.dart';
+import 'supply_progress.dart';
 
 class SupplyRecordPage extends StatelessWidget {
   const SupplyRecordPage({super.key, required this.recordId});
@@ -182,6 +183,11 @@ class _RecordState extends State<_Record> {
               child: const Text('核对原操作结果'))
         ]),
       if (r != null) ...[
+        supplyCard('当前进度与下一步', [
+          supplyStatus(r['current_status'] as String),
+          const SizedBox(height: 12),
+          supplyNote(supplyNextStep(r['current_status'] as String, work: work)),
+        ]),
         Card(
             child: Padding(
                 padding: const EdgeInsets.all(16),

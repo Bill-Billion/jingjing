@@ -15,6 +15,22 @@ import 'license_models.dart';
 import 'license_widgets.dart';
 import 'license_forms.dart';
 
+Widget _licenseHero({required String title, required String subtitle}) => Container(
+    padding: const EdgeInsets.all(24),
+    decoration: BoxDecoration(
+        color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AccountTheme.border)),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Icon(Icons.description_outlined, color: AccountTheme.accent, size: 32),
+      const SizedBox(height: 20),
+      Text(title, style: const TextStyle(fontFamily: AccountTheme.sans,
+          fontSize: 28, fontWeight: FontWeight.w700, height: 1.3)),
+      const SizedBox(height: 12),
+      Text(subtitle, style: const TextStyle(color: AccountTheme.muted,
+          fontSize: 14, height: 1.6)),
+    ]));
+
 class LicenseCatalog extends StatelessWidget {
   const LicenseCatalog({super.key, this.embedded = false});
   final bool embedded;
@@ -207,7 +223,7 @@ class _LicenseListState extends State<_LicenseList> {
             Row(children: [
               const CircleAvatar(
                   radius: 30,
-                  backgroundColor: Color(0xFFF0E8DE),
+                  backgroundColor: AccountTheme.selectedSurface,
                   child: Icon(Icons.workspace_premium_outlined,
                       size: 36, color: AccountTheme.accent)),
               const SizedBox(width: 16),
@@ -241,7 +257,7 @@ class _LicenseListState extends State<_LicenseList> {
     final children = <Widget>[
       if (widget.catalog) ...[
         supplyNote('从一个故事开始'),
-        const ManuscriptHero(title: '发现好剧本', subtitle: '每一个好故事，\n都有被看见的可能。'),
+        _licenseHero(title: '发现好剧本', subtitle: '每一个好故事，\n都有被看见的可能。'),
         const SizedBox(height: 24),
         const Text('已上架的剧本',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
@@ -503,7 +519,7 @@ class _LicenseDetailState extends State<_LicenseDetail> {
   }
 
   Widget _statusPanel(LicenseRecord r) => Card(
-      color: r.kind == 'RESERVATION' ? const Color(0xFFFAF4ED) : Colors.white,
+      color: r.kind == 'RESERVATION' ? AccountTheme.selectedSurface : AccountTheme.surface,
       child: Padding(
           padding: const EdgeInsets.all(16),
           child:
@@ -511,7 +527,7 @@ class _LicenseDetailState extends State<_LicenseDetail> {
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               CircleAvatar(
                   radius: 28,
-                  backgroundColor: const Color(0xFFF0E8DE),
+                  backgroundColor: AccountTheme.selectedSurface,
                   child: Icon(
                       r.kind == 'RESERVATION'
                           ? Icons.schedule_outlined
@@ -600,7 +616,7 @@ class _LicenseDetailState extends State<_LicenseDetail> {
             if (r.kind == 'RESERVATION' || r.kind == 'GRANT')
               _statusPanel(r)
             else if (r.kind == 'READING') ...[
-              const ManuscriptHero(
+              _licenseHero(
                   title: '指定账号受控阅稿', subtitle: '获批且未到期后，\n仅作评估阅读。'),
               const SizedBox(height: 16),
               Text(r.statusText,

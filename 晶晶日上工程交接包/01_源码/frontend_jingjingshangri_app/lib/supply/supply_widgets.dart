@@ -44,7 +44,7 @@ Widget supplyStatus(String status) => Align(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(
             color: AccountTheme.accent.withValues(alpha: .08),
-            borderRadius: BorderRadius.zero),
+            borderRadius: BorderRadius.circular(50)),
         child: Text(supplyStatuses[status] ?? status,
             style: const TextStyle(
                 fontSize: 12,

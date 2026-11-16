@@ -4,6 +4,7 @@ import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../discovery/public_discovery.dart';
 import '../engagement/community_support.dart';
+import '../engagement/activity_summary_card.dart';
 import '../trade/trade_widgets.dart';
 
 const collectionKinds = {'ARTIST': '艺人', 'STOCK': '作品', 'NOTICE': '通告'};
@@ -326,7 +327,11 @@ class _CollectionsState extends State<_Collections> {
   @override
   Widget build(BuildContext context) => tradeScaffold(context, '我的收藏与浏览记录', [
         tradeHeading('留住感兴趣的内容', eyebrow: '只属于当前登录账号'),
-        const Text('同一账号的个人与机构身份共用这份私人清单，不属于机构资产。'),
+        ActivitySummaryCard(
+            label: '当前账号的私人清单',
+            value: history ? '浏览记录' : '我的收藏',
+            icon: history ? Icons.history : Icons.bookmark_border,
+            description: '个人与机构身份共用这份账号私人清单，不属于机构资产。重新打开内容时仍须核对当前可用性。'),
         const SizedBox(height: 16),
         SegmentedButton<bool>(
             segments: const [
@@ -403,7 +408,14 @@ class _CollectionsState extends State<_Collections> {
         for (final r in rows)
           tradeSection(
               r['availability'] == 'AVAILABLE' ? r['title'] : '内容已不可用', [
-            tradeFact('类型', collectionKinds[r['kind']]),
+            Wrap(spacing: 8, runSpacing: 8, children: [
+              Chip(label: Text(collectionKinds[r['kind']]!)),
+              if (r['availability'] != 'AVAILABLE')
+                const Chip(label: Text('当前不可用')),
+            ]),
+            if (r['availability'] != 'AVAILABLE')
+              const Text('原内容已不能打开。清单记录仍保留，可按需移除，不会删除原订单。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
             if (r['availability'] == 'AVAILABLE') tradeFact('城市', r['city']),
             tradeFact(
                 history ? '浏览时间' : '收藏时间', communityDate(r['recorded_at'])),

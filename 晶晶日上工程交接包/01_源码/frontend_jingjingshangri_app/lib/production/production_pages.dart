@@ -1114,7 +1114,7 @@ class _VersionReviewState extends State<_VersionReview> {
     return [
       if (fulfillment != null && decision == 'REQUEST_CHANGES')
         changeKindInput(),
-      tradeSection('决定', [
+      tradeSection('1 · 选择本版处理', [
         SegmentedButton<String>(
             segments: const [
               ButtonSegment(value: 'ACCEPT', label: Text('确认本版')),
@@ -1127,7 +1127,7 @@ class _VersionReviewState extends State<_VersionReview> {
                 ? null
                 : (values) => setState(() => decision = values.single))
       ]),
-      tradeSection(decision == 'ACCEPT' ? '确认说明' : '修改意见', [
+      tradeSection(decision == 'ACCEPT' ? '2 · 说明确认依据' : '2 · 写明修改要求', [
         TextField(
             controller: note,
             enabled: !locked && canDecide,
@@ -1138,7 +1138,7 @@ class _VersionReviewState extends State<_VersionReview> {
                 labelText: decision == 'ACCEPT' ? '确认说明' : '本版修改意见',
                 hintText: '请围绕这一个具体版本填写说明。'))
       ]),
-      tradeSection('修改次数说明', [
+      tradeSection('3 · 核对本次影响', [
         tradeFact('按本单约定记录',
             '已提出 ${p.data['change_requests']} 次 / 约定 ${p.data['specification']['revision_limit']} 次'),
         appNotice(fulfillment == null
@@ -1220,6 +1220,28 @@ class _VersionReviewState extends State<_VersionReview> {
                         busy ? null : () => submit(decision, note.text))
                   ]),
                 if (v != null && p != null) ...[
+                  Container(
+                      margin: const EdgeInsets.only(bottom: 18),
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                          color: AccountTheme.selectedSurface,
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: AccountTheme.border)),
+                      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Icon(v.accepted(p) ? Icons.check_circle_outline : Icons.movie_outlined,
+                            color: AccountTheme.accent, size: 28),
+                        const SizedBox(width: 14),
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(productionVersionTitle(v), style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 8),
+                          Text(productionVersionState(v, p), style: const TextStyle(
+                              color: AccountTheme.muted, height: 1.5)),
+                          const SizedBox(height: 8),
+                          const Text('本页只处理当前绑定版本，不代表付款或最终下载已完成。',
+                              style: TextStyle(color: AccountTheme.muted, fontSize: 12, height: 1.5)),
+                        ])),
+                      ])),
                   tradeSection(widget.feedbackOnly ? '绑定版本' : '阶段与版本', [
                     tradeFact('版本', productionVersionTitle(v)),
                     tradeFact('当前状态', productionVersionState(v, p)),
@@ -1480,6 +1502,17 @@ class _PrivateWorkState extends State<_PrivateWork> {
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (notice != null) appNotice(notice!),
           if (p != null && v != null) ...[
+            tradeSection('交付状态', [
+              Wrap(spacing: 8, runSpacing: 8, children: [
+                Chip(label: Text(v.accepted(p) ? '当前版已验收' : '当前版待核对')),
+                Chip(label: Text(deliverable ? '满足下载条件' : '下载条件未满足')),
+              ]),
+              const SizedBox(height: 12),
+              Text(deliverable
+                  ? '可按本次原约定读取正式作品，公开分享或发行仍需另行办理授权。'
+                  : '先核对当前最终版本、付款和有效权利；有预览不代表正式原片可下载。',
+                  style: const TextStyle(fontSize: 14, height: 1.6, color: AccountTheme.muted)),
+            ]),
             tradeSection('当前成片', [
               if (video?.controller.value.isInitialized == true)
                 AspectRatio(
@@ -1491,7 +1524,7 @@ class _PrivateWorkState extends State<_PrivateWork> {
                     child: Container(
                         decoration: BoxDecoration(
                             color: AccountTheme.text.withValues(alpha: .08),
-                            borderRadius: BorderRadius.zero),
+                            borderRadius: BorderRadius.circular(18)),
                         child: const Center(
                             child: Icon(Icons.play_circle_outline,
                                 size: 64, color: AccountTheme.accent)))),

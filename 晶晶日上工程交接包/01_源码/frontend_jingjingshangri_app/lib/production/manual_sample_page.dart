@@ -261,6 +261,12 @@ class _ManualSampleState extends State<_ManualSample> {
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           if (notice != null) appNotice(notice!),
           if (s != null) ...[
+            tradeBanner(
+                s.data['confirmation'] == null ? '等待本人核对' : '本版确认已记录',
+                s.data['confirmation'] == null
+                    ? self ? '请先核对具体真人、形象与委托条款，再确认本版。' : '当前身份不能代替权利人本人确认，请等待本人办理。'
+                    : '继续查看同一委托关联的制作项目。本人确认不是付款或交付完成。',
+                icon: Icons.verified_user_outlined),
             tradeSection('具体权利与委托', [
               tradeFact('肖像声音等权利所属本人', s.data['rights_owner_party_id']),
               tradeFact('委托方', s.data['commissioner_party_id']),

@@ -1,3 +1,4 @@
+import 'auditions_visual.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
@@ -475,6 +476,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
         tradeButton('重新读取本预约材料与授权', busy ? null : _refreshDelivery,
             outline: true),
       if (r != null) ...[
+        auditionGuide(auditionStates[r.status]!, auditionNextStep(r), label: '原单办理'),
         tradeSection(r.title, [
           tradeFact('当前真实状态', auditionStates[r.status]),
           tradeFact('原约定一口价', v5Money(r.data['offer']['unit_minor'])),

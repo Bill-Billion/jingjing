@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
+import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import '../artists/artists_api.dart';
 import '../artists/artists_models.dart';
@@ -663,7 +664,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         communityFact('收入依据', '经核实的渠道净收入；尚未核实发行事实或入账时不计成已到账收益'),
         const Text('各方合计100%，最多两位小数。'),
         for (final (i, s) in shares.indexed)
-          communitySection('分成约定 ${i + 1}', [
+          tradeSection('分成约定 ${i + 1}', [
             communitySelect('本项目实际收益方', s.party, parties,
                 enabled ? (v) => setState(() => s.party = v) : null),
             communitySelect(
@@ -712,7 +713,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         ],
         if (rows.isEmpty && !checking) appNotice('暂无当前身份获准读取的约定。'),
         for (final r in rows)
-          communitySection(
+          tradeSection(
               r['kind'] == 'PROJECT'
                   ? communityText(communityMap(r['data'])['title'])
                   : widget.income
@@ -774,8 +775,19 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
           project == null
               ? '关联项目 ${communityShort(r['project_id'])}'
               : communityMap(project!['data'])['title']),
-      communityFact('进展', communityState(r['current_status'])),
-      communityFact('版本', r['object_version']),
+      tradeSection('本版会签', [
+        Text(communityState(r['current_status']),
+            style: const TextStyle(color: AccountTheme.accent,
+                fontSize: 20, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 12),
+        communityFact('版本', r['object_version']),
+        Text(!ownSigner
+            ? '当前身份不是本版会签人，可按权限查看记录，不能代替他人确认。'
+            : ownDecision == null
+                ? '请先阅读本版完整条款，再作出本人的决定；其他会签人与付款分别办理。'
+                : '本版已有当前身份的会签记录，请核对下方决定与后续办理进度。',
+            style: const TextStyle(fontSize: 14, height: 1.6)),
+      ]),
       if (income)
         ...revenueFacts(communityMap(d['revenue']))
       else ...[
@@ -795,7 +807,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
           communityFact(x.$2,
               x.$1 == 'valid_until' ? communityDate(terms[x.$1]) : terms[x.$1]),
         for (final (i, s) in communityRows(terms['installments']).indexed)
-          communitySection('原分期 · 第 ${i + 1} 期', [
+          tradeSection('原分期 · 第 ${i + 1} 期', [
             communityFact('金额', communityMoney(s['amount_minor'])),
             communityFact('达成条件', s['milestone']),
             communityFact(
@@ -811,13 +823,13 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         if (terms['revenue'] != null)
           ...revenueFacts(communityMap(terms['revenue'])),
         if (amendment.isNotEmpty)
-          communitySection(
+          tradeSection(
               amendment['kind'] == 'RECAST' ? '换角后的独立金额' : '改价与条款变更', [
             communityFact('变更原因', amendment['reason']),
             communityFact(
                 '新约需补现金', communityMoney(amendment['cash_required_minor'])),
             for (final s in communityRows(amendment['settlements']))
-              communitySection('原付款处理依据', [
+              tradeSection('原付款处理依据', [
                 communityFact('原资金净额', communityMoney(s['net_minor'])),
                 communityFact('旧约保留金额', communityMoney(s['retained_minor'])),
                 communityFact(
@@ -840,7 +852,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
               outline: true),
         if (progress != null)
           for (final (i, s) in communityRows(progress!['milestones']).indexed)
-            communitySection('已确认履约节点 · 第 ${i + 1} 项', [
+            tradeSection('已确认履约节点 · 第 ${i + 1} 项', [
               communityFact('达成说明', s['reason']),
               ExpansionTile(
                   tilePadding: EdgeInsets.zero,
@@ -849,12 +861,12 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
             ])
       ],
       if (d['review'] is Map)
-        communitySection('独立审核意见', [
+        tradeSection('独立审核意见', [
           communityFact(
               '审核结论', communityState(communityMap(d['review'])['decision'])),
           communityFact('说明', communityMap(d['review'])['reason'])
         ]),
-      communitySection('各方会签进度', [
+      tradeSection('各方会签进度', [
         for (final s in communityRows(d['confirmers']))
           communityFact(
               s['party_id'] == session.partyId
@@ -908,7 +920,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         ]
       ]),
       if (!income && producer && r['current_status'] == 'APPROVED')
-        communitySection('出品方后续办理', [
+        tradeSection('出品方后续办理', [
           if (amendment.isNotEmpty)
             tradeButton(
                 '会签齐备后启用这份新约',
@@ -992,7 +1004,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
           [r['owner_party_id'], project?['owner_party_id']]
               .contains(session.partyId) &&
           ['APPROVED', 'IN_REVIEW'].contains(r['current_status']))
-        communitySection('退出约定', [
+        tradeSection('退出约定', [
           communityField(why, '退出原因', lines: 3),
           tradeButton(
               '申请退出本次约定',
@@ -1028,7 +1040,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
   }
 
   List<Widget> evidenceFields() => [
-        communitySection('本人权利或履约证明', [
+        tradeSection('本人权利或履约证明', [
           SupplyFiles(
               api: SupplyApi(session),
               purpose: 'RIGHTS_EVIDENCE',
@@ -1121,9 +1133,9 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         communityField(prohibited, '明确禁止的用途', lines: 3),
         communityField(cancellation, '取消、退出及退款安排', lines: 4),
         if (mode != 'REVENUE_SHARE')
-          communitySection('协商片酬分期', [
+          tradeSection('协商片酬分期', [
             for (final (i, s) in stages.indexed)
-              communitySection('第${i + 1}期', [
+              tradeSection('第${i + 1}期', [
                 communityField(s.amount, '本期片酬（元）',
                     keyboard: TextInputType.number),
                 communityField(s.milestone, '本期实际达成条件', lines: 2),

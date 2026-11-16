@@ -165,7 +165,7 @@ class _ArtistPublicPortraitState extends State<ArtistPublicPortrait> {
   Widget build(BuildContext context) => AspectRatio(
       aspectRatio: widget.aspectRatio,
       child: ColoredBox(
-          color: const Color(0xFFE5E1D7),
+          color: AccountTheme.surface,
           child: _image != null
               ? Image(
                   image: _image!,

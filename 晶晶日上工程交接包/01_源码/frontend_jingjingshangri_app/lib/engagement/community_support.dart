@@ -672,10 +672,12 @@ Widget communityHeading(String title, String subtitle, {String? eyebrow}) =>
     );
 
 Widget communitySection(String title, List<Widget> children) => Container(
-    margin: const EdgeInsets.only(bottom: 20),
-    padding: const EdgeInsets.symmetric(vertical: 16),
-    decoration: const BoxDecoration(
-        border: Border(top: BorderSide(color: AccountTheme.border))),
+    margin: const EdgeInsets.only(bottom: 16),
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+        color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AccountTheme.border)),
     child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),

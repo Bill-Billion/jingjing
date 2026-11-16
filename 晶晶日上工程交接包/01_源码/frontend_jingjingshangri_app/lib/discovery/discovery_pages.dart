@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'public_discovery.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
-import '../account/editorial_widgets.dart';
 import '../engagement/community_support.dart';
 import '../engagement/engagement_pages.dart' show validateBuyers;
 import '../notices/notices_api.dart';
@@ -195,11 +194,20 @@ class _PublicProducerState extends State<_PublicProducer> {
         Text(error ?? '正在核对该主体的当前公开选择。'),
         const SizedBox(height: 24),
       ] else ...[
-        EditorialFeature(
-            title: current['party_kind'] == 'PERSON' ? '出品人' : '机构',
-            eyebrow: '出品方档案 / ${widget.city}',
-            description: '已公开主体 ${communityShort(current['party_id'])}',
-            imageLabel: '未提供公开肖像或封面'),
+        tradeHeading(current['party_kind'] == 'PERSON' ? '出品人公开档案' : '机构公开档案',
+            eyebrow: '当前公开名单 / ${widget.city}'),
+        tradeSection('公开主体', [
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            Chip(label: Text(current['party_kind'] == 'PERSON' ? '出品人' : '机构')),
+            Chip(label: Text(widget.city)),
+          ]),
+          const SizedBox(height: 12),
+          Text('已公开主体 ${communityShort(current['party_id'])}',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 10),
+          const Text('本接口未提供公开姓名、肖像或封面。这里只呈现已经公开的业务事实。',
+              style: TextStyle(fontSize: 13, color: AccountTheme.muted, height: 1.6)),
+        ]),
         tradeFact('公开主体编号', current['party_id']),
         tradeSection('已核实的业务记录', [
           tradeFact(

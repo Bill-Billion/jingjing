@@ -8,6 +8,7 @@ import '../trade/trade_widgets.dart';
 import 'operation_api.dart';
 import 'operation_models.dart';
 import 'operation_widgets.dart';
+import 'notification_identity_card.dart';
 
 const notificationChannels = {
   'ORDER_CONVERSATIONS': '订单会话',
@@ -255,7 +256,9 @@ class _NotificationsState extends State<_Notifications> {
   Widget build(BuildContext context) {
     final content = <Widget>[
       tradeHeading('消息', eyebrow: '按当前账号与办事身份查看'),
-      tradeFact('当前身份', widget.session.party?['display_name']),
+      NotificationIdentityCard(
+          identity: widget.session.party?['display_name'] as String? ?? '待核对身份',
+          showUnread: true, unread: snapshot?['total'] as int?),
       Wrap(spacing: 8, runSpacing: 8, children: [
         ChoiceChip(
             label:
@@ -321,7 +324,10 @@ class _NotificationsState extends State<_Notifications> {
               style:
                   const TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
           tradeFact('时间', communityDate(n['created_at'])),
-          tradeFact('状态', n['read'] ? '已读' : '未读'),
+          Align(alignment: Alignment.centerLeft, child: Chip(
+              avatar: Icon(n['read'] ? Icons.mark_email_read_outlined : Icons.mark_email_unread_outlined,
+                  size: 18, color: n['read'] ? AccountTheme.muted : AccountTheme.accent),
+              label: Text(n['read'] ? '已读' : '未读'))),
           tradeButton('查看对应业务', locked ? null : () => open(n)),
           if (n['read'] == false)
             tradeButton(
@@ -409,7 +415,13 @@ class _ActivityRecordState extends State<_ActivityRecord> {
               'CANDIDATE': '参选记录',
               'COMPETITION': '活动进度'
             }[r['kind']] ?? '活动业务记录'}'),
-        tradeFact('当前进度', communityState(r['current_status'])),
+        tradeSection('本条记录状态', [
+          Text(communityState(r['current_status']), style: const TextStyle(
+              fontSize: 20, color: AccountTheme.accent, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 10),
+          const Text('请进入对应活动查看完整规则和处理结果；收到通知不代表奖励已经兑现。',
+              style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+        ]),
         if (d['reason'] is String) Text(d['reason']),
         if (d['body'] is String) Text(d['body']),
         if (communityId(eventId))

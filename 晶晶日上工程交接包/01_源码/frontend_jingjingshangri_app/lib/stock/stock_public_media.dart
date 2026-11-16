@@ -200,7 +200,7 @@ class _StockPublicMediaViewState extends State<StockPublicMediaView> {
     final poster = AspectRatio(
         aspectRatio: 16 / 9,
         child: ColoredBox(
-            color: const Color(0xFFE5E1D7),
+            color: AccountTheme.surface,
             child: image == null
                 ? _placeholder()
                 : Image(

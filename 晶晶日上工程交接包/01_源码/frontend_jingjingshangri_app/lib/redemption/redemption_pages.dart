@@ -7,6 +7,7 @@ import '../trade/trade_widgets.dart';
 import '../trade/trade_api.dart';
 import '../trade/trade_models.dart';
 import '../engagement/community_support.dart';
+import '../engagement/activity_summary_card.dart';
 import '../cocreation/cocreation_cast.dart';
 
 String? lotteryAvailability(Map<String, dynamic> r, {DateTime? now}) {
@@ -476,38 +477,18 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
 
   void open(String view, [Object? id]) => Navigator.pushNamed(
       context, '/redemption?view=$view${id == null ? '' : '&recordId=$id'}');
-  Widget menu() => Container(
-        decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: AccountTheme.border))),
-        child: Row(children: [
-          for (final x in [
-            ('catalog', '兑换目录'),
-            ('pools', '已审活动'),
-            ('grants', '我的券包'),
-            ('draws', '开奖记录')
-          ])
-            Expanded(
-              child: TextButton(
-                onPressed: widget.view == x.$1 ? null : () => open(x.$1),
-                style: TextButton.styleFrom(
-                    foregroundColor: AccountTheme.muted,
-                    disabledForegroundColor: AccountTheme.text,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 14, horizontal: 2)),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  Text(x.$2, textAlign: TextAlign.center),
-                  const SizedBox(height: 8),
-                  Container(
-                      width: 24,
-                      height: 3,
-                      color: widget.view == x.$1
-                          ? AccountTheme.accent
-                          : Colors.transparent),
-                ]),
-              ),
-            ),
-        ]),
-      );
+  Widget menu() => Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Wrap(spacing: 8, runSpacing: 8, children: [
+        for (final x in [
+          ('catalog', '兑换目录'), ('pools', '已审活动'),
+          ('grants', '我的券包'), ('draws', '开奖记录')
+        ])
+          ChoiceChip(
+              label: Text(x.$2),
+              selected: widget.view == x.$1,
+              onSelected: (_) { if (widget.view != x.$1) open(x.$1); }),
+      ]));
   List<Widget> templateFacts(Map<String, dynamic> t) => [
         communityFact('权益类型', redemptionKind(t['kind'])),
         communityFact('原条款', t['terms']),
@@ -549,7 +530,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
             onPressed: () => open('role'), child: const Text('角色摇奖预留 · 暂未开放')),
         if (rows.isEmpty && !checking && error == null) ...[
           tradeBanner('暂无有效兑换目录', '目录审核生效后方可兑换；所需晶钻、库存与有效期以已审目录为准。'),
-          communitySection('制作金适用范围', [
+          tradeSection('制作金适用范围', [
             const Text('仅适用已登记的人工定制片与微剧；不适用于现货、人工样片、数字人创建或托管。'),
             appNotice('先核对原报价与抵扣后金额。普通抵扣在首次真实付款确认后核销；全额抵扣在开工时核销，现金实付0元。'),
           ]),
@@ -567,7 +548,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
             ],
             enabled ? (v) => setState(() => benefit.text = v ?? '') : null),
         for (final r in rows)
-          communitySection(
+          tradeSection(
               communityText(communityMap(r['template'])['title']), [
             ...templateFacts(communityMap(r['template'])),
             communityFact('剩余库存', r['remaining']),
@@ -629,7 +610,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         if (rows.isEmpty && !checking && error == null)
           appNotice('暂无属于当前身份的权益。'),
         for (final r in rows)
-          communitySection(
+          tradeSection(
               communityText(
                   communityMap(communityMap(r['data'])['template'])['title']),
               [
@@ -666,13 +647,17 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         delivery = communityMaybeMap(d['delivery']);
     return [
       communityHeading(communityText(t['title']), '每次使用都重新核对本人、权限与原约定。'),
-      communityFact(
-          '当前进展', communityState(r['effective_status'] ?? r['current_status'])),
+      ActivitySummaryCard(
+          label: '本份权益 · 当前状态',
+          value: communityState(r['effective_status'] ?? r['current_status']),
+          description: r['effective_status'] == 'AVAILABLE'
+              ? '请先核对适用范围、期限与原报价，再选择下方办理入口。'
+              : '请核对占用、使用或交付记录。状态不满足时不能另造订单重复使用。'),
       communityFact('可用截止', communityDate(d['expires_at'])),
       ...templateFacts(t),
       if (['PRODUCTION_CREDIT', 'PRODUCTION_FREE', 'SERVICE_CREDIT']
           .contains(t['kind']))
-        communitySection('用于原报价', [
+        tradeSection('用于原报价', [
           quoteChoice(),
           tradeButton(
               '读取服务器抵扣后的报价',
@@ -695,7 +680,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         ]),
       if (['INTERVIEW', 'EXPOSURE'].contains(t['kind']) &&
           r['effective_status'] == 'AVAILABLE')
-        communitySection('绑定我本人的艺人', [
+        tradeSection('绑定我本人的艺人', [
           cast.chooser(session,
               enabled: enabled && !checking,
               personAndAvatarOnly: t['kind'] == 'EXPOSURE', changed: () {
@@ -789,7 +774,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                   : null)
         ]),
       if (delivery.isNotEmpty)
-        communitySection('已独立审核的排期', [
+        tradeSection('已独立审核的排期', [
           communityFact('安排说明', delivery['reference']),
           communityFact('开始', communityDate(delivery['starts_at'])),
           communityFact('结束', communityDate(delivery['ends_at'])),
@@ -819,7 +804,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
           ]
         ]),
       if (['INTERVIEW', 'EXPOSURE'].contains(t['kind']))
-        communitySection('未兑现时申请处理', [
+        tradeSection('未兑现时申请处理', [
           communityField(why, '具体未兑现情况', lines: 3),
           tradeButton(
               '提交权益处理申请',
@@ -845,7 +830,11 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         adjusted = hd == null ? null : communityMap(hd['adjusted_quote']);
     return [
       communityHeading('核对本次权益抵扣', '金额与新分期以服务器返回的冻结报价为准。'),
-      communityFact('所用权益', t['title']),
+      ActivitySummaryCard(
+          label: '本次抵扣', value: communityText(t['title']),
+          description: hold == null
+              ? '选择已审核原报价，读取服务器计算的抵扣结果后再确认。'
+              : '已读取本次占用记录，请核对调整后报价；占用不等于下单或付款成功。'),
       quoteChoice(),
       if (hold == null)
         tradeButton(
@@ -875,7 +864,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                     })
                 : null),
       if (adjusted != null) ...[
-        communitySection('这次应付金额', [
+        tradeSection('这次应付金额', [
           communityFact(
               '原金额',
               communityMoney(
@@ -935,7 +924,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         tradeBanner('角色摇奖尚未开放', '开放条件与正式规则发布后再办理。'),
         communityFact('功能状态', '暂未开放'),
         communityFact('开放时间', '待发布'),
-        communitySection('参与条件与后续办理', [
+        tradeSection('参与条件与后续办理', [
           const Text('正式开放前公示规则与兑现办法。开放后仍须核对实名、本人授权与独立演出约定；取得权益不等于取得出演权。'),
         ]),
         communityCheck('取得权益不等于获得出演权', false, null),
@@ -951,7 +940,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         const SizedBox(height: 20),
         if (rows.isEmpty && !checking && error == null) ...[
           tradeBanner('暂无已审开放活动', '当前不接受抽取，不扣用晶钻。'),
-          communitySection('参加方式与实际概率', [
+          tradeSection('参加方式与实际概率', [
             communityFact('参加方式', '单抽 / 十连'),
             communityFact('本期扣用晶钻', '待已审活动规则公示'),
             communityFact('实际概率与保底', '待公示'),
@@ -963,7 +952,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
           tradeButton('暂无开放活动', null),
         ],
         for (final r in rows)
-          communitySection(
+          tradeSection(
               communityText(communityMap(r['config'])['version']), [
             communityFact('单次 / 十连晶钻',
                 '${communityMap(r['config'])['single_points']} / ${communityMap(r['config'])['ten_points']}'),
@@ -978,7 +967,12 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     final c = communityMap(r['config']), dist = communityMap(r['distribution']);
     return [
       communityHeading(communityText(c['version']), '开奖结果由服务器保存，每次请求只扣一次。'),
-      communityFact('活动进展', communityState(r['current_status'])),
+      ActivitySummaryCard(
+          label: '晶钻活动 · 当前阶段',
+          value: communityState(r['current_status']),
+          icon: Icons.card_giftcard_outlined,
+          description: lotteryAvailability(r) ??
+              '先核对概率、条款和本次扣用晶钻；提交时服务器仍会检查资格及库存。'),
       if (r['publication_notice'] != null) ...[
         communityFact(
             '本版实际公示时间',
@@ -991,14 +985,14 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
       if (lotteryAvailability(r) != null) appNotice(lotteryAvailability(r)!),
       communityFact('开始', communityDate(r['starts_at'])),
       communityFact('截止', communityDate(r['ends_at'])),
-      communitySection('本次完整条款', [
+      tradeSection('本次完整条款', [
         SelectableText(communityText(r['terms'])),
         communityFact('单次扣用', '${c['single_points']}晶钻'),
         communityFact('十连扣用', '${c['ten_points']}晶钻'),
         appNotice('十连先按原规则抽取前九次，满足条件时第十次走保底分支；十次并非独立同概率。库存不足暂停整次抽取。')
       ]),
       for (final p in communityRows(dist['prizes']))
-        communitySection(redemptionKind(p['kind']), [
+        tradeSection(redemptionKind(p['kind']), [
           communityFact('单次概率', redemptionPercent(p['single_probability'])),
           communityFact('第十次综合概率', redemptionPercent(p['tenth_probability'])),
           communityFact(
@@ -1007,7 +1001,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
               '十次期望数量', redemptionExpectedCount(p['expected_count_per_ten']))
         ]),
       for (final p in communityRows(r['prize_promises']))
-        communitySection(
+        tradeSection(
             '奖品原承诺 · ${communityText(communityMap(p['template'])['title'])}',
             templateFacts(communityMap(p['template']))),
       communityCheck('我已核对本次条款、实际概率、扣用晶钻及库存不足处理', agreed,
@@ -1054,7 +1048,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         if (rows.isEmpty && !checking && error == null)
           appNotice('暂无属于当前身份的开奖记录。'),
         for (final r in rows)
-          communitySection(
+          tradeSection(
               '${communityDate(communityMap(r['data'])['at'])} · ${communityMap(r['data'])['count']}次',
               [
                 communityFact('实际扣用', '${communityMap(r['data'])['points']}晶钻'),
@@ -1069,10 +1063,12 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     return [
       communityHeading('这一次的抽取结果', '以下内容读取服务器保存的原结果。'),
       communityFact('时间', communityDate(d['at'])),
-      communityFact('实际扣用', '${d['points']}晶钻'),
-      communityFact('状态', communityState(r['current_status'])),
+      ActivitySummaryCard(
+          label: '本次实际扣用', value: '${d['points']} 晶钻',
+          icon: Icons.diamond_outlined,
+          description: '状态：${communityState(r['current_status'])}。下方为已保存原结果；取得权益后仍须按各份权益的实际状态办理。'),
       for (final p in communityRows(d['results']))
-        communitySection(
+        tradeSection(
             '第${(p['index'] as int) + 1}次 · ${redemptionKind(p['kind'])}', [
           communityFact(
               '保底分支', p['guaranteed_slot'] == true ? '本次按保底规则抽取' : '按本次原规则抽取'),

@@ -56,7 +56,25 @@ class _ContractPageState extends State<ContractPage> {
   }
 
   Widget _card(String title, List<Widget> children, {IconData? icon}) =>
-      tradeSection(title, children);
+      Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+              color: AccountTheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AccountTheme.border)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Row(children: [
+              if (icon != null) ...[
+                Icon(icon, size: 22, color: AccountTheme.accent),
+                const SizedBox(width: 10),
+              ],
+              Expanded(child: Text(title,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700))),
+            ]),
+            const SizedBox(height: 16),
+            ...children,
+          ]));
   Widget _fact(String label, dynamic value) => supplyFact(label, value);
   Widget _notice(String message, {bool error = false}) => Padding(
       padding: const EdgeInsets.only(bottom: 16),

@@ -4,6 +4,7 @@ import '../account/account_session.dart';
 import '../account/app_visual.dart';
 import '../customization/private_draft_guard.dart';
 import '../engagement/community_support.dart';
+import '../engagement/activity_summary_card.dart';
 import '../stock/v5_support.dart';
 import '../trade/trade_widgets.dart';
 
@@ -212,10 +213,19 @@ class _LimitsScreenState extends CommunityPageState<_LimitsScreen> {
               tradeButton('刷新本人限额', busy || checking ? null : load,
                   outline: true),
               if (d != null) ...[
+                ActivitySummaryCard(
+                    label: '本次限额设置',
+                    value: p == null ? '没有待生效申请' : ready ? '可由本人确认' : '等待确认时间',
+                    icon: Icons.shield_outlined,
+                    description: p == null
+                        ? '当前设置继续有效。新调整以服务器返回结果为准。'
+                        : ready
+                            ? '等待期结束不代表自动生效，请核对申请内容后使用下方确认操作。'
+                            : '原上限继续有效，达到服务器规定时间后仍需本人确认。'),
                 communityFact('统计月份（北京时间）', communityMap(d['period'])['month']),
                 communityFact('服务器核对时间', communityDate(d['as_of'])),
                 for (final k in ['PAYMENT', 'RECHARGE'])
-                  communitySection(k == 'PAYMENT' ? '本人现金消费' : '本人充值', [
+                  tradeSection(k == 'PAYMENT' ? '本人现金消费' : '本人充值', [
                     communityFact(
                         '当前月度上限', money(communityMap(d['limits'])[k])),
                     communityFact(
@@ -287,7 +297,7 @@ class _LimitsScreenState extends CommunityPageState<_LimitsScreen> {
               tradeButton('查看本人变更记录', busy || checking ? null : readHistory,
                   outline: true),
               for (final r in history)
-                communitySection('额度变更记录', [
+                tradeSection('额度变更记录', [
                   communityFact(
                       '操作',
                       const {

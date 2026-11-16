@@ -20,25 +20,28 @@ Widget _stateHeading(String eyebrow, String title) =>
               style: const TextStyle(
                   fontFamily: AccountTheme.serif,
                   fontWeight: FontWeight.w900,
-                  fontSize: 36,
+                  fontSize: 30,
                   height: 1.3))),
       const SizedBox(height: 24),
     ]);
 
 Widget _statePanel(String title, String body, {bool dark = false}) => Container(
-    color: dark ? AccountTheme.text : const Color(0xFFE7E4DA),
+    decoration: BoxDecoration(
+        color: dark ? AccountTheme.selectedSurface : AccountTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AccountTheme.border)),
     padding: const EdgeInsets.all(16),
     child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(title,
           style: TextStyle(
-              color: dark ? AccountTheme.canvas : AccountTheme.text,
+              color: AccountTheme.text,
               fontWeight: FontWeight.w700,
               fontSize: 16,
               height: 1.5)),
       const SizedBox(height: 12),
       Text(body,
           style: TextStyle(
-              color: dark ? AccountTheme.canvas : AccountTheme.text,
+              color: AccountTheme.text,
               fontSize: 14,
               height: 1.5)),
     ]));
@@ -95,7 +98,7 @@ class ReadLoadingContent extends StatelessWidget {
         const SizedBox(height: 12),
         const LinearProgressIndicator(
             color: AccountTheme.vermilion,
-            backgroundColor: Color(0xFFE7E4DA),
+            backgroundColor: AccountTheme.surface,
             minHeight: 4),
         const SizedBox(height: 12),
         const Text('加载中…',
@@ -206,11 +209,13 @@ class ReadFailureContent extends StatelessWidget {
                 style: TextStyle(
                     fontFamily: AccountTheme.serif,
                     fontWeight: FontWeight.w900,
-                    fontSize: 36,
+                    fontSize: 30,
                     height: 1.3))),
         const SizedBox(height: 24),
         Container(
-            color: const Color(0xFFE7E4DA),
+            decoration: BoxDecoration(
+                color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(20)),
             padding: const EdgeInsets.all(16),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

@@ -343,6 +343,11 @@ class _PublicSearchState extends State<_PublicSearch> {
     final data = activeKind == 'NOTICE' ? communityMap(r['notice']) : r;
     final id = (activeKind == 'ARTIST' ? r['listing_id'] : r['id']) as String;
     return tradeSection('${data['display_name'] ?? data['title'] ?? '试镜方案'}', [
+      Wrap(spacing: 8, runSpacing: 8, children: [
+        Chip(label: Text(discoveryKinds[activeKind]!)),
+        if (activeMatching) const Chip(label: Text('按所选条件匹配')),
+      ]),
+      const SizedBox(height: 10),
       tradeFact('城市', data['city']),
       if (activeMatching)
         tradeFact(
@@ -409,7 +414,7 @@ class _PublicSearchState extends State<_PublicSearch> {
             controller: query,
             maxLength: 100,
             decoration:
-                const InputDecoration(labelText: '关键词', hintText: '按公开名称、介绍查找'),
+                const InputDecoration(prefixIcon: Icon(Icons.search), labelText: '关键词', hintText: '按公开名称、介绍查找'),
             onChanged: (_) => setState(clearResults),
             onSubmitted: (_) => load()),
         SwitchListTile(
@@ -525,6 +530,18 @@ class _PublicSearchState extends State<_PublicSearch> {
         if (busy) const LinearProgressIndicator(),
         if (error != null)
           Text(error!, style: const TextStyle(color: AccountTheme.danger)),
+        if (rows.isNotEmpty) ...[
+          Row(children: [
+            const Expanded(child: Text('已读取的结果', style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.w700))),
+            Text('${rows.length} 项', style: const TextStyle(
+                fontSize: 14, color: AccountTheme.accent)),
+          ]),
+          const SizedBox(height: 8),
+          const Text('当前已读取数量，不是目录总数', style: TextStyle(
+              fontSize: 12, color: AccountTheme.muted)),
+          const SizedBox(height: 16),
+        ],
         for (final r in rows) result(r),
         if (!busy && error == null && rows.isEmpty)
           Text(cursor == null ? '没有找到当前可公开的内容。' : '本页暂未找到匹配项，可以继续查找。'),
@@ -752,7 +769,8 @@ class _DirectoryState extends State<_Directory> {
         for (final r in rows)
           if (widget.featured)
             tradeSection(communityMap(r['artist'])['display_name'], [
-              const Text('精选艺人 · 运营推荐'),
+              const Chip(label: Text('精选艺人 · 运营推荐')),
+              const SizedBox(height: 8),
               Text(r['recommendation']),
               tradeFact('城市', communityMap(r['artist'])['city']),
               tradeButton('查看艺人公开资料', () async {
@@ -765,6 +783,8 @@ class _DirectoryState extends State<_Directory> {
             ])
           else
             tradeSection(r['display_name'], [
+              const Chip(label: Text('机构公开资料')),
+              const SizedBox(height: 10),
               if (widget.partyId != null)
                 OrganizationCover(
                     key: ValueKey('${r['record_id']}:${r['object_version']}'),
@@ -921,7 +941,11 @@ class _OrganizationCoverState extends State<OrganizationCover> {
   @override
   Widget build(BuildContext context) => Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: image != null
+      child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: ColoredBox(
+              color: AccountTheme.surface,
+              child: image != null
           ? Image(
               image: image!,
               fit: BoxFit.cover,
@@ -942,5 +966,5 @@ class _OrganizationCoverState extends State<OrganizationCover> {
                             load();
                           },
                     child: const Text('重新读取主图')),
-            ]));
+            ]))));
 }

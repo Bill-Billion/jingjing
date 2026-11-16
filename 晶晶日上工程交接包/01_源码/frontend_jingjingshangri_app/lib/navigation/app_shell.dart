@@ -104,14 +104,14 @@ class _AppShellState extends State<AppShell> {
   Widget _entry(
           String title, String description, IconData icon, VoidCallback open) =>
       Material(
-          color: AccountTheme.canvas,
+          color: AccountTheme.surface,
+          borderRadius: BorderRadius.circular(20),
           child: InkWell(
+              borderRadius: BorderRadius.circular(20),
               onTap: open,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: const BoxDecoration(
-                    border:
-                        Border(bottom: BorderSide(color: AccountTheme.border))),
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(16),
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -135,7 +135,7 @@ class _AppShellState extends State<AppShell> {
                           ])),
                       const SizedBox(width: 16),
                       const Icon(Icons.north_east,
-                          size: 20, color: AccountTheme.text),
+                          size: 20, color: AccountTheme.accent),
                     ]),
               )));
 
@@ -188,15 +188,17 @@ class _AppShellState extends State<AppShell> {
           const SizedBox(height: 24),
         ] else ...[
           Container(
-              color: AccountTheme.text,
+              decoration: BoxDecoration(
+                  color: AccountTheme.selectedSurface,
+                  borderRadius: BorderRadius.circular(24)),
               padding: const EdgeInsets.fromLTRB(20, 22, 16, 22),
               child:
                   Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
                 const Text('我',
                     style: TextStyle(
                         fontFamily: AccountTheme.serif,
-                        color: AccountTheme.canvas,
-                        fontSize: 104,
+                        color: AccountTheme.text,
+                        fontSize: 48,
                         fontWeight: FontWeight.w900,
                         height: 1.15)),
                 const SizedBox(width: 20),
@@ -206,13 +208,13 @@ class _AppShellState extends State<AppShell> {
                         children: [
                       Text(session.account?['display_name'] ?? '我的账号',
                           style: const TextStyle(
-                              color: AccountTheme.canvas,
+                              color: AccountTheme.text,
                               fontSize: 17,
                               fontWeight: FontWeight.w700)),
                       const SizedBox(height: 8),
                       const Text('把每一次出场，留成作品。',
                           style: TextStyle(
-                              color: AccountTheme.canvas,
+                              color: AccountTheme.text,
                               fontSize: 11,
                               height: 1.7)),
                     ])),
@@ -221,7 +223,7 @@ class _AppShellState extends State<AppShell> {
                     onPressed: () => Clipboard.setData(
                         ClipboardData(text: session.account?['id'] ?? '')),
                     icon: const Icon(Icons.copy_outlined,
-                        size: 18, color: AccountTheme.canvas)),
+                        size: 18, color: AccountTheme.text)),
               ])),
           Card(
               child: Padding(
@@ -486,8 +488,9 @@ class _AppShellState extends State<AppShell> {
                 border: Border(top: BorderSide(color: AccountTheme.border))),
             child: NavigationBarTheme(
                 data: NavigationBarThemeData(
-                    iconTheme: const WidgetStatePropertyAll(
-                        IconThemeData(size: 22, color: AccountTheme.text)),
+                    iconTheme: WidgetStateProperty.resolveWith((states) =>
+                        IconThemeData(size: 22, color: states.contains(WidgetState.selected)
+                            ? AccountTheme.accent : AccountTheme.muted)),
                     labelTextStyle: WidgetStateProperty.resolveWith((states) =>
                         TextStyle(
                             fontFamily: AccountTheme.sans,

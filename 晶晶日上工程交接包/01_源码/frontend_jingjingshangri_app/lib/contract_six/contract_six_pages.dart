@@ -1,3 +1,4 @@
+import '../account/account_theme.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
@@ -264,7 +265,7 @@ class _SixState extends CommunityPageState<_Six> {
   Widget files() {
     final personal = !['guardians', 'closure'].contains(widget.kind) ||
         session.party?['kind'] == 'PERSON';
-    return communitySection('仅供本次办理的私有依据', [
+    return sixSection('仅供本次办理的私有依据', [
       if (!session.isOwner || !personal)
         appNotice('请先在账号页选择本人个人负责人身份，再上传本人核验材料。业务申请仍按账号办理。')
       else
@@ -761,7 +762,7 @@ class _SixState extends CommunityPageState<_Six> {
         communityFact('交接期状态', sixState(r['period_status'])),
         appNotice('解除后立即停止新业务。旧单沟通仅限未交接、仍有效授权且在交接期内的记录；补记不恢复到期权限，旧账和合同不改写。'),
         for (final row in communityRows(r['items']))
-          communitySection('原订单 ${communityShort(row['order_id'])}', [
+          sixSection('原订单 ${communityShort(row['order_id'])}', [
             communityFact('交接状态', sixState(row['status'])),
             communityFact('原订单状态', sixState(row['order_status'])),
             ...sixFacts(row['acknowledgements'], '双方各自确认'),
@@ -796,7 +797,7 @@ class _SixState extends CommunityPageState<_Six> {
           tradeButton('读取已审核适龄预览', enabled ? () => linked('content') : null,
               outline: true),
           for (final item in content)
-            communitySection('${item['title']}', [
+            sixSection('${item['title']}', [
               const Text('仅限适龄预览，每次访问重新检查权限和时段，不提供付费完整片。'),
               tradeButton(
                   '保存本项适龄预览',
@@ -839,7 +840,7 @@ class _SixState extends CommunityPageState<_Six> {
       communityFact('运营首次响应目标', communityDate(r['initial_response_due_at'])),
       appNotice('这是运营响应目标，不是法律自动裁决期限。撤回通知不直接恢复内容；解除本案也不解除其他冻结依据。'),
       for (final key in ['notice', 'counter'])
-        communitySection(key == 'notice' ? '获准通知材料' : '获准反通知材料', [
+        sixSection(key == 'notice' ? '获准通知材料' : '获准反通知材料', [
           ...sixFacts(r[key]),
           communityFact(
               '站内送达', communityMaybeMap(deliveries[key])['at'] ?? '尚未送达'),
@@ -883,6 +884,20 @@ class _SixState extends CommunityPageState<_Six> {
                 ? '按账号核验独立权限，切换机构不授予运营权限。'
                 : '按当前获准记录办理，保留原规则、原版本与原请求。'),
         ...feedback,
+        sixSection('办理前先确认', [
+          Text(sixGuide(widget.kind), style: const TextStyle(
+              color: AccountTheme.muted, height: 1.6)),
+          if (record != null) ...[
+            const SizedBox(height: 12),
+            Text(sixState(record![widget.kind == 'closure' ? 'status'
+                : widget.kind == 'handover' ? 'period_status' : 'current_status']),
+                style: const TextStyle(color: AccountTheme.accent,
+                    fontSize: 22, fontWeight: FontWeight.w700, height: 1.4)),
+            const SizedBox(height: 8),
+            const Text('当前状态来自本次读取；可办理事项仍按本人权限及原记录核验。',
+                style: TextStyle(color: AccountTheme.muted, height: 1.5)),
+          ],
+        ]),
         tradeButton('刷新当前记录', busy || checking ? null : load, outline: true),
         if (['guardians', 'infringement'].contains(widget.kind))
           tradeButton('返回我的记录列表', enabled ? () => open(null) : null,
@@ -902,7 +917,7 @@ class _SixState extends CommunityPageState<_Six> {
                   : null,
               outline: true),
           for (final row in rows)
-            communitySection(
+            sixSection(
                 '${sixState(row['current_status'])} · ${communityShort(row['id'])}',
                 [
                   if (row['kind'] != null)
@@ -932,7 +947,7 @@ class _SixState extends CommunityPageState<_Six> {
                   : null,
               outline: true),
         if (actions.isNotEmpty)
-          communitySection('明确本次办理', [
+          sixSection('明确本次办理', [
             communitySelect(
                 '本次办理事项',
                 action,
@@ -1061,5 +1076,27 @@ List<Widget> sixFacts(Object? value, [String? title]) {
   } else {
     children = [communityFact('记录', sixState(value))];
   }
-  return title == null ? children : [communitySection(title, children)];
+  return title == null ? children : [sixSection(title, children)];
 }
+
+Widget sixSection(String title, List<Widget> children) => Container(
+    margin: const EdgeInsets.only(bottom: 18),
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+        color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AccountTheme.border)),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text(title, style: const TextStyle(fontFamily: AccountTheme.sans,
+          fontSize: 18, fontWeight: FontWeight.w700, height: 1.4)),
+      const SizedBox(height: 14),
+      ...children,
+    ]));
+
+String sixGuide(String kind) => switch (kind) {
+  'guardians' => '先核对监护关系，再办理获准的限制、信息处理或退款申请。真实儿童处理和收费仍关闭；退款申请、审核与实际退款是不同阶段。',
+  'infringement' => '核对通知材料 → 按需补件及送达 → 反通知与独立复核。冻结和恢复以案件实际结果为准，提交材料不代表已裁定。',
+  'handover' => '解除后不再开展新业务。逐笔核对旧单与双方交接确认；到期停止权限，补记不恢复权限，历史账目保留。',
+  'closure' => '答复期限与执行期限分别核对。核验通过后才计算执行期限，延期和逾期保留记录；实际执行并复核后才能结案。',
+  _ => '按当前获准记录办理，保留原规则与原请求。',
+};

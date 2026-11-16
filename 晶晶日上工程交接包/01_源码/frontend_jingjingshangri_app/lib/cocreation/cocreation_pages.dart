@@ -1,3 +1,4 @@
+import 'cocreation_visual.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
@@ -318,7 +319,14 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           ('snippets', '我的片段'),
           ('benefits', '服务额度')
         ])
-          OutlinedButton(onPressed: () => open(x.$1), child: Text(x.$2))
+          OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                  backgroundColor: widget.view == x.$1
+                      ? AccountTheme.selectedSurface : null,
+                  foregroundColor: widget.view == x.$1
+                      ? AccountTheme.accent : AccountTheme.text),
+              onPressed: () { if (widget.view != x.$1) open(x.$1); },
+              child: Text(x.$2))
       ]);
   List<Widget> listView() {
     final kind = widget.view;
@@ -337,7 +345,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
       if (kind == 'rooms') tradeButton('发起新的共创', () => open('new')),
       if (rows.isEmpty && !checking && error == null) appNotice('当前身份暂无相关记录。'),
       for (final r in rows)
-        communitySection(
+        cocreationSection(
             kind == 'rooms'
                 ? communityText(r['title'])
                 : kind == 'benefits'
@@ -530,6 +538,8 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
         ]
       : [
           communityHeading('发起多人共创', '选择自己的已提交故事，确认本次承制方与规则。建房后再逐人邀请。'),
+          cocreationGuide('从一个故事开始',
+              '选择故事 → 核对承制方与条款 → 保存房间。邀请、本人参加与授权在建房后分别办理，建房不产生费用。'),
           communitySelect(
               '本人已提交故事',
               request.text,
@@ -611,7 +621,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           if (creationStory != null && rules.isEmpty)
             appNotice('当前暂无生效共创规则，请稍后重新读取。'),
           if (selectedRule != null && rules.any((r) => r['id'] == selectedRule))
-            communitySection('本次参与条款', [
+            cocreationSection('本次参与条款', [
               SelectableText(communityText(communityMap(
                       rules.firstWhere((r) => r['id'] == selectedRule)['rule'])[
                   'participation_terms'])),
@@ -646,8 +656,8 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     return [
       communityHeading('一起完成这部戏', '参加人数、有效人数和已核定成团依据分别展示。',
           eyebrow: '共创计划 / 每人独立确认'),
-      tradeBanner(
-          communityText(r['title']), communityState(r['current_status'])),
+      cocreationGuide(communityText(r['title']),
+          '当前：${communityState(r['current_status'])}。${r['current_status'] == 'OPEN' ? '招募期间，由每位参与者独立填写资料并确认授权。' : '按当前阶段核对人数、订单及制作记录；不是所有阶段都可以继续邀请或修改资料。'}'),
       const Text('已参加人数',
           style: TextStyle(color: AccountTheme.muted, fontSize: 13)),
       const SizedBox(height: 8),
@@ -661,7 +671,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           eligible >= 0 &&
           eligible <= joined)
         roomProgress('资料授权及付款齐备', eligible, joined),
-      communitySection('当前条件', [
+      cocreationSection('当前条件', [
         communityFact('资料授权及付款齐备', count['eligible_count']),
         communityFact('距成团还差', count['people_remaining']),
         communityFact('距服务额度还差', count['benefit_remaining']),
@@ -680,7 +690,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           benefitRemaining >= 0 &&
           eligible + benefitRemaining > 0)
         roomProgress('服务额度人数进度', eligible, eligible + benefitRemaining),
-      communitySection('每人独立确认的条款', [
+      cocreationSection('每人独立确认的条款', [
         SelectableText(communityText(snapshot['participation_terms'])),
         communityFact('用途 / 地域', '${r['purpose']} / ${r['territory']}'),
         if (snapshot['benefit'] is Map)
@@ -691,7 +701,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
         CocreationInvitePanel(
             session: session, room: r['id'], version: r['object_version']),
       if (actions.contains('INVITE'))
-        communitySection('邀请具体真人参加', [
+        cocreationSection('邀请具体真人参加', [
           communitySelect(
               '已关联的受邀真人',
               invitePerson.text,
@@ -744,7 +754,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
                 context, '/production/project?projectId=${r['project_id']}'),
             outline: true),
       if (actions.contains('REQUEST_CANCEL')) ...[
-        communitySection('延期、取消或恢复申请', [
+        cocreationSection('延期、取消或恢复申请', [
           communitySelect(
               '本次申请',
               caseKind,
@@ -785,7 +795,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           appNotice('取消批准不等于资金已退。恢复需要独立复核，退出后旧验收不会继续作为新交付依据。')
         ]),
         for (final c in cases)
-          communitySection(
+          cocreationSection(
               '房间申请 · ${communityText(communityMap(c['data'])['kind'])}', [
             communityFact('进展', communityState(c['current_status'])),
             communityFact('申请原因', communityMap(c['data'])['reason']),
@@ -807,11 +817,12 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
   }
 
   Widget roomProgress(String label, int current, int total) =>
-      communitySection(label, [
+      cocreationSection(label, [
         LinearProgressIndicator(
             value: current / total,
-            minHeight: 3,
-            color: AccountTheme.vermilion,
+            minHeight: 8,
+            borderRadius: BorderRadius.circular(8),
+            color: AccountTheme.accent,
             backgroundColor: AccountTheme.border),
         const SizedBox(height: 10),
         Text('$current / $total 人',
@@ -830,12 +841,15 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
     return [
       communityHeading(
           editing ? '我的参加资料' : '本人参加与授权', '只提交本人的资料。其他人的故事、素材和授权不会在此开放。'),
+      cocreationGuide(canEdit ? '先选本人，再确认参与' : '当前房间不开放参加资料修改',
+          canEdit ? '核对本人形象与用途授权，补齐私有故事和素材后再确认。领取邀请不等于已参加，人数条件齐备也不等于开工。'
+              : '可核对已保存资料与当前状态；其他人的私有资料不会向你开放。'),
       communityFact('共创名称', r['title']),
       communityFact('截止时间', communityDate(r['deadline'])),
       if (member != null)
         communityFact('本人参加状态', communityState(member!['current_status'])),
       for (final (i, c) in casts.indexed)
-        communitySection('本人形象 ${i + 1}', [
+        cocreationSection('本人形象 ${i + 1}', [
           c.chooser(session,
               enabled: enabled && canEdit,
               changed: () => setState(() {
@@ -863,7 +877,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
                 : null,
             outline: true),
       communityField(story, '我本人的私人故事', lines: 5, enabled: enabled && canEdit),
-      communitySection('我本人的私有素材', [
+      cocreationSection('我本人的私有素材', [
         if (materialReady)
           ArtistFiles(
               key: ValueKey('participation-materials:${person.id}'),
@@ -883,7 +897,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
         else
           appNotice('请先选择并核对本人的艺人档案，再上传本人的私有素材。')
       ]),
-      communitySection('核对本次参与条款', [
+      cocreationSection('核对本次参与条款', [
         SelectableText(communityText(
             communityMap(r['rule_snapshot'])['participation_terms'])),
         communityCheck(
@@ -934,7 +948,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
                 : null)
       ]),
       if (editing && member!['current_status'] == 'ACTIVE')
-        communitySection('退出本次共创', [
+        cocreationSection('退出本次共创', [
           communityField(why, '退出原因', lines: 3, enabled: enabled),
           communityCheck(
               '我知道退出会停止自己的资料和旧片段继续使用，退款另按原约定处理',

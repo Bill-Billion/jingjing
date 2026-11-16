@@ -525,7 +525,7 @@ class _AftercareState extends State<_Aftercare> {
                     for (final issue in f.cases)
                       tradeSection(fulfillmentCaseKinds[issue.data['kind']]!, [
                         tradeFact('当前进度',
-                            issue.status == 'OPEN' ? '平台正在核对材料' : '独立决定已记录'),
+                            issue.status == 'OPEN' ? '等待平台核对与决定' : '独立决定已记录'),
                         SelectableText(issue.data['reason'],
                             style: const TextStyle(height: 1.7)),
                         tradeFact('提交时间', tradeDate(issue.data['opened_at'])),
@@ -583,6 +583,9 @@ class _AftercareState extends State<_Aftercare> {
                     if (f.cases.isEmpty) appNotice('暂无已提交问题。说明和证据会留在这笔原项目。'),
                     if (allow || pending != null)
                       tradeSection('提交问题与材料', [
+                        const Text('选择具体问题 → 说明原约定与差异 → 附上本人证据',
+                            style: TextStyle(fontSize: 13, height: 1.6)),
+                        const SizedBox(height: 16),
                         DropdownButtonFormField<String>(
                             initialValue: kind,
                             isExpanded: true,

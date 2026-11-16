@@ -12,6 +12,7 @@ import '../supply/supply_api.dart';
 import '../supply/supply_files.dart';
 import 'community_support.dart';
 import 'ranking_explanation.dart';
+import 'activity_summary_card.dart';
 
 Map<String, dynamic> mcnDashboardForAccount(
     Map<String, dynamic> raw, String accountId,
@@ -443,10 +444,13 @@ class _EngagementState extends CommunityPageState<_Engagement> {
           ('reviews', '订单评价'),
           ('exposures', '真实曝光')
         ])
-          OutlinedButton(
-              onPressed: () => Navigator.pushReplacementNamed(
-                  context, '/engagement?view=${x.$1}'),
-              child: Text(x.$2))
+          ChoiceChip(
+              label: Text(x.$2),
+              selected: widget.view == x.$1,
+              onSelected: (_) {
+                if (widget.view != x.$1) Navigator.pushReplacementNamed(
+                    context, '/engagement?view=${x.$1}');
+              })
       ]);
   List<Widget> rankingIndex() => [
         communityHeading('在作品中成长', '每一份排名和成长，都有实际订单与评价依据。'),
@@ -459,7 +463,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         if (rows.isEmpty && !checking && error == null)
           appNotice('选择城市、区县和类别后读取已发布榜单。没有记录时不会编造名次。'),
         for (final r in rows)
-          communitySection(
+          tradeSection(
               '${communityText(r['city'])} · ${communityText(r['category'])}', [
             communityFact('榜单时间', communityDate(r['at'])),
             tradeButton(
@@ -470,7 +474,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             communityRecordId(r)
           ]),
         for (final r in secondary)
-          communitySection(communityText(r['title']), [
+          tradeSection(communityText(r['title']), [
             communityFact('月冠军', communityState(r['status'])),
             communityFact('投票截止', communityDate(r['ends_at'])),
             tradeButton(
@@ -498,7 +502,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         ('popularity', '人气榜')
       ])
         if (boards.containsKey(b.$1))
-          communitySection(b.$2, [
+          tradeSection(b.$2, [
             if (communityRows(boards[b.$1]).isEmpty)
               const Text('当前条件不足，暂无可公布名次。'),
             for (final (i, r) in communityRows(boards[b.$1]).indexed)
@@ -552,11 +556,19 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         result = communityMaybeMap(d['result']);
     return [
       communityHeading(communityText(d['title']), '按本次已发布规则投票与核对结果。'),
-      communityFact('当前状态', communityState(d['status'])),
+      ActivitySummaryCard(
+          label: '月冠军 · 当前阶段',
+          value: communityState(d['status']),
+          icon: Icons.emoji_events_outlined,
+          description: result.isNotEmpty
+              ? '已有核定结果，请核对下方结果及异议期限。'
+              : votingOpen
+                  ? '先阅读本次规则和晶钻扣用条件，再选择候选艺人。'
+                  : '当前未开放投票，请核对活动状态、起止时间及异议期限。'),
       communityFact('开始时间', communityDate(d['starts_at'])),
       communityFact('投票截止', communityDate(d['ends_at'])),
       communityFact('异议截止', communityDate(d['appeal_until'])),
-      communitySection('本次规则', [
+      tradeSection('本次规则', [
         communityFact('每次投票', '${rules['vote_cost']} 晶钻'),
         communityFact('每日上限', '${rules['daily_cap']}次'),
         if (voteUsage != null) ...[
@@ -578,19 +590,19 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         appNotice('每日次数、可用晶钻、候选状态和活动时间由服务器重新核对。')
       ]),
       for (final r in communityRows(d['candidates']))
-        communitySection('候选艺人 · ${artistName(r['person_id'])}', [
+        tradeSection('候选艺人 · ${artistName(r['person_id'])}', [
           communityFact('榜单分值', r['ranking_score']),
           tradeButton('确认本次扣分投票', enabled && votingOpen ? () => vote(r) : null,
               outline: true)
         ]),
-      communitySection('我的投票记录', [
+      tradeSection('我的投票记录', [
         if (secondary.isEmpty) const Text('尚无本次投票记录。'),
         for (final r in secondary)
           communityFact(communityState(r['current_status']),
               '${communityMaybeMap(r['data'])['points']} 晶钻')
       ]),
       if (result.isNotEmpty)
-        communitySection('已核定结果', [
+        tradeSection('已核定结果', [
           communityFact('核定时间', communityDate(result['at'])),
           communityFact('冠军艺人', artistName(result['winner_person_id'])),
           for (final r in communityRows(result['scores']))
@@ -636,7 +648,12 @@ class _EngagementState extends CommunityPageState<_Engagement> {
           enabled ? (v) => setState(() => person.text = v ?? '') : null),
       tradeButton('读取本人成长', enabled ? () => submit(load) : null),
       if (detail != null)
-        communitySection('当前成长', [
+        ActivitySummaryCard(
+            label: '艺人成长 · 当前等级',
+            value: communityText(g['level']),
+            description: '成长来自服务器记录的业务事实，不等于钱包晶钻或可提现收入。'),
+      if (detail != null)
+        tradeSection('当前成长', [
           communityFact('等级', g['level']),
           communityFact('累计成长', g['growth_points']),
           communityFact('近期成长', g['recent_growth_points']),
@@ -654,10 +671,10 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                     : null)
         ]),
       if (detail != null)
-        communitySection('星光记录', [
+        tradeSection('星光记录', [
           appNotice('星光单独记录，不作为可支付晶钻或可提现余额。'),
           for (final r in communityRows(detail!['starlight_entries']))
-            communitySection(
+            tradeSection(
                 '原订单 ${communityShort(communityMap(r['data'])['order_id'])}', [
               communityFact('本项星光', communityMap(r['data'])['amount']),
               communityFact(
@@ -675,7 +692,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             ])
         ]),
       if (ownProfile)
-        communitySection('榜单公开设置', [
+        tradeSection('榜单公开设置', [
           communityField(city, '公开城市'),
           communityField(district, '公开区县'),
           communityField(category, '公开类别'),
@@ -698,10 +715,10 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                   : null,
               outline: true)
         ]),
-      communitySection('已取得奖励', [
+      tradeSection('已取得奖励', [
         if (secondary.isEmpty) const Text('暂无奖励记录。'),
         for (final r in secondary)
-          communitySection(
+          tradeSection(
               communityText(communityMaybeMap(r['data'])['title']), [
             communityFact('进展', communityState(r['current_status'])),
             communityFact(
@@ -732,7 +749,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         menu(),
         const SizedBox(height: 20),
         for (final r in rows)
-          communitySection(
+          tradeSection(
               '原订单 ${communityShort(communityMaybeMap(r['data'])['order_id'])}',
               [
                 communityFact('状态', communityState(r['current_status'])),
@@ -754,7 +771,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                 communityRecordId(r)
               ]),
         if (rows.isEmpty) appNotice('暂无属于当前身份的推荐返佣记录。'),
-        communitySection('核对推荐归因', [
+        tradeSection('核对推荐归因', [
           appNotice(
               '建立推荐来源需要当前生效规则与服务方安全目录，当前接口尚未提供可选来源。可先核对已有原订单的归因、退款冲回和应计结果。'),
           communitySelect(
@@ -789,7 +806,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
       menu(),
       const SizedBox(height: 20),
       if (d != null)
-        communitySection('经营与收入', [
+        tradeSection('经营与收入', [
           communityFact(session.isOwner ? '正式环境应计' : '本页受派订单应计',
               communityMoney(d['total_accrual_minor'])),
           appNotice('应计收入并非实际出款；换绑机构不改写原合同与历史记录。'),
@@ -798,7 +815,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
           if (d['truncated'] == true)
             appNotice('记录较多，当前展示有数量上限；完整核对请在机构网页工作台办理。'),
           for (final r in communityRows(d['orders']))
-            communitySection('订单 ${communityShort(r['order_id'])}', [
+            tradeSection('订单 ${communityShort(r['order_id'])}', [
               communityFact('订单进展', communityState(r['status'])),
               communityFact('本机构应计', communityMoney(r['mcn_accrual_minor'])),
               communityFact('资金环境', r['environment'])
@@ -808,7 +825,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                 communityShort(communityMaybeMap(r['data'])['account_id']))
         ]),
       for (final r in staff)
-        communitySection('员工受托范围', [
+        tradeSection('员工受托范围', [
           communityFact('工作人员',
               communityShort(communityMaybeMap(r['data'])['account_id'])),
           communityFact(
@@ -855,7 +872,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                     : null,
                 outline: true),
       if (session.isOwner)
-        communitySection('明确员工委托与派单', [
+        tradeSection('明确员工委托与派单', [
           communitySelect(
               '本机构有效成员',
               employee.text,
@@ -970,6 +987,10 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         communityHeading('同城出品人与机构', '仅展示已经明确同意公开的主体，个人与机构分别查看。'),
         menu(),
         const SizedBox(height: 20),
+        const ActivitySummaryCard(
+            label: '曝光资源', value: '按实际兑现展示',
+            icon: Icons.visibility_outlined,
+            description: '获得奖励不等于已开始曝光。这里只显示当前生效记录，安排与截止时间需逐项核对。'),
         communityField(city, '所在城市'),
         tradeButton('读取同城名单', enabled ? load : null),
         if (detail == null) appNotice('请先选择城市，读取当前公开名单。'),
@@ -981,11 +1002,11 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             ('personal', '同城出品人'),
             ('organizations', '同城机构')
           ])
-            communitySection(group.$2, [
+            tradeSection(group.$2, [
               if (communityRows(detail![group.$1]).isEmpty)
                 const Text('当前没有已同意公开的相关主体。'),
               for (final (i, r) in communityRows(detail![group.$1]).indexed)
-                communitySection(
+                tradeSection(
                     '${detail!['ranking_enabled'] == true ? '第${i + 1}名 · ' : ''}${r['party_id'] == session.partyId ? communityText(session.party?['display_name']) : '已公开主体 ${communityShort(r['party_id'])}'}',
                     [
                       communityFact(
@@ -1024,7 +1045,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             ])
         ],
         if (session.isOwner)
-          communitySection('本人公开选择', [
+          tradeSection('本人公开选择', [
             communityCheck('同意当前办事身份在所选城市名单中公开', buyerOptIn,
                 enabled ? (v) => setState(() => buyerOptIn = v == true) : null),
             tradeButton(
@@ -1100,7 +1121,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                       })
                   : null),
         communityField(reviewBody, '本次履约的具体评价', lines: 4),
-        communitySection('本人评价附图或证明（可不上传）', [
+        tradeSection('本人评价附图或证明（可不上传）', [
           SupplyFiles(
               api: SupplyApi(session),
               purpose: 'REVIEW_EVIDENCE',
@@ -1153,7 +1174,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                     })
                 : null),
         if (reviewResult != null)
-          communitySection('本次已发布评价', [
+          tradeSection('本次已发布评价', [
             communityFact(
                 '真实感', communityMap(reviewResult!['data'])['realism']),
             communityFact('契合度', communityMap(reviewResult!['data'])['fit']),
@@ -1174,12 +1195,16 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         communityHeading('真实曝光安排', '仅显示当前已经登记且正在生效的奖励资源位。'),
         menu(),
         const SizedBox(height: 20),
+        const ActivitySummaryCard(
+            label: '曝光资源', value: '按实际兑现展示',
+            icon: Icons.visibility_outlined,
+            description: '获得奖励不等于已开始曝光。这里只显示当前生效记录，安排与截止时间需逐项核对。'),
         communityField(city, '所在城市'),
         tradeButton('读取当前生效曝光', enabled ? load : null),
         if (rows.isEmpty && !checking && error == null)
           appNotice('当前所选城市暂无生效曝光记录。'),
         for (final r in rows)
-          communitySection(artistName(r['person_id']), [
+          tradeSection(artistName(r['person_id']), [
             communityFact('资源位', r['placement']),
             communityFact('曝光截止', communityDate(r['ends_at'])),
             communityFact('来源', '实际取得的奖励，非付费广告排序'),
@@ -1205,7 +1230,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         for (final own in secondary.where((x) =>
             communityMap(x['data'])['kind'] == 'EXPOSURE' &&
             communityMap(x['data'])['delivery'] is Map))
-          communitySection('本人的已登记曝光', [
+          tradeSection('本人的已登记曝光', [
             communityFact(
                 '资源位',
                 communityMap(

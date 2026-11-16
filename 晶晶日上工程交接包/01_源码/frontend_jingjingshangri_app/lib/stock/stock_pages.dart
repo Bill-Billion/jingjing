@@ -13,6 +13,7 @@ import 'stock_api.dart';
 import 'stock_models.dart';
 import 'stock_listing_form.dart';
 import 'stock_public_card.dart';
+import 'stock_purchase_summary.dart';
 import 'stock_public_media.dart';
 import 'v5_media.dart';
 import 'v5_support.dart';
@@ -201,7 +202,10 @@ class _StockScreenState extends State<_StockScreen> {
             '按本版许可购买',
             [
               Text(o.title),
-              tradeFact('价格', v5Money(o.price)),
+              Text(v5Money(o.price), style: const TextStyle(
+                  color: AccountTheme.accent, fontSize: 32,
+                  fontWeight: FontWeight.w700)),
+              const SizedBox(height: 12),
               ...stockLicenseFacts(o.license)
             ],
             theme: AccountTheme.plazaData)) {
@@ -398,6 +402,28 @@ class _StockScreenState extends State<_StockScreen> {
         plaza: ['catalog', 'video'].contains(widget.mode),
         api: api,
         title: title,
+        footer: o == null ? null : Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(children: [
+                const Expanded(child: Text('本版许可价格',
+                    style: TextStyle(color: AccountTheme.muted, fontSize: 12))),
+                Text(v5Money(o.price), style: const TextStyle(
+                    color: AccountTheme.accent, fontSize: 24,
+                    fontWeight: FontWeight.w700)),
+              ]),
+              const SizedBox(height: 8),
+              FilledButton(
+                  onPressed: busy || !licenseRead && api.pending('/checkout') == null
+                      ? null : checkout,
+                  child: Text(api.pending('/checkout') == null
+                      ? '确认本版购买并查看原订单' : '恢复原购买请求核对')),
+              const SizedBox(height: 6),
+              const Text('建立订单不等于付款成功',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 11, color: AccountTheme.muted)),
+            ]),
         children: [
           if (o != null) ...[
             StockPublicMediaView(
@@ -495,7 +521,10 @@ class _StockScreenState extends State<_StockScreen> {
                 kind: 'STOCK',
                 targetId: o.id),
             tradeSection('价格与本版许可', [
-              tradeFact('价格', v5Money(o.price)),
+              Text(v5Money(o.price), style: const TextStyle(
+                  color: AccountTheme.accent, fontSize: 32,
+                  fontWeight: FontWeight.w700)),
+              const SizedBox(height: 12),
               ...stockLicenseFacts(o.license)
             ]),
             CheckboxListTile(
@@ -521,11 +550,7 @@ class _StockScreenState extends State<_StockScreen> {
                     : (v) => setState(() => channel = v!)),
             const SizedBox(height: 16),
             appNotice('确认只建立原订单。是否付款及许可是否生效，以原订单实际核实结果为准；不开私人联系卡。'),
-            tradeButton(
-                api.pending('/checkout') == null ? '确认本版购买并查看原订单' : '恢复原购买请求核对',
-                busy || !licenseRead && api.pending('/checkout') == null
-                    ? null
-                    : checkout),
+
           ],
           if (widget.mode == 'listings') ...[
             tradeButton('提交一部现成作品上架', busy ? null : () => go('/stock/new')),
@@ -626,6 +651,7 @@ class _StockScreenState extends State<_StockScreen> {
               appNotice('当前身份没有现货订单。付款及资格核实后按原单发放许可。'),
           ],
           if (p != null) ...[
+            StockPurchaseSummary(purchase: p),
             tradeSection('本次许可与交付', [
               if (p.data['current_case_id'] != null)
                 appNotice('本单售后处理中，正式文件下载已暂停。原许可记录保留，等待独立客服核对。'),
@@ -639,7 +665,11 @@ class _StockScreenState extends State<_StockScreen> {
                   title: const Text('原合同依据'),
                   children: [tradeFact('原合同指纹', p.raw['contract_sha256'])])
             ]),
-            if (p.usable)
+            if (p.usable) ...[
+              tradeHeading('读取你的作品', eyebrow: '正式交付 / 按当前许可使用', fontSize: 24),
+              const Text('播放与保存均须核对当前权限。文件保存到本机后仍受许可约束。',
+                  style: TextStyle(color: AccountTheme.muted, fontSize: 13, height: 1.5)),
+              const SizedBox(height: 12),
               V5Media(
                   key: ValueKey('${p.orderId}:$ticket'),
                   api: api,
@@ -664,6 +694,7 @@ class _StockScreenState extends State<_StockScreen> {
                       });
                     }
                   }),
+            ],
             if (!p.usable) appNotice('当前不可读取正式文件。请核对原付款、本人许可或售后处理；不能回退为公开文件。'),
             if (p.data['accepted_at'] == null && p.usable) ...[
               tradeButton(
@@ -702,13 +733,18 @@ class _StockScreenState extends State<_StockScreen> {
               appNotice(p.data['acceptance_method'] == 'AGREED_TIMEOUT'
                   ? '按原约定期限处理，未冒记本人主动确认。'
                   : '本人已明确确认本次交付。'),
-            if (p.data['refund_plan'] != null) ...[
+            if (p.data['refund_plan'] != null) tradeSection('退款与许可决定', [
               tradeFact('本案核定退款', v5Money(p.data['refund_plan']['amount_minor'])),
               tradeFact('退款到账后原许可', p.data['refund_plan']['license_action'] == 'KEEP' ? '保留原许可，仍须满足当前授权' : '撤销原许可'),
-            ],
+              const Text('这是已核定的处理方案，实际到账请查看原订单渠道记录。',
+                  style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.5)),
+            ]),
             for (final c in p.cases)
               tradeSection(stockCases[c['kind']]!, [
                 Text(c['reason']),
+                tradeFact('提交时间', tradeDate(c['opened_at'])),
+                if (c['resolution'] != null)
+                  tradeFact('处理时间', tradeDate(c['resolution']['at'])),
                 tradeFact(
                     '处理',
                     c['resolution'] == null
