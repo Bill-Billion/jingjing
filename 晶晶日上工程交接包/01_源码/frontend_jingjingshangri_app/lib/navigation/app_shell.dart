@@ -14,6 +14,13 @@ import '../plaza/plaza_pages.dart';
 import '../widgets/editorial_icons.dart';
 import 'package:flutter/services.dart';
 
+// Local 05 palette from Figma 4016:6960; shared navigation stays unchanged.
+const _mineCanvas = Color(0xff101513);
+const _mineSurface = Color(0xff1c2420);
+const _mineText = Color(0xfff2f5ef);
+const _mineMuted = Color(0xffa5aea8);
+const _mineBorder = Color(0xff34403a);
+
 /// Keep the current tab address without replacing the mounted shell. Child
 /// routes still use ordinary Material routes and return to this updated address.
 class AppShellRoute extends MaterialPageRoute<dynamic> {
@@ -184,14 +191,14 @@ class _AppShellState extends State<AppShell> {
           const SizedBox(height: 12),
           Text(session.authNotice ?? '登录后选择办事身份，管理自己的资料与合同。',
               style: const TextStyle(
-                  fontSize: 14, color: AccountTheme.muted, height: 1.6)),
+                  fontSize: 14, color: _mineMuted, height: 1.6)),
           const SizedBox(height: 20),
           FilledButton(
               onPressed: () => _open('/login'), child: const Text('手机号登录')),
           const SizedBox(height: 24),
         ] else ...[
           Container(
-            color: AccountTheme.surface,
+            color: _mineSurface,
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
@@ -199,18 +206,18 @@ class _AppShellState extends State<AppShell> {
                     width: 56, height: 56,
                     decoration: BoxDecoration(
                         color: AccountTheme.selectedSurface,
-                        borderRadius: BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(12)),
                     child: const Icon(Icons.person_outline,
-                        size: 32, color: AccountTheme.text)),
-                const SizedBox(width: 12),
+                        size: 32, color: _mineText)),
+                const SizedBox(width: 10),
                 Expanded(child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(session.account?['display_name'] ?? '我的账号',
-                      style: const TextStyle(fontSize: 20,
-                          fontWeight: FontWeight.w700)),
+                      style: const TextStyle(fontSize: 20, height: 1.4,
+                          color: _mineText, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 4),
                   const Text('认证与成长以本人记录为准',
-                      style: TextStyle(fontSize: 11, color: AccountTheme.muted)),
+                      style: TextStyle(fontSize: 11, color: _mineMuted)),
                 ])),
                 IconButton(
                     tooltip: '复制账号编号',
@@ -224,30 +231,25 @@ class _AppShellState extends State<AppShell> {
                       padding: EdgeInsets.zero,
                       minimumSize: const Size(0, 32),
                       alignment: Alignment.centerLeft,
-                      foregroundColor: AccountTheme.text),
+                      foregroundColor: _mineText),
                   onPressed: () => _open('/account'),
                   child: const Text('个人资料与身份 ↗')),
               Row(children: [
                 Expanded(child: Text(
                     '当前身份 · ${session.party?['display_name'] ?? '尚未选择办事身份'}',
-                    style: const TextStyle(fontSize: 12, color: AccountTheme.muted))),
+                    style: const TextStyle(fontSize: 12, color: _mineMuted))),
                 TextButton(onPressed: () => _open('/account'),
                     child: const Text('切换身份')),
               ]),
             ]),
           ),
         ],
-        if (session.isLoggedIn && session.isOwner &&
-            session.party?['kind'] == 'PERSON')
-          _PersonalWalletSummary(
-              key: ValueKey((session.epoch, session.account?['id'], session.partyId)),
-              session: session),
         Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _myDirectory()),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+            child: _myDirectory(session)),
       ];
 
-  Widget _myDirectory() {
+  Widget _myDirectory(AccountSession session) {
     final groups = <(String, String, List<(String, String)>)>[
       (
         '业务与作品',
@@ -329,9 +331,10 @@ class _AppShellState extends State<AppShell> {
     ];
     return Column(children: [
       for (final g in groups)
-        DecoratedBox(
+        Container(
+            constraints: const BoxConstraints(minHeight: 70),
             decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: AccountTheme.border))),
+                border: Border(bottom: BorderSide(color: _mineBorder))),
             child: ExpansionTile(
                 tilePadding: EdgeInsets.zero,
                 childrenPadding: const EdgeInsets.only(left: 12),
@@ -340,21 +343,32 @@ class _AppShellState extends State<AppShell> {
                 title: Text(g.$1,
                     style: const TextStyle(
                         fontFamily: AccountTheme.serif,
-                        fontSize: 21,
-                        height: 1.3,
+                        fontSize: 20,
+                        height: 1.4,
+                        color: _mineText,
                         fontWeight: FontWeight.w700)),
                 subtitle: g.$1 == '资金与收益'
-                    ? Row(children: [
-                        Expanded(child: TextButton(
-                            onPressed: () => _open('/wallet'),
-                            child: const Text('消费余额\n查看本人钱包'))),
-                        Expanded(child: TextButton(
-                            onPressed: () => _open('/finance'),
-                            child: const Text('收入与结算\n查看获准记录'))),
-                      ])
-                    : Text(g.$2, style: const TextStyle(
-                        fontSize: 11, color: AccountTheme.muted)),
-                trailing: const Icon(Icons.north_east, size: 22),
+                    ? Column(crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (session.isLoggedIn && session.isOwner &&
+                              session.party?['kind'] == 'PERSON')
+                            _PersonalWalletSummary(
+                                key: ValueKey((session.epoch,
+                                    session.account?['id'], session.partyId)),
+                                session: session)
+                          else
+                            TextButton(onPressed: () => _open('/wallet'),
+                                child: const Text('消费余额 · 查看本人钱包')),
+                          Align(alignment: Alignment.centerLeft,
+                              child: TextButton(
+                                  onPressed: () => _open('/finance'),
+                                  child: const Text('收入与结算 · 查看获准记录'))),
+                        ])
+                    : Padding(padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(g.$2, style: const TextStyle(
+                            fontSize: 12, height: 1.5, color: _mineMuted))),
+                trailing: const Icon(Icons.north_east,
+                    size: 26, color: _mineText),
                 children: [
                   for (final item in g.$3)
                     _entry(item.$1, '', Icons.north_east, () => _open(item.$2))
@@ -422,20 +436,21 @@ class _AppShellState extends State<AppShell> {
     final session = context.watch<AccountSession>();
     return AccountTheme(
         child: Scaffold(
+      backgroundColor: _selected == 4 ? _mineCanvas : null,
       appBar: _selected == 0 || _selected == 3 || session.isLoggedIn && [1, 2].contains(_selected)
           ? null
           : AppBar(
               backgroundColor: _selected == 4 && session.isLoggedIn
-                  ? AccountTheme.surface
+                  ? _mineSurface
                   : AccountTheme.canvas,
-              foregroundColor: AccountTheme.text,
+              foregroundColor: _selected == 4 ? _mineText : AccountTheme.text,
               automaticallyImplyLeading: false,
               centerTitle: false,
-              titleSpacing: 16,
-              toolbarHeight: 64,
+              titleSpacing: _selected == 4 ? 20 : 16,
+              toolbarHeight: _selected == 4 ? 44 : 64,
               title: Text(_selected == 0 ? '晶晶日上' : _labels[_selected],
                   style: TextStyle(
-                      color: AccountTheme.text,
+                      color: _selected == 4 ? _mineText : AccountTheme.text,
                       fontFamily: AccountTheme.sans,
                       fontSize: 28,
                       fontWeight: FontWeight.w700)),
@@ -756,10 +771,11 @@ class _PersonalWalletSummaryState extends State<_PersonalWalletSummary> {
   Widget build(BuildContext context) {
     final d = summary?.raw;
     return Padding(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+        padding: const EdgeInsets.only(top: 8),
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          const Text('本人钱包', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 12),
+          const Text('消费钱包 · 本人账本', style: TextStyle(
+              fontSize: 11, height: 16 / 11, color: _mineMuted)),
+          const SizedBox(height: 4),
           if (busy) const Text('正在读取本人钱包…'),
           if (error != null) ...[
             Text(error!),
@@ -767,14 +783,15 @@ class _PersonalWalletSummaryState extends State<_PersonalWalletSummary> {
           ],
           if (d != null) ...[
             Text('账面可用余额  ${v5Money(d['available_balance_minor'] as int)}',
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                style: const TextStyle(fontSize: 16, height: 1.25, color: _mineText,
+                    fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Text('待核对或锁定  ${v5Money(d['reserved_balance_minor'] as int)}'),
             Text('可用晶钻  ${d['available_points']}'),
           ],
           const SizedBox(height: 8),
           const Text('本人账本摘要，不代表可提现、转账或渠道已开放支付。',
-              style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              style: TextStyle(fontSize: 12, color: _mineMuted)),
           TextButton(onPressed: openWallet, child: const Text('查看钱包与原始流水')),
         ]));
   }
