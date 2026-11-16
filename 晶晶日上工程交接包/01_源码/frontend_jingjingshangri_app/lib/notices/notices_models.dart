@@ -169,3 +169,83 @@ class NoticeRecord {
                   ? '机构发布资格'
                   : '原资格记录';
 }
+
+// Revision history is a separate private projection, never a NoticeRecord.
+class NoticeHistorySnapshot {
+  NoticeHistorySnapshot(dynamic value, String noticeId) : raw = v5Map(value) {
+    v5Require(raw['notice_id'] == noticeId &&
+        v5Int(raw['object_version'], min: 1) &&
+        (raw['revision_id'] == null || v5Id(raw['revision_id'])) &&
+        v5Hash(raw['notice_sha256']));
+    notice = v5Map(raw['notice']);
+    validateNotice(notice);
+  }
+  final Map<String, dynamic> raw;
+  late final Map<String, dynamic> notice;
+  bool sameAs(NoticeHistorySnapshot other) =>
+      raw['notice_id'] == other.raw['notice_id'] &&
+      raw['object_version'] == other.raw['object_version'] &&
+      raw['revision_id'] == other.raw['revision_id'] &&
+      raw['notice_sha256'] == other.raw['notice_sha256'];
+}
+
+class NoticeRevisionItem {
+  NoticeRevisionItem(dynamic value, String noticeId,
+      {required bool publisher, required String party}) {
+    final raw = v5Map(value);
+    v5Require(v5Id(raw['id']));
+    id = raw['id'];
+    status = raw['current_status'];
+    Map<String, dynamic> content;
+    if (publisher) {
+      v5Require(raw['kind'] == 'NOTICE_REVISION' &&
+          raw['parent_id'] == noticeId && raw['owner_party_id'] == party &&
+          v5Int(raw['object_version'], min: 1) &&
+          v5Hash(raw['content_sha256']) &&
+          ['IN_REVIEW', 'APPROVED', 'REJECTED'].contains(status));
+      content = v5Map(raw['data']);
+      v5Require(content['reason'] is String);
+      reason = content['reason'];
+      if (content['review'] != null) {
+        final review = v5Map(content['review']);
+        v5Require(review['reason'] is String);
+        reviewReason = review['reason'];
+      }
+      recordVersion = raw['object_version'];
+    } else {
+      // Fail closed if a submitter receives an unexpected full-record shape.
+      v5Require(raw.keys.every(const {
+            'id', 'current_status', 'base_snapshot', 'notice', 'notice_sha256'
+          }.contains) &&
+          status == 'APPROVED' && v5Hash(raw['notice_sha256']));
+      content = raw;
+    }
+    base = NoticeHistorySnapshot(content['base_snapshot'], noticeId);
+    notice = v5Map(content['notice']);
+    validateNotice(notice);
+  }
+  late final String id, status;
+  late final NoticeHistorySnapshot base;
+  late final Map<String, dynamic> notice;
+  String? reason, reviewReason;
+  int? recordVersion;
+}
+
+class NoticeHistoryPage {
+  NoticeHistoryPage(dynamic value, String noticeId,
+      {required bool publisher, required String party, String? previous}) {
+    final raw = v5Map(value);
+    v5Require(raw['notice_id'] == noticeId);
+    current = NoticeHistorySnapshot(raw['current'], noticeId);
+    items = v5Rows(raw['items'], max: 100).map((row) =>
+        NoticeRevisionItem(row, noticeId, publisher: publisher, party: party)).toList();
+    cursor = raw['next_cursor'];
+    v5Require(cursor == null || v5Id(cursor));
+    v5Require(cursor == null || cursor != previous);
+    v5Require(items.map((item) => item.id).toSet().length == items.length);
+    if (cursor != null) v5Require(items.isNotEmpty && cursor == items.last.id);
+  }
+  late final NoticeHistorySnapshot current;
+  late final List<NoticeRevisionItem> items;
+  late final String? cursor;
+}

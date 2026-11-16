@@ -971,6 +971,17 @@ class _NoticeScreenState extends State<_NoticeScreen> {
         ]),
         if (r.kind == 'NOTICE')
           tradeSection('本次通告内容', noticeFacts(v5Map(r.data['notice']))),
+        if (r.raw['owner_party_id'] == widget.session.partyId &&
+            (r.kind == 'NOTICE' || r.kind == 'SUBMISSION' &&
+                v5Id(r.data['submission']['notice_id']) &&
+                r.raw['parent_id'] == r.data['submission']['notice_id']))
+          tradeButton('查看授权修订历史',
+              busy || api.pendingOperations.isNotEmpty ? null : () => go(
+                  Uri(path: '/notices/history', queryParameters: {
+                    'noticeId': r.kind == 'NOTICE' ? r.id : r.data['submission']['notice_id'] as String,
+                    'sourceRecordId': r.id,
+                  }).toString()), outline: true),
+
         if (r.kind == 'SUBMISSION') ...[
           Text(r.status == 'SENT' ? '待回应投稿' : '本次投稿进度',
               style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),

@@ -84,6 +84,23 @@ class NoticesApi extends V5Api {
     return get('/records/${key(id)}', (d) => NoticeRecord(d, p, id: id));
   }
 
+  Future<NoticeHistoryPage> history(String noticeId,
+      {required NoticeRecord source, String? cursor}) {
+    final party = owner();
+    key(noticeId);
+    v5Require(source.raw['owner_party_id'] == party);
+    final publisher = source.kind == 'NOTICE';
+    v5Require(publisher
+        ? source.id == noticeId
+        : source.kind == 'SUBMISSION' &&
+            source.raw['parent_id'] == noticeId &&
+            source.data['submission']['notice_id'] == noticeId);
+    return get('/announcements/$noticeId/history',
+        (d) => NoticeHistoryPage(d, noticeId,
+            publisher: publisher, party: party, previous: cursor),
+        query: {'limit': 20, if (cursor != null) 'cursor': key(cursor)});
+  }
+
   Future<Map<String, dynamic>> invitationContext(String listing, String rule) =>
       get('/invitation-context', (d) {
         for (final k in [
