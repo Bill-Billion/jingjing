@@ -83,23 +83,39 @@ class _WalletScreenState extends State<_WalletScreen> {
         case 'summary':
         case 'recharge':
         case 'level-six':
-          summary = await api.summary();
+          final readSummary = await api.summary();
+          if (!mounted || t != ticket) return null;
+          api.check(epoch, p);
+          summary = readSummary;
           missing = false;
         case 'points':
         case 'scout':
-          summary = await api.summary();
+          final readSummary = await api.summary();
+          if (!mounted || t != ticket) return null;
+          api.check(epoch, p);
+          summary = readSummary;
           missing = false;
           rules.clear();
           try {
-            rules.addAll(await api.rules());
+            final readRules = await api.rules();
+            if (!mounted || t != ticket) return null;
+            api.check(epoch, p);
+            rules.addAll(readRules);
           } on AccountError {
+            if (!mounted || t != ticket) return null;
+            api.check(epoch, p);
             ruleNotice = '等级与续年规则暂未读到，已保留真实成长和会员年金额；可重新核对。';
           }
         case 'rules':
           rules.clear();
-          rules.addAll(await api.rules());
+          final readRules = await api.rules();
+          if (!mounted || t != ticket) return null;
+          api.check(epoch, p);
+          rules.addAll(readRules);
         case 'records':
           final r = await api.records(kind, cursor: more ? cursor : null);
+          if (!mounted || t != ticket) return null;
+          api.check(epoch, p);
           rows.addAll(r.items);
           cursor = r.cursor;
         case 'sync':
@@ -108,6 +124,8 @@ class _WalletScreenState extends State<_WalletScreen> {
           final seen = <String>{};
           do {
             final r = await api.records('EARNING', cursor: next);
+            if (!mounted || t != ticket) return null;
+            api.check(epoch, p);
             syncCandidates.addAll(
                 r.items.where((e) => e.data['source_kind'] == 'CONSUMPTION'));
             next = r.cursor;

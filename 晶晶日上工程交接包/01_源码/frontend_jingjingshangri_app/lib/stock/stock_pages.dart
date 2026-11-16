@@ -204,6 +204,7 @@ class _StockScreenState extends State<_StockScreen> {
   }
 
   Future<void> checkout() async {
+    if (busy) return;
     final o = offer;
     if (o == null) return;
     final original = api.pending('/checkout');
@@ -225,7 +226,8 @@ class _StockScreenState extends State<_StockScreen> {
             theme: AccountTheme.plazaData)) {
       return;
     }
-    if (!mounted) return;
+    if (!mounted || busy) return;
+    if (original == null && (!licenseRead || channel == 'CUSTODY')) return;
     setState(() {
       busy = true;
       error = null;
@@ -297,6 +299,7 @@ class _StockScreenState extends State<_StockScreen> {
   }
 
   Future<void> purchaseAction(String action) async {
+    if (busy) return;
     final current = purchase;
     if (current == null) return;
     final epoch = widget.session.epoch, party = widget.session.partyId;
@@ -309,7 +312,7 @@ class _StockScreenState extends State<_StockScreen> {
             [Text(current.title), ...stockLicenseFacts(current.license)])) {
       return;
     }
-    if (!mounted) return;
+    if (!mounted || busy) return;
     setState(() {
       busy = true;
       error = null;
@@ -377,6 +380,9 @@ class _StockScreenState extends State<_StockScreen> {
   @override
   Widget build(BuildContext context) {
     final o = offer, l = listing, p = purchase;
+    final mediaTicket = ticket,
+        mediaEpoch = widget.session.epoch,
+        mediaParty = widget.session.partyId;
     final title = switch (widget.mode) {
       'catalog' => '全部作品',
       'video' => '视频商品详情',
@@ -874,13 +880,19 @@ class _StockScreenState extends State<_StockScreen> {
                   allowSave: true,
                   load: () => api.bytes('/purchases/${p.orderId}/content'),
                   onOpened: () async {
+                    if (!mounted || mediaTicket != ticket ||
+                        mediaEpoch != widget.session.epoch ||
+                        mediaParty != widget.session.partyId ||
+                        purchase?.orderId != p.orderId) return;
                     final current = await api.purchase(p.orderId);
-                    if (mounted) {
-                      setState(() {
-                        purchase = current;
-                        opened = true;
-                      });
-                    }
+                    if (!mounted || mediaTicket != ticket ||
+                        mediaEpoch != widget.session.epoch ||
+                        mediaParty != widget.session.partyId ||
+                        purchase?.orderId != p.orderId) return;
+                    setState(() {
+                      purchase = current;
+                      opened = true;
+                    });
                   }),
               ),
             ],

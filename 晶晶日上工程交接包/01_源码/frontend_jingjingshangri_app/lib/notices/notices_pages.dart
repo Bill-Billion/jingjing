@@ -170,19 +170,29 @@ class _NoticeScreenState extends State<_NoticeScreen> {
           publicRows.addAll(r.items);
           cursor = r.cursor;
         case 'public':
-          publicNotice = await api.publicNotice(widget.id ?? '');
+          final loadedNotice = await api.publicNotice(widget.id ?? '');
+          if (!mounted || t != ticket) return;
+          api.check(epoch, null);
+          publicNotice = loadedNotice;
         case 'records':
           final r = await api.records(recordKind, cursor: more ? cursor : null);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
           rows.addAll(r.items);
           cursor = r.cursor;
         case 'record':
-          record = await api.record(widget.id ?? '');
+          final loadedRecord = await api.record(widget.id ?? '');
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          record = loadedRecord;
         case 'new':
           rules.clear();
           String? next;
           final seen = <String>{};
           do {
             final r = await api.rules(cursor: next);
+            if (!mounted || t != ticket) return;
+            api.check(epoch, p);
             rules.addAll(r.items);
             next = r.cursor;
             if (next != null) v5Require(seen.add(next));

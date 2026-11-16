@@ -251,7 +251,7 @@ class _ConversationState extends State<_Conversation>
               : '已暂停继续写入和联系卡读取；保留本单历史。独立客服在网页办理冻结、恢复、归档或隐藏。')
         ]),
         for (final m in rows) ...message(m, c),
-        if (rows.isEmpty && !busy) appNotice('本单当前没有可读取的消息。'),
+        if (rows.isEmpty && !busy && error == null) appNotice('本单当前没有可读取的消息。'),
         if (cursor != null)
           tradeButton('继续读取后续本单消息', busy ? null : () => load(more: true),
               outline: true),
