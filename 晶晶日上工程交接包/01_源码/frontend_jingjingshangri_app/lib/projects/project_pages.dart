@@ -280,7 +280,7 @@ class _ProjectsListState extends State<_ProjectsList> {
                   const SizedBox(width: 8), SizedBox(width: 70, child: action),
                 ]);
               })),
-        if (!busy && rows.isEmpty)
+        if (!busy && error == null && rows.isEmpty)
           tradeSection('暂时没有参与项目', [supplyNote('只展示当前主体获准参与的项目。')]),
         if (cursor != null)
           tradeButton('加载更多', busy ? null : () => load(more: true),

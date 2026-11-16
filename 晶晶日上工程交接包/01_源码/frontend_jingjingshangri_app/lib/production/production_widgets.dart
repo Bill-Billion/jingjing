@@ -79,11 +79,11 @@ String productionVersionTitle(ProductionRecord version) =>
 String productionVersionState(
         ProductionRecord version, ProductionRecord project) =>
     !version.current(project)
-        ? '历史版本，当前确认已失效'
+        ? '历史版本，不能作为当前确认对象'
         : version.accepted(project)
             ? '本版已确认'
             : version.status == 'APPROVED'
-                ? '审核通过，等待你确认'
+                ? '审核通过，等待买方负责人确认'
                 : productionStatuses[version.status]!;
 Widget productionSpecification(ProductionRecord p) => supplyCard('原约定', [
       tradeFact('档位 / 版本',

@@ -672,6 +672,59 @@ class _StoryEditorState extends State<_StoryEditor> {
     return !dirty || await confirm('离开当前故事？', '尚未保存的内容将丢失。你也可以返回后先保存草稿。');
   }
 
+
+  // Official node 4016:10955. Scoped to this editor, not the shared theme.
+  ThemeData _editorTheme() {
+    const accent = Color(0xFFB9F34A), canvas = Color(0xFF101513);
+    final base = AccountTheme.data;
+    final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(12));
+    final border = OutlineInputBorder(borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none);
+    return base.copyWith(
+      scaffoldBackgroundColor: canvas,
+      colorScheme: base.colorScheme.copyWith(primary: accent, onPrimary: canvas,
+          surface: const Color(0xFF1C2420), onSurface: const Color(0xFFF2F5EF),
+          outline: const Color(0xFF34403A)),
+      appBarTheme: base.appBarTheme.copyWith(backgroundColor: canvas,
+          foregroundColor: const Color(0xFFF2F5EF), surfaceTintColor: Colors.transparent,
+          titleTextStyle: const TextStyle(fontFamily: AccountTheme.sans,
+              fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500)),
+      inputDecorationTheme: base.inputDecorationTheme.copyWith(
+          filled: true, fillColor: const Color(0xFF1C2420),
+          contentPadding: const EdgeInsets.all(12),
+          border: border, enabledBorder: border, disabledBorder: border,
+          focusedBorder: border.copyWith(borderSide: const BorderSide(color: accent)),
+          labelStyle: const TextStyle(fontSize: 12, color: Color(0xFFA5AEA8)),
+          hintStyle: const TextStyle(fontSize: 14, color: Color(0xFFA5AEA8))),
+      filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(
+          minimumSize: const Size(0, 48), backgroundColor: accent,
+          foregroundColor: canvas, shape: shape,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          textStyle: const TextStyle(fontFamily: AccountTheme.sans,
+              fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500))),
+      outlinedButtonTheme: OutlinedButtonThemeData(style: OutlinedButton.styleFrom(
+          minimumSize: const Size(0, 48), foregroundColor: accent,
+          side: const BorderSide(color: accent), shape: shape,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          textStyle: const TextStyle(fontFamily: AccountTheme.sans,
+              fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500))),
+    );
+  }
+
+  Widget _editorCard(String title, List<Widget> children,
+      {bool compact = false, bool highlight = false}) => Container(
+      margin: EdgeInsets.only(bottom: compact ? 8 : 18),
+      padding: EdgeInsets.all(compact ? 12 : 16),
+      decoration: BoxDecoration(
+          color: highlight ? const Color(0xFF202C23) : const Color(0xFF1C2420),
+          borderRadius: BorderRadius.circular(compact ? 12 : 16)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(title, style: const TextStyle(color: Color(0xFFF2F5EF),
+            fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 8),
+        ...children,
+      ]));
+
   Widget field(StoryField field) {
     final warning = fieldErrors['answers.${field.key}'];
     final canEdit = editable && !locked && !conflict;
@@ -683,9 +736,9 @@ class _StoryEditorState extends State<_StoryEditor> {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFA5AEA8)),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           if (!editable && ['TEXT', 'CHOICE'].contains(field.type))
             SelectableText(
               (answers[field.key]?.trim().isNotEmpty ?? false)
@@ -693,12 +746,13 @@ class _StoryEditorState extends State<_StoryEditor> {
                   : '（未填写）',
               key: ValueKey('story-answer-${field.key}'),
               style: const TextStyle(
-                  color: AccountTheme.text, fontSize: 16, height: 1.6),
+                  color: Color(0xFFF2F5EF), fontSize: 14, height: 22 / 14),
             ),
           if (editable && field.type == 'TEXT')
             TextField(
               key: ValueKey('story-field-${field.key}'),
               controller: controllers[field.key],
+              style: const TextStyle(fontSize: 14, height: 22 / 14, color: Color(0xFFF2F5EF)),
               enabled: canEdit,
               minLines: 3,
               maxLines: 7,
@@ -804,37 +858,32 @@ class _StoryEditorState extends State<_StoryEditor> {
   Widget build(BuildContext context) {
     final pendingOperation = pending;
     final children = <Widget>[
-      _eyebrow('人工定制 / 故事需求'),
-      tradeHeading(
+      const Text('人工定制 / 制作需求', style: TextStyle(
+          fontSize: 12, height: 1.5, color: Color(0xFFB9F34A))),
+      const SizedBox(height: 18),
+      Text(
         supplementOpen
             ? '还需要你补充一些内容'
             : record != null && record!.status != 'DRAFT'
                 ? '故事已交给平台'
                 : '写下你的故事',
-        fontSize: 24,
+        style: const TextStyle(fontFamily: AccountTheme.sans,
+            fontSize: 28, height: 36 / 28, fontWeight: FontWeight.w700,
+            color: Color(0xFFF2F5EF)),
       ),
-      if (!denied && (record == null || record!.status == 'DRAFT'))
-        _storyPanel('先留下想法，再形成约定', [
-          const Wrap(spacing: 8, runSpacing: 8, children: [
-            Chip(label: Text('仅本人可见')),
-            Chip(label: Text('分享未开放')),
-          ]),
-          _note('把创作方向与故事片段写进下方本品类的问题。此处保存的是现有定制需求草稿，不是通用AI生成器，也不会直接生成或交付影片。'),
-          _note('参考素材请仅使用已获权的内容。AI生成或氛围参考应在说明中注明，不作为正式成片或交付承诺。上传前须先保存草稿，上传成功不代表授权通过。'),
-        ]),
-      if (!denied && (record == null || record!.status == 'DRAFT'))
-        _storyPanel('本次制作需求', [
-          const ListTile(contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.edit_note_outlined),
-              title: Text('先写下故事需求'),
-              subtitle: Text('本页保存和提交真实业务故事，不直接生成制作订单。')),
-          const Divider(),
-          const ListTile(contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.people_outline),
-              title: Text('多人共创另行办理'),
-              subtitle: Text('先提交故事，再在共创流程按真实条件开房；这里不切换为房间或付款。')),
-        ]),
-      if (!denied) _storyPanel('本次办理', [
+      const SizedBox(height: 18),
+      if (!denied && (record == null || record!.status == 'DRAFT')) ...[
+        _editorCard('个人定制', [
+          const Text('按下方真实品类模板填写；仅本人可见，分享未开放。',
+              style: TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFA5AEA8))),
+        ], compact: true),
+        _editorCard('多人共创另行办理', [
+          const Text('先提交故事，再从原记录进入共创流程核对开房条件。本页不切换房间或付款。',
+              style: TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFA5AEA8))),
+        ], compact: true),
+        const SizedBox(height: 10),
+      ],
+      if (!denied) _editorCard('本次办理', [
         Wrap(spacing: 8, runSpacing: 8, children: [
           Chip(label: Text(record == null ? '填写需求' : storyStatuses[record!.status]!)),
           if (supplementOpen) const Chip(label: Text('需要补充')),
@@ -881,9 +930,9 @@ class _StoryEditorState extends State<_StoryEditor> {
             padding: const EdgeInsets.only(bottom: 8),
             child: Material(
               color: selected?.id == category.id
-                  ? AccountTheme.selectedSurface
-                  : AccountTheme.surface,
-              borderRadius: BorderRadius.circular(18),
+                  ? const Color(0xFF293A22)
+                  : const Color(0xFF1C2420),
+              borderRadius: BorderRadius.circular(12),
               clipBehavior: Clip.antiAlias,
               child: ListTile(
                 key: ValueKey('customization-category-${category.code}'),
@@ -893,22 +942,22 @@ class _StoryEditorState extends State<_StoryEditor> {
                   selected?.id == category.id ? Icons.check : Icons.add,
                   size: 20,
                   color: selected?.id == category.id
-                      ? AccountTheme.accent
-                      : AccountTheme.text,
+                      ? const Color(0xFFB9F34A)
+                      : const Color(0xFFF2F5EF),
                 ),
                 title: Text(category.template.title,
                     style: TextStyle(
                         color: selected?.id == category.id
-                            ? AccountTheme.accent
-                            : AccountTheme.text,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600)),
+                            ? const Color(0xFFB9F34A)
+                            : const Color(0xFFF2F5EF),
+                        fontSize: 14, height: 20 / 14,
+                        fontWeight: FontWeight.w500)),
                 subtitle: Text(
                   '${category.template.description}${category.submissionAvailable ? '' : '\n可保存草稿，当前暂不可正式提交'}',
                   style: TextStyle(
                       color: selected?.id == category.id
-                          ? AccountTheme.text
-                          : AccountTheme.muted,
+                          ? const Color(0xFFF2F5EF)
+                          : const Color(0xFFA5AEA8),
                       fontSize: 12,
                       height: 1.5),
                 ),
@@ -974,14 +1023,17 @@ class _StoryEditorState extends State<_StoryEditor> {
         const SizedBox(height: 8),
         KeyedSubtree(
             key: const ValueKey('story-form-section'),
-            child: _storyPanel(template!.title, [
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              Text(template!.title, style: const TextStyle(fontSize: 14,
+                  height: 20 / 14, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 8),
               if (template!.description.isNotEmpty)
                 _note(template!.description),
               if (fieldErrors['answers'] != null)
                 appNotice(fieldErrors['answers']!, icon: Icons.error_outline),
               for (final item in template!.fields
                   .where((f) => f.type != 'PRIVATE_ATTACHMENT'))
-                _storyPanel('', [field(item)]),
+                field(item),
               if (template!.fields.any((f) => f.type == 'PRIVATE_ATTACHMENT'))
                 if (record == null)
                   appNotice('先保存故事草稿，再选择文件并上传。附件不会随文字自动提交；上传后仍须保存绑定并确认正式提交。')
@@ -1074,10 +1126,13 @@ class _StoryEditorState extends State<_StoryEditor> {
                               requestId: record!.id))),
               child: const Text('查看这份需求的报价与订单')),
         ]),
-      _storyPanel('提交之后', [
-        _note('故事提交后由平台对接。报价、合同、授权和制作将在后续步骤分别确认。'),
-        _note('保存草稿不会正式提交、开房或产生付款。参考素材不是交付成片，私人故事不会因保存自动开放协作分享。'),
-      ]),
+      _editorCard('需求提交后由平台对接', [
+        const Text('问题按已选品类模板显示；普通买家可直接填写故事，草稿保留绑定模板。专员核对用途、素材与阵容，再提供报价。提交不扣费，也不代替他人授权。',
+            style: TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFF2F5EF))),
+        const SizedBox(height: 8),
+        const Text('素材请仅使用已获权内容；AI或氛围参考应注明，不作为正式成片。先保存草稿再上传，上传后仍须保存绑定并正式提交。保存不自动开房或开放协作分享。',
+            style: TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFF2F5EF))),
+      ], highlight: true),
     ];
     Future<void> goBack() async {
       if (!await leave() || !context.mounted) return;
@@ -1093,9 +1148,10 @@ class _StoryEditorState extends State<_StoryEditor> {
       onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) await goBack();
       },
-      child: AccountTheme(
+      child: Theme(data: _editorTheme(),
         child: Scaffold(
           appBar: AppBar(
+            toolbarHeight: 52,
             title: Text(
               record?.status == 'DRAFT' || record == null
                   ? '定制故事需求'
@@ -1108,7 +1164,7 @@ class _StoryEditorState extends State<_StoryEditor> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 560),
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                   children: [...children, const SizedBox(height: 24)],
                 ),
               ),
@@ -1118,7 +1174,7 @@ class _StoryEditorState extends State<_StoryEditor> {
               ? null
               : DecoratedBox(
                   decoration: const BoxDecoration(
-                      color: AccountTheme.canvas,
+                      color: Color(0xFF101513),
                       border:
                           Border(top: BorderSide(color: AccountTheme.border))),
                   child: SafeArea(
@@ -1128,14 +1184,14 @@ class _StoryEditorState extends State<_StoryEditor> {
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 560),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(18, 10, 18, 12),
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
                           child: LayoutBuilder(builder: (context, constraints) {
                             final actions = <Widget>[
                               OutlinedButton(
                                   key: const ValueKey('story-save'),
                                   onPressed: locked || conflict ? null : save,
                                   child: Text(
-                                      supplementOpen ? '保存补充草稿' : '保存个人草稿'),
+                                      supplementOpen ? '保存补充草稿' : '保存业务草稿'),
                                 ),
                               FilledButton(
                                   key: const ValueKey('story-submit'),
@@ -1150,7 +1206,7 @@ class _StoryEditorState extends State<_StoryEditor> {
                                       ? null
                                       : () => save(submit: true),
                                   child: Text(
-                                      supplementOpen ? '正式重提补充' : '提交制作需求'),
+                                      supplementOpen ? '正式重提补充' : '提交给制作专员'),
                                 ),
                             ];
                             if (constraints.maxWidth < 340 ||
@@ -1164,9 +1220,9 @@ class _StoryEditorState extends State<_StoryEditor> {
                                   ]);
                             }
                             return Row(children: [
-                              Expanded(child: actions[0]),
-                              const SizedBox(width: 12),
-                              Expanded(child: actions[1]),
+                              Expanded(flex: 138, child: actions[0]),
+                              const SizedBox(width: 10),
+                              Expanded(flex: 202, child: actions[1]),
                             ]);
                           }),
                         ),
