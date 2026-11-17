@@ -185,7 +185,15 @@ class _TradeListState extends State<_TradeList> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               decoration: const BoxDecoration(border: Border(
                   bottom: BorderSide(color: AccountTheme.border))),
-              child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              child: LayoutBuilder(builder: (context, constraints) {
+                final stacked = constraints.maxWidth < 340 ||
+                    MediaQuery.textScalerOf(context).scale(14) > 16.8;
+                final amount = Text(tradeMoney(r.amount),
+                    softWrap: true,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600));
+                return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Container(width: 60, height: 80,
                     decoration: BoxDecoration(color: AccountTheme.surface,
                         borderRadius: BorderRadius.circular(10)),
@@ -211,10 +219,17 @@ class _TradeListState extends State<_TradeList> {
                   TextButton(onPressed: busy ? null : () => open(r),
                       child: Text('查看${tradeKinds[r.kind]}')),
                 ])),
-                const SizedBox(width: 8),
-                Text(tradeMoney(r.amount),
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-              ])),
+                if (!stacked) ...[
+                  const SizedBox(width: 8),
+                  SizedBox(width: constraints.maxWidth * .28, child: amount),
+                ],
+              ]),
+                if (stacked) ...[
+                  const SizedBox(height: 8),
+                  Align(alignment: Alignment.centerRight, child: amount),
+                ],
+              ]);
+              })),
         const Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
             child: Text('按当前已授权身份查看，可切换订单、报价或旧记录。暂不支持跨类别、按角色或状态汇总筛选。',
