@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:file_picker/file_picker.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
@@ -9,7 +11,8 @@ import '../engagement/community_support.dart';
 import '../supply/supply_api.dart';
 import '../supply/supply_files.dart';
 import '../trade/trade_widgets.dart';
-import 'project_models.dart' show projectDigest;
+import 'project_models.dart' show projectDigest, ProjectRecord;
+import 'project_api.dart';
 
 const participationModes = {
   'FIXED_FEE': '固定片酬',
@@ -753,6 +756,35 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
               '${participationRoles[s['role']]} · ${parties.where((x) => x.$1 == s['party_id']).firstOrNull?.$2 ?? communityShort(s['party_id'])}',
               '${((s['bps'] as int) / 100).toStringAsFixed(2)}%')
       ];
+  Future<void> saveAgreementEvidence(Map<String, dynamic> source) async {
+    if (!enabled || checking) return;
+    final id = source['id'], version = source['object_version'],
+        hash = source['content_sha256'];
+    final epoch = session.epoch, party = session.partyId, t = ticket;
+    bool current() => mounted && ticket == t && session.epoch == epoch &&
+        session.partyId == party && record?['id'] == id &&
+        record?['object_version'] == version && record?['content_sha256'] == hash;
+    setState(() { busy = true; error = null; notice = null; });
+    try {
+      final bytes = await ProjectsApi(session)
+          .agreementEvidence(ProjectRecord.parse(source));
+      if (!current()) return;
+      final saved = await FilePicker.saveFile(
+          dialogTitle: '保存本版约定依据',
+          fileName: 'agreement-evidence-$id.bin', bytes: bytes);
+      if (!current()) return;
+      setState(() => notice = kIsWeb
+          ? '文件已交给浏览器，请在下载记录核对；读取不代表同意约定。'
+          : saved == null
+              ? '已取消保存，文件未存入设备。'
+              : '本版约定依据已保存；读取不代表同意约定。');
+    } catch (e) {
+      if (current()) setState(() => fail(e));
+    } finally {
+      if (mounted && ticket == t) setState(() => busy = false);
+    }
+  }
+
   List<Widget> agreementView() {
     final r = record;
     if (r == null) return [];
@@ -775,6 +807,13 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
           project == null
               ? '关联项目 ${communityShort(r['project_id'])}'
               : communityMap(project!['data'])['title']),
+      tradeSection('本版约定依据', [
+        const Text('按当前本方权限读取本记录关联的私有依据，不代表已会签或允许另作他用。'),
+        if (ownSigner || r['owner_party_id'] == session.partyId)
+          tradeButton('读取并保存本版约定依据',
+              enabled && !checking ? () => saveAgreementEvidence(r) : null,
+              outline: true),
+      ]),
       tradeSection('本版会签', [
         Text(communityState(r['current_status']),
             style: const TextStyle(color: AccountTheme.accent,

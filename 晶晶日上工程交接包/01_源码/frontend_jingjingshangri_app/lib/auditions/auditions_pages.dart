@@ -931,7 +931,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           tradeFact('金额', v5Money(s.data['amount_minor'])),
           tradeFact('具体补充约定', s.data['terms']),
           tradeFact('原单与合同', '沿用原已付试镜，保留原合同指纹'),
-          tradeFact('截止', tradeDate(s.data['expires_at']))
+          tradeFact('截止', tradeDate(s.data['expires_at'])),
+          ..._supplementRefundFacts(s),
         ]),
         if (s.data['order_id'] != null)
           tradeButton('查看此笔独立补差订单',
@@ -974,6 +975,32 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           d['baseplate_id'] == null)
         tradeButton('另给私人归档授权后保存造型', () => action(r, 'baseplate'),
             outline: true),
+    ];
+  }
+
+  List<Widget> _supplementRefundFacts(AuditionRecord supplement) {
+    final data = supplement.data;
+    final limit = data['refund_limit_minor'];
+    final reason = data['refund_reason'];
+    final refundStage = const {
+      'REFUND_REQUIRED', 'PARTIALLY_REFUNDED', 'REFUNDED'
+    }.contains(supplement.status);
+    final validDecision = data['order_id'] != null &&
+        limit is int && limit > 0 && limit <= data['amount_minor'] &&
+        reason is String && reason.trim().isNotEmpty && reason.length <= 2000;
+    if (!refundStage && !validDecision &&
+        !const {'PAID', 'PAYMENT_REVIEW_REQUIRED'}.contains(supplement.status)) {
+      return [];
+    }
+    return [
+      const Divider(),
+      if (validDecision) ...[
+        tradeFact('已记录的累计退款核定上限', v5Money(limit)),
+        tradeFact('退款核定理由', reason),
+        appNotice('核定上限包含此前已退金额，不是本次退款金额，也不是当前剩余可退额。实际申请与到账请进入此笔独立补差订单核对。'),
+      ] else if (refundStage)
+        appNotice('本条记录未提供可确认的退款核定明细，请进入此笔独立补差订单核对。'),
+      appNotice('追加单退款须先由独立客服核定，再按原付款办理。退款核定与渠道到账分别记录；本卡不依据核定上限认定已退款。'),
     ];
   }
 

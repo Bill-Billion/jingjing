@@ -8,6 +8,7 @@ import { domains } from '@/business'
 const route = useRoute()
 const query = ref('')
 const links = [
+  { to: '/wallet-refunds/operations', label: '充值退款核验与任务', icon: CircleCheck },
   { to: '/workspace', label: '账号与机构', icon: User },
   { to: '/me/phone-change', label: '更换登录手机号', icon: Setting },
   { to: '/invoices/requests', label: '我的开票', icon: Tickets },
@@ -125,7 +126,7 @@ const categories = [
   {id:'gigs',icon:Briefcase,label:'商单与通告',roots:['gigs','notices','handover']},
   {id:'creation',icon:EditPen,label:'故事与共创',roots:['operations/customization','cocreation','auditions','conversations']},
   {id:'production',icon:VideoCamera,label:'制作与发行',roots:['production','projects']},
-  {id:'finance',icon:DataAnalysis,label:'财务与运营',roots:['daily-finance','finance','operations','invoices/operations','support/operations','directory/reviews']},
+  {id:'finance',icon:DataAnalysis,label:'财务与运营',roots:['wallet-refunds','daily-finance','finance','operations','invoices/operations','support/operations','directory/reviews']},
 ]
 const categoryFor = (entry:Entry) => categories.find(group => group.roots.some(root => entry.to === `/${root}` || entry.to.startsWith(`/${root}/`)))!
 const groups = categories.map(group => ({...group,entries:entries.filter(entry => categoryFor(entry).id === group.id)}))

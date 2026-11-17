@@ -66,6 +66,7 @@ const router = createRouter({
     ...operationsRoutes,
     ...customizationRoutes,
     ...artistsRoutes,
+    { path: '/wallet-refunds/operations/:recordId?', name: 'recharge-refund-operations', component: () => import('@/views/RechargeRefundOperationsView.vue'), meta: { title: '充值退款核验与任务' } },
     ...businessRoutes,
     ...clientServiceRoutes,
     // 开发自检页：整个路由项在构建时按 import.meta.env.DEV 决定要不要加。

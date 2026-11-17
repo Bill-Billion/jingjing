@@ -913,6 +913,13 @@ class _SixState extends CommunityPageState<_Six> {
                 ? '按账号核验独立权限，切换机构不授予运营权限。'
                 : '按当前获准记录办理，保留原规则、原版本与原请求。'),
         ...feedback,
+        if (widget.kind == 'guardians' && !widget.operations)
+          tradeButton('监护充值退款进度（与订单退款分开）',
+              !enabled || checking ? null : () async {
+                if (await guard.currentState!.confirmLeave() && mounted) {
+                  await Navigator.pushNamed(context, '/wallet/guardian-refunds');
+                }
+              }, outline: true),
         sixSection('办理前先确认', [
           Text(sixGuide(widget.kind), style: const TextStyle(
               color: AccountTheme.muted, height: 1.6)),

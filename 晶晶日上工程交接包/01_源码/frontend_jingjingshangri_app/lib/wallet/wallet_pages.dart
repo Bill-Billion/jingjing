@@ -296,6 +296,8 @@ class _WalletScreenState extends State<_WalletScreen> {
                   busy ? null : () => go('/wallet/records?kind=RECHARGE'),
                   outline: true),
             ]),
+            _entry('本人充值退款申请', '查看原充值、提交依据及核对退款到账', '/wallet/refunds'),
+            _entry('监护充值退款进度', '按当前监护权限读取已有申请', '/wallet/guardian-refunds'),
             _entry('消费与退款记录', '按关联订单查看资金变化', '/wallet/records?kind=CASH_SPEND'),
             _entry('星探会员年充值', '本会员年累计充值与实际资格', '/wallet/scout'),
             _entry('艺人收入', '查看经营结算与收益收款，单独记账', '/finance'),

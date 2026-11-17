@@ -28,6 +28,7 @@ import 'trade/participation_checkout_page.dart';
 import 'auditions/auditions_pages.dart';
 import 'wallet/wallet_pages.dart';
 import 'wallet/consumer_limits.dart';
+import 'wallet/recharge_refunds.dart';
 import 'gigs/gig_pages.dart';
 import 'gigs/gig_forms.dart';
 import 'gigs/gig_conversation.dart';
@@ -165,6 +166,8 @@ class JingjingShangriApp extends StatelessWidget {
                   updatedAt: LegalDocs.privacyUpdated),
               '/wallet' => const WalletPage(),
               '/wallet/limits' => const ConsumerLimitsPage(),
+              '/wallet/refunds' => const RechargeRefundsPage(),
+              '/wallet/guardian-refunds' => const RechargeRefundsPage(guardian: true),
               '/wallet/points' => const WalletPage(mode: 'points'),
               '/wallet/scout' => const WalletPage(mode: 'scout'),
               '/wallet/rules' => const WalletPage(mode: 'rules'),
