@@ -38,6 +38,7 @@ class CollectionsApi extends CommunityApi {
     // A visit belongs only to this actual detail opening; never queue/replay it.
     final epoch = session.epoch;
     final p = await preferences();
+    check(epoch, null);
     if (p['history_enabled'] != true) return;
     try {
       await write('history', {'kind': kind, 'target_id': id},
@@ -237,6 +238,11 @@ class _CollectionsState extends State<_Collections> {
   Future<void> load({bool more = false}) async {
     if (more && (busy || cursor == null)) return;
     final t = ++ticket, previous = more ? cursor : null;
+    final epoch = widget.session.epoch;
+    final requestedHistory = history, requestedKind = kind;
+    bool current() => mounted && t == ticket &&
+        epoch == widget.session.epoch && history == requestedHistory &&
+        kind == requestedKind && cursor == previous;
     setState(() {
       busy = true;
       error = null;
@@ -248,12 +254,16 @@ class _CollectionsState extends State<_Collections> {
     });
     try {
       final p = await api.preferences();
+      if (!current()) return;
+      api.check(epoch, null);
       final d = await api
-          .read(history ? 'history' : 'favorites', account: true, query: {
+          .read(requestedHistory ? 'history' : 'favorites', account: true, query: {
         'limit': 20,
-        if (kind != null) 'kind': kind,
+        if (requestedKind != null) 'kind': requestedKind,
         if (previous != null) 'cursor': previous
       });
+      if (!current()) return;
+      api.check(epoch, null);
       final result = validatePublicPage(d, previous: previous);
       for (final r in result) {
         communityRequire(collectionKinds.containsKey(r['kind']) &&
@@ -263,7 +273,7 @@ class _CollectionsState extends State<_Collections> {
                 ? r['title'] == null && r['city'] == null
                 : r['title'] is String && r['city'] is String));
       }
-      if (!mounted || t != ticket) return;
+      if (!current()) return;
       communityRequire(d['next_cursor'] == null || seen.add(d['next_cursor']));
       setState(() {
         preferences = p;
@@ -271,7 +281,7 @@ class _CollectionsState extends State<_Collections> {
         cursor = d['next_cursor'];
       });
     } catch (e) {
-      if (mounted && t == ticket) {
+      if (current()) {
         setState(() {
           error = communityError(e);
           if (e is AccountError &&

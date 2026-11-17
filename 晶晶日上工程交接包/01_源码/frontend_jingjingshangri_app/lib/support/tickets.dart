@@ -242,24 +242,34 @@ class _SupportState extends State<_Support> {
   }
 
   Future<void> moreHistory() async {
-    if (busy || historyCursor == null) return;
-    final before = historyCursor;
-    setState(() => busy = true);
+    if (busy || historyCursor == null || widget.ticketId == null ||
+        record?['id'] != widget.ticketId) return;
+    final before = historyCursor!;
+    final ticketId = widget.ticketId!;
+    final t = ++ticket, epoch = widget.session.epoch;
+    final party = widget.session.partyId;
+    bool current() => mounted && t == ticket &&
+        widget.session.epoch == epoch && widget.session.partyId == party &&
+        widget.ticketId == ticketId && record?['id'] == ticketId &&
+        historyCursor == before;
+    setState(() { busy = true; error = null; });
     try {
-      final d = await api.read('tickets/${widget.ticketId}/history',
+      final d = await api.read('tickets/$ticketId/history',
           query: {'limit': 20, 'cursor': before});
+      if (!current()) return;
       final list = validateHistory(d);
       communityRequire(d['next_cursor'] == null || d['next_cursor'] > before);
-      if (mounted) {
-        setState(() {
-          events = [...events, ...list];
-          historyCursor = d['next_cursor'];
-        });
-      }
+      if (!current()) return;
+      setState(() {
+        events = [...events, ...list];
+        historyCursor = d['next_cursor'];
+      });
     } catch (e) {
-      if (mounted) setState(() => error = communityError(e));
+      if (current()) setState(() => error = communityError(e));
     } finally {
-      if (mounted) setState(() => busy = false);
+      // Release only this request's lock, even if its identity/cursor expired.
+      // Never publish records or errors here, or clear a newer request's lock.
+      if (mounted && t == ticket) setState(() => busy = false);
     }
   }
 

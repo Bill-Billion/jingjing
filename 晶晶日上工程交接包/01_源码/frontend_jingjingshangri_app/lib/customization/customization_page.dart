@@ -857,21 +857,41 @@ class _StoryEditorState extends State<_StoryEditor> {
   @override
   Widget build(BuildContext context) {
     final pendingOperation = pending;
+    final existingDraft =
+        !denied && record?.status == 'DRAFT' && !supplementOpen;
     final children = <Widget>[
-      const Text('人工定制 / 制作需求', style: TextStyle(
+      Text(existingDraft ? '业务草稿 / 故事品类' : '人工定制 / 制作需求',
+          style: const TextStyle(
           fontSize: 12, height: 1.5, color: Color(0xFFB9F34A))),
       const SizedBox(height: 18),
       Text(
-        supplementOpen
-            ? '还需要你补充一些内容'
-            : record != null && record!.status != 'DRAFT'
-                ? '故事已交给平台'
-                : '写下你的故事',
+        existingDraft
+            ? record!.title
+            : supplementOpen
+                ? '还需要你补充一些内容'
+                : record != null && record!.status != 'DRAFT'
+                    ? '故事已交给平台'
+                    : '写下你的故事',
         style: const TextStyle(fontFamily: AccountTheme.sans,
             fontSize: 28, height: 36 / 28, fontWeight: FontWeight.w700,
             color: Color(0xFFF2F5EF)),
       ),
       const SizedBox(height: 18),
+      if (existingDraft) ...[
+        _editorCard('仅自己可见 · 尚未正式提交', [
+          const Text('这份业务草稿尚未送交平台，保存不会提交或收费；协作分享暂未开放。',
+              style: TextStyle(fontSize: 12, height: 1.5,
+                  color: Color(0xFFA5AEA8))),
+          if (!record!.allows('SAVE'))
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Text('当前草稿仅可查看，暂不能保存修改。',
+                  style: TextStyle(fontSize: 12, height: 1.5,
+                      color: Color(0xFFA5AEA8))),
+            ),
+        ], compact: true),
+        const SizedBox(height: 10),
+      ],
       if (!denied && (record == null || record!.status == 'DRAFT')) ...[
         _editorCard('个人定制', [
           const Text('按下方真实品类模板填写；仅本人可见，分享未开放。',

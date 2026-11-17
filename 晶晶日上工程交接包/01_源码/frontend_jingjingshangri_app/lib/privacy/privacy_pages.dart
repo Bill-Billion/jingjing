@@ -729,10 +729,27 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         method: 'PATCH',
         account: true,
         reload: false,
-        validate: (r) => communityRequire(r['object_version'] is int &&
-            r['personalization'] == body['personalization'] &&
-            r['marketing'] == body['marketing'] &&
-            r['rest_reminder_minutes'] == body['rest_reminder_minutes']));
+        validate: (r) {
+          communityRequire(r['object_version'] is int &&
+              r['personalization'] == body['personalization'] &&
+              r['marketing'] == body['marketing'] &&
+              r['rest_reminder_minutes'] == body['rest_reminder_minutes']);
+          for (final field in ['push_enabled', 'night_reminder_enabled']) {
+            if (body.containsKey(field)) {
+              communityRequire(r[field] is bool && r[field] == body[field]);
+            }
+          }
+          if (body.containsKey('quiet_hours')) {
+            final expected = communityMap(body['quiet_hours']);
+            final actual = communityMap(r['quiet_hours']);
+            communityRequire(actual['enabled'] is bool &&
+                actual['start_minute'] is int &&
+                actual['end_minute'] is int &&
+                actual['enabled'] == expected['enabled'] &&
+                actual['start_minute'] == expected['start_minute'] &&
+                actual['end_minute'] == expected['end_minute']);
+          }
+        });
     if (r != null && mounted) {
       loadedPreferences = false;
       await load();
