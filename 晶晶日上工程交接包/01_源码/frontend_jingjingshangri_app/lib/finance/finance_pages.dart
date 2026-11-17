@@ -288,12 +288,6 @@ class _OverviewState extends State<_Overview> {
                           '/finance/records?agreementId=${g!.id}&kind=SETTLEMENT'),
                   outline: true),
               tradeButton(
-                  '查看本约定流水',
-                  locked
-                      ? null
-                      : () => open('/finance/entries?agreementId=${g!.id}'),
-                  outline: true),
-              tradeButton(
                   '查看约定与确认',
                   locked
                       ? null
@@ -329,14 +323,6 @@ class _OverviewState extends State<_Overview> {
                             '/finance/records?agreementId=${g!.id}&kind=RECEIPT'),
                     outline: true)
               ],
-              tradeButton(
-                  '申请收益收款',
-                  locked ||
-                          mine == null ||
-                          mine['available_minor'] <= 0 ||
-                          mine['meaning'] == 'MERCHANT_RETAINED_NOT_TRANSFER'
-                      ? null
-                      : () => open('/finance/payout/new?agreementId=${g!.id}'))
             ]),
             if (readiness != null)
               tradeSection('付款方式', [appNotice('自动出款未启用。实际外部付款、私有凭据与独立核验另行办理。')])
@@ -344,20 +330,19 @@ class _OverviewState extends State<_Overview> {
           tradeButton('刷新本人结算', locked ? null : load, outline: true)
         ],
         locked: locked,
-        footer: g == null ? null : Row(children: [
-          Expanded(child: OutlinedButton(
+        footer: g == null ? null : _financeFooterActions(
+          OutlinedButton(
               onPressed: locked ? null
                   : () => open('/finance/entries?agreementId=${g!.id}'),
-              child: const Text('收益流水'))),
-          const SizedBox(width: 10),
-          Expanded(child: FilledButton(
+              child: const Text('收益流水')),
+          FilledButton(
               onPressed: locked || mine == null ||
                       mine['available_minor'] <= 0 ||
                       mine['meaning'] == 'MERCHANT_RETAINED_NOT_TRANSFER'
                   ? null
                   : () => open('/finance/payout/new?agreementId=${g!.id}'),
-              child: const Text('申请收益收款'))),
-        ]));
+              child: const Text('申请收益收款')),
+        ));
   }
 }
 
@@ -1089,22 +1074,18 @@ class _RecordState extends State<_Record> {
       ],
       locked: locked,
       footer: r?.kind == 'SETTLEMENT' && g != null
-          ? Row(children: [
-              Expanded(
-                  child: OutlinedButton(
-                      onPressed: locked
-                          ? null
-                          : () =>
-                              open('/finance/dispute/new?recordId=${r!.id}'),
-                      child: const Text('提出结算异议'))),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: FilledButton(
-                      onPressed: locked
-                          ? null
-                          : () => open('/finance/record?recordId=${g!.id}'),
-                      child: const Text('查看原始约定')))
-            ])
+          ? _financeFooterActions(
+              OutlinedButton(
+                  onPressed: locked
+                      ? null
+                      : () => open('/finance/dispute/new?recordId=${r!.id}'),
+                  child: const Text('提出结算异议')),
+              FilledButton(
+                  onPressed: locked
+                      ? null
+                      : () => open('/finance/record?recordId=${g!.id}'),
+                  child: const Text('查看原始约定')),
+            )
           : null);
 }
 
@@ -1283,3 +1264,20 @@ class _EntriesState extends State<_Entries> {
       ],
       locked: busy || widget.session.financePending.isNotEmpty);
 }
+
+Widget _financeFooterActions(Widget first, Widget second) => LayoutBuilder(
+    builder: (context, constraints) {
+      final stacked = constraints.maxWidth < 340 ||
+          MediaQuery.textScalerOf(context).scale(14) / 14 > 1.2;
+      return stacked
+          ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              first,
+              const SizedBox(height: 8),
+              second,
+            ])
+          : Row(children: [
+              Expanded(child: first),
+              const SizedBox(width: 10),
+              Expanded(child: second),
+            ]);
+    });

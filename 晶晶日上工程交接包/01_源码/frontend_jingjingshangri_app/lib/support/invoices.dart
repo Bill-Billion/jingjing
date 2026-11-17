@@ -969,7 +969,8 @@ class _InvoicesState extends State<_Invoices> {
             ],
             tradeButton('重新读取当前进度', busy || uploading ? null : load,
                 outline: true),
-            tradeButton(
+            if (!create)
+              tradeButton(
                 '核对原订单与付款',
                 busy || uploading
                     ? null

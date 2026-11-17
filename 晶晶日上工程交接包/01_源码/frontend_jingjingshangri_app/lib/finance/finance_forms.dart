@@ -260,19 +260,33 @@ class _FormState extends State<_Form> {
       ],
       locked: locked,
       footer: widget.mode == 'PAYOUT' && target != null
-          ? Row(children: [
-              Expanded(
-                  child: OutlinedButton(
-                      onPressed: locked
-                          ? null
-                          : () => Navigator.pushNamed(context,
-                              '/finance/records?agreementId=${widget.id}&kind=PAYOUT'),
-                      child: const Text('查看收款记录'))),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: FilledButton(
-                      onPressed: canSubmit ? submit : null,
-                      child: const Text('提交收款申请')))
-            ])
+          ? _financeFooterActions(
+              OutlinedButton(
+                  onPressed: locked
+                      ? null
+                      : () => Navigator.pushNamed(context,
+                          '/finance/records?agreementId=${widget.id}&kind=PAYOUT'),
+                  child: const Text('查看收款记录')),
+              FilledButton(
+                  onPressed: canSubmit ? submit : null,
+                  child: const Text('提交收款申请')),
+            )
           : null);
 }
+
+Widget _financeFooterActions(Widget first, Widget second) => LayoutBuilder(
+    builder: (context, constraints) {
+      final stacked = constraints.maxWidth < 340 ||
+          MediaQuery.textScalerOf(context).scale(14) / 14 > 1.2;
+      return stacked
+          ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              first,
+              const SizedBox(height: 8),
+              second,
+            ])
+          : Row(children: [
+              Expanded(child: first),
+              const SizedBox(width: 10),
+              Expanded(child: second),
+            ]);
+    });
