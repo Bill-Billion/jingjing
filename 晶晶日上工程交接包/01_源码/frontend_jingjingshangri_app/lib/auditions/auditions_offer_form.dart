@@ -166,6 +166,7 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
         if (contexts.isEmpty)
           appNotice('尚无本人可读或已明确提供的公开展示授权上下文，请先办理本人同意；机构不读取私人同意原件。'),
         V5Form(
+            actionInFooter: true,
             key: formKey,
             api: api,
             title: '公开选择与本次服务约定',

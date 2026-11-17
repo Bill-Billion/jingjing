@@ -493,6 +493,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             ]),
             if (r.status == 'PUBLISHED')
               V5Form(
+                  actionInFooter: true,
                   api: api,
                   title: '公开选择',
                   action: '保存试镜公开设置',
