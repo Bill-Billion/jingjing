@@ -70,5 +70,8 @@ App /mcn 的关系记录入口不是批量网页的替代，也不证明缺少�
 |本人执行已审注销和恢复|A/privacy/privacy_pages.dart:905–987、closure_reference.dart|专用恢复引用，不把可能完成的注销走普通重复重试。|
 |运营核期限/延期/结案|W privacy closure-queue/closure-operations；B/http/privacy-routes.js:31等|真实方案与独审已有；不代表历史版本、备份和多方钱账全部删除。|
 
-## 当前结论
+## f15b5cc2基线结论
 本轮无新增已证实必须开发的角色端缺口。Web通告三项未检得专用接入，但必须先明确必需角色端范围。资料副本、机构五动作、条件匹配、注销已有实际源码，不能重列未开发。未穷尽类别覆盖、实际文件、失权及恢复继续保留，整批开发后集中联测；不提高任何全端验收状态。
+
+## 3f0db7c2之后的W03运营续批
+后续确认App修改申请已可提交，但运营缺从原通告发现修订的入口。现新增NoticeRevisionHistory.vue，在BusinessView的运营根NOTICE详情挂载，账号级读取已有history并导航既有修订审核页；保留原版本、岗位核验和pending。不是重建本人Web修改申请或全局队列。详见APP_NOTICE_OPS_REVISION_HISTORY_ENTRY.md；未测试或编译。
