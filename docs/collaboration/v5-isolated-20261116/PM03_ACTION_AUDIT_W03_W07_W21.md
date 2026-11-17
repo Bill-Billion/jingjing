@@ -75,3 +75,7 @@ App /mcn 的关系记录入口不是批量网页的替代，也不证明缺少�
 
 ## 3f0db7c2之后的W03运营续批
 后续确认App修改申请已可提交，但运营缺从原通告发现修订的入口。现新增NoticeRevisionHistory.vue，在BusinessView的运营根NOTICE详情挂载，账号级读取已有history并导航既有修订审核页；保留原版本、岗位核验和pending。不是重建本人Web修改申请或全局队列。详见APP_NOTICE_OPS_REVISION_HISTORY_ENTRY.md；未测试或编译。
+
+## 集中候选最终有界静态复核
+W03 原管理网页已挂载 NoticeRevisionHistory；本人修订申请/新版确认由 App 原入口覆盖。W04/W05 副本全类别和文件拒绝等为待运行验证，不重复列未开发。W07 明确条件匹配已接；后端 recommended-matches 存在而两前端尚无调用，额外个性化推荐入口是否属于本轮需产品范围决定，不能直接算已确认漏接。
+本次只复核台账待核/未接条目，未发现额外证据充分的可独立新增前端动作，不等于全仓穷尽或运行通过。当前未提交候选详见 PM03_CONCENTRATED_CANDIDATE_SCOPE.md；本轮不测试、合并或部署。

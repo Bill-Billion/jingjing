@@ -594,6 +594,19 @@ class _RecordState extends State<_Record> {
     };
   }
 
+  Widget _hostingFact(String label, String value, String detail) => Container(
+      padding: const EdgeInsets.symmetric(vertical: 18),
+      decoration: const BoxDecoration(border: Border(
+          bottom: BorderSide(color: AccountTheme.border))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(label, style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        const SizedBox(height: 8),
+        Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        Text(detail, style: const TextStyle(fontSize: 12, height: 1.6,
+            color: AccountTheme.muted)),
+      ]));
+
   List<Widget> serviceFacts(ArtistRecord r) {
     final d = r.data, s = d['specification'], order = r.raw['order'];
     return [
@@ -615,12 +628,23 @@ class _RecordState extends State<_Record> {
               const Text('托管仅提供约定服务，不改变资产所有权或扩大本人授权。',
                   style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
             ])),
+      if (d['kind'] == 'AVATAR_HOSTING') ...[
+        _hostingFact(r.freeService ? '基础服务' : '原商品价格',
+            r.freeService ? '永久免费' : artistMoney(d['price_minor']),
+            r.freeService ? '无需付款，不自动扣费。' : '按原服务记录核对，不以新版免费说明覆盖历史价格。'),
+        if (r.freeService)
+          _hostingFact('托管服务', '无需续费',
+              '仅登记托管权益，云服务尚未启用。长期模型尚未开放；人工精修另行约定。'),
+        const SizedBox(height: 20),
+        tradeHeading('托管记录与原约定', fontSize: 20),
+      ],
       tradeFact('服务', artistServiceKinds[d['kind']]),
       tradeFact('服务请求编号', r.id),
       tradeFact('本人买方主体', detail?.person.owner),
       if (!r.freeService) tradeFact('已审商品规格编号', d['spec_id']),
-      tradeFact(r.freeService ? '免费权益' : '原商品价格',
-          r.freeService ? '永久免费，无需付款' : artistMoney(d['price_minor'])),
+      if (d['kind'] != 'AVATAR_HOSTING')
+        tradeFact(r.freeService ? '免费权益' : '原商品价格',
+            r.freeService ? '永久免费，无需付款' : artistMoney(d['price_minor'])),
       tradeFact('服务档位 / 版本', '${s['service_tier']} / ${s['version']}'),
       tradeFact('对应真人', detail?.person.name),
       tradeFact(
@@ -640,8 +664,6 @@ class _RecordState extends State<_Record> {
             : r.status == 'FAILED'
                 ? '免费服务未交付，无付款退款。'
                 : '免费权益按已保存记录核对。'),
-      if (r.freeService && d['kind'] == 'AVATAR_HOSTING')
-        appNotice('永久免费，无需续费。仅登记托管权益，云服务尚未启用。'),
       if (d['kind'] == 'AVATAR_HOSTING' && !r.freeService) ...[
         tradeFact('原商品托管月数', s['service']['hosting_months']),
         tradeFact(
@@ -1512,6 +1534,34 @@ class _AvatarDetailsState extends State<_AvatarDetails> {
         if (mounted) load();
       });
 
+  Widget _avatarFact(String title, Widget value, {String? description}) =>
+      Container(
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          decoration: const BoxDecoration(border: Border(
+              bottom: BorderSide(color: AccountTheme.border))),
+          child: LayoutBuilder(builder: (context, constraints) {
+            final label = Column(
+                crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+              if (description != null) ...[
+                const SizedBox(height: 6),
+                Text(description, style: const TextStyle(
+                    fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+              ],
+            ]);
+            if (constraints.maxWidth < 300 ||
+                MediaQuery.textScalerOf(context).scale(14) > 18) {
+              return Column(crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [label, const SizedBox(height: 10), value]);
+            }
+            return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+              Expanded(flex: 3, child: label),
+              const SizedBox(width: 16),
+              Flexible(flex: 2, child: Align(
+                  alignment: Alignment.centerRight, child: value)),
+            ]);
+          }));
+
   @override
   Widget build(BuildContext context) {
     final d = detail;
@@ -1532,28 +1582,26 @@ class _AvatarDetailsState extends State<_AvatarDetails> {
               Expanded(child: Text('形象与声音私档\n尚未提供可读取的数字人封面',
                   style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted))),
             ])),
-        tradeSection('资产所有人', [
-          tradeFact('真人本人', d.person.name),
-          tradeFact('所有权主体', shortSupplyId(d.person.owner)),
-          tradeFact('当前管理', self ? '本人管理' : '仅当前有效委托范围'),
-          tradeFact(
-              '私人档案',
-              avatar.raw['data']['archive_status'] == 'DELIVERED'
-                  ? '已交付'
-                  : '尚未交付'),
-        ]),
-        tradeSection('当前授权与委托', [
-          tradeButton('查看当前委托范围', busy ? null : () => records('DELEGATION'),
-              outline: true),
-          appNotice('授权按具体用途、期限和作品逐份核对；已建档不代表允许公开、商用或重新生成。'),
-        ]),
-        tradeSection('试镜素材与造型版本', [
-          tradeButton('查看造型版本', busy ? null : () => records('LOOK'),
-              outline: true),
-          tradeButton('查看声音版本', busy ? null : () => records('VOICE'),
-              outline: true),
-          if ((self || actions.contains('MANAGE_MATERIALS')) &&
-              (avatar.raw['data']['material_asset_ids'] as List).isNotEmpty)
+        _avatarFact('资产所有人', Text(d.person.name),
+            description: '真人本人'),
+        _avatarFact('所有权主体', Text(shortSupplyId(d.person.owner))),
+        _avatarFact('当前管理', Text(self ? '本人管理' : '仅当前有效委托范围')),
+        _avatarFact('私人档案', Text(
+            avatar.raw['data']['archive_status'] == 'DELIVERED'
+                ? '已交付' : '尚未交付')),
+        _avatarFact('当前授权与委托',
+            TextButton(onPressed: busy ? null : () => records('DELEGATION'),
+                child: const Text('查看当前委托范围')),
+            description: '授权按具体用途、期限和作品逐份核对；已建档不代表允许公开、商用或重新生成。'),
+        _avatarFact('造型版本',
+            TextButton(onPressed: busy ? null : () => records('LOOK'),
+                child: const Text('查看造型版本'))),
+        _avatarFact('声音版本',
+            TextButton(onPressed: busy ? null : () => records('VOICE'),
+                child: const Text('查看声音版本'))),
+        if ((self || actions.contains('MANAGE_MATERIALS')) &&
+            (avatar.raw['data']['material_asset_ids'] as List).isNotEmpty)
+          tradeSection('试镜素材与造型版本', [
             ArtistFiles(
                 api: api,
                 person: d.person,

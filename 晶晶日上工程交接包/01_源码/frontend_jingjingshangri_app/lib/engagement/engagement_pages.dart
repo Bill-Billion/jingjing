@@ -1,3 +1,4 @@
+import 'dart:convert';
 import '../account/account_theme.dart';
 import '../contract_six/contract_six_pages.dart';
 import 'package:flutter/material.dart';
@@ -197,6 +198,13 @@ class _EngagementState extends CommunityPageState<_Engagement> {
   @override
   Future<void> load() async {
     final t = ++ticket;
+    final growthRead = widget.view == 'growth',
+        growthPerson = person.text,
+        growthEpoch = session.epoch,
+        growthParty = session.partyId;
+    bool currentRead() => mounted && t == ticket &&
+        (!growthRead || session.epoch == growthEpoch &&
+            session.partyId == growthParty && person.text == growthPerson);
     nominationTicket++;
     nominationProfiles = [];
     nominationProfile = null;
@@ -204,6 +212,10 @@ class _EngagementState extends CommunityPageState<_Engagement> {
     setState(() {
       checking = true;
       error = null;
+      if (growthRead) {
+        detail = null;
+        secondary = [];
+      }
     });
     try {
       Map<String, dynamic>? d;
@@ -213,13 +225,13 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         String? cursor;
         do {
           final page = await ArtistsApi(session).people(cursor: cursor);
+          if (growthRead && !currentRead()) return;
           list.addAll(page.items);
           cursor = page.cursor;
           communityRequire(cursor == null || seen.add(cursor));
         } while (cursor != null);
-        if (mounted && t == ticket) {
-          people = list;
-        }
+        if (growthRead && !currentRead()) return;
+        if (mounted && t == ticket) people = list;
       }
       if (['referrals', 'mcn', 'reviews'].contains(widget.view) &&
           session.isOwner) {
@@ -332,19 +344,20 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             d['total_accrual_minor'] is int);
         if (session.isOwner) s = communityItems(await api.read('mcn/staff'));
       } else if (widget.view == 'growth') {
-        if (!session.isOwner && person.text.isNotEmpty) {
-          final e = session.epoch,
-              p = session.partyId,
-              id = communityRequiredId(person.text, '本次受派艺人');
-          final raw =
-              await session.read('/api/v1/artists/people/$id', actingParty: p);
-          api.check(e, p);
+        if (!session.isOwner && growthPerson.isNotEmpty) {
+          final id = communityRequiredId(growthPerson, '本次受派艺人');
+          final raw = await session.read('/api/v1/artists/people/$id',
+              actingParty: growthParty);
+          api.check(growthEpoch, growthParty);
+          if (!currentRead()) return;
           people = [ArtistDetail.parse(raw, id).person];
         }
-        if (person.text.isNotEmpty) {
+        if (!currentRead()) return;
+        if (growthPerson.isNotEmpty) {
           d = await api.read('growth',
-              query: {'person_id': communityRequiredId(person.text, '本人艺人')});
+              query: {'person_id': communityRequiredId(growthPerson, '本人艺人')});
         }
+        if (!currentRead()) return;
         if (session.isOwner) extra = communityItems(await api.read('rewards'));
       } else if (city.text.trim().isNotEmpty &&
           district.text.trim().isNotEmpty &&
@@ -357,7 +370,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         extra = communityItems(await api.read('competitions',
             account: true, query: {'city': city.text.trim()}));
       }
-      if (mounted && t == ticket) {
+      if (currentRead()) {
         setState(() {
           detail = d;
           rows = r;
@@ -366,7 +379,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         });
       }
     } catch (e) {
-      if (mounted && t == ticket) setState(() => fail(e));
+      if (currentRead()) setState(() => fail(e));
     } finally {
       if (mounted && t == ticket) setState(() => checking = false);
     }
@@ -554,7 +567,15 @@ class _EngagementState extends CommunityPageState<_Engagement> {
       session.isOwner &&
       people.any((p) => p.id == person.text && p.owner == session.partyId);
   Future<void> vote(Map<String, dynamic> candidate) async {
+    if (!mounted || !enabled || checking || !votingOpen) return;
     final d = detail!, rules = communityMap(d['rules']);
+    final epoch = session.epoch, party = session.partyId, readTicket = ticket;
+    final eventId = d['id'], candidateId = candidate['id'];
+    // The public projection has no object_version. Bind consent to this read
+    // generation and its actual event/candidate data, not an invented version.
+    final eventSnapshot = jsonEncode(d), candidateSnapshot = jsonEncode(candidate);
+    if (!communityRows(d['candidates']).any((r) =>
+        r['id'] == candidateId && jsonEncode(r) == candidateSnapshot)) return;
     final yes = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
@@ -569,10 +590,16 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                       onPressed: () => Navigator.pop(c, true),
                       child: const Text('确认扣分并投票'))
                 ]));
-    if (yes == true) {
-      await act('votes', {'event_id': d['id'], 'candidate_id': candidate['id']},
-          validate: (r) => communityRecord(r, kind: 'VOTE'));
-    }
+    if (yes != true || !mounted) return;
+    final current = detail;
+    if (epoch != session.epoch || party != session.partyId ||
+        readTicket != ticket || !enabled || checking || !votingOpen ||
+        current == null || current['id'] != eventId ||
+        jsonEncode(current) != eventSnapshot ||
+        !communityRows(current['candidates']).any((r) =>
+            r['id'] == candidateId && jsonEncode(r) == candidateSnapshot)) return;
+    await act('votes', {'event_id': eventId, 'candidate_id': candidateId},
+        validate: (r) => communityRecord(r, kind: 'VOTE'));
   }
 
   Widget menu() => Wrap(spacing: 8, runSpacing: 8, children: [
@@ -865,8 +892,19 @@ class _EngagementState extends CommunityPageState<_Engagement> {
           delegated ? '本次受托艺人' : '本人艺人',
           person.text,
           [for (final p in people) (p.id, '${p.name} · 版本${p.version}')],
-          enabled ? (v) => setState(() => person.text = v ?? '') : null),
+          enabled ? (v) => setState(() {
+            if (person.text == (v ?? '')) return;
+            person.text = v ?? '';
+            ticket++;
+            detail = null;
+            secondary = [];
+            error = null;
+            checking = false;
+          }) : null),
       tradeButton('读取本人成长', enabled ? () => submit(load) : null),
+      if (detail == null)
+        appNotice(checking ? '正在读取当前所选艺人的成长记录。' :
+            '请读取当前所选艺人的成长记录；未读取成功前不展示等级或进度。'),
       if (detail != null && account.isEmpty)
         appNotice('本艺人尚无已核算成长账户，不展示示例等级或进度。'),
       if (account.isNotEmpty)
@@ -977,7 +1015,8 @@ class _EngagementState extends CommunityPageState<_Engagement> {
               enabled ? () => Navigator.pushNamed(context, '/engagement?view=reviews') : null,
               outline: true),
       ]),
-      tradeSection('已取得奖励', [
+      if (detail != null)
+        tradeSection('已取得奖励', [
         if (secondary.isEmpty) const Text('暂无奖励记录。'),
         for (final r in secondary)
           tradeSection(
@@ -1113,12 +1152,22 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                 '撤回这份员工委托',
                 enabled
                     ? () => submit(() async {
+                          final epoch = session.epoch, party = session.partyId,
+                              generation = ticket;
+                          final id = r['id'], version = r['object_version'],
+                              hash = r['content_sha256'];
+                          bool current() => mounted && epoch == session.epoch &&
+                              party == session.partyId && generation == ticket &&
+                              enabled && !checking && session.isOwner &&
+                              staff.any((item) => item['id'] == id &&
+                                  item['object_version'] == version &&
+                                  item['content_sha256'] == hash &&
+                                  item['current_status'] == 'ACTIVE');
+                          if (!current()) return;
                           final why = await _reasonDialog('撤回员工委托');
-                          if (why != null) {
-                            await act(
-                                'mcn/staff/${r['id']}/revoke', {'reason': why},
-                                version: r['object_version']);
-                          }
+                          if (why == null || !current()) return;
+                          await act('mcn/staff/$id/revoke', {'reason': why},
+                              version: version);
                         })
                     : null,
                 outline: true)
@@ -1567,7 +1616,6 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                       },
                       child: const Text('确认提交'))
                 ]));
-    if (value != null) reason.text = value;
     c.dispose();
     return value;
   }

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_theme.dart';
@@ -591,11 +592,26 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         menu(),
         const SizedBox(height: 20),
         tradeSection('已审活动', [
-          _rightsRow('晶钻活动', '开放情况、参与条件与概率按本期公示逐项核对。',
-              Icons.card_giftcard_outlined),
-          const Divider(height: 24),
-          tradeButton('查看已公示活动', !enabled || checking ? null : () => open('pools'),
-              outline: true),
+          LayoutBuilder(builder: (context, constraints) {
+            final summary = _rightsRow(
+                '晶钻活动', '开放情况、参与条件与概率按本期公示逐项核对。',
+                Icons.card_giftcard_outlined);
+            final action = tradeButton('查看已公示活动',
+                !enabled || checking ? null : () => open('pools'),
+                outline: true);
+            if (constraints.maxWidth < 300 ||
+                MediaQuery.textScalerOf(context).scale(14) > 18) {
+              return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [summary, const SizedBox(height: 12), action]);
+            }
+            return Row(crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: summary),
+                  const SizedBox(width: 10),
+                  SizedBox(width: 96, child: action),
+                ]);
+          }),
         ]),
         const Text('兑换目录', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
         const SizedBox(height: 12),
@@ -641,13 +657,25 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                   '确认兑换这份权益',
                   enabled && r['remaining'] > 0
                       ? () => submit(() async {
+                            final epoch = session.epoch, party = session.partyId,
+                                generation = ticket;
+                            final stockId = r['id'], hash = r['template_sha256'],
+                                points = communityMap(r['template'])['exchange_points'];
+                            final snapshot = jsonEncode(r);
+                            bool current() => mounted && epoch == session.epoch &&
+                                party == session.partyId && generation == ticket &&
+                                enabled && !checking && rows.any((item) =>
+                                    item['id'] == stockId && item['template_sha256'] == hash &&
+                                    communityMap(item['template'])['exchange_points'] == points &&
+                                    item['remaining'] > 0 && jsonEncode(item) == snapshot);
+                            if (!current()) return;
                             if (await confirm('核对本次兑换',
-                                '将扣用${communityMap(r['template'])['exchange_points']}晶钻，按上方条款发放这一份权益。')) {
+                                '将扣用$points晶钻，按上方条款发放这一份权益。') && current()) {
                               final out = await act(
                                   'exchanges',
                                   {
-                                    'stock_id': r['id'],
-                                    'template_sha256': r['template_sha256']
+                                    'stock_id': stockId,
+                                    'template_sha256': hash
                                   },
                                   reload: false,
                                   validate: (v) =>
@@ -1080,11 +1108,8 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         const SizedBox(height: 20),
         if (rows.isEmpty && !checking && error == null) ...[
           tradeSection('本期晶钻活动', [
-            _rightsRow('暂无已审开放活动', '当前不接受抽取，不扣用晶钻。',
+            _rightsRow('暂无已审开放活动', '发布后先核对本期活动规则。',
                 Icons.card_giftcard_outlined),
-            const Divider(height: 24),
-            const Text('暂未开放', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
-            communityFact('活动时间', '待发布'),
           ]),
           _statusFact('当前状态', '暂无开放活动', '当前不接受抽取，不扣用晶钻'),
           _statusFact('参加方式', '单抽 / 十连', '扣用晶钻以本期已审活动规则公示为准'),
@@ -1157,13 +1182,24 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
             count == 1 ? '按本次规则单抽' : '按本次规则十连',
             enabled && agreed && lotteryAvailability(r) == null
                 ? () => submit(() async {
+                      final epoch = session.epoch, party = session.partyId,
+                          generation = ticket;
+                      final poolId = r['id'], rulesHash = r['rules_sha256'],
+                          points = count == 1 ? c['single_points'] : c['ten_points'];
+                      final snapshot = jsonEncode(r);
+                      bool current() => mounted && epoch == session.epoch &&
+                          party == session.partyId && generation == ticket &&
+                          enabled && !checking && agreed && detail != null &&
+                          detail!['id'] == poolId && detail!['rules_sha256'] == rulesHash &&
+                          jsonEncode(detail) == snapshot && lotteryAvailability(detail!) == null;
+                      if (!current()) return;
                       if (await confirm('确认本次${count == 1 ? '单抽' : '十连'}',
-                          '将扣用${count == 1 ? c['single_points'] : c['ten_points']}晶钻。提交后先核对同一次结果，不更换编号重复抽取。')) {
+                          '将扣用$points晶钻。提交后先核对同一次结果，不更换编号重复抽取。') && current()) {
                         final out = await act(
                             'draws',
                             {
-                              'pool_id': r['id'],
-                              'rules_sha256': r['rules_sha256'],
+                              'pool_id': poolId,
+                              'rules_sha256': rulesHash,
                               'count': count
                             },
                             reload: false,

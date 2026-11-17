@@ -363,27 +363,46 @@ class _NoticeScreenState extends State<_NoticeScreen> {
   }
 
   Widget _featuredNotice(NoticePublic item) => tradeSection('通告详情速览', [
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Container(width: 92, height: 116,
+        LayoutBuilder(builder: (context, constraints) {
+          final compact = constraints.maxWidth < 300 ||
+              MediaQuery.textScalerOf(context).scale(14) / 14 > 1.2;
+          final information = Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('${noticeTypes[item.notice['type']]} · ${item.notice['city']}',
+                    style: const TextStyle(color: AccountTheme.accent, fontSize: 12)),
+                const SizedBox(height: 12),
+                Text(item.notice['title'],
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, height: 1.4)),
+                const SizedBox(height: 12),
+                if (item.notice['details']['roles'] is String)
+                  Text(item.notice['details']['roles'],
+                      maxLines: 3, overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: AccountTheme.muted, height: 1.5)),
+                const SizedBox(height: 8),
+                Text('开始 ${tradeDate(item.notice['valid_from'])}',
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              ]));
+          Widget poster(double width) => Container(
+              width: width,
+              constraints: const BoxConstraints(minHeight: 220),
+              color: AccountTheme.selectedSurface,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(16),
+              child: const Text('未提供海报', textAlign: TextAlign.center,
+                  style: TextStyle(color: AccountTheme.muted, fontSize: 12)));
+          return Container(
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(color: AccountTheme.surface,
                   borderRadius: BorderRadius.circular(14)),
-              alignment: Alignment.center,
-              child: const Icon(Icons.campaign_outlined, color: AccountTheme.muted, size: 30)),
-          const SizedBox(width: 16),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(item.notice['title'],
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, height: 1.4)),
-            const SizedBox(height: 8),
-            Text('${noticeTypes[item.notice['type']]} · ${item.notice['city']}',
-                style: const TextStyle(color: AccountTheme.accent, fontSize: 12)),
-            if (item.notice['details']['roles'] is String)
-              Text(item.notice['details']['roles'],
-                  maxLines: 3, overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(color: AccountTheme.muted, height: 1.5)),
-            Text('开始 ${tradeDate(item.notice['valid_from'])}',
-                style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
-          ])),
-        ]),
+              child: compact
+                  ? Column(crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [poster(constraints.maxWidth), information])
+                  : IntrinsicHeight(child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [poster(constraints.maxWidth * .56),
+                        Expanded(child: information)])));
+        }),
         const Divider(height: 24),
         Text(item.raw['official'] == true ? '平台官方发布' : '普通已审通告',
             style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
@@ -1109,19 +1128,21 @@ class _NoticeScreenState extends State<_NoticeScreen> {
             const Text('暂不提供即时聊天或在本页补充材料；原投稿与已关联业务可继续核对。',
                 style: TextStyle(color: AccountTheme.muted, height: 1.6)),
           ]),
-          if (r.data['quote'] != null) ...[
-            tradeFact('原报价指纹', r.data['quote']['content_sha256']),
-            if (r.data['quote']['buyer_party_id'] == widget.session.partyId)
-              tradeButton('查看并确认原已审报价',
-                  () => go('/trade/record?recordId=${r.data['quote']['id']}'))
-          ],
-          if (r.raw['order_id'] != null)
-            tradeButton('查看原订单',
-                () => go('/trade/record?recordId=${r.raw['order_id']}'),
-                outline: true),
-          tradeButton('查看原投稿',
-              () => go('/notices/record?recordId=${r.data['submission_id']}'),
-              outline: true)
+          tradeSection('关联业务与原记录', [
+            if (r.data['quote'] != null) ...[
+              tradeFact('原报价指纹', r.data['quote']['content_sha256']),
+              if (r.data['quote']['buyer_party_id'] == widget.session.partyId)
+                tradeButton('查看并确认原已审报价',
+                    () => go('/trade/record?recordId=${r.data['quote']['id']}'))
+            ],
+            if (r.raw['order_id'] != null)
+              tradeButton('查看原订单',
+                  () => go('/trade/record?recordId=${r.raw['order_id']}'),
+                  outline: true),
+            tradeButton('查看原投稿',
+                () => go('/notices/record?recordId=${r.data['submission_id']}'),
+                outline: true)
+          ]),
         ],
         if (r.kind == 'QUALIFICATION') ...[
           tradeFact('申请类型',

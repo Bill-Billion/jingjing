@@ -659,13 +659,15 @@ class _StockScreenState extends State<_StockScreen> {
                   decoration: const BoxDecoration(
                       border: Border(bottom: BorderSide(color: AccountTheme.border))),
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Container(width: 60, height: 80,
-                        decoration: BoxDecoration(color: AccountTheme.surface,
-                            borderRadius: BorderRadius.circular(10)),
-                        child: const Icon(Icons.movie_outlined, color: AccountTheme.muted)),
-                    const SizedBox(width: 12),
-                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    final action = TextButton(
+                        onPressed: busy || api.writes > 0 || api.pendingOperations.isNotEmpty
+                            ? null : () => go('/stock/listing?listingId=${r.id}'),
+                        child: Text(r.status == 'IN_REVIEW' ? '查看进度'
+                            : r.status == 'REJECTED' ? '核对退回' : '查看商品',
+                            textAlign: TextAlign.center));
+                    final summary = Column(
+                        crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(r.data['title'], style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w600)),
                       const SizedBox(height: 8),
@@ -678,15 +680,28 @@ class _StockScreenState extends State<_StockScreen> {
                                   : r.status == 'IN_REVIEW' ? const Color(0xFFE5C66B)
                                   : r.status == 'REJECTED' || r.status == 'RIGHTS_HOLD'
                                       ? AccountTheme.danger : AccountTheme.muted)),
-                    ])),
-                    const SizedBox(width: 8),
-                    SizedBox(width: 76, child: TextButton(
-                        onPressed: busy || api.writes > 0 || api.pendingOperations.isNotEmpty
-                            ? null : () => go('/stock/listing?listingId=${r.id}'),
-                        child: Text(r.status == 'IN_REVIEW' ? '查看进度'
-                            : r.status == 'REJECTED' ? '核对退回' : '查看商品',
-                            textAlign: TextAlign.center))),
-                  ])),
+                    ]);
+                    final narrow = constraints.maxWidth < 340 ||
+                        MediaQuery.textScalerOf(context).scale(14) > 18;
+                    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Container(width: 60, height: 80,
+                          decoration: BoxDecoration(color: AccountTheme.surface,
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Icon(Icons.movie_outlined, color: AccountTheme.muted)),
+                      const SizedBox(width: 12),
+                      Expanded(child: narrow
+                          ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                              summary,
+                              const SizedBox(height: 8),
+                              action,
+                            ])
+                          : summary),
+                      if (!narrow) ...[
+                        const SizedBox(width: 8),
+                        SizedBox(width: 76, child: action),
+                      ],
+                    ]);
+                  })),
             if (!busy && listings.isEmpty && error == null)
               appNotice('本人当前没有上架材料。'),
             tradeSection('上架前请确认', [

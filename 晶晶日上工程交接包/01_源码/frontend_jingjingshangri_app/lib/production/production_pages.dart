@@ -846,6 +846,13 @@ class _VersionReviewState extends State<_VersionReview> {
         pending == null && stale && !conflictReviewed) {
       return;
     }
+    final epoch = widget.session.epoch, party = api.participant(),
+        account = widget.session.account?['id'], beforeTicket = ticket,
+        records = jsonEncode([v.raw, p.raw]),
+        originalPending = jsonEncode(pending),
+        frozenChecks = Map<String, bool>.from(checks),
+        frozenChangeKind = changeKind,
+        form = jsonEncode([note.text, changeNote.text, decision, checks, changeKind]);
     final input =
         pending == null ? message.trim() : '${pending['body']['note']}';
     final chosen =
@@ -864,7 +871,15 @@ class _VersionReviewState extends State<_VersionReview> {
       return;
     }
     if (!mounted) return;
-    final epoch = widget.session.epoch, party = api.participant();
+    if (widget.session.epoch != epoch || widget.session.partyId != party ||
+        widget.session.account?['id'] != account || ticket != beforeTicket ||
+        version == null || project == null ||
+        jsonEncode([version!.raw, project!.raw]) != records ||
+        jsonEncode(api.pending(path)) != originalPending ||
+        pending == null && jsonEncode([note.text, changeNote.text, decision, checks, changeKind]) != form) {
+      setState(() { conflictReviewed = false; error = '确认期间身份、版本、原请求或填写内容已变化，请重新核对。'; });
+      return;
+    }
     setState(() {
       busy = true;
       error = null;
@@ -879,10 +894,10 @@ class _VersionReviewState extends State<_VersionReview> {
               chosen == 'ACCEPT'
                   ? {
                       for (final name in productionCheckNames(v.stage))
-                        name: checks[name] == true
+                        name: frozenChecks[name] == true
                     }
                   : null,
-              changeKind: changeKind)
+              changeKind: frozenChangeKind)
           : await api.retry(path);
       api.check(epoch, party);
       if (!mounted) return;

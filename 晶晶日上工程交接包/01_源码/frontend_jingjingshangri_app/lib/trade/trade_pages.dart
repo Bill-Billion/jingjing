@@ -772,16 +772,41 @@ class _TradeDetailState extends State<_TradeDetail> {
     final fullyCovered = r.quote['discount']?['coverage'] == 'FULL' &&
         r.quote['total_minor'] == 0;
     return [
-      _tradeReadPanel('订单 ${shortSupplyId(r.id)}', [
-        tradeStatus(r),
-        appNotice(fullyCovered
-            ? '本单由制作权益全额抵扣，应付现金为0，无需支付首款、中款或尾款。权益在开工时核销，制作进度与交付仍按原约定确认。'
-            : r.quote['stock_video'] != null
-                ? '付款核实后查看本单内容、原购买许可与售后。'
-                : r.quote['audition'] != null
-                    ? '按本单接单与核实收款状态办理预约、材料和售后。'
-                    : '款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')
-      ]),
+      Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+              color: AccountTheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AccountTheme.border)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            const Text('原订单当前状态',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+            const SizedBox(height: 10),
+            Semantics(header: true,
+                child: Text(tradeStatuses[r.status] ?? r.status,
+                    style: const TextStyle(fontSize: 24,
+                        fontWeight: FontWeight.w700, color: AccountTheme.text))),
+            const SizedBox(height: 14),
+            Text(fullyCovered
+                ? '本单由制作权益全额抵扣，应付现金为0，无需支付首款、中款或尾款。权益在开工时核销，制作进度与交付仍按原约定确认。'
+                : r.quote['stock_video'] != null
+                    ? '付款核实后查看本单内容、原购买许可与售后。'
+                    : r.quote['audition'] != null
+                        ? '按本单接单与核实收款状态办理预约、材料和售后。'
+                        : '款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。',
+                style: const TextStyle(fontSize: 14, height: 1.6,
+                    color: AccountTheme.text)),
+            const SizedBox(height: 16),
+            const Divider(color: AccountTheme.border),
+            const Text('原订单编号',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+            const SizedBox(height: 6),
+            SelectableText(r.id,
+                style: const TextStyle(fontSize: 12, height: 1.5,
+                    color: AccountTheme.muted)),
+          ])),
       _tradeSubjectCard(r.title, '原单版本 ${r.version} · ${tradeMoney(r.amount)}'),
       if (r.isBuyer(api.owner()))
         tradeButton(

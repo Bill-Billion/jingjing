@@ -1,6 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
+import '../account/account_theme.dart';
 import '../account/account_session.dart';
 import '../account/app_visual.dart';
 import '../contracts/contract_text.dart';
@@ -649,19 +650,37 @@ class _RecordState extends State<_Record> {
                         ? '本人已确认本版'
                         : '本人不同意本版',
             '按本版原约定核对本人可见份额。确认不代表真实付款，实付与税费另行核验。'),
-        if (snapshot != null) ...[
-          financeEditorialFact(
-              '本期本人应得', financeMoneyText(snapshot['accrued_minor']),
-              description: '本版原始结算快照中的本人份额'),
-          financeEditorialFact(
-              '已核实调整', financeMoneyText(snapshot['adjustment_minor'])),
-          financeEditorialFact(
-              '本人已核实付款', financeMoneyText(snapshot['paid_minor']),
-              description: '以已核实的实际付款凭据为准'),
-          financeEditorialFact(
-              '尚未付款', financeMoneyText(snapshot['balance_minor']),
-              accent: true)
-        ] else
+        if (snapshot != null)
+          Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 24),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                  color: AccountTheme.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AccountTheme.border)),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                const Text('本版本人结算',
+                    style: TextStyle(fontSize: 14, color: AccountTheme.muted)),
+                const SizedBox(height: 16),
+                const Text('尚未付款',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 8),
+                SelectableText(financeMoneyText(snapshot['balance_minor']),
+                    style: const TextStyle(fontSize: 32,
+                        fontWeight: FontWeight.w700, color: AccountTheme.accent)),
+                const SizedBox(height: 12),
+                const Text('本版原始结算快照中的本人份额；尚未付款不等于当前可申请收款，也不代表已经到账。',
+                    style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+                const SizedBox(height: 16),
+                const Divider(color: AccountTheme.border),
+                tradeFact('本期本人应得', financeMoneyText(snapshot['accrued_minor'])),
+                tradeFact('已核实调整', financeMoneyText(snapshot['adjustment_minor'])),
+                tradeFact('本人已核实付款', financeMoneyText(snapshot['paid_minor'])),
+                const Text('已核实付款以实际付款凭据为准；各金额保留原结算含义。',
+                    style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+              ]))
+        else
           supplyNote('本版未返回本人份额，不能推算其他人的金额。'),
         tradeSection('结算期间', [
           financeParagraph(x.data['period_reference']),

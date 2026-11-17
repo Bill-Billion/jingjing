@@ -137,3 +137,7 @@ W19本人App提名后续已接，见APP_CHAMPIONSHIP_NOMINATION_W19.md。上表�
 
 ## 3f0db7c2之后的W16门禁续批
 Web原grants区取消占用错误允许GRANT编号。现仅对新发起release增加COUPON_HOLD、同主体OWNER、HELD、无订单门禁；成功hold回执的原编号版本与pending恢复保留，不加过期限制。离页后HOLD读取契约仍欠，未新造接口。见WEB_W16_COUPON_RELEASE_GUARD.md；未测试或编译。
+
+## 集中候选最终有界静态复核
+W16 Web 取消门禁及 App 兑换/抽取弹窗上下文已补；离页后 HOLD 当前版本合法读取仍缺。W18 本人/已有监护退款及原运营处理已接，监护新申请仍缺子女 party 和 RECHARGE 选择源。W19 本人提名与买家参榜 buyer-city-profile 已有真实提交，截止后的未知恢复仍有后端边界。W22 本人依据文件已调用 project_api.dart 专用授权下载；财务/独审原 Web 分工保留。成员失权、付款、私有文件与 KEEP/REVOKE 整链均只列待验证，不列未开发。
+本次只复核台账待核/未接条目，未发现额外证据充分的可独立新增前端动作，不等于全仓穷尽或运行通过。当前未提交候选详见 PM03_CONCENTRATED_CANDIDATE_SCOPE.md；本轮不测试、合并或部署。

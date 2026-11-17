@@ -1,3 +1,4 @@
+import 'dart:convert';
 import '../rights/rights_widgets.dart';
 import '../rights/rights_models.dart';
 import 'package:file_picker/file_picker.dart';
@@ -106,13 +107,21 @@ class ManualSampleApi {
     if (!session.isOwner || snapshot.data['rights_owner_party_id'] != p) {
       throw const AccountError(403, 'ARTIST_SELF_REQUIRED');
     }
-    final raw = await session.write('POST', '$path/confirmation',
-        actingParty: p,
-        body: original == null
+    final account = session.account?['id'],
+        body = Map<String, dynamic>.from(original == null
             ? {'content_sha256': snapshot.raw['content_sha256']}
-            : productionMap(original['body']),
-        version: original?['version'] ?? snapshot.version, validate: (r) {
-      ManualSample(r, requestId, p);
+            : productionMap(original['body'])),
+        expectedVersion = original?['version'] ?? snapshot.version;
+    final raw = await session.write('POST', '$path/confirmation',
+        actingParty: p, body: body, version: expectedVersion, validate: (r) {
+      production.check(epoch, p);
+      final result = ManualSample(r, requestId, p),
+          confirmation = productionMap(result.data['confirmation']);
+      productionRequire(session.account?['id'] == account &&
+          result.version == expectedVersion + 1 &&
+          result.data['rights_owner_party_id'] == p &&
+          confirmation['account_id'] == account &&
+          confirmation['confirmed_sha256'] == body['content_sha256']);
     });
     production.check(epoch, p);
     return ManualSample(raw, requestId, p);
@@ -185,8 +194,16 @@ class _ManualSampleState extends State<_ManualSample> {
   Future<void> confirm() async {
     final s = snapshot;
     if (s == null || busy) return;
+    final epoch = widget.session.epoch, party = api.production.participant(),
+        account = widget.session.account?['id'], original = api.pending,
+        fingerprint = jsonEncode(s.raw), pendingFingerprint = jsonEncode(api.pending);
     if (!await tradeConfirm(
-        context, api.pending == null ? '本人确认这版人工样片约定' : '恢复原本人确认', [
+        context, original == null ? '本人确认这版人工样片约定' : '恢复原本人确认', [
+      if (original != null) ...[
+        tradeFact('原请求版本', original['version']),
+        tradeFact('原请求内容校验', productionMap(original['body'])['content_sha256']),
+        const Text('仅恢复上述原请求。下列是最新读取的条款，不是原请求历史正文，也不表示重新确认最新版。'),
+      ],
       tradeFact('具体真人', s.cast['person_id']),
       tradeFact('具体数字人', s.cast['avatar_id']),
       CopyrightFacts(
@@ -194,11 +211,20 @@ class _ManualSampleState extends State<_ManualSample> {
               ? productionMap(s.data['copyright_terms'])
               : null),
       SelectableText(s.data['terms']),
-      const Text('仅确认这版明确授权的人工样片委托，不开放长期模型或额外商业使用。')
+      Text(original == null
+          ? '仅确认这版明确授权的人工样片委托，不开放长期模型或额外商业使用。'
+          : '恢复不会重新确认上述最新条款，也不会扩大原请求授权。')
     ])) {
       return;
     }
     if (!mounted) return;
+    if (widget.session.epoch != epoch || api.production.session.partyId != party ||
+        widget.session.account?['id'] != account || snapshot == null ||
+        jsonEncode(snapshot!.raw) != fingerprint ||
+        jsonEncode(api.pending) != pendingFingerprint) {
+      setState(() { reviewed = false; error = '确认期间身份、约定或原请求已变化，请重新核对。'; });
+      return;
+    }
     setState(() {
       busy = true;
       error = null;

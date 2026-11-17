@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:file_picker/file_picker.dart';
@@ -192,6 +193,38 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
   AccountSession get session => widget.session;
   @override
   String get domain => 'projects';
+  bool changingDraft = false;
+  // Local draft consent only: never rewrite an already submitted pending body.
+  @override
+  TextEditingController field([String text = '']) {
+    final controller = super.field(text);
+    var previous = controller.text;
+    controller.addListener(() {
+      final next = controller.text;
+      if (next == previous) return; // Selection/composition is not a new value.
+      previous = next;
+      if (mounted && agreed && !changingDraft) setState(() => agreed = false);
+    });
+    return controller;
+  }
+
+  String draftSignature() => jsonEncode([
+        for (final controller in controllers) controller.text,
+        selectedCandidate, mode, usage, exclusive, milestoneKey,
+        evidence,
+        [for (final share in shares) [share.party, share.role, share.percent.text]],
+        [for (final stage in stages)
+          [stage.key, stage.amount.text, stage.milestone.text, stage.start]],
+      ]);
+
+  void draftChanged(VoidCallback change) {
+    final before = draftSignature();
+    setState(() {
+      changingDraft = true;
+      try { change(); } finally { changingDraft = false; }
+      if (draftSignature() != before) agreed = false;
+    });
+  }
   late final why = field(),
       territory = field(),
       language = field(),
@@ -270,6 +303,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
   Future<void> load() async {
     final t = ++ticket;
     setState(() {
+      agreed = false;
       checking = true;
       error = null;
     });
@@ -478,6 +512,43 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                     child: const Text('确认按本次约定办理'))
               ])) ==
       true;
+  Future<void> confirmAgreementAction(Map<String, dynamic> source,
+      {required bool activation}) async {
+    bool permitted() => !widget.income && record?['kind'] == 'PARTICIPATION' &&
+        (activation
+            ? project?['owner_party_id'] == session.partyId &&
+                record?['current_status'] == 'APPROVED' &&
+                communityMaybeMap(communityMaybeMap(record?['data'])['amendment']).isNotEmpty
+            : [record?['owner_party_id'], project?['owner_party_id']]
+                    .contains(session.partyId) &&
+                ['APPROVED', 'IN_REVIEW'].contains(record?['current_status']));
+    if (!mounted || !enabled || checking || !permitted()) return;
+    final epoch = session.epoch, party = session.partyId, generation = ticket;
+    final id = source['id'], version = source['object_version'],
+        hash = source['content_sha256'];
+    final projectId = project?['id'], projectVersion = project?['object_version'],
+        projectHash = project?['content_sha256'];
+    final withdrawalReason = activation ? null : communityRequired(why.text, '退出原因');
+    bool current() => mounted && epoch == session.epoch && party == session.partyId &&
+        generation == ticket && enabled && !checking && permitted() &&
+        record?['id'] == id && record?['object_version'] == version &&
+        record?['content_sha256'] == hash && project?['id'] == projectId &&
+        project?['object_version'] == projectVersion && project?['content_sha256'] == projectHash;
+    if (!current()) return;
+    final yes = await confirm(activation ? '核对启用新约' : '核对退出边界', activation
+        ? '服务器将重新核对各方会签、旧约资金和当前角色；旧约保留历史，新约正式替代后才继续履约。'
+        : '已有付款或现行方案时须先处理原订单或新约；退出不会自动退款，也不会自动覆盖历史条款。');
+    if (!yes || !current()) return;
+    if (activation) {
+      await act('participations/$id/activation', {'content_sha256': hash},
+          version: version,
+          validate: (v) => proof('participations/$id/activation', {}, v));
+    } else {
+      await act('participations/$id/withdrawal', {'reason': withdrawalReason},
+          version: version);
+    }
+  }
+
   void open(String view, {String? id, String? projectId}) => Navigator.pushNamed(
       context,
       '$base?view=$view${id == null ? '' : '&recordId=$id'}${projectId == null ? '' : '&projectId=$projectId'}');
@@ -554,7 +625,9 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
   Future<void> selectPerson(String? id) async {
     if (id == null) return;
     final e = session.epoch, p = session.partyId;
-    setState(() {
+    draftChanged(() {
+      // Rereading the same person also invalidates consent to prior evidence.
+      agreed = false;
       person.text = id;
       variants = [];
       checking = true;
@@ -669,25 +742,25 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         for (final (i, s) in shares.indexed)
           tradeSection('分成约定 ${i + 1}', [
             communitySelect('本项目实际收益方', s.party, parties,
-                enabled ? (v) => setState(() => s.party = v) : null),
+                enabled ? (v) => draftChanged(() => s.party = v) : null),
             communitySelect(
                 '该方角色',
                 s.role,
                 [for (final r in participationRoles.entries) (r.key, r.value)],
-                enabled ? (v) => setState(() => s.role = v!) : null),
+                enabled ? (v) => draftChanged(() => s.role = v!) : null),
             communityField(s.percent, '分成比例（%）',
                 keyboard: TextInputType.number),
             if (shares.length > 1)
               TextButton(
                   onPressed:
-                      enabled ? () => setState(() => shares.removeAt(i)) : null,
+                      enabled ? () => draftChanged(() => shares.removeAt(i)) : null,
                   child: const Text('移除这一方分成'))
           ]),
         if (shares.length < 30)
           tradeButton(
               '增加本项目收益方',
               enabled
-                  ? () => setState(() => shares.add(_ShareInput(field())))
+                  ? () => draftChanged(() => shares.add(_ShareInput(field())))
                   : null,
               outline: true),
         communityField(revenueTerms, '具体分成范围、结算条件与约定', lines: 4),
@@ -964,18 +1037,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
             tradeButton(
                 '会签齐备后启用这份新约',
                 enabled
-                    ? () => submit(() async {
-                          if (await confirm('核对启用新约',
-                              '服务器将重新核对各方会签、旧约资金和当前角色；旧约保留历史，新约正式替代后才继续履约。')) {
-                            await act('participations/${r['id']}/activation',
-                                {'content_sha256': r['content_sha256']},
-                                version: r['object_version'],
-                                validate: (v) => proof(
-                                    'participations/${r['id']}/activation',
-                                    {},
-                                    v));
-                          }
-                        })
+                    ? () => submit(() => confirmAgreementAction(r, activation: true))
                     : null,
                 outline: true),
           if (progress?['order_id'] == null &&
@@ -1002,7 +1064,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                     : communityRows(terms!['installments'])))
                   (s['key'] as String, communityText(s['milestone']))
               ],
-              enabled ? (v) => setState(() => milestoneKey = v) : null),
+              enabled ? (v) => draftChanged(() => milestoneKey = v) : null),
           ...evidenceFields(),
           communityField(why, '节点实际达成说明', lines: 3),
           tradeButton(
@@ -1048,14 +1110,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
           tradeButton(
               '申请退出本次约定',
               enabled
-                  ? () => submit(() async {
-                        if (await confirm('核对退出边界',
-                            '已有付款或现行方案时须先处理原订单或新约；退出不会自动退款，也不会自动覆盖历史条款。')) {
-                          await act('participations/${r['id']}/withdrawal',
-                              {'reason': communityRequired(why.text, '退出原因')},
-                              version: r['object_version']);
-                        }
-                      })
+                  ? () => submit(() => confirmAgreementAction(r, activation: false))
                   : null,
               outline: true)
         ]),
@@ -1086,7 +1141,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
               ids: evidence,
               single: true,
               enabled: enabled,
-              onChanged: enabled ? (v) => setState(() => evidence = v) : null)
+              onChanged: enabled ? (v) => draftChanged(() => evidence = v) : null)
         ])
       ];
   List<Widget> formView() {
@@ -1122,7 +1177,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                     '${roleTitle(c)} · 原议价${communityMoney(communityMap(c['data'])['amount_minor'])} · 版本${c['object_version']}'
                   )
               ],
-              enabled ? (v) => setState(() => selectedCandidate = v) : null),
+              enabled ? (v) => draftChanged(() => selectedCandidate = v) : null),
         communityFact(
             '原候选片酬',
             candidate == null
@@ -1147,23 +1202,23 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                   (v.id, '${v.data['display_name']} · 第${v.data['revision']}版')
               ],
               enabled
-                  ? (v) => setState(
+                  ? (v) => draftChanged(
                       () => (kind == 'LOOK' ? look : voice).text = v ?? '')
                   : null),
         communitySelect(
             '参演报酬方式',
             mode,
             [for (final m in participationModes.entries) (m.key, m.value)],
-            enabled ? (v) => setState(() => mode = v!) : null),
+            enabled ? (v) => draftChanged(() => mode = v!) : null),
         communityField(fee, amending ? '新约片酬总额（元）' : '原候选片酬总额（元）',
             keyboard: TextInputType.number, enabled: amending),
         communitySelect(
             '本次形象使用',
             usage,
             [('EXISTING_MATERIAL', '使用已有素材'), ('NEW_GENERATION', '生成新的表演')],
-            enabled ? (v) => setState(() => usage = v!) : null),
+            enabled ? (v) => draftChanged(() => usage = v!) : null),
         communityCheck('本次参演有排他约定', exclusive,
-            enabled ? (v) => setState(() => exclusive = v == true) : null),
+            enabled ? (v) => draftChanged(() => exclusive = v == true) : null),
         communityField(territory, '使用地域'),
         communityField(language, '使用语言'),
         communityDateField(context, until, '使用截止',
@@ -1182,12 +1237,12 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                     '本期须在开工前付清',
                     s.start,
                     enabled
-                        ? (v) => setState(() => s.start = v == true)
+                        ? (v) => draftChanged(() => s.start = v == true)
                         : null),
                 if (stages.length > 1)
                   TextButton(
                       onPressed: enabled
-                          ? () => setState(() => stages.removeAt(i))
+                          ? () => draftChanged(() => stages.removeAt(i))
                           : null,
                       child: const Text('移除此分期'))
               ]),
@@ -1195,7 +1250,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
               tradeButton(
                   '增加协商分期',
                   enabled
-                      ? () => setState(
+                      ? () => draftChanged(
                           () => stages.add(_StageInput(field(), field())))
                       : null,
                   outline: true)
