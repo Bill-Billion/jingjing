@@ -813,6 +813,18 @@ class _LicenseDetailState extends State<_LicenseDetail> {
                   supplyFact('核验意见', d['review']['reason'])
               ]),
             if (r.kind == 'GRANT') ...[
+              supplyCard('许可发放依据', [
+                supplyNote('查看原预留与发放时引用的核验材料；材料记录不替代当前许可、付款或实际使用权限核对。'),
+                if (r.parent != null)
+                  OutlinedButton(
+                      onPressed: _busy ? null : () => Navigator.pushNamed(
+                          context, '/licensing/record?recordId=${r.parent}'),
+                      child: const Text('查看原预留')),
+                OutlinedButton(
+                    onPressed: _busy ? null : () => Navigator.pushNamed(
+                        context, '/licensing/record?recordId=${d['evidence_id']}'),
+                    child: const Text('查看发放核验材料')),
+              ]),
               supplyFact('发放时间', licenseDate(d['activated_at'])),
               supplyFact('发放依据', d['reason']),
               if (d['suspension_reason'] != null)
@@ -845,6 +857,35 @@ class _LicenseDetailState extends State<_LicenseDetail> {
               supplyFact('对应许可', r.parent),
               supplyFact('项目编号', d['project_id']),
               supplyFact('条款校验摘要', d['terms_sha256']),
+              supplyCard('绑定记录与当前许可', [
+                supplyFact('绑定记录状态', r.statusText),
+                if (_bindingGrant != null) ...[
+                  supplyFact('已读取许可状态', _bindingGrant!.statusText),
+                  supplyFact('许可记录版本', _bindingGrant!.version),
+                  if (_bindingGrant!.terms != null) ...[
+                    supplyFact('许可开始', licenseDate(
+                        _bindingGrant!.terms!.data['valid_from'])),
+                    supplyFact('开发截止', licenseDate(
+                        _bindingGrant!.terms!.data['development_until'])),
+                    supplyFact('有效截止', licenseDate(
+                        _bindingGrant!.terms!.data['valid_until'])),
+                  ],
+                ],
+                supplyNote('已绑定不等于当前可使用。这里展示本次读取的许可状态与期限；实际办理仍须核对付款、权利及用途条件，不以绑定状态替代。'),
+              ]),
+              if (_bindingProject != null)
+                supplyCard('已绑定用途项目', [
+                  supplyFact('项目名称', _bindingProject!.title),
+                  supplyFact('用途', licensePurposes[
+                      _bindingProject!.data['purpose']]),
+                  supplyFact('地域', licenseCountries[
+                      _bindingProject!.data['territory']] ??
+                      _bindingProject!.data['territory']),
+                  supplyFact('语言', licenseLanguages[
+                      _bindingProject!.data['language']] ??
+                      _bindingProject!.data['language']),
+                  supplyFact('集数', _bindingProject!.data['episodes']),
+                ]),
               supplyNote('绑定已占用许可的项目额度，本阶段不提供解绑后再次使用。'),
               OutlinedButton(
                   onPressed: _bindingGrant?.status == 'ACTIVE' &&

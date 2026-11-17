@@ -1,5 +1,6 @@
 import 'cocreation_visual.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_theme.dart';
@@ -229,6 +230,14 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
       }
       if (mounted && t == ticket) {
         setState(() {
+          final basisChanged = room != null && d != null &&
+              (room!['participation_sha256'] != d['participation_sha256'] ||
+               member != null && m != null &&
+                   member!['object_version'] != m['object_version']);
+          if (['join', 'member'].contains(widget.view) && basisChanged) {
+            agreed = false;
+            notice = '参与依据或本人记录版本已变化，请重新核对并明确同意；结果未知的原请求仍按原内容恢复。';
+          }
           room = d;
           people = loadedPeople;
           member = m;
@@ -907,7 +916,17 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
             style: const TextStyle(color: AccountTheme.muted)),
       ]);
 
+  // Compare raw draft values without value() validation or any write.
+  String participationCastSignature() => jsonEncode([
+    for (final c in casts) [
+      c.person.text, c.avatar.text, c.supplyConsent.text, c.look.text,
+      c.voice.text, c.consents.text, c.usage,
+    ],
+  ]);
+
   List<Widget> participationView() {
+    final castBefore = participationCastSignature();
+    final storyBefore = story.text;
     final r = room;
     if (r == null) return [];
     final editing = widget.view == 'member';
@@ -959,6 +978,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           c.chooser(session,
               enabled: enabled && canEdit,
               changed: () => setState(() {
+                    if (participationCastSignature() != castBefore) agreed = false;
                     final id = casts.first.person.text;
                     if (id.isNotEmpty) {
                       if (materialPerson != null && materialPerson != id) {
@@ -971,7 +991,10 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
           if (casts.length > 1)
             TextButton(
                 onPressed: enabled && canEdit
-                    ? () => setState(() => casts.removeAt(i))
+                    ? () => setState(() {
+                        casts.removeAt(i);
+                        agreed = false;
+                      })
                     : null,
                 child: const Text('移除此处的形象引用'))
         ]),
@@ -979,10 +1002,24 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
         tradeButton(
             '增加本人另一形象',
             enabled && canEdit
-                ? () => setState(() => casts.add(CocreationCastInput(field)))
+                ? () => setState(() {
+                    casts.add(CocreationCastInput(field));
+                    agreed = false;
+                  })
                 : null,
             outline: true),
-      communityField(story, '我本人的私人故事', lines: 5, enabled: enabled && canEdit),
+      Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: TextField(
+              controller: story,
+              enabled: enabled && canEdit,
+              maxLines: 5,
+              decoration: const InputDecoration(labelText: '我本人的私人故事'),
+              onChanged: (value) {
+                if (value != storyBefore && agreed) {
+                  setState(() => agreed = false);
+                }
+              })),
       cocreationSection('我本人的私有素材', [
         if (materialReady)
           ArtistFiles(
@@ -1010,7 +1047,11 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
             '允许我本人片段按本次约定分享',
             sharing,
             enabled && canEdit
-                ? (v) => setState(() => sharing = v == true)
+                ? (v) => setState(() {
+                    final next = v == true;
+                    if (sharing != next) agreed = false;
+                    sharing = next;
+                  })
                 : null),
         communityCheck(
             '我已核对本人、形象、资料与本次参与条款，并明确同意',
