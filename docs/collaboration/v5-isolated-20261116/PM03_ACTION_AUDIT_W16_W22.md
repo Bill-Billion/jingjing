@@ -132,3 +132,5 @@ M/projects/release.js:23 对 PARTICIPATION/INCOME_AGREEMENT 明确特判：先 a
 
 ## f15b5cc2之后的当前续批
 上表W18“未接”是核查基线事实，本批已新增本人充值退款与监护列表详情App、运营独立核验/任务/证据页面；具体源码及未接监护新申请见APP_RECHARGE_REFUND_PM03_HANDOFF.md、APP_W18_RECHARGE_REFUND_OPS_HANDOFF.md。W22本约定证据按钮及专用受控下载已补，见APP_PARTICIPATION_EVIDENCE_W22.md。上述均未运行验证，不将基线缺项重复统计为仍全部未开发。
+
+W19本人App提名后续已接，见APP_CHAMPIONSHIP_NOMINATION_W19.md。上表“未见candidates写入”保留为f15b5cc2基线，不再作为当前未开发结论。资格/截止在幂等查重前重核的服务器恢复边界仍欠，不擅自改写为已解决。

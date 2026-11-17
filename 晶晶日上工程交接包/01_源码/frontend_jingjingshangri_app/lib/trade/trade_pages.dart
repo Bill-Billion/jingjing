@@ -1352,6 +1352,39 @@ class _TradeDetailState extends State<_TradeDetail> {
               outline: true),
       ];
   }
+  List<Widget> refundChannelFacts(TradeRecord r) {
+    final proof = r.data['proof'];
+    final matched = proof is Map &&
+        r.status == 'SUCCEEDED' &&
+        proof['status'] == 'SUCCEEDED' &&
+        proof['refund_id'] == r.id &&
+        proof['payment_id'] == r.data['payment_id'] &&
+        proof['amount_minor'] == r.amount &&
+        proof['currency'] == r.data['currency'] &&
+        proof['provider'] == r.data['provider'] &&
+        proof['environment'] == r.data['environment'];
+    return [
+      tradeSection('退款渠道与回执摘要', [
+        tradeFact('原退款渠道', tradeChannel(r.data['provider'])),
+        tradeFact('渠道环境',
+            r.data['environment'] == 'SANDBOX' ? '测试环境' : '正式环境'),
+        if (r.data['environment'] == 'SANDBOX')
+          appNotice('此笔为测试渠道记录，成功状态不代表真实资金到账。'),
+        if (matched) ...[
+          appNotice('服务器已核对渠道成功回执；摘要与当前退款编号、原付款及金额一致。'),
+          tradeFact('回执对应退款编号', r.id),
+          tradeFact('回执对应原付款编号', r.data['payment_id']),
+          tradeFact('回执退款金额', tradeMoney(r.amount)),
+          tradeFact('回执币种', r.data['currency']),
+        ] else if (proof != null)
+          appNotice('当前回执摘要无法与本笔成功退款完整核对，请保留原记录并联系平台核查；此处不据摘要判定到账。')
+        else
+          appNotice('当前记录未提供可核对的渠道成功回执摘要。'),
+        const Text('当前接口未提供渠道终态发生时间或到账时间；不以记录更新时间或业务汇总同步时间代替。此处仅为结构化回执摘要，不是可下载的银行凭证或发票。'),
+      ]),
+    ];
+  }
+
   List<Widget> refundView(TradeRecord r) => [
         tradeBanner(
             tradeStatuses[r.status]!,
@@ -1369,6 +1402,7 @@ class _TradeDetailState extends State<_TradeDetail> {
             tradeFact('明细 ${a['line_id']}', tradeMoney(a['amount_minor'])),
           tradeFact('原因', r.data['reason'])
         ]),
+        ...refundChannelFacts(r),
         tradeSection('独立审核', [
           tradeFact(
               '审核结论',

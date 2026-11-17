@@ -118,6 +118,12 @@ class _EngagementState extends CommunityPageState<_Engagement> {
   final staffActions = <String>{};
   List<Map<String, dynamic>> rows = [], secondary = [], staff = [];
   Map<String, dynamic>? detail, voteUsage;
+  List<Map<String, dynamic>> nominationProfiles = [];
+  String? nominationProfile, nominationError;
+  bool nominationReading = false, nominationAgreed = false,
+      nominationUnknown = false;
+  int nominationTicket = 0;
+  Map<String, dynamic>? nominationResult;
   List<ArtistPerson> people = [];
   List<TradeRecord> orders = [];
   List<Map<String, dynamic>> members = [], bookings = [];
@@ -134,6 +140,11 @@ class _EngagementState extends CommunityPageState<_Engagement> {
     rows = [];
     secondary = [];
     staff = [];
+    nominationTicket++;
+    nominationProfiles = [];
+    nominationProfile = nominationError = null;
+    nominationReading = nominationAgreed = nominationUnknown = false;
+    nominationResult = null;
     detail = null;
     voteUsage = null;
     people = [];
@@ -165,6 +176,13 @@ class _EngagementState extends CommunityPageState<_Engagement> {
 
   @override
   Future<void> recovered(Map<String, dynamic> value) async {
+    if (value['kind'] == 'CANDIDATE') {
+      setState(() {
+        nominationResult = value;
+        nominationUnknown = false;
+        nominationAgreed = false;
+      });
+    }
     if (value['kind'] == 'ORDER_REVIEW') {
       communityRecord(value, kind: 'ORDER_REVIEW');
       setState(() {
@@ -179,6 +197,10 @@ class _EngagementState extends CommunityPageState<_Engagement> {
   @override
   Future<void> load() async {
     final t = ++ticket;
+    nominationTicket++;
+    nominationProfiles = [];
+    nominationProfile = null;
+    nominationAgreed = nominationReading = false;
     setState(() {
       checking = true;
       error = null;
@@ -353,7 +375,15 @@ class _EngagementState extends CommunityPageState<_Engagement> {
   @override
   Future<void> reconcilePending() async {
     final p = recoverySuffix!, b = communityMap(recovery!['body']);
-    if (p.startsWith('mcn/')) {
+    if (p == 'candidates') {
+      nominationUnknown = true;
+      await api.read('competitions/${b['event_id']}', account: true);
+      await api.read('profiles/mine');
+      if (recovery!['resultId'] != null) {
+        final result = await api.read('records/${recovery!['resultId']}');
+        validateNomination(result, b);
+      }
+    } else if (p.startsWith('mcn/')) {
       await api.read('mcn/dashboard');
       if (session.isOwner) await api.read('mcn/staff');
     } else if (p == 'votes' || p == 'appeals') {
@@ -381,6 +411,116 @@ class _EngagementState extends CommunityPageState<_Engagement> {
       if (mounted) setState(() => fail(e));
     }
   }
+
+  void validateNomination(Map<String, dynamic> value, Map<String, dynamic> body) {
+    final r = communityRecord(value, kind: 'CANDIDATE');
+    communityRequire(r['owner_party_id'] == session.partyId &&
+        r['parent_id'] == body['event_id'] &&
+        communityMap(r['data'])['profile_id'] == body['profile_id'] &&
+        communityId(communityMap(r['data'])['person_id']));
+  }
+
+  @override
+  Future<void> validateResult(Map<String, dynamic> value) async {
+    communityRecord(value);
+    if (recoverySuffix == 'candidates' && recovery != null) {
+      validateNomination(value, communityMap(recovery!['body']));
+    }
+  }
+
+  bool get nominationOpen {
+    final end = DateTime.tryParse('${detail?['ends_at']}');
+    return canVote && detail?['status'] == 'PUBLISHED' && end != null &&
+        DateTime.now().isBefore(end);
+  }
+
+  Future<void> readNominationProfiles() async {
+    if (!enabled || checking || nominationReading || !canVote) return;
+    final event = detail?['id'], epoch = session.epoch, party = session.partyId,
+        t = ++nominationTicket, page = ticket;
+    bool current() => mounted && t == nominationTicket && page == ticket &&
+        epoch == session.epoch && party == session.partyId && detail?['id'] == event;
+    setState(() {
+      nominationReading = true;
+      nominationError = nominationProfile = null;
+      nominationProfiles = [];
+      nominationAgreed = false;
+    });
+    try {
+      final data = await api.read('profiles/mine');
+      if (!current()) return;
+      final rows = communityItems(data), ids = <String>{};
+      for (final row in rows) {
+        communityRequire(communityId(row['id']) && ids.add(row['id']) &&
+            communityId(row['person_id']) && ['city', 'district', 'category']
+                .every((key) => row[key] is String &&
+                    (row[key] as String).trim().isNotEmpty &&
+                    (row[key] as String).length <= 100));
+      }
+      setState(() {
+        nominationProfiles = rows.where((row) => ['city', 'district', 'category']
+            .every((key) => row[key] == detail?[key])).toList();
+        if (nominationProfiles.isEmpty) nominationError =
+            '没有与本活动地域和类别匹配的本人有效档案；这不代表此前没有提交提名。';
+      });
+    } catch (e) {
+      if (current()) setState(() => nominationError = communityError(e));
+    } finally {
+      if (mounted && t == nominationTicket) setState(() => nominationReading = false);
+    }
+  }
+
+  Future<void> nominate() async {
+    if (!enabled || checking || nominationReading || !nominationOpen ||
+        !nominationAgreed || nominationUnknown || nominationResult != null) return;
+    final selected = nominationProfiles.where((p) => p['id'] == nominationProfile)
+        .firstOrNull;
+    if (selected == null) return;
+    final body = <String, dynamic>{'event_id': detail!['id'], 'profile_id': selected['id']};
+    final epoch = session.epoch, party = session.partyId;
+    final out = await act('candidates', body, reload: false, validate: (value) {
+      validateNomination(value, body);
+      communityRequire(communityMap(value['data'])['person_id'] == selected['person_id']);
+    });
+    if (!mounted || epoch != session.epoch || party != session.partyId) return;
+    setState(() {
+      nominationAgreed = false;
+      if (out != null) nominationResult = out;
+      if (recoverySuffix == 'candidates') nominationUnknown = true;
+    });
+  }
+
+  Widget nominationSection() => tradeSection('本人提名参选', [
+    const Text('仅使用本人有效参榜档案。提交后仍须候选资格审核，不代表入选、获奖或扣用投票晶钻。'),
+    if (!canVote) const Text('请切换到本人个人身份再办理提名。'),
+    if (nominationUnknown || recoverySuffix == 'candidates')
+      const Text('原提名结果仍须核对。公开候选只列已审核者；活动截止后的恢复失败不代表从未提交，请保留原请求联系核对，勿另建重复申请。'),
+    if (nominationResult != null) ...[
+      communityFact('本次提名记录', communityShort(nominationResult!['id'])),
+      communityFact('服务器状态', communityState(nominationResult!['current_status'])),
+      tradeButton('读取本次提名记录', enabled ? () => Navigator.pushNamed(context,
+          '/engagement/record?recordId=${nominationResult!['id']}') : null, outline: true),
+    ],
+    tradeButton('读取本人可用参榜档案', enabled && !checking && !nominationReading &&
+        canVote ? readNominationProfiles : null, outline: true),
+    if (nominationReading) const LinearProgressIndicator(),
+    if (nominationError != null) appNotice(nominationError!),
+    for (final profile in nominationProfiles)
+      RadioListTile<String>(value: profile['id'], groupValue: nominationProfile,
+          title: Text('${profile['city']} · ${profile['district']} · ${profile['category']}'),
+          subtitle: Text('本人档案 ${communityShort(profile['id'])}'),
+          onChanged: enabled && !checking && !nominationReading && !nominationUnknown &&
+              nominationResult == null ? (value) => setState(() {
+                nominationProfile = value; nominationAgreed = false;
+              }) : null),
+    communityCheck('我以本人身份提交选定档案提名，资格以本活动审核为准', nominationAgreed,
+        enabled && !checking && !nominationReading && nominationOpen &&
+            nominationProfile != null && !nominationUnknown && nominationResult == null
+            ? (value) => setState(() => nominationAgreed = value == true) : null),
+    tradeButton('提交本人提名', enabled && !checking && !nominationReading &&
+        nominationOpen && nominationAgreed && nominationProfile != null &&
+        !nominationUnknown && nominationResult == null ? nominate : null),
+  ]);
 
   String artistName(Object? id) =>
       publicNames['$id'] ?? '公开名称暂未提供 · ${communityShort(id)}';
@@ -595,6 +735,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             child: const Text('本期结果')),
       ]),
       const SizedBox(height: 20),
+      nominationSection(),
       Container(key: progressSection, child: tradeSection('评选时间与进度', [
         communityFact('01 · 开始时间', communityDate(d['starts_at'])),
         communityFact('02 · 投票截止', communityDate(d['ends_at'])),
