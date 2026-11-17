@@ -372,7 +372,18 @@ class _CollectionsState extends State<_Collections> {
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: const BoxDecoration(border: Border(
               bottom: BorderSide(color: AccountTheme.border))),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          child: LayoutBuilder(builder: (context, constraints) {
+            final stacked = constraints.maxWidth < 340 ||
+                MediaQuery.textScalerOf(context).scale(14) > 16.8;
+            final openAction = TextButton(
+                    onPressed: locked ? null : () async {
+                      await Navigator.pushNamed(context,
+                          publicContentRoute(item['kind'], item['target_id']));
+                      if (mounted) load();
+                    },
+                    child: Text(item['kind'] == 'ARTIST' ? '查看档案' : '查看',
+                        textAlign: TextAlign.center));
+            return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Container(width: 60, height: 80,
                   decoration: BoxDecoration(color: AccountTheme.surface,
@@ -397,21 +408,19 @@ class _CollectionsState extends State<_Collections> {
                 Text('${history ? "浏览" : "收藏"}于 ${communityDate(item['recorded_at'])}',
                     style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
               ])),
-              if (item['availability'] == 'AVAILABLE') ...[
+              if (item['availability'] == 'AVAILABLE' && !stacked) ...[
                 const SizedBox(width: 8),
-                SizedBox(width: 72, child: TextButton(
-                    onPressed: locked ? null : () async {
-                      await Navigator.pushNamed(context,
-                          publicContentRoute(item['kind'], item['target_id']));
-                      if (mounted) load();
-                    },
-                    child: Text(item['kind'] == 'ARTIST' ? '查看档案' : '查看',
-                        textAlign: TextAlign.center))),
+                SizedBox(width: 72, child: openAction),
               ],
             ]),
+            if (item['availability'] == 'AVAILABLE' && stacked) ...[
+              const SizedBox(height: 8),
+              Align(alignment: Alignment.centerRight, child: openAction),
+            ],
             const SizedBox(height: 10),
             ...actions,
-          ]));
+          ]);
+          }));
 
   @override
   Widget build(BuildContext context) => tradeScaffold(context, '我的收藏与浏览记录', [

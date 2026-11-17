@@ -627,7 +627,7 @@ class _SupportState extends State<_Support> {
                 '查看原订单与售后', () => Navigator.pushNamed(context, '/orders'),
                 outline: true),
           ],
-          footer: widget.create ? Wrap(spacing: 12, children: [
+          footer: widget.create ? Wrap(spacing: 12, runSpacing: 8, children: [
             TextButton(
                 onPressed: locked ? null : () => leave(route: '/help'),
                 child: const Text('阅读帮助')),

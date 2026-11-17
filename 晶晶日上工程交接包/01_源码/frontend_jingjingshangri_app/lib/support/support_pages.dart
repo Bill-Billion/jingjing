@@ -128,10 +128,6 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
       const SizedBox(height: 24),
       tradeSection('反馈提交', [
         const Text('以当前办事身份提交问题，查看客服答复和补件进度。'),
-        tradeButton(
-            '提交反馈或举报', () => Navigator.pushNamed(context, '/support/new')),
-        tradeButton('查看我的反馈记录', () => Navigator.pushNamed(context, '/support'),
-            outline: true),
       ]),
       tradeSection('需要业务协助时', [
         const Text('请先查看对应订单、投稿或制作记录中的处理进度和已开放的服务入口。不同业务的沟通、售后和材料核对保留在原业务中。',
@@ -143,7 +139,7 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
             () => Navigator.pushNamed(context, '/privacy?view=complaint'),
             outline: true),
       ]),
-    ], footer: Wrap(spacing: 12, children: [
+    ], footer: Wrap(spacing: 12, runSpacing: 8, children: [
       TextButton(
           onPressed: () => Navigator.pushNamed(context, '/support'),
           child: const Text('我的反馈记录')),

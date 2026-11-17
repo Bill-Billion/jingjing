@@ -803,7 +803,15 @@ class _StockScreenState extends State<_StockScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: const BoxDecoration(border: Border(
                       bottom: BorderSide(color: AccountTheme.border))),
-                  child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  child: LayoutBuilder(builder: (context, constraints) {
+                    final stacked = constraints.maxWidth < 340 ||
+                        MediaQuery.textScalerOf(context).scale(14) > 16.8;
+                    final action = TextButton(
+                        onPressed: busy ? null : () => go('/stock/purchase?orderId=${r.orderId}'),
+                        child: Text(r.usable ? '播放 / 下载' : '核对原单',
+                            textAlign: TextAlign.center));
+                    return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Container(width: 60, height: 80,
                         decoration: BoxDecoration(color: AccountTheme.surface,
                             borderRadius: BorderRadius.circular(10)),
@@ -828,12 +836,17 @@ class _StockScreenState extends State<_StockScreen> {
                           style: TextStyle(fontSize: 11,
                               color: r.usable ? AccountTheme.accent : AccountTheme.muted)),
                     ])),
-                    const SizedBox(width: 8),
-                    SizedBox(width: 82, child: TextButton(
-                        onPressed: busy ? null : () => go('/stock/purchase?orderId=${r.orderId}'),
-                        child: Text(r.usable ? '播放 / 下载' : '核对原单',
-                            textAlign: TextAlign.center))),
-                  ])),
+                    if (!stacked) ...[
+                      const SizedBox(width: 8),
+                      SizedBox(width: 82, child: action),
+                    ],
+                  ]),
+                    if (stacked) ...[
+                      const SizedBox(height: 8),
+                      Align(alignment: Alignment.centerRight, child: action),
+                    ],
+                  ]);
+                  })),
             tradeSection('每份作品保留使用范围', [
               const Text('播放、保存和后续使用都以原单有效许可为准。下载不自动授予商用、改编或再分发权限。'),
               tradeButton('查看合同与许可', busy ? null : () => go('/library?section=contracts'),
