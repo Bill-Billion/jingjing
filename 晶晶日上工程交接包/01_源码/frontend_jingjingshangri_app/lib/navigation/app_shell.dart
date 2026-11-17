@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show FontVariation;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -782,9 +783,15 @@ class _PersonalWalletSummaryState extends State<_PersonalWalletSummary> {
             TextButton(onPressed: load, child: const Text('重新读取')),
           ],
           if (d != null) ...[
-            Text('账面可用余额  ${v5Money(d['available_balance_minor'] as int)}',
-                style: const TextStyle(fontSize: 16, height: 1.25, color: _mineText,
-                    fontWeight: FontWeight.w600)),
+            Text.rich(TextSpan(children: [
+              const TextSpan(text: '账面可用余额  '),
+              TextSpan(text: v5Money(d['available_balance_minor'] as int),
+                  style: const TextStyle(fontFamily: 'WalletBalanceInter',
+                      fontFamilyFallback: ['NotoSansSC'],
+                      fontVariations: [FontVariation('wght', 600),
+                        FontVariation('opsz', 14)])),
+            ]), style: const TextStyle(fontSize: 16, height: 1.25, color: _mineText,
+                fontWeight: FontWeight.w600)),
             const SizedBox(height: 8),
             Text('待核对或锁定  ${v5Money(d['reserved_balance_minor'] as int)}'),
             Text('可用晶钻  ${d['available_points']}'),
