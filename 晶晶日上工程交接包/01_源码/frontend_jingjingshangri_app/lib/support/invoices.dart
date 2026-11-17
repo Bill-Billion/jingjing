@@ -788,40 +788,56 @@ class _InvoicesState extends State<_Invoices> {
                     outline: true),
               ]),
             if (create && eligibility != null) ...[
-              tradeSection('本订单当前可申请', [
-                Text(communityMoney(eligibility!['available_minor']),
-                    style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700)),
-                const SizedBox(height: 12),
-                Text(eligibility!['environment'] == 'SANDBOX'
-                    ? '模拟环境，仅形成模拟凭证，不是真实发票。'
-                    : '额度来自当前收退款及申请占用记录，提交时会重新核对。'),
-                const Divider(height: 24),
-                tradeFact('原订单', widget.orderId),
-                tradeButton('核对原订单与付款',
-                    locked ? null : () => leave(route: invoiceBusinessRoute(widget.orderId)),
-                    outline: true),
-              ]),
-              tradeSection('开票范围与办理结果', [
-                const Text('仅按本订单真实可申请额度办理，不把订单总价或平台全额收入当作可开票金额。提交申请不是票据已开具；后续可在申请记录读取获准票据。'),
-              ]),
-              tradeSection('额度构成', [
-                tradeFact(
-                    '环境',
-                    eligibility!['environment'] == 'SANDBOX'
-                        ? '模拟环境，非真实发票'
+              Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                      color: AccountTheme.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AccountTheme.border)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    const Text('本订单当前可申请',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 10),
+                    SelectableText(communityMoney(eligibility!['available_minor']),
+                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w700,
+                            color: AccountTheme.accent)),
+                    const SizedBox(height: 12),
+                    Text(eligibility!['environment'] == 'SANDBOX'
+                        ? '模拟环境，仅形成模拟凭证，不是真实发票。'
                         : eligibility!['environment'] == 'PRODUCTION'
-                            ? '正式环境'
-                            : '尚无可归属现金收款'),
-                for (final entry in const {
-                  'received_minor': '已核实收款',
-                  'refunded_minor': '已退款',
-                  'pending_refund_minor': '退款待处理',
-                  'occupied_minor': '其他申请占用',
-                  'available_minor': '本次可申请'
-                }.entries)
-                  tradeFact(
-                      entry.value, communityMoney(eligibility![entry.key])),
-              ]),
+                            ? '正式环境；额度来自当前收退款及申请占用记录，提交时会重新核对。'
+                            : '尚无可归属现金收款；提交时仍须核对环境与额度。',
+                        style: const TextStyle(fontSize: 14, height: 1.6)),
+                    const Divider(height: 24, color: AccountTheme.border),
+                    const Text('原订单', style: TextStyle(color: AccountTheme.muted)),
+                    const SizedBox(height: 6),
+                    SelectableText(widget.orderId ?? '原订单编号未返回'),
+                    const SizedBox(height: 12),
+                    tradeButton('核对原订单与付款',
+                        locked ? null : () => leave(route: invoiceBusinessRoute(widget.orderId)),
+                        outline: true),
+                    const Divider(height: 24, color: AccountTheme.border),
+                    const Text('额度构成',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                    for (final entry in const {
+                      'received_minor': '已核实收款',
+                      'refunded_minor': '已退款',
+                      'pending_refund_minor': '退款待处理',
+                      'occupied_minor': '其他申请占用'
+                    }.entries)
+                      Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                            Text(entry.value, style: const TextStyle(color: AccountTheme.muted)),
+                            const SizedBox(height: 4),
+                            SelectableText(communityMoney(eligibility![entry.key])),
+                          ])),
+                    const Divider(height: 24, color: AccountTheme.border),
+                    const Text('仅按本订单真实可申请额度办理，不把订单总价或平台全额收入当作可开票金额。提交申请不是票据已开具；后续可在申请记录读取获准票据。',
+                        style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+                  ])),
               tradeSection('本次抬头', headerFields()),
               TextField(
                   controller: amount,

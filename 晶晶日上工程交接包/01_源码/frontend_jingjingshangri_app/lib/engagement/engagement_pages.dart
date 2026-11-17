@@ -1323,18 +1323,48 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                     decoration: const BoxDecoration(border: Border(
                         bottom: BorderSide(color: AccountTheme.border))),
                     child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                      Row(children: [
-                        Container(width: 60, height: 80, color: AccountTheme.surface,
+                      LayoutBuilder(builder: (context, constraints) {
+                        final compact = constraints.maxWidth < 300 ||
+                            MediaQuery.textScalerOf(context).scale(14) / 14 > 1.2;
+                        final caption = Column(
+                            crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text('${r['party_id'] == session.partyId ? communityText(session.party?['display_name']) : '已公开主体 ${communityShort(r['party_id'])}'}',
+                              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                          const SizedBox(height: 8),
+                          Text(r['facts_available'] == true
+                              ? '已核实完成订单 ${r['completed_orders']} · 净付款 ${communityMoney(r['verified_net_paid_minor'])}'
+                              : '核算依据尚未配置',
+                              style: const TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.5)),
+                          if (compact && detail!['ranking_enabled'] == true)
+                            Text('第${i + 1}名', style: const TextStyle(color: AccountTheme.accent)),
+                        ]);
+                        final portrait = Container(width: 60, height: 80,
+                            color: AccountTheme.surface,
                             child: Icon(group.$1 == 'personal' ? Icons.person_outline : Icons.business_outlined,
-                                color: AccountTheme.muted)),
-                        const SizedBox(width: 12),
-                        Expanded(child: Text(
-                            '${r['party_id'] == session.partyId ? communityText(session.party?['display_name']) : '已公开主体 ${communityShort(r['party_id'])}'}',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700))),
-                        if (detail!['ranking_enabled'] == true)
-                          Text('第${i + 1}名', style: const TextStyle(color: AccountTheme.accent)),
-                      ]),
+                                color: AccountTheme.muted));
+                        if (compact) {
+                          return Column(crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [portrait, const SizedBox(height: 8), caption]);
+                        }
+                        return Row(children: [
+                          portrait,
+                          const SizedBox(width: 12),
+                          Expanded(child: caption),
+                          if (detail!['ranking_enabled'] == true) ...[
+                            const SizedBox(width: 8),
+                            Text('第${i + 1}名', style: const TextStyle(color: AccountTheme.accent)),
+                          ],
+                        ]);
+                      }),
                       const SizedBox(height: 12),
+                      if (group.$1 != 'personal')
+                        appNotice('机构不使用个人晶钻钱包；机构订单与核实付款独立计入。'),
+                      if (r['compliance_clear'] != true)
+                        appNotice('合规记录：有记录需复核。'),
+                      ExpansionTile(
+                        tilePadding: EdgeInsets.zero,
+                        title: const Text('核算与合规详情', style: TextStyle(fontSize: 14)),
+                        children: [
                       communityFact(
                           '核实的完成订单',
                           r['facts_available'] == true
@@ -1352,12 +1382,13 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                             r['scout_active'] == true
                                 ? '当前有效 · 第${r['scout_level']}级'
                                 : '当前未生效')
-                      ] else
-                        appNotice('机构不使用个人晶钻钱包；机构订单与核实付款独立计入。'),
+                      ],
                       if (detail!['ranking_enabled'] == true)
                         communityFact('本次排名分值', r['score']),
                       communityFact('合规记录',
                           r['compliance_clear'] == true ? '当前已核对' : '有记录需复核'),
+                        ],
+                      ),
                       tradeButton(
                           '查看已公开资料',
                           () => Navigator.pushNamed(

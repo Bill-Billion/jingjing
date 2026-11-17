@@ -715,7 +715,43 @@ class _TradeDetailState extends State<_TradeDetail> {
       tradeSection('付款节点', [
         if (tradeInstallments(d).isEmpty)
           appNotice('制作权益已覆盖全额，无现金付款节点；开工时核销，不产生现金收款或可提现余额。'),
-        for (final i in tradeInstallments(d)) ...[
+        for (final i in tradeInstallments(d))
+          if (!order)
+            Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                    color: AccountTheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AccountTheme.border)),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  Text(tradeTriggers[i['trigger']]!,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 8),
+                  SelectableText(tradeMoney(tradeRows(i['allocations'])
+                      .fold(0, (a, v) => a + (v['amount_minor'] as int))),
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700,
+                          color: AccountTheme.accent)),
+                  const SizedBox(height: 8),
+                  ExpansionTile(
+                      tilePadding: EdgeInsets.zero,
+                      title: const Text('核对本节点分项金额'),
+                      children: [
+                        for (final a in tradeRows(i['allocations']))
+                          Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                                Text('分配 · ${a['line_id']}',
+                                    style: const TextStyle(color: AccountTheme.muted)),
+                                const SizedBox(height: 4),
+                                SelectableText(tradeMoney(a['amount_minor'])),
+                              ])),
+                      ]),
+                  if (i['trigger'] != 'ORDER_ACCEPTED')
+                    appNotice('这笔款项须满足原订单对应的具体版本确认条件；订单页会重新核对制作进度。'),
+                ]))
+          else ...[
           tradeFact(
               tradeTriggers[i['trigger']]!,
               tradeMoney(tradeRows(i['allocations'])

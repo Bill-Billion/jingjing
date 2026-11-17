@@ -736,13 +736,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                       ? null : (_) => open(entry.$1)),
           ]),
           const SizedBox(height: 16),
-          tradeSection('核销与释放', [
-            const Text('占用不等于核销。普通抵扣在首次真实付款确认后核销；全额抵扣在开工时核销，现金实付 0 元。',
-                style: TextStyle(color: AccountTheme.muted, height: 1.6)),
-            const SizedBox(height: 8),
-            const Text('未下单的占用可按原操作释放；已经下单先核对原订单。排期、面试与实际兑现分别记录，不代表取得出演权。',
-                style: TextStyle(color: AccountTheme.muted, height: 1.6)),
-          ]),
+
         ],
         const SizedBox(height: 20),
         if (rows.isEmpty && !checking && error == null)
@@ -780,7 +774,23 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                       outline: true),
                 if (widget.quoteId != null && r['effective_status'] == 'HELD')
                   appNotice('该权益已被原操作占用。请先恢复原请求并核对原报价，不能重新占用。')
-              ])
+              ]),
+        if (widget.quoteId == null)
+          Container(
+              margin: const EdgeInsets.only(top: 20),
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(color: const Color(0xFF202320),
+                  borderRadius: BorderRadius.circular(18)),
+              child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('核销与释放', style: TextStyle(color: Colors.white,
+                    fontSize: 18, fontWeight: FontWeight.w700)),
+                SizedBox(height: 12),
+                Text('占用不等于核销。普通抵扣在首次真实付款确认后核销；全额抵扣在开工时核销，现金实付 0 元。',
+                    style: TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+                SizedBox(height: 8),
+                Text('未下单的占用可按原操作释放；已经下单先核对原订单。排期、面试与实际兑现分别记录，不代表取得出演权。',
+                    style: TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+              ])),
       ];
   List<Widget> grantView() {
     final r = detail;

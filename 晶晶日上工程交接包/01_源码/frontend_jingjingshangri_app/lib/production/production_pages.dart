@@ -196,6 +196,52 @@ class _ProjectListState extends State<_ProjectList> {
                   : '仅展示真实参与或实际指派的项目。开工项目由商家负责人按原订单办理。')
             ]),
           for (final r in rows)
+            if (!widget.works)
+              tradeSection('制作项目 ${shortSupplyId(r.id)}', [
+                LayoutBuilder(builder: (context, constraints) {
+                  final summary = Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(productionStatuses[r.status] ?? r.status,
+                            style: const TextStyle(fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 6),
+                        Text('当前版本已确认 ${productionConfirmedStages(r)}/4 个阶段',
+                            style: const TextStyle(color: AccountTheme.muted)),
+                      ]);
+                  final action = tradeButton(
+                      '查看项目', busy ? null : () => open(r));
+                  if (constraints.maxWidth < 340 ||
+                      MediaQuery.textScalerOf(context).scale(14) > 18) {
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [summary, const SizedBox(height: 10), action]);
+                  }
+                  return Row(children: [
+                    Expanded(child: summary),
+                    const SizedBox(width: 12),
+                    action,
+                  ]);
+                }),
+                ExpansionTile(
+                    key: PageStorageKey('production-summary-${r.id}'),
+                    tilePadding: EdgeInsets.zero,
+                    title: const Text('订单与阶段明细'),
+                    children: [
+                      tradeFact('原订单', shortSupplyId(r.orderId)),
+                      tradeFact('服务档位', r.data['specification']['service_tier']),
+                      tradeFact('修改次数',
+                          '${r.data['change_requests']} / ${r.data['specification']['revision_limit']}'),
+                      for (final stage in productionStages.keys)
+                        tradeFact(
+                            productionStages[stage]!,
+                            r.data['current'][stage] == null
+                                ? '未开始'
+                                : r.data['current'][stage] == r.data['accepted'][stage]
+                                    ? '当前版本已确认'
+                                    : '当前版本待审阅')
+                    ]),
+              ])
+            else
             tradeSection('制作项目 ${shortSupplyId(r.id)}', [
               tradeFact('当前状态', productionStatuses[r.status]),
               tradeFact('当前版本确认', '已确认 ${productionConfirmedStages(r)}/4 个阶段'),
@@ -345,8 +391,8 @@ class _ProjectDetailState extends State<_ProjectDetail> {
           if (p != null) ...[
             Padding(
                 padding: const EdgeInsets.only(bottom: 24),
-                child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                  Expanded(child: Column(
+                child: LayoutBuilder(builder: (context, constraints) {
+                  final heading = Column(
                       crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text('平台制作任务 / ${productionStatuses[p.status]}',
                         style: const TextStyle(fontSize: 11, color: AccountTheme.accent)),
@@ -357,15 +403,23 @@ class _ProjectDetailState extends State<_ProjectDetail> {
                     const SizedBox(height: 10),
                     Text('${p.data['specification']['final_seconds']}秒 · ${p.data['specification']['service_tier']}',
                         style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
-                  ])),
-                  const SizedBox(width: 16),
-                  Container(width: 108, height: 144,
+                  ]);
+                  final cover = Container(width: 108, height: 144,
                       decoration: BoxDecoration(color: AccountTheme.surface,
                           borderRadius: BorderRadius.circular(12)),
                       child: const Center(child: Text('当前未提供封面',
                           textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 11, color: AccountTheme.muted)))),
-                ])),
+                          style: TextStyle(fontSize: 11, color: AccountTheme.muted))));
+                  if (constraints.maxWidth < 340 ||
+                      MediaQuery.textScalerOf(context).scale(14) > 18) {
+                    return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [heading, const SizedBox(height: 16), cover]);
+                  }
+                  return Row(crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [Expanded(child: heading),
+                        const SizedBox(width: 16), cover]);
+                })),
             Container(
                 margin: const EdgeInsets.only(bottom: 20),
                 padding: const EdgeInsets.all(20),

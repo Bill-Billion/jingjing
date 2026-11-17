@@ -1114,13 +1114,16 @@ class _ControlledReaderState extends State<_ControlledReader>
             icon: Icons.description_outlined),
         if (_record != null) ...[
           _readingSection('本次阅读授权'),
-          supplyCard('以原记录为准', [
-            supplyFact('授权编号', _record!.id),
-            supplyFact('授权记录版本', _record!.version),
-            supplyFact('授权截止', licenseDate(_record!.data['valid_until'])),
-            supplyFact('当前状态', _record!.statusText),
-            supplyNote('记录版本不是协议签署版本。页面会重新核对授权；读取成功不延长有效期，也不授予改编、生成或训练。'),
-          ]),
+          supplyFact('授权截止', licenseDate(_record!.data['valid_until'])),
+          supplyFact('当前状态', _record!.statusText),
+          ExpansionTile(
+              tilePadding: EdgeInsets.zero,
+              title: const Text('本次阅读授权详情'),
+              children: [
+                supplyFact('授权编号', _record!.id),
+                supplyFact('授权记录版本', _record!.version),
+                supplyNote('记录版本不是协议签署版本。页面会重新核对授权；读取成功不延长有效期，也不授予改编、生成或训练。'),
+              ]),
         ],
         if (_error != null) supplyNote(_error!, error: true),
         if (_busy) const Center(child: CircularProgressIndicator()),

@@ -611,24 +611,6 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
                               set('evidence_asset_ids', ids.join(', ')))
                     ]),
                   if (a == 'delivery') ...[
-                    Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          const Text('交付准备进度',
-                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 10),
-                          LinearProgressIndicator(
-                              value: (r.data['rules']['photo_count'] + r.data['rules']['video_count']) > 0
-                                  ? ((v5InputIds(v['photos'] ?? '').length + v5InputIds(v['videos'] ?? '').length) /
-                                      (r.data['rules']['photo_count'] + r.data['rules']['video_count'])).clamp(0.0, 1.0).toDouble()
-                                  : 0),
-                          const SizedBox(height: 8),
-                          Text('${v5InputIds(v['photos'] ?? '').length + v5InputIds(v['videos'] ?? '').length} / ${r.data['rules']['photo_count'] + r.data['rules']['video_count']} 项已选择',
-                              style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
-                          const Text('选择不等于交付成功；提交时仍需重新核验授权。',
-                              style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
-                        ])),
                     for (final choice in [
                       (
                         'photos',
@@ -665,7 +647,25 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
                                       setState(() {});
                                     }
                                   : null)
-                      ])
+                      ]),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          const Text('交付准备进度',
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 10),
+                          LinearProgressIndicator(
+                              value: (r.data['rules']['photo_count'] + r.data['rules']['video_count']) > 0
+                                  ? ((v5InputIds(v['photos'] ?? '').length + v5InputIds(v['videos'] ?? '').length) /
+                                      (r.data['rules']['photo_count'] + r.data['rules']['video_count'])).clamp(0.0, 1.0).toDouble()
+                                  : 0),
+                          const SizedBox(height: 8),
+                          Text('${v5InputIds(v['photos'] ?? '').length + v5InputIds(v['videos'] ?? '').length} / ${r.data['rules']['photo_count'] + r.data['rules']['video_count']} 项已选择',
+                              style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                          const Text('选择不等于交付成功；提交时仍需重新核验授权。',
+                              style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                        ])),
                   ],
                 ]),
       ]

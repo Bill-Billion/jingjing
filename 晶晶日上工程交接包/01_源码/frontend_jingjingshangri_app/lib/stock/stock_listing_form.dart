@@ -459,25 +459,27 @@ class _StockListingFormState extends State<StockListingForm> {
               },
               onSuccess: (r) => Navigator.pushReplacementNamed(
                   context, '/stock/listing?listingId=${r['id']}'),
-              extra: (v, set, enabled) => [
-                    _listingPanel('本次媒体与独立预览', [
-                    tradeBanner(
-                        v['file_id'] == null || v['preview_file_id'] == null
-                            ? '正式文件与独立预览待补' : '本次视频已选择，提交后仍需双审核',
-                        '正式与预览必须是不同文件；AI 标识和水印须保留在实际提交文件中，上传不等于授权通过。'),
-                    tradeFact('已选正式文件',
-                        v['file_id'] == null ? '尚未上传或选择' : '本次已上传的私有正式文件'),
-                    tradeFact(
-                        '已选独立预览',
-                        v['preview_file_id'] == null
-                            ? '尚未上传或选择'
-                            : '本次已上传的独立预览'),
-                    _StockUpload(
-                        api: api,
-                        enabled: enabled,
-                        onUploaded: (id, role) => set(role, id)),
-                    ]),
-                    if (publications[v['publication_id']] != null)
+              beforeField: (field, v, set, enabled) => [
+                    if (field.keyName == 'publication_id')
+                      _listingPanel('本次媒体与独立预览', [
+                      tradeBanner(
+                          v['file_id'] == null || v['preview_file_id'] == null
+                              ? '正式文件与独立预览待补' : '本次视频已选择，提交后仍需双审核',
+                          '正式与预览必须是不同文件；AI 标识和水印须保留在实际提交文件中，上传不等于授权通过。'),
+                      tradeFact('已选正式文件',
+                          v['file_id'] == null ? '尚未上传或选择' : '本次已上传的私有正式文件'),
+                      tradeFact(
+                          '已选独立预览',
+                          v['preview_file_id'] == null
+                              ? '尚未上传或选择'
+                              : '本次已上传的独立预览'),
+                      _StockUpload(
+                          api: api,
+                          enabled: enabled,
+                          onUploaded: (id, role) => set(role, id)),
+                      ]),
+                    if (field.keyName == 'city' &&
+                        publications[v['publication_id']] != null)
                       _listingPanel('本版商品与销售许可', [
                         Text(publications[v['publication_id']]!['spec_title'],
                             style: const TextStyle(fontSize: 20,
@@ -492,6 +494,8 @@ class _StockListingFormState extends State<StockListingForm> {
                         appNotice(publications[v['publication_id']]!['terms']),
                         appNotice('名称、售价与销售条款来自已审商品版本。改价需采用新版本，不改写历史订单。'),
                       ]),
+              ],
+              extra: (v, set, enabled) => [
                     _listingPanel('权利证明与相关授权（私有）', [
                       appNotice('逐人核对画面、声音与使用范围。提交证明不替代本人授权，也不等于内容或权利审核通过。'),
                       SupplyFiles(

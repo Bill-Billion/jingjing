@@ -408,13 +408,13 @@ class _WalletScreenState extends State<_WalletScreen> {
                   Text('本人 · ${widget.session.party?['display_name'] ?? '当前个人身份'}',
                       style: const TextStyle(color: Color(0xFFDDDFDA), fontSize: 12)),
                 ])),
+            _metric('合格消费成长', s.raw['qualifying_growth']),
+            ..._scoutProgress(s),
             if (s.raw['cumulative_points'] != null)
               _metric('累计获得晶钻', s.raw['cumulative_points']['net_issued'],
                   description: '按服务器累计净发放记录，不以当前可用余额替代。')
             else
               appNotice('当前未提供累计获得晶钻，不从成长等级或余额推算。'),
-            _metric('合格消费成长', s.raw['qualifying_growth']),
-            ..._scoutProgress(s),
             ExpansionTile(
                 tilePadding: EdgeInsets.zero,
                 title: const Text('查看会员年与实际资格'),
@@ -689,6 +689,9 @@ class _WalletScreenState extends State<_WalletScreen> {
         if (next == null)
           const Text('已达到本版最高成长门槛，实际资格仍按独立审核核对。')
         else ...[
+          Text('$growth / $next 消费成长',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 12),
           LinearProgressIndicator(
               value: (growth / next).clamp(0, 1).toDouble()),
           const SizedBox(height: 10),
@@ -697,13 +700,16 @@ class _WalletScreenState extends State<_WalletScreen> {
         ],
       ]),
       tradeSection('本会员年充值进度', [
+        Text('${v5Money(renewal)} / ${v5Money(threshold)}',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 12),
         LinearProgressIndicator(
             value: (renewal / threshold).clamp(0, 1).toDouble()),
         const SizedBox(height: 10),
         tradeFact('本规则会员年充值门槛', v5Money(threshold)),
         tradeFact('距本规则充值门槛', v5Money(renewal >= threshold ? 0 : threshold - renewal)),
         Text(
-            '${v5Money(renewal)} / ${v5Money(threshold)} · ${renewal >= threshold ? '已达本版门槛' : '尚未达到本版门槛'}',
+            renewal >= threshold ? '已达本版门槛' : '尚未达到本版门槛',
             style: const TextStyle(fontSize: 13, color: AccountTheme.muted)),
         const SizedBox(height: 10),
         const Text('会员资格以服务器核实为准。充值本身不发晶钻，也不增加消费成长。',
@@ -910,24 +916,38 @@ class _WalletScreenState extends State<_WalletScreen> {
         key: ValueKey('wallet-record-${r.raw['id']}'),
         tilePadding: EdgeInsets.zero,
         childrenPadding: const EdgeInsets.only(bottom: 12),
-        title: Text(walletKinds[r.kind] ?? '个人账本',
-            style: const TextStyle(fontSize: 15)),
-        subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text([
-            if (d['occurred_at'] != null) tradeDate(d['occurred_at'])
-            else if (d['created_at'] != null) '申请 ${tradeDate(d['created_at'])}',
-            walletStates[r.status] ?? r.status,
-          ].join(' · '),
-              style: const TextStyle(color: AccountTheme.muted, fontSize: 12)),
-          const SizedBox(height: 6),
-          Text(walletKinds[r.kind] ?? '个人账本',
-              style: const TextStyle(color: AccountTheme.accent, fontSize: 11)),
-          if (amount is int || points is int) ...[
-            const SizedBox(height: 8),
-            Text(amount is int ? v5Money(amount) : '$points 晶钻',
-                style: const TextStyle(fontSize: 13)),
-          ],
-        ]),
+        title: LayoutBuilder(builder: (context, constraints) {
+          final value = amount is int ? v5Money(amount)
+              : points is int ? '$points 晶钻' : null;
+          final summary = Column(
+              crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(walletKinds[r.kind] ?? '个人账本',
+                style: const TextStyle(fontSize: 15)),
+            const SizedBox(height: 6),
+            Text([
+              if (d['occurred_at'] != null) tradeDate(d['occurred_at'])
+              else if (d['created_at'] != null) '申请 ${tradeDate(d['created_at'])}',
+              walletStates[r.status] ?? r.status,
+            ].join(' · '),
+                style: const TextStyle(color: AccountTheme.muted, fontSize: 12)),
+          ]);
+          if (value == null) return summary;
+          final stacked = constraints.maxWidth < 300 ||
+              MediaQuery.textScalerOf(context).scale(14) > 20;
+          final metric = Text(value,
+              textAlign: stacked ? TextAlign.start : TextAlign.end,
+              style: const TextStyle(color: AccountTheme.text,
+                  fontSize: 22, fontWeight: FontWeight.w700));
+          return stacked
+              ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  summary, const SizedBox(height: 10), metric,
+                ])
+              : Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Expanded(flex: 3, child: summary),
+                  const SizedBox(width: 12),
+                  Expanded(flex: 2, child: metric),
+                ]);
+        }),
         trailing: const Icon(Icons.expand_more, size: 18),
         children: _recordBody(r));
   }

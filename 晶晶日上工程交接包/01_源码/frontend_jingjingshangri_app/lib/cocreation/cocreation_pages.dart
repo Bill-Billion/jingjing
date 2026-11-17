@@ -735,7 +735,7 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
               const Text('发起人与原已付订单保留。不会自动延期或自动退款；到期后按本人权限申请独立处理。'),
             ])),
 
-      cocreationGuide(communityText(r['title']),
+      cocreationGuide(communityState(r['current_status']),
           '当前：${communityState(r['current_status'])}。${r['current_status'] == 'OPEN' ? '招募期间，由每位参与者独立填写资料并确认授权。' : '按当前阶段核对人数、订单及制作记录；不是所有阶段都可以继续邀请或修改资料。'}'),
       cocreationSection('已参加人数', [
         Text('${count['joined_count']}',
@@ -939,18 +939,30 @@ class _CocreationState extends CommunityPageState<_Cocreation> {
       tradeHeading(editing ? '我的参演资料' : '确认我的参演',
           eyebrow: '本人确认 / 仅限本次范围', fontSize: 28),
       cocreationSection('本次参与人', [
-        Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Container(width: 60, height: 80, color: AccountTheme.surface,
-              child: const Icon(Icons.person_outline, color: AccountTheme.muted)),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        LayoutBuilder(builder: (context, constraints) {
+          final compact = constraints.maxWidth < 300 ||
+              MediaQuery.textScalerOf(context).scale(14) / 14 > 1.2;
+          final portrait = Container(width: 60, height: 80,
+              color: AccountTheme.surface,
+              child: const Icon(Icons.person_outline, color: AccountTheme.muted));
+          final caption = Column(
+              crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(person?.name ?? '尚未选择本人档案',
                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
             const SizedBox(height: 8),
             Text(materialReady ? '本人档案已匹配 · 仍需本次范围确认' : '请先核对本人身份与档案',
                 style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
-          ])),
-        ]),
+          ]);
+          if (compact) {
+            return Column(crossAxisAlignment: CrossAxisAlignment.start,
+                children: [portrait, const SizedBox(height: 12), caption]);
+          }
+          return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            portrait,
+            const SizedBox(width: 12),
+            Expanded(child: caption),
+          ]);
+        }),
       ]),
       appNotice('只提交本人的资料。其他人的故事、素材和授权不会在此开放。'),
       cocreationGuide(canEdit ? '先选本人，再确认参与' : '当前房间不开放参加资料修改',

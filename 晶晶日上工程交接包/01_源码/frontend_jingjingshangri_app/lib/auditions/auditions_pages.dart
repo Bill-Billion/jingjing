@@ -622,14 +622,6 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                     style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
               ])),
             ])),
-        const Text('试镜一口价', style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
-        const SizedBox(height: 6),
-        Text(o.raw['unit_minor'] == null ? '价格未公开' : v5Money(o.raw['unit_minor']),
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 8),
-        const Text('含交通；以本次完整约定为准，不在站外追加现金收取。',
-            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
-        const SizedBox(height: 20),
         auditionGuide('先说明用途，再确认约定',
             '填写真实场地、时间与用途，提交安全核查。通过后再确认订单和付款，之后等待艺人接单。', label: '预约准备'),
         if (!widget.session.isOwner)
@@ -658,6 +650,17 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                   'adult_confirmed', '我确认按本人已核实的成年身份办理，理解试镜不等于取得出演或发行权',
                   type: 'bool')
             ],
+            beforeField: (field, values, change, enabled) =>
+                field.keyName == 'adult_confirmed' ? [
+                  const Text('试镜一口价', style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                  const SizedBox(height: 6),
+                  Text(o.raw['unit_minor'] == null ? '价格未公开' : v5Money(o.raw['unit_minor']),
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 8),
+                  const Text('含交通；以本次完整约定为准，不在站外追加现金收取。',
+                      style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+                  const SizedBox(height: 20),
+                ] : const <Widget>[],
             restore: (b) {
               final a = v5Map(b['appointment']);
               return {

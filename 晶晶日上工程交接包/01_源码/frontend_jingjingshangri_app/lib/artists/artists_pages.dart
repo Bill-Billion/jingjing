@@ -783,9 +783,16 @@ class _RecordState extends State<_Record> {
                 Text('按下方真实审核意见补充，继续沿用本申请与原审核服务，不重复购买或收费。',
                     style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
               ])),
+        if (r.kind == 'HALO' && r.status == 'NEEDS_MATERIAL' &&
+            r.data['review'] != null)
+          tradeSection('独立审核意见', [
+            ContractText(value: r.data['review']['reason']),
+            tradeFact('审核时间', artistWhen(r.data['review']['reviewed_at']))
+          ]),
         artistNextStep(r),
         ...facts(r),
-        if (r.data['review'] != null)
+        if (r.data['review'] != null &&
+            !(r.kind == 'HALO' && r.status == 'NEEDS_MATERIAL'))
           tradeSection('独立审核意见', [
             ContractText(value: r.data['review']['reason']),
             tradeFact('审核时间', artistWhen(r.data['review']['reviewed_at']))

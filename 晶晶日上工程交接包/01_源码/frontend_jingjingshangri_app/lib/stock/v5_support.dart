@@ -751,6 +751,7 @@ class V5Form extends StatefulWidget {
       this.beforeSubmit,
       this.facts = const [],
       this.factsBuilder,
+      this.beforeField,
       this.extra});
   final V5Api api;
   final bool canSubmit, actionInFooter;
@@ -766,6 +767,9 @@ class V5Form extends StatefulWidget {
   final void Function(Map<String, dynamic>)? onSuccess;
   final List<Widget> facts;
   final List<Widget> Function(Map<String, dynamic>)? factsBuilder;
+  // Optional UI-only insertion; omitted callers retain their flat field order.
+  final List<Widget> Function(V5Field, Map<String, dynamic>,
+      void Function(String, dynamic), bool)? beforeField;
   final List<Widget> Function(
       Map<String, dynamic>, void Function(String, dynamic), bool)? extra;
   @override
@@ -1177,7 +1181,8 @@ class V5FormState extends State<V5Form>
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    for (final f in widget.fields)
+                    for (final f in widget.fields) ...[
+                      ...?widget.beforeField?.call(f, values, change, enabled),
                       Padding(
                           padding: const EdgeInsets.only(bottom: 16),
                           child: f.type == 'bool'
@@ -1229,6 +1234,7 @@ class V5FormState extends State<V5Form>
                                                           v.trim().isEmpty)
                                                   ? '请填写${f.label}'
                                                   : null)),
+                    ],
                     ...?widget.extra?.call(values, change, enabled),
                   ])),
           if (conflict && widget.reload != null) ...[
