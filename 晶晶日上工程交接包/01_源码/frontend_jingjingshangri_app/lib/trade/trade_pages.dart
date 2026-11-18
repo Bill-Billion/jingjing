@@ -725,7 +725,7 @@ class _TradeDetailState extends State<_TradeDetail> {
                     color: AccountTheme.surface,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AccountTheme.border)),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                child: Material(type: MaterialType.transparency, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                   Text(tradeTriggers[i['trigger']]!,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 8),
@@ -750,7 +750,7 @@ class _TradeDetailState extends State<_TradeDetail> {
                       ]),
                   if (i['trigger'] != 'ORDER_ACCEPTED')
                     appNotice('这笔款项须满足原订单对应的具体版本确认条件；订单页会重新核对制作进度。'),
-                ]))
+                ])))
           else ...[
           tradeFact(
               tradeTriggers[i['trigger']]!,
