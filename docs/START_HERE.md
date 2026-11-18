@@ -1,3 +1,8 @@
+<!-- PM04-ENTRY-20261118 -->
+# PM04下一轮工作入口（PR40尚未通过）
+
+[PM04当前执行入口](pm04/README.md) · [阶段计划](pm04/PM04_PLAN.md) · [开发驾驶舱](pm04/PM04_DASHBOARD.md) · [离线HTML驾驶舱](pm04/PM04_DASHBOARD.html) · [后端Codex](pm04/PM04_CORE_CODEX.md) · [前端Codex](pm04/PM04_FRONTEND_CODEX.md) · [原需求冻结与未成年人专项](pm04/PM04_REQUIREMENTS_FREEZE_20261118.md)。本侧已认领BE-01与JT-03后端准备，前端仍待本人认领；先独立集中开发，再固定版本联测，最后审阅。PM03并未验收，以下原内容和计数保留为历史。
+
 # 当前补修：PM03 联合候选已同步 PR40，整批联测仍未通过
 
 联合分支 core/pm03-joint-20261118 已发布 [草稿 PR40](https://github.com/Bill-Billion/jingjing/pull/40)。App 补修源码 22b269e145209eece2cb8c13ed5d7da6a70cd66c，后端及管理网页组件未改、运行和证据仍对应 996b34417e1149f858a3804af7cc933d43c1856a；API 0.31.79-rc.1 / 0225（225项）不变。发布文档头与受测源码分开登记。

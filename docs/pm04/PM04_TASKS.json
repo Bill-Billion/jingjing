@@ -1,0 +1,302 @@
+{
+  "snapshot": {
+    "phase": "PM04-PREPARATION_AFTER_PM03_DRAFT",
+    "as_of": "2026-11-18",
+    "reviewed_pr": "https://github.com/Bill-Billion/jingjing/pull/40",
+    "pr_status": "OPEN_DRAFT_NOT_MERGED_NOT_DEPLOYED",
+    "pr_head": "0786030e88e905013c61e3d7e00c052c99301cde",
+    "pr_base_branch": "core/full-business-closure-20261028",
+    "pr_head_branch": "core/pm03-joint-20261118",
+    "app_tested_source": "22b269e145209eece2cb8c13ed5d7da6a70cd66c",
+    "backend_ops_tested_source": "996b34417e1149f858a3804af7cc933d43c1856a",
+    "api_version": "0.31.79-rc.1",
+    "migration": "0225",
+    "applied_migrations": 225,
+    "app_tests": {
+      "pass": 1155,
+      "fail": 74,
+      "skip": 1,
+      "exit_code": 1
+    },
+    "app_analyze_local": {
+      "errors": 0,
+      "warning_and_info": 120,
+      "exit_code": 1
+    },
+    "remote_checks": {
+      "observed_unique_jobs": 4,
+      "state": "NOT_GREEN",
+      "backend_db": "FFMPEG_APT_PREPARATION_TIMEOUT_EXIT_124",
+      "frontend_app": "FLUTTER_ANALYZE_88_ISSUES_EXIT_2",
+      "ops_browser": "FFMPEG_APT_PREPARATION_TIMEOUT_EXIT_124",
+      "no_db_contract": "SUCCESS",
+      "notes": "相同提交的PR/push检查可能重复；日志结论不是全部业务断言失败。"
+    },
+    "formal_acceptance": {
+      "criteria_total": 151,
+      "pass": 19,
+      "partial": 124,
+      "insufficient": 8,
+      "groups_total": 18,
+      "groups_closed": 0,
+      "routes_total": 12,
+      "routes_closed": 0
+    },
+    "w_scopes_total": 17,
+    "w_scopes_done": 0,
+    "physical_device_tested": false,
+    "real_money_enabled": false,
+    "merged": false,
+    "deployed": false,
+    "age_policy": "BASELINE_FROZEN_MINOR_REQUIREMENTS_REQUIRED_DEFERRED",
+    "source": "docs/reviews/pm03-joint-20261118/FOLLOWUP_RESULTS.json",
+    "notes": "2026-11-18用户要求不修改任何原需求；未成年人全要求后置专项但仍为151项验收必要条件。PM04是接续计划，不表示PM03已经完成；任何成果以相同源码、相同记录和原始日志认定。"
+  },
+  "tasks": [
+    {
+      "id": "PM04-BE-01",
+      "lane": "后端 / CI",
+      "owner": "chengcongcong222",
+      "phase": "G0",
+      "priority": "P0",
+      "status": "CLAIMED",
+      "title": "远端CI限时失败归因与统一可复现运行入口",
+      "problem": "PR40服务器及网页工作流在准备FFmpeg/apt依赖时 exit 124，不能冒充业务测试失败或成功；无数据库契约检查成功。",
+      "actions": [
+        "固定PR40 HEAD与受测组件SHA，核对应工作流日志和工具链/超时配置",
+        "在受控CI或等价环境修复依赖获取/缓存/时限，不绕过真实检查、不删除现有断言",
+        "重跑DB+后端、真实接口网页业务与必要权限负例，分别保存日志/运行编号/原始退出码",
+        "对同一提交汇总所有PR和push检查，不拼接不同SHA结果"
+      ],
+      "acceptance": [
+        "指定HEAD的相关CI作业成功，或逐项记录无法通过的真实阻塞和责任",
+        "FFmpeg准备及数据库测试分开证实，保留原日志",
+        "不改真实收费、生产、公网、3490、离线APK"
+      ],
+      "dependencies": [
+        "PR40-DRAFT"
+      ],
+      "output": "docs/reviews/pm04/CI_ROOT_CAUSES.md + 当前SHA检查链接",
+      "start": "可立即开始",
+      "execution_status": "IN_PROGRESS",
+      "claimed_by": [
+        "chengcongcong222"
+      ],
+      "claim_scope": "CI dependency diagnosis and backend-owned fixes; no frontend source changes"
+    },
+    {
+      "id": "PM04-FE-02",
+      "lane": "App / 前端",
+      "owner": "Bill-Billion",
+      "phase": "G0",
+      "priority": "P0",
+      "status": "UNCLAIMED",
+      "title": "74项App回归失败逐项归因、修复和双端静态分析收敛",
+      "problem": "完整App 1155通过/74失败/1跳过；35个专项通过不能替代整批；本地analyzer 120 warning/info、CI分析88项exit2。",
+      "actions": [
+        "从APP_FAILURES_FOLLOWUP.json逐项建立唯一归因：真实功能缺陷/夹具失效/选择器或滚动/环境工具链/待查",
+        "优先处理隐私失权、资金误判、历史订单污染、请求未知等风险；低风险布局可成组处理",
+        "保持原断言和反例，不以skip/delete测试、降低lint门槛来制造通过",
+        "冻结App源码SHA并跑完整Flutter test、analyze、Android及FlutterWeb，保留失败清单和新旧对照",
+        "管理网页原功能与V5视觉对照复核；不重做W18/W14/W19/W16/W22已接四组"
+      ],
+      "acceptance": [
+        "74项每项都有明确分类、原因和可复现证据，新增全量结果不与旧数混用",
+        "受影响重点页面及安全负例通过；构建和静态分析退出码符合正式CI约定",
+        "原EXPERIENCE_CURRENT由前端本人更新；实体机尚未测不得声称已验"
+      ],
+      "dependencies": [
+        "PR40-DRAFT"
+      ],
+      "output": "docs/reviews/pm04/APP_FAILURE_TRIAGE.csv + 全量回归与构建结果",
+      "start": "可立即开始，和BE-01并行",
+      "execution_status": "NOT_STARTED",
+      "claimed_by": [],
+      "claim_scope": ""
+    },
+    {
+      "id": "PM04-JT-03",
+      "lane": "联合联测",
+      "owner": "chengcongcong222 + Bill-Billion（分别认领）",
+      "phase": "G1",
+      "priority": "P0",
+      "status": "PARTIALLY_CLAIMED",
+      "title": "同记录关键业务闭环验证，不把17范围重新开发",
+      "problem": "W18监护退款合成成功、HOLD读取和分佣选择已有证据；17范围尚无整项DONE。",
+      "actions": [
+        "冻结组件SHA、API 0.31.79-rc.1、迁移0225及本机8小时隔离环境，双方各自独立复现",
+        "第一批优先W11购买发权及KEEP/REVOKE售后、W12定制/分期/交付、W14通告到商单与未知恢复",
+        "第二批覆盖W18既有监护售后、W16 HOLD释放/核销/退款、W22分佣会签/清算；其他W组按覆盖表跟进",
+        "每例关联相同业务ID、参与账号/角色、原请求key/版本、原文件、资金事实、拒绝/撤权和最终状态",
+        "联合测试按风险并行，不恢复“测完上一条才能开发下一条”的旧队列",
+        "未成年人相关高风险权限/退款保留轻量冒烟；完整监护模式多角色验收留到G2专项，严禁取消。"
+      ],
+      "acceptance": [
+        "每条闭环保存同记录端到端证据和未通过路径",
+        "不把合成付款说成真实支付，不把部分通过提升为正式DONE",
+        "维持原18组0关闭、12部分、151条19/124/8直到正式验收独立签字"
+      ],
+      "dependencies": [
+        "PM04-BE-01",
+        "PM04-FE-02"
+      ],
+      "output": "docs/reviews/pm04/JOINED_17_SCOPE_EVIDENCE.md + 业务ID矩阵",
+      "start": "可先准备环境与用例；完整复验需稳定候选",
+      "execution_status": "BACKEND_PREPARATION_ONLY",
+      "claimed_by": [
+        "chengcongcong222"
+      ],
+      "claim_scope": "Backend roles, record and file manifest, local reproducibility only; frontend unclaimed; joined testing not started"
+    },
+    {
+      "id": "PM04-PM-04",
+      "lane": "产品 / 原需求核对",
+      "owner": "产品负责人 + 法务（未指派GitHub人员）",
+      "phase": "G2",
+      "priority": "P2-REQUIRED",
+      "status": "UNCLAIMED",
+      "title": "原未成年人需求冻结与覆盖映射（后置但必交）",
+      "problem": "用户已确定不改需求、未成年人专项后置；需要把21/37/00/01/26号原文逐条对应旧实现和151项验收，不能把未验收当未开发。",
+      "actions": [
+        "核原条款与本轮适用版本，逐条列出源码、页面、合同入口、验收证据和未测/确缺差异",
+        "标记原文交叉解释项，但不新增商业规则或删除消费/监护退款",
+        "按REQUIRED_DEFERRED保留全部未成年人条款，G2统一启动补齐和签收",
+        "如发现年龄越权收费/儿童私有数据泄露，立即转G0安全缺陷"
+      ],
+      "acceptance": [
+        "形成原文到代码与ACC的完整覆盖矩阵，现有业务与历史订单不改",
+        "所有未通过条目均保留在151项正式台账，最终发布必须关闭",
+        "没有新的产品范围提案或自动法律裁决引擎"
+      ],
+      "dependencies": [
+        "PM04-BE-01",
+        "PM04-FE-02"
+      ],
+      "output": "docs/pm04/PM04_REQUIREMENTS_FREEZE_20261118.md + 逐项缺口核对记录",
+      "start": "本轮记录为REQUIRED_DEFERRED；当前只处理确证高危漏洞，G2专项统一补齐",
+      "execution_status": "NOT_STARTED_REQUIRED_DEFERRED",
+      "claimed_by": [],
+      "claim_scope": ""
+    },
+    {
+      "id": "PM04-BE-05",
+      "lane": "后端 / 未成年人原需求专项",
+      "owner": "chengcongcong222",
+      "phase": "G2",
+      "priority": "P2-REQUIRED",
+      "status": "UNCLAIMED",
+      "title": "未成年人原需求服务端全入口覆盖与退款逆向验收（后置必交）",
+      "problem": "后端现有监护与退款系统已经存在，仍需审核全部直接入口、角色变化和退款否定分支；不得另建系统。",
+      "actions": [
+        "从原21/37/26号文件及ACC-DEL-02.01/23.03审计充值、经营、试镜、抽奖、付费投票、定制等真实POST与代理办事人年龄限制",
+        "对监护关系、内容池、使用时段、消费同意/额度与年龄撤销、历史退款做正逆向隔离测试",
+        "补原支付拒绝、取消、部分退款、重复/未知、撤权及身份变化的同记录证据",
+        "只在原文要求确缺或发现安全问题时作最小补丁；真实儿童/真实资金继续受限"
+      ],
+      "acceptance": [
+        "按原验收ID输出每个端点/状态/回执/缺口的可复现证据",
+        "不再把PR40已接接口当作新需求，不破坏原操作键和历史账本",
+        "全部实际缺口与外部阻断均有可追踪归属"
+      ],
+      "dependencies": [
+        "PM04-PM-04"
+      ],
+      "output": "docs/reviews/pm04/MINOR_REQUIREMENT_BACKEND_MATRIX.md",
+      "start": "REQUIRED_DEFERRED；当前仅修P0确证安全缺陷，G2后置专项启动",
+      "execution_status": "NOT_STARTED_REQUIRED_DEFERRED",
+      "claimed_by": [],
+      "claim_scope": ""
+    },
+    {
+      "id": "PM04-FE-06",
+      "lane": "前端 / 未成年人原需求专项",
+      "owner": "Bill-Billion",
+      "phase": "G2",
+      "priority": "P2-REQUIRED",
+      "status": "UNCLAIMED",
+      "title": "监护/未成年人模式全端实测与原文缺口补齐（后置必交）",
+      "problem": "原App和管理网页已有监护/退款入口，真正剩余为缺口定位、否定场景、真机和完整验收。",
+      "actions": [
+        "从当前App `contract_six_pages.dart`、`wallet/recharge_refunds.dart`及运营Web原入口确认实际动作及对应原需求",
+        "对关系确认/撤销/跨家庭、时长时段/适龄预览、身份失权、监护投诉与退款各状态进行App+Web实际复验",
+        "未成年人业务拒绝由服务端确认，端侧不隐去原申请与查询入口；历史退款申请及原请求恢复保持",
+        "出真机截图/文件/大字及错误页面证据；按原文只修确缺交互"
+      ],
+      "acceptance": [
+        "每个原监护交互在合法角色、错误和恢复条件下可复现",
+        "未经监护/权限失效不得读取他方儿童数据；审核中不能显示退款到账",
+        "不重建已接四组接口、不新增原文不存在的业务流"
+      ],
+      "dependencies": [
+        "PM04-PM-04",
+        "PM04-BE-05"
+      ],
+      "output": "docs/reviews/pm04/MINOR_REQUIREMENT_APP_WEB_MATRIX.md",
+      "start": "REQUIRED_DEFERRED；G2统一专项实测及修复，当前不拖住FE-02",
+      "execution_status": "NOT_STARTED_REQUIRED_DEFERRED",
+      "claimed_by": [],
+      "claim_scope": ""
+    },
+    {
+      "id": "PM04-QA-07",
+      "lane": "联合验收",
+      "owner": "双方 + 维护者（分别签认）",
+      "phase": "G2",
+      "priority": "P1",
+      "status": "UNCLAIMED",
+      "title": "17范围覆盖收口、151验收条目真实重计及阶段审阅",
+      "problem": "原W03—W22共17个范围中没有一项被正式标DONE，全面积算为完成存在风险。",
+      "actions": [
+        "在原COVERAGE/W台账中记录每个范围需要的角色、业务ID、正常与高风险逆向、私有文件与外部条件",
+        "不重做已有码；已验证事项链接原证据，未验证标NOT_RUN，真实服务标WAITING_EXTERNAL",
+        "验证主流程和多角色跨设备，复核发行、售后、机构权限、财务、历史规则与独审",
+        "阶段末维护者真实审阅合并策略，区分代码可合入和可正式上线的不同门槛",
+        "将REQUIRED_DEFERRED的未成年人标准逐项保留，G2末全部有真实证据才能提交发布准入审阅。"
+      ],
+      "acceptance": [
+        "每项覆盖有准确状态、可点击日志和具体责任",
+        "原151/18/12数字仅在实际执行验收后更新；未签字不能提升",
+        "PR40和后续PR仍保持草稿/未合并直到人审"
+      ],
+      "dependencies": [
+        "PM04-JT-03",
+        "PM04-BE-05",
+        "PM04-FE-06"
+      ],
+      "output": "docs/reviews/pm04/ACCEPTANCE_LEDGER.md + 维护者审阅回执",
+      "start": "可并行整理矩阵，验收需实测结果",
+      "execution_status": "NOT_STARTED",
+      "claimed_by": [],
+      "claim_scope": ""
+    },
+    {
+      "id": "PM04-RL-08",
+      "lane": "设备 / 外部依赖",
+      "owner": "Bill-Billion + chengcongcong222 + 甲方",
+      "phase": "G3",
+      "priority": "P1",
+      "status": "UNCLAIMED",
+      "title": "实体机体验、真实供应商与发布准入清单",
+      "problem": "Android模拟器首页并不等于实体机/iOS/真实支付/签名/备案验收。",
+      "actions": [
+        "前端在实际Android和iOS设备验证登录、切身份、弱网、长文/大字、键盘安全区、文件下载及关键状态；记录OS和包SHA",
+        "后端核清九项真实外部服务的产品绑定、合同/商户号/OSS/实名/机审条件、真实库迁移和支付退款对账所需证据",
+        "将缺业务资质/设备/签名/备案/私有素材等标为WAITING_EXTERNAL，列唯一外部责任人，不重复催问",
+        "不因合成联测成功就启用真实收费、公网、生产或发版；发布决定另需维护者和业务/法务财务签收"
+      ],
+      "acceptance": [
+        "实体机录屏、安装包SHA及关键链检查有原始证据",
+        "外部阻塞项都有状态和负责人，未满足则发布NO-GO",
+        "不改3490、原离线APK或生产环境"
+      ],
+      "dependencies": [
+        "PM04-QA-07"
+      ],
+      "output": "docs/reviews/pm04/RELEASE_READINESS.md（Go/No-Go）",
+      "start": "清单可立即编制；实体机须真实设备，供应商待外部资料",
+      "execution_status": "NOT_STARTED",
+      "claimed_by": [],
+      "claim_scope": ""
+    }
+  ]
+}
