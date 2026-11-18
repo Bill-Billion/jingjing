@@ -21,11 +21,15 @@ async function prepare(db,checkRunning,options={}){
  }
  if(firstAuditions)scenarios.first_audition={person_id:firstAuditions.seller.person.id,avatar_id:firstAuditions.offer.avatar_id,public_consent_id:firstAuditions.publicConsent.id,rule_id:firstAuditions.ruleId};
  const mediaDir=path.resolve(__dirname,'../.local/v5-r05-r12-media');
- await fs.mkdir(mediaDir,{recursive:true});
- const ffmpeg=process.env.FFMPEG_PATH||'/opt/homebrew/bin/ffmpeg';
- for(const [name,filter]of [['full','testsrc2=size=320x180:rate=15'],['preview','smptebars=size=320x180:rate=15']]){
-  const dest=path.join(mediaDir,name+'.mp4');
-  try{await fs.access(dest);}catch(e){if(e.code!=='ENOENT')throw e;require('node:child_process').execFileSync(ffmpeg,['-nostdin','-hide_banner','-loglevel','error','-f','lavfi','-i',filter,'-t','1','-an','-c:v','libx264','-pix_fmt','yuv420p',dest],{stdio:'pipe'});}
+ // PM03 BATCH has already generated bounded samples with JX_TEST_FFMPEG.
+ // Do not generate unused fallback media or depend on another machine's cache.
+ if(!options.samples){
+  await fs.mkdir(mediaDir,{recursive:true});
+  const ffmpeg=process.env.JX_TEST_FFMPEG||process.env.FFMPEG_PATH||'ffmpeg';
+  for(const [name,filter]of [['full','testsrc2=size=320x180:rate=15'],['preview','smptebars=size=320x180:rate=15']]){
+   const dest=path.join(mediaDir,name+'.mp4');
+   try{await fs.access(dest);}catch(e){if(e.code!=='ENOENT')throw e;require('node:child_process').execFileSync(ffmpeg,['-nostdin','-hide_banner','-loglevel','error','-f','lavfi','-i',filter,'-t','1','-an','-c:v','libx264','-pix_fmt','yuv420p',dest],{stdio:'pipe',windowsHide:true,timeout:30000});}
+  }
  }
 
  const full=await fs.readFile(options.samples?path.join(options.samples,'sample-1-full.mp4'):path.join(mediaDir,'full.mp4')),preview=await fs.readFile(options.samples?path.join(options.samples,'sample-1-preview.mp4'):path.join(mediaDir,'preview.mp4'));
