@@ -230,7 +230,7 @@ async function prepare(db,checkRunning,options={}){
    const benefit=(await call('/cocreation/benefits',buyer)).items.find(v=>v.parent_id===readyRoom.id);
    scenarios.cocreation_ready={room_id:readyRoom.id,member_id:readyMember.id,order_id:ready.order.id,project_id:projectReady.id,snippet_id:snippet.id,benefit_id:benefit?.id};
    }
-   await seedMcn({db,people,scenarios,call,storageFactory});
+   await seedMcn({db,people,scenarios,call,storageFactory,current:options.currentCommercial});
    await seedCommercial({db,people,scenarios,call,current:options.currentCommercial,platform:common.org.party_id});
    return {call,common,stock,notices,auditions,cast};
   }
@@ -239,7 +239,7 @@ async function prepare(db,checkRunning,options={}){
 async function quoteOnly(seed,unitMinor){let result;const stop=Error('SYNTHETIC_QUOTE_ONLY');try{await seed.newOrder({unitMinor,beforeAccept:async data=>{result=data;throw stop;}});}catch(e){if(e!==stop)throw e;}if(!result)throw Error('SYNTHETIC_QUOTE_MISSING');return result;}
 module.exports={prepare};
 
-async function seedMcn({db,people,scenarios,call,storageFactory}){
+async function seedMcn({db,people,scenarios,call,storageFactory,current=false}){
  const owner=people.auditions_outsider,employee=people.auditions_buyer2,artist=people.auditions_seller;
  const org=await call('/organizations',owner,{party:false,body:{display_name:'隔离MCN机构'}});
  const orgId=org.party_id;
@@ -290,7 +290,7 @@ async function seedCommercial({db,people,scenarios,call,current=false,platform})
  const reviewGig=r=>call('/gigs/records/'+r.id+'/reviews',reviewer,{party:false,version:r.object_version,body:{decision:'APPROVED',reason:'synthetic independent',checks:r.kind==='RULE'?null:{identity_verified:true,authority_verified:true,materials_reviewed:true,content_reviewed:true,marking_reviewed:true}}});
  rule=await reviewGig(rule);
  const gig=await reviewGig(await call('/gigs/requests',buyer,{body:{title:'隔离商业合作',brief:'仅合成订单沟通验收',category:'TEST',scope:{purpose:'COMMERCIAL',territory:'CN',valid_until:'2098-01-01T00:00:00.000Z'},rule_id:rule.id,proofs:[]}}));
- let offer=await reviewGig(await call('/gigs/offers',seller,{body:{gig_id:gig.id,spec_id:spec.id,avatar_id:avatar,consent_id:consent.id,relation_id:null,commission:{platform_bps:2000,mcn_bps:0},terms:'隔离既有商业约定',ranking_opt_in:false,evidence_asset_ids:[proof]}}));
+ let offer=await reviewGig(await call('/gigs/offers',seller,{body:{gig_id:gig.id,spec_id:spec.id,avatar_id:avatar,consent_id:consent.id,relation_id:null,commission:{platform_bps:current?2200:2000,mcn_bps:0},terms:'隔离既有商业约定',ranking_opt_in:false,evidence_asset_ids:[proof]}}));
  offer=await call('/gigs/offers/'+offer.id+'/acceptance',buyer,{version:offer.object_version,body:{offer_sha256:offer.content_sha256}});
  const quote=await reviewTrade(await trade.quote(seller.fixtureContext,{party_id:seller.acting_party_id,buyer_party_id:buyer.acting_party_id,lines:[{line_id:'commercial',spec_id:spec.id,quantity:1}],installments:[{key:'full',trigger:'ORDER_ACCEPTED',allocations:[{line_id:'commercial',amount_minor:10001}],apple_product_id:null}],channel:'ALIPAY',transaction_model:'DIRECT_SUPPLIER',rule_id:ruleId,expires_at:'2098-01-01T00:00:00.000Z',payment_window_minutes:30,license_reservation_id:null,commercial_offer_id:offer.id,operation_key:key()}));
  const order=await trade.accept(buyer.fixtureContext,{record_id:quote.id,party_id:buyer.acting_party_id,expected_version:quote.object_version,quote_sha256:quote.content_sha256,operation_key:key()});
