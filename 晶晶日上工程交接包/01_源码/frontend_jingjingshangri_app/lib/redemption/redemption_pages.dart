@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
@@ -382,9 +383,89 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     }
   }
 
+  void validateDrawCommand(Map<String, dynamic> r, Map<String, dynamic> body) {
+    validateDraw(r);
+    final d = communityMap(r['data']);
+    communityRequire(d['pool_id'] == body['pool_id'] &&
+        d['rules_sha256'] == body['rules_sha256'] && d['count'] == body['count']);
+  }
+
+  // Freeze the submitted input before awaiting; validators must not read a new form.
+  Future<Map<String, dynamic>?> commandAct(String suffix, Map<String, dynamic> body,
+      {int? version, bool reload = true,
+      FutureOr<void> Function(Map<String, dynamic>)? validate}) {
+    final original = communityMap(jsonDecode(jsonEncode(body)));
+    final owner = api.party(false);
+    return act(suffix, original, version: version, reload: reload,
+        validate: (r) async {
+          validateCommandReceipt(r, suffix, original, owner);
+          await validate?.call(r);
+        });
+  }
+
+  void validateCommandReceipt(Map<String, dynamic> r, String suffix,
+      Map<String, dynamic> original, String? owner) {
+    communityRequire(communityId(owner) && r['owner_party_id'] == owner);
+    final d = communityMap(r['data']);
+    if (suffix == 'draws') {
+      validateDrawCommand(r, original);
+    } else if (suffix == 'exchanges' || suffix == 'service-credits') {
+      communityRecord(r, kind: 'GRANT');
+      communityRequire(r['parent_id'] == original['stock_id']);
+      if (suffix == 'exchanges') {
+        communityRequire(d['template_sha256'] == original['template_sha256']);
+      } else {
+        communityRequire(d['cocreation_benefit_id'] == original['benefit_id']);
+      }
+    } else {
+      final grant = RegExp(r'^grants/([0-9a-fA-F-]{36})/(checkout|bind|confirmation|remedies)$')
+          .firstMatch(suffix);
+      final release = RegExp(r'^holds/([0-9a-fA-F-]{36})/release$').firstMatch(suffix);
+      if (release != null) {
+        communityRecord(r, id: release[1], kind: 'COUPON_HOLD');
+        communityRequire(r['current_status'] == 'RELEASED');
+      } else if (grant != null) {
+        final id = grant[1], action = grant[2];
+        if (action == 'checkout') {
+          communityRecord(r, kind: 'COUPON_HOLD');
+          communityRequire(d['grant_id'] == id && d['quote_id'] == original['quote_id']);
+        } else if (action == 'remedies') {
+          communityRecord(r, kind: 'REMEDY');
+          communityRequire(r['parent_id'] == id && d['reason'] == original['reason']);
+        } else {
+          communityRecord(r, id: id, kind: 'GRANT');
+          if (action == 'bind') {
+            final binding = communityMap(d['binding']);
+            communityRequire(r['current_status'] == 'BOUND' &&
+                binding['person_id'] == original['person_id'] &&
+                binding['avatar_id'] == original['avatar_id'] &&
+                binding['profile_id'] == original['profile_id'] &&
+                communityDigest(binding['cast']) == communityDigest(original['cast']));
+          } else {
+            // C.command replays stored result_json, not the later live record.
+            communityRequire(original['accepted'] is bool);
+            if (original['accepted'] == true) {
+              communityRequire(r['current_status'] == 'CONFIRMED' &&
+                  communityMap(d['delivery'])['confirmed_at'] is String);
+            } else {
+              communityRequire(r['current_status'] == 'BOUND' && d['delivery'] == null);
+            }
+          }
+        }
+      }
+    }
+  }
+
   @override
   void validateResult(Map<String, dynamic> r) {
     communityRecord(r);
+    if (recovery != null) {
+      communityRequire((recoveryMethod ?? 'POST') == 'POST');
+      final fingerprint = jsonDecode(recovery!['fingerprint'] as String) as List;
+      final owner = api.party(false);
+      communityRequire(fingerprint.length > 1 && fingerprint[1] == owner);
+      validateCommandReceipt(r, recoverySuffix ?? '', communityMap(recovery!['body']), owner);
+    }
     if (r['kind'] == 'DRAW') validateDraw(r);
     if (r['kind'] == 'GRANT') {
       final d = communityMap(r['data']);
@@ -671,7 +752,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                             if (!current()) return;
                             if (await confirm('核对本次兑换',
                                 '将扣用$points晶钻，按上方条款发放这一份权益。') && current()) {
-                              final out = await act(
+                              final out = await commandAct(
                                   'exchanges',
                                   {
                                     'stock_id': stockId,
@@ -694,7 +775,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                           r['remaining'] > 0 &&
                           benefits.any((b) => b['id'] == benefit.text)
                       ? () => submit(() async {
-                            final out = await act(
+                            final out = await commandAct(
                                 'service-credits',
                                 {
                                   'benefit_id': communityRequiredId(
@@ -909,7 +990,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                   ? () => submit(() async {
                         final c =
                             t['kind'] == 'INTERVIEW' ? cast.value() : null;
-                        await act(
+                        await commandAct(
                             'grants/${r['id']}/bind',
                             {
                               'person_id':
@@ -937,14 +1018,14 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
             tradeButton(
                 '本人确认该排期',
                 enabled && agreed
-                    ? () => act(
+                    ? () => commandAct(
                         'grants/${r['id']}/confirmation', {'accepted': true},
                         version: r['object_version'])
                     : null),
             tradeButton(
                 '不接受本次排期',
                 enabled
-                    ? () => act(
+                    ? () => commandAct(
                         'grants/${r['id']}/confirmation', {'accepted': false},
                         version: r['object_version'])
                     : null,
@@ -963,7 +1044,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
               '提交权益处理申请',
               enabled
                   ? () => submit(() async {
-                        await act('grants/${r['id']}/remedies',
+                        await commandAct('grants/${r['id']}/remedies',
                             {'reason': communityRequired(why.text, '未兑现情况')},
                             version: r['object_version']);
                       })
@@ -998,7 +1079,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                     r['effective_status'] == 'AVAILABLE' &&
                     quotes.any((q) => q.id == quote.text)
                 ? () => submit(() async {
-                      final out = await act(
+                      final out = await commandAct(
                           'grants/${r['id']}/checkout',
                           {
                             'quote_id':
@@ -1052,7 +1133,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
               '放弃本次占用',
               enabled
                   ? () => submit(() async {
-                        final out = await act(
+                        final out = await commandAct(
                             'holds/${hold!['id']}/release', {},
                             version: hold!['object_version'], reload: false);
                         if (out != null && mounted) {
@@ -1205,7 +1286,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                       if (!current()) return;
                       if (await confirm('确认本次${count == 1 ? '单抽' : '十连'}',
                           '将扣用$points晶钻。提交后先核对同一次结果，不更换编号重复抽取。') && current()) {
-                        final out = await act(
+                        final out = await commandAct(
                             'draws',
                             {
                               'pool_id': poolId,
@@ -1213,7 +1294,11 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                               'count': count
                             },
                             reload: false,
-                            validate: validateDraw);
+                            validate: (value) => validateDrawCommand(value, {
+                              'pool_id': poolId,
+                              'rules_sha256': rulesHash,
+                              'count': count,
+                            }));
                         if (out != null && mounted) {
                           setState(() => agreed = false);
                           open('draw', out['id']);

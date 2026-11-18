@@ -146,3 +146,16 @@ Chrome窗口重新绑定后可读，原画布50%清晰观察58–61；窗口不�
 本轮相对3a8c8803累计调整17个真实页面（12/15/16/17/19/26/32/40/44/47/50/56/62/65/66/68/69）；这17页与PM03的17业务范围不是同一统计。没有修改独立预览或后端。
 本轮按已有清晰原图与源码核查其余页面：30目的本已单行、31三类选择与原恢复已有、71/72响应式媒体行、73/74真实偏好和底栏均已落，不重复造工作。37建档与后续形象/声音服务是不同受权步骤，不能在无已建档实体时插入假上传；18三维评分不得换成原稿无契约标签。64/70动态业务模板不能凭静态稿压成固定字段。
 尚欠原媒体及精确设计参数、Flutter实际长文/键盘/大字/窄屏视觉核验和17范围整链运行验证。已有契约/产品分工缺口继续逐项保留，不把本轮静态收口视为103状态或全部实际App完成；也不把尚未渲染的所有布局问题武断归为后端。未经新的可靠依据不继续为小字号/图标位置反复改写既有安全流程。
+
+## 2e7ed513后原请求回执与私有保存防护（本地未发布）
+- W12制作问题：cases回执须包含原账号/主体及kind、reason、原顺序证据，当前版本必须大于原expected_version；幂等重放允许已处理状态及更高版本。恢复冻结原body/version/key，读取后核pending未变；异常保持未知请求。此为内容与版本绑定，不是operation key唯一证明。见APP_W12_CASE_RECEIPT_BINDING.md。
+- W16/W17：锁券恢复绑定原grant/quote，抽取首次及恢复绑定原pool/rules hash/count；验证在pending消费前，不匹配保持uncertain。未补不存在的HOLD详情读取。见APP_W16_W17_ORIGINAL_RECEIPT_BINDING.md。
+- 私有文件保存：读取返回、打开保存器前和保存器返回后核session/epoch/party/ticket，陈旧回调不写提示，独立保存所有者释放busy。不是已证实越权，也不能撤回已交保存器的文件。见APP_PRIVATE_SAVE_CONTEXT_GUARD.md。
+本轮没有新增后端/网页/预览代码，没有测试、编译、渲染、合并或部署。此前17页UI增量独立静态交叉复核未发现确定字段丢失、权限改变或恢复错绑，不能据此称运行通过。原监护退款选择源、跨截止幂等前置、HOLD读取及产品/设计契约边界保留。
+
+## 本轮集中回执覆盖收口（仍本地未发布）
+- 通告App七类实际POST已核：资格/发布/新投稿绑定原内容、身份与创建回执；回复/撤回/新版确认绑定原路径及原版本；修订申请保留既有校验。INVITATION缺省来源允许服务端补合法ID，原传则匹配；只有原请求含通告版本/hash才核对应快照。Web旧修复不再被误当App覆盖。见APP_NOTICE_FOUR_COMMAND_RECEIPTS.md及APP_NOTICE_CONFIRMATION_RECEIPT_BINDING.md。
+- 互动页十类写动作覆盖表已收束：既有提名，加投票/异议/员工授权撤回与新增、榜单档案、评价、推荐同步、派单、买家公开选择。首次冻结原请求，恢复用原pending；推荐佣金归推荐方，可由原三方同步，不错误要求owner等于调用者或强制增版到账。见APP_W19_W20_RECEIPT_BINDING.md及APP_ENGAGEMENT_REMAINING_RECEIPTS.md。
+- 权益页全部当前写入口统一校验：原checkout/draw及兑换、共创额度、绑定、确认/拒绝、处理申请、释放。首次冻结owner/body，恢复核原fingerprint主体；新REMEDY与原GRANT区分，service-credit允许原有grant，不误要求AVAILABLE。见APP_REDEMPTION_COMMAND_RECEIPTS.md。
+- 制作fulfillment当前视图版本下界：cases/start/reissue严格大于原expected；delivery-receipt/refund-sync允许合法同版。不得强制exact版本、旧receipt或旧状态永久存在。Manual sample另属历史回执，原+1校验保留。
+这些是前端回执一致性防护，不是发现服务端实际串单或越权。互动/权益已交叉静态复核，原body/key/If-Match与未知pending路径保留；后端在幂等查找前核资格/时效的边界仍未解决。未测试、编译、渲染或推送。

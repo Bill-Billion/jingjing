@@ -433,9 +433,153 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         communityId(communityMap(r['data'])['person_id']));
   }
 
+  void Function(Map<String, dynamic>)? _recoverReceipt;
+
+  void Function(Map<String, dynamic>)? receiptValidator(
+      String suffix, Map<String, dynamic> input, int? version, String? party) {
+    final revoke = RegExp(r'^mcn/staff/([0-9a-fA-F-]{36})/revoke$')
+        .firstMatch(suffix);
+    if (!['votes', 'appeals', 'mcn/staff', 'profiles', 'reviews',
+        'referrals/sync', 'mcn/assignments', 'buyer-city-profile'].contains(suffix) &&
+        revoke == null) return null;
+    // Freeze the submitted body, not editable fields or a refreshed list.
+    final body = communityMap(jsonDecode(jsonEncode(input)));
+    bool sameSet(Object? actual, Object? expected, {bool ids = false}) {
+      if (actual is! List || expected is! List || actual.isEmpty ||
+          (ids && actual.length > 100) ||
+          actual.any((x) => x is! String || (ids && !communityId(x))) ||
+          expected.any((x) => x is! String || (ids && !communityId(x)))) return false;
+      final a = actual.toSet(), b = expected.toSet();
+      return a.length == actual.length && b.length == expected.length &&
+          a.length == b.length && a.containsAll(b);
+    }
+    return (value) {
+      const extraKinds = {
+        'profiles': 'RANK_PROFILE', 'reviews': 'ORDER_REVIEW',
+        'referrals/sync': 'REFERRAL_COMMISSION',
+        'mcn/assignments': 'ASSIGNMENT',
+        'buyer-city-profile': 'BUYER_PROFILE',
+      };
+      if (extraKinds.containsKey(suffix)) {
+        final r = communityRecord(value, kind: extraKinds[suffix]);
+        final data = communityMap(r['data']);
+        communityRequire(communityId(party));
+        if (suffix == 'referrals/sync') {
+          final attribution = communityMap(data['attribution']);
+          communityRequire(communityId(body['order_id']) &&
+              r['parent_id'] == body['order_id'] &&
+              data['order_id'] == body['order_id'] &&
+              communityId(attribution['referrer_party_id']) &&
+              communityId(attribution['buyer_party_id']) &&
+              communityId(attribution['supplier_party_id']) &&
+              r['owner_party_id'] == attribution['referrer_party_id'] &&
+              [attribution['buyer_party_id'], attribution['supplier_party_id'],
+                attribution['referrer_party_id']].contains(party) &&
+              const ['PENDING', 'REVERSED', 'RULE_REVIEW_REQUIRED',
+                'SIMULATION_EXCLUDED', 'PLATFORM_BUDGET_REVIEW_REQUIRED',
+                'ACCRUED'].contains(r['current_status']));
+        } else {
+          communityRequire(r['owner_party_id'] == party);
+          if (suffix == 'reviews') {
+            communityRequire(communityId(body['order_id']) &&
+                r['parent_id'] == body['order_id'] &&
+                r['current_status'] == 'PUBLISHED' &&
+                data['free_points_awarded'] == 0 &&
+                communityDigest({for (final key in body.keys) key: data[key]}) ==
+                    communityDigest(body));
+          } else {
+            communityRequire(r['parent_id'] == null);
+            if (suffix == 'mcn/assignments') {
+              final booking = body['booking_id'], order = body['order_id'];
+              communityRequire(((communityId(booking) && order == null) ||
+                    (communityId(order) && booking == null)) &&
+                  communityId(body['account_id']) &&
+                  r['current_status'] == 'ASSIGNED' &&
+                  data['booking_id'] == booking && data['order_id'] == order &&
+                  data['account_id'] == body['account_id']);
+            } else {
+              communityRequire(body['opt_in'] is bool &&
+                  body['city'] is String &&
+                  data['opt_in'] == body['opt_in'] && data['city'] == body['city']);
+              if (suffix == 'profiles') {
+                communityRequire(communityId(body['person_id']) &&
+                    const ['ACTIVE', 'EXCLUDED'].contains(r['current_status']) &&
+                    data['person_id'] == body['person_id'] &&
+                    data['district'] == body['district'] &&
+                    data['category'] == body['category']);
+              } else {
+                communityRequire(r['current_status'] == 'ACTIVE');
+              }
+            }
+          }
+        }
+        return;
+      }
+      final kind = suffix == 'votes' ? 'VOTE'
+          : suffix == 'appeals' ? 'APPEAL' : 'STAFF_GRANT';
+      final r = communityRecord(value, kind: kind), data = communityMap(r['data']);
+      communityRequire(communityId(party) && r['owner_party_id'] == party);
+      if (suffix == 'votes' || suffix == 'appeals') {
+        communityRequire(communityId(body['event_id']) &&
+            r['parent_id'] == body['event_id']);
+        if (suffix == 'votes') {
+          communityRequire(r['current_status'] == 'VALID' &&
+              communityId(body['candidate_id']) &&
+              data['candidate_id'] == body['candidate_id'] &&
+              data['points'] is int && data['points'] > 0 &&
+              data['points'] <= 100000 &&
+              communityId(data['hold_id']));
+        } else {
+          communityRequire(r['current_status'] == 'OPEN' &&
+              body['reason'] is String && data['reason'] == body['reason']);
+        }
+      } else if (revoke != null) {
+        communityRequire(communityId(revoke.group(1)) &&
+            r['id'] == revoke.group(1) && r['parent_id'] == null &&
+            r['current_status'] == 'REVOKED' && version != null &&
+            r['object_version'] == version + 1 &&
+            body['reason'] is String && data['reason'] == body['reason']);
+      } else {
+        final actualUntil = DateTime.tryParse('${data['valid_until']}');
+        final expectedUntil = DateTime.tryParse('${body['valid_until']}');
+        const actions = {'READ_PROFILE', 'COMMISSION_PRODUCTION',
+          'MANAGE_AUDITIONS', 'MANAGE_MATERIALS', 'COMMERCIAL_MESSAGES',
+          'READ_INCOME', 'MANAGE_LISTINGS'};
+        communityRequire(r['current_status'] == 'ACTIVE' &&
+            r['parent_id'] == null && communityId(body['account_id']) &&
+            data['account_id'] == body['account_id'] &&
+            sameSet(data['person_ids'], body['person_ids'], ids: true) &&
+            sameSet(data['actions'], body['actions']) &&
+            (data['actions'] as List).every(actions.contains) &&
+            actualUntil != null && expectedUntil != null &&
+            actualUntil.isAtSameMomentAs(expectedUntil));
+      }
+    };
+  }
+
+  Future<Map<String, dynamic>?> actBound(String suffix,
+      Map<String, dynamic> body, {int? version, bool reload = true}) {
+    final frozen = communityMap(jsonDecode(jsonEncode(body)));
+    final validate = receiptValidator(suffix, frozen, version, session.partyId);
+    return act(suffix, frozen, version: version, reload: reload, validate: validate);
+  }
+
+  @override
+  Future<void> recover() async {
+    if (recovery == null || recoverySuffix == null || !reconciled || busy) return;
+    _recoverReceipt = receiptValidator(recoverySuffix!,
+        communityMap(recovery!['body']), recovery!['version'] as int?, session.partyId);
+    try {
+      await super.recover();
+    } finally {
+      _recoverReceipt = null;
+    }
+  }
+
   @override
   Future<void> validateResult(Map<String, dynamic> value) async {
     communityRecord(value);
+    _recoverReceipt?.call(value);
     if (recoverySuffix == 'candidates' && recovery != null) {
       validateNomination(value, communityMap(recovery!['body']));
     }
@@ -598,8 +742,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         jsonEncode(current) != eventSnapshot ||
         !communityRows(current['candidates']).any((r) =>
             r['id'] == candidateId && jsonEncode(r) == candidateSnapshot)) return;
-    await act('votes', {'event_id': eventId, 'candidate_id': candidateId},
-        validate: (r) => communityRecord(r, kind: 'VOTE'));
+    await actBound('votes', {'event_id': eventId, 'candidate_id': candidateId});
   }
 
   Widget menu() => Wrap(spacing: 8, runSpacing: 8, children: [
@@ -841,7 +984,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                     if (!appealsOpen) {
                       throw const AccountError(409, 'APPEAL_CLOSED');
                     }
-                    await act('appeals', {
+                    await actBound('appeals', {
                       'event_id': d['id'],
                       'reason': communityRequired(reason.text, '异议原因')
                     });
@@ -991,7 +1134,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
               '保存本次公开选择',
               enabled
                   ? () => submit(() async {
-                        await act('profiles', {
+                        await actBound('profiles', {
                           'person_id': communityRequiredId(person.text, '本人艺人'),
                           'city': communityRequired(city.text, '城市', max: 100),
                           'district':
@@ -1092,7 +1235,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
               '核对该订单推荐结果',
               enabled && order.text.isNotEmpty
                   ? () => submit(() async {
-                        await act('referrals/sync', {
+                        await actBound('referrals/sync', {
                           'order_id': communityRequiredId(order.text, '原订单')
                         });
                       })
@@ -1166,7 +1309,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                           if (!current()) return;
                           final why = await _reasonDialog('撤回员工委托');
                           if (why == null || !current()) return;
-                          await act('mcn/staff/$id/revoke', {'reason': why},
+                          await actBound('mcn/staff/$id/revoke', {'reason': why},
                               version: version);
                         })
                     : null,
@@ -1234,7 +1377,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                       employee.text.isNotEmpty &&
                       staffActions.isNotEmpty
                   ? () => submit(() async {
-                        await act('mcn/staff', {
+                        await actBound('mcn/staff', {
                           'account_id':
                               communityRequiredId(employee.text, '有效成员'),
                           'person_ids': selectedPeople.toList(),
@@ -1277,7 +1420,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
               '派给该工作人员',
               enabled
                   ? () => submit(() async {
-                        await act('mcn/assignments', {
+                        await actBound('mcn/assignments', {
                           'account_id':
                               communityRequiredId(employee.text, '有效成员'),
                           'booking_id': assignmentKind == 'BOOKING'
@@ -1413,15 +1556,13 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                 '保存本次公开选择',
                 enabled
                     ? () => submit(() async {
-                          await act(
+                          await actBound(
                               'buyer-city-profile',
                               {
                                 'city': communityRequired(city.text, '城市',
                                     max: 100),
                                 'opt_in': buyerOptIn
-                              },
-                              validate: (r) =>
-                                  communityRecord(r, kind: 'BUYER_PROFILE'));
+                              });
                         })
                     : null,
                 outline: true),
@@ -1449,17 +1590,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                             max: 2000),
                         'media_asset_ids': List<String>.from(reviewMedia)
                       };
-                      final result = await act('reviews', body, reload: false,
-                          validate: (r) {
-                        communityRecord(r, kind: 'ORDER_REVIEW');
-                        final d = communityMap(r['data']);
-                        communityRequire(r['parent_id'] == selected &&
-                            d['free_points_awarded'] == 0 &&
-                            communityDigest({
-                                  for (final key in body.keys) key: d[key]
-                                }) ==
-                                communityDigest(body));
-                      });
+                      final result = await actBound('reviews', body, reload: false);
                       if (result != null && mounted) {
                         setState(() {
                           reviewResult = result;

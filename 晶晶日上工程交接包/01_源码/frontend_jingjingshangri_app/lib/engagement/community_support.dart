@@ -423,6 +423,7 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
   bool busy = false, checking = false;
   String? error, notice;
   int ticket = 0;
+  Object? _privateSaveOwner;
   final controllers = <TextEditingController>[];
   Map<String, dynamic>? recovery;
   String? recoverySuffix, recoveryMethod;
@@ -636,26 +637,49 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
   Future<void> savePrivate(String suffix, String filename,
       {String? hash, bool account = false}) async {
     if (busy) return;
+    final requestApi = api;
+    final requestSession = requestApi.session;
+    final epoch = requestSession.epoch;
+    final party = account || requestApi.personal ? null : requestSession.partyId;
+    final startedTicket = ticket;
+    final owner = Object();
+    _privateSaveOwner = owner;
+    bool current() {
+      if (!mounted || !identical(_privateSaveOwner, owner) ||
+          ticket != startedTicket || !identical(session, requestSession)) {
+        return false;
+      }
+      try {
+        requestApi.check(epoch, party);
+        return requestApi.party(account) == party;
+      } catch (_) {
+        return false;
+      }
+    }
     setState(() {
       busy = true;
       error = null;
     });
     try {
       final bytes =
-          await api.bytes(suffix, account: account, sha256Value: hash);
-      if (!mounted) return;
+          await requestApi.bytes(suffix, account: account, sha256Value: hash);
+      if (!current()) return;
       final saved = await FilePicker.saveFile(fileName: filename, bytes: bytes);
-      if (mounted) {
-        setState(() => notice = kIsWeb
-            ? '文件已交给浏览器，请在下载记录核对。'
-            : saved == null
-                ? '已取消保存，文件未存入设备。'
-                : '文件已保存，请在设备中核对。');
-      }
+      if (!current()) return;
+      setState(() => notice = kIsWeb
+          ? '文件已交给浏览器，请在下载记录核对。'
+          : saved == null
+              ? '已取消保存，文件未存入设备。'
+              : '文件已保存，请在设备中核对。');
     } catch (e) {
-      if (mounted) setState(() => fail(e));
+      if (current()) setState(() => fail(e));
     } finally {
-      if (mounted) setState(() => busy = false);
+      // Release this save's lock even when its read ticket became stale.
+      // Never publish a stale result or release a replacement save's lock.
+      if (identical(_privateSaveOwner, owner)) {
+        _privateSaveOwner = null;
+        if (mounted) setState(() => busy = false);
+      }
     }
   }
 }

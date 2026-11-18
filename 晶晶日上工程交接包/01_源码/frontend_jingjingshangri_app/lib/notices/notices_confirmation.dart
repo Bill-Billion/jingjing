@@ -277,6 +277,7 @@ class _ConfirmationState extends State<_Confirmation> {
             beforeSubmit: (_) => verifyFrozen(frozen, snapshot),
             reload: reloadForm,
             parse: (value) => api.validateConfirmation(value, widget.id,
+                submissionVersion: pending == null ? frozen.version : pending['version'],
                 noticeVersion: requestedBody?['notice_version'] ?? snapshot.raw['object_version'],
                 noticeSha256: requestedBody?['notice_sha256'] ?? snapshot.raw['notice_sha256']),
             onSuccess: (_) async {
