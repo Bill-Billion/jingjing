@@ -33,7 +33,7 @@ def render_tasks(board):
         '当前完整测试版仍按产品总览的原18组交付，日常看工作名称即可，不需要记编号。', '',
         '这张表记录完整工作范围，逐次成果与待审状态以当前进度为准；各阶段完成部分不等于整组已经验收。'
         '双方按当前阶段说明协作。'
-        'PM03按用户2026-11-17决定先集中开发、整批交付后联合测试；前端负责人 Bill-Billion接入既有业务，后端负责人 chengcongcong222核契约并准备整批环境；后端不接管前端源码，各自维护自己的CURRENT，实际认领分别记录。'
+        'PM03按用户决定先集中开发、整批交付后联合测试；2026-11-18用户授权 chengcongcong222接手已交候选的四组端侧接口、环境补缺与联合修复，Bill-Billion原成果及CURRENT保留，联合增量单独交接。'
         '具体操作见 [双方分工](../collaboration/TEAM_ONBOARDING.md)，'
         '最新成果和限制见 [当前进度](../status/MAINLINE_PROGRESS.md)。', '',
         '表中的“需先完成”指整项工作最后验收前需要的其他成果。'
@@ -140,7 +140,8 @@ def validate():
                 and t.get('implementation_branch') == t['branch']
                 and bool(t.get('implementation_authority'))
                 and bool(t.get('implementation_scope')) and bool(t.get('evidence')))
-            check(bool(t['branch']) and (t['branch'].startswith(prefix) or
+            handoff = t['stream'] == 'Experience' and t['branch'].startswith('handoff/')
+            check(bool(t['branch']) and (t['branch'].startswith(prefix) or handoff or
                 cross_stream and t['branch'].startswith('core/')), 'Claim must have correct branch: ' + t['id'])
         check(t['status'] in ('READY', 'PLANNED', 'CLAIMED', 'IN_PROGRESS', 'IN_REVIEW', 'DONE', 'BLOCKED'), 'Unknown status: ' + t['id'])
         if t['status'] in ('CLAIMED', 'IN_PROGRESS', 'IN_REVIEW', 'DONE'):
