@@ -1,0 +1,211 @@
+{
+  "cycle_id": "PM04-20261118",
+  "title": "PM04—冻结原需求、PR40质量收敛及全条款验收",
+  "status": "PLANNED_UNCLAIMED",
+  "source_pr": "https://github.com/Bill-Billion/jingjing/pull/40",
+  "as_of": "2026-11-18",
+  "reviewed_pr_head": "0786030e88e905013c61e3d7e00c052c99301cde",
+  "stage_gate": "PM03未通过；PM04作为下一工作包执行，禁止将规划视为PM03验收完成",
+  "status_semantics": "PLANNED/UNCLAIMED不代表负责人已读或同意；TESTED仅在本轮日志回执齐全时设置；DONE须同记录+维护者核验",
+  "snapshot": {
+    "phase": "PM04-PREPARATION_AFTER_PM03_DRAFT",
+    "as_of": "2026-11-18",
+    "reviewed_pr": "https://github.com/Bill-Billion/jingjing/pull/40",
+    "pr_status": "OPEN_DRAFT_NOT_MERGED_NOT_DEPLOYED",
+    "pr_head": "0786030e88e905013c61e3d7e00c052c99301cde",
+    "pr_base_branch": "core/full-business-closure-20261028",
+    "pr_head_branch": "core/pm03-joint-20261118",
+    "app_tested_source": "22b269e145209eece2cb8c13ed5d7da6a70cd66c",
+    "backend_ops_tested_source": "996b34417e1149f858a3804af7cc933d43c1856a",
+    "api_version": "0.31.79-rc.1",
+    "migration": "0225",
+    "applied_migrations": 225,
+    "app_tests": {
+      "pass": 1155,
+      "fail": 74,
+      "skip": 1,
+      "exit_code": 1
+    },
+    "app_analyze_local": {
+      "errors": 0,
+      "warning_and_info": 120,
+      "exit_code": 1
+    },
+    "remote_checks": {
+      "observed_unique_jobs": 4,
+      "state": "NOT_GREEN",
+      "backend_db": "FFMPEG_APT_PREPARATION_TIMEOUT_EXIT_124",
+      "frontend_app": "FLUTTER_ANALYZE_88_ISSUES_EXIT_2",
+      "ops_browser": "FFMPEG_APT_PREPARATION_TIMEOUT_EXIT_124",
+      "no_db_contract": "SUCCESS",
+      "notes": "相同提交的PR/push检查可能重复；日志结论不是全部业务断言失败。"
+    },
+    "formal_acceptance": {
+      "criteria_total": 151,
+      "pass": 19,
+      "partial": 124,
+      "insufficient": 8,
+      "groups_total": 18,
+      "groups_closed": 0,
+      "routes_total": 12,
+      "routes_closed": 0
+    },
+    "w_scopes_total": 17,
+    "w_scopes_done": 0,
+    "physical_device_tested": false,
+    "real_money_enabled": false,
+    "merged": false,
+    "deployed": false,
+    "age_policy": "BASELINE_FROZEN_MINOR_REQUIREMENTS_REQUIRED_DEFERRED",
+    "source": "docs/reviews/pm03-joint-20261118/FOLLOWUP_RESULTS.json",
+    "notes": "2026-11-18用户要求不修改任何原需求；未成年人全要求后置专项但仍为151项验收必要条件。PM04是接续计划，不表示PM03已经完成；任何成果以相同源码、相同记录和原始日志认定。"
+  },
+  "task_ids": [
+    "PM04-BE-01",
+    "PM04-FE-02",
+    "PM04-JT-03",
+    "PM04-PM-04",
+    "PM04-BE-05",
+    "PM04-FE-06",
+    "PM04-QA-07",
+    "PM04-RL-08"
+  ],
+  "tasks": [
+    {
+      "id": "PM04-BE-01",
+      "title": "远端CI限时失败归因与统一可复现运行入口",
+      "owner_suggested": "chengcongcong222",
+      "claim_status": "UNCLAIMED",
+      "execution_status": "NOT_STARTED",
+      "phase": "G0",
+      "priority": "P0",
+      "depends_on": [
+        "PR40-DRAFT"
+      ],
+      "output": "docs/reviews/pm04/CI_ROOT_CAUSES.md + 当前SHA检查链接",
+      "issue_url": null
+    },
+    {
+      "id": "PM04-FE-02",
+      "title": "74项App回归失败逐项归因、修复和双端静态分析收敛",
+      "owner_suggested": "Bill-Billion",
+      "claim_status": "UNCLAIMED",
+      "execution_status": "NOT_STARTED",
+      "phase": "G0",
+      "priority": "P0",
+      "depends_on": [
+        "PR40-DRAFT"
+      ],
+      "output": "docs/reviews/pm04/APP_FAILURE_TRIAGE.csv + 全量回归与构建结果",
+      "issue_url": null
+    },
+    {
+      "id": "PM04-JT-03",
+      "title": "同记录关键业务闭环验证，不把17范围重新开发",
+      "owner_suggested": "chengcongcong222 + Bill-Billion（分别认领）",
+      "claim_status": "UNCLAIMED",
+      "execution_status": "NOT_STARTED",
+      "phase": "G1",
+      "priority": "P0",
+      "depends_on": [
+        "PM04-BE-01",
+        "PM04-FE-02"
+      ],
+      "output": "docs/reviews/pm04/JOINED_17_SCOPE_EVIDENCE.md + 业务ID矩阵",
+      "issue_url": null
+    },
+    {
+      "id": "PM04-PM-04",
+      "title": "原未成年人需求冻结与覆盖映射（后置但必交）",
+      "owner_suggested": "产品负责人 + 法务（未指派GitHub人员）",
+      "claim_status": "UNCLAIMED",
+      "execution_status": "NOT_STARTED_REQUIRED_DEFERRED",
+      "phase": "G2",
+      "priority": "P2-REQUIRED",
+      "depends_on": [
+        "PM04-BE-01",
+        "PM04-FE-02"
+      ],
+      "output": "docs/pm04/PM04_REQUIREMENTS_FREEZE_20261118.md + 逐项缺口核对记录",
+      "issue_url": null
+    },
+    {
+      "id": "PM04-BE-05",
+      "title": "未成年人原需求服务端全入口覆盖与退款逆向验收（后置必交）",
+      "owner_suggested": "chengcongcong222",
+      "claim_status": "UNCLAIMED",
+      "execution_status": "NOT_STARTED_REQUIRED_DEFERRED",
+      "phase": "G2",
+      "priority": "P2-REQUIRED",
+      "depends_on": [
+        "PM04-PM-04"
+      ],
+      "output": "docs/reviews/pm04/MINOR_REQUIREMENT_BACKEND_MATRIX.md",
+      "issue_url": null
+    },
+    {
+      "id": "PM04-FE-06",
+      "title": "监护/未成年人模式全端实测与原文缺口补齐（后置必交）",
+      "owner_suggested": "Bill-Billion",
+      "claim_status": "UNCLAIMED",
+      "execution_status": "NOT_STARTED_REQUIRED_DEFERRED",
+      "phase": "G2",
+      "priority": "P2-REQUIRED",
+      "depends_on": [
+        "PM04-PM-04",
+        "PM04-BE-05"
+      ],
+      "output": "docs/reviews/pm04/MINOR_REQUIREMENT_APP_WEB_MATRIX.md",
+      "issue_url": null
+    },
+    {
+      "id": "PM04-QA-07",
+      "title": "17范围覆盖收口、151验收条目真实重计及阶段审阅",
+      "owner_suggested": "双方 + 维护者（分别签认）",
+      "claim_status": "UNCLAIMED",
+      "execution_status": "NOT_STARTED",
+      "phase": "G2",
+      "priority": "P1",
+      "depends_on": [
+        "PM04-JT-03",
+        "PM04-BE-05",
+        "PM04-FE-06"
+      ],
+      "output": "docs/reviews/pm04/ACCEPTANCE_LEDGER.md + 维护者审阅回执",
+      "issue_url": null
+    },
+    {
+      "id": "PM04-RL-08",
+      "title": "实体机体验、真实供应商与发布准入清单",
+      "owner_suggested": "Bill-Billion + chengcongcong222 + 甲方",
+      "claim_status": "UNCLAIMED",
+      "execution_status": "NOT_STARTED",
+      "phase": "G3",
+      "priority": "P1",
+      "depends_on": [
+        "PM04-QA-07"
+      ],
+      "output": "docs/reviews/pm04/RELEASE_READINESS.md（Go/No-Go）",
+      "issue_url": null
+    }
+  ],
+  "files": [
+    "docs/pm04/PM04_PLAN.md",
+    "docs/pm04/PM04_DASHBOARD.md",
+    "docs/pm04/PM04_DASHBOARD.html",
+    "docs/pm04/PM04_MINORS_POLICY_DECISION.md",
+    "docs/pm04/PM04_CORE_CODEX.md",
+    "docs/pm04/PM04_FRONTEND_CODEX.md",
+    "docs/pm04/PM04_TASKS.json",
+    "docs/pm04/PM04_REQUIREMENTS_FREEZE_20261118.md"
+  ],
+  "limits": [
+    "原18组/12路线/151条状态不改",
+    "不推送PR40、不修改前端EXPERIENCE_CURRENT",
+    "不合并/部署、不启用真实收费/生产/公网",
+    "历史监护退款与记录保留",
+    "PM03原始驾驶舱归档不覆盖",
+    "未成年人 REQUIRED_DEFERRED 不等于删除；最终全151项覆盖通过前发布 NO-GO"
+  ],
+  "policy": "原需求不变；未成年人 REQ/ACC 后置 G2 专项、最终必须全部覆盖，无新增产品策略变更。"
+}
