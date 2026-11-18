@@ -47,6 +47,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            // Opt-in joint test package; keep existing installed/offline App intact.
+            if (providers.gradleProperty("pm03Isolated").orNull == "true") {
+                applicationIdSuffix = ".pm03joint"
+            }
+        }
         release {
             // 本地模拟器使用 debug；release 无正式证书时保持未签名。
             signingConfig = if (hasReleaseKeystore) {

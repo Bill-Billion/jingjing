@@ -8,13 +8,13 @@ Widget cocreationSection(String title, List<Widget> children) => Container(
         color: AccountTheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AccountTheme.border)),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    child: Material(type: MaterialType.transparency, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(title, style: const TextStyle(
           fontFamily: AccountTheme.sans, fontSize: 18,
           fontWeight: FontWeight.w700, height: 1.4)),
       const SizedBox(height: 14),
       ...children,
-    ]));
+    ])));
 
 Widget cocreationGuide(String title, String detail) => cocreationSection(title, [
     const Row(children: [

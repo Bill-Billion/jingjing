@@ -803,12 +803,12 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                     child: Material(
                         color: type == value ? AccountTheme.selectedSurface : AccountTheme.surface,
                         borderRadius: BorderRadius.circular(14),
-                        child: ListTile(
+                        child: Material(type: MaterialType.transparency, child: ListTile(
                             title: Text(noticeTypes[value]!),
                             trailing: Icon(type == value
                                 ? Icons.radio_button_checked : Icons.radio_button_unchecked,
                                 color: AccountTheme.accent),
-                            onTap: busy || type == value ? null : () => chooseType(value)))),
+                            onTap: busy || type == value ? null : () => chooseType(value))))),
               const SizedBox(height: 16),
               appNotice('提交后先进入审核，审核通过前不会公开。本页不提供独立草稿保存；离开时会核对未提交内容。'),
               if (type != null && eligibility!.canPublish(type!))

@@ -144,12 +144,12 @@ Widget tradeSection(String title, List<Widget> children) => Container(
         color: AccountTheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AccountTheme.border)),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    child: Material(type: MaterialType.transparency, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
       ...children,
-    ]));
+    ])));
 
 Widget tradeFact(String label, Object? value, {bool accent = false}) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 8),

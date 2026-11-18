@@ -225,7 +225,7 @@ class _StoryListState extends State<_StoryList> {
                 color: AccountTheme.surface,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: AccountTheme.border)),
-            child: ListTile(
+            child: Material(type: MaterialType.transparency, child: ListTile(
               key: ValueKey('story-open-${row.id}'),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 16,
@@ -247,7 +247,7 @@ class _StoryListState extends State<_StoryList> {
               trailing: const Icon(Icons.north_east, size: 18),
               onTap:
                   row.allows('READ') && !busy ? () => open(id: row.id) : null,
-            ),
+            )),
           ),
         if (cursor != null)
           OutlinedButton(
@@ -954,7 +954,7 @@ class _StoryEditorState extends State<_StoryEditor> {
                   : const Color(0xFF1C2420),
               borderRadius: BorderRadius.circular(12),
               clipBehavior: Clip.antiAlias,
-              child: ListTile(
+              child: Material(type: MaterialType.transparency, child: ListTile(
                 key: ValueKey('customization-category-${category.code}'),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -982,7 +982,7 @@ class _StoryEditorState extends State<_StoryEditor> {
                       height: 1.5),
                 ),
                 onTap: locked ? null : () => choose(category),
-              ),
+              )),
             ),
           ),
       ],

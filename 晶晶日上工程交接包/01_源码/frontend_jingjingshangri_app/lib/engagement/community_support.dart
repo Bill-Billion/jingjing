@@ -719,12 +719,12 @@ Widget communitySection(String title, List<Widget> children) => Container(
         color: AccountTheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AccountTheme.border)),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    child: Material(type: MaterialType.transparency, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
       const SizedBox(height: 14),
       ...children
-    ]));
+    ])));
 Widget communityFact(String label, Object? value) => Padding(
     padding: const EdgeInsets.only(bottom: 10),
     child: Wrap(spacing: 12, runSpacing: 4, children: [

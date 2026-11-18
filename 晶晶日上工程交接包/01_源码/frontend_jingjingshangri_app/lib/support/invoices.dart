@@ -688,7 +688,7 @@ class _InvoicesState extends State<_Invoices> {
               child: Material(
                   color: kind == option.key ? AccountTheme.selectedSurface : AccountTheme.surface,
                   borderRadius: BorderRadius.circular(14),
-                  child: ListTile(
+                  child: Material(type: MaterialType.transparency, child: ListTile(
                       title: Text(option.value),
                       trailing: Icon(kind == option.key
                           ? Icons.radio_button_checked : Icons.radio_button_unchecked,
@@ -696,7 +696,7 @@ class _InvoicesState extends State<_Invoices> {
                       onTap: locked ? null : () => setState(() {
                         kind = option.key;
                         headerDirty = true;
-                      })))),
+                      }))))),
         const SizedBox(height: 8),
         TextField(
             controller: title,

@@ -245,13 +245,13 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
                       color: option == widget.kind
                           ? AccountTheme.selectedSurface : AccountTheme.surface,
                       borderRadius: BorderRadius.circular(14),
-                      child: ListTile(
+                      child: Material(type: MaterialType.transparency, child: ListTile(
                           title: Text(submissionKinds[option]!),
                           trailing: Icon(option == widget.kind
                               ? Icons.radio_button_checked : Icons.radio_button_unchecked,
                               color: AccountTheme.accent),
                           onTap: busy || api.pendingOperations.isNotEmpty
-                              ? null : () => selectSubmissionKind(option)))),
+                              ? null : () => selectSubmissionKind(option))))),
             const SizedBox(height: 16),
             if (notice != null)
               tradeSection('明确接收的通告', [

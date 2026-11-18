@@ -47,6 +47,7 @@ async function seed(db,out,deadline,check,storageAt){
  link=await G.decide(S.buyer2.ctx,{record_id:link.id,expected_version:link.object_version,decision:'ACCEPT',reason:'synthetic child acceptance',operation_key:key()});
  link=await G.decide(S.reviewer.ctx,{record_id:link.id,operations:true,expected_version:link.object_version,decision:'APPROVE',age_band:'AGE_14_17',identity_checked:true,relationship_checked:true,reason:'synthetic relationship review',operation_key:key()});
  f.scenarios.guardian_refund={guardian_role:'stock_seller',child_role:'stock_buyer2',guardian_link_id:link.id,child_party_id:S.buyer2.personal_party_id,recharge_id:recharge.id,evidence_asset_id:proof.id};
+ await grant(db,{account_id:f.people.reviewer.account_id,action:'WALLET_REFUND_REVIEW',enabled:true,expected_version:0,expires_at:deadline,authority_ref:'synthetic:pm03-batch',reason:'independent synthetic recharge refund review and scheduling'});
  const accounts={},byAccount=new Map(),auth=load('src/modules/auth/repository').createAuthRepository(db,{secret:f.secret});
  for(const [role,u]of Object.entries(f.people)){
   if(!byAccount.has(u.account_id)){

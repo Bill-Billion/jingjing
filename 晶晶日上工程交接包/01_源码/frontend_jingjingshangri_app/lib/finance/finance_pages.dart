@@ -1289,7 +1289,7 @@ Widget _financeFooterActions(Widget first, Widget second) => LayoutBuilder(
       final stacked = constraints.maxWidth < 340 ||
           MediaQuery.textScalerOf(context).scale(14) / 14 > 1.2;
       return stacked
-          ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          ? Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
               first,
               const SizedBox(height: 8),
               second,

@@ -499,7 +499,7 @@ class _WalletScreenState extends State<_WalletScreen> {
                                 ? AccountTheme.selectedSurface
                                 : AccountTheme.surface,
                             borderRadius: BorderRadius.circular(14),
-                            child: ListTile(
+                            child: Material(type: MaterialType.transparency, child: ListTile(
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(14)),
                                 title: Text(amount.isEmpty ? '其他金额' : '¥$amount'),
@@ -510,7 +510,7 @@ class _WalletScreenState extends State<_WalletScreen> {
                                     ? Icons.radio_button_checked
                                     : Icons.radio_button_unchecked,
                                     color: AccountTheme.accent),
-                                onTap: enabled ? () => change('amount', amount) : null))),
+                                onTap: enabled ? () => change('amount', amount) : null)))),
 
                   ..._rechargeEstimate(values['amount'], s),
                   tradeSection('余额使用限制', [

@@ -87,7 +87,7 @@ class _PeopleState extends State<_People> {
             margin: const EdgeInsets.only(bottom: 12),
             decoration: BoxDecoration(color: AccountTheme.surface,
                 borderRadius: BorderRadius.circular(16)),
-            child: ListTile(
+            child: Material(type: MaterialType.transparency, child: ListTile(
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 leading: const Icon(Icons.person_outline, color: AccountTheme.muted),
                 title: Text(p.name, style: const TextStyle(
@@ -98,7 +98,7 @@ class _PeopleState extends State<_People> {
                 onTap: busy ? null : () =>
                     Navigator.pushNamed(c, artistPersonRoute(p.id)).then((_) {
                       if (mounted) load();
-                    }))),
+                    })))),
         for (final entry in [
           ('我的数字形象', artistPersonRoute(p.id)),
           if (p.owner == widget.session.partyId)
@@ -109,14 +109,14 @@ class _PeopleState extends State<_People> {
           Container(
               decoration: const BoxDecoration(border: Border(
                   bottom: BorderSide(color: AccountTheme.border))),
-              child: ListTile(
+              child: Material(type: MaterialType.transparency, child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(vertical: 8),
                   title: Text(entry.$1, style: const TextStyle(fontSize: 14)),
                   trailing: const Icon(Icons.chevron_right, size: 18),
                   onTap: busy || widget.session.artistsPending.isNotEmpty
                       ? null : () => Navigator.pushNamed(c, entry.$2).then((_) {
                           if (mounted) load();
-                        }))),
+                        })))),
         const SizedBox(height: 20),
       ],
       tradeBanner(

@@ -1148,12 +1148,12 @@ Widget sixSection(String title, List<Widget> children) => Container(
         color: AccountTheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AccountTheme.border)),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    child: Material(type: MaterialType.transparency, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(title, style: const TextStyle(fontFamily: AccountTheme.sans,
           fontSize: 18, fontWeight: FontWeight.w700, height: 1.4)),
       const SizedBox(height: 14),
       ...children,
-    ]));
+    ])));
 
 String sixGuide(String kind) => switch (kind) {
   'guardians' => '先核对监护关系，再办理获准的限制、信息处理或退款申请。真实儿童处理和收费仍关闭；退款申请、审核与实际退款是不同阶段。',

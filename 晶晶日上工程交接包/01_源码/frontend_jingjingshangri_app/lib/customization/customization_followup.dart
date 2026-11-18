@@ -172,7 +172,7 @@ class _FollowupListState extends State<_FollowupList> {
                   color: AccountTheme.surface,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(color: AccountTheme.border)),
-              child: ListTile(
+              child: Material(type: MaterialType.transparency, child: ListTile(
                 key: ValueKey('story-history-${r.id}'),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -183,7 +183,7 @@ class _FollowupListState extends State<_FollowupList> {
                         fontSize: 12, color: AccountTheme.muted, height: 1.6)),
                 trailing: const Icon(Icons.north_east, size: 18),
                 onTap: busy ? null : () => detail(r),
-              )),
+              ))),
         if (selected != null) ...[
           const Divider(height: 32),
           Text('第 ${selected!.data['submission_number']} 次正式提交 · 原内容',

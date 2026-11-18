@@ -290,12 +290,19 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
       final next = page['next_cursor'];
       communityRequire(next == null ||
           communityId(next) && next != before && linkSeen.add(next));
-      final links = communityItems(page)
-          .where((r) =>
-              r['kind'] == 'LINK' &&
-              r['guardian_account_id'] == session.account?['id'] &&
-              r['current_status'] == 'ACTIVE')
-          .toList();
+      // The list is a minimal index. Identity/child fields belong to the
+      // permission-checked detail and must not be inferred from a list item.
+      final links = <Map<String, dynamic>>[];
+      for (final item in communityItems(page).where((r) =>
+          r['kind'] == 'LINK' && r['current_status'] == 'ACTIVE')) {
+        communityRequire(communityId(item['id']));
+        final link = await CommunityApi(session, 'guardians')
+            .read('records/${item['id']}', account: true);
+        if (!mounted || epoch != session.epoch || t != ticket) return;
+        communityRequire(link['id'] == item['id'] && link['kind'] == 'LINK');
+        if (link['guardian_account_id'] == session.account?['id'] &&
+            link['current_status'] == 'ACTIVE') links.add(link);
+      }
       for (final r in links)
         communityRequire(
             communityId(r['id']) && communityId(r['child_account_id']));
