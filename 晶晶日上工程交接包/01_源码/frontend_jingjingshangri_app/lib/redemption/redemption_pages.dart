@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_theme.dart';
@@ -7,7 +9,10 @@ import '../trade/trade_widgets.dart';
 import '../trade/trade_api.dart';
 import '../trade/trade_models.dart';
 import '../engagement/community_support.dart';
+import '../engagement/activity_summary_card.dart';
 import '../cocreation/cocreation_cast.dart';
+import '../wallet/wallet_api.dart';
+import '../wallet/wallet_models.dart';
 
 String? lotteryAvailability(Map<String, dynamic> r, {DateTime? now}) {
   final at = now ?? DateTime.now(), notice = r['publication_notice'];
@@ -103,7 +108,8 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
   late final cast = CocreationCastInput(field);
   List<Map<String, dynamic>> rows = [], benefits = [], exposureProfiles = [];
   List<TradeRecord> quotes = [];
-  String? quoteError, exposureError;
+  String? quoteError, exposureError, walletNotice;
+  WalletSummary? personalWallet;
   Map<String, dynamic>? detail, hold;
   bool agreed = false, bindingAgreed = false;
   @override
@@ -136,6 +142,8 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     quoteError = null;
     exposureError = null;
     detail = null;
+    personalWallet = null;
+    walletNotice = null;
     hold = null;
     agreed = false;
     bindingAgreed = false;
@@ -160,6 +168,8 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
       quoteError = null;
       exposureProfiles = [];
       exposureError = null;
+      personalWallet = null;
+      walletNotice = null;
     });
     try {
       if (widget.view == 'role') {
@@ -186,6 +196,24 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
             id: widget.id,
             kind: 'GRANT');
         final g = communityMap(d['data']);
+        final holdId = g['checkout_hold_id'] ?? hold?['id'];
+        if (holdId != null) {
+          communityRequire(communityId(holdId));
+          final currentHold = communityRecord(await api.read('holds/$holdId'),
+              id: holdId, kind: 'COUPON_HOLD');
+          final hd = communityMap(currentHold['data']);
+          communityRequire(currentHold['owner_party_id'] == session.partyId &&
+              hd['grant_id'] == widget.id &&
+              (widget.quoteId == null || hd['quote_id'] == widget.quoteId));
+          if (mounted && t == ticket) {
+            hold = currentHold;
+            quote.text = hd['quote_id'];
+            agreed = false;
+          }
+        } else {
+          hold = null;
+          agreed = false;
+        }
         communityRequire(g['template'] is Map &&
             g['cashable'] == false &&
             g['transferable'] == false);
@@ -248,6 +276,24 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
           rows = r;
           detail = d;
         });
+      }
+      if (mounted && t == ticket && widget.view == 'catalog') {
+        if (session.isOwner && session.party?['kind'] == 'PERSON') {
+          try {
+            final wallet = await WalletApi(session).summary();
+            if (mounted && t == ticket) setState(() => personalWallet = wallet);
+          } on AccountError catch (e) {
+            if (mounted && t == ticket) {
+              setState(() => walletNotice = e.code == 'WALLET_NOT_FOUND'
+                  ? '本人尚未开立消费账本；未开立不等于晶钻为零。'
+                  : '本人晶钻暂未读到，请到晶钻中心核对；兑换目录仍可查看。');
+            }
+          }
+        } else {
+          if (mounted && t == ticket) {
+            setState(() => walletNotice = '切换到本人个人身份后查看可用晶钻，不展示机构或代办人的余额。');
+          }
+        }
       }
       if (mounted && t == ticket && needsQuotes) {
         try {
@@ -355,9 +401,100 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     }
   }
 
+  void validateDrawCommand(Map<String, dynamic> r, Map<String, dynamic> body) {
+    validateDraw(r);
+    final d = communityMap(r['data']);
+    communityRequire(d['pool_id'] == body['pool_id'] &&
+        d['rules_sha256'] == body['rules_sha256'] &&
+        d['count'] == body['count']);
+  }
+
+  // Freeze the submitted input before awaiting; validators must not read a new form.
+  Future<Map<String, dynamic>?> commandAct(
+      String suffix, Map<String, dynamic> body,
+      {int? version,
+      bool reload = true,
+      FutureOr<void> Function(Map<String, dynamic>)? validate}) {
+    final original = communityMap(jsonDecode(jsonEncode(body)));
+    final owner = api.party(false);
+    return act(suffix, original, version: version, reload: reload,
+        validate: (r) async {
+      validateCommandReceipt(r, suffix, original, owner);
+      await validate?.call(r);
+    });
+  }
+
+  void validateCommandReceipt(Map<String, dynamic> r, String suffix,
+      Map<String, dynamic> original, String? owner) {
+    communityRequire(communityId(owner) && r['owner_party_id'] == owner);
+    final d = communityMap(r['data']);
+    if (suffix == 'draws') {
+      validateDrawCommand(r, original);
+    } else if (suffix == 'exchanges' || suffix == 'service-credits') {
+      communityRecord(r, kind: 'GRANT');
+      communityRequire(r['parent_id'] == original['stock_id']);
+      if (suffix == 'exchanges') {
+        communityRequire(d['template_sha256'] == original['template_sha256']);
+      } else {
+        communityRequire(d['cocreation_benefit_id'] == original['benefit_id']);
+      }
+    } else {
+      final grant = RegExp(
+              r'^grants/([0-9a-fA-F-]{36})/(checkout|bind|confirmation|remedies)$')
+          .firstMatch(suffix);
+      final release =
+          RegExp(r'^holds/([0-9a-fA-F-]{36})/release$').firstMatch(suffix);
+      if (release != null) {
+        communityRecord(r, id: release[1], kind: 'COUPON_HOLD');
+        communityRequire(r['current_status'] == 'RELEASED');
+      } else if (grant != null) {
+        final id = grant[1], action = grant[2];
+        if (action == 'checkout') {
+          communityRecord(r, kind: 'COUPON_HOLD');
+          communityRequire(
+              d['grant_id'] == id && d['quote_id'] == original['quote_id']);
+        } else if (action == 'remedies') {
+          communityRecord(r, kind: 'REMEDY');
+          communityRequire(
+              r['parent_id'] == id && d['reason'] == original['reason']);
+        } else {
+          communityRecord(r, id: id, kind: 'GRANT');
+          if (action == 'bind') {
+            final binding = communityMap(d['binding']);
+            communityRequire(r['current_status'] == 'BOUND' &&
+                binding['person_id'] == original['person_id'] &&
+                binding['avatar_id'] == original['avatar_id'] &&
+                binding['profile_id'] == original['profile_id'] &&
+                communityDigest(binding['cast']) ==
+                    communityDigest(original['cast']));
+          } else {
+            // C.command replays stored result_json, not the later live record.
+            communityRequire(original['accepted'] is bool);
+            if (original['accepted'] == true) {
+              communityRequire(r['current_status'] == 'CONFIRMED' &&
+                  communityMap(d['delivery'])['confirmed_at'] is String);
+            } else {
+              communityRequire(
+                  r['current_status'] == 'BOUND' && d['delivery'] == null);
+            }
+          }
+        }
+      }
+    }
+  }
+
   @override
   void validateResult(Map<String, dynamic> r) {
     communityRecord(r);
+    if (recovery != null) {
+      communityRequire((recoveryMethod ?? 'POST') == 'POST');
+      final fingerprint =
+          jsonDecode(recovery!['fingerprint'] as String) as List;
+      final owner = api.party(false);
+      communityRequire(fingerprint.length > 1 && fingerprint[1] == owner);
+      validateCommandReceipt(
+          r, recoverySuffix ?? '', communityMap(recovery!['body']), owner);
+    }
     if (r['kind'] == 'DRAW') validateDraw(r);
     if (r['kind'] == 'GRANT') {
       final d = communityMap(r['data']);
@@ -476,38 +613,24 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
 
   void open(String view, [Object? id]) => Navigator.pushNamed(
       context, '/redemption?view=$view${id == null ? '' : '&recordId=$id'}');
-  Widget menu() => Container(
-        decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: AccountTheme.border))),
-        child: Row(children: [
-          for (final x in [
-            ('catalog', '兑换目录'),
-            ('pools', '已审活动'),
-            ('grants', '我的券包'),
-            ('draws', '开奖记录')
-          ])
-            Expanded(
-              child: TextButton(
-                onPressed: widget.view == x.$1 ? null : () => open(x.$1),
-                style: TextButton.styleFrom(
-                    foregroundColor: AccountTheme.muted,
-                    disabledForegroundColor: AccountTheme.text,
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 14, horizontal: 2)),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  Text(x.$2, textAlign: TextAlign.center),
-                  const SizedBox(height: 8),
-                  Container(
-                      width: 24,
-                      height: 3,
-                      color: widget.view == x.$1
-                          ? AccountTheme.accent
-                          : Colors.transparent),
-                ]),
-              ),
-            ),
-        ]),
-      );
+  Widget menu() => Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Wrap(spacing: 8, runSpacing: 8, children: [
+        for (final x in [
+          ('pools', '已审活动'),
+          ('catalog', '兑换目录'),
+          ('grants', '我的券包'),
+          ('draws', '开奖记录')
+        ])
+          ChoiceChip(
+              label: Text(x.$2),
+              selected: widget.view == x.$1,
+              onSelected: !enabled || checking
+                  ? null
+                  : (_) {
+                      if (widget.view != x.$1) open(x.$1);
+                    }),
+      ]));
   List<Widget> templateFacts(Map<String, dynamic> t) => [
         communityFact('权益类型', redemptionKind(t['kind'])),
         communityFact('原条款', t['terms']),
@@ -540,16 +663,99 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                     child: const Text('确认本次操作'))
               ])) ==
       true;
+  Widget _rightsRow(String title, String detail, IconData icon) =>
+      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(
+            width: 60,
+            height: 80,
+            decoration: BoxDecoration(
+                color: AccountTheme.selectedSurface,
+                borderRadius: BorderRadius.circular(12)),
+            child: Icon(icon, color: AccountTheme.muted)),
+        const SizedBox(width: 14),
+        Expanded(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 8),
+          Text(detail,
+              style: const TextStyle(color: AccountTheme.muted, height: 1.6)),
+        ])),
+      ]);
+
+  Widget _rightsFooter(Widget first, Widget second) => LayoutBuilder(
+      builder: (context, constraints) => constraints.maxWidth < 340 ||
+              MediaQuery.textScalerOf(context).scale(14) > 20
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [first, const SizedBox(height: 8), second])
+          : Row(children: [
+              Expanded(child: first),
+              const SizedBox(width: 10),
+              Expanded(child: second)
+            ]));
+
   List<Widget> catalogView() => [
-        communityHeading('晶钻权益', '选择已经审核的真实权益，适用范围和有效期先看清。',
-            eyebrow: '晶钻 / 兑换与活动'),
+        tradeHeading('晶钻权益', fontSize: 24, eyebrow: '晶钻 / 兑换与活动'),
+        const Text('选择已经审核的真实权益，适用范围和有效期先看清。',
+            style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+        const SizedBox(height: 16),
+        tradeSection('本人可用晶钻', [
+          if (personalWallet != null)
+            Text('${personalWallet!.raw['available_points']}',
+                style:
+                    const TextStyle(fontSize: 32, fontWeight: FontWeight.w700))
+          else
+            Text(walletNotice ?? (checking ? '正在核对本人晶钻…' : '本人晶钻尚未读到，请重新核对。')),
+          const Text('余额不代表活动已开放或已取得权益；实际资格、库存与扣用按原规则核对。'),
+          tradeButton(
+              '查看本人晶钻明细',
+              checking
+                  ? null
+                  : () => Navigator.pushNamed(context, '/wallet/points'),
+              outline: true),
+        ]),
         menu(),
         const SizedBox(height: 20),
+        tradeSection('已审活动', [
+          LayoutBuilder(builder: (context, constraints) {
+            final summary = _rightsRow(
+                '晶钻活动', '开放情况、参与条件与概率按本期公示逐项核对。', Icons.card_giftcard_outlined);
+            final action = tradeButton(
+                '查看已公示活动', !enabled || checking ? null : () => open('pools'),
+                outline: true);
+            if (constraints.maxWidth < 300 ||
+                MediaQuery.textScalerOf(context).scale(14) > 18) {
+              return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [summary, const SizedBox(height: 12), action]);
+            }
+            return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(child: summary),
+                  const SizedBox(width: 10),
+                  SizedBox(width: 96, child: action),
+                ]);
+          }),
+        ]),
+        const Text('兑换目录',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 12),
         TextButton(
             onPressed: () => open('role'), child: const Text('角色摇奖预留 · 暂未开放')),
         if (rows.isEmpty && !checking && error == null) ...[
-          tradeBanner('暂无有效兑换目录', '目录审核生效后方可兑换；所需晶钻、库存与有效期以已审目录为准。'),
-          communitySection('制作金适用范围', [
+          tradeSection('目录公示', [
+            _rightsRow(
+                '待目录公示', '当前没有已读取的有效目录，不接受兑换。', Icons.inventory_2_outlined),
+            const Divider(height: 24),
+            _statusFact('当前状态', '待目录公示', '所需晶钻、库存及有效期以已审目录为准'),
+            communityFact('库存与有效期', '待目录公示'),
+          ]),
+          tradeSection('制作金适用范围', [
             const Text('仅适用已登记的人工定制片与微剧；不适用于现货、人工样片、数字人创建或托管。'),
             appNotice('先核对原报价与抵扣后金额。普通抵扣在首次真实付款确认后核销；全额抵扣在开工时核销，现金实付0元。'),
           ]),
@@ -567,8 +773,12 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
             ],
             enabled ? (v) => setState(() => benefit.text = v ?? '') : null),
         for (final r in rows)
-          communitySection(
-              communityText(communityMap(r['template'])['title']), [
+          tradeSection(communityText(communityMap(r['template'])['title']), [
+            _rightsRow(
+                communityText(communityMap(r['template'])['title']),
+                redemptionKind(communityMap(r['template'])['kind']),
+                Icons.redeem_outlined),
+            const Divider(height: 24),
             ...templateFacts(communityMap(r['template'])),
             communityFact('剩余库存', r['remaining']),
             if (communityMap(r['template'])['exchange_points'] != null) ...[
@@ -578,13 +788,38 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                   '确认兑换这份权益',
                   enabled && r['remaining'] > 0
                       ? () => submit(() async {
-                            if (await confirm('核对本次兑换',
-                                '将扣用${communityMap(r['template'])['exchange_points']}晶钻，按上方条款发放这一份权益。')) {
-                              final out = await act(
+                            final epoch = session.epoch,
+                                party = session.partyId,
+                                generation = ticket;
+                            final stockId = r['id'],
+                                hash = r['template_sha256'],
+                                points = communityMap(
+                                    r['template'])['exchange_points'];
+                            final snapshot = jsonEncode(r);
+                            bool current() =>
+                                mounted &&
+                                epoch == session.epoch &&
+                                party == session.partyId &&
+                                generation == ticket &&
+                                enabled &&
+                                !checking &&
+                                rows.any((item) =>
+                                    item['id'] == stockId &&
+                                    item['template_sha256'] == hash &&
+                                    communityMap(item['template'])[
+                                            'exchange_points'] ==
+                                        points &&
+                                    item['remaining'] > 0 &&
+                                    jsonEncode(item) == snapshot);
+                            if (!current()) return;
+                            if (await confirm(
+                                    '核对本次兑换', '将扣用$points晶钻，按上方条款发放这一份权益。') &&
+                                current()) {
+                              final out = await commandAct(
                                   'exchanges',
                                   {
-                                    'stock_id': r['id'],
-                                    'template_sha256': r['template_sha256']
+                                    'stock_id': stockId,
+                                    'template_sha256': hash
                                   },
                                   reload: false,
                                   validate: (v) =>
@@ -603,7 +838,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                           r['remaining'] > 0 &&
                           benefits.any((b) => b['id'] == benefit.text)
                       ? () => submit(() async {
-                            final out = await act(
+                            final out = await commandAct(
                                 'service-credits',
                                 {
                                   'benefit_id': communityRequiredId(
@@ -619,20 +854,55 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                           })
                       : null,
                   outline: true)
-          ])
+          ]),
+        tradeSection('如何获得晶钻', [
+          const Text('充值不直接奖励晶钻。消费奖励按原订单真实付款、履约和售后条件核对，免费奖励以本人原规则为准。',
+              style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+          const Divider(height: 24),
+          tradeButton(
+              '查看本人晶钻来源',
+              !enabled || checking
+                  ? null
+                  : () => Navigator.pushNamed(
+                      context, '/wallet/records?kind=EARNING'),
+              outline: true),
+        ]),
       ];
   List<Widget> grantsView() => [
-        communityHeading(widget.quoteId == null ? '我的券包' : '选择本次报价可用的制作权益',
+        communityHeading(widget.quoteId == null ? '我的权益' : '选择本次报价可用的制作权益',
             '占用、核销、排期和实际兑现分别记录。'),
-        if (widget.quoteId == null) menu(),
+        if (widget.quoteId == null) ...[
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            for (final entry in [
+              ('grants', '我的券包'),
+              ('draws', '开奖记录'),
+              ('catalog', '兑换目录'),
+              ('pools', '已审活动'),
+            ])
+              ChoiceChip(
+                  label: Text(entry.$2),
+                  selected: entry.$1 == 'grants',
+                  onSelected: !enabled || checking || entry.$1 == 'grants'
+                      ? null
+                      : (_) => open(entry.$1)),
+          ]),
+          const SizedBox(height: 16),
+        ],
         const SizedBox(height: 20),
         if (rows.isEmpty && !checking && error == null)
           appNotice('暂无属于当前身份的权益。'),
         for (final r in rows)
-          communitySection(
+          tradeSection(
               communityText(
                   communityMap(communityMap(r['data'])['template'])['title']),
               [
+                _rightsRow(
+                    communityText(communityMap(
+                        communityMap(r['data'])['template'])['title']),
+                    redemptionKind(communityMap(
+                        communityMap(r['data'])['template'])['kind']),
+                    Icons.confirmation_number_outlined),
+                const Divider(height: 24),
                 communityFact(
                     '当前进展',
                     communityState(
@@ -656,7 +926,31 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                       outline: true),
                 if (widget.quoteId != null && r['effective_status'] == 'HELD')
                   appNotice('该权益已被原操作占用。请先恢复原请求并核对原报价，不能重新占用。')
-              ])
+              ]),
+        if (widget.quoteId == null)
+          Container(
+              margin: const EdgeInsets.only(top: 20),
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                  color: const Color(0xFF202320),
+                  borderRadius: BorderRadius.circular(18)),
+              child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('核销与释放',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700)),
+                    SizedBox(height: 12),
+                    Text('占用不等于核销。普通抵扣在首次真实付款确认后核销；全额抵扣在开工时核销，现金实付 0 元。',
+                        style:
+                            TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+                    SizedBox(height: 8),
+                    Text('未下单的占用可按原操作释放；已经下单先核对原订单。排期、面试与实际兑现分别记录，不代表取得出演权。',
+                        style:
+                            TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+                  ])),
       ];
   List<Widget> grantView() {
     final r = detail;
@@ -666,13 +960,17 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         delivery = communityMaybeMap(d['delivery']);
     return [
       communityHeading(communityText(t['title']), '每次使用都重新核对本人、权限与原约定。'),
-      communityFact(
-          '当前进展', communityState(r['effective_status'] ?? r['current_status'])),
+      ActivitySummaryCard(
+          label: '本份权益 · 当前状态',
+          value: communityState(r['effective_status'] ?? r['current_status']),
+          description: r['effective_status'] == 'AVAILABLE'
+              ? '请先核对适用范围、期限与原报价，再选择下方办理入口。'
+              : '请核对占用、使用或交付记录。状态不满足时不能另造订单重复使用。'),
       communityFact('可用截止', communityDate(d['expires_at'])),
       ...templateFacts(t),
       if (['PRODUCTION_CREDIT', 'PRODUCTION_FREE', 'SERVICE_CREDIT']
           .contains(t['kind']))
-        communitySection('用于原报价', [
+        tradeSection('用于原报价', [
           quoteChoice(),
           tradeButton(
               '读取服务器抵扣后的报价',
@@ -695,7 +993,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         ]),
       if (['INTERVIEW', 'EXPOSURE'].contains(t['kind']) &&
           r['effective_status'] == 'AVAILABLE')
-        communitySection('绑定我本人的艺人', [
+        tradeSection('绑定我本人的艺人', [
           cast.chooser(session,
               enabled: enabled && !checking,
               personAndAvatarOnly: t['kind'] == 'EXPOSURE', changed: () {
@@ -771,7 +1069,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                   ? () => submit(() async {
                         final c =
                             t['kind'] == 'INTERVIEW' ? cast.value() : null;
-                        await act(
+                        await commandAct(
                             'grants/${r['id']}/bind',
                             {
                               'person_id':
@@ -789,7 +1087,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                   : null)
         ]),
       if (delivery.isNotEmpty)
-        communitySection('已独立审核的排期', [
+        tradeSection('已独立审核的排期', [
           communityFact('安排说明', delivery['reference']),
           communityFact('开始', communityDate(delivery['starts_at'])),
           communityFact('结束', communityDate(delivery['ends_at'])),
@@ -799,14 +1097,14 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
             tradeButton(
                 '本人确认该排期',
                 enabled && agreed
-                    ? () => act(
+                    ? () => commandAct(
                         'grants/${r['id']}/confirmation', {'accepted': true},
                         version: r['object_version'])
                     : null),
             tradeButton(
                 '不接受本次排期',
                 enabled
-                    ? () => act(
+                    ? () => commandAct(
                         'grants/${r['id']}/confirmation', {'accepted': false},
                         version: r['object_version'])
                     : null,
@@ -819,13 +1117,13 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
           ]
         ]),
       if (['INTERVIEW', 'EXPOSURE'].contains(t['kind']))
-        communitySection('未兑现时申请处理', [
+        tradeSection('未兑现时申请处理', [
           communityField(why, '具体未兑现情况', lines: 3),
           tradeButton(
               '提交权益处理申请',
               enabled
                   ? () => submit(() async {
-                        await act('grants/${r['id']}/remedies',
+                        await commandAct('grants/${r['id']}/remedies',
                             {'reason': communityRequired(why.text, '未兑现情况')},
                             version: r['object_version']);
                       })
@@ -845,8 +1143,18 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         adjusted = hd == null ? null : communityMap(hd['adjusted_quote']);
     return [
       communityHeading('核对本次权益抵扣', '金额与新分期以服务器返回的冻结报价为准。'),
-      communityFact('所用权益', t['title']),
+      ActivitySummaryCard(
+          label: '本次抵扣',
+          value: communityText(t['title']),
+          description: hold == null
+              ? '选择已审核原报价，读取服务器计算的抵扣结果后再确认。'
+              : '已读取本次占用记录，请核对调整后报价；占用不等于下单或付款成功。'),
       quoteChoice(),
+      if (hold != null) ...[
+        communityFact('当前占用状态', communityState(hold!['current_status'])),
+        tradeButton('重读本次占用', enabled && !checking ? load : null,
+            outline: true),
+      ],
       if (hold == null)
         tradeButton(
             '读取并暂时占用这份权益',
@@ -856,7 +1164,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                     r['effective_status'] == 'AVAILABLE' &&
                     quotes.any((q) => q.id == quote.text)
                 ? () => submit(() async {
-                      final out = await act(
+                      final out = await commandAct(
                           'grants/${r['id']}/checkout',
                           {
                             'quote_id':
@@ -875,7 +1183,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                     })
                 : null),
       if (adjusted != null) ...[
-        communitySection('这次应付金额', [
+        tradeSection('这次应付金额', [
           communityFact(
               '原金额',
               communityMoney(
@@ -897,7 +1205,14 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
               enabled ? (v) => setState(() => agreed = v == true) : null),
           tradeButton(
               '采用本次抵扣，返回原报价确认',
-              enabled && agreed
+              enabled &&
+                      !checking &&
+                      agreed &&
+                      hold?['current_status'] == 'HELD' &&
+                      hd?['order_id'] == null &&
+                      DateTime.tryParse('${hd?['expires_at']}')
+                              ?.isAfter(DateTime.now()) ==
+                          true
                   ? () => Navigator.pop(context, {
                         'hold_id': hold!['id'],
                         'adjusted_quote_sha256': hd['adjusted_quote_sha256'],
@@ -908,9 +1223,12 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                   : null),
           tradeButton(
               '放弃本次占用',
-              enabled
+              enabled &&
+                      !checking &&
+                      hold?['current_status'] == 'HELD' &&
+                      hd?['order_id'] == null
                   ? () => submit(() async {
-                        final out = await act(
+                        final out = await commandAct(
                             'holds/${hold!['id']}/release', {},
                             version: hold!['object_version'], reload: false);
                         if (out != null && mounted) {
@@ -930,41 +1248,74 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     ];
   }
 
+  // V5 24 uses a quiet status hierarchy. This is a reserved feature,
+  // not an available pool; no entry action or fabricated opening date.
+  Widget _statusFact(String label, String value, String description) =>
+      Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          decoration: const BoxDecoration(
+              border: Border(bottom: BorderSide(color: AccountTheme.border))),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text(label,
+                style:
+                    const TextStyle(color: AccountTheme.muted, fontSize: 12)),
+            const SizedBox(height: 8),
+            Text(value,
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Text(description,
+                style: const TextStyle(
+                    color: AccountTheme.muted, fontSize: 13, height: 1.5)),
+          ]));
+
   List<Widget> roleView() => [
         communityHeading('角色机会', '功能预留，当前不接受参与。', eyebrow: '角色机会 / 预留功能'),
-        tradeBanner('角色摇奖尚未开放', '开放条件与正式规则发布后再办理。'),
-        communityFact('功能状态', '暂未开放'),
-        communityFact('开放时间', '待发布'),
-        communitySection('参与条件与后续办理', [
+        tradeSection('角色机会', [
+          _rightsRow('角色摇奖', '正式活动与兑现办法待发布。', Icons.theater_comedy_outlined),
+          const Divider(height: 24),
+          const Text('暂未开放',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+        ]),
+        _statusFact('功能状态', '暂未开放', '开放条件与正式规则发布后再办理'),
+        _statusFact('开放时间', '待发布', '以正式活动公告为准'),
+        tradeSection('参与条件与后续办理', [
           const Text('正式开放前公示规则与兑现办法。开放后仍须核对实名、本人授权与独立演出约定；取得权益不等于取得出演权。'),
         ]),
         communityCheck('取得权益不等于获得出演权', false, null),
         communityCheck('开放后按正式规则办理授权与确认', false, null),
-        tradeButton('查看晶钻活动', () => open('pools'), outline: true),
-        tradeButton('暂未开放', null),
       ];
 
+  bool get _emptyPools =>
+      widget.view == 'pools' && rows.isEmpty && !checking && error == null;
+
   List<Widget> poolsView() => [
-        communityHeading('晶钻活动', '先读已审核规则、真实概率和库存条件，再决定是否参加。',
-            eyebrow: '本期活动 / 规则与奖品'),
+        if (_emptyPools)
+          tradeHeading('晶钻活动', fontSize: 28, eyebrow: '已审晶钻活动 / 当前无开放活动')
+        else
+          communityHeading('晶钻活动', '先读已审核规则、真实概率和库存条件，再决定是否参加。',
+              eyebrow: '本期活动 / 规则与奖品'),
         menu(),
         const SizedBox(height: 20),
         if (rows.isEmpty && !checking && error == null) ...[
-          tradeBanner('暂无已审开放活动', '当前不接受抽取，不扣用晶钻。'),
-          communitySection('参加方式与实际概率', [
-            communityFact('参加方式', '单抽 / 十连'),
-            communityFact('本期扣用晶钻', '待已审活动规则公示'),
-            communityFact('实际概率与保底', '待公示'),
+          tradeSection('本期晶钻活动', [
+            _rightsRow(
+                '暂无已审开放活动', '发布后先核对本期活动规则。', Icons.card_giftcard_outlined),
+          ]),
+          _statusFact('当前状态', '暂无开放活动', '当前不接受抽取，不扣用晶钻'),
+          _statusFact('参加方式', '单抽 / 十连', '扣用晶钻以本期已审活动规则公示为准'),
+          _statusFact('实际概率与保底', '待公示', '规则发布前不推算中奖概率或承诺保底结果'),
+          tradeSection('参加前核对', [
+            const Text('先核对本期条款、实际概率、库存和扣用晶钻。结果未知时先查询原次记录，沿用原请求核对，不重复抽取。',
+                style: TextStyle(color: AccountTheme.muted, height: 1.6)),
             appNotice('十连的前九次与第十次保底分支分别核对；十次并非独立同概率。库存不足暂停整次抽取。'),
           ]),
           communityCheck('核对本期条款、实际概率与扣用晶钻', false, null),
           communityCheck('结果未知先查原次记录，沿用原请求核对', false, null),
-          tradeButton('查询原次结果', () => open('draws'), outline: true),
-          tradeButton('暂无开放活动', null),
         ],
         for (final r in rows)
-          communitySection(
-              communityText(communityMap(r['config'])['version']), [
+          tradeSection(communityText(communityMap(r['config'])['version']), [
             communityFact('单次 / 十连晶钻',
                 '${communityMap(r['config'])['single_points']} / ${communityMap(r['config'])['ten_points']}'),
             communityFact('截止时间', communityDate(r['ends_at'])),
@@ -978,7 +1329,12 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     final c = communityMap(r['config']), dist = communityMap(r['distribution']);
     return [
       communityHeading(communityText(c['version']), '开奖结果由服务器保存，每次请求只扣一次。'),
-      communityFact('活动进展', communityState(r['current_status'])),
+      ActivitySummaryCard(
+          label: '晶钻活动 · 当前阶段',
+          value: communityState(r['current_status']),
+          icon: Icons.card_giftcard_outlined,
+          description:
+              lotteryAvailability(r) ?? '先核对概率、条款和本次扣用晶钻；提交时服务器仍会检查资格及库存。'),
       if (r['publication_notice'] != null) ...[
         communityFact(
             '本版实际公示时间',
@@ -991,14 +1347,14 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
       if (lotteryAvailability(r) != null) appNotice(lotteryAvailability(r)!),
       communityFact('开始', communityDate(r['starts_at'])),
       communityFact('截止', communityDate(r['ends_at'])),
-      communitySection('本次完整条款', [
+      tradeSection('本次完整条款', [
         SelectableText(communityText(r['terms'])),
         communityFact('单次扣用', '${c['single_points']}晶钻'),
         communityFact('十连扣用', '${c['ten_points']}晶钻'),
         appNotice('十连先按原规则抽取前九次，满足条件时第十次走保底分支；十次并非独立同概率。库存不足暂停整次抽取。')
       ]),
       for (final p in communityRows(dist['prizes']))
-        communitySection(redemptionKind(p['kind']), [
+        tradeSection(redemptionKind(p['kind']), [
           communityFact('单次概率', redemptionPercent(p['single_probability'])),
           communityFact('第十次综合概率', redemptionPercent(p['tenth_probability'])),
           communityFact(
@@ -1007,7 +1363,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
               '十次期望数量', redemptionExpectedCount(p['expected_count_per_ten']))
         ]),
       for (final p in communityRows(r['prize_promises']))
-        communitySection(
+        tradeSection(
             '奖品原承诺 · ${communityText(communityMap(p['template'])['title'])}',
             templateFacts(communityMap(p['template']))),
       communityCheck('我已核对本次条款、实际概率、扣用晶钻及库存不足处理', agreed,
@@ -1017,17 +1373,44 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
             count == 1 ? '按本次规则单抽' : '按本次规则十连',
             enabled && agreed && lotteryAvailability(r) == null
                 ? () => submit(() async {
+                      final epoch = session.epoch,
+                          party = session.partyId,
+                          generation = ticket;
+                      final poolId = r['id'],
+                          rulesHash = r['rules_sha256'],
+                          points =
+                              count == 1 ? c['single_points'] : c['ten_points'];
+                      final snapshot = jsonEncode(r);
+                      bool current() =>
+                          mounted &&
+                          epoch == session.epoch &&
+                          party == session.partyId &&
+                          generation == ticket &&
+                          enabled &&
+                          !checking &&
+                          agreed &&
+                          detail != null &&
+                          detail!['id'] == poolId &&
+                          detail!['rules_sha256'] == rulesHash &&
+                          jsonEncode(detail) == snapshot &&
+                          lotteryAvailability(detail!) == null;
+                      if (!current()) return;
                       if (await confirm('确认本次${count == 1 ? '单抽' : '十连'}',
-                          '将扣用${count == 1 ? c['single_points'] : c['ten_points']}晶钻。提交后先核对同一次结果，不更换编号重复抽取。')) {
-                        final out = await act(
+                              '将扣用$points晶钻。提交后先核对同一次结果，不更换编号重复抽取。') &&
+                          current()) {
+                        final out = await commandAct(
                             'draws',
                             {
-                              'pool_id': r['id'],
-                              'rules_sha256': r['rules_sha256'],
+                              'pool_id': poolId,
+                              'rules_sha256': rulesHash,
                               'count': count
                             },
                             reload: false,
-                            validate: validateDraw);
+                            validate: (value) => validateDrawCommand(value, {
+                                  'pool_id': poolId,
+                                  'rules_sha256': rulesHash,
+                                  'count': count,
+                                }));
                         if (out != null && mounted) {
                           setState(() => agreed = false);
                           open('draw', out['id']);
@@ -1054,7 +1437,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         if (rows.isEmpty && !checking && error == null)
           appNotice('暂无属于当前身份的开奖记录。'),
         for (final r in rows)
-          communitySection(
+          tradeSection(
               '${communityDate(communityMap(r['data'])['at'])} · ${communityMap(r['data'])['count']}次',
               [
                 communityFact('实际扣用', '${communityMap(r['data'])['points']}晶钻'),
@@ -1069,10 +1452,14 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
     return [
       communityHeading('这一次的抽取结果', '以下内容读取服务器保存的原结果。'),
       communityFact('时间', communityDate(d['at'])),
-      communityFact('实际扣用', '${d['points']}晶钻'),
-      communityFact('状态', communityState(r['current_status'])),
+      ActivitySummaryCard(
+          label: '本次实际扣用',
+          value: '${d['points']} 晶钻',
+          icon: Icons.diamond_outlined,
+          description:
+              '状态：${communityState(r['current_status'])}。下方为已保存原结果；取得权益后仍须按各份权益的实际状态办理。'),
       for (final p in communityRows(d['results']))
-        communitySection(
+        tradeSection(
             '第${(p['index'] as int) + 1}次 · ${redemptionKind(p['kind'])}', [
           communityFact(
               '保底分支', p['guaranteed_slot'] == true ? '本次按保底规则抽取' : '按本次原规则抽取'),
@@ -1089,7 +1476,15 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
   @override
   Widget build(BuildContext context) => tradeScaffold(
       context,
-      '晶钻与权益',
+      switch (widget.view) {
+        'catalog' => '晶钻权益中心',
+        'role' => '角色摇奖预留',
+        'pools' || 'pool' => '晶钻活动',
+        'grant' || 'checkout' => '兑换权益详情',
+        'grants' => '我的权益',
+        'draws' || 'draw' => '开奖记录',
+        _ => '晶钻与权益',
+      },
       [
         ...feedback,
         ...switch (widget.view) {
@@ -1106,5 +1501,36 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
         tradeButton('重新读取当前记录', busy ? null : load, outline: true)
       ],
       locked: recovery != null ||
-          widget.view == 'checkout' && hold?['current_status'] == 'HELD');
+          widget.view == 'checkout' && hold?['current_status'] == 'HELD',
+      footer: widget.view == 'catalog'
+          ? _rightsFooter(
+              OutlinedButton(
+                  onPressed: !enabled || checking
+                      ? null
+                      : () => Navigator.pushNamed(context, '/wallet/rules'),
+                  child: const Text('晶钻规则')),
+              FilledButton(
+                  onPressed: !enabled || checking ? null : () => open('grants'),
+                  child: const Text('查看我的权益')))
+          : widget.view == 'grants' && widget.quoteId == null
+              ? _rightsFooter(
+                  OutlinedButton(
+                      onPressed:
+                          !enabled || checking ? null : () => open('draws'),
+                      child: const Text('查询开奖记录')),
+                  FilledButton(
+                      onPressed:
+                          !enabled || checking ? null : () => open('catalog'),
+                      child: const Text('查看兑换目录')))
+              : _emptyPools || widget.view == 'role'
+                  ? _rightsFooter(
+                      OutlinedButton(
+                          onPressed: !enabled || checking
+                              ? null
+                              : () => open(
+                                  widget.view == 'role' ? 'pools' : 'draws'),
+                          child: Text(
+                              widget.view == 'role' ? '查看已公示活动' : '查询原次结果')),
+                      const FilledButton(onPressed: null, child: Text('尚未开放')))
+                  : null);
 }

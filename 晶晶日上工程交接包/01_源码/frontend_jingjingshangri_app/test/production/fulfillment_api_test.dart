@@ -107,10 +107,16 @@ void main() {
   test('问题请求IfMatch使用PROJECT履约版本，503恢复原内容原版本原key', () async {
     var count = 0;
     final a = fulfillmentAdapter(
-        override: (r) => r.path.endsWith('/cases') && ++count == 1
-            ? envelope({'code': 'SERVICE_UNAVAILABLE'},
-                status: 503, error: true)
-            : null);
+        override: (r) {
+          if (!r.path.endsWith('/cases')) return null;
+          if (++count == 1) {
+            return envelope({'code': 'SERVICE_UNAVAILABLE'},
+                status: 503, error: true);
+          }
+          final result = fulfillmentData(version: 9, issue: true);
+          result['cases'][0]['data'].addAll(r.data);
+          return envelope(result);
+        });
     final s = await buyerSession(a),
         api = ProductionApi(s),
         p = ProductionRecord.parse(fulfillmentProjectData()),

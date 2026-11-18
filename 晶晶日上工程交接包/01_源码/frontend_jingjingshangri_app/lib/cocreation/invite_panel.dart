@@ -1,3 +1,4 @@
+import 'cocreation_visual.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -295,8 +296,10 @@ class _CocreationInvitePanelState extends State<CocreationInvitePanel> {
 
   @override
   Widget build(BuildContext context) =>
-      communitySection(widget.host ? '邀请家人或朋友' : '领取家人或朋友的邀请', [
-        const Text('邀请不绑定手机号，持有者满足条件即可领取一次；请只转给指定的人。领取不等于本人参加或授权。'),
+      cocreationSection(widget.host ? '邀请家人或朋友' : '领取家人或朋友的邀请', [
+        Text(widget.host
+            ? '生成邀请 → 私下转交指定的人 → 对方领取并独立确认参加。邀请不绑定手机号，请勿公开传播。'
+            : '粘贴邀请 → 选择本人有效实名档案 → 领取后前往房间填写参加资料。领取不等于参加或授权。'),
         if (error != null) appNotice(error!),
         if (notice != null) appNotice(notice!),
         if (recovery != null) ...[

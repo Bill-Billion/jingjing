@@ -167,13 +167,15 @@ class _FollowupListState extends State<_FollowupList> {
           Text(widget.history ? '暂无正式提交记录。' : '平台尚未给这份需求报价。'),
         for (final r in histories)
           Container(
-              decoration: const BoxDecoration(
-                  border:
-                      Border(bottom: BorderSide(color: AccountTheme.border))),
-              child: ListTile(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                  color: AccountTheme.surface,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AccountTheme.border)),
+              child: Material(type: MaterialType.transparency, child: ListTile(
                 key: ValueKey('story-history-${r.id}'),
                 contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 0, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 title: Text('第 ${r.number} 次正式提交',
                     style: const TextStyle(fontWeight: FontWeight.w600)),
                 subtitle: Text(tradeDate(r.data['submitted_at']),
@@ -181,7 +183,7 @@ class _FollowupListState extends State<_FollowupList> {
                         fontSize: 12, color: AccountTheme.muted, height: 1.6)),
                 trailing: const Icon(Icons.north_east, size: 18),
                 onTap: busy ? null : () => detail(r),
-              )),
+              ))),
         if (selected != null) ...[
           const Divider(height: 32),
           Text('第 ${selected!.data['submission_number']} 次正式提交 · 原内容',

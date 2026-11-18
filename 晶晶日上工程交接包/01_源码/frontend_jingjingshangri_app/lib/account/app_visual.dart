@@ -8,7 +8,7 @@ class HomeStationHero extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 240),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.zero,
+          borderRadius: BorderRadius.circular(20),
           color: const Color(0xFF665846),
           image: const DecorationImage(
               image: AssetImage('assets/images/home-station-v2.png'),
@@ -37,7 +37,7 @@ class ManuscriptHero extends StatelessWidget {
       constraints: const BoxConstraints(minHeight: 150),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.zero,
+          borderRadius: BorderRadius.circular(20),
           color: const Color(0xFFF0E5D7),
           image: const DecorationImage(
               image: AssetImage('assets/images/story-manuscript-v2.png'),
@@ -53,12 +53,13 @@ class ManuscriptHero extends StatelessWidget {
                   children: [
                     Text(title,
                         style: const TextStyle(
+                            color: const Color(0xFF151515),
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
                             height: 1.35)),
                     const SizedBox(height: 8),
                     Text(subtitle,
-                        style: const TextStyle(fontSize: 14, height: 1.5)),
+                        style: const TextStyle(color: Color(0xFF151515), fontSize: 14, height: 1.5)),
                   ]))));
 }
 
@@ -75,10 +76,9 @@ Widget appNotice(String text, {IconData icon = Icons.info_outline}) =>
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-            color: const Color(0xFFE7E4DA),
-            border: const Border(
-                top: BorderSide(color: AccountTheme.border),
-                bottom: BorderSide(color: AccountTheme.border))),
+            color: AccountTheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AccountTheme.border)),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Icon(icon, color: AccountTheme.accent, size: 24),
           const SizedBox(width: 12),
@@ -100,7 +100,7 @@ class _UploadBorder extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final path = Path()
-      ..addRRect(RRect.fromRectAndRadius(Offset.zero & size, Radius.zero));
+      ..addRRect(RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(16)));
     final paint = Paint()
       ..color = AccountTheme.border
       ..style = PaintingStyle.stroke

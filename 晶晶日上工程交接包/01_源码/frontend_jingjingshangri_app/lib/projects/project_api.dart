@@ -272,6 +272,39 @@ class ProjectsApi {
     return bytes;
   }
 
+  // A confirmer may read this agreement's single evidence through the project
+  // endpoint; do not widen the owner-only generic project evidence path.
+  Future<Uint8List> agreementEvidence(ProjectRecord original) async {
+    final p = owner(), epoch = session.epoch;
+    if (!['PARTICIPATION', 'INCOME_AGREEMENT'].contains(original.kind)) {
+      throw const AccountError(403, 'PROJECT_EVIDENCE_FORBIDDEN');
+    }
+    final assetId = original.data['evidence_asset_id'];
+    if (!projectIsId(assetId)) {
+      throw const AccountError(403, 'EVIDENCE_NOT_ATTACHED');
+    }
+    void verify(ProjectRecord fresh) {
+      check(epoch, p);
+      if (fresh.version != original.version || fresh.hash != original.hash ||
+          fresh.data['evidence_asset_id'] != assetId) {
+        throw const AccountError(412, 'VERSION_CONFLICT');
+      }
+      if (fresh.owner != p && !(fresh.data['confirmers'] as List)
+          .any((signer) => signer['party_id'] == p)) {
+        throw const AccountError(403, 'PROJECT_EVIDENCE_FORBIDDEN');
+      }
+    }
+    verify(await record(original.id, kind: original.kind));
+    final bytes = await session.readBytes(
+        '/api/v1/projects/records/${original.id}/evidence/$assetId',
+        actingParty: p);
+    check(epoch, p);
+    // The endpoint verifies private storage length/hash and rechecks access.
+    // Re-read the agreement too so a superseded local version is not saved.
+    verify(await record(original.id, kind: original.kind));
+    return bytes;
+  }
+
   Future<List<Map<String, dynamic>>> supplyChoices(String kind) async {
     final p = owner(),
         epoch = session.epoch,

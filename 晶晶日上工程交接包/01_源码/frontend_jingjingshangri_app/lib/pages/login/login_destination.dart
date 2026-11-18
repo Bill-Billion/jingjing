@@ -174,6 +174,8 @@ const _readAndFormRoutes = <String>{
   '/wallet',
   '/wallet/level-six',
   '/wallet/limits',
+  '/wallet/refunds',
+  '/wallet/guardian-refunds',
   '/wallet/points',
   '/wallet/recharge',
   '/wallet/records',

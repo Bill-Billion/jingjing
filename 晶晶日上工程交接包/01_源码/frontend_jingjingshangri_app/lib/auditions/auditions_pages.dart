@@ -1,3 +1,4 @@
+import 'auditions_visual.dart';
 import '../contract_six/contract_six_models.dart';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -167,6 +168,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   }
 
   void setRecord(AuditionRecord r) {
+    if (record?.id == r.id && record!.version > r.version) return;
     if (record == null ||
         jsonEncode(record!.data['delivery']) !=
             jsonEncode(r.data['delivery'])) {
@@ -180,9 +182,24 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
   }
 
   Future<int?> latest() async {
-    final r = await api.record(widget.id ?? '');
-    if (mounted) setState(() => setRecord(r));
-    return r.version;
+    final t = ticket, epoch = widget.session.epoch, p = widget.session.partyId;
+    final id = widget.id ?? '';
+    final r = await api.record(id);
+    api.check(epoch, p);
+    if (!mounted || t != ticket || widget.id != id) {
+      throw const AccountError(0, 'CONTEXT_CHANGED');
+    }
+    setState(() => setRecord(r));
+    return record!.version;
+  }
+
+  void mergeMessages(List<AuditionRecord> incoming) {
+    final merged = {for (final row in messages) row.id: row};
+    for (final row in incoming) {
+      final old = merged[row.id];
+      if (old == null || row.version >= old.version) merged[row.id] = row;
+    }
+    messages..clear()..addAll(merged.values);
   }
 
   Future<void> load({bool more = false}) async {
@@ -200,6 +217,11 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         cursor = null;
         contacts = null;
         itinerary = null;
+        if (widget.mode == 'booking') supplements.clear();
+        if (widget.mode == 'messages') {
+          messages.clear();
+          messageCursor = null;
+        }
       }
     });
     try {
@@ -214,32 +236,54 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           offers.addAll(r.items);
           cursor = r.cursor;
         case 'book':
-          offer = await api.offer(widget.id ?? '',
+          final loadedOffer = await api.offer(widget.id ?? '',
               invitationId: widget.invitationId);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          offer = loadedOffer;
         case 'bookings':
         case 'offers':
           final r = await api.records(
               widget.mode == 'offers' ? 'OFFER' : 'BOOKING',
               cursor: more ? cursor : null);
-          records.addAll(r.items);
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          final merged = {for (final row in records) row.id: row};
+          for (final row in r.items) {
+            final old = merged[row.id];
+            if (old == null || row.version >= old.version) merged[row.id] = row;
+          }
+          records..clear()..addAll(merged.values);
           cursor = r.cursor;
         case 'offer':
-          setRecord(await api.record(widget.id ?? ''));
+          final loaded = await api.record(widget.id ?? '');
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          setRecord(loaded);
         case 'booking':
         case 'messages':
-          setRecord(await api.record(widget.id ?? ''));
-          if (record!.kind != 'BOOKING') {
+          final loaded = await api.record(widget.id ?? '');
+          if (!mounted || t != ticket) return;
+          api.check(epoch, p);
+          if (loaded.kind != 'BOOKING') {
             throw const AccountError(400, 'INVALID_ACTION');
           }
+          setRecord(loaded);
+          final booking = record!;
           if (widget.mode == 'booking') {
-            supplements.clear();
-            supplements.addAll(await api.supplements(record!.id));
-          } else if (['OPEN', 'FROZEN', 'ARCHIVED']
-              .contains(record!.conversation)) {
-            final r = await api.messages(record!.id);
+            final loadedSupplements = await api.supplements(booking.id);
+            if (!mounted || t != ticket) return;
+            api.check(epoch, p);
+            if (record?.id != booking.id || record?.version != booking.version) return;
+            supplements..clear()..addAll(loadedSupplements);
+          } else if (['OPEN', 'FROZEN', 'ARCHIVED'].contains(booking.conversation)) {
+            final page = await api.messages(booking.id);
+            if (!mounted || t != ticket) return;
+            api.check(epoch, p);
+            if (record?.id != booking.id || record?.version != booking.version) return;
             messages.clear();
-            messages.addAll(r.items);
-            messageCursor = r.cursor;
+            mergeMessages(page.items);
+            messageCursor = page.cursor;
           }
         default:
           throw const AccountError(400, 'INVALID_PATH');
@@ -248,27 +292,36 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           widget.mode == 'catalog' && widget.invitationId == null ? null : p);
       if (mounted && t == ticket) setState(() {});
     } on AccountError catch (e) {
-      if (mounted && t == ticket) setState(() => error = v5Error(e));
+      if (mounted && t == ticket && widget.session.epoch == epoch &&
+          widget.session.partyId == p) setState(() => error = v5Error(e));
     } finally {
-      if (mounted && t == ticket) setState(() => busy = false);
+      if (mounted && t == ticket && widget.session.epoch == epoch &&
+          widget.session.partyId == p) setState(() => busy = false);
     }
   }
 
   Future<void> moreMessages() async {
-    if (messageCursor == null || record == null) return;
-    setState(() => busy = true);
+    if (busy || messageCursor == null || record == null) return;
+    final booking = record!, before = messageCursor!;
+    final t = ++ticket, epoch = widget.session.epoch, p = widget.session.partyId;
+    setState(() { busy = true; error = null; });
+    bool sameRequest() => mounted && t == ticket &&
+        widget.session.epoch == epoch && widget.session.partyId == p;
+    bool current() => sameRequest() &&
+        record?.id == booking.id && record?.version == booking.version &&
+        messageCursor == before;
     try {
-      final r = await api.messages(record!.id, cursor: messageCursor);
-      if (mounted) {
-        setState(() {
-          messages.addAll(r.items);
-          messageCursor = r.cursor;
-        });
-      }
+      final page = await api.messages(booking.id, cursor: before);
+      if (!current()) return;
+      api.check(epoch, p);
+      setState(() {
+        mergeMessages(page.items);
+        messageCursor = page.cursor;
+      });
     } on AccountError catch (e) {
-      if (mounted) setState(() => error = v5Error(e));
+      if (current()) setState(() => error = v5Error(e));
     } finally {
-      if (mounted) setState(() => busy = false);
+      if (sameRequest()) setState(() => busy = false);
     }
   }
 
@@ -305,7 +358,15 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
     }
   }
 
-  void go(String path) => Navigator.pushNamed(context, path);
+  Future<void> go(String path) async {
+    await Navigator.pushNamed(context, path);
+    // Actions and original-order payment run on child routes. Re-read on
+    // return instead of leaving the parent at its pre-action status.
+    if (mounted && !busy && api.pendingOperations.isEmpty &&
+        !['book', 'messages'].contains(widget.mode)) {
+      await load();
+    }
+  }
   void action(AuditionRecord r, String action) =>
       go('/auditions/action?bookingId=${r.id}&action=$action');
   @override
@@ -315,7 +376,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
       'catalog' => '可约艺人',
       'book' => '约一次试镜',
       'offers' => '我的试镜方案',
-      'offer' => '试镜方案与开关',
+      'offer' => '试镜设置',
       'bookings' => '我的试镜',
       'messages' => '本单会话',
       _ => '试镜进度与取样'
@@ -332,8 +393,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                       header: true,
                       child: const Text('试镜',
                           style: TextStyle(
-                              fontFamily: AccountTheme.serif,
-                              fontSize: 56,
+                              fontFamily: AccountTheme.sans,
+                              fontSize: 28,
                               height: 1.1,
                               fontWeight: FontWeight.w900)))),
               TextButton(
@@ -345,8 +406,12 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                 style: TextStyle(
                     fontSize: 12, height: 1.6, color: AccountTheme.muted)),
             const SizedBox(height: 22),
-          ] else
-            tradeHeading(title, eyebrow: '真实用途 / 正规场地 / 一口价含交通'),
+          ] else if (widget.mode == 'messages')
+            tradeHeading('试镜订单会话',
+                eyebrow: '订单会话 / ${r == null ? '读取中' : auditionConversations[r.conversation]}',
+                fontSize: 24)
+          else
+            tradeHeading(title, eyebrow: '真实用途 / 正规场地 / 一口价含交通', fontSize: 28),
           V5RecoveryPanel(
               api: api,
               label: api.recoveryLabel,
@@ -365,70 +430,26 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                 : '这里只读取本次已接受定向邀约匹配的真实方案。'),
             if (widget.invitationId == null) ...[
               cityScope(),
-              TextField(
-                  controller: city,
-                  onChanged: (_) => setState(() => independentCity = true),
-                  decoration: const InputDecoration(labelText: '城市筛选')),
-              tradeButton('按城市查找', busy ? null : () => load(), outline: true),
+              LayoutBuilder(builder: (context, constraints) {
+                final input = TextField(
+                    controller: city,
+                    enabled: !busy,
+                    onChanged: (_) => setState(() => independentCity = true),
+                    decoration: const InputDecoration(labelText: '城市筛选'));
+                final search = OutlinedButton(
+                    onPressed: busy ? null : () => load(),
+                    child: const Text('按城市查找'));
+                if (constraints.maxWidth < 320 ||
+                    MediaQuery.textScalerOf(context).scale(14) > 20) {
+                  return Column(crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [input, const SizedBox(height: 10), search]);
+                }
+                return Row(children: [Expanded(child: input),
+                    const SizedBox(width: 12), search]);
+              }),
             ],
-            for (final x in offers)
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 18),
-                decoration: const BoxDecoration(
-                    border:
-                        Border(bottom: BorderSide(color: AccountTheme.border))),
-                child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                          width: 104,
-                          height: 170,
-                          color: const Color(0xFFE7E4DA),
-                          alignment: Alignment.center,
-                          child: const Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Text('未提供公开肖像',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontSize: 12,
-                                      height: 1.5,
-                                      color: AccountTheme.muted)))),
-                      const SizedBox(width: 16),
-                      Expanded(
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                            Text(x.title,
-                                style: const TextStyle(
-                                    fontFamily: AccountTheme.serif,
-                                    fontSize: 24,
-                                    height: 1.25,
-                                    fontWeight: FontWeight.w700)),
-                            const SizedBox(height: 10),
-                            Text('${x.raw['city']} · ${x.raw['service_area']}',
-                                style:
-                                    const TextStyle(fontSize: 12, height: 1.6)),
-                            const SizedBox(height: 12),
-                            Text(
-                                x.raw['unit_minor'] == null
-                                    ? '价格未公开'
-                                    : v5Money(x.raw['unit_minor']),
-                                style: const TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.w700)),
-                            const Text('一口价 · 含交通',
-                                style: TextStyle(
-                                    fontSize: 11, color: AccountTheme.muted)),
-                            const SizedBox(height: 12),
-                            tradeButton(
-                                '约试镜 ↗',
-                                busy
-                                    ? null
-                                    : () => go(
-                                        '/auditions/book?offerId=${x.id}${widget.invitationId == null ? '' : '&invitationId=${widget.invitationId}'}')),
-                          ])),
-                    ]),
-              ),
-            if (!busy && offers.isEmpty) appNotice('当前筛选没有仍可约的有效方案。'),
+            for (final x in offers) _catalogOffer(x),
+            if (!busy && error == null && offers.isEmpty) appNotice('当前筛选没有仍可约的有效方案。'),
             tradeButton('我的试镜进度', () => go('/auditions/bookings'),
                 outline: true),
             tradeButton('本人发布与接单方案', () => go('/auditions/offers'),
@@ -436,11 +457,17 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           ],
           if (o != null) _bookingForm(o),
           if (['offers', 'bookings'].contains(widget.mode)) ...[
+            auditionGuide(widget.mode == 'offers' ? '我的发布方案' : '接续本次试镜',
+                widget.mode == 'offers'
+                    ? '核对方案审核和公开设置；发布方案不等于收到预约。'
+                    : '在同一记录内核对付款、接单、取样与售后。身份改变后可办理动作仍由服务器核验。'),
             if (widget.mode == 'offers')
               tradeButton('提交本人试镜方案审核', () => go('/auditions/new')),
             for (final x in records)
               tradeSection(x.title, [
                 tradeFact('状态', auditionStates[x.status]),
+                Text(auditionNextStep(x), style: const TextStyle(
+                    color: AccountTheme.muted, height: 1.6)),
                 if (x.kind == 'BOOKING')
                   ...auditionAppointmentFacts(v5Map(x.data['appointment'])),
                 tradeButton(
@@ -452,6 +479,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             if (!busy && records.isEmpty) appNotice('本人当前没有可读的本类试镜记录。'),
           ],
           if (r != null && r.kind == 'OFFER') ...[
+            auditionGuide(auditionStates[r.status]!, auditionNextStep(r), label: '方案进度'),
             tradeSection(r.title, [
               tradeFact('状态', auditionStates[r.status]),
               tradeFact('价格', v5Money(r.data['offer']['unit_minor'])),
@@ -465,20 +493,33 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             ]),
             if (r.status == 'PUBLISHED')
               V5Form(
+                  actionInFooter: true,
                   api: api,
-                  title: '分别控制公开预约与公开价格',
-                  action: '保存本方案公开选择',
+                  title: '公开选择',
+                  action: '保存试镜公开设置',
                   suffix: '/offers/${r.id}/visibility',
                   version: r.version,
                   initial: {
                     'public_booking': r.data['offer']['public_booking'],
                     'public_price': r.data['offer']['public_price']
                   },
-                  fields: const [
-                    V5Field('public_booking', '允许公开预约',
-                        type: 'bool', required: false),
-                    V5Field('public_price', '公开本方案价格',
-                        type: 'bool', required: false)
+                  fields: const [],
+                  factsBuilder: (v) => [
+                    tradeFact('公开接试镜', v['public_booking'] == true ? '开启' : '关闭'),
+                    tradeFact('公开一口价', v['public_price'] == true ? '开启' : '关闭'),
+                  ],
+                  extra: (v, set, enabled) => [
+                    for (final setting in [
+                      ('public_booking', '公开接试镜'),
+                      ('public_price', '公开一口价')
+                    ])
+                      SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(setting.$2),
+                          value: v[setting.$1] == true,
+                          onChanged: enabled ? (value) => set(setting.$1, value) : null),
+                    const Text('这里只调整本版公开选择，不改原订单价格、规则或独立授权。',
+                        style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
                   ],
                   buildBody: (v) => {
                         'public_booking': v['public_booking'] == true,
@@ -501,20 +542,92 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         ]);
   }
 
+  Widget _catalogOffer(AuditionOffer offer) {
+    final location = [offer.raw['city'], offer.raw['service_area']]
+        .whereType<String>().map((value) => value.trim())
+        .where((value) => value.isNotEmpty).join(' · ');
+    return Container(
+        padding: const EdgeInsets.symmetric(vertical: 20),
+        decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: AccountTheme.border))),
+        child: LayoutBuilder(builder: (context, constraints) {
+          final compact = constraints.maxWidth < 320 ||
+              MediaQuery.textScalerOf(context).scale(14) > 20;
+          final portrait = Container(
+              width: 120, height: 180,
+              decoration: BoxDecoration(color: AccountTheme.selectedSurface,
+                  borderRadius: BorderRadius.circular(14)),
+              alignment: Alignment.center,
+              child: const Padding(padding: EdgeInsets.all(12),
+                  child: Text('未提供公开肖像', textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 12, color: AccountTheme.muted))));
+          final summary = Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('已审试镜方案', style: TextStyle(fontSize: 11, color: AccountTheme.accent)),
+            const SizedBox(height: 8),
+            Text(offer.title, style: const TextStyle(fontSize: 24,
+                height: 1.25, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 12),
+            Text(location, style: const TextStyle(fontSize: 12, height: 1.6)),
+            const SizedBox(height: 10),
+            Text(offer.raw['mode'] == 'OFFLINE' ? '线下正规场地试镜' : '线上材料试镜',
+                style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+            const SizedBox(height: 8),
+            Text(offer.slots.isEmpty ? '本方案未返回公开时段'
+                : '已公开时段：${offer.slots.length} 个',
+                style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+            const Text('公开时段不代表实时剩余可约量，预约前请重新核对。',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          ]);
+          final price = Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(offer.raw['unit_minor'] == null ? '价格未公开' : v5Money(offer.raw['unit_minor']),
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+            const Text('一口价 · 含交通', style: TextStyle(fontSize: 11, color: AccountTheme.muted)),
+          ]);
+          final book = FilledButton(
+              onPressed: busy ? null : () => go(
+                  '/auditions/book?offerId=${offer.id}${widget.invitationId == null ? '' : '&invitationId=${widget.invitationId}'}'),
+              child: const Text('约试镜 ↗'));
+          return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            if (compact) ...[Align(alignment: Alignment.centerLeft, child: portrait),
+              const SizedBox(height: 14), summary]
+            else Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              portrait, const SizedBox(width: 16), Expanded(child: summary)]),
+            const SizedBox(height: 18),
+            if (compact) ...[price, const SizedBox(height: 12), book]
+            else Row(children: [Expanded(child: price), const SizedBox(width: 12), book]),
+          ]);
+        }));
+  }
+
   Widget _bookingForm(AuditionOffer o) =>
       Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        tradeSection(o.title, [
-          tradeFact(
-              '价格',
-              o.raw['unit_minor'] == null
-                  ? '此方案未公开价格，安全核查后核对本次完整约定'
-                  : v5Money(o.raw['unit_minor'])),
-          tradeFact('交通', '含在一口价内；不在站外追加现金收取'),
-          tradeFact('服务范围', o.raw['service_area'])
-        ]),
+        Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(16)),
+            child: Row(children: [
+              Container(width: 64, height: 80,
+                  decoration: BoxDecoration(color: AccountTheme.selectedSurface,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: const Icon(Icons.person_outline, color: AccountTheme.muted)),
+              const SizedBox(width: 16),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                Text(o.title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 8),
+                Text([o.raw['city'], o.raw['service_area']]
+                        .whereType<String>().map((value) => value.trim())
+                        .where((value) => value.isNotEmpty).join(' · '),
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              ])),
+            ])),
+        auditionGuide('先说明用途，再确认约定',
+            '填写真实场地、时间与用途，提交安全核查。通过后再确认订单和付款，之后等待艺人接单。', label: '预约准备'),
         if (!widget.session.isOwner)
           appNotice('当前机构成员可办理获授权的试镜预约，发起新的买方预约须由有效负责人确认。'),
         V5Form(
+            actionInFooter: true,
             api: api,
             canSubmit: widget.session.isOwner,
             title: '真实预约用途',
@@ -537,6 +650,17 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                   'adult_confirmed', '我确认按本人已核实的成年身份办理，理解试镜不等于取得出演或发行权',
                   type: 'bool')
             ],
+            beforeField: (field, values, change, enabled) =>
+                field.keyName == 'adult_confirmed' ? [
+                  const Text('试镜一口价', style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                  const SizedBox(height: 6),
+                  Text(o.raw['unit_minor'] == null ? '价格未公开' : v5Money(o.raw['unit_minor']),
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 8),
+                  const Text('含交通；以本次完整约定为准，不在站外追加现金收取。',
+                      style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+                  const SizedBox(height: 20),
+                ] : const <Widget>[],
             restore: (b) {
               final a = v5Map(b['appointment']);
               return {
@@ -588,6 +712,36 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
         allOpened = r.mediaIds.isNotEmpty && r.mediaIds.every(opened.contains),
         d = r.data;
     return [
+      auditionGuide(auditionStates[r.status]!, auditionNextStep(r), label: '本单当前进度'),
+      if (['REFUND_REQUIRED', 'REFUNDED'].contains(r.status)) ...[
+        tradeBanner(
+            r.status == 'REFUNDED' && r.raw['refund_is_verified'] == true
+                ? '全额退款已核实' : '退款处理中 · 等待核验',
+            r.status == 'REFUNDED' && r.raw['refund_is_verified'] == true
+                ? '本次原单退款已由渠道核实。退款详情与凭证请查看原退款记录，本次未约成的试镜不因此重新开放。'
+                : '原单退款要求已记录，尚不能称为款项已退回。实际到账以原渠道核实为准，不承诺固定退款周期。',
+            icon: Icons.receipt_long_outlined),
+        tradeFact(r.status == 'REFUNDED' && r.raw['refund_is_verified'] == true
+                ? '本次核实退款金额' : '本次应退金额',
+            v5Money(d['refund_minor'])),
+        const Text('未约成不开放双方自由会话。其他预约需另行确认，不沿用本单沟通权限。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        tradeButton('看看其他可约艺人',
+            busy ? null : () => go('/auditions/catalog'), outline: true),
+      ],
+
+      if (r.status == 'DELIVERED') ...[
+        const Text('试镜交付待确认',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        Text('原记录版本 ${r.version} · ${d['rules']['photo_count']} 照 / ${d['rules']['video_count']} 视频',
+            style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        const SizedBox(height: 12),
+        const Text('确认只针对本次试镜履约，不代表最终录用或后续参演授权。对现场或素材有异议，请使用本单争议入口。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        const SizedBox(height: 16),
+      ],
+
       tradeSection(r.title, [
         tradeFact('实际状态', auditionStates[r.status]),
         ...auditionAppointmentFacts(v5Map(d['appointment'])),
@@ -598,7 +752,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
             '${d['rules']['acceptance_hours']} 小时'),
         SelectableText(d['rules']['terms'])
       ]),
-      appNotice('试镜完成不授予买家出演、发行或重新生成权。付款、接受、联系方式与取样许可分别核对。'),
+      appNotice('试镜完成不授予买家出演、发行或重新生成权。付款、接受、联系方式与取样许可分别核对。评价不能代替取样验收、实际付款或争议处理。'),
       if (d['order_id'] != null)
         tradeButton(
             '原订单、真实付款与退款', () => go('/trade/record?recordId=${d['order_id']}'),
@@ -688,7 +842,7 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
               }),
         if (isBuyer && r.status == 'DELIVERED') ...[
           appNotice(d['rules']['acceptance_policy'] == 'CONTRACT_20261029'
-              ? '本单从交付审核通过起计48小时；文件不可用或争议时不能自动完成。本人收讫仍须实际取得全部取样，不会重置服务器期限。'
+              ? '本单从交付审核通过起，按原规则${d['rules']['acceptance_hours']}小时核对；实际截止以服务器记录为准。文件不可用或争议时不能自动完成。本人收讫仍须实际取得全部取样，不会重置服务器期限。'
               : '须逐项成功查看或保存本次全部取样，再明确收讫；上传或付款时间不能启动验收计时。'),
           _receiptForm(r, 'receipt', allOpened, '明确确认本次全部取样已收到'),
           _receiptForm(r, 'confirm', allOpened, '明确确认本次试镜履约完成'),
@@ -781,7 +935,8 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           tradeFact('金额', v5Money(s.data['amount_minor'])),
           tradeFact('具体补充约定', s.data['terms']),
           tradeFact('原单与合同', '沿用原已付试镜，保留原合同指纹'),
-          tradeFact('截止', tradeDate(s.data['expires_at']))
+          tradeFact('截止', tradeDate(s.data['expires_at'])),
+          ..._supplementRefundFacts(s),
         ]),
         if (s.data['order_id'] != null)
           tradeButton('查看此笔独立补差订单',
@@ -827,6 +982,32 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
     ];
   }
 
+  List<Widget> _supplementRefundFacts(AuditionRecord supplement) {
+    final data = supplement.data;
+    final limit = data['refund_limit_minor'];
+    final reason = data['refund_reason'];
+    final refundStage = const {
+      'REFUND_REQUIRED', 'PARTIALLY_REFUNDED', 'REFUNDED'
+    }.contains(supplement.status);
+    final validDecision = data['order_id'] != null &&
+        limit is int && limit > 0 && limit <= data['amount_minor'] &&
+        reason is String && reason.trim().isNotEmpty && reason.length <= 2000;
+    if (!refundStage && !validDecision &&
+        !const {'PAID', 'PAYMENT_REVIEW_REQUIRED'}.contains(supplement.status)) {
+      return [];
+    }
+    return [
+      const Divider(),
+      if (validDecision) ...[
+        tradeFact('已记录的累计退款核定上限', v5Money(limit)),
+        tradeFact('退款核定理由', reason),
+        appNotice('核定上限包含此前已退金额，不是本次退款金额，也不是当前剩余可退额。实际申请与到账请进入此笔独立补差订单核对。'),
+      ] else if (refundStage)
+        appNotice('本条记录未提供可确认的退款核定明细，请进入此笔独立补差订单核对。'),
+      appNotice('追加单退款须先由独立客服核定，再按原付款办理。退款核定与渠道到账分别记录；本卡不依据核定上限认定已退款。'),
+    ];
+  }
+
   Widget _receiptForm(
           AuditionRecord r, String action, bool canSubmit, String title) =>
       V5Form(
@@ -856,26 +1037,57 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
           onSuccess: (d) => setState(
               () => setRecord(AuditionRecord(d, id: r.id, kind: 'BOOKING'))));
   List<Widget> _messageBody(AuditionRecord r) => [
-        tradeBanner(auditionConversations[r.conversation]!,
-            '会话只服务这一笔原订单；联系方式另行同意，争议或改期时冻结，完成后归档。'),
+        if (r.conversation == 'ARCHIVED')
+          tradeBanner('会话已归档 · 只读',
+              '按当前权限保留历史消息。本页不再发送消息、附件或改价申请；售后请回到原订单处理，不重开双方聊天。'),
+
+        tradeSection('本单会话开通与边界', [
+          tradeFact('当前状态', auditionConversations[r.conversation]),
+          const Text('会话只服务这一笔原订单；联系方式另行同意，争议或改期时冻结，完成后归档。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+          if (['FROZEN', 'ARCHIVED'].contains(r.conversation))
+            const Text('当前为只读状态，不能发送新消息或取样引用。',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          if (!['OPEN', 'FROZEN', 'ARCHIVED'].contains(r.conversation))
+            const Text('本单会话尚未开放，本页未读取消息；请先核对上方真实订单状态。',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        ]),
+        if (['OPEN', 'FROZEN', 'ARCHIVED'].contains(r.conversation) &&
+            messages.isEmpty && !busy && error == null)
+          const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Text('当前已读取的会话暂无消息。',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: AccountTheme.muted))),
         for (final m in messages)
-          tradeSection(
-              m.data['account_id'] == widget.session.account?['id']
-                  ? '我发出的消息'
-                  : '本单参与方消息',
-              [
-                if (m.data['kind'] == 'TEXT')
-                  Text(m.data['body'])
-                else if (m.data['kind'] == 'ORDER_CARD')
-                  tradeButton('查看本单订单卡',
-                      () => go('/trade/record?recordId=${m.data['order_id']}'),
-                      outline: true)
-                else
-                  Text('引用本单已交取样；可回试镜进度按权限读取。'),
-                tradeFact('时间', tradeDate(m.data['at'])),
-                tradeFact(
-                    '本人阅读状态', m.raw['is_read'] == true ? '我已读' : '我尚未标记已读')
-              ]),
+          Align(
+              alignment: m.data['account_id'] == widget.session.account?['id']
+                  ? Alignment.centerRight : Alignment.centerLeft,
+              child: Container(
+                  constraints: const BoxConstraints(maxWidth: 320),
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                      color: m.data['account_id'] == widget.session.account?['id']
+                          ? AccountTheme.selectedSurface : AccountTheme.surface,
+                      borderRadius: BorderRadius.circular(14)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(m.data['account_id'] == widget.session.account?['id']
+                        ? '我' : '本单参与方',
+                        style: const TextStyle(fontSize: 11, color: AccountTheme.muted)),
+                    const SizedBox(height: 8),
+                    if (m.data['kind'] == 'TEXT')
+                      Text(m.data['body'])
+                    else if (m.data['kind'] == 'ORDER_CARD')
+                      tradeButton('查看本单订单卡',
+                          () => go('/trade/record?recordId=${m.data['order_id']}'),
+                          outline: true)
+                    else
+                      const Text('引用本单已交取样；回试镜进度按权限读取。'),
+                    const SizedBox(height: 8),
+                    Text('${tradeDate(m.data['at'])} · ${m.raw['is_read'] == true ? '我已读' : '我尚未标记已读'}',
+                        style: const TextStyle(fontSize: 10, color: AccountTheme.muted)),
+                  ]))),
         if (messageCursor != null)
           tradeButton('继续读取后续消息', busy ? null : moreMessages, outline: true),
         if (['OPEN', 'FROZEN', 'ARCHIVED'].contains(r.conversation) &&
@@ -898,19 +1110,50 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                 return null;
               },
               onSuccess: (_) => load()),
+        LayoutBuilder(builder: (context, constraints) {
+          final actions = [
+            OutlinedButton(
+                onPressed: busy || api.pendingOperations.isNotEmpty ? null
+                    : () => go('/auditions/booking?bookingId=${r.id}'),
+                child: const Text('查看试镜档案')),
+            if (r.data['order_id'] != null)
+              OutlinedButton(
+                  onPressed: busy || api.pendingOperations.isNotEmpty ? null
+                      : () => go('/trade/record?recordId=${r.data['order_id']}'),
+                  child: const Text('查看原订单约定')),
+          ];
+          if (constraints.maxWidth < 320 ||
+              MediaQuery.textScalerOf(context).scale(14) > 20) {
+            return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: actions);
+          }
+          return Row(children: [
+            for (var i = 0; i < actions.length; i++) ...[
+              if (i > 0) const SizedBox(width: 10),
+              Expanded(child: actions[i]),
+            ],
+          ]);
+        }),
+        const Divider(height: 32, color: AccountTheme.border),
+        if (r.conversation != 'ARCHIVED')
+          tradeButton('找客服 · 请求加入本单',
+              busy || api.pendingOperations.isNotEmpty ? null
+                  : () => action(r, 'support'), outline: true),
         if (r.conversation == 'OPEN') ...[
+          tradeSection('发送本单内容', [
           V5Form(
+              actionInFooter: true,
+              canSubmit: !busy,
               key: ValueKey(messageForm),
               api: api,
               title: '只发送本单内容',
-              action: '发送本单消息',
+              action: '发送消息',
               suffix: '/bookings/${r.id}/messages',
               fields: [
                 const V5Field('kind', '内容类型', choices: {
                   'TEXT': '订单内文字',
                   'ORDER_CARD': '本单订单卡',
                   'DELIVERY_MEDIA': '本单取样引用'
-                }),
+                }, wrapChoices: true),
                 const V5Field('body', '本单文字内容（非文字卡可留空）',
                     type: 'multiline', required: false),
                 V5Field('asset_id', '仅选本单取样（文字或订单卡可留空）',
@@ -949,6 +1192,9 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                 await load();
                 if (mounted) setState(() => messageForm++);
               }),
+          const Text('照片和视频仅引用本单已交取样；这里不新增上传，也不自动取得后续使用授权。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          ]),
           tradeButton('填写或撤回本次联系卡同意', () => action(r, 'contact'),
               outline: true),
           tradeButton(
@@ -965,9 +1211,5 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
                 appNotice('双方当前均未开放联系卡。')
             ]),
         ],
-        tradeButton('请求平台客服加入本单', () => action(r, 'support'), outline: true),
-        tradeButton(
-            '返回本次试镜与取样', () => go('/auditions/booking?bookingId=${r.id}'),
-            outline: true),
       ];
 }

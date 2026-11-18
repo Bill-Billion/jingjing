@@ -1,0 +1,96 @@
+TAP version 13
+# Subtest: PM03 original notice acknowledgement survives deadline but never grants new authority
+    # Subtest: expired notice and expired consent do not erase original successful command
+    ok 1 - expired notice and expired consent do not erase original successful command
+      ---
+      duration_ms: 37.4225
+      type: 'test'
+      ...
+    # Subtest: other accounts, acting subjects and lost memberships cannot retrieve original receipt
+    ok 2 - other accounts, acting subjects and lost memberships cannot retrieve original receipt
+      ---
+      duration_ms: 57.1008
+      type: 'test'
+      ...
+    # Subtest: absence is NOT_OBSERVED and unsupported operations are rejected without writing commands
+    ok 3 - absence is NOT_OBSERVED and unsupported operations are rejected without writing commands
+      ---
+      duration_ms: 14.2608
+      type: 'test'
+      ...
+    1..3
+ok 1 - PM03 original notice acknowledgement survives deadline but never grants new authority
+  ---
+  duration_ms: 8544.7708
+  type: 'test'
+  ...
+# Subtest: durable recharge refund recovery and guardian delegation in isolated MySQL
+    # Subtest: task insert and case link are atomic; same case scheduling keeps one durable task
+    ok 1 - task insert and case link are atomic; same case scheduling keeps one durable task
+      ---
+      duration_ms: 103.3624
+      type: 'test'
+      ...
+    # Subtest: lost provider response persists UNKNOWN and worker restart only queries the original refund
+    ok 2 - lost provider response persists UNKNOWN and worker restart only queries the original refund
+      ---
+      duration_ms: 76.545
+      type: 'test'
+      ...
+    # Subtest: expired lease cannot settle money or finish a job; a new lease queries and settles once
+    ok 3 - expired lease cannot settle money or finish a job; a new lease queries and settles once
+      ---
+      duration_ms: 56.5098
+      type: 'test'
+      ...
+    # Subtest: bad receipt blocks, never releases funds; current independent permission is required to resume
+    ok 4 - bad receipt blocks, never releases funds; current independent permission is required to resume
+      ---
+      duration_ms: 84.7722
+      type: 'test'
+      ...
+    # Subtest: missing adapter and changed merchant fail closed; cancelled queued cases never send
+    ok 5 - missing adapter and changed merchant fail closed; cancelled queued cases never send
+      ---
+      duration_ms: 96.9692
+      type: 'test'
+      ...
+    # Subtest: a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+    ok 6 - a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+      ---
+      duration_ms: 49.8281
+      type: 'test'
+      ...
+    # Subtest: consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+    ok 7 - consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+      ---
+      duration_ms: 318.7833
+      type: 'test'
+      ...
+    # Subtest: guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+    ok 8 - guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+      ---
+      duration_ms: 84.0589
+      type: 'test'
+      ...
+    # Subtest: revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+    ok 9 - revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+      ---
+      duration_ms: 101.1067
+      type: 'test'
+      ...
+    1..9
+ok 2 - durable recharge refund recovery and guardian delegation in isolated MySQL
+  ---
+  duration_ms: 8030.8154
+  type: 'test'
+  ...
+1..2
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 17022.4513

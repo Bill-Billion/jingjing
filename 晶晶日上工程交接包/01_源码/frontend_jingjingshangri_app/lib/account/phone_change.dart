@@ -377,7 +377,26 @@ class _PhoneChangeState extends State<_PhoneChange> {
             '更换手机号',
             [
               tradeHeading('更换手机号', eyebrow: '账号安全 / 本人办理'),
-              const Text('账号、订单、作品与机构关系保留。换号先验证原手机号，再验证新手机号，最后由你明确确认。'),
+              tradeSection('本人验证步骤', [
+                Wrap(spacing: 8, runSpacing: 8, children: [
+                  for (final step in const <String, String>{
+                    'AWAITING_OLD': '1 原手机号',
+                    'AWAITING_NEW': '2 新手机号',
+                    'READY': '3 本人确认',
+                  }.entries)
+                    Chip(
+                        backgroundColor: state == step.key
+                            ? AccountTheme.selectedSurface : AccountTheme.surface,
+                        side: BorderSide(color: state == step.key
+                            ? AccountTheme.accent : AccountTheme.border),
+                        label: Text(step.value,
+                            style: TextStyle(color: state == step.key
+                                ? AccountTheme.accent : AccountTheme.muted))),
+                ]),
+                const SizedBox(height: 12),
+                const Text('账号、订单、作品与机构关系保留。换号先验证原手机号，再验证新手机号，最后由你明确确认。',
+                    style: TextStyle(height: 1.6)),
+              ]),
               if (busy) const LinearProgressIndicator(),
               if (error != null)
                 Text(error!,

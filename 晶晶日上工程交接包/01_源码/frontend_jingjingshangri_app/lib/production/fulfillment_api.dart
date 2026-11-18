@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import '../account/account_api.dart';
@@ -57,11 +58,34 @@ extension ProductionFulfillmentApi on ProductionApi {
         project.data['assignee_account_id'] != session.account?['id']) {
       throw const AccountError(403, 'PRODUCTION_PRODUCER_REQUIRED');
     }
+    final commandBody = action == 'cases'
+        ? productionMap(jsonDecode(jsonEncode(body)))
+        : body;
+    final commandVersion = originalVersion ?? flow.version;
+    final account = session.account?['id'];
     final raw = await session.write('POST', fulfillmentPath(project.id, action),
         actingParty: p,
-        body: body,
-        version: originalVersion ?? flow.version, validate: (r) {
-      ProductionFulfillment(r, project);
+        body: commandBody,
+        version: commandVersion, validate: (r) {
+      final result = ProductionFulfillment(r, project);
+      if (action == 'cases') {
+        check(epoch, p);
+        // Replays return the current view, possibly after case resolution.
+        // Bind preserved contents, not current status or an exact version.
+        productionRequire(result.version > commandVersion &&
+            account != null && result.cases.any((issue) =>
+            issue.raw['created_by'] == account &&
+            issue.data['opened_by_party_id'] == p &&
+            issue.data['kind'] == commandBody['kind'] &&
+            issue.data['reason'] == commandBody['reason'] &&
+            jsonEncode(issue.data['evidence_asset_ids']) ==
+                jsonEncode(commandBody['evidence_asset_ids'])));
+      } else if (['delivery-receipt', 'refund-sync'].contains(action)) {
+        // These commands can succeed without a new version when already done.
+        productionRequire(result.version >= commandVersion);
+      } else if (['start', 'reissue'].contains(action)) {
+        productionRequire(result.version > commandVersion);
+      }
     });
     check(epoch, p);
     return ProductionFulfillment(raw, project);
@@ -73,11 +97,24 @@ extension ProductionFulfillmentApi on ProductionApi {
     if (op == null) throw const AccountError(409, 'NO_PENDING_OPERATION');
     final action = path.split('/').last;
     productionRequire(path == fulfillmentPath(project.id, action));
+    final epoch = session.epoch, party = participant();
+    final original = action == 'cases'
+        ? productionMap(jsonDecode(jsonEncode(op)))
+        : op;
     final current = await fulfillment(project);
-    // Reconcile current context without replacing the original body/version/key.
+    if (action == 'cases') {
+      check(epoch, party);
+      final live = pending(path);
+      productionRequire(live != null &&
+          live['key'] == original['key'] &&
+          live['version'] == original['version'] &&
+          jsonEncode(live['body']) == jsonEncode(original['body']));
+    }
+    // AccountApi reuses the key for the unchanged original fingerprint.
+    // Never recreate a disappeared or replaced pending command after the read.
     return changeFulfillment(
-        project, current, action, productionMap(op['body']),
-        originalVersion: op['version']);
+        project, current, action, productionMap(original['body']),
+        originalVersion: original['version']);
   }
 
   Future<ProductionFulfillment> receiveDeliveryNotice(ProductionRecord project,

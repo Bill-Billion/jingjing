@@ -8,6 +8,7 @@ import '../trade/trade_widgets.dart';
 import 'operation_api.dart';
 import 'operation_models.dart';
 import 'operation_widgets.dart';
+import 'notification_identity_card.dart';
 
 const notificationChannels = {
   'ORDER_CONVERSATIONS': '订单会话',
@@ -254,31 +255,51 @@ class _NotificationsState extends State<_Notifications> {
   @override
   Widget build(BuildContext context) {
     final content = <Widget>[
-      tradeHeading('消息', eyebrow: '按当前账号与办事身份查看'),
-      tradeFact('当前身份', widget.session.party?['display_name']),
-      Wrap(spacing: 8, runSpacing: 8, children: [
-        ChoiceChip(
-            label:
-                Text('全部${snapshot == null ? '' : ' · ${snapshot!['total']}'}'),
-            selected: channel == null,
-            onSelected: locked
-                ? null
-                : (_) {
-                    channel = null;
-                    load();
-                  }),
-        for (final c in notificationChannels.entries)
-          ChoiceChip(
-              label: Text(
-                  '${c.value}${snapshot == null ? '' : ' · ${communityMap(snapshot!['channels'])[c.key]}'}'),
-              selected: channel == c.key,
-              onSelected: locked
-                  ? null
-                  : (_) {
-                      channel = c.key;
-                      load();
-                    }),
-      ]),
+      if (widget.embedded)
+        Padding(
+            padding: const EdgeInsets.only(top: 16, bottom: 20),
+            child: Row(children: [
+              const Expanded(child: Text('消息', style: TextStyle(
+                  fontSize: 28, fontWeight: FontWeight.w700))),
+              TextButton(
+                  onPressed: locked || snapshot == null ? null
+                      : () => write('/api/v1/operations/notifications/read-all', {
+                            'snapshot_id': snapshot!['snapshot_id'],
+                            'channel': channel
+                          }),
+                  child: Text(channel == null ? '全部已读' : '本频道已读')),
+            ]))
+      else
+        tradeHeading('消息', eyebrow: '按当前账号与办事身份查看'),
+      NotificationIdentityCard(
+          identity: widget.session.party?['display_name'] as String? ?? '待核对身份',
+          showUnread: true, unread: snapshot?['total'] as int?),
+      // Keep every backend channel, including activity voting; counts are
+      // authorized unread notification counts, not invented conversation totals.
+      SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(children: [
+            for (final c in <MapEntry<String?, String>>[
+              const MapEntry(null, '全部'),
+              ...notificationChannels.entries
+            ])
+              Padding(
+                  padding: const EdgeInsets.only(right: 12),
+                  child: DecoratedBox(
+                      decoration: BoxDecoration(border: Border(bottom: BorderSide(
+                          color: channel == c.key
+                              ? AccountTheme.accent : Colors.transparent,
+                          width: 3))),
+                      child: TextButton(
+                          onPressed: locked ? null : () {
+                            channel = c.key;
+                            load();
+                          },
+                          style: TextButton.styleFrom(
+                              foregroundColor: channel == c.key
+                                  ? AccountTheme.text : AccountTheme.muted),
+                          child: Text('${c.value}${snapshot == null ? '' : ' · ${c.key == null ? snapshot!['total'] : communityMap(snapshot!['channels'])[c.key]}'}')))),
+          ])),
       SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: const Text('只看未读'),
@@ -291,7 +312,7 @@ class _NotificationsState extends State<_Notifications> {
                 }),
       if (countError != null)
         Text(countError!, style: const TextStyle(color: AccountTheme.danger)),
-      tradeButton(
+      if (!widget.embedded) tradeButton(
           channel == null ? '全部标为已读' : '本频道全部已读',
           locked || snapshot == null
               ? null
@@ -300,7 +321,7 @@ class _NotificationsState extends State<_Notifications> {
                     'channel': channel
                   }),
           outline: true),
-      const Text('只标记本次未读查询中的通知。新到消息保留未读；通知已读不代表已经阅读原会话。',
+      const Text('只标记本次未读查询中的通知。新到消息保留未读；通知已读不代表已经阅读原会话，也不代表订单、投稿或其他业务已经办理。',
           style: TextStyle(color: AccountTheme.muted, height: 1.6)),
       if (busy) const LinearProgressIndicator(),
       if (error != null)
@@ -316,28 +337,58 @@ class _NotificationsState extends State<_Notifications> {
                       recovery: true)),
         ]),
       for (final n in rows)
-        tradeSection(notificationChannels[n['channel']]!, [
-          Text(operationEvent(n['event_code']),
-              style:
-                  const TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
-          tradeFact('时间', communityDate(n['created_at'])),
-          tradeFact('状态', n['read'] ? '已读' : '未读'),
-          tradeButton('查看对应业务', locked ? null : () => open(n)),
-          if (n['read'] == false)
-            tradeButton(
-                '标记这条已读',
-                locked
-                    ? null
-                    : () => write(
-                        '/api/v1/operations/notifications/${n['id']}/read', {}),
-                outline: true),
-        ]),
+        Container(
+            decoration: const BoxDecoration(border: Border(
+                bottom: BorderSide(color: AccountTheme.border))),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(width: 44, height: 48,
+                  decoration: BoxDecoration(color: AccountTheme.surface,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Icon(
+                      n['channel'] == 'ORDER_CONVERSATIONS'
+                          ? Icons.chat_bubble_outline : Icons.notifications_outlined,
+                      color: AccountTheme.accent, size: 24)),
+              const SizedBox(width: 12),
+              Expanded(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(operationEvent(n['event_code']),
+                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 4),
+                Text(notificationChannels[n['channel']]!,
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                const SizedBox(height: 4),
+                Text(communityDate(n['created_at']),
+                    style: const TextStyle(fontSize: 11, color: AccountTheme.muted)),
+                Wrap(spacing: 8, children: [
+                  TextButton(onPressed: locked ? null : () => open(n),
+                      child: const Text('查看对应业务')),
+                  if (n['read'] == false)
+                    TextButton(onPressed: locked ? null
+                        : () => write('/api/v1/operations/notifications/${n['id']}/read', {}),
+                        child: const Text('标记已读')),
+                ]),
+              ])),
+              const SizedBox(width: 8),
+              Semantics(label: n['read'] ? '已读' : '未读',
+                  child: Icon(n['read'] ? Icons.done : Icons.circle,
+                      size: n['read'] ? 16 : 8,
+                      color: n['read'] ? AccountTheme.muted : AccountTheme.accent)),
+            ])),
       if (!busy && error == null && rows.isEmpty)
         Text(cursor == null ? '当前没有获准查看的通知。' : '本页暂没有可显示的通知，可继续读取。'),
       if (cursor != null)
         tradeButton('继续读取通知', locked ? null : () => load(more: true),
             outline: true),
-      tradeButton('刷新消息与未读', busy ? null : load, outline: true),
+      tradeButton('刷新消息与未读', locked ? null : load, outline: true),
+      if (widget.embedded) ...[
+        const SizedBox(height: 12),
+        tradeButton('需要协助？联系平台客服',
+            locked ? null : () => Navigator.pushNamed(context, '/help'),
+            outline: true),
+        const Text('当前展示获准的通知，不是会话摘要。投稿是单向意向；原订单会话及归档权限在对应业务中核对。',
+            style: TextStyle(fontSize: 11, color: AccountTheme.muted, height: 1.6)),
+      ],
     ];
     return widget.embedded
         ? Column(
@@ -409,7 +460,13 @@ class _ActivityRecordState extends State<_ActivityRecord> {
               'CANDIDATE': '参选记录',
               'COMPETITION': '活动进度'
             }[r['kind']] ?? '活动业务记录'}'),
-        tradeFact('当前进度', communityState(r['current_status'])),
+        tradeSection('本条记录状态', [
+          Text(communityState(r['current_status']), style: const TextStyle(
+              fontSize: 20, color: AccountTheme.accent, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 10),
+          const Text('请进入对应活动查看完整规则和处理结果；收到通知不代表奖励已经兑现。',
+              style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+        ]),
         if (d['reason'] is String) Text(d['reason']),
         if (d['body'] is String) Text(d['body']),
         if (communityId(eventId))

@@ -1,3 +1,5 @@
+import '../account/account_theme.dart';
+import 'auditions_visual.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
@@ -121,8 +123,15 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
   @override
   Widget build(BuildContext context) {
     final d = detail;
-    return V5Frame(api: api, title: '本人试镜方案', children: [
-      tradeHeading('约见之前，先约定清楚', eyebrow: '本人或明确受托 / L2 / 独立审核'),
+    return V5Frame(api: api, title: '试镜设置', children: [
+      tradeHeading('试镜设置', eyebrow: '试镜由你决定是否公开', fontSize: 28),
+      auditionGuide('人物与授权 → 服务约定 → 独立审核',
+          '先选择有权办理的真人及形象，再填写价格、服务范围和可约时间。提交后等待审核，不会直接公开。', label: '发布试镜方案'),
+      tradeSection('一次邀约，一个总价', [
+        const Text('交通计入一口价，不另列站外加费。费用分配按所选有效规则和本单约定核对，不采用设计示例比例。'),
+        const SizedBox(height: 12),
+        const Text('关闭公开预约不等于撤回其他公开展示授权；展示与定向邀约仍各自受授权及资格限制。调价不自动改写旧单，已有订单按原约定或双方明确确认的正式变更办理。'),
+      ]),
       V5RecoveryPanel(
           api: api,
           label: api.recoveryLabel,
@@ -158,9 +167,10 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
         if (contexts.isEmpty)
           appNotice('尚无本人可读或已明确提供的公开展示授权上下文，请先办理本人同意；机构不读取私人同意原件。'),
         V5Form(
+            actionInFooter: true,
             key: formKey,
             api: api,
-            title: '本人的完整试镜约定',
+            title: '公开选择与本次服务约定',
             action: '提交本版试镜方案独立审核',
             suffix: '/offers',
             // A pending offer may be recovered, but its rule must never be
@@ -173,19 +183,35 @@ class _AuditionOfferFormState extends State<AuditionOfferForm> {
               const V5Field('title', '方案名称'),
               V5Field('context', '具体数字人与已审公开同意', choices: contextNames),
               V5Field('rule_id', '当前生效的试镜规则', choices: rules),
-              const V5Field('city', '所在城市'),
+              const V5Field('city', '试镜城市'),
               const V5Field('service_area', '明确服务范围'),
               const V5Field('mode', '试镜形式',
                   choices: {'OFFLINE': '线下正规场地', 'ONLINE_MATERIALS': '线上材料'}),
-              const V5Field('price', '一口价（元，含交通）', type: 'money'),
+              const V5Field('price', '含交通一口价（元）', type: 'money'),
               const V5Field('slots', '可预约时段', type: 'slots'),
               const V5Field('terms', '具体服务与费用约定', type: 'multiline'),
-              const V5Field('public_booking', '允许公开预约',
-                  type: 'bool', required: false),
-              const V5Field('public_price', '公开本方案价格',
-                  type: 'bool', required: false),
               const V5Field('transport', '我确认已把适用交通条件计入一口价，付款前明确全部条件',
                   type: 'bool')
+            ],
+            factsBuilder: (v) => [
+              tradeFact('公开接试镜', v['public_booking'] == true ? '开启' : '关闭'),
+              tradeFact('公开一口价', v['public_price'] == true ? '开启' : '关闭'),
+            ],
+            extra: (v, set, enabled) => [
+              tradeSection('公开选择', [
+                SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('公开接试镜'),
+                    value: v['public_booking'] == true,
+                    onChanged: enabled ? (value) => set('public_booking', value) : null),
+                SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('公开一口价'),
+                    value: v['public_price'] == true,
+                    onChanged: enabled ? (value) => set('public_price', value) : null),
+                const Text('本次选择随方案提交审核，不表示已公开；关闭预约不撤销其他授权。',
+                    style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              ]),
             ],
             restore: (b) {
               final o = v5Map(b['offer']);

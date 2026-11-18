@@ -7,6 +7,7 @@ const drawFields=()=>[id('pool_id','已阅读且开放的奖池'),hash('rules_sh
 export const redemption:Domain={key:'redemption',title:'权益与礼遇',journal:'BENEFITS & DRAW / 11',intro:'用实际可用晶钻兑换，按冻结约定选券与抽取，取得的权益再按真实排期兑现。',note:'抵扣券、全额权益、面试和曝光各有用途与有效期，不可提现。抽取结果、扣点及库存均由服务器确定；断线恢复原请求不会重新开奖。钱包旧摘要的入口标志不代表本模块资格，办理以本模块实际结果为准。',sections:[
 {key:'catalog',label:'可兑换权益',path:'/redemption/catalog',party:'none'},
 {key:'grants',label:'本人的券与权益',path:'/redemption/grants',detail:'/redemption/grants/:record_id',party:'required'},
+{key:'holds',label:'原券占用状态',path:'/redemption/holds/:record_id',detail:'/redemption/holds/:record_id',party:'required'},
 {key:'pools',label:'已审奖池与概率',path:'/redemption/pools',detail:'/redemption/pools/:record_id',party:'none'},
 {key:'draws',label:'本人的原开奖结果',path:'/redemption/draws',detail:'/redemption/draws/:record_id',party:'required'},
 {key:'exposures',label:'实际有效曝光',path:'/redemption/exposures',party:'none',query:[text('city','城市',100)]},
@@ -16,7 +17,7 @@ export const redemption:Domain={key:'redemption',title:'权益与礼遇',journal
 op('exchange','按已读约定兑换本权益','/redemption/exchanges',[id('stock_id','实际已审权益库存'),hash('template_sha256','已阅读权益约定校验值')],'required',false,['catalog']),
 op('credit','从原共创领取指定服务额度','/redemption/service-credits',[id('benefit_id','本人的原共创额度'),id('stock_id','对应服务的已审库存')],'required',false,['grants']),
 op('hold','为原报价选择本券并锁定','/redemption/grants/:record_id/checkout',[id('quote_id','本人准确的已审制作报价')],'required',true,['grants']),
-op('release','取消本次未确认报价的锁定','/redemption/holds/:record_id/release',[],'required',true,['grants']),
+op('release','取消本次未确认报价的锁定','/redemption/holds/:record_id/release',[],'required',true,['grants','holds']),
 op('bind','本人绑定实际人物与用途','/redemption/grants/:record_id/bind',[id('person_id','本人真人档案'),id('avatar_id','本人数字人'),group('cast','面试所需逐项出演授权',castFields(),true),id('profile_id','曝光所需本人已公开榜单档案',true)],'required',true,['grants']),
 op('submit-delivery-evidence','为本项权益提交履约依据','/redemption/grants/:record_id/evidence-submissions',[select('purpose','依据用于',[['SCHEDULE','本次排期'],['COMPLETION','本次完成结果']]),id('asset_id','本次实际履约依据')],'required',true,['fulfillments']),
 op('confirmation','本人明确接受或拒绝本次排期','/redemption/grants/:record_id/confirmation',[bool('accepted','接受当前已独审的真实排期（不勾选表示拒绝）')],'required',true,['grants']),

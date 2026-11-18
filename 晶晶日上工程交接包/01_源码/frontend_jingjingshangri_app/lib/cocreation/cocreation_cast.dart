@@ -1,3 +1,4 @@
+import '../account/account_theme.dart';
 import 'package:flutter/material.dart';
 import '../engagement/community_support.dart';
 import '../account/account_session.dart';
@@ -292,10 +293,21 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
                 avatar)
         .toList();
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      const Text('01 · 本人与数字人', style: TextStyle(
+          color: AccountTheme.accent, fontWeight: FontWeight.w600)),
+      const SizedBox(height: 12),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
-      if (people.isEmpty && !busy)
+      if (people.isEmpty && !busy) ...[
         appNotice('尚无属于当前本人的艺人资料。请先在艺人档案中登记本人、素材与用途授权。'),
+        TextButton.icon(
+            icon: const Icon(Icons.person_outline),
+            label: const Text('前往本人艺人档案'),
+            onPressed: enabled ? () async {
+              await Navigator.pushNamed(context, '/artists');
+              if (mounted) await load();
+            } : null),
+      ],
       communitySelect(
           '本人艺人',
           input.person.text,
@@ -328,6 +340,10 @@ class _CocreationCastChooserState extends State<CocreationCastChooser> {
                 }
               : null),
       if (!widget.personAndAvatarOnly) ...[
+        const SizedBox(height: 16),
+        const Text('02 · 形象版本与本次授权', style: TextStyle(
+            color: AccountTheme.accent, fontWeight: FontWeight.w600)),
+        const SizedBox(height: 12),
         for (final kind in ['LOOK', 'VOICE'])
           communitySelect(
               kind == 'LOOK' ? '已登记造型版本' : '声音版本（可不使用）',

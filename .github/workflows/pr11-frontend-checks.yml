@@ -16,6 +16,8 @@ on:
       - 'scripts/pr39-commercial-sandbox.cjs'
       - 'scripts/pr39-invoice-phone-sandbox.cjs'
       - 'scripts/run-ui-browser-check.test.cjs'
+      - 'scripts/support/synthetic-identity-provider.cjs'
+      - 'scripts/synthetic-identity-provider.test.cjs'
       - 'scripts/ci-ubuntu-mirror.cjs'
       - 'scripts/workspace-navigation-check.mjs'
       - 'scripts/v5-r03-*.mjs'
@@ -64,6 +66,8 @@ on:
       - 'scripts/pr39-commercial-sandbox.cjs'
       - 'scripts/pr39-invoice-phone-sandbox.cjs'
       - 'scripts/run-ui-browser-check.test.cjs'
+      - 'scripts/support/synthetic-identity-provider.cjs'
+      - 'scripts/synthetic-identity-provider.test.cjs'
       - 'scripts/ci-ubuntu-mirror.cjs'
       - 'scripts/workspace-navigation-check.mjs'
       - 'scripts/v5-r03-*.mjs'
@@ -167,7 +171,7 @@ jobs:
           timeout 120s npm --prefix ../backend_server ci --no-audit --no-fund
       - name: 检查测试服务退出、端口占用和失败清理
         working-directory: ${{ github.workspace }}
-        run: node --test scripts/run-ui-browser-check.test.cjs
+        run: node --test scripts/run-ui-browser-check.test.cjs scripts/synthetic-identity-provider.test.cjs
       - name: 启动一次性测试数据库
         working-directory: ${{ github.workspace }}
         run: node scripts/ci-mysql.cjs start

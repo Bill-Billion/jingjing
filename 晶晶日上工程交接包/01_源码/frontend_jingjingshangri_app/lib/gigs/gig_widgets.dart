@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
+import '../account/account_theme.dart';
 import '../pages/login/login_page.dart';
 import '../supply/supply_widgets.dart';
 import '../trade/trade_widgets.dart';
@@ -121,3 +122,20 @@ Widget gigTextField(TextEditingController c, String label,
             onChanged: changed));
 String gigSignedMoney(int minor) =>
     '${minor < 0 ? '-' : '+'}¥${minor.abs() ~/ 100}.${(minor.abs() % 100).toString().padLeft(2, '0')}';
+
+Widget gigNextStep(GigRecord record) {
+  final message = switch (record.status) {
+    'IN_REVIEW' => '等待独立审核，提交材料不代表已经发布或成交。',
+    'REJECTED' => '先核对审核原因，再修正本次材料；不要把原记录当作有效商单或约定。',
+    'INVITED' => '等待受邀本人核对范围、期限与分配约定并明确回应，机构不能代替本人接受。',
+    'APPROVED' => '已审约定仍需买方确认；确认约定后，正式报价、订单和付款另行办理。',
+    'ACCEPTED' => '约定已获确认，请继续核对正式报价与对应订单；这里不是付款回执。',
+    'CALCULATED' => '核算仅为账目记录，实际出款、提现及税务结果不能从本状态推定。',
+    'SUSPENDED' || 'RETIRED' || 'ENDED' => '后续操作受当前状态限制，历史约定和订单保留；请按原记录办理交接与售后。',
+    _ => '按当前有效范围继续办理；授权、正式报价、付款与交付分别以原记录核实。',
+  };
+  return tradeSection('下一步办理', [
+    Text(message, style: const TextStyle(
+        fontSize: 14, height: 1.6, color: AccountTheme.text)),
+  ]);
+}

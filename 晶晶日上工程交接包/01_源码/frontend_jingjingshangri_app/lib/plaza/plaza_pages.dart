@@ -13,7 +13,7 @@ import '../stock/stock_public_card.dart';
 import '../widgets/editorial_icons.dart';
 import 'plaza_data.dart';
 
-const _wash = Color(0xFFE5E1D7);
+const _wash = AccountTheme.surface;
 
 String plazaCityLabel(String value) => value.isEmpty
     ? '全部城市'
@@ -167,11 +167,9 @@ class _PlazaPageState extends State<PlazaPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                         title,
-                        Row(children: [
-                          tools.first,
-                          const Spacer(),
-                          ...tools.skip(1)
-                        ])
+                        Wrap(spacing: 8, runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: tools)
                       ])
                 : Row(children: [Expanded(child: title), ...tools]));
       });
@@ -231,7 +229,8 @@ class _PlazaPageState extends State<PlazaPage> {
                       child: Column(mainAxisSize: MainAxisSize.min, children: [
                         Icon(item.$2, size: 24),
                         const SizedBox(height: 9),
-                        Text(item.$1, style: const TextStyle(fontSize: 12)),
+                        Text(item.$1, textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 12)),
                       ]))))
       ]));
 
@@ -262,7 +261,8 @@ class _PlazaPageState extends State<PlazaPage> {
   Widget _panel(String title, String message,
           {String? action, VoidCallback? onTap, bool busy = false}) =>
       Container(
-          color: _wash,
+          decoration: BoxDecoration(
+              color: _wash, borderRadius: BorderRadius.circular(20)),
           padding: const EdgeInsets.all(14),
           child:
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -325,11 +325,11 @@ class _PlazaPageState extends State<PlazaPage> {
                   : '本页暂无资料，可继续读取。'),
         _grid(
             data.featured.items,
-            3,
+            4,
             10,
             (row) =>
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  _artistCard(communityMap(row['artist'])),
+                  _artistCard(communityMap(row['artist']), featured: true),
                   Text(row['recommendation'],
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -348,10 +348,15 @@ class _PlazaPageState extends State<PlazaPage> {
           TextButton(
               onPressed: data.featured.busy ? null : () => data.loadFeatured(),
               child: const Text('重读精选')),
-        const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: Text('运营推荐，不代表明星认证或成绩排名。',
-                style: TextStyle(fontSize: 12, color: AccountTheme.muted))),
+        Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(children: [
+              Text('当前城市 · ${plazaCityLabel(data.city)}',
+                  style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              const SizedBox(height: 4),
+              const Text('运营推荐，不代表明星认证或成绩排名。',
+                  style: TextStyle(fontSize: 11, color: AccountTheme.muted)),
+            ])),
         const Divider(height: 1),
       ]);
 
@@ -365,14 +370,17 @@ class _PlazaPageState extends State<PlazaPage> {
           List<T> items, int columns, double gap, Widget Function(T) card) =>
       LayoutBuilder(builder: (context, box) {
         final enlarged = MediaQuery.textScalerOf(context).scale(14) > 19;
-        final count = enlarged ? 2 : columns;
+        final preferred = enlarged || box.maxWidth < 300 ? 2 : columns;
+        final count = box.maxWidth < 190 ||
+                MediaQuery.textScalerOf(context).scale(14) > 28
+            ? 1 : preferred;
         final width = (box.maxWidth - gap * (count - 1)) / count;
-        return Wrap(spacing: gap, runSpacing: 14, children: [
+        return Wrap(spacing: gap, runSpacing: enlarged ? 18 : 12, children: [
           for (final item in items) SizedBox(width: width, child: card(item))
         ]);
       });
 
-  Widget _artistCard(Map<String, dynamic> row) => Semantics(
+  Widget _artistCard(Map<String, dynamic> row, {bool featured = false}) => Semantics(
       button: true,
       label: '查看艺人详情，${row['display_name']}，${row['city']}',
       child: Material(
@@ -385,13 +393,14 @@ class _PlazaPageState extends State<PlazaPage> {
                     ArtistPublicPortrait(
                         key: ValueKey(
                             '${data.artists.revision}:${row['listing_id']}'),
+                        circular: featured,
                         session: widget.session,
                         listing: row,
                         onUnavailable: () =>
                             data.removeUnavailableArtist(row['listing_id'])),
                     const SizedBox(height: 6),
                     Text(row['display_name'],
-                        maxLines: 1,
+                        maxLines: MediaQuery.textScalerOf(context).scale(14) > 19 ? 2 : 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                             fontFamily: AccountTheme.serif,
@@ -530,9 +539,12 @@ class _PlazaPageState extends State<PlazaPage> {
         if (mounted && widget.active) await data.loadNotices();
       },
       child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: AccountTheme.border))),
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+              color: AccountTheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AccountTheme.border)),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             const Padding(
                 padding: EdgeInsets.only(top: 7),

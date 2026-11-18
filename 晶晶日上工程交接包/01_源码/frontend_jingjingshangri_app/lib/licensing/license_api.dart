@@ -57,15 +57,23 @@ class LicenseApi {
   }
 
   Future<List<LicenseRecord>> all(String kind) async {
-    final result = <LicenseRecord>[], seen = <String>{};
+    final party = owner(), epoch = session.epoch;
+    final result = <String, LicenseRecord>{}, seen = <String>{};
     String? cursor;
     do {
+      check(epoch, party);
       final data = await page(kind, cursor: cursor);
-      result.addAll(data.items);
+      check(epoch, party);
+      for (final record in data.items) {
+        final previous = result[record.id];
+        if (previous == null || record.version > previous.version) {
+          result[record.id] = record;
+        }
+      }
       cursor = data.nextCursor;
       if (cursor != null) licenseRequire(seen.add(cursor));
     } while (cursor != null);
-    return {for (final record in result) record.id: record}.values.toList();
+    return result.values.toList();
   }
 
   Future<LicenseRecord> record(String id) async {

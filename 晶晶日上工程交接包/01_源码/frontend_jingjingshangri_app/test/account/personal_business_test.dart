@@ -56,7 +56,8 @@ void main() {
       });
       final s = (await t.runAsync(() => buyerSession(a)))!;
       await nav.openApp(t, s, route: '/library?section=$category');
-      await pressSource(t, entry.key, '回到原业务');
+      await pressSource(t, entry.key,
+          category == 'contracts' ? '查看原约定' : '回到原业务');
       expect(a.requests.any((r) => r.path == '/api/v1/projects/records/$id'),
           isTrue);
       expect(s.projectsAccessDenied, isFalse);

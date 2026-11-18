@@ -72,7 +72,7 @@ class CustomizationPage extends StatelessWidget {
   }
 }
 
-Widget _heading(String text) => tradeHeading(text);
+Widget _heading(String text) => tradeHeading(text, fontSize: 28);
 Widget _eyebrow(String text) => Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: Text(
@@ -82,6 +82,19 @@ Widget _eyebrow(String text) => Padding(
     );
 Widget _section(String title, List<Widget> children) =>
     tradeSection(title, children);
+Widget _storyPanel(String title, List<Widget> children) => Container(
+    margin: const EdgeInsets.only(bottom: 18),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AccountTheme.border)),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      if (title.isNotEmpty) ...[
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 12),
+      ],
+      ...children,
+    ]));
 Widget _note(String text) => Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
@@ -207,12 +220,15 @@ class _StoryListState extends State<_StoryList> {
           ]),
         for (final row in rows)
           Container(
-            decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: AccountTheme.border))),
-            child: ListTile(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+                color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AccountTheme.border)),
+            child: Material(type: MaterialType.transparency, child: ListTile(
               key: ValueKey('story-open-${row.id}'),
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 0,
+                horizontal: 16,
                 vertical: 14,
               ),
               title: Text(
@@ -231,7 +247,7 @@ class _StoryListState extends State<_StoryList> {
               trailing: const Icon(Icons.north_east, size: 18),
               onTap:
                   row.allows('READ') && !busy ? () => open(id: row.id) : null,
-            ),
+            )),
           ),
         if (cursor != null)
           OutlinedButton(
@@ -656,6 +672,59 @@ class _StoryEditorState extends State<_StoryEditor> {
     return !dirty || await confirm('离开当前故事？', '尚未保存的内容将丢失。你也可以返回后先保存草稿。');
   }
 
+
+  // Official node 4016:10955. Scoped to this editor, not the shared theme.
+  ThemeData _editorTheme() {
+    const accent = Color(0xFFB9F34A), canvas = Color(0xFF101513);
+    final base = AccountTheme.data;
+    final shape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(12));
+    final border = OutlineInputBorder(borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide.none);
+    return base.copyWith(
+      scaffoldBackgroundColor: canvas,
+      colorScheme: base.colorScheme.copyWith(primary: accent, onPrimary: canvas,
+          surface: const Color(0xFF1C2420), onSurface: const Color(0xFFF2F5EF),
+          outline: const Color(0xFF34403A)),
+      appBarTheme: base.appBarTheme.copyWith(backgroundColor: canvas,
+          foregroundColor: const Color(0xFFF2F5EF), surfaceTintColor: Colors.transparent,
+          titleTextStyle: const TextStyle(fontFamily: AccountTheme.sans,
+              fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500)),
+      inputDecorationTheme: base.inputDecorationTheme.copyWith(
+          filled: true, fillColor: const Color(0xFF1C2420),
+          contentPadding: const EdgeInsets.all(12),
+          border: border, enabledBorder: border, disabledBorder: border,
+          focusedBorder: border.copyWith(borderSide: const BorderSide(color: accent)),
+          labelStyle: const TextStyle(fontSize: 12, color: Color(0xFFA5AEA8)),
+          hintStyle: const TextStyle(fontSize: 14, color: Color(0xFFA5AEA8))),
+      filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(
+          minimumSize: const Size(0, 48), backgroundColor: accent,
+          foregroundColor: canvas, shape: shape,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          textStyle: const TextStyle(fontFamily: AccountTheme.sans,
+              fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500))),
+      outlinedButtonTheme: OutlinedButtonThemeData(style: OutlinedButton.styleFrom(
+          minimumSize: const Size(0, 48), foregroundColor: accent,
+          side: const BorderSide(color: accent), shape: shape,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          textStyle: const TextStyle(fontFamily: AccountTheme.sans,
+              fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500))),
+    );
+  }
+
+  Widget _editorCard(String title, List<Widget> children,
+      {bool compact = false, bool highlight = false}) => Container(
+      margin: EdgeInsets.only(bottom: compact ? 8 : 18),
+      padding: EdgeInsets.all(compact ? 12 : 16),
+      decoration: BoxDecoration(
+          color: highlight ? const Color(0xFF202C23) : const Color(0xFF1C2420),
+          borderRadius: BorderRadius.circular(compact ? 12 : 16)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(title, style: const TextStyle(color: Color(0xFFF2F5EF),
+            fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w500)),
+        const SizedBox(height: 8),
+        ...children,
+      ]));
+
   Widget field(StoryField field) {
     final warning = fieldErrors['answers.${field.key}'];
     final canEdit = editable && !locked && !conflict;
@@ -667,9 +736,9 @@ class _StoryEditorState extends State<_StoryEditor> {
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            style: const TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFA5AEA8)),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
           if (!editable && ['TEXT', 'CHOICE'].contains(field.type))
             SelectableText(
               (answers[field.key]?.trim().isNotEmpty ?? false)
@@ -677,12 +746,13 @@ class _StoryEditorState extends State<_StoryEditor> {
                   : '（未填写）',
               key: ValueKey('story-answer-${field.key}'),
               style: const TextStyle(
-                  color: AccountTheme.text, fontSize: 16, height: 1.6),
+                  color: Color(0xFFF2F5EF), fontSize: 14, height: 22 / 14),
             ),
           if (editable && field.type == 'TEXT')
             TextField(
               key: ValueKey('story-field-${field.key}'),
               controller: controllers[field.key],
+              style: const TextStyle(fontSize: 14, height: 22 / 14, color: Color(0xFFF2F5EF)),
               enabled: canEdit,
               minLines: 3,
               maxLines: 7,
@@ -787,15 +857,65 @@ class _StoryEditorState extends State<_StoryEditor> {
   @override
   Widget build(BuildContext context) {
     final pendingOperation = pending;
+    final existingDraft =
+        !denied && record?.status == 'DRAFT' && !supplementOpen;
     final children = <Widget>[
-      _eyebrow('人工定制 / 故事需求'),
-      _heading(
-        supplementOpen
-            ? '还需要你补充一些内容'
-            : record != null && record!.status != 'DRAFT'
-                ? '故事已交给平台'
-                : '写下你的故事',
+      Text(existingDraft ? '业务草稿 / 故事品类' : '人工定制 / 制作需求',
+          style: const TextStyle(
+          fontSize: 12, height: 1.5, color: Color(0xFFB9F34A))),
+      const SizedBox(height: 18),
+      Text(
+        existingDraft
+            ? record!.title
+            : supplementOpen
+                ? '还需要你补充一些内容'
+                : record != null && record!.status != 'DRAFT'
+                    ? '故事已交给平台'
+                    : '写下你的故事',
+        style: const TextStyle(fontFamily: AccountTheme.sans,
+            fontSize: 28, height: 36 / 28, fontWeight: FontWeight.w700,
+            color: Color(0xFFF2F5EF)),
       ),
+      const SizedBox(height: 18),
+      if (existingDraft) ...[
+        _editorCard('仅自己可见 · 尚未正式提交', [
+          const Text('这份业务草稿尚未送交平台，保存不会提交或收费；协作分享暂未开放。',
+              style: TextStyle(fontSize: 12, height: 1.5,
+                  color: Color(0xFFA5AEA8))),
+          if (!record!.allows('SAVE'))
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Text('当前草稿仅可查看，暂不能保存修改。',
+                  style: TextStyle(fontSize: 12, height: 1.5,
+                      color: Color(0xFFA5AEA8))),
+            ),
+        ], compact: true),
+        const SizedBox(height: 10),
+      ],
+      if (!denied && (record == null || record!.status == 'DRAFT')) ...[
+        _editorCard('个人定制', [
+          const Text('按下方真实品类模板填写；仅本人可见，分享未开放。',
+              style: TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFA5AEA8))),
+        ], compact: true),
+        _editorCard('多人共创另行办理', [
+          const Text('先提交故事，再从原记录进入共创流程核对开房条件。本页不切换房间或付款。',
+              style: TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFA5AEA8))),
+        ], compact: true),
+        const SizedBox(height: 10),
+      ],
+      if (!denied) _editorCard('本次办理', [
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          Chip(label: Text(record == null ? '填写需求' : storyStatuses[record!.status]!)),
+          if (supplementOpen) const Chip(label: Text('需要补充')),
+        ]),
+        _note(supplementOpen
+            ? '请按平台提出的问题补充本次需求，再提交原记录。'
+            : record == null || record!.status == 'DRAFT'
+                ? '先选品类与真实用途，再完善内容；保存草稿不会提交或收费。'
+                : record!.status == 'SUBMITTED'
+                    ? '需求已提交，等待平台查看。报价、付款和制作开工分别确认。'
+                    : '平台正在受理，请查看本单的材料、补充要求及后续报价。'),
+      ]),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!, icon: Icons.error_outline),
       if (notice != null) appNotice(notice!, icon: Icons.check_circle_outline),
@@ -830,9 +950,11 @@ class _StoryEditorState extends State<_StoryEditor> {
             padding: const EdgeInsets.only(bottom: 8),
             child: Material(
               color: selected?.id == category.id
-                  ? AccountTheme.text
-                  : AccountTheme.surface,
-              child: ListTile(
+                  ? const Color(0xFF293A22)
+                  : const Color(0xFF1C2420),
+              borderRadius: BorderRadius.circular(12),
+              clipBehavior: Clip.antiAlias,
+              child: Material(type: MaterialType.transparency, child: ListTile(
                 key: ValueKey('customization-category-${category.code}'),
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -840,27 +962,27 @@ class _StoryEditorState extends State<_StoryEditor> {
                   selected?.id == category.id ? Icons.check : Icons.add,
                   size: 20,
                   color: selected?.id == category.id
-                      ? AccountTheme.canvas
-                      : AccountTheme.text,
+                      ? const Color(0xFFB9F34A)
+                      : const Color(0xFFF2F5EF),
                 ),
                 title: Text(category.template.title,
                     style: TextStyle(
                         color: selected?.id == category.id
-                            ? AccountTheme.canvas
-                            : AccountTheme.text,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600)),
+                            ? const Color(0xFFB9F34A)
+                            : const Color(0xFFF2F5EF),
+                        fontSize: 14, height: 20 / 14,
+                        fontWeight: FontWeight.w500)),
                 subtitle: Text(
                   '${category.template.description}${category.submissionAvailable ? '' : '\n可保存草稿，当前暂不可正式提交'}',
                   style: TextStyle(
                       color: selected?.id == category.id
-                          ? const Color(0xFFD9D5CB)
-                          : AccountTheme.muted,
+                          ? const Color(0xFFF2F5EF)
+                          : const Color(0xFFA5AEA8),
                       fontSize: 12,
                       height: 1.5),
                 ),
                 onTap: locked ? null : () => choose(category),
-              ),
+              )),
             ),
           ),
       ],
@@ -921,7 +1043,10 @@ class _StoryEditorState extends State<_StoryEditor> {
         const SizedBox(height: 8),
         KeyedSubtree(
             key: const ValueKey('story-form-section'),
-            child: _section(template!.title, [
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              Text(template!.title, style: const TextStyle(fontSize: 14,
+                  height: 20 / 14, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 8),
               if (template!.description.isNotEmpty)
                 _note(template!.description),
               if (fieldErrors['answers'] != null)
@@ -1021,7 +1146,13 @@ class _StoryEditorState extends State<_StoryEditor> {
                               requestId: record!.id))),
               child: const Text('查看这份需求的报价与订单')),
         ]),
-      _note('故事提交后由平台对接。报价、合同、授权和制作将在后续步骤分别确认。'),
+      _editorCard('需求提交后由平台对接', [
+        const Text('问题按已选品类模板显示；普通买家可直接填写故事，草稿保留绑定模板。专员核对用途、素材与阵容，再提供报价。提交不扣费，也不代替他人授权。',
+            style: TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFF2F5EF))),
+        const SizedBox(height: 8),
+        const Text('素材请仅使用已获权内容；AI或氛围参考应注明，不作为正式成片。先保存草稿再上传，上传后仍须保存绑定并正式提交。保存不自动开房或开放协作分享。',
+            style: TextStyle(fontSize: 12, height: 1.5, color: Color(0xFFF2F5EF))),
+      ], highlight: true),
     ];
     Future<void> goBack() async {
       if (!await leave() || !context.mounted) return;
@@ -1037,9 +1168,10 @@ class _StoryEditorState extends State<_StoryEditor> {
       onPopInvokedWithResult: (didPop, result) async {
         if (!didPop) await goBack();
       },
-      child: AccountTheme(
+      child: Theme(data: _editorTheme(),
         child: Scaffold(
           appBar: AppBar(
+            toolbarHeight: 52,
             title: Text(
               record?.status == 'DRAFT' || record == null
                   ? '定制故事需求'
@@ -1052,7 +1184,7 @@ class _StoryEditorState extends State<_StoryEditor> {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 560),
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(18, 20, 18, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                   children: [...children, const SizedBox(height: 24)],
                 ),
               ),
@@ -1062,7 +1194,7 @@ class _StoryEditorState extends State<_StoryEditor> {
               ? null
               : DecoratedBox(
                   decoration: const BoxDecoration(
-                      color: AccountTheme.canvas,
+                      color: Color(0xFF101513),
                       border:
                           Border(top: BorderSide(color: AccountTheme.border))),
                   child: SafeArea(
@@ -1072,20 +1204,16 @@ class _StoryEditorState extends State<_StoryEditor> {
                       child: ConstrainedBox(
                         constraints: const BoxConstraints(maxWidth: 560),
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(18, 10, 18, 12),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: OutlinedButton(
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 10),
+                          child: LayoutBuilder(builder: (context, constraints) {
+                            final actions = <Widget>[
+                              OutlinedButton(
                                   key: const ValueKey('story-save'),
                                   onPressed: locked || conflict ? null : save,
                                   child: Text(
                                       supplementOpen ? '保存补充草稿' : '保存业务草稿'),
                                 ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: FilledButton(
+                              FilledButton(
                                   key: const ValueKey('story-submit'),
                                   onPressed: locked ||
                                           conflict ||
@@ -1098,11 +1226,25 @@ class _StoryEditorState extends State<_StoryEditor> {
                                       ? null
                                       : () => save(submit: true),
                                   child: Text(
-                                      supplementOpen ? '正式重提补充' : '正式提交需求'),
+                                      supplementOpen ? '正式重提补充' : '提交给制作专员'),
                                 ),
-                              ),
-                            ],
-                          ),
+                            ];
+                            if (constraints.maxWidth < 340 ||
+                                MediaQuery.textScalerOf(context).scale(14) > 20) {
+                              return Column(mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    actions[0],
+                                    const SizedBox(height: 10),
+                                    actions[1],
+                                  ]);
+                            }
+                            return Row(children: [
+                              Expanded(flex: 138, child: actions[0]),
+                              const SizedBox(width: 10),
+                              Expanded(flex: 202, child: actions[1]),
+                            ]);
+                          }),
                         ),
                       ),
                     ),

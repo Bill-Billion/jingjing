@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'public_discovery.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
-import '../account/editorial_widgets.dart';
 import '../engagement/community_support.dart';
 import '../engagement/engagement_pages.dart' show validateBuyers;
 import '../notices/notices_api.dart';
@@ -195,11 +194,29 @@ class _PublicProducerState extends State<_PublicProducer> {
         Text(error ?? '正在核对该主体的当前公开选择。'),
         const SizedBox(height: 24),
       ] else ...[
-        EditorialFeature(
-            title: current['party_kind'] == 'PERSON' ? '出品人' : '机构',
-            eyebrow: '出品方档案 / ${widget.city}',
-            description: '已公开主体 ${communityShort(current['party_id'])}',
-            imageLabel: '未提供公开肖像或封面'),
+        tradeHeading(current['party_kind'] == 'PERSON' ? '出品人公开档案' : '机构公开档案',
+            eyebrow: '当前公开名单 / ${widget.city}', fontSize: 28),
+        tradeSection('公开主体', [
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            Chip(label: Text(current['party_kind'] == 'PERSON' ? '出品人' : '机构')),
+            Chip(label: Text(widget.city)),
+          ]),
+          const SizedBox(height: 12),
+          Row(children: [
+            Expanded(child: Text('已公开主体 ${communityShort(current['party_id'])}',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700))),
+            const SizedBox(width: 16),
+            Container(width: 72, height: 96,
+                decoration: BoxDecoration(color: AccountTheme.selectedSurface,
+                    borderRadius: BorderRadius.circular(10)),
+                child: Icon(current['party_kind'] == 'PERSON'
+                    ? Icons.person_outline : Icons.business_outlined,
+                    color: AccountTheme.muted)),
+          ]),
+          const SizedBox(height: 10),
+          const Text('本接口未提供公开姓名、肖像或封面。这里只呈现已经公开的业务事实。',
+              style: TextStyle(fontSize: 13, color: AccountTheme.muted, height: 1.6)),
+        ]),
         tradeFact('公开主体编号', current['party_id']),
         tradeSection('已核实的业务记录', [
           tradeFact(
@@ -227,7 +244,7 @@ class _PublicProducerState extends State<_PublicProducer> {
           const Text('名单分值来自当前公开规则，消费成长与星探资格分别核对，不代表艺人评分或距离排序。',
               style: TextStyle(color: AccountTheme.muted, height: 1.6)),
         ]),
-        tradeSection('已读取的公开通告', [
+        tradeSection('在架通告 · 当前已读范围', [
           const Text('只显示当前城市已读取目录中，由该主体发布的通告。继续读取可核对后续页面；进入详情时会重新核对公开状态。',
               style: TextStyle(color: AccountTheme.muted, height: 1.6)),
           if (noticesBusy) const LinearProgressIndicator(),
@@ -240,7 +257,7 @@ class _PublicProducerState extends State<_PublicProducer> {
             const SizedBox(height: 16),
             Text(n.notice['title'],
                 style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
             tradeFact('通告类型', noticeTypes[n.notice['type']]),
             tradeFact('有效截止', communityDate(n.notice['valid_until'])),
             tradeButton(
@@ -257,6 +274,11 @@ class _PublicProducerState extends State<_PublicProducer> {
                 busy || noticesBusy ? null : () => loadNotices(more: true),
                 outline: true),
         ]),
+        tradeSection('投稿规则', [
+          const Text('请从具体公开通告核对投稿方式与授权范围，感兴趣后由平台客服跟进。阅读资料不等于接受合作或签约。'),
+          tradeButton('阅读投稿与沟通说明',
+              () => Navigator.pushNamed(context, '/help'), outline: true),
+        ]),
         tradeSection('公开资料边界', [
           const Text('公开名单尚未提供姓名、肖像或作品清单。向该主体投稿仍需本次用途的有效本人授权及接收条件，不能由名单资格代替。',
               style: TextStyle(color: AccountTheme.muted, height: 1.6)),
@@ -265,13 +287,10 @@ class _PublicProducerState extends State<_PublicProducer> {
         ]),
       ],
       tradeButton('重新核对公开名单', busy || noticesBusy ? null : load, outline: true),
-      tradeButton(
-          '查看本城通告目录',
-          () => Navigator.pushNamed(
-              context,
-              discoveryDirectoryRoute(DiscoveryKind.notices,
-                  city: widget.city)),
-          outline: true),
-    ]);
+    ], footer: current == null ? null : OutlinedButton(
+        onPressed: busy || noticesBusy ? null
+            : () => Navigator.pushNamed(context,
+                discoveryDirectoryRoute(DiscoveryKind.notices, city: widget.city)),
+        child: const Text('查看本城通告目录')));
   }
 }

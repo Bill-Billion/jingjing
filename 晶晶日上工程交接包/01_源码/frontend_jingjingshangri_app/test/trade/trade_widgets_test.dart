@@ -9,6 +9,7 @@ import '../account/fake_account_api.dart';
 import '../navigation/app_navigation_test.dart' as nav;
 import 'trade_api_test.dart' show buyerSession;
 import 'trade_fixtures.dart';
+import '../stock/v5_test_host.dart' show reveal;
 
 // Keep the recovery assertions within SnackBar's four-second lifetime. A
 // naturally expired warning would not exercise the successful-write cleanup.
@@ -332,8 +333,7 @@ void main() {
             : adapter.defaultReply(r));
     final s = (await tester.runAsync(() => buyerSession(adapter)))!;
     await nav.openApp(tester, s, route: '/trade/record?recordId=$paymentId');
-    await tester.drag(find.byType(ListView), const Offset(0, -550));
-    await nav.frames(tester);
+    await reveal(tester, find.text('结果待核实'));
     expect(find.text('结果待核实'), findsOneWidget);
     expect(find.text('must-never-display'), findsNothing);
     expect(find.text('申请逐项退款'), findsNothing);

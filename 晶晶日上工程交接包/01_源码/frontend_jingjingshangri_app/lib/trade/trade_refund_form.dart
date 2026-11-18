@@ -99,6 +99,16 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
     }
   }
 
+  String lineTitle(String id) {
+    final source = order;
+    if (source != null) {
+      for (final line in tradeRows(source.quote['lines'])) {
+        if (line['line_id'] == id) return line['title'] as String;
+      }
+    }
+    return '明细名称未核对（$id）';
+  }
+
   Map<String, int> available(TradeRecord payment, List<TradeRecord> records) {
     final result = tradeRefundRemaining(payment, records);
     for (final e in cancellationFlows.entries) {
@@ -215,7 +225,7 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
         context,
         '申请退款',
         [
-          tradeHeading('新建售后申请', eyebrow: '原订单 / 原付款'),
+          tradeHeading('新建售后申请', eyebrow: '原订单 / 原付款', fontSize: 28),
           const Text('请选择退款的真实付款与明细，并填写申请原因。我们将根据原订单条款进行审核。',
               style: TextStyle(
                   fontSize: 16, height: 1.6, color: AccountTheme.muted)),
@@ -250,7 +260,9 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
               tradeFact('原付款', p.id),
               tradeFact('金额', tradeMoney(p.amount)),
               tradeFact('服务器状态', tradeStatuses[p.status]),
-              if (p.orderId != null) tradeFact('订单', p.orderId)
+              if (p.orderId != null) tradeFact('订单', p.orderId),
+              if (order != null) tradeFact('原订单版本', order!.version),
+              appNotice('本页仅提交原付款的退款诉求。提交与审核通过都不等于已退款到账；补交付或权利问题请从原项目问题记录办理。')
             ]),
             for (final flow in cancellationFlows.values)
               tradeSection('原项目取消与应退款', [
@@ -291,7 +303,7 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
               appNotice('Apple 当前仅支持原付款全额退款。审核通过后仍需用户通过 Apple 官方流程申请。'),
             tradeSection('退款明细与本次金额', [
               for (final e in remaining.entries) ...[
-                tradeFact('明细 ${e.key}', '可申请 ${tradeMoney(e.value)}'),
+                tradeFact(lineTitle(e.key), '可申请 ${tradeMoney(e.value)}'),
                 TextField(
                     controller: amounts[e.key],
                     enabled: !locked &&
@@ -301,7 +313,7 @@ class _TradeRefundFormState extends State<TradeRefundForm> {
                     keyboardType:
                         const TextInputType.numberWithOptions(decimal: true),
                     decoration: InputDecoration(
-                        labelText: '${e.key} 退款金额', suffixText: '元'),
+                        labelText: '${lineTitle(e.key)}退款金额', suffixText: '元'),
                     onChanged: (_) => setState(() {})),
                 const SizedBox(height: 16),
               ],

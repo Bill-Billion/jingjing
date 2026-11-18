@@ -165,9 +165,15 @@ async function run() {
       const a = await auth.resolve((req.headers.authorization || '').replace(/^Bearer /,''));
       return {subject_ref:a.subject_ref};
     };
-    const sim = await load('src/testing/payment-simulator').createPaymentSimulator(db,{...env,MYSQL_DATABASE:name,JX_PAYMENT_SIMULATOR_ENABLED:'true'}, {merchant_party_id:state.merchant_party_id,resolvePrincipal:principal});
-    const app = load('src/http/account-api').createAccountApi({db,secret:state.secret,sms,authSettings:{sessionMs:duration},supplyStorageFactory:storageAt(out),tradeProvidersFactory:()=>sim,
-      tradeEnv:state.customization_merchant_party_id?{CUSTOMIZATION_MERCHANT_PARTY_ID:state.customization_merchant_party_id}:undefined,allowedOrigins:origins});
+    const simEnv={...env,MYSQL_DATABASE:name,JX_PAYMENT_SIMULATOR_ENABLED:'true'};
+    const sim = state.mode==='BATCH'
+      ? await load('src/testing/multi-merchant-payment-simulator').createMultiMerchantSimulator(db,simEnv,{merchant_party_ids:[state.merchant_party_id,state.customization_merchant_party_id,...Object.values(state.accounts).map(a=>a.party_id)],resolvePrincipal:principal})
+      : await load('src/testing/payment-simulator').createPaymentSimulator(db,simEnv,{merchant_party_id:state.merchant_party_id,resolvePrincipal:principal});
+    // One local batch contains 45 independent accounts. Keep bounded limits,
+    // sufficient for their first login; this never changes production defaults.
+    const authSettings={sessionMs:duration,...state.mode==='BATCH'?{ipSendsPerHour:100,totalSendsPerHour:200,ipLoginsPerMinute:100}:{}};
+    const app = load('src/http/account-api').createAccountApi({db,secret:state.secret,sms,authSettings,supplyStorageFactory:storageAt(out),tradeProvidersFactory:()=>sim,
+      supplyEnv:state.mode==='BATCH'?{MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}:undefined,tradeEnv:state.customization_merchant_party_id?{CUSTOMIZATION_MERCHANT_PARTY_ID:state.customization_merchant_party_id,MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}:undefined,allowedOrigins:origins});
     const allowed = /^\/api\/v1\/(auth|me|parties|stock|trade|notices|artists|supply|operations)(\/|$)/;
     server = require('node:http').createServer(async(req,res)=>{
       const error = (status,code) => {res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error:{code}}));};

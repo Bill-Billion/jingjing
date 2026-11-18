@@ -197,7 +197,43 @@ class _BusinessLibraryState extends State<_BusinessLibrary> {
     }
   }
 
-  Widget record(String source, Map<String, dynamic> item) => Padding(
+  Widget _contractRecord(String source, Map<String, dynamic> item) => Container(
+      key: ValueKey(item['key']),
+      padding: const EdgeInsets.symmetric(vertical: 18),
+      decoration: const BoxDecoration(border: Border(
+          bottom: BorderSide(color: AccountTheme.border))),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(width: 60, height: 80,
+            decoration: BoxDecoration(color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(8)),
+            child: const Icon(Icons.description_outlined,
+                color: AccountTheme.muted)),
+        const SizedBox(width: 12),
+        Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(item['title'], style: const TextStyle(
+              fontSize: 16, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 6),
+          Text(businessSources[source]!.label, style: const TextStyle(
+              fontSize: 12, color: Color(0xFF387344))),
+          const SizedBox(height: 6),
+          Text('记录版本 ${item['object_version']} · ${communityDate(item['created_at'])}',
+              style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          const SizedBox(height: 6),
+          Text(personalBusinessStatus(item), style: const TextStyle(
+              fontSize: 12, color: AccountTheme.accent)),
+          const SizedBox(height: 6),
+          Text(item['notice'], style: const TextStyle(
+              fontSize: 12, color: AccountTheme.muted, height: 1.5)),
+        ])),
+        const SizedBox(width: 8),
+        SizedBox(width: 72, child: TextButton(
+            onPressed: () => open(source, personalBusinessRoute(item, source: source)),
+            child: const Text('查看原约定', textAlign: TextAlign.center))),
+      ]));
+
+  Widget record(String source, Map<String, dynamic> item) =>
+      widget.category == 'contracts' ? _contractRecord(source, item) : Padding(
       key: ValueKey(item['key']),
       padding: const EdgeInsets.only(top: 16, bottom: 8),
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -263,9 +299,21 @@ class _BusinessLibraryState extends State<_BusinessLibrary> {
   }
 
   @override
-  Widget build(BuildContext context) => tradeScaffold(context, '我的业务目录', [
-        tradeHeading('约定、作品与收入', eyebrow: '从原业务继续办理'),
-        tradeFact('当前办事身份', widget.session.party?['display_name']),
+  Widget build(BuildContext context) => tradeScaffold(context, widget.category == 'contracts' ? '我的合同与许可' : '我的业务目录', [
+        tradeHeading(widget.category == 'contracts' ? '合同与许可' : '约定、作品与收入',
+            eyebrow: widget.category == 'contracts' ? '每次使用都有依据' : '从原业务继续办理',
+            fontSize: 28),
+        tradeSection('当前办事身份', [
+          Row(children: [
+            const Icon(Icons.badge_outlined, color: AccountTheme.accent, size: 28),
+            const SizedBox(width: 12),
+            Expanded(child: Text(widget.session.party?['display_name'] ?? '尚未选择身份',
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
+          ]),
+          const SizedBox(height: 8),
+          const Text('目录只展示当前身份可读取的记录，切换身份后会重新读取。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        ]),
         Wrap(spacing: 8, runSpacing: 8, children: [
           for (final category in businessCategories.entries)
             ChoiceChip(
@@ -281,6 +329,14 @@ class _BusinessLibraryState extends State<_BusinessLibrary> {
             style: const TextStyle(color: AccountTheme.muted, height: 1.6)),
         const SizedBox(height: 20),
         for (final entry in sources.entries) sourceCard(entry.key, entry.value),
+        if (widget.category == 'contracts') ...[
+          const SizedBox(height: 24),
+          const Text('保留当时的约定',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 8),
+          const Text('内容确认、真实签署、许可生效分别核对；新报价或新版本不会替换已成交订单中的原约定。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        ],
         tradeButton('刷新当前分类', initialBusy ? null : loadAll, outline: true),
         if (widget.category == 'income')
           tradeButton('消费者钱包', () => Navigator.pushNamed(context, '/wallet'),

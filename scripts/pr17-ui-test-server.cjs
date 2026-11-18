@@ -193,6 +193,9 @@ async function main() {
   const allowedOrigins = [5203, 5204, 5205, 5206, 8772, 8773, 8774, 8775, 8776].flatMap(p => [`http://127.0.0.1:${p}`, `http://localhost:${p}`]);
   const app = createAccountApi({ db, secret: crypto.randomBytes(32).toString('base64'), sms, supplyEnv: { NODE_ENV: 'test' },
     supplyStorageFactory: storageFactory, governanceEnvironment: 'SANDBOX',
+    artistIdentityProviderFactory: () => require('./support/synthetic-identity-provider.cjs')({
+      namespace: 'synthetic.pr17.identity', allowedAccounts: () => [people.buyer?.accountId],
+    }),
     tradeProvidersFactory: () => ({ get(code) { assert(providers, 'Fixture transport not initialized'); return providers.get(code); } }), allowedOrigins,
     authSettings: { resendMs: 1000, phoneSendsPerHour: 1000, ipSendsPerHour: 1000, totalSendsPerHour: 1000, ipLoginsPerMinute: 1000 } });
   apiServer = http.createServer((req, res) => {
@@ -225,6 +228,14 @@ async function main() {
 
   }
   const { seller, buyer, reviewer, mcn, member, outsider, ruleAuthor } = people;
+  // The ordinary buyer must satisfy current adult identity before accepting a quote.
+  // Seller identity remains owned by publicInviteArtist; unrelated accounts stay unverified.
+  const unverifiedBuyer = await request('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr17-buyer-precheck', { person: buyer, party: buyer.personalPartyId, status: 409 });
+  assert.equal(unverifiedBuyer.body.error.code, 'VERIFIED_ADULT_REQUIRED');
+  const buyerIdentity = await call('POST', '/artists/people', { person: buyer, party: buyer.personalPartyId, body: { display_name: 'PR17合成成年买家（非真实核验）' } });
+  assert.equal((await call('POST', `/artists/people/${buyerIdentity.id}/identity`, { person: buyer, party: buyer.personalPartyId, body: { session_ref: 'synthetic:pr17-buyer-identity' } })).current_status, 'VERIFIED');
+  assert.equal((await call('GET', '/wallet/consumer-risk/preview?kind=RECHARGE&amount_minor=1&request_key=synthetic-pr17-buyer-precheck', { person: buyer, party: buyer.personalPartyId })).required, false);
+  checks.push('Buyer preflight rejects missing adult identity, then real person/identity APIs establish only the normal synthetic buyer prerequisite before quote acceptance');
   const organization = await call('POST', '/organizations', { person: mcn, body: { display_name: '青岚直签 MCN（合成隔离测试）' } });
   mcnOrganizationId = organization.party_id; mcn.actingPartyId = member.actingPartyId = mcnOrganizationId;
   const invitation = await call('POST', `/parties/${mcnOrganizationId}/invitations`, { person: mcn, party: mcnOrganizationId,

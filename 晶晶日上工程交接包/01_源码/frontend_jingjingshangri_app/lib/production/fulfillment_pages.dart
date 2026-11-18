@@ -201,7 +201,10 @@ class _StoryState extends State<_Story> {
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         if (story != null) ...[
           appNotice('只读保存本单采用的正式故事。重新修改需求不会覆盖这里的原约定。'),
-          tradeFact('正式提交', shortSupplyId(story!.raw['submission_id'])),
+          tradeSection('本单采用的故事版本', [
+            tradeFact('正式提交', shortSupplyId(story!.raw['submission_id'])),
+            const Text('以下内容仅供核对原约定，不在此页编辑或替换。', style: TextStyle(fontSize: 13, height: 1.6)),
+          ]),
           for (final field in story!.template.fields)
             tradeSection(field.label, [
               SelectableText(
@@ -513,25 +516,55 @@ class _AftercareState extends State<_Aftercare> {
                 context,
                 '售后与争议',
                 [
-                  tradeHeading('售后与争议', eyebrow: '原项目 / 独立处理'),
+                  tradeHeading('售后与争议', eyebrow: '原项目 / 独立处理', fontSize: 28),
                   if (busy || fileBusy) const LinearProgressIndicator(),
                   if (error != null)
                     appNotice(error!, icon: Icons.error_outline),
                   if (notice != null) appNotice(notice!),
                   if (f != null) ...[
-                    tradeBanner(fulfillmentStates[f.state]!,
-                        '取消审核、应退款、渠道处理中与已核实退款分别记录。',
-                        icon: Icons.support_agent),
+                    tradeSection('售后处理状态', [
+                      Text(f.cases.any((issue) => issue.status == 'OPEN')
+                          ? '等待平台核对与决定' : fulfillmentStates[f.state]!,
+                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+                      const SizedBox(height: 12),
+                      const Text('提交、独立决定、执行与实际到账分别核对。批准取消或退款不代表资金已到账。',
+                          style: TextStyle(fontSize: 13, height: 1.6)),
+                      const Divider(height: 28),
+                      tradeFact('已提交问题', f.cases.length),
+                      tradeFact('仍待决定', f.cases.where((issue) => issue.status == 'OPEN').length),
+                    ]),
+                    tradeSection('关联原项目与订单', [
+                      tradeFact('项目编号', project?.id),
+                      tradeFact('项目版本', project?.version),
+                      tradeFact('原订单编号', f.orderId),
+                      if (project != null)
+                        for (final stage in productionStages.entries)
+                          if (project!.data['current'][stage.key] != null)
+                            tradeFact('当前${stage.value}版本',
+                                project!.data['current'][stage.key]),
+                      if (owner)
+                        tradeButton('查看原订单金额与处理记录',
+                            locked ? null : () => Navigator.pushNamed(context,
+                                '/trade/record?recordId=${f.orderId}'), outline: true),
+                      appNotice('本页不推算订单总额。金额、付款渠道及退款回执在原订单分别核对。'),
+                    ]),
                     for (final issue in f.cases)
                       tradeSection(fulfillmentCaseKinds[issue.data['kind']]!, [
-                        tradeFact('当前进度',
-                            issue.status == 'OPEN' ? '平台正在核对材料' : '独立决定已记录'),
+                        tradeFact('平台核对进度',
+                            issue.status == 'OPEN' ? '等待平台核对与决定' : '独立决定已记录'),
+                        const Divider(height: 24),
+                        const Text('原申请诉求与说明', style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 10),
                         SelectableText(issue.data['reason'],
                             style: const TextStyle(height: 1.7)),
                         tradeFact('提交时间', tradeDate(issue.data['opened_at'])),
+                        const Divider(height: 24),
+                        if (issue.data['resolution'] == null)
+                          const Text('提交已记录，核对与独立决定尚待完成；不推定已受理或正在执行。'),
                         if (issue.data['resolution'] != null) ...[
                           tradeFact(
-                              '独立处理决定',
+                              '已记录方案 · 不等于执行到账',
                               {
                                 'RESUME': '恢复原制作',
                                 'CANCEL': '取消委托并核对退款',
@@ -548,6 +581,12 @@ class _AftercareState extends State<_Aftercare> {
                                   : () => Navigator.pushNamed(context,
                                       '/trade/record?recordId=${issue.changeOrderId}'),
                               outline: true),
+                        const Divider(height: 24),
+                        const Text('本次问题证据', style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 8),
+                        if (issue.data['evidence_asset_ids'].isEmpty)
+                          const Text('本记录未附证据材料。'),
                         if (issue.data['opened_by_party_id'] ==
                             widget.session.partyId)
                           for (final id in issue.data['evidence_asset_ids'])
@@ -582,7 +621,10 @@ class _AftercareState extends State<_Aftercare> {
                       ]),
                     if (f.cases.isEmpty) appNotice('暂无已提交问题。说明和证据会留在这笔原项目。'),
                     if (allow || pending != null)
-                      tradeSection('提交问题与材料', [
+                      tradeSection('本人诉求与问题证据', [
+                        const Text('选择具体问题 → 说明原约定与差异 → 附上本人证据',
+                            style: TextStyle(fontSize: 13, height: 1.6)),
+                        const SizedBox(height: 16),
                         DropdownButtonFormField<String>(
                             initialValue: kind,
                             isExpanded: true,

@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
+import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import '../artists/artists_api.dart';
 import '../artists/artists_models.dart';
@@ -13,6 +14,18 @@ import '../trade/trade_widgets.dart';
 import 'stock_api.dart';
 import 'stock_models.dart';
 import 'v5_support.dart';
+
+Widget _listingPanel(String title, List<Widget> children) => Container(
+    margin: const EdgeInsets.only(bottom: 20),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AccountTheme.border)),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+      const SizedBox(height: 14),
+      ...children,
+    ]));
 
 class StockListingForm extends StatefulWidget {
   const StockListingForm({super.key, required this.session, this.revisionId});
@@ -291,8 +304,8 @@ class _StockListingFormState extends State<StockListingForm> {
   @override
   Widget build(BuildContext context) {
     final d = person;
-    return V5Frame(api: api, title: '现成作品上架', children: [
-      tradeHeading('让完成的作品被看见', eyebrow: '具体艺人 / 本版明确许可'),
+    return V5Frame(api: api, title: '编辑视频商品', children: [
+      tradeHeading('编辑视频商品', eyebrow: '正式文件 / 独立预览 / 本版明确许可', fontSize: 28),
       V5RecoveryPanel(
           api: api,
           label: api.recoveryLabel,
@@ -326,17 +339,23 @@ class _StockListingFormState extends State<StockListingForm> {
               busy || api.pending(suffix) != null ? null : (v) => choose(v!)),
       if (d != null) ...[
         appNotice('卖方和每位出镜人分别需要有效实名、L1及主角光环人工审核。缴费、待审或补件不等于通过；内容及授权另行审核。'),
-        for (final p in people)
-          tradeFact(
-              p.id == personId ? '卖方：${p.name}' : '可选出镜人：${p.name}',
-              eligibility[p.id]?.summary ??
-                  eligibilityErrors[p.id] ??
-                  '尚未核对当前资格'),
-        if (!permitted) appNotice('当前身份尚无这位真人的明确上架委托。'),
-        tradeButton('重新核对上架资格', busy ? null : refreshEligibility,
-            outline: true),
-        tradeButton('查看人物与认证', () => Navigator.pushNamed(context, '/artists'),
-            outline: true),
+        _listingPanel('画面与声音 · 逐人核对', [
+          for (final p in people) ...[
+            tradeFact(
+                p.id == personId ? '卖方：${p.name}' : '可选出镜人：${p.name}',
+                eligibility[p.id]?.summary ??
+                    eligibilityErrors[p.id] ??
+                    '尚未核对当前资格'),
+            const Divider(height: 20),
+          ],
+          if (!permitted) appNotice('当前身份尚无这位真人的明确上架委托。'),
+          tradeButton('重新核对上架资格', busy ? null : refreshEligibility,
+              outline: true),
+          tradeButton('查看人物与认证', () => Navigator.pushNamed(context, '/artists'),
+              outline: true),
+          const Text('身份与上架资格不等于已获全部画面、声音许可。下方逐人选择仍按真实授权选项办理。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        ]),
         DropdownButtonFormField<int>(
             key: countSelector,
             initialValue: count,
@@ -353,7 +372,7 @@ class _StockListingFormState extends State<StockListingForm> {
           V5Form(
               key: formKey,
               api: api,
-              title: '本版上架材料',
+              title: '本版商品与授权材料',
               action: '提交内容与权利双审核',
               suffix: suffix,
               version: previous?.version,
@@ -440,21 +459,45 @@ class _StockListingFormState extends State<StockListingForm> {
               },
               onSuccess: (r) => Navigator.pushReplacementNamed(
                   context, '/stock/listing?listingId=${r['id']}'),
+              beforeField: (field, v, set, enabled) => [
+                    if (field.keyName == 'publication_id')
+                      _listingPanel('本次媒体与独立预览', [
+                      tradeBanner(
+                          v['file_id'] == null || v['preview_file_id'] == null
+                              ? '正式文件与独立预览待补' : '本次视频已选择，提交后仍需双审核',
+                          '正式与预览必须是不同文件；AI 标识和水印须保留在实际提交文件中，上传不等于授权通过。'),
+                      tradeFact('已选正式文件',
+                          v['file_id'] == null ? '尚未上传或选择' : '本次已上传的私有正式文件'),
+                      tradeFact(
+                          '已选独立预览',
+                          v['preview_file_id'] == null
+                              ? '尚未上传或选择'
+                              : '本次已上传的独立预览'),
+                      _StockUpload(
+                          api: api,
+                          enabled: enabled,
+                          onUploaded: (id, role) => set(role, id)),
+                      ]),
+                    if (field.keyName == 'city' &&
+                        publications[v['publication_id']] != null)
+                      _listingPanel('本版商品与销售许可', [
+                        Text(publications[v['publication_id']]!['spec_title'],
+                            style: const TextStyle(fontSize: 20,
+                                fontWeight: FontWeight.w700, height: 1.4)),
+                        const SizedBox(height: 12),
+                        Text(v5Money(publications[v['publication_id']]!['unit_minor']),
+                            style: const TextStyle(fontSize: 28,
+                                fontWeight: FontWeight.w700)),
+                        const SizedBox(height: 8),
+                        tradeFact('销售条款版本',
+                            publications[v['publication_id']]!['rule_version']),
+                        appNotice(publications[v['publication_id']]!['terms']),
+                        appNotice('名称、售价与销售条款来自已审商品版本。改价需采用新版本，不改写历史订单。'),
+                      ]),
+              ],
               extra: (v, set, enabled) => [
-                    if (publications[v['publication_id']] != null)
-                      appNotice(publications[v['publication_id']]!['terms']),
-                    tradeFact('已选正式文件',
-                        v['file_id'] == null ? '尚未上传或选择' : '本次已上传的私有正式文件'),
-                    tradeFact(
-                        '已选独立预览',
-                        v['preview_file_id'] == null
-                            ? '尚未上传或选择'
-                            : '本次已上传的独立预览'),
-                    _StockUpload(
-                        api: api,
-                        enabled: enabled,
-                        onUploaded: (id, role) => set(role, id)),
-                    tradeSection('权利证据（私有）', [
+                    _listingPanel('权利证明与相关授权（私有）', [
+                      appNotice('逐人核对画面、声音与使用范围。提交证明不替代本人授权，也不等于内容或权利审核通过。'),
                       SupplyFiles(
                           api: SupplyApi(widget.session),
                           purpose: 'RIGHTS_EVIDENCE',
@@ -466,6 +509,21 @@ class _StockListingFormState extends State<StockListingForm> {
                           enabled: enabled,
                           onChanged: (ids) =>
                               set('rights_evidence_ids', ids.join(', ')))
+                    ]),
+                    _listingPanel('本次材料核对', [
+                      tradeFact('正式文件', v['file_id'] == null ? '待补' : '已选择，待审核'),
+                      tradeFact('独立预览', v['preview_file_id'] == null ? '待补' : '已选择，待审核'),
+                      tradeFact('销售条款', publications[v['publication_id']] == null
+                          ? '待选择已审版本' : '已选择原已审版本'),
+                      tradeFact('权利证明引用',
+                          (v['rights_evidence_ids'] ?? '').toString().trim().isEmpty
+                              ? '尚未选择证明' : '已有引用，真实性与范围待核对'),
+                      const Text('选择文件、引用证明和提交申请均不等于授权通过。最终完整性和逐人资格仍在原提交流程核对。',
+                          style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+                    ]),
+                    tradeSection('许可边界', [
+                      const Text('采用上方已审销售说明，不默认扩大画面、声音或商用范围；不以材料提交代替权利人本人确认。重新提交生成新版本，不改写旧单许可。',
+                          style: TextStyle(fontSize: 14, height: 1.6)),
                     ]),
                   ]),
       ],

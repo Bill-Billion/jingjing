@@ -11063,6 +11063,104 @@
       "previous_remote_check_status": "ALL_THREE_SUCCESS",
       "delivery_candidate": "c17c49d30224ba29195b6abbfc083d9333a98ee2",
       "remote_check_observed_at": "2026-11-13 00:54:47 UTC"
+    },
+    {
+      "id": "EXP-PM03-V5-001",
+      "title": "V5全业务页面与17范围角色动作集中追齐",
+      "stage": 0,
+      "stream": "Experience",
+      "owner": "Bill-Billion",
+      "status": "IN_PROGRESS",
+      "branch": "handoff/v5-isolated-20261116",
+      "work_refs": [],
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/PM03_V5_FRONTEND_CODE_HANDOFF_20261116.md",
+        "docs/collaboration/v5-isolated-20261116/PM03_ROLE_ACTION_INDEX_20261117.md"
+      ],
+      "acceptance": "先集中完成原要求App/管理网页/运营独审角色动作与完整候选交付，再固定版本整体联合测试；源码与预览不代替运行验收",
+      "shared_boundaries": [
+        "auth/permission",
+        "payments/refunds",
+        "rights/licenses"
+      ],
+      "review_status": "PENDING",
+      "test_status": "NOT_RUN",
+      "evidence": [],
+      "blockers": [
+        "监护新充值退款申请缺合法child_party/子女RECHARGE选择来源；W18其余本人/运营接入本批已落源码，未运行验收",
+        "W19本人提名跨截止未知结果恢复受服务器前置校验限制；W16离页后HOLD合法重读契约仍待确认",
+        "其他设计精校及契约/端分工差异保留；不以未测试算未开发"
+      ],
+      "frontend_batch_progress": {
+        "source": "53f6c485 PM03 batch alignment",
+        "remote_verified_commit": "a5be9c13e82d92cf6fc528007538cf8827603545",
+        "status": "CONCENTRATED_DEVELOPMENT_NOT_COMPLETE_HANDOFF",
+        "joint_testing": "NOT_STARTED_AFTER_COMPLETE_HANDOFF",
+        "summary": "docs/collaboration/v5-isolated-20261116/STAGE_DELIVERY_20261117.md"
+      },
+      "pm01_work_items": [
+        "W03",
+        "W04",
+        "W05",
+        "W06",
+        "W07",
+        "W08",
+        "W11",
+        "W12",
+        "W13",
+        "W14",
+        "W15",
+        "W16",
+        "W17",
+        "W18",
+        "W19",
+        "W20",
+        "W21",
+        "W22"
+      ],
+      "shared_boundary_notes": [
+        "AccountTheme及交易公共组件影响跨业务页面，必须由同事复核",
+        "页面代码按当前后端状态组织，不改变接口、权限、钱账、恢复或历史合同"
+      ]
+    },
+    {
+      "id": "CORE-PM03-JOINT-001",
+      "title": "PM03 joint interface continuation and batch verification",
+      "stage": 0,
+      "stream": "Core",
+      "owner": "chengcongcong222",
+      "status": "IN_PROGRESS",
+      "branch": "core/pm03-joint-20261118",
+      "req_refs": [],
+      "dependencies": [],
+      "deliverables": [
+        "docs/collaboration/PM03_JOINT_HANDOFF_20261118.md",
+        "docs/reviews/pm03-joint-20261118/REPORT.md"
+      ],
+      "review_status": "PENDING_STAGE_END",
+      "test_status": "PARTIAL_74_APP_FAILURES",
+      "evidence": [
+        "docs/reviews/pm03-joint-20261118/TEST_RESULTS.json",
+        "docs/reviews/pm03-joint-20261118/FOLLOWUP_RESULTS.json"
+      ],
+      "pm01_work_items": [
+        "W01",
+        "W10",
+        "W14",
+        "W16",
+        "W18",
+        "W19",
+        "W22"
+      ],
+      "work_refs": [],
+      "acceptance": "Four interface groups integrated; full batch same-record role and recovery evidence; open failures resolved before maintainer review",
+      "shared_boundaries": [
+        "auth/permission",
+        "payments/refunds",
+        "rights/licenses"
+      ]
     }
   ],
   "delivery_policy": {
@@ -18427,5 +18525,27 @@
     "frontend_tested": false,
     "handoff": "docs/collaboration/PM03_BACKEND_BATCH_HANDOFF_20261118.md",
     "evidence": "docs/reviews/pm03-batch-readiness-20261118/REPORT.md"
+  },
+  "pm03_joint_20261118": {
+    "owner": "chengcongcong222",
+    "branch": "core/pm03-joint-20261118",
+    "runtime_commit": "996b34417e1149f858a3804af7cc933d43c1856a",
+    "stage": "BATCH_TESTING_WITH_OPEN_FAILURES",
+    "four_interface_groups_integrated": true,
+    "app_complete": {
+      "passed": 1155,
+      "failed": 74,
+      "skipped": 1,
+      "exit_code": 1
+    },
+    "ops_npm_test_exit_code": 0,
+    "physical_device_tested": false,
+    "frontend_received_confirmation": false,
+    "maintainer_reviewed": false,
+    "handoff": "docs/collaboration/PM03_JOINT_HANDOFF_20261118.md",
+    "evidence": "docs/reviews/pm03-joint-20261118/REPORT.md",
+    "app_source_commit": "22b269e145209eece2cb8c13ed5d7da6a70cd66c",
+    "backend_and_ops_source_commit": "996b34417e1149f858a3804af7cc933d43c1856a",
+    "pr": "https://github.com/Bill-Billion/jingjing/pull/40"
   }
 }

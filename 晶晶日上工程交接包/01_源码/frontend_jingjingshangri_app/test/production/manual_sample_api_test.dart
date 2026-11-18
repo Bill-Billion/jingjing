@@ -88,7 +88,7 @@ void main() {
           return envelope({'code': 'SERVICE_UNAVAILABLE'},
               status: 503, error: true);
         }
-        final result = snapshot();
+          final result = snapshot()..['object_version'] = 3;
         result['data']['confirmation'] = {
           'account_id': accountId,
           'confirmed_sha256': 'c' * 64,

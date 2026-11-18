@@ -23,10 +23,12 @@ import 'licensing/license_pages.dart';
 import 'licensing/license_forms.dart';
 import 'licensing/license_models.dart';
 import 'trade/trade_pages.dart';
+import 'trade/aftercare_entry_page.dart';
 import 'trade/participation_checkout_page.dart';
 import 'auditions/auditions_pages.dart';
 import 'wallet/wallet_pages.dart';
 import 'wallet/consumer_limits.dart';
+import 'wallet/recharge_refunds.dart';
 import 'gigs/gig_pages.dart';
 import 'gigs/gig_forms.dart';
 import 'gigs/gig_conversation.dart';
@@ -42,6 +44,9 @@ import 'finance/finance_forms.dart';
 import 'operations/operation_pages.dart';
 import 'stock/stock_pages.dart';
 import 'notices/notices_pages.dart';
+import 'notices/notices_history.dart';
+import 'notices/notices_confirmation.dart';
+import 'notices/notices_revision_request.dart';
 import 'engagement/engagement_pages.dart';
 import 'cocreation/cocreation_pages.dart';
 import 'redemption/redemption_pages.dart';
@@ -161,6 +166,8 @@ class JingjingShangriApp extends StatelessWidget {
                   updatedAt: LegalDocs.privacyUpdated),
               '/wallet' => const WalletPage(),
               '/wallet/limits' => const ConsumerLimitsPage(),
+              '/wallet/refunds' => const RechargeRefundsPage(),
+              '/wallet/guardian-refunds' => const RechargeRefundsPage(guardian: true),
               '/wallet/points' => const WalletPage(mode: 'points'),
               '/wallet/scout' => const WalletPage(mode: 'scout'),
               '/wallet/rules' => const WalletPage(mode: 'rules'),
@@ -392,6 +399,13 @@ class JingjingShangriApp extends StatelessWidget {
               '/notices/records' || '/notices/submissions' => NoticesPage(
                   mode: 'records',
                   kind: uri.queryParameters['kind'] ?? 'SUBMISSION'),
+              '/notices/revision-request' => NoticeRevisionRequestPage(
+                  recordId: uri.queryParameters['recordId'] ?? ''),
+              '/notices/notice-confirmation' => NoticeConfirmationPage(
+                  recordId: uri.queryParameters['recordId'] ?? ''),
+              '/notices/history' => NoticeHistoryPageView(
+                  noticeId: uri.queryParameters['noticeId'] ?? '',
+                  sourceRecordId: uri.queryParameters['sourceRecordId'] ?? ''),
               '/notices/record' => NoticesPage(
                   mode: 'record', id: uri.queryParameters['recordId']),
               '/notices/qualification' =>
@@ -404,9 +418,7 @@ class JingjingShangriApp extends StatelessWidget {
                   kind: uri.queryParameters['kind']),
               '/ai-create' => const CustomizationPage(
                   createNew: true, initialCategory: 'blessing_manual'),
-              '/after-sales' || '/review' => const AppUnavailablePage(
-                  title: '反馈与售后',
-                  description: '制作反馈与售后页面暂未开放。反馈会围绕明确的订单或制作版本办理。'),
+              '/after-sales' || '/review' => const AftercareEntryPage(),
               _ => const AppUnknownPage(),
             };
     }

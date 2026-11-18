@@ -90,12 +90,13 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
     final topics = helpTopics.where((t) =>
         '${t.title} ${t.summary} ${t.answer}'.toLowerCase().contains(keyword));
     return tradeScaffold(context, '帮助与反馈', [
-      tradeHeading('我们来帮你', eyebrow: '平台帮助 / 有事在这里说'),
+      tradeHeading('我们来帮你', eyebrow: '平台帮助 / 有事在这里说', fontSize: 28),
       TextField(
           controller: query,
           maxLength: 80,
           decoration: const InputDecoration(
-              labelText: '查找帮助', hintText: '付款、下载、投稿、认证或试镜'),
+              labelText: '查找帮助', hintText: '付款、下载、投稿、认证或试镜',
+              counterText: '', prefixIcon: Icon(Icons.search)),
           onChanged: (_) => setState(() {})),
       const SizedBox(height: 24),
       if (topics.isEmpty)
@@ -103,18 +104,20 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
             padding: EdgeInsets.symmetric(vertical: 20),
             child: Text('没有找到相关帮助。可清空条件，查看现行流程说明。')),
       for (final topic in topics)
-        DecoratedBox(
+        Container(
             decoration: const BoxDecoration(
                 border: Border(bottom: BorderSide(color: AccountTheme.border))),
             child: ExpansionTile(
-                tilePadding: EdgeInsets.zero,
+                tilePadding: const EdgeInsets.symmetric(vertical: 12),
                 childrenPadding: const EdgeInsets.only(bottom: 16),
+                trailing: const Text('阅读',
+                    style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
                 title: Text(topic.title,
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w700)),
+                        fontSize: 14, fontWeight: FontWeight.w600)),
                 subtitle: Text(topic.summary,
                     style: const TextStyle(
-                        color: AccountTheme.muted, height: 1.6)),
+                        fontSize: 12, color: AccountTheme.muted, height: 1.6)),
                 children: [
                   Text(topic.answer, style: const TextStyle(height: 1.7)),
                   const SizedBox(height: 16),
@@ -125,10 +128,6 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
       const SizedBox(height: 24),
       tradeSection('反馈提交', [
         const Text('以当前办事身份提交问题，查看客服答复和补件进度。'),
-        tradeButton(
-            '提交反馈或举报', () => Navigator.pushNamed(context, '/support/new')),
-        tradeButton('查看我的反馈记录', () => Navigator.pushNamed(context, '/support'),
-            outline: true),
       ]),
       tradeSection('需要业务协助时', [
         const Text('请先查看对应订单、投稿或制作记录中的处理进度和已开放的服务入口。不同业务的沟通、售后和材料核对保留在原业务中。',
@@ -140,6 +139,13 @@ class _HelpFeedbackPageState extends State<HelpFeedbackPage> {
             () => Navigator.pushNamed(context, '/privacy?view=complaint'),
             outline: true),
       ]),
-    ]);
+    ], footer: Wrap(spacing: 12, runSpacing: 8, children: [
+      TextButton(
+          onPressed: () => Navigator.pushNamed(context, '/support'),
+          child: const Text('我的反馈记录')),
+      FilledButton(
+          onPressed: () => Navigator.pushNamed(context, '/support/new'),
+          child: const Text('向平台提交问题')),
+    ]));
   }
 }

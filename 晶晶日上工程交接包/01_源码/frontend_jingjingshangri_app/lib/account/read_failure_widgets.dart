@@ -18,27 +18,30 @@ Widget _stateHeading(String eyebrow, String title) =>
           header: true,
           child: Text(title,
               style: const TextStyle(
-                  fontFamily: AccountTheme.serif,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 36,
+                  fontFamily: AccountTheme.sans,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 28,
                   height: 1.3))),
       const SizedBox(height: 24),
     ]);
 
 Widget _statePanel(String title, String body, {bool dark = false}) => Container(
-    color: dark ? AccountTheme.text : const Color(0xFFE7E4DA),
+    decoration: BoxDecoration(
+        color: dark ? AccountTheme.selectedSurface : AccountTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AccountTheme.border)),
     padding: const EdgeInsets.all(16),
     child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(title,
           style: TextStyle(
-              color: dark ? AccountTheme.canvas : AccountTheme.text,
+              color: AccountTheme.text,
               fontWeight: FontWeight.w700,
               fontSize: 16,
               height: 1.5)),
       const SizedBox(height: 12),
       Text(body,
           style: TextStyle(
-              color: dark ? AccountTheme.canvas : AccountTheme.text,
+              color: AccountTheme.text,
               fontSize: 14,
               height: 1.5)),
     ]));
@@ -54,7 +57,7 @@ class ReadAccessDeniedPage extends StatelessWidget {
       context,
       '内容权限',
       [
-        _stateHeading('内容权限', '当前无法\n读取这页'),
+        _stateHeading('内容权限', '当前无法查看'),
         _statePanel('当前无法读取', reason, dark: true),
         const SizedBox(height: 24),
         const Text('请核对当前账号、办事身份和有效权限。重新核对不会自动继续原操作。',
@@ -87,15 +90,15 @@ class ReadLoadingContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-        _stateHeading(label, '正在读取进度'),
-        _statePanel('正在加载', '请稍候，正在读取本页可查看的最新信息。'),
+        _stateHeading(label, '正在读取'),
+        _statePanel('正在读取本页信息', '请稍候，正在核对本页可查看的最新信息。这不是付款、签署或交付的业务进度。'),
         const SizedBox(height: 24),
         const Text('获取本页信息',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
         const SizedBox(height: 12),
         const LinearProgressIndicator(
             color: AccountTheme.vermilion,
-            backgroundColor: Color(0xFFE7E4DA),
+            backgroundColor: AccountTheme.surface,
             minHeight: 4),
         const SizedBox(height: 12),
         const Text('加载中…',
@@ -135,8 +138,8 @@ class ReadSessionExpiredPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final content =
         Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      _stateHeading('账号验证', '回来，\n继续这个故事'),
-      _statePanel('登录状态已过期', '完成登录后，继续查看$label。私有内容已清空，不会自动继续原操作。'),
+      _stateHeading('账号验证', '登录已过期'),
+      _statePanel('登录状态已过期', '完成登录后重新核对查看${label}的权限。私有内容暂不展示，不会自动继续付款、签署或确认操作。'),
       const SizedBox(height: 24),
       Container(
           padding: const EdgeInsets.symmetric(vertical: 8),
@@ -202,15 +205,17 @@ class ReadFailureContent extends StatelessWidget {
         const SizedBox(height: 24),
         Semantics(
             header: true,
-            child: const Text('这页还没\n加载出来',
+            child: const Text('暂时无法读取',
                 style: TextStyle(
-                    fontFamily: AccountTheme.serif,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 36,
+                    fontFamily: AccountTheme.sans,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 28,
                     height: 1.3))),
         const SizedBox(height: 24),
         Container(
-            color: const Color(0xFFE7E4DA),
+            decoration: BoxDecoration(
+                color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(20)),
             padding: const EdgeInsets.all(16),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -225,7 +230,7 @@ class ReadFailureContent extends StatelessWidget {
                       style: const TextStyle(fontSize: 14, height: 1.5)),
                 ])),
         const SizedBox(height: 24),
-        const Text('重新加载仅重新读取当前页面，保留本页筛选，不会再次提交业务或付款。',
+        const Text('重新读取只核对当前页面，不会再次提交业务或付款。若写入结果未知，请回原记录恢复核对，不要用通用重试重新办理。',
             style: TextStyle(
                 color: AccountTheme.muted, fontSize: 14, height: 1.6)),
         const SizedBox(height: 24),
@@ -252,6 +257,6 @@ class ReadFailureActions extends StatelessWidget {
             child: FilledButton(
                 key: const ValueKey('read-failure-retry'),
                 onPressed: onRetry,
-                child: const Text('重新加载', textAlign: TextAlign.center))),
+                child: const Text('重新读取本页', textAlign: TextAlign.center))),
       ]);
 }

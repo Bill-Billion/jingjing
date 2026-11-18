@@ -566,6 +566,62 @@ class AccountSession extends ChangeNotifier {
   void discardPending(String method, String path, {String? actingParty}) =>
       api.discardPending(method, path, token: _token, party: actingParty);
 
+  /// A historical receipt proves the original write; current detail is read
+  /// separately. Neither NOT_OBSERVED nor a later 409 proves that write failed.
+  Future<Map<String, dynamic>?> recoverCommitted(String method, String path,
+      {required String? actingParty,
+      required void Function(Map<String, dynamic>) validate}) async {
+    final spec = method == 'POST' ? originalOperationKinds[path] : null;
+    final op = pending(method, path, actingParty: actingParty);
+    if (spec == null || op == null) return null;
+    final started = epoch, key = op['key'];
+    final receipt = await read(
+        '/api/v1/${spec[0]}/operations/${Uri.encodeComponent(key)}',
+        actingParty: actingParty,
+        query: {'operation': spec[1]});
+    _check(started);
+    void require(bool ok) {
+      if (!ok)
+        throw const AccountError(200, 'UNEXPECTED_RESPONSE_SHAPE',
+            uncertain: true);
+    }
+
+    require(receipt['operation'] == spec[1] && receipt['operation_key'] == key);
+    if (receipt['outcome'] == 'NOT_OBSERVED') {
+      require([
+        'request_sha256',
+        'record_id',
+        'record_kind',
+        'original_object_version',
+        'original_status'
+      ].every((k) => receipt[k] == null));
+      return null;
+    }
+    require(receipt['outcome'] == 'COMMITTED' &&
+        receipt['record_kind'] == spec[2] &&
+        receipt['request_sha256'] ==
+            originalOperationDigest({
+              ...Map<String, dynamic>.from(op['body']),
+              'party_id': actingParty,
+              'operation_key': key
+            }) &&
+        receipt['record_id'] is String &&
+        RegExp(r'^[0-9a-f-]{36}$').hasMatch(receipt['record_id']) &&
+        receipt['original_object_version'] is int &&
+        receipt['original_object_version'] > 0 &&
+        receipt['original_status'] is String);
+    final current = await read(
+        '/api/v1/${spec[0]}/records/${receipt['record_id']}',
+        actingParty: actingParty);
+    _check(started);
+    require(
+        current['id'] == receipt['record_id'] && current['kind'] == spec[2]);
+    validate(current);
+    require(pending(method, path, actingParty: actingParty)?['key'] == key);
+    discardPending(method, path, actingParty: actingParty);
+    return current;
+  }
+
   Future<Map<String, dynamic>> read(String path,
           {String? actingParty, Map<String, dynamic>? query}) =>
       _request('GET', path, actingParty: actingParty, query: query);

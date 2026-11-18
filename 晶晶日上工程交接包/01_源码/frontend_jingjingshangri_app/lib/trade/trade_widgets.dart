@@ -130,24 +130,26 @@ Widget tradeHeading(String title, {String? eyebrow, double fontSize = 32}) =>
               header: true,
               child: Text(title,
                   style: TextStyle(
-                      fontFamily: 'EditorialSerif',
+                      fontFamily: AccountTheme.sans,
                       fontSize: fontSize,
                       height: 1.25,
                       fontWeight: FontWeight.w900))),
         ]));
 
-/// Paper sections follow the ruled, card-free layout of the film editorial.
+/// V5 grouped information cards; callbacks and recovery flows stay unchanged.
 Widget tradeSection(String title, List<Widget> children) => Container(
-    margin: const EdgeInsets.only(bottom: 8),
-    padding: const EdgeInsets.symmetric(vertical: 18),
-    decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AccountTheme.border))),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    margin: const EdgeInsets.only(bottom: 16),
+    padding: const EdgeInsets.all(18),
+    decoration: BoxDecoration(
+        color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AccountTheme.border)),
+    child: Material(type: MaterialType.transparency, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
       ...children,
-    ]));
+    ])));
 
 Widget tradeFact(String label, Object? value, {bool accent = false}) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 8),
@@ -170,7 +172,9 @@ Widget tradeBanner(String title, String body,
         {IconData icon = Icons.hourglass_empty}) =>
     Container(
         margin: const EdgeInsets.only(bottom: 18),
-        color: AccountTheme.text,
+        decoration: BoxDecoration(
+            color: AccountTheme.selectedSurface,
+            borderRadius: BorderRadius.circular(16)),
         child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -182,7 +186,7 @@ Widget tradeBanner(String title, String body,
                       children: [
                     Text(title,
                         style: const TextStyle(
-                            color: AccountTheme.canvas,
+                            color: AccountTheme.text,
                             fontSize: 16,
                             fontWeight: FontWeight.w700)),
                     const SizedBox(height: 8),
@@ -190,7 +194,7 @@ Widget tradeBanner(String title, String body,
                         style: const TextStyle(
                             fontSize: 14,
                             height: 1.6,
-                            color: Color(0xFFD9D5CB)))
+                            color: AccountTheme.muted))
                   ]))
             ])));
 Widget tradeStatus(TradeRecord r) =>

@@ -6,6 +6,7 @@ import '../account/fake_account_api.dart';
 import '../navigation/app_navigation_test.dart' as nav;
 import 'trade_api_test.dart' show buyerSession;
 import 'trade_fixtures.dart';
+import '../stock/v5_test_host.dart' show reveal;
 
 const cashierRoute =
     '/trade/record?recordId=$orderId&section=cashier&installmentKey=';
@@ -46,9 +47,11 @@ void main() {
     expect(
         tester.widget<Text>(find.byKey(const Key('trade-cashier-amount'))).data,
         '¥900.00');
-    expect(find.text('支付宝 · 原订单已固定'), findsOneWidget);
+    await reveal(tester, find.text('当前订单记账收款'));
     expect(find.text('当前订单记账收款'), findsOneWidget);
     expect(find.text('¥380.01'), findsNWidgets(2));
+    await reveal(tester, find.text('支付宝 · 原订单已固定'));
+    expect(find.text('支付宝 · 原订单已固定'), findsOneWidget);
     await tester.scrollUntilVisible(find.textContaining('当前付款节点尚未确认可办理'), 300,
         scrollable: find.byType(Scrollable).first);
     await nav.frames(tester);
@@ -218,6 +221,7 @@ void main() {
     final adapter = readCashier(order: order);
     final session = (await tester.runAsync(() => buyerSession(adapter)))!;
     await nav.openApp(tester, session, route: '${cashierRoute}deposit');
+    await reveal(tester, find.text('资金托管账户 · 原订单已固定'));
     expect(find.text('资金托管账户 · 原订单已固定'), findsOneWidget);
     expect(find.text('托管消费尚未接通'), findsOneWidget);
     await tester.scrollUntilVisible(find.textContaining('托管消费余额尚未接通'), 300,

@@ -27,6 +27,8 @@ watch(()=>[!!ui.pending.value,!!receipt.value],()=>{batch.frozen=!!ui.pending.va
 watch(ui.busy,value=>emit('lock',value||!!ui.pending.value),{flush:'sync'})
 watch(ui.securityRevision,()=>{denied.value=true;receiptItems.value=[];targets.value=[];members.value=[];detail.value=null;receipt.value=null;batch.items=[]},{flush:'sync'})
 watch(mode,()=>{targets.value=[];target.value='';cursor.value=null;detail.value=null;seen.clear();generation++},{flush:'sync'})
+// Confirmation applies only to the current item, its read evidence and batch contents.
+watch(()=>JSON.stringify([mode.value,target.value,detail.value,price.value,account.value,reason.value,members.value,batch.items]),()=>{agreed.value=false},{flush:'sync'})
 const identity=()=>({token:session.token!,accountId:session.account!.id,actingParty:session.selectedId})
 async function read(action:(read:(p:string)=>Promise<BusinessData>)=>Promise<void>){
  if(locked.value||!batch.available)return;const g=generation,snapshot=session.capture();reading.value=true;ui.error.value=null

@@ -4,8 +4,14 @@ const path=require('node:path'),fs=require('node:fs/promises'),{randomUUID:key}=
 const backend=path.resolve(__dirname,'../../晶晶日上工程交接包/01_源码/backend_server');
 const load=rel=>require(path.join(backend,rel));
 async function seed(db,out,deadline,check,storageAt){
- const f=await require('../v5-r05-r12-seed.cjs').prepare(db,check,{firstSupply:true});
- const app=load('src/http/account-api').createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.merchantId}});
+ const samples=path.join(out,'samples');await fs.mkdir(samples,{recursive:true});
+ const ffmpeg=process.env.JX_TEST_FFMPEG||process.env.FFMPEG_PATH||'ffmpeg';
+ const run=args=>require('node:child_process').execFileSync(ffmpeg,['-nostdin','-hide_banner','-loglevel','error',...args],{windowsHide:true,stdio:'pipe',timeout:30000});
+ for(const [file,source]of [['sample-1-full.mp4','testsrc2'],['sample-1-preview.mp4','smptebars'],['sample-3-full.mp4','smptebars']])run(['-f','lavfi','-i',source+'=size=320x180:rate=15','-t','2','-an','-c:v','libx264','-pix_fmt','yuv420p',path.join(samples,file)]);
+ // The existing seed filename is retained, but this image is colour bars, not a portrait.
+ run(['-f','lavfi','-i','smptebars=size=320x180','-frames:v','1','-update','1',path.join(samples,'test-portrait.jpg')]);
+ const f=await require('../v5-r05-r12-seed.cjs').prepare(db,check,{firstSupply:true,samples,currentCommercial:true});
+ const app=load('src/http/account-api').createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,supplyEnv:{MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'},tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.merchantId,MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}});
  const server=app.listen(0,'127.0.0.1');
  await new Promise((resolve,reject)=>{server.once('listening',resolve);server.once('error',reject);});
  try{await f.setup('http://127.0.0.1:'+server.address().port+'/api/v1');}
@@ -41,6 +47,7 @@ async function seed(db,out,deadline,check,storageAt){
  link=await G.decide(S.buyer2.ctx,{record_id:link.id,expected_version:link.object_version,decision:'ACCEPT',reason:'synthetic child acceptance',operation_key:key()});
  link=await G.decide(S.reviewer.ctx,{record_id:link.id,operations:true,expected_version:link.object_version,decision:'APPROVE',age_band:'AGE_14_17',identity_checked:true,relationship_checked:true,reason:'synthetic relationship review',operation_key:key()});
  f.scenarios.guardian_refund={guardian_role:'stock_seller',child_role:'stock_buyer2',guardian_link_id:link.id,child_party_id:S.buyer2.personal_party_id,recharge_id:recharge.id,evidence_asset_id:proof.id};
+ await grant(db,{account_id:f.people.reviewer.account_id,action:'WALLET_REFUND_REVIEW',enabled:true,expected_version:0,expires_at:deadline,authority_ref:'synthetic:pm03-batch',reason:'independent synthetic recharge refund review and scheduling'});
  const accounts={},byAccount=new Map(),auth=load('src/modules/auth/repository').createAuthRepository(db,{secret:f.secret});
  for(const [role,u]of Object.entries(f.people)){
   if(!byAccount.has(u.account_id)){
@@ -57,6 +64,6 @@ async function seed(db,out,deadline,check,storageAt){
  check();
  return {secret:f.secret,merchant_party_id:S.seller.personal_party_id,customization_merchant_party_id:f.merchantId,accounts,scenarios:f.scenarios,
   requests:{notice_submission:{rule_id:rule.id,submission},guardian_refund:{child_party_id:S.buyer2.personal_party_id,guardian_link_id:link.id,recharge_id:recharge.id,amount_minor:1000,reason:'synthetic refund',evidence_asset_ids:[proof.id]}},
-  coverage:{current_additions:['ordinary_notice','notice_receipt','guardian_refund'],legacy_samples:['notice','commercial'],media_limit:'Stock and cocreation have synthetic MP4; audition photos/video remain placeholder bytes.',payment_limit:'Interactive simulator merchant is stock seller; other pre-created payments are synthetic historical fixtures. No claim of all-business payment/refund coverage.',frontend_tested:false}};
+  coverage:{current_additions:['ordinary_notice','notice_receipt','guardian_refund'],legacy_samples:['notice'],media_limit:'Synthetic colour bars and playable MP4 cover stock, audition and cocreation. No real-person material.',payment_limit:'New interactive trade payments use the order merchant. Seeded paid records retain their historical synthetic provider bindings; no claim they have been exercised through current payment UI.',frontend_tested:false}};
 }
 module.exports={seed};

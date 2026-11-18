@@ -5,6 +5,7 @@ import '../account/account_session.dart';
 import 'supply_api.dart';
 import 'supply_models.dart';
 import 'supply_widgets.dart';
+import 'supply_progress.dart';
 
 class SupplyPage extends StatelessWidget {
   const SupplyPage({super.key});
@@ -105,6 +106,7 @@ class _SupplyHomeState extends State<_SupplyHome> {
           ] else ...[
             supplyStatus(latest['current_status'] as String),
             const SizedBox(height: 8),
+            supplyNote(supplyNextStep(latest['current_status'] as String, work: false)),
             Text(latest['data']['display_name'],
                 style: const TextStyle(fontWeight: FontWeight.w600)),
             supplyNote('申请第 ${latest['revision']} 版'),
@@ -161,6 +163,8 @@ class _SupplyHomeState extends State<_SupplyHome> {
                           const SizedBox(width: 16),
                           supplyStatus(w['current_status'] as String)
                         ]),
+                        const SizedBox(height: 12),
+                        supplyNote(supplyNextStep(w['current_status'] as String, work: true)),
                         const Divider(height: 28),
                         Row(children: [
                           const Text('版本编号', style: TextStyle(fontSize: 14)),

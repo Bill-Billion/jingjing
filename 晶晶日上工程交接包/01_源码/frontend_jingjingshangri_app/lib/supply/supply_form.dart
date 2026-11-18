@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
+import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import '../account/account_session.dart';
 import 'supply_api.dart';
 import 'supply_files.dart';
 import 'supply_models.dart';
 import 'supply_widgets.dart';
+import 'supply_progress.dart';
 import '../licensing/license_api.dart';
 
 class SupplyForm extends StatelessWidget {
@@ -332,6 +334,7 @@ class _SupplyFormBodyState extends State<_SupplyFormBody> {
                 : '保存作品新修订')
             : (previous == null ? '作者申请' : '补正与更新资料'),
         [
+          supplyJourney(work: widget.work),
           Card(
               key: const Key('supply-current-identity'),
               child: Padding(
@@ -440,6 +443,7 @@ class _SupplyFormBodyState extends State<_SupplyFormBody> {
                         ]),
                       if (widget.work)
                         supplyCard('私有稿件 *', [
+                          supplyNote('稿件仅向获准审核或办理的主体开放，不会作为公开封面。'),
                           files(manuscript, (v) => manuscript = v, single: true)
                         ]),
                       supplyCard(widget.work ? '作品权利证明 *' : '申请证明材料 *',
@@ -462,11 +466,11 @@ class _SupplyFormBodyState extends State<_SupplyFormBody> {
                                     margin: const EdgeInsets.only(bottom: 20),
                                     padding: const EdgeInsets.all(16),
                                     decoration: BoxDecoration(
-                                        color: Colors.white,
+                                        color: AccountTheme.surface,
                                         border: Border.all(
-                                            color: const Color(0xFFE2E3DB)),
+                                            color: AccountTheme.border),
                                         borderRadius:
-                                            BorderRadius.circular(10)),
+                                            BorderRadius.circular(20)),
                                     child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.stretch,

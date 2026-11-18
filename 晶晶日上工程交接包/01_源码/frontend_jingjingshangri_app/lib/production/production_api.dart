@@ -95,16 +95,25 @@ class ProductionApi {
   }
 
   Future<List<ProductionRecord>> all({String? projectId, String? kind}) async {
-    final rows = <ProductionRecord>[], seen = <String>{};
+    // Keep the entire traversal within its starting identity, not just each page.
+    final p = participant(), epoch = session.epoch;
+    final rows = <String, ProductionRecord>{}, seen = <String>{};
     String? cursor;
     do {
+      check(epoch, p);
       final result =
           await page(projectId: projectId, kind: kind, cursor: cursor);
-      rows.addAll(result.items);
+      check(epoch, p);
+      for (final row in result.items) {
+        final previous = rows[row.id];
+        if (previous == null || row.version > previous.version) {
+          rows[row.id] = row;
+        }
+      }
       cursor = result.nextCursor;
       if (cursor != null) productionRequire(seen.add(cursor));
     } while (cursor != null);
-    return {for (final r in rows) r.id: r}.values.toList();
+    return rows.values.toList();
   }
 
   Map<String, dynamic>? pending(String path) =>

@@ -122,7 +122,12 @@ class _ProcurementFactsState extends State<ProcurementFacts> {
         const Text('允许转许可不代表已有下游授权。肖像声音等人格权另外确认。')
       ],
       const Text('开发、上线及撤回须独立核验；绑定项目不等于开发。收益应计与调整均未转账，不自动扣款或付款。'),
-      ContractText(value: p ?? d, fieldLabels: ipFactLabels),
+      const SizedBox(height: 12),
+      ExpansionTile(
+          tilePadding: EdgeInsets.zero,
+          title: const Text('完整合同与事实字段'),
+          subtitle: const Text('展开核对原记录，不改写历史约定'),
+          children: [ContractText(value: p ?? d, fieldLabels: ipFactLabels)]),
       if (error != null) supplyNote(error!, error: true),
       for (final id in ids)
         OutlinedButton(
