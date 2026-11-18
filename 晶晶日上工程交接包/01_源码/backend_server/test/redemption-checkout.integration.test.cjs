@@ -24,6 +24,15 @@ test('coupon checkout preserves original promises and real payment facts',{skip:
    assert.equal((await S.trade.read(buyer.ctx,{record_id:q.id,party_id:buyer.personal_party_id})).data.total_minor,50000);
    await assert.rejects(request('/redemption/holds/'+h.id+'/release',buyer,{version:3,body:{}}),{code:'COUPON_CANCEL_ORDER_FIRST'});await cancel(o);assert.equal((await get(g)).current_status,'AVAILABLE');
   });
+  await t.test('hold detail after leaving returns current hold version and excludes other owners',async()=>{
+   const current=await request('/redemption/holds/'+h.id,buyer);
+   assert.equal(current.kind,'COUPON_HOLD');assert.equal(current.current_status,'RELEASED');
+   assert(current.object_version>h.object_version);assert.equal(current.data.quote_id,q.id);
+   assert.equal(current.data.grant_id,g.id);
+   await assert.rejects(request('/redemption/holds/'+h.id,outsider),{code:'REDEMPTION_NOT_FOUND'});
+   await assert.rejects(request('/redemption/holds/'+g.id,buyer),{code:'REDEMPTION_NOT_FOUND'});
+   await assert.rejects(request('/redemption/holds/'+h.id,buyer,{party:false}),{code:'ACTING_PARTY_REQUIRED'});
+  });
   await t.test('new 30/40/30 coupon quote and contract preserve net amounts and script milestone',async()=>{
    const a=await offer({preview:'SCRIPT_BEFORE_INTERIM'}),grant=await grantFor([a.spec.id]),held=await hold(grant,a.quote);
    const adjusted=held.data.adjusted_quote;

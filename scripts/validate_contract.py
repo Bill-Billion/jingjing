@@ -154,7 +154,7 @@ def validate(runtime_fixtures=None):
         'listCustomizationIntakeRequests': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
         'intakeCustomizationRequest': 'AUTHORIZED_CUSTOMIZATION_OPERATOR',
     }
-    personal_collection_ops = {'recordPersonalVisit', 'getCollectionPreferences', 'listPersonalFavorites', 'listPersonalHistory', 'getPersonalCollectionTarget', 'setCollectionPreferences', 'clearPersonalHistory', 'removePersonalHistory', 'setPersonalFavorite'}
+    personal_collection_ops = {'guardianRechargeRefundOptions', 'recordPersonalVisit', 'getCollectionPreferences', 'listPersonalFavorites', 'listPersonalHistory', 'getPersonalCollectionTarget', 'setCollectionPreferences', 'clearPersonalHistory', 'removePersonalHistory', 'setPersonalFavorite'}
     personal_collection_ops.update({'cancelPhoneChange', 'getPhoneChange', 'getCurrentPhoneChange', 'createPhoneChange', 'confirmPhoneChange', 'verifyPhoneChangeChallenge', 'sendPhoneChangeChallenge'})
     # Newly reviewed operator-only endpoints use no acting-party header.
     for path, item in spec['paths'].items():
@@ -166,6 +166,8 @@ def validate(runtime_fixtures=None):
             check((security == []) == (op['operationId'] in public_ids), 'Security: '+op['operationId'])
             params = [resolve(spec, p['$ref']) if '$ref' in p else p for p in op.get('parameters',[])]
             headers = {p['name']:p for p in params if p['in']=='header'}
+            if op['operationId'] == 'guardianRechargeRefundOptions':
+                check(path == '/api/v1/wallet/guardian-recharge-refund-options' and method == 'get' and 'X-Acting-Party' not in headers, 'Guardian refund choices use own account only')
             if op['operationId'] in {'scheduleRechargeRefund', 'downloadRechargeRefundEvidence', 'requestGuardianRechargeRefund', 'listOperatorRechargeRefunds', 'retryRechargeRefundTask', 'getGuardianRechargeRefund', 'reviewRechargeRefund', 'listGuardianRechargeRefunds', 'getOperatorRechargeRefund'}:
                 check('X-Acting-Party' not in headers, 'Refund account identity only: '+path)
             if op['operationId'] in provider_callbacks:

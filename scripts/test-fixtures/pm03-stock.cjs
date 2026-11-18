@@ -15,8 +15,9 @@ const origins = ['http://127.0.0.1:5173','http://localhost:5173','http://127.0.0
 const fail = code => {throw Object.assign(Error(code), {code});};
 async function sourceDigest() {
   const prefix = '晶晶日上工程交接包/01_源码/backend_server/';
-  const tracked = execFileSync('git',['ls-files','-z','--',prefix+'src',prefix+'migrations/mysql-runtime',prefix+'test/helpers',prefix+'scripts/test-network-guard.cjs',prefix+'package.json',prefix+'package-lock.json'],{cwd:root,windowsHide:true}).toString('utf8').split('\0').filter(Boolean);
-  const files = [...new Set([...tracked,'scripts/stock-sandbox.cjs','scripts/test-fixtures/pm03-stock.cjs','scripts/test-fixtures/private-state.cjs'])].sort();
+  const tracked = execFileSync('git',['ls-files','-z','--',prefix+'src',prefix+'migrations/mysql-runtime',prefix+'test/helpers',prefix+'test/support',prefix+'scripts/test-network-guard.cjs',prefix+'package.json',prefix+'package-lock.json'],{cwd:root,windowsHide:true}).toString('utf8').split('\0').filter(Boolean);
+  const untracked = execFileSync('git',['ls-files','--others','--exclude-standard','-z','--',prefix+'src'],{cwd:root,windowsHide:true}).toString('utf8').split('\0').filter(Boolean);
+  const files = [...new Set([...tracked,...untracked,'scripts/stock-sandbox.cjs','scripts/test-fixtures/pm03-stock.cjs','scripts/test-fixtures/pm03-batch.cjs','scripts/v5-r05-r12-seed.cjs','scripts/test-fixtures/private-state.cjs','contracts/openapi.yaml'])].sort();
   const hash = createHash('sha256');
   for(const file of files) hash.update(file+'\0').update(await fs.readFile(path.join(root,file))).update('\0');
   return hash.digest('hex');
@@ -104,7 +105,7 @@ async function seed(db, out, deadline, check) {
 }
 async function run() {
   const [command, argument] = process.argv.slice(2);
-  if(!['--pm03','--pm03-resume'].includes(command) || (command === '--pm03' ? process.argv.length !== 3 : process.argv.length !== 4)) fail('USAGE_STOCK_SANDBOX_PM03_OR_PM03_RESUME_DIRECTORY');
+  if(!['--pm03','--pm03-batch','--pm03-resume'].includes(command) || (command === '--pm03-resume' ? process.argv.length !== 4 : process.argv.length !== 3)) fail('USAGE_STOCK_SANDBOX_PM03_OR_BATCH_OR_PM03_RESUME_DIRECTORY');
   if(!process.env.JX_MYSQL_TEST_ENV_FILE) fail('ISOLATED_TEST_ENV_REQUIRED');
   const env = JSON.parse(await fs.readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'));
   for(const [k,v] of Object.entries({NODE_ENV:'test',DB_CLIENT:'mysql',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'})) if(env[k] !== v) fail('ISOLATED_TEST_ENV_REQUIRED');
@@ -148,7 +149,9 @@ async function run() {
     if(!argument) {
       await load('src/infrastructure/database/migrator').migrate(db);
       const expires_at = new Date(Date.now()+duration).toISOString();
-      state = {schema:1,database:name,revision,source_sha256,expires_at,synthetic_only:true,...await seed(db,out,expires_at,check)};
+      const batch=command==='--pm03-batch';
+      state = {schema:1,database:name,revision,source_sha256,expires_at,synthetic_only:true,mode:batch?'BATCH':'STOCK_NOTICE',
+        ...await (batch?require('./pm03-batch.cjs').seed(db,out,expires_at,check,storageAt):seed(db,out,expires_at,check))};
       await privateJson(path.join(out,'state.json'),state);
     }
     const sms = {call:async(operation,input,context)=>{
@@ -163,7 +166,8 @@ async function run() {
       return {subject_ref:a.subject_ref};
     };
     const sim = await load('src/testing/payment-simulator').createPaymentSimulator(db,{...env,MYSQL_DATABASE:name,JX_PAYMENT_SIMULATOR_ENABLED:'true'}, {merchant_party_id:state.merchant_party_id,resolvePrincipal:principal});
-    const app = load('src/http/account-api').createAccountApi({db,secret:state.secret,sms,authSettings:{sessionMs:duration},supplyStorageFactory:storageAt(out),tradeProvidersFactory:()=>sim,allowedOrigins:origins});
+    const app = load('src/http/account-api').createAccountApi({db,secret:state.secret,sms,authSettings:{sessionMs:duration},supplyStorageFactory:storageAt(out),tradeProvidersFactory:()=>sim,
+      tradeEnv:state.customization_merchant_party_id?{CUSTOMIZATION_MERCHANT_PARTY_ID:state.customization_merchant_party_id}:undefined,allowedOrigins:origins});
     const allowed = /^\/api\/v1\/(auth|me|parties|stock|trade|notices|artists|supply|operations)(\/|$)/;
     server = require('node:http').createServer(async(req,res)=>{
       const error = (status,code) => {res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error:{code}}));};
@@ -187,12 +191,16 @@ async function run() {
         } catch(e){error(e.status || 400,e.code || 'INVALID_TEST_REQUEST');}
         return;
       }
-      if(allowed.test(url) || /^\/(health|ready)$/.test(url)) return app(req,res);
+      if(allowed.test(url) || (state.mode==='BATCH' && /^\/api\/v1\/(?!testing(?:\/|$))/.test(url)) || /^\/(health|ready)$/.test(url)) return app(req,res);
       return error(403,'LOCAL_FIXTURE_ROUTE_DISABLED');
     });
     server.listen(0,'127.0.0.1');await new Promise((resolve,reject)=>{server.once('listening',resolve);server.once('error',reject);});
+    const migrationStatus=await load('src/infrastructure/database/migrator').status(db);
+    if(migrationStatus.migrations.some(m=>m.status!=='APPLIED'))fail('PM03_MIGRATIONS_INCOMPLETE');
+    const contractVersion=(await fs.readFile(path.join(root,'contracts/openapi.yaml'),'utf8')).match(/^  version: (.+)$/m)[1];
     const access = {synthetic_only:true,payment_simulation:true,base_url:'http://127.0.0.1:'+server.address().port+'/api/v1',expires_at:state.expires_at,revision,source_sha256,
-      accounts:state.accounts,scenarios:state.scenarios,requests:state.requests};
+      versions:{contract:contractVersion,migration:migrationStatus.migrations.at(-1).version,applied_migrations:migrationStatus.migrations.length,frontend_reference:'1d9c0fc4938f71a89ba6ab3f7bca453f47872ac0'},
+      mode:state.mode||'STOCK_NOTICE',accounts:state.accounts,scenarios:state.scenarios,requests:state.requests,coverage:state.coverage||null};
     await privateJson(path.join(out,'access.json'),access);
     await fs.rm(path.join(out,'stop'),{force:true});
     await fs.writeFile(path.join(out,'status.json'),JSON.stringify({status:'RUNNING',synthetic_only:true,base_url:access.base_url,expires_at:state.expires_at,database:name,data_retained:true},null,2));

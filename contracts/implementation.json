@@ -1,5 +1,5 @@
 {
-  "version": "0.31.78-rc.11",
+  "version": "0.31.79-rc.1",
   "isolated_tested_operations": [
     "createSmsChallenge",
     "createSession",
@@ -676,7 +676,12 @@
     "actPartyRepresentation",
     "requestRecoveryFinanceOperation",
     "linkRecoveryReceiptFinanceOperation",
-    "cancelRecoveryFinanceOperation"
+    "cancelRecoveryFinanceOperation",
+    "noticesOperationReceipt",
+    "engagementOperationReceipt",
+    "guardianRechargeRefundOptions",
+    "redemptionHold",
+    "participationRuleOptions"
   ],
   "evidence": "晶晶日上工程交接包/01_源码/backend_server/test/account-api.integration.test.cjs",
   "production_enabled": false,
@@ -1602,5 +1607,21 @@
     "meaning": "Completed NOT_SELECTED interviews may request existing independently reviewed extension or points fallback; completed_delivery retains the original attempt; completed schedules are not cancelled; no automatic role or money award",
     "frontend_run": false,
     "real_services": false
+  },
+  "pm03_batch_readiness": {
+    "version": "0.31.79-rc.1",
+    "database_migration": "0225",
+    "migration_added": false,
+    "scope": "Additive guardian refund choices, original-command acknowledgements, coupon hold reads and performer rule choices",
+    "paths": [
+      "/api/v1/notices/operations/{operation_key}",
+      "/api/v1/engagement/operations/{operation_key}",
+      "/api/v1/wallet/guardian-recharge-refund-options",
+      "/api/v1/redemption/holds/{record_id}",
+      "/api/v1/projects/candidates/{record_id}/participation-rules"
+    ],
+    "frontend_integrated": false,
+    "frontend_candidate": "1d9c0fc4938f71a89ba6ab3f7bca453f47872ac0",
+    "production_enabled": false
   }
 }

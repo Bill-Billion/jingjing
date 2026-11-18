@@ -25,6 +25,19 @@ test('negotiated participation: actual HTTP, cash milestones and separate revenu
  let candidate=await post('/projects/roles/'+role.id+'/applications',role,{avatar_id:cast.avatar.id,consent_id:consent.id,amount_minor:10000,note:'Specific performer'},artist);
  candidate=await post('/projects/candidates/'+candidate.id+'/decisions',candidate,{decision:'SELECT',content_sha256:candidate.content_sha256,reason:'selected'});
  candidate=await post('/projects/candidates/'+candidate.id+'/decisions',candidate,{decision:'CONFIRM',content_sha256:candidate.content_sha256,reason:'self confirmed'},artist);
+ await t.test('confirmed performer selects only effective applicable commercial commission rules',async()=>{
+  const url='/projects/candidates/'+candidate.id+'/participation-rules';
+  const result=await call(url,artist,{schema:'ParticipationRuleOptionsResponse'});
+  const found=result.items.find(x=>x.rule_id===ruleId);assert(found);assert.equal(found.marketplace_finance.platform_bps,2200);
+  assert.equal(found.content_sha256,digest(content));assert.equal(found.current_status,'EFFECTIVE');
+  await assert.rejects(call(url,buyer),{code:'PROJECT_PARTY_FORBIDDEN'});
+  await db.execute("UPDATE governance_rules SET current_status='RETIRED' WHERE id=?",[ruleId]);
+  try{assert(!(await call(url,artist,{schema:'ParticipationRuleOptionsResponse'})).items.some(x=>x.rule_id===ruleId));}
+  finally{await db.execute("UPDATE governance_rules SET current_status='EFFECTIVE' WHERE id=?",[ruleId]);}
+  await db.execute("UPDATE governance_rules SET effective_at='2099-01-01 00:00:00' WHERE id=?",[ruleId]);
+  try{assert(!(await call(url,artist,{schema:'ParticipationRuleOptionsResponse'})).items.some(x=>x.rule_id===ruleId));}
+  finally{await db.execute("UPDATE governance_rules SET effective_at='2020-01-01 00:00:00' WHERE id=?",[ruleId]);}
+ });
  const terms={mode:'MIXED',usage:'EXISTING_MATERIAL',exclusive:false,territory:'CN',language:'zh',valid_until:'2098-01-01T00:00:00.000Z',permitted_uses:'Named film release only',prohibited_uses:'No model transfer or standalone voice',installments:[{key:'first',amount_minor:3000,milestone:'Signing'},{key:'final',amount_minor:7000,milestone:'Buyer accepted role delivery'}],start_payment_keys:['first'],revenue:{basis:'VERIFIED_CHANNEL_NET_RECEIPTS',shares:[{party_id:artist.personal_party_id,role:'RIGHTSHOLDER',bps:2000},{party_id:buyer.personal_party_id,role:'PRODUCER',bps:8000}],terms:'Channel net receipts only'},cancellation_terms:'Independent review based on actual performance'};
  const input={cast:{person_id:cast.person.id,look_version_id:cast.look.id,voice_version_id:null},terms,rule_id:ruleId,evidence_asset_id:proof.id};let agreement,order;
  await t.test('face-only role consent cannot carry a separately archived voice',async()=>{

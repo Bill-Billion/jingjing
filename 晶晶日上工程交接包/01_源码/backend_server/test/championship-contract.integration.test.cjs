@@ -63,9 +63,10 @@ test('contract championship: actual HTTP votes, same-event appeal and earned rew
    const before=(await legacy.read(reviewer.ctx,{record_id:stock.id})).data.reserved;
    await assert.rejects(rev('reviewCompetition',pending),{code:'CHAMPIONSHIP_CONTRACT_RATE_MISMATCH'});assert.equal((await legacy.read(reviewer.ctx,{record_id:stock.id})).data.reserved,before);
   });
+  let nominationInput;
   await t.test('two independently approved events share the same account daily allowance',async()=>{
    event=await invoke('competition',outsider,input);await assert.rejects(rev('reviewCompetition',event,outsider),{code:'SELF_REVIEW_FORBIDDEN'});event=await rev('reviewCompetition',event);second=await rev('reviewCompetition',await invoke('competition',outsider,{...input,title:'Synthetic second event'}));
-   candidate=await rev('reviewCandidate',await invoke('nominate',seller,{party_id:seller.personal_party_id,event_id:event.id,profile_id:profile.id}));candidate2=await rev('reviewCandidate',await invoke('nominate',seller,{party_id:seller.personal_party_id,event_id:second.id,profile_id:profile.id}));
+   nominationInput={party_id:seller.personal_party_id,event_id:event.id,profile_id:profile.id,operation_key:key()};candidate=await rev('reviewCandidate',await invoke('nominate',seller,nominationInput));candidate2=await rev('reviewCandidate',await invoke('nominate',seller,{party_id:seller.personal_party_id,event_id:second.id,profile_id:profile.id}));
    const v={party_id:buyer.personal_party_id,event_id:event.id,candidate_id:candidate.id,operation_key:key()};await db.withConnection(c=>c.query("CREATE TRIGGER champion_vote_fail BEFORE INSERT ON engagement_audit FOR EACH ROW BEGIN IF NEW.event_code='VOTE_POINTS_COMMITTED' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic audit failure'; END IF; END"));
    try{await assert.rejects(invoke('vote',buyer,v),e=>e.status===503);assert.equal(await balance(),2000);assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM engagement_records WHERE kind='VOTE'"))[0][0].n),0);}finally{await db.withConnection(c=>c.query('DROP TRIGGER champion_vote_fail'));}
    firstVote=await invoke('vote',buyer,v);assert.equal(firstVote.data.points,100);assert.equal((await invoke('vote',buyer,v)).id,firstVote.id);assert.equal(await balance(),1900);
@@ -106,6 +107,16 @@ test('contract championship: actual HTTP votes, same-event appeal and earned rew
    const response=await fetch(base+'/engagement/rewards/'+grant.id+'/file',{headers:{Authorization:'Bearer '+seller.token,'X-Acting-Party':seller.personal_party_id}});assert.equal(response.status,200);const bytes=Buffer.from(await response.arrayBuffer());assert.equal(createHash('sha256').update(bytes).digest('hex'),proof.content_sha256);assert.equal(bytes.toString(),'synthetic champion exposure delivery proof');
    const outsiderResponse=await fetch(base+'/engagement/rewards/'+grant.id+'/file',{headers:{Authorization:'Bearer '+buyer.token,'X-Acting-Party':buyer.personal_party_id}});assert.equal(outsiderResponse.status,404);await outsiderResponse.arrayBuffer();
    records.award_id=grant.id;records.score=event.data.result.scores[0];records.delivery_hash=proof.content_sha256;records.earned_exposure_only=true;
+  });
+  await t.test('nomination receipt remains queryable after deadline without replay or current eligibility',async()=>{
+   const url=base+'/engagement/operations/'+nominationInput.operation_key+'?operation=NOMINATE';
+   const response=await fetch(url,{headers:{Authorization:'Bearer '+seller.token,'X-Acting-Party':seller.personal_party_id}});
+   const value=await response.json();assert.equal(response.status,200,JSON.stringify(value));
+   assert.equal(value.data.outcome,'COMMITTED');assert.equal(value.data.record_id,candidate.id);
+   assert.equal(value.data.original_status,'IN_REVIEW');assert.equal(value.data.request_sha256,digest(nominationInput));
+   assert.equal(value.data.data,undefined);assert.equal(value.data.original_object_version,1);
+   fixtures.push({method:'GET',path:new URL(url).pathname,schema:'OperationReceiptResponse',value});
+   await assert.rejects(invoke('nominate',seller,nominationInput),{code:'COMPETITION_CANDIDATE_NOT_ELIGIBLE'});
   });
   const out=path.resolve(__dirname,'../../../..','.local');await fs.mkdir(out,{recursive:true});await fs.writeFile(path.join(out,'championship-contract-http-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));await fs.writeFile(path.join(out,'championship-contract-records.json'),JSON.stringify(records,null,2));
  }finally{if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();if(prior===undefined)delete process.env.RANKING_CONTRACT_POLICY;else process.env.RANKING_CONTRACT_POLICY=prior;}

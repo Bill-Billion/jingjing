@@ -115,6 +115,19 @@ test('recharge refund role-separated HTTP and personal guardian copies',{skip:!p
 
   link=await G.decide(buyer2.ctx,{record_id:link.id,expected_version:link.object_version,decision:'ACCEPT',reason:'synthetic child acceptance',operation_key:key()});
   link=await G.decide(reviewer.ctx,{record_id:link.id,operations:true,expected_version:link.object_version,decision:'APPROVE',age_band:'AGE_14_17',identity_checked:true,relationship_checked:true,reason:'synthetic relationship checked',operation_key:key()});
+  await t.test('guardian refund choices derive child party and recharge only from a currently active link',async()=>{
+   const url='/wallet/guardian-recharge-refund-options?guardian_link_id='+link.id;
+   const result=ok(await http(S.seller,url,{schema:'GuardianRechargeOptionsResponse'}));
+   assert.equal(result.child_party_id,buyer2.personal_party_id);assert.equal(result.guardian_link_id,link.id);
+   assert(result.items.some(x=>x.id===childTopup.id));assert(!result.items.some(x=>x.id===recharge.id));
+   for(const row of result.items)assert.deepEqual(Object.keys(row).sort(),['id','object_version','current_status','amount_minor','refunded_minor','currency'].sort());
+   assert.equal((await http(outsider,url)).status,403);
+   assert.equal((await http(S.seller,url,{party:buyer2.personal_party_id})).status,400);
+   assert.equal((await http(S.seller,url+'&cursor='+recharge.id)).status,400);
+   assert.equal((await http(S.seller,url+'&child_party_id='+buyer.personal_party_id)).status,400);
+   await db.execute("UPDATE guardian_records SET current_status='REVOKED' WHERE id=?",[link.id]);
+   try{assert.equal((await http(S.seller,url)).status,403);}finally{await db.execute("UPDATE guardian_records SET current_status='ACTIVE' WHERE id=?",[link.id]);}
+  });
   const guardianBody={child_party_id:buyer2.personal_party_id,guardian_link_id:link.id,recharge_id:childTopup.id,amount_minor:1000,reason:'synthetic guardian original refund',evidence_asset_ids:[guardianProof.id]};
   let guardianCase;
   await t.test('guardian HTTP uses own identity and evidence, separate child source, no self-review',async()=>{

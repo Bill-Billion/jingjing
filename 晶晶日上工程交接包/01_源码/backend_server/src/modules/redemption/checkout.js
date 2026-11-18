@@ -18,6 +18,14 @@ function discounted(q,g,holdId){
  require('../customization/finance-policy').checked(adjusted,q.merchant_party_id);return adjusted;
 }
 function methods({db,actor}){return {
+ async hold(ctx,i){
+  shape(i,['record_id','party_id']);return db.withTransaction(async tx=>{
+   const a=await actor(tx,ctx);await A.owner(tx,a,i.party_id);
+   const h=await C.load(tx,i.record_id,'COUPON_HOLD','FOR SHARE');
+   if(h.owner_party_id!==i.party_id)throw error('REDEMPTION_NOT_FOUND',404);
+   return h;
+  });
+ },
  async holdCoupon(ctx,i){
   shape(i,['record_id','party_id','expected_version','quote_id','operation_key']);
   return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await A.owner(tx,a,i.party_id);const q=await quote(tx,i.quote_id),g=await C.load(tx,i.record_id,'GRANT');
