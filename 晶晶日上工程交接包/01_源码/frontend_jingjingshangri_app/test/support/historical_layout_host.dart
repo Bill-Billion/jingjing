@@ -59,7 +59,7 @@ void expectCurrentShell(WidgetTester tester, Widget page) {
   final bar = find.byType(NavigationBar);
   expect(bar, findsOneWidget);
   expect(tester.widget<NavigationBar>(bar).selectedIndex, page.initialTab);
-  for (final title in ['首页', '入戏', '培育', '成角', '我的']) {
+  for (final title in ['广场', '试镜', '通告', '消息', '我的']) {
     expect(
         find.descendant(of: bar, matching: find.text(title)), findsOneWidget);
   }

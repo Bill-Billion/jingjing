@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +19,7 @@ Future<void> host(
   AccountSession session, {
   String? id,
   bool create = false,
+  String? initialCategory,
 }) async {
   tester.view.physicalSize = const Size(390, 844);
   tester.view.devicePixelRatio = 1;
@@ -26,7 +29,8 @@ Future<void> host(
     ChangeNotifierProvider.value(
       value: session,
       child: MaterialApp(
-        home: CustomizationPage(requestId: id, createNew: create),
+        home: CustomizationPage(
+            requestId: id, createNew: create, initialCategory: initialCategory),
       ),
     ),
   );
@@ -47,6 +51,36 @@ Future<void> tapKey(WidgetTester tester, String key) async {
 }
 
 void main() {
+  testWidgets('人工视频入口读取已发布采集表且不自动生成或创建订单', (tester) async {
+    final manual = jsonDecode(File(
+            '../backend_server/src/modules/customization/blessing-template.json')
+        .readAsStringSync());
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(handler: (r) {
+      if (r.path == '/api/v1/customization-categories') {
+        return envelope({
+          'items': [
+            {
+              ...category(),
+              'category_code': 'blessing_manual',
+              'template_snapshot': manual
+            }
+          ]
+        });
+      }
+      return adapter.defaultReply(r);
+    });
+    final session = (await tester.runAsync(() => storySession(adapter)))!;
+    await host(tester, session,
+        create: true, initialCategory: 'blessing_manual');
+    expect(find.text('祝福短视频（人工制作）'), findsWidgets);
+    expect(find.textContaining('人工受理'), findsWidgets);
+    expect(
+        adapter.requests.where(
+            (r) => r.method == 'POST' && !r.path.startsWith('/api/v1/auth/')),
+        isEmpty);
+    expect(adapter.requests.where((r) => r.path.contains('/ai/')), isEmpty);
+  });
   testWidgets('选择品类真的更换问题；新故事保存完整文字答案', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(
@@ -175,27 +209,31 @@ void main() {
     });
     expect(tester.takeException(), null);
   });
-  testWidgets('必填附件模板可保存文字，但没有附件伪上传或正式提交', (tester) async {
+  testWidgets('必填附件未选择可保存文字，提交会定位缺失而不发起正式提交', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(
       handler: (r) => r.path == '$storyCollection/$requestId'
           ? envelope(story(attachment: true))
-          : adapter.defaultReply(r),
+          : r.path == '$storyCollection/$requestId/attachments'
+              ? envelope({'items': [], 'next_cursor': null})
+              : adapter.defaultReply(r),
     );
     await host(tester, (await tester.runAsync(() => storySession(adapter)))!,
         id: requestId);
     final submit = tester.widget<FilledButton>(
       find.byKey(const ValueKey('story-submit')),
     );
-    expect(submit.onPressed, null);
+    expect(submit.onPressed, isNotNull);
     expect(
       tester
           .widget<OutlinedButton>(find.byKey(const ValueKey('story-save')))
           .onPressed,
       isNotNull,
     );
-    expect(find.byType(DropdownButtonFormField<String>), findsOneWidget);
-    expect(find.textContaining('附件提交尚未开放'), findsWidgets);
+    await tapKey(tester, 'story-submit');
+    await tester.scrollUntilVisible(find.text('这一项尚未填写。'), 180,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.text('这一项尚未填写。'), findsOneWidget);
     expect(
       adapter.requests.any(
         (r) => r.method == 'POST' && r.path.endsWith('/submissions'),

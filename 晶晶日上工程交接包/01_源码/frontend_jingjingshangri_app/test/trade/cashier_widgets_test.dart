@@ -47,7 +47,7 @@ void main() {
         tester.widget<Text>(find.byKey(const Key('trade-cashier-amount'))).data,
         '¥900.00');
     expect(find.text('支付宝 · 原订单已固定'), findsOneWidget);
-    expect(find.text('当前已核实收款'), findsOneWidget);
+    expect(find.text('当前订单记账收款'), findsOneWidget);
     expect(find.text('¥380.01'), findsNWidgets(2));
     await tester.scrollUntilVisible(find.textContaining('当前付款节点尚未确认可办理'), 300,
         scrollable: find.byType(Scrollable).first);
@@ -220,6 +220,8 @@ void main() {
     await nav.openApp(tester, session, route: '${cashierRoute}deposit');
     expect(find.text('资金托管账户 · 原订单已固定'), findsOneWidget);
     expect(find.text('托管消费尚未接通'), findsOneWidget);
+    await tester.scrollUntilVisible(find.textContaining('托管消费余额尚未接通'), 300,
+        scrollable: find.byType(Scrollable).first);
     expect(find.textContaining('托管消费余额尚未接通'), findsOneWidget);
     expect(find.text('支付宝'), findsNothing);
     expect(find.text('¥320'), findsNothing);

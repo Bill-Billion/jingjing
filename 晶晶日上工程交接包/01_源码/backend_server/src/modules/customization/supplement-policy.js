@@ -10,7 +10,6 @@ function items(template,input){
   shape(item,['field_key','reason','instruction']);
   const field=fields.get(item.field_key);
   if(!field||seen.has(item.field_key))throw error('INVALID_SUPPLEMENT_FIELD',400);
-  if(field.type==='PRIVATE_ATTACHMENT')throw error('ATTACHMENT_SUBMISSION_NOT_READY',422);
   seen.add(item.field_key);text(item.reason,500);text(item.instruction,1000);
  }
  return bounded(input);

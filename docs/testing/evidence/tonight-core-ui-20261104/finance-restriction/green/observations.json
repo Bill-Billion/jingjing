@@ -1,0 +1,63 @@
+{
+  "synthetic_only": true,
+  "database": "jx_test_32800_9ba984260b6c",
+  "checks": [
+    {
+      "case": "payout-approval-after-restriction",
+      "evidence": "3bb1b3f3-4603-4a2f-a076-84d5134778ad",
+      "payout": "e8dff38e-666c-492f-8e14-e9e94740dd0b",
+      "asset": "a1e09572-e149-480f-a3e0-214edd9b4c84",
+      "privacy_request": "5f02797c-2afc-4821-83d0-ec47db986a26",
+      "expected_status": 409,
+      "actual_status": 409,
+      "actual_error": "CONTENT_RESTRICTED",
+      "before": {
+        "records": 4,
+        "entries": 2,
+        "audit": 13
+      },
+      "after": {
+        "records": 4,
+        "entries": 2,
+        "audit": 13
+      },
+      "payout_status": "APPROVED",
+      "evidence_status": "IN_REVIEW",
+      "before_paid": 0,
+      "after_paid": 0
+    },
+    {
+      "case": "same-payout-after-approved-release",
+      "evidence": "3bb1b3f3-4603-4a2f-a076-84d5134778ad",
+      "payout": "e8dff38e-666c-492f-8e14-e9e94740dd0b",
+      "result": "PASS",
+      "paid_minor": 1000
+    },
+    {
+      "case": "restricted-new-draft",
+      "asset": "6435cbfc-33ba-4c3a-9e06-67d76a86d896",
+      "expected_status": 409,
+      "actual_status": 409,
+      "actual_error": "CONTENT_RESTRICTED",
+      "before": {
+        "records": 4,
+        "entries": 3,
+        "audit": 15
+      },
+      "after": {
+        "records": 4,
+        "entries": 3,
+        "audit": 15
+      }
+    },
+    {
+      "case": "draft-after-approved-release",
+      "draft": "54ce6997-dde6-4f46-9e8d-c4dc38f845c3",
+      "result": "PASS"
+    }
+  ],
+  "cleanup": {
+    "database_removed": true,
+    "server_stopped": true
+  }
+}

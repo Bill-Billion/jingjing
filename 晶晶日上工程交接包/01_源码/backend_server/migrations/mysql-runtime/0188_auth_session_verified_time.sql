@@ -1,0 +1,1 @@
+ALTER TABLE auth_sessions ADD authenticated_ms BIGINT UNSIGNED NOT NULL DEFAULT 0

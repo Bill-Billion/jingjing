@@ -1,3 +1,4 @@
+import '../rights/rights_widgets.dart';
 import 'package:flutter/material.dart';
 import '../account/account_session.dart';
 import '../account/account_api.dart';
@@ -139,6 +140,10 @@ class _TradeListState extends State<_TradeList> {
             tradeButton('恢复原请求核对', busy ? null : () => restore(op['path'])),
           ]),
         if (error != null) supplyNote(error!, error: true),
+        if (error?.contains('个人月度限额') == true)
+          tradeButton(
+              '查看个人月度限额', () => Navigator.pushNamed(context, '/wallet/limits'),
+              outline: true),
         if (busy) const LinearProgressIndicator(),
         if (!busy && items.isEmpty && error == null)
           tradeSection('暂无${tradeKinds[kind]}',
@@ -159,7 +164,7 @@ class _TradeListState extends State<_TradeList> {
             tradeFact('当前状态', tradeStatuses[r.status]),
             if (r.kind == 'ORDER')
               tradeFact(
-                  '已核实收款', tradeMoney(r.data['financial']['received_minor'])),
+                  '订单记账收款', tradeMoney(r.data['financial']['received_minor'])),
             if (r.kind == 'LEGACY') appNotice('仅保留历史依据，不代表渠道已确认到账。'),
             tradeButton('查看${tradeKinds[r.kind]}', busy ? null : () => open(r))
           ]),
@@ -567,11 +572,14 @@ class _TradeDetailState extends State<_TradeDetail> {
             appNotice('这份报价对应历史故事版本，不可确认新订单。'),
           appNotice('报价固定到这一版正式故事，故事正文不会复制到交易列表。'),
         ]),
+      if (d['marketplace_finance'] != null)
+        marketplaceFacts(d['marketplace_finance']),
       if (d['commercial'] != null)
         tradeSection('原商业接单约定', [
           tradeFact('约定编号', d['commercial']['offer_id']),
           gigScopeFacts(gigMap(d['commercial']['scope'])),
-          gigCommissionFacts(gigMap(d['commercial']['commission'])),
+          gigCommissionFacts(gigMap(d['commercial']['commission']),
+              marketplace: d['commercial']['marketplace_terms']),
           tradeFact(
               '公开入榜', d['commercial']['ranking_opt_in'] ? '明确选择参与' : '不参与'),
           ExpansionTile(
@@ -595,6 +603,11 @@ class _TradeDetailState extends State<_TradeDetail> {
                 ? '由服务提供方直接履约'
                 : '平台作为交易主体')
       ]),
+      if (d['customization'] != null || d['customization_copyright'] != null)
+        CopyrightFacts(
+            snapshot: d['customization_copyright'] is Map
+                ? tradeMap(d['customization_copyright'])
+                : null),
       tradeSection('报价明细', [
         for (final l in tradeRows(d['lines'])) ...[
           tradeFact(l['title'], tradeMoney(l['total_minor']), accent: true),
@@ -681,14 +694,26 @@ class _TradeDetailState extends State<_TradeDetail> {
 
   List<Widget> orderView(TradeRecord r) {
     final f = r.data['financial'];
+    final fullyCovered = r.quote['discount']?['coverage'] == 'FULL' &&
+        r.quote['total_minor'] == 0;
     return [
+      if (r.isBuyer(api.owner()))
+        tradeButton(
+            '按本订单申请开票',
+            locked
+                ? null
+                : () =>
+                    Navigator.pushNamed(context, '/invoices?orderId=${r.id}'),
+            outline: true),
       tradeSection('订单 ${shortSupplyId(r.id)}', [
         tradeStatus(r),
-        appNotice(r.quote['stock_video'] != null
-            ? '付款核实后查看本单内容、个人许可与售后。'
-            : r.quote['audition'] != null
-                ? '按本单接单与核实收款状态办理预约、材料和售后。'
-                : '款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')
+        appNotice(fullyCovered
+            ? '本单由制作权益全额抵扣，应付现金为0，无需支付首款、中款或尾款。权益在开工时核销，制作进度与交付仍按原约定确认。'
+            : r.quote['stock_video'] != null
+                ? '付款核实后查看本单内容、原购买许可与售后。'
+                : r.quote['audition'] != null
+                    ? '按本单接单与核实收款状态办理预约、材料和售后。'
+                    : '款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')
       ]),
       if (r.quote['stock_video'] != null)
         tradeButton(
@@ -709,13 +734,25 @@ class _TradeDetailState extends State<_TradeDetail> {
       if (r.quote['artist_service'] != null)
         tradeSection(
             '对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
+      if (r.quote['customization'] != null ||
+          r.quote['customization_copyright'] != null)
+        CopyrightFacts(
+            snapshot: r.quote['customization_copyright'] is Map
+                ? tradeMap(r.quote['customization_copyright'])
+                : null),
       if (r.quote['customization'] != null)
         appNotice(tradeCustomizationRulesReady(r)
-            ? '原故事、报价与合同已固定。先核对首款，再按原单预览、确认和后续付款节点办理；生成订单不代表已付款或签署。'
+            ? fullyCovered
+                ? '原故事、报价与合同已固定。按原单预览、确认和验收；本单现金应付为0，生成订单不代表已开工、已交付或已签署。'
+                : '原故事、报价与合同已固定。先核对首款，再按原单预览、确认和后续付款节点办理；生成订单不代表已付款或签署。'
             : '这笔历史定制订单未保存完整付款和交付条款。请由平台核对原约定，不会自动补用新单规则。'),
+      if (r.quote['marketplace_finance'] != null)
+        marketplaceFacts(r.quote['marketplace_finance']),
       if (r.quote['commercial'] != null)
         tradeSection('关联商业约定', [
           tradeFact('接单约定编号', r.quote['commercial']['offer_id']),
+          gigCommissionFacts(gigMap(r.quote['commercial']['commission']),
+              marketplace: r.quote['commercial']['marketplace_terms']),
           tradeButton(
               '进入本单专属会话',
               locked
@@ -801,10 +838,11 @@ class _TradeDetailState extends State<_TradeDetail> {
             outline: true),
         tradeFact('应付总额', tradeMoney(r.amount)),
         const Divider(),
-        tradeFact('已核实收款', tradeMoney(f['received_minor']), accent: true),
+        tradeFact('订单记账收款', tradeMoney(f['received_minor']), accent: true),
         const Divider(),
-        tradeFact('已核实退款', tradeMoney(f['refunded_minor'])),
-        tradeFact('净收款', tradeMoney(f['net_minor']))
+        tradeFact('订单记账退款', tradeMoney(f['refunded_minor'])),
+        tradeFact('订单记账净额', tradeMoney(f['net_minor'])),
+        appNotice('测试渠道的记账不代表真实资金到账；请核对原付款和退款记录的渠道、环境及回执。')
       ]),
       tradeSection('合同与许可', [
         tradeButton(
@@ -909,6 +947,7 @@ class _TradeDetailState extends State<_TradeDetail> {
     final stage = {
       'SAMPLE_ACCEPTED': 'SAMPLE',
       'FINAL_ACCEPTED': 'FINAL',
+      'CUSTOMIZATION_SCRIPT_CONFIRMED': 'SCRIPT',
       'CUSTOMIZATION_INTERIM_CONFIRMED': 'SAMPLE'
     }[trigger];
     final lines = tradeRows(order.quote['lines'])
@@ -962,9 +1001,10 @@ class _TradeDetailState extends State<_TradeDetail> {
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
         tradeFact('订单编号', shortSupplyId(order.id)),
         tradeFact('合同现金总额', tradeMoney(order.amount)),
-        tradeFact('当前已核实收款', tradeMoney(financial['received_minor'])),
-        tradeFact('当前已核实退款', tradeMoney(financial['refunded_minor'])),
-        tradeFact('当前净收款', tradeMoney(financial['net_minor'])),
+        tradeFact('当前订单记账收款', tradeMoney(financial['received_minor'])),
+        tradeFact('当前订单记账退款', tradeMoney(financial['refunded_minor'])),
+        tradeFact('当前订单记账净额', tradeMoney(financial['net_minor'])),
+        appNotice('测试渠道的记账不代表真实资金到账；请核对原付款和退款记录的渠道、环境及回执。'),
         tradeFact('合同服务方', shortSupplyId(order.merchant)),
       ]),
       Container(
@@ -1132,7 +1172,13 @@ class _TradeDetailState extends State<_TradeDetail> {
         tradeBanner(
             tradeStatuses[r.status]!,
             r.status == 'SUCCEEDED'
-                ? '服务器已核实真实收款，仍须另行办理制作、签署和许可。'
+                ? r.data['environment'] == 'SANDBOX' &&
+                        r.data['app_id'] == 'SIMULATED_ONLY' &&
+                        r.data['merchant_id'] == 'SIMULATED_ONLY'
+                    ? '服务器已核实模拟收款，没有真实资金；仍须另行办理制作、签署和许可。'
+                    : r.data['environment'] == 'SANDBOX'
+                        ? '服务器已核实测试环境的渠道回执，不代表真实资金到账；仍须另行办理制作、签署和许可。'
+                        : '服务器已核实真实收款，仍须另行办理制作、签署和许可。'
                 : '请先核对这笔付款，不要重复支付。客户端不能发起实际支付。',
             icon: Icons.receipt_long_outlined),
         if (r.data['provider'] == 'APPLE')
@@ -1271,6 +1317,10 @@ class _TradeDetailState extends State<_TradeDetail> {
                 eyebrow: '${tradeKinds[r.kind]} / ${shortSupplyId(r.id)}'),
           if (busy) const LinearProgressIndicator(),
           if (error != null) supplyNote(error!, error: true),
+          if (error?.contains('个人月度限额') == true)
+            tradeButton('查看个人月度限额',
+                () => Navigator.pushNamed(context, '/wallet/limits'),
+                outline: true),
           for (final op in widget.session.tradePending)
             tradeSection('操作结果待核实', [
               appNotice('请恢复原请求核对，不要修改原内容或重复建立付款。'),
@@ -1355,4 +1405,15 @@ class TradeRefundPage extends StatelessWidget {
   Widget build(BuildContext context) => TradeGate(
       returnRoute: '/trade/refund?paymentId=$paymentId',
       builder: (s) => TradeRefundForm(session: s, paymentId: paymentId));
+}
+
+Widget marketplaceFacts(dynamic value) {
+  final d = tradeMap(value), a = tradeMap(d['allocation']);
+  return tradeSection('本单保存的分配约定', [
+    tradeFact('计费基数', '已收减已退后的净额'),
+    tradeFact('平台费用', gigPercent(a['platform_bps'])),
+    tradeFact('机构占供给收益', gigPercent(a['mcn_supply_bps'])),
+    tradeFact('保存时间', tradeDate(d['captured_at'])),
+    appNotice('采用本单保存的规则与关系。解绑不改旧订单；实际收款、退款与计提分别核对，计算记录不表示银行到账。')
+  ]);
 }

@@ -1,0 +1,352 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "5830823c54a9a3ea0849d928b571eee9196b96cd",
+  "run_id": "backend-acceptance-2026-11-13T04-07-08-348Z-bb850f",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "NOTICE-PERMISSIONS",
+      "acceptance_id": "ACC-DEL-10.02",
+      "result": "LOCAL_PASS",
+      "scope": "新规则个人五类发布、未实名/儿童/越权/官方冒用拒绝、机构独审范围；实际HTTP，合成身份",
+      "remaining": "各类资格完整独立复验与真实实名仍缺",
+      "actual_checks": [
+        {
+          "name": "never-funded adult can publish all five ordinary types without changing membership",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 284.6676,
+          "error_code": null
+        },
+        {
+          "name": "unverified, child, expired, inactive, foreign identity and official impersonation remain rejected",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 70,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 208.9852,
+          "error_code": null
+        },
+        {
+          "name": "organization scope and other project ownership cannot be bypassed with an ordinary rule",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 95,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 127.3266,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "NOTICE-NOT-ORDER",
+      "acceptance_id": "ACC-DEL-10.03",
+      "result": "LOCAL_PASS",
+      "scope": "普通发布、投递、意向只建工单，客服绑定报价后明确接受才生成未付款订单；原同单后续付款/退款复验",
+      "remaining": "不代表当前页面、真实服务或所有角色授权标准完成",
+      "actual_checks": [
+        {
+          "name": "duplicate interest creates one case; no order or chat created",
+          "file": "test/notices.integration.test.cjs",
+          "line": 117,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 53.0187,
+          "error_code": null
+        },
+        {
+          "name": "same notice receives reviewed artist submission then one support case after lost response recovery",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 105,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 151.5788,
+          "error_code": null
+        },
+        {
+          "name": "independent support links actual quote and creates the same unpaid order without membership",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 132,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 576.7872,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "NOTICE-HISTORY",
+      "acceptance_id": "ACC-DEL-10.04",
+      "result": "LOCAL_PASS",
+      "scope": "下架仍可读本人历史，旧报价不变；新增逐申请通知、待审接收方隔离、同键去重与故障回滚；截止拒绝新意向",
+      "remaining": "通告修订版本及关键条件变更的完整流程仍未覆盖；本轮只补下架分支，不能整条PASS",
+      "actual_checks": [
+        {
+          "name": "closing ordinary notice blocks new submissions while historical quote remains unchanged",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 208,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 24.1415,
+          "error_code": null
+        },
+        {
+          "name": "notice withdrawal notifies each historical application once without changing submission or contract",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 216,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 653.9712,
+          "error_code": null
+        },
+        {
+          "name": "failure to record notice withdrawal notification rolls back closure and all prior events",
+          "file": "test/notices-ordinary.integration.test.cjs",
+          "line": 237,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 227.0847,
+          "error_code": null
+        },
+        {
+          "name": "deadline failure never creates a customer service case",
+          "file": "test/notices.integration.test.cjs",
+          "line": 126,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 86.5229,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "COCREATION-START",
+      "acceptance_id": "ACC-DEL-16.02",
+      "result": "LOCAL_PASS",
+      "scope": "未付款不计有效人数、缺授权不制作；九人延期后重确认并补第十人，10人开工且无20人奖",
+      "remaining": "真实权属/付款、全部所需端及独立复验仍缺",
+      "actual_checks": [
+        {
+          "name": "materials are private; unpaid participants do not qualify; duplicate real person is rejected",
+          "file": "test/cocreation.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 47.6139,
+          "error_code": null
+        },
+        {
+          "name": "missing personal material prevents participation and withdrawn consent prevents production",
+          "file": "test/cocreation.integration.test.cjs",
+          "line": 70,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1284.0529,
+          "error_code": null
+        },
+        {
+          "name": "same extended room requires nine renewed agreements and a tenth separate participant; ten qualifies without twenty-person reward",
+          "file": "test/cocreation-modern-journey.integration.test.cjs",
+          "line": 13,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 714.9147,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "COCREATION-BENEFIT",
+      "acceptance_id": "ACC-DEL-16.03",
+      "result": "LOCAL_PASS",
+      "scope": "锁定20人只生成一份非现金权益；退出保留历史锁定，整包退款撤销权益。另有人工插入权益夹具的实际兑现接口：仅本人、有效期沿用、一次绑定、取消释放、源撤销后不得继续制作；两个案例不拼成同房间整链",
+      "remaining": "兑现入口已有；按正常成团流程产生的同一权益接兑现、到期/退出组合及所需端/独立复验另验",
+      "actual_checks": [
+        {
+          "name": "first payment qualifies twenty people; cutoff creates one noncash benefit and one original order",
+          "file": "test/cocreation-modern-journey.integration.test.cjs",
+          "line": 13,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 778.6572,
+          "error_code": null
+        },
+        {
+          "name": "withdrawal pauses old production and downloads; independent recovery keeps old cutoff but requires new versions",
+          "file": "test/cocreation-modern-journey.integration.test.cjs",
+          "line": 13,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 564.1632,
+          "error_code": null
+        },
+        {
+          "name": "same paid room cancels through production review; three actual refunds revoke benefit and cannot revive old files",
+          "file": "test/cocreation-modern-journey.integration.test.cjs",
+          "line": 13,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1756.2208,
+          "error_code": null
+        },
+        {
+          "name": "co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source",
+          "file": "test/redemption-checkout.integration.test.cjs",
+          "line": 103,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 765.9804,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "COCREATION-EXIT",
+      "acceptance_id": "ACC-DEL-16.04",
+      "result": "LOCAL_PASS",
+      "scope": "九人延期/退款、开工后撤权暂停及旧文件拒绝、本人片段权限；付款待复核不误结清",
+      "remaining": "真实成员、实际制作质量/标识/款项、所需端及独立签收仍缺",
+      "actual_checks": [
+        {
+          "name": "personal clip remains unavailable until final acceptance and remaining 30 percent; other people cannot download",
+          "file": "test/cocreation-modern-journey.integration.test.cjs",
+          "line": 13,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2698.7186,
+          "error_code": null
+        },
+        {
+          "name": "nine-person unformed room extends only after independent review; old personal agreement cannot silently carry forward",
+          "file": "test/cocreation-modern-journey.integration.test.cjs",
+          "line": 13,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1337.5718,
+          "error_code": null
+        },
+        {
+          "name": "separate nine-person room cancels before production; review is not a refund and duplicate receipt credits only once",
+          "file": "test/cocreation-modern-journey.integration.test.cjs",
+          "line": 13,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2330.1419,
+          "error_code": null
+        },
+        {
+          "name": "unformed room cannot mark refund complete while original payment requires review",
+          "file": "test/cocreation-modern-journey.integration.test.cjs",
+          "line": 13,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1885.1863,
+          "error_code": null
+        },
+        {
+          "name": "withdrawal pauses old production and downloads; independent recovery keeps old cutoff but requires new versions",
+          "file": "test/cocreation-modern-journey.integration.test.cjs",
+          "line": 13,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 564.1632,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "WALLET-CASH",
+      "acceptance_id": "ACC-DEL-17.02",
+      "result": "LOCAL_PASS",
+      "scope": "可信合成回执到账一次，充值不发成长；消费预留/未知冻结/退款返原充值批次，同账不重复余额",
+      "remaining": "真实持牌托管/清分及全部财务对账另验",
+      "actual_checks": [
+        {
+          "name": "only matching verified custody receipt credits balance once; topup yields zero growth",
+          "file": "test/wallet.integration.test.cjs",
+          "line": 38,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 41.454,
+          "error_code": null
+        },
+        {
+          "name": "custody order reservation is atomic, unknown payments retain funds, refund restores original lots",
+          "file": "test/wallet.integration.test.cjs",
+          "line": 121,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 728.8622,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "WALLET-MEMBERSHIP",
+      "acceptance_id": "ACC-DEL-17.03",
+      "result": "LOCAL_PASS",
+      "scope": "会员按独立期间的规则函数：首次达标一年、大额不无限续年、到期保级恢复和退款排除；另有钱包接口实名过期历史保留及原充值合成可信退款回执的实际处理使会员失效、成长不增",
+      "remaining": "跨真实时段与真实充值回执的完整会员链未验；规则函数通过不等于整条API或页面完成",
+      "actual_checks": [
+        {
+          "name": "cumulative 300 yuan unlocks one year and contributes zero growth",
+          "file": "test/wallet-policy.test.cjs",
+          "line": 11,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 9.7642,
+          "error_code": null
+        },
+        {
+          "name": "large one-time topup cannot buy several membership years",
+          "file": "test/wallet-policy.test.cjs",
+          "line": 12,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.1786,
+          "error_code": null
+        },
+        {
+          "name": "renewal counted once per membership year, expiration retains growth and topup restores",
+          "file": "test/wallet-policy.test.cjs",
+          "line": 13,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.9078,
+          "error_code": null
+        },
+        {
+          "name": "refunded topups and future receipts do not falsely qualify",
+          "file": "test/wallet-policy.test.cjs",
+          "line": 15,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.1147,
+          "error_code": null
+        },
+        {
+          "name": "expired adult verification preserves balance history but disables displayed membership",
+          "file": "test/wallet.integration.test.cjs",
+          "line": 107,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 40.076,
+          "error_code": null
+        },
+        {
+          "name": "trusted partial receipt and duplicate queries reduce recharge net once; membership recalculates without adding consumption growth",
+          "file": "test/recharge-refunds.integration.test.cjs",
+          "line": 59,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 32.3932,
+          "error_code": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "result": "PASS",
+  "checks": [
+    {
+      "name": "unpaid application rejected without phantom submission",
+      "result": "PASS",
+      "service_id": "98045951-2f90-4878-88eb-c7aaf8489962",
+      "order_id": "6f03618f-93b1-474c-a93e-3d91460635c2"
+    },
+    {
+      "name": "fee paid but not certified",
+      "result": "PASS",
+      "service_id": "9649c85f-78f5-43eb-ac5c-0008210be142",
+      "order_id": "d67dc6d6-85b7-4cad-aae2-d031578572ef",
+      "payment_id": "c23ffd0e-f5df-4134-8485-15a455273a23",
+      "fee_minor": 1000,
+      "halo_level": 1
+    },
+    {
+      "name": "invalid materials fixed and concurrent retry uses one paid application",
+      "result": "PASS",
+      "application_id": "583d3e5a-e53b-4a86-a0a1-35a7a6ea2896",
+      "service_id": "9649c85f-78f5-43eb-ac5c-0008210be142",
+      "approved": false
+    },
+    {
+      "name": "same application supplements once without charging and independent approval consumes original fee",
+      "result": "PASS",
+      "application_id": "583d3e5a-e53b-4a86-a0a1-35a7a6ea2896",
+      "service_id": "9649c85f-78f5-43eb-ac5c-0008210be142",
+      "payment_id": "c23ffd0e-f5df-4134-8485-15a455273a23",
+      "supplements": 1,
+      "original_materials_retained": true
+    },
+    {
+      "name": "synthetic future clock expires effective identity/certification but preserves approved history and fee",
+      "result": "PASS",
+      "application_id": "583d3e5a-e53b-4a86-a0a1-35a7a6ea2896",
+      "original_valid_until": "2027-11-13T10:54:14.967Z",
+      "original_sha256": "7d6e3b6b7774d5b8a783b48bc2cce450f2d773bfff3b93897b5c3a33787ae4fd"
+    }
+  ],
+  "limits": [
+    "Synthetic receipt and future clock; identity also expires in that future scenario",
+    "No real certification material or payment provider; no frontend"
+  ]
+}

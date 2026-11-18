@@ -1,0 +1,78 @@
+TAP version 13
+# Subtest: booking scoped delivery options preserve person recipient and live permissions
+    # Subtest: unpaid booking cannot browse delivery materials
+    ok 1 - unpaid booking cannot browse delivery materials
+      ---
+      duration_ms: 59.9439
+      type: 'test'
+      ...
+    # Subtest: six linked photos paginate once; video separate; no storage paths or private evidence
+    ok 2 - six linked photos paginate once; video separate; no storage paths or private evidence
+      ---
+      duration_ms: 73.3993
+      type: 'test'
+      ...
+    # Subtest: consent matches booking person avatar purpose and recipient; foreign and expired consents excluded
+    not ok 3 - consent matches booking person avatar purpose and recipient; foreign and expired consents excluded
+      ---
+      duration_ms: 39.7973
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\auditions-delivery-options.integration.test.cjs:27:11'
+      failureType: 'testCodeFailure'
+      error: 'ARTIST_CONSENT_EXPIRED'
+      code: 'ARTIST_CONSENT_EXPIRED'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\artists\repository.js:53:281
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Object.command (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\artists\context.js:36:667)
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:29:467)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:27:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: buyer operator stranger spoofed identity and missing identity cannot enumerate
+    ok 4 - buyer operator stranger spoofed identity and missing identity cannot enumerate
+      ---
+      duration_ms: 62.2503
+      type: 'test'
+      ...
+    # Subtest: invalid types limits and caller-selected person rejected
+    ok 5 - invalid types limits and caller-selected person rejected
+      ---
+      duration_ms: 29.5676
+      type: 'test'
+      ...
+    # Subtest: unlinked same-owner upload and another persons linked upload excluded
+    ok 6 - unlinked same-owner upload and another persons linked upload excluded
+      ---
+      duration_ms: 39.0527
+      type: 'test'
+      ...
+    # Subtest: actual submission still validates chosen options and cannot reuse selection during review
+    ok 7 - actual submission still validates chosen options and cannot reuse selection during review
+      ---
+      duration_ms: 41.1421
+      type: 'test'
+      ...
+    1..7
+not ok 1 - booking scoped delivery options preserve person recipient and live permissions
+  ---
+  duration_ms: 8599.4582
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\auditions-delivery-options.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 8
+# suites 0
+# pass 6
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8822.0523

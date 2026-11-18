@@ -1,0 +1,63 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "9c2e9b267b6f37e8d030a098ae4913cfebd66351",
+  "run_id": "pm01-partial-recovery-2026-11-14T05-05-49-592Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "frontend_run": false,
+  "real_services": false,
+  "checks": [
+    {
+      "id": "PARTIAL-PAYOUT-RETURN",
+      "acceptance_ids": [
+        "ACC-DEL-20.04"
+      ],
+      "name": "已付订单分次追偿回款与独立入账",
+      "result": "LOCAL_PASS",
+      "scope": "原已付订单分次回款：退款产生待追偿余额、80/120分独审回款、审核前不记现金、重复与累计超额拒绝、原出款及旧结算保留、日报与本人收入对账。",
+      "remaining": "正常履约推荐佣金同单结佣/实际支付组合、独立追偿处置单与真实清分回款、其他业务入口、完整本人资料交付/原件、法律主体变更及端侧/独立验收仍待。",
+      "actual_checks": {
+        "synthetic_only": true,
+        "real_services": false,
+        "frontend_run": false,
+        "order_id": "ad6254ca-25a0-4244-9ba6-f7424b32864f",
+        "agreement_id": "15254a28-e230-4ba1-af4e-57e0a04bd8d6",
+        "payout_id": "b90b4d0a-3f8a-416f-b66e-2b4a190cc913",
+        "first_receipt_id": "eaf21575-6e45-4234-b5b6-4b1bbb38d003",
+        "second_receipt_id": "f70b5c83-5b01-44ac-a686-eb884608129f",
+        "stale_receipt_id": "b79b269c-2d68-4b08-b7da-c032dffc6970",
+        "final_receipt_id": "8336ac35-e52f-4421-a749-b44b1d2cebbd",
+        "original_payout_minor": 1000,
+        "recovery_due_before": 200,
+        "first_return_minor": 80,
+        "remaining_recovery_due": 120,
+        "second_return_minor": 120,
+        "recovery_due_after": 0,
+        "additional_full_bank_return_minor": 800,
+        "limits": [
+          "SANDBOX synthetic trusted payment and bank receipts; no external payment or recovery",
+          "Actual HTTP production and finance actions; no current referral commission attribution",
+          "Additional 800 return is bank-return compatibility, not an 800 debt claim"
+        ]
+      },
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-partial-recovery-20261114/RECOVERY_JOURNEY.json",
+          "sha256": "b926ab68f3eba60f6b4afbd8e20737fb63acdb4f0230dfcb397ed20f9c70bcec"
+        },
+        {
+          "path": "docs/reviews/pm01-partial-recovery-20261114/FINAL_BACKEND.json",
+          "sha256": "082373bd6ba72ba3fa107f154209adeb1f647923abf578409a45e4f8dfbdc822"
+        },
+        {
+          "path": "docs/reviews/pm01-partial-recovery-20261114/FINAL_CONTRACT.json",
+          "sha256": "cb676967f5534d00c68664191b2917291af6458a36ad2be7ec62e25fe1361511"
+        },
+        {
+          "path": "docs/reviews/pm01-partial-recovery-20261114/SOURCE_MANIFEST.json",
+          "sha256": "53be5fbb7631a2ea937f46365774b31c858d923f35e27fbe92a2df6c1b66f180"
+        }
+      ]
+    }
+  ]
+}

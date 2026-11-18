@@ -73,7 +73,7 @@ def audit(env,environment):
                         port=u.port  # Validate a supplied port without echoing its value.
                         issue(not u.hostname or '*' in (u.hostname or '') or u.scheme not in (['https'] if environment=='production' else ['http','https']) or bool(u.username or u.password or u.query or u.fragment or u.path),'网页来源须填写准确域名和端口，不允许通配或附路径')
                 except ValueError: issues.append('网页来源地址格式无效')
-        if ident=='sms': issue(bool(env.get('DEBUG')),'短信配置禁止开启DEBUG日志')
+        if ident=='sms': issue(bool(env.get('DEBUG') or env.get('NODE_DEBUG')),'短信配置禁止开启DEBUG/NODE_DEBUG日志')
         if ident=='storage':
             issue(env.get('OSS_ENVIRONMENT')!=('PRODUCTION' if environment=='production' else 'SANDBOX'),'OSS_ENVIRONMENT与目标环境不一致')
             issue(bool(env.get('OSS_ENDPOINT')),'新版OSS_ENDPOINT必须留空')

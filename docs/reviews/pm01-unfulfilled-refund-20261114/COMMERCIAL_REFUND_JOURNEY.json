@@ -1,0 +1,101 @@
+{
+  "synthetic_only": true,
+  "real_services": false,
+  "frontend_run": false,
+  "records": {
+    "notice_id": "8386ae1c-5739-4723-926e-3c4d018435e6",
+    "submission_id": "2e50ed6f-15f1-4ba3-a5a1-36893a458128",
+    "case_id": "5de0cced-50e1-467f-857b-8b1fd860d7c6",
+    "person_id": "e3be2051-42df-4297-8df1-496c10cb4c6d",
+    "avatar_id": "1b407bd4-a1b3-4e20-a7ab-59f5343da597",
+    "old_agency": "de49fab7-fd6a-4159-bc81-10a7f85a6614",
+    "new_agency": "149abc6a-206a-4a05-94ea-faf339d0a711",
+    "relation_id": "f3dbd598-41e8-4779-82f1-573e5957a0fd",
+    "order_id": "304d49bd-d913-4797-bbe1-44dab25c3f06",
+    "payment_id": "a8dd3629-a021-48ac-af90-e39a39578624",
+    "contract_sha256": "590c6ca55ec8697c061317e384c4a530c3785d59fa29923e37db1d4aa243771d",
+    "message_id": "d8852780-e1bf-4e35-9f0a-1d727f6893f4",
+    "controlled_media_message_id": "a5e05cd7-67f3-491b-b9d3-a298ecbaf475",
+    "controlled_media_asset_id": "54625864-d609-4ca0-b478-1c03fde11174",
+    "handover_order_id": "304d49bd-d913-4797-bbe1-44dab25c3f06",
+    "handover_deadline_at": "2026-11-21T03:37:50.730Z",
+    "refund_id": "99d28ff6-d6f7-420b-8233-836975fb353e",
+    "commission_id": "254eff1f-4dee-4d74-a5b6-e8a387ba9ed1",
+    "final_refund_id": "f5ef8308-0648-4575-b748-ab915bde7154",
+    "referral": {
+      "id": "b15d2550-03ce-4703-9338-f03314b5272c",
+      "referrer_party_id": "2c9ad6a1-9c3e-4967-bf39-9f9c30f3aa82",
+      "new_click_party_id": "2409e96d-b72a-4fdc-b31b-95ddb53f0f9d",
+      "amount_minor": 0,
+      "status": "REVERSED",
+      "agreement_id": "01b312ca-a7da-4f6e-8f7c-444f15b50b89",
+      "partial_refund_stayed_pending": true,
+      "original_contract_unchanged": true,
+      "actual_payout": false,
+      "synthetic_PRODUCTION_receipts": true
+    }
+  },
+  "checks": [
+    {
+      "name": "approved notice to artist submission and interested recipient creates one support case",
+      "result": "PASS"
+    },
+    {
+      "name": "scoped agency options hide private people and reject wrong identities or stale public sources",
+      "result": "PASS"
+    },
+    {
+      "name": "agency invitation requires artist consent; staff cannot silently accept",
+      "result": "PASS"
+    },
+    {
+      "name": "first commercial quote is accepted and genuinely enters paid state through simulated receipt",
+      "result": "PASS"
+    },
+    {
+      "name": "member alone has no artist messages or income; explicit scoped staff grant is necessary",
+      "result": "PASS"
+    },
+    {
+      "name": "same paid commercial conversation provides independently reviewed personal message copy",
+      "result": "PASS"
+    },
+    {
+      "name": "reassignment changes income visibility; revocation immediately removes messages and dashboard",
+      "result": "PASS"
+    },
+    {
+      "name": "removing and reinviting an employee does not resurrect the old scoped artist grant",
+      "result": "PASS"
+    },
+    {
+      "name": "same paid order enters seven-day handover with expiry, original-key recovery and bilateral acknowledgement",
+      "result": "PASS"
+    },
+    {
+      "name": "artist withdrawal removes old agency live access without erasing contract or old income",
+      "result": "PASS"
+    },
+    {
+      "name": "changing agency cannot transfer historic order, commission or messages to new agency",
+      "result": "PASS"
+    },
+    {
+      "name": "partial refund after agency switch reverses original amounts once and does not rewrite original contract",
+      "result": "PASS"
+    },
+    {
+      "name": "remaining full refund archives same conversation and clears original accrual without transferring it",
+      "result": "PASS"
+    },
+    {
+      "name": "ended relationships, restricted proofs and withdrawn public sources cannot be reused; original invitation recovers",
+      "result": "PASS"
+    }
+  ],
+  "limits": [
+    "Agency, trade and referral steps HTTP; provider receipts and zero finance via repositories",
+    "Synthetic PRODUCTION-labelled receipts; no service/production use",
+    "No commercial fulfillment; full refund closes zero original referral, not actual payout or recovery"
+  ]
+}

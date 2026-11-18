@@ -28,7 +28,7 @@ test('server derives required story from saved product, not a client-selected fl
  assert.throws(()=>products.quote(lines,{}),{code:'CUSTOMIZATION_SOURCE_REQUIRED'});
  products.quote(lines,{customization_source:{request_id:'checked separately'}});
  const sample={product_profile:{version:'V5',type:'MANUAL_SAMPLE'},line_kind:'PRODUCTION',quantity:1};assert.throws(()=>products.quote([sample],{}),{code:'CUSTOMIZATION_SOURCE_REQUIRED'});assert.throws(()=>products.quote([{...sample,quantity:2}],{customization_source:{}}),{code:'MANUAL_SAMPLE_ONE_SERVICE_REQUIRED'});products.quote([sample],{customization_source:{request_id:'verified by repository'}});
- for(const type of products.TYPES.filter(t=>['STOCK_VIDEO','COMMERCIAL','AUDITION'].includes(t)))assert.throws(()=>products.quote([{product_profile:{version:'V5',type}}],{}),{code:'PRODUCT_FLOW_NOT_IMPLEMENTED'});
+ for(const type of products.TYPES.filter(t=>['STOCK_VIDEO','COMMERCIAL','AUDITION'].includes(t)))assert.throws(()=>products.quote([{product_profile:{version:'V5',type}}],{}),{code:type==='COMMERCIAL'?'COMMERCIAL_SOURCE_REQUIRED':'PRODUCT_FLOW_NOT_IMPLEMENTED'});
 });
 test('legacy and V5 products cannot be mixed to weaken rules',()=>{
  assert.throws(()=>products.quote([{product_profile:custom},{}],{customization_source:{}}),{code:'MIXED_PRODUCT_PROFILES'});
@@ -36,4 +36,12 @@ test('legacy and V5 products cannot be mixed to weaken rules',()=>{
  products.quote([{}],{});
  assert.throws(()=>products.quote([{}],{requireV5Products:true}),{code:'PRODUCT_PROFILE_REQUIRED'});
  assert.throws(()=>products.quote([{}],{customization_source:{}}),{code:'PRODUCT_PROFILE_REQUIRED'});
+});
+
+test('typed commercial quotes require one accepted commercial source and cannot borrow customization or avatar flows',()=>{
+ const item={product_profile:{version:'V5',type:'COMMERCIAL'},line_kind:'OTHER',quantity:1};
+ products.quote([item],{commercial_offer_id:'verified by repository'});
+ for(const lines of [[{...item,quantity:2}],[item,item],[{...item,line_kind:'LICENSE'}]])assert.throws(()=>products.quote(lines,{commercial_offer_id:'verified by repository'}),{code:'COMMERCIAL_SOURCE_REQUIRED'});
+ assert.throws(()=>products.quote([item],{commercial_offer_id:'verified by repository',customization_source:{}}),{code:'COMMERCIAL_SOURCE_REQUIRED'});
+ assert.throws(()=>products.quote([item],{commercial_offer_id:'verified by repository',artist_service_source:{}}),{code:'ARTIST_PRODUCT_MISMATCH'});
 });

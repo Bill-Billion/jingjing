@@ -3,6 +3,8 @@ const express=require('express');
 const {id,ref,shape,version,error}=require('../modules/party/policy');
 function createWalletRouter({db,resolvePrincipal}){
  const router=express.Router(),repo=require('../modules/wallet/repository').createWalletRepository(db,{resolvePrincipal});
+ const controls=require('../modules/wallet/consumer-controls').createConsumerControls(db,{resolvePrincipal});
+ const risk=require('../modules/wallet/risk').createConsumerRisk(db,{resolvePrincipal});
  const wrap=fn=>(req,res,next)=>Promise.resolve().then(()=>fn(req,res)).catch(next);
  function party(req,required=true){const value=req.get('X-Acting-Party');if(required&&!value)throw error('ACTING_PARTY_REQUIRED',400);if(!required&&value)throw error('ACTING_PARTY_NOT_ALLOWED',400);return req.actingParty=value?id(value):null;}
  function expected(req){const value=req.get('If-Match');if(!value)throw error('EXPECTED_VERSION_REQUIRED',428);if(!/^"[1-9][0-9]*"$/.test(value))throw error('INVALID_VERSION',400);return version(Number(value.slice(1,-1)));}
@@ -16,6 +18,13 @@ function createWalletRouter({db,resolvePrincipal}){
  post('/earnings/sync','syncOrder',['order_id']);
  post('/level-six','applyLevelSix',['evidence_asset_ids','valid_from','valid_until','terms']);
  post('/level-six/:record_id/review','reviewLevelSix',['decision','reason'],false,true);
+ for(const [path,method,fields,personal,match] of [['/consumer-risk/rules','createRule',['rule'],false,false],['/consumer-risk/rules/:record_id/review','reviewRule',['decision','reason'],false,true],['/consumer-risk/confirm','confirm',['target','preview_sha256','read_confirmed'],true,false]])router.post(path,wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,fields);const p=party(req,personal);reply(req,res,await risk[method](req,{...req.body,...personal?{party_id:p}:{},...req.params.record_id?{record_id:id(req.params.record_id)}:{},...match?{expected_version:expected(req)}:{},operation_key:ref(req.get('Idempotency-Key'))}));}));
+ router.get('/consumer-risk/status',wrap(async(req,res)=>{shape(req.query,[]);party(req,false);reply(req,res,await risk.status(req));}));
+ router.get('/consumer-risk/rules',wrap(async(req,res)=>{shape(req.query,[]);party(req,false);reply(req,res,await risk.rules(req));}));
+ router.get('/consumer-risk/preview',wrap(async(req,res)=>{shape(req.query,['kind','order_id','installment_key','request_key','payment_id','amount_minor','pool_id','count']);const target={...req.query};for(const k of ['amount_minor','count'])if(target[k]!==undefined){if(!/^[1-9][0-9]*$/.test(target[k]))throw error('INVALID_CONSUMER_TARGET',400);target[k]=Number(target[k]);}reply(req,res,await risk.preview(req,{party_id:party(req),target}));}));
+ for(const [path,method,fields] of [['/consumer-controls','change',['kind','monthly_limit_minor']],['/consumer-controls/confirm','confirm',['kind']],['/consumer-controls/cancel','cancel',['kind']]])router.post(path,wrap(async(req,res)=>{shape(req.query,[]);shape(req.body,fields);reply(req,res,await controls[method](req,{...req.body,party_id:party(req),expected_version:expected(req),operation_key:ref(req.get('Idempotency-Key'))}));}));
+ router.get('/consumer-controls',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await controls.get(req,{party_id:party(req)}));}));
+ router.get('/consumer-controls/history',wrap(async(req,res)=>{shape(req.query,['cursor','limit']);if(req.query.limit!==undefined&&!/^[1-9][0-9]{0,2}$/.test(req.query.limit))throw error('INVALID_LIMIT',400);reply(req,res,await controls.history(req,{party_id:party(req),after:req.query.cursor||'',limit:req.query.limit?Number(req.query.limit):20}));}));
  router.get('/rules',wrap(async(req,res)=>{shape(req.query,[]);party(req,false);reply(req,res,await repo.rules(req));}));
  router.get('/summary',wrap(async(req,res)=>{shape(req.query,[]);reply(req,res,await repo.summary(req,{party_id:party(req)}));}));
  router.get('/records',wrap(async(req,res)=>{shape(req.query,['kind','cursor','limit']);if(req.query.limit!==undefined&&!/^[1-9][0-9]{0,2}$/.test(req.query.limit))throw error('INVALID_LIMIT',400);reply(req,res,await repo.records(req,{party_id:party(req),kind:req.query.kind,after:req.query.cursor||'',limit:req.query.limit?Number(req.query.limit):20}));}));

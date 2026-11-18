@@ -1,6 +1,35 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'account_api.dart';
+
+// Expected usage/decision denials clear the current preview in its page, but
+// do not revoke the family's entire account area or erase a pending command.
+bool _scopedContractDenial(String path, AccountError error) =>
+    (path == '/api/v1/cocreation/invite-links/claim' &&
+        error.code == 'COCREATION_INVITE_LINK_UNAVAILABLE') ||
+    path.startsWith('/api/v1/guardians/') &&
+        const {
+          'GUARDIAN_DISABLED',
+          'MINOR_NIGHT_RESTRICTED',
+          'GUARDIAN_USAGE_SESSION_REQUIRED',
+          'MINOR_DAILY_TIME_LIMIT',
+          'MINOR_SPEND_NOT_ALLOWED',
+          'MINOR_DAILY_SPEND_LIMIT',
+          'MINOR_CONTENT_POOL_NOT_ENABLED',
+          'UNDER_14_PROCESSING_DISABLED',
+          'GUARDIAN_LINK_NOT_ACTIVE',
+        }.contains(error.code) ||
+    RegExp(r'^/api/v1/auditions/bookings/[0-9a-fA-F-]{36}/delivery-options$')
+            .hasMatch(path) &&
+        const {
+          'MCN_EMPLOYEE_SCOPE_REQUIRED',
+          'ARTIST_DELEGATION_REQUIRED',
+          'AUDITION_PARTY_FORBIDDEN',
+          'AUDITION_NOT_FOUND',
+          'ARTIST_NOT_FOUND',
+          'ARTIST_AVATAR_NOT_FOUND',
+        }.contains(error.code);
 
 /// New account state stays in memory. No tokens or private account lists are
 /// written to the legacy preferences; app restart requires phone verification.
@@ -21,6 +50,10 @@ class AccountSession extends ChangeNotifier {
   final List<Map<String, dynamic>> sentInvitations = [];
   int _epoch = 0;
   int get epoch => _epoch;
+  int _loginEpoch = 0;
+  int get loginEpoch => _loginEpoch;
+  int usagePreferencesRevision = 0;
+  String? _usagePreferencesKey;
   int? _restReminderMinutes;
   int? get restReminderMinutes => _restReminderMinutes;
   final _domainDenials = <String>{};
@@ -34,6 +67,7 @@ class AccountSession extends ChangeNotifier {
     if (!additionalBusinessPrefixes.contains(prefix)) {
       throw ArgumentError.value(prefix, 'prefix', 'Unknown business domain');
     }
+    if (_domainDenials.contains(prefix)) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -83,6 +117,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get artistsPending =>
       api.artistsPending(token: _token, party: partyId);
   void denyArtists() {
+    if (artistsAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -102,6 +137,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get operationsPending =>
       api.operationsPending(token: _token, party: partyId);
   void denyOperations() {
+    if (operationsAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -120,6 +156,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get financePending =>
       api.financePending(token: _token, party: partyId);
   void denyFinance() {
+    if (financeAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -142,6 +179,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get projectsPending =>
       api.projectsPending(token: _token, party: partyId);
   void denyProjects() {
+    if (projectsAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -159,6 +197,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get productionPending =>
       api.productionPending(token: _token, party: partyId);
   void denyProduction() {
+    if (productionAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -179,6 +218,7 @@ class AccountSession extends ChangeNotifier {
   List<Map<String, dynamic>> get gigsPending =>
       api.gigsPending(token: _token, party: partyId);
   void denyGigs() {
+    if (gigsAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -194,6 +234,7 @@ class AccountSession extends ChangeNotifier {
   }
 
   void denyTrade() {
+    if (tradeAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -209,6 +250,7 @@ class AccountSession extends ChangeNotifier {
   }
 
   void denyLicensing() {
+    if (licensingAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -224,6 +266,7 @@ class AccountSession extends ChangeNotifier {
   }
 
   void denySupply() {
+    if (supplyAccessDenied) return;
     _epoch++;
     operationsTargets.clear();
     api.clearSupplyOperations();
@@ -243,9 +286,41 @@ class AccountSession extends ChangeNotifier {
   Map<String, dynamic>? get party =>
       selected?['party'] as Map<String, dynamic>?;
   bool allows(String action) =>
+      _activeMembership &&
       (party?['allowed_actions'] as List? ?? []).contains(action);
   bool get isOwner =>
+      _activeMembership &&
       (selected?['membership']?['roles'] as List? ?? []).contains('OWNER');
+  bool get _activeMembership =>
+      selected?['membership']?['current_status'] == 'ACTIVE' &&
+      !['SUSPENDED', 'CLOSED'].contains(party?['current_status']);
+
+  String _authority(Map<String, dynamic>? row) {
+    List<String> sorted(dynamic values) =>
+        (values as List? ?? []).map((v) => v.toString()).toList()..sort();
+    return jsonEncode([
+      row?['party']?['id'],
+      row?['party']?['current_status'],
+      row?['membership']?['current_status'],
+      sorted(row?['membership']?['roles']),
+      sorted(row?['membership']?['allowed_actions']),
+      sorted(row?['party']?['allowed_actions']),
+      sorted((row?['party']?['capabilities'] as List? ?? [])
+          .map((c) => jsonEncode(
+              [c['code'], c['current_status'], sorted(c['allowed_actions'])]))
+          .toList())
+    ]);
+  }
+
+  void _replaceSelected(Map<String, dynamic>? row) {
+    final changed = _authority(selected) != _authority(row);
+    selected = row;
+    if (changed) {
+      api.clearSupplyOperations();
+      _epoch++;
+      operationsTargets.clear();
+    }
+  }
 
   Future<Map<String, dynamic>> sendCode(String phone) =>
       api.request('POST', '/api/v1/auth/sms-challenges',
@@ -294,6 +369,8 @@ class AccountSession extends ChangeNotifier {
   }
 
   void _clear() {
+    _loginEpoch++;
+    api.clearAccountOperations();
     api.clearSupplyOperations();
     _domainDenials.clear();
     artistsAccessDenied = false;
@@ -312,6 +389,8 @@ class AccountSession extends ChangeNotifier {
     _token = null;
     account = null;
     _restReminderMinutes = null;
+    _usagePreferencesKey = null;
+    usagePreferencesRevision++;
     selected = null;
     parties = [];
     partiesCursor = null;
@@ -322,6 +401,20 @@ class AccountSession extends ChangeNotifier {
     if (started != _epoch) throw const AccountError(0, 'CONTEXT_CHANGED');
   }
 
+  /// The server has already revoked every session after a phone change.
+  void requirePhoneRelogin() {
+    _clear();
+    authNotice = '换号结果请用新手机号重新登录后核对。原账号及其业务保留。';
+    notifyListeners();
+  }
+
+  bool _publicDirectoryMissing(String path, AccountError error) =>
+      error.status == 404 &&
+      ['DIRECTORY_NOT_FOUND', 'DIRECTORY_COVER_NOT_FOUND']
+          .contains(error.code) &&
+      RegExp(r'^/api/v1/directory/organizations/[0-9a-fA-F-]{36}(/cover)?$')
+          .hasMatch(path);
+
   Future<Map<String, dynamic>> _request(
     String method,
     String path, {
@@ -329,10 +422,20 @@ class AccountSession extends ChangeNotifier {
     Map<String, dynamic>? query,
     String? actingParty,
     int? version,
+    String? operationKey,
     Uint8List? bytes,
+    void Function(int sent, int total)? onSendProgress,
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) async {
     final started = _epoch;
+    final loginStarted = _loginEpoch;
+    final phoneChange = path.startsWith('/api/v1/me/phone-changes');
+    bool current() => phoneChange || path.startsWith('/api/v1/privacy/usage')
+        ? loginStarted == _loginEpoch
+        : started == _epoch;
+    if (phoneChange && actingParty != null) {
+      throw const AccountError(400, 'ACTING_PARTY_NOT_ALLOWED');
+    }
     if (_token == null) {
       throw const AccountError(401, 'AUTHENTICATION_REQUIRED');
     }
@@ -343,9 +446,15 @@ class AccountSession extends ChangeNotifier {
           body: body,
           query: query,
           version: version,
+          operationKey: operationKey,
           bytes: bytes,
+          onSendProgress: onSendProgress == null
+              ? null
+              : (sent, total) {
+                  if (started == _epoch) onSendProgress(sent, total);
+                },
           validate: validate);
-      _check(started);
+      if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (path == '/api/v1/privacy/preferences' &&
           ['GET', 'PATCH'].contains(method)) {
         final minutes = result['rest_reminder_minutes'];
@@ -353,8 +462,19 @@ class AccountSession extends ChangeNotifier {
             result['marketing'] is bool &&
             minutes is int &&
             (minutes == 0 || minutes >= 15 && minutes <= 240) &&
-            _restReminderMinutes != minutes) {
+            _usagePreferencesKey !=
+                jsonEncode([
+                  minutes,
+                  result['night_reminder_enabled'],
+                  result['quiet_hours']
+                ])) {
           _restReminderMinutes = minutes;
+          _usagePreferencesKey = jsonEncode([
+            minutes,
+            result['night_reminder_enabled'],
+            result['quiet_hours']
+          ]);
+          usagePreferencesRevision++;
           notifyListeners();
         }
       }
@@ -366,7 +486,9 @@ class AccountSession extends ChangeNotifier {
           error.code == 'WALLET_NOT_FOUND';
       if ([403, 404].contains(error.status) &&
           started == _epoch &&
-          !unopenedWallet) {
+          !unopenedWallet &&
+          !_publicDirectoryMissing(path, error) &&
+          !_scopedContractDenial(path, error)) {
         for (final prefix in additionalBusinessPrefixes) {
           if (path.startsWith(prefix)) {
             denyDomain(prefix);
@@ -426,7 +548,9 @@ class AccountSession extends ChangeNotifier {
           started == _epoch) {
         denyLicensing();
       }
-      if (error.status == 401 && started == _epoch) {
+      if (error.status == 401 &&
+          current() &&
+          !(phoneChange && error.code == 'INVALID_PHONE_CHANGE_CODE')) {
         _clear();
         authNotice = '登录已失效，请重新验证手机号。';
         notifyListeners();
@@ -439,6 +563,9 @@ class AccountSession extends ChangeNotifier {
           {String? actingParty}) =>
       api.pending(method, path, token: _token, party: actingParty);
 
+  void discardPending(String method, String path, {String? actingParty}) =>
+      api.discardPending(method, path, token: _token, party: actingParty);
+
   Future<Map<String, dynamic>> read(String path,
           {String? actingParty, Map<String, dynamic>? query}) =>
       _request('GET', path, actingParty: actingParty, query: query);
@@ -448,22 +575,26 @@ class AccountSession extends ChangeNotifier {
     String? actingParty,
     Map<String, dynamic>? body,
     int? version,
+    String? operationKey,
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) =>
       _request(method, path,
           actingParty: actingParty,
           body: body ?? {},
           version: version,
+          operationKey: operationKey,
           validate: validate);
 
   Future<Map<String, dynamic>> upload(String path, Uint8List bytes,
           {required String actingParty,
           required Map<String, dynamic> query,
+          void Function(int sent, int total)? onSendProgress,
           required void Function(Map<String, dynamic>) validate}) =>
       _request('POST', path,
           bytes: bytes,
           query: query,
           actingParty: actingParty,
+          onSendProgress: onSendProgress,
           validate: validate);
   Future<Uint8List> readBytes(String path,
       {String? actingParty, Map<String, dynamic>? query}) async {
@@ -479,7 +610,10 @@ class AccountSession extends ChangeNotifier {
     } on AccountError catch (e) {
       if (started == _epoch) {
         final domain = additionalBusinessPrefixes.where(path.startsWith);
-        if ([403, 404].contains(e.status) && domain.isNotEmpty) {
+        if ([403, 404].contains(e.status) &&
+            domain.isNotEmpty &&
+            !_publicDirectoryMissing(path, e) &&
+            !_scopedContractDenial(path, e)) {
           denyDomain(domain.first);
         } else if (path.startsWith('/api/v1/artists/') &&
             [403, 404].contains(e.status)) {
@@ -517,16 +651,52 @@ class AccountSession extends ChangeNotifier {
     }
     if (more && partiesCursor == null) return;
     final ticket = ++_partyRead;
-    final result = await read('/api/v1/me/parties', query: {
+    final wanted = partyId;
+    Future<Map<String, dynamic>?> currentPage(
+        Map<String, dynamic> query) async {
+      try {
+        if (query['party_id'] != null) {
+          final access = await read('/api/v1/me/parties/${query['party_id']}');
+          return {
+            'items': [access],
+            'next_cursor': null
+          };
+        }
+        return await read('/api/v1/me/parties', query: query);
+      } on AccountError catch (e) {
+        if (ticket != _partyRead && e.code == 'CONTEXT_CHANGED') return null;
+        if ([403, 404].contains(e.status) &&
+            partyId == wanted &&
+            wanted != null) {
+          _unavailableParties.add(wanted);
+          _replaceSelected(null);
+          parties = parties.where((p) => p['party']['id'] != wanted).toList();
+          partyNotice = '原身份已不可用，请核对后选择其他身份。';
+          notifyListeners();
+        }
+        rethrow;
+      }
+    }
+
+    final result = await currentPage({
       'limit': 20,
       if (more && partiesCursor != null) 'cursor': partiesCursor,
     });
-    if (ticket != _partyRead) return;
+    if (result == null || ticket != _partyRead) return;
     // A stale list may keep returning an inaccessible identity. Only an
     // explicit user refresh retries it; automatic refresh must not loop.
     final rows = maps(result['items'])
         .where((row) => !_unavailableParties.contains(row['party']['id']))
         .toList();
+    if (!more && wanted != null) {
+      final current = await currentPage({'party_id': wanted, 'limit': 1});
+      if (current == null || ticket != _partyRead) return;
+      // The explicit identity endpoint supplies current authority, even when
+      // a cached list still contains an older membership for this same ID.
+      rows.removeWhere((row) => row['party']['id'] == wanted);
+      rows.addAll(
+          maps(current['items']).where((row) => row['party']['id'] == wanted));
+    }
     parties = {
       for (final row in [
         ...(more ? parties : <Map<String, dynamic>>[]),
@@ -535,27 +705,22 @@ class AccountSession extends ChangeNotifier {
         row['party']['id']: row
     }.values.toList();
     partiesCursor = result['next_cursor'] as String?;
-    // Keep a selected identity even if it is on another page. Its permissions
-    // are re-read separately; an actual 403/404 clears the selection below.
     final match = parties.where((row) => row['party']['id'] == partyId);
     if (match.isNotEmpty) {
-      final wasOwner = isOwner;
-      final previousStatus = party?['current_status'];
-      selected = match.first;
-      if ((wasOwner && !isOwner) ||
-          (previousStatus != party?['current_status'] &&
-              ['SUSPENDED', 'CLOSED'].contains(party?['current_status']))) {
-        api.clearSupplyOperations();
-        _epoch++;
-        operationsTargets.clear();
-      }
+      _replaceSelected(match.first);
+    } else if (wanted != null && !more) {
+      _unavailableParties.add(wanted);
+      _replaceSelected(null);
+      partyNotice = '原身份已不可用，请核对后选择其他身份。';
     }
-    if (selected == null && parties.isNotEmpty) selected = parties.first;
+    if (wanted == null && selected == null && parties.isNotEmpty) {
+      _replaceSelected(parties.first);
+    }
     notifyListeners();
   }
 
   void select(Map<String, dynamic> value) {
-    if (value['party']['id'] == partyId) return;
+    if (_authority(value) == _authority(selected)) return;
     partyNotice = null;
     api.clearSupplyOperations();
     _domainDenials.clear();
@@ -578,15 +743,11 @@ class AccountSession extends ChangeNotifier {
     final id = partyId;
     if (id == null) return;
     try {
-      final previousStatus = party?['current_status'];
-      final result = await read('/api/v1/parties/$id', actingParty: id);
-      selected = {...selected!, 'party': result};
-      if (['SUSPENDED', 'CLOSED'].contains(result['current_status']) &&
-          result['current_status'] != previousStatus) {
-        api.clearSupplyOperations();
-        _epoch++;
-        operationsTargets.clear();
+      final result = await read('/api/v1/me/parties/$id');
+      if (result['party']?['id'] != id) {
+        throw const AccountError(404, 'PARTY_NOT_FOUND');
       }
+      _replaceSelected(result);
       parties =
           parties.map((p) => p['party']['id'] == id ? selected! : p).toList();
       notifyListeners();
@@ -594,10 +755,7 @@ class AccountSession extends ChangeNotifier {
       if ([403, 404].contains(error.status) && partyId == id) {
         _unavailableParties.add(id);
         partyNotice = '部分身份暂时无法访问，已停止自动重试。可以刷新当前记录，或选择其他身份。';
-        api.clearSupplyOperations();
-        _epoch++;
-        operationsTargets.clear();
-        selected = null;
+        _replaceSelected(null);
         parties = parties.where((p) => p['party']['id'] != id).toList();
         notifyListeners();
       }

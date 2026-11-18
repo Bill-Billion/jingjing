@@ -1,0 +1,187 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "188fa0e316a98f103a24b2be6e15b703144d8ffc",
+  "run_id": "pm01-support-assignment-2026-11-13T11-32-21-843Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "SUPPORT-ASSIGNMENT-HANDOVER",
+      "acceptance_id": "ACC-DEL-11.03",
+      "result": "LOCAL_PASS",
+      "scope": "具体客服指派、转派失权、撤权救援、同键当前状态、同案原报价、兼容首次接管、历史与事务回滚",
+      "remaining": "未接页面和真实运营；独立签收未完成",
+      "actual_checks": [
+        {
+          "name": "new dispatch authority is explicit and cannot be replaced by ordinary support or interested parties",
+          "file": "test/notices-assignment.integration.test.cjs",
+          "line": 22,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 66.0193,
+          "error_code": null
+        },
+        {
+          "name": "concurrent same command assigns once and exposes only current handler to the parties",
+          "file": "test/notices-assignment.integration.test.cjs",
+          "line": 28,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 50.0321,
+          "error_code": null
+        },
+        {
+          "name": "handover rejects stale versions; old handler loses reads, quote choices and writes; old key cannot restore assignment",
+          "file": "test/notices-assignment.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 94.7451,
+          "error_code": null
+        },
+        {
+          "name": "revoked assignee cannot read or recover old writes; manager can rescue the same original case",
+          "file": "test/notices-assignment.integration.test.cjs",
+          "line": 41,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 63.2328,
+          "error_code": null
+        },
+        {
+          "name": "only current independent handler links original quote; linked case freezes dispatch and does not change intent",
+          "file": "test/notices-assignment.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 265.2718,
+          "error_code": null
+        },
+        {
+          "name": "unassigned compatibility linking records first handler without rewriting prior case or fee rules",
+          "file": "test/notices-assignment.integration.test.cjs",
+          "line": 54,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 926.4652,
+          "error_code": null
+        },
+        {
+          "name": "withdrawn source closes the case and rejects new assignments while preserving history",
+          "file": "test/notices-assignment.integration.test.cjs",
+          "line": 58,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 103.3033,
+          "error_code": null
+        },
+        {
+          "name": "assignment audit failure rolls back the handler, case version and notification together",
+          "file": "test/notices-assignment.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 87.082,
+          "error_code": null
+        },
+        {
+          "name": "history integrity and manager revocation are checked on every read",
+          "file": "test/notices-assignment.integration.test.cjs",
+          "line": 67,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 25.1143,
+          "error_code": null
+        },
+        {
+          "name": "specific support assignment and handover preserve original cooperation and quote",
+          "file": "test/notices-assignment.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 11135.4657,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "name": "specific handler assigned once; internal dispatch reason hidden from parties",
+          "result": "PASS",
+          "case_id": "7effb48d-c8ee-49b8-82e7-b819ccad21db",
+          "submission_id": "588d2c8e-80fc-4fa0-8514-c1b43b3655ad",
+          "account_id": "f29069c2-139c-4be3-af1f-49d1de8dd334"
+        },
+        {
+          "name": "handover removes former handler access; recovery returns current handler; history retained",
+          "result": "PASS",
+          "case_id": "7effb48d-c8ee-49b8-82e7-b819ccad21db",
+          "from": "f29069c2-139c-4be3-af1f-49d1de8dd334",
+          "to": "47eb7f14-ecdc-42ae-955a-e1290fefe6f2",
+          "history_versions": [
+            2,
+            3
+          ]
+        },
+        {
+          "name": "revoked target blocked and dispatcher rescues original case",
+          "result": "PASS",
+          "case_id": "7effb48d-c8ee-49b8-82e7-b819ccad21db",
+          "restored_account_id": "f29069c2-139c-4be3-af1f-49d1de8dd334"
+        },
+        {
+          "name": "assigned handler links same quote once; intent preserved and no automatic payment",
+          "result": "PASS",
+          "case_id": "7effb48d-c8ee-49b8-82e7-b819ccad21db",
+          "submission_id": "588d2c8e-80fc-4fa0-8514-c1b43b3655ad",
+          "quote_id": "bf587383-829b-4211-bd03-fe8823456926",
+          "order_id": "39a82bfe-d1fe-4552-9452-72577b709d92"
+        },
+        {
+          "name": "compatible unassigned quote link records first actual handler",
+          "result": "PASS",
+          "case_id": "9a45b286-4b09-49d3-b897-ff44c8a73329",
+          "submission_id": "8f8c803c-4689-48cd-9038-81be02dda877",
+          "quote_id": "710fb1c4-1a71-48a5-b401-190c767beef8"
+        },
+        {
+          "name": "source withdrawal preserves assignment history and blocks new dispatch",
+          "result": "PASS",
+          "case_id": "ace3e65e-b37b-4963-b9e3-6d2414bb22da",
+          "assignment_version": 2
+        }
+      ]
+    },
+    {
+      "id": "CERTIFICATION-ISOLATED-EXPIRY",
+      "acceptance_id": "ACC-DEL-02.03",
+      "result": "LOCAL_PASS",
+      "scope": "实名与免费基础资格仍有效时，原付费认证在原期限单独到期，历史不改且不自动扣费",
+      "remaining": "合成实名与时钟，不替代真实认证资料、续审及设备完整办理",
+      "actual_checks": [
+        {
+          "name": "certification alone expires at its original boundary while renewed identity and free base qualification remain valid",
+          "file": "test/artists-contract.integration.test.cjs",
+          "line": 154,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 54.6507,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "name": "original certification boundary removes only that certification while renewed identity and free base remain valid",
+          "result": "PASS",
+          "application_id": "2a05f97a-f00f-4f73-ad12-b80c43b275af",
+          "identity_record_id": "ca9d86c4-a660-4a61-96ab-b08118edf851",
+          "base_qualification_id": "56f920b6-3f49-442b-bb8b-013a09d5e112",
+          "original_valid_until": "2027-11-13T11:32:31.011Z",
+          "halo_before": 2,
+          "halo_at_deadline": 1,
+          "new_payment_count": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,358 @@
+TAP version 13
+# Subtest: current-contract customization buyer identity on acceptance and payment
+    # Subtest: verified buyer accepts a current-contract script-first quote
+    ok 1 - verified buyer accepts a current-contract script-first quote
+      ---
+      duration_ms: 42.3428
+      type: 'test'
+      ...
+    # Subtest: verified buyer prepares the current-contract first payment
+    ok 2 - verified buyer prepares the current-contract first payment
+      ---
+      duration_ms: 25.8886
+      type: 'test'
+      ...
+    # Subtest: unverified buyer cannot accept a new current-contract quote
+    not ok 3 - unverified buyer cannot accept a new current-contract quote
+      ---
+      duration_ms: 30.78
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:46:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"727a1f35-8abc-4f05-b307-0e53ed2f3712","actor":{"account_id":"12d96455-6933-4517-8651-808234f4c83c"},"acting_party":"0532b49a-4078-48c1-bbb3-84fe4e37b29f"},"data":{"id":"bbae9baa-1d2a-40a0-bacf-19e9751d577b","kind":"ORDER","buyer_party_id":"0532b49a-4078-48c1-bbb3-84fe4e37b29f","merchant_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","parent_id":"7f5d3d09-37eb-4869-9c49-1f551bb7c05f","order_id":null,"created_by":"12d96455-6933-4517-8651-808234f4c83c","current_status":"OPEN","object_version":1,"content_sha256":"8d9372163d1919c3e29d77567b446dd637a8d2f30ed1c7d0780d697c7df1bce5","data":{"quote":{"lines":[{"title":"Synthetic manual customization","review":{"reason":"synthetic","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"line_id":"film","spec_id":"690cdd19-bc24-4b10-8f4f-be01b2c24eb1","currency":"CNY","quantity":1,"line_kind":"PRODUCTION","unit_minor":10000,"total_minor":10000,"spec_version":2,"specification":{"terms":"synthetic non-commercial","version":"synthetic1","deliverables":["synthetic manual film"],"service_tier":"test","final_seconds":90,"revision_limit":1,"sample_seconds":20,"customization_delivery":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":null,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","acceptance_calendar":{"version":"synthetic-calendar-1","timezone":"Asia/Shanghai","source_ref":"synthetic:no-holiday-claim","valid_from":"2025-01-01","valid_until":"2027-12-31","working_dates":[],"non_working_dates":[]},"preview_payment_order":"SCRIPT_BEFORE_INTERIM","acceptance_working_days":5}},"product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"channel":"ALIPAY","rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","currency":"CNY","expires_at":"2099-01-01T00:00:00.000Z","total_minor":10000,"installments":[{"key":"first","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null},{"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED","allocations":[{"line_id":"film","amount_minor":4000}],"apple_product_id":null},{"key":"last","trigger":"FINAL_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null}],"customization":{"request_id":"b52dd117-b271-44cd-8d91-9811d55f69a2","submission_id":"1e7d8808-3a8b-4790-9b2d-fad5cea28a99","content_sha256":"29352da93a7614a00d2ec999abfc6aa163f5c3f1e3f7643dce1fbf97175d07e9"},"transaction_model":"PLATFORM_PRINCIPAL","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"},"platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"},"license_reservation_id":null,"payment_window_minutes":30},"contract":{"commitments":{"quote":{"channel":"ALIPAY","currency":"CNY","customization":{"content_sha256":"29352da93a7614a00d2ec999abfc6aa163f5c3f1e3f7643dce1fbf97175d07e9","request_id":"b52dd117-b271-44cd-8d91-9811d55f69a2","submission_id":"1e7d8808-3a8b-4790-9b2d-fad5cea28a99"},"customization_finance":{"model":"V5_SELF_OPERATED","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1","id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","rule_key":"r04.synthetic","terms":{"customization_finance":{"model":"V5_SELF_OPERATED","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","rounding":"HALF_UP_PLATFORM_REMAINDER","rules":{"lines":[{"deductions":[],"line_id":"film","shares":[{"bps":10000,"party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","role":"PLATFORM"}]}],"release_condition":"DELIVERY_ACCEPTED","settlement_at":"2020-01-01T00:00:00.000Z","terms":"synthetic only","version":"synthetic1"}},"explicit":"synthetic no real agreement"},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"rules":{"lines":[{"deductions":[],"line_id":"film","shares":[{"bps":10000,"party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","role":"PLATFORM"}]}],"release_condition":"DELIVERY_ACCEPTED","settlement_at":"2020-01-01T00:00:00.000Z","terms":"synthetic only","version":"synthetic1"}},"expires_at":"2099-01-01T00:00:00.000Z","installments":[{"allocations":[{"amount_minor":3000,"line_id":"film"}],"apple_product_id":null,"key":"first","trigger":"ORDER_ACCEPTED"},{"allocations":[{"amount_minor":4000,"line_id":"film"}],"apple_product_id":null,"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED"},{"allocations":[{"amount_minor":3000,"line_id":"film"}],"apple_product_id":null,"key":"last","trigger":"FINAL_ACCEPTED"}],"license_reservation_id":null,"lines":[{"currency":"CNY","line_id":"film","line_kind":"PRODUCTION","product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","quantity":1,"review":{"account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93","decision":"APPROVED","reason":"synthetic"},"spec_id":"690cdd19-bc24-4b10-8f4f-be01b2c24eb1","spec_version":2,"specification":{"customization_delivery":{"acceptance_calendar":{"non_working_dates":[],"source_ref":"synthetic:no-holiday-claim","timezone":"Asia/Shanghai","valid_from":"2025-01-01","valid_until":"2027-12-31","version":"synthetic-calendar-1","working_dates":[]},"acceptance_hours":null,"acceptance_working_days":5,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","preview_payment_order":"SCRIPT_BEFORE_INTERIM","source_ref":"synthetic:test-only","version":"V5-Q05-Q06"},"deliverables":["synthetic manual film"],"final_seconds":90,"revision_limit":1,"sample_seconds":20,"service_tier":"test","terms":"synthetic non-commercial","version":"synthetic1"},"title":"Synthetic manual customization","total_minor":10000,"unit_minor":10000}],"payment_window_minutes":30,"review":{"account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93","decision":"APPROVED","reason":"synthetic independent"},"rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","total_minor":10000,"transaction_model":"PLATFORM_PRINCIPAL"},"quote_id":"7f5d3d09-37eb-4869-9c49-1f551bb7c05f","quote_sha256":"6edc4095114337c703578f12e781107bf8da129490f4e1304a18dd7c6c9ef0c5"},"content_sha256":"dd0fce7ab2caac90cbc4254c82b2eba682951eafcad8a50e70376a93e67d332f","contract_version_id":"8c9ba15b-7f4f-4d9c-8331-427f5d0340b1","created_at":"2026-11-14T13:31:06.800Z","current_status":"SEALED","format_version":"contract-content-v1","id":"71b96fc8-111a-49bc-97f8-a44b822e8050","object_version":1,"party_ids":["0532b49a-4078-48c1-bbb3-84fe4e37b29f","3da2223c-a265-4b51-978a-304e03b3fe6d"],"rule_contents":[{"content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1","id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","rule_key":"r04.synthetic","terms":{"customization_finance":{"model":"V5_SELF_OPERATED","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","rounding":"HALF_UP_PLATFORM_REMAINDER","rules":{"lines":[{"deductions":[],"line_id":"film","shares":[{"bps":10000,"party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","role":"PLATFORM"}]}],"release_condition":"DELIVERY_ACCEPTED","settlement_at":"2020-01-01T00:00:00.000Z","terms":"synthetic only","version":"synthetic1"}},"explicit":"synthetic no real agreement"},"version":"1"}],"signing_method":"NOT_SIGNED"},"buyer_acknowledged_by":"12d96455-6933-4517-8651-808234f4c83c","financial":{"received_minor":0,"refunded_minor":0,"net_minor":0}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:46:208)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:46:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified buyer cannot replay quote acceptance
+    not ok 4 - unverified buyer cannot replay quote acceptance
+      ---
+      duration_ms: 16.6272
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:47:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"2bad8a59-65e6-4913-8a0a-070ff291d375","actor":{"account_id":"12d96455-6933-4517-8651-808234f4c83c"},"acting_party":"0532b49a-4078-48c1-bbb3-84fe4e37b29f"},"data":{"id":"a1fa1ca3-126e-4393-a6fc-2f7140d70828","kind":"ORDER","buyer_party_id":"0532b49a-4078-48c1-bbb3-84fe4e37b29f","merchant_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","parent_id":"80cac4f0-ae64-4069-8d0d-8159b5b30f47","order_id":null,"created_by":"12d96455-6933-4517-8651-808234f4c83c","current_status":"OPEN","object_version":1,"content_sha256":"5b717a11e39c83de23bfe4b54e0d62b1aa508e78216d4f91eca27261f5637769","data":{"quote":{"lines":[{"title":"Synthetic manual customization","review":{"reason":"synthetic","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"line_id":"film","spec_id":"4a18bd29-3ba4-43db-885e-7e424536a326","currency":"CNY","quantity":1,"line_kind":"PRODUCTION","unit_minor":10000,"total_minor":10000,"spec_version":2,"specification":{"terms":"synthetic non-commercial","version":"synthetic1","deliverables":["synthetic manual film"],"service_tier":"test","final_seconds":90,"revision_limit":1,"sample_seconds":20,"customization_delivery":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":null,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","acceptance_calendar":{"version":"synthetic-calendar-1","timezone":"Asia/Shanghai","source_ref":"synthetic:no-holiday-claim","valid_from":"2025-01-01","valid_until":"2027-12-31","working_dates":[],"non_working_dates":[]},"preview_payment_order":"SCRIPT_BEFORE_INTERIM","acceptance_working_days":5}},"product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"channel":"ALIPAY","rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","currency":"CNY","expires_at":"2099-01-01T00:00:00.000Z","total_minor":10000,"installments":[{"key":"first","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null},{"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED","allocations":[{"line_id":"film","amount_minor":4000}],"apple_product_id":null},{"key":"last","trigger":"FINAL_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null}],"customization":{"request_id":"26ebb809-44e7-45b3-b07a-711084dcb4cf","submission_id":"6ab59431-c027-4b8e-b677-95c248142900","content_sha256":"2ee92847655f1fc72a3c5df8421e27b81c5f34c7a4bcd19747ee827252257afd"},"transaction_model":"PLATFORM_PRINCIPAL","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"},"platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"},"license_reservation_id":null,"payment_window_minutes":30},"contract":{"id":"23cba7e9-cf7f-410e-955f-903d60206f9b","party_ids":["0532b49a-4078-48c1-bbb3-84fe4e37b29f","3da2223c-a265-4b51-978a-304e03b3fe6d"],"created_at":"2026-11-14T13:31:06.515Z","commitments":{"quote":{"lines":[{"title":"Synthetic manual customization","review":{"reason":"synthetic","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"line_id":"film","spec_id":"4a18bd29-3ba4-43db-885e-7e424536a326","currency":"CNY","quantity":1,"line_kind":"PRODUCTION","unit_minor":10000,"total_minor":10000,"spec_version":2,"specification":{"terms":"synthetic non-commercial","version":"synthetic1","deliverables":["synthetic manual film"],"service_tier":"test","final_seconds":90,"revision_limit":1,"sample_seconds":20,"customization_delivery":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":null,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","acceptance_calendar":{"version":"synthetic-calendar-1","timezone":"Asia/Shanghai","source_ref":"synthetic:no-holiday-claim","valid_from":"2025-01-01","valid_until":"2027-12-31","working_dates":[],"non_working_dates":[]},"preview_payment_order":"SCRIPT_BEFORE_INTERIM","acceptance_working_days":5}},"product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"channel":"ALIPAY","rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","currency":"CNY","expires_at":"2099-01-01T00:00:00.000Z","total_minor":10000,"installments":[{"key":"first","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null},{"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED","allocations":[{"line_id":"film","amount_minor":4000}],"apple_product_id":null},{"key":"last","trigger":"FINAL_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null}],"customization":{"request_id":"26ebb809-44e7-45b3-b07a-711084dcb4cf","submission_id":"6ab59431-c027-4b8e-b677-95c248142900","content_sha256":"2ee92847655f1fc72a3c5df8421e27b81c5f34c7a4bcd19747ee827252257afd"},"transaction_model":"PLATFORM_PRINCIPAL","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"},"platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"},"license_reservation_id":null,"payment_window_minutes":30},"quote_id":"80cac4f0-ae64-4069-8d0d-8159b5b30f47","quote_sha256":"d3e7705309628df8fe9cf02f8108febd7e84590f02ff7e2a1ce0966fecef6a25"},"rule_contents":[{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"}],"content_sha256":"4684088ba34d73ef1db046ccabfa48d3a267148b0e8a8be83ebccfaf2dab3e0a","current_status":"SEALED","format_version":"contract-content-v1","object_version":1,"signing_method":"NOT_SIGNED","contract_version_id":"ce89bab1-2f86-4543-a2b8-22db423c2807"},"financial":{"net_minor":0,"received_minor":0,"refunded_minor":0},"buyer_acknowledged_by":"12d96455-6933-4517-8651-808234f4c83c"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:47:202)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:47:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified buyer cannot prepare a new payment on an earlier order
+    not ok 5 - unverified buyer cannot prepare a new payment on an earlier order
+      ---
+      duration_ms: 24.1766
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:48:13'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected rejection.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:48:92)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:48:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified buyer cannot replay payment preparation
+    not ok 6 - unverified buyer cannot replay payment preparation
+      ---
+      duration_ms: 4.3701
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:49:13'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected rejection.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:49:77)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:49:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified buyer retains original order read and contract
+    ok 7 - unverified buyer retains original order read and contract
+      ---
+      duration_ms: 11.2642
+      type: 'test'
+      ...
+    # Subtest: expired buyer cannot accept a new current-contract quote
+    not ok 8 - expired buyer cannot accept a new current-contract quote
+      ---
+      duration_ms: 26.0664
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:46:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"16a03d9b-8c14-41f1-a83a-81dd0ab6b16c","actor":{"account_id":"12d96455-6933-4517-8651-808234f4c83c"},"acting_party":"0532b49a-4078-48c1-bbb3-84fe4e37b29f"},"data":{"id":"6f547f47-e3f8-48e1-9ec3-b32caee10861","kind":"ORDER","buyer_party_id":"0532b49a-4078-48c1-bbb3-84fe4e37b29f","merchant_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","parent_id":"d6bf11df-451e-45e0-9d85-3cbae56692e4","order_id":null,"created_by":"12d96455-6933-4517-8651-808234f4c83c","current_status":"OPEN","object_version":1,"content_sha256":"e8f663fb02245d6644df571d04fb69ab2984409bd54d9f72f90f0a32ab9574eb","data":{"quote":{"lines":[{"title":"Synthetic manual customization","review":{"reason":"synthetic","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"line_id":"film","spec_id":"dcca5be2-2abb-4b83-949c-e17febca829b","currency":"CNY","quantity":1,"line_kind":"PRODUCTION","unit_minor":10000,"total_minor":10000,"spec_version":2,"specification":{"terms":"synthetic non-commercial","version":"synthetic1","deliverables":["synthetic manual film"],"service_tier":"test","final_seconds":90,"revision_limit":1,"sample_seconds":20,"customization_delivery":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":null,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","acceptance_calendar":{"version":"synthetic-calendar-1","timezone":"Asia/Shanghai","source_ref":"synthetic:no-holiday-claim","valid_from":"2025-01-01","valid_until":"2027-12-31","working_dates":[],"non_working_dates":[]},"preview_payment_order":"SCRIPT_BEFORE_INTERIM","acceptance_working_days":5}},"product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"channel":"ALIPAY","rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","currency":"CNY","expires_at":"2099-01-01T00:00:00.000Z","total_minor":10000,"installments":[{"key":"first","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null},{"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED","allocations":[{"line_id":"film","amount_minor":4000}],"apple_product_id":null},{"key":"last","trigger":"FINAL_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null}],"customization":{"request_id":"cb241884-bdc0-4b58-bd88-a7f892371336","submission_id":"63d8a6f9-32c4-41ce-82f8-5f45fa5efa13","content_sha256":"feed1fe495a8498a1c3247d5d57c4ab6aff66d5d6544523e3ed1dd19cb1de23a"},"transaction_model":"PLATFORM_PRINCIPAL","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"},"platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"},"license_reservation_id":null,"payment_window_minutes":30},"contract":{"commitments":{"quote":{"channel":"ALIPAY","currency":"CNY","customization":{"content_sha256":"feed1fe495a8498a1c3247d5d57c4ab6aff66d5d6544523e3ed1dd19cb1de23a","request_id":"cb241884-bdc0-4b58-bd88-a7f892371336","submission_id":"63d8a6f9-32c4-41ce-82f8-5f45fa5efa13"},"customization_finance":{"model":"V5_SELF_OPERATED","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1","id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","rule_key":"r04.synthetic","terms":{"customization_finance":{"model":"V5_SELF_OPERATED","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","rounding":"HALF_UP_PLATFORM_REMAINDER","rules":{"lines":[{"deductions":[],"line_id":"film","shares":[{"bps":10000,"party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","role":"PLATFORM"}]}],"release_condition":"DELIVERY_ACCEPTED","settlement_at":"2020-01-01T00:00:00.000Z","terms":"synthetic only","version":"synthetic1"}},"explicit":"synthetic no real agreement"},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"rules":{"lines":[{"deductions":[],"line_id":"film","shares":[{"bps":10000,"party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","role":"PLATFORM"}]}],"release_condition":"DELIVERY_ACCEPTED","settlement_at":"2020-01-01T00:00:00.000Z","terms":"synthetic only","version":"synthetic1"}},"expires_at":"2099-01-01T00:00:00.000Z","installments":[{"allocations":[{"amount_minor":3000,"line_id":"film"}],"apple_product_id":null,"key":"first","trigger":"ORDER_ACCEPTED"},{"allocations":[{"amount_minor":4000,"line_id":"film"}],"apple_product_id":null,"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED"},{"allocations":[{"amount_minor":3000,"line_id":"film"}],"apple_product_id":null,"key":"last","trigger":"FINAL_ACCEPTED"}],"license_reservation_id":null,"lines":[{"currency":"CNY","line_id":"film","line_kind":"PRODUCTION","product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","quantity":1,"review":{"account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93","decision":"APPROVED","reason":"synthetic"},"spec_id":"dcca5be2-2abb-4b83-949c-e17febca829b","spec_version":2,"specification":{"customization_delivery":{"acceptance_calendar":{"non_working_dates":[],"source_ref":"synthetic:no-holiday-claim","timezone":"Asia/Shanghai","valid_from":"2025-01-01","valid_until":"2027-12-31","version":"synthetic-calendar-1","working_dates":[]},"acceptance_hours":null,"acceptance_working_days":5,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","preview_payment_order":"SCRIPT_BEFORE_INTERIM","source_ref":"synthetic:test-only","version":"V5-Q05-Q06"},"deliverables":["synthetic manual film"],"final_seconds":90,"revision_limit":1,"sample_seconds":20,"service_tier":"test","terms":"synthetic non-commercial","version":"synthetic1"},"title":"Synthetic manual customization","total_minor":10000,"unit_minor":10000}],"payment_window_minutes":30,"review":{"account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93","decision":"APPROVED","reason":"synthetic independent"},"rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","total_minor":10000,"transaction_model":"PLATFORM_PRINCIPAL"},"quote_id":"d6bf11df-451e-45e0-9d85-3cbae56692e4","quote_sha256":"1cb478105ff7b603613937c74da57037dd8ec0819eb5ab616316ac44de17acce"},"content_sha256":"f72f73325299aaf66d60dc6427233078f0064792f5e9637164ecd4b40e6fe8c7","contract_version_id":"f95bf541-43de-4649-9db9-66b6c1e5bec7","created_at":"2026-11-14T13:31:07.094Z","current_status":"SEALED","format_version":"contract-content-v1","id":"49d7186d-1a06-415a-b905-e8e5f3b664b4","object_version":1,"party_ids":["0532b49a-4078-48c1-bbb3-84fe4e37b29f","3da2223c-a265-4b51-978a-304e03b3fe6d"],"rule_contents":[{"content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1","id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","rule_key":"r04.synthetic","terms":{"customization_finance":{"model":"V5_SELF_OPERATED","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","rounding":"HALF_UP_PLATFORM_REMAINDER","rules":{"lines":[{"deductions":[],"line_id":"film","shares":[{"bps":10000,"party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","role":"PLATFORM"}]}],"release_condition":"DELIVERY_ACCEPTED","settlement_at":"2020-01-01T00:00:00.000Z","terms":"synthetic only","version":"synthetic1"}},"explicit":"synthetic no real agreement"},"version":"1"}],"signing_method":"NOT_SIGNED"},"buyer_acknowledged_by":"12d96455-6933-4517-8651-808234f4c83c","financial":{"received_minor":0,"refunded_minor":0,"net_minor":0}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:46:208)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:46:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired buyer cannot replay quote acceptance
+    not ok 9 - expired buyer cannot replay quote acceptance
+      ---
+      duration_ms: 12.2904
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:47:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"bcf0fc75-9917-4df3-ad7f-45549f6a0100","actor":{"account_id":"12d96455-6933-4517-8651-808234f4c83c"},"acting_party":"0532b49a-4078-48c1-bbb3-84fe4e37b29f"},"data":{"id":"a1fa1ca3-126e-4393-a6fc-2f7140d70828","kind":"ORDER","buyer_party_id":"0532b49a-4078-48c1-bbb3-84fe4e37b29f","merchant_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","parent_id":"80cac4f0-ae64-4069-8d0d-8159b5b30f47","order_id":null,"created_by":"12d96455-6933-4517-8651-808234f4c83c","current_status":"OPEN","object_version":1,"content_sha256":"5b717a11e39c83de23bfe4b54e0d62b1aa508e78216d4f91eca27261f5637769","data":{"quote":{"lines":[{"title":"Synthetic manual customization","review":{"reason":"synthetic","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"line_id":"film","spec_id":"4a18bd29-3ba4-43db-885e-7e424536a326","currency":"CNY","quantity":1,"line_kind":"PRODUCTION","unit_minor":10000,"total_minor":10000,"spec_version":2,"specification":{"terms":"synthetic non-commercial","version":"synthetic1","deliverables":["synthetic manual film"],"service_tier":"test","final_seconds":90,"revision_limit":1,"sample_seconds":20,"customization_delivery":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":null,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","acceptance_calendar":{"version":"synthetic-calendar-1","timezone":"Asia/Shanghai","source_ref":"synthetic:no-holiday-claim","valid_from":"2025-01-01","valid_until":"2027-12-31","working_dates":[],"non_working_dates":[]},"preview_payment_order":"SCRIPT_BEFORE_INTERIM","acceptance_working_days":5}},"product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"channel":"ALIPAY","rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","currency":"CNY","expires_at":"2099-01-01T00:00:00.000Z","total_minor":10000,"installments":[{"key":"first","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null},{"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED","allocations":[{"line_id":"film","amount_minor":4000}],"apple_product_id":null},{"key":"last","trigger":"FINAL_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null}],"customization":{"request_id":"26ebb809-44e7-45b3-b07a-711084dcb4cf","submission_id":"6ab59431-c027-4b8e-b677-95c248142900","content_sha256":"2ee92847655f1fc72a3c5df8421e27b81c5f34c7a4bcd19747ee827252257afd"},"transaction_model":"PLATFORM_PRINCIPAL","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"},"platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"},"license_reservation_id":null,"payment_window_minutes":30},"contract":{"id":"23cba7e9-cf7f-410e-955f-903d60206f9b","party_ids":["0532b49a-4078-48c1-bbb3-84fe4e37b29f","3da2223c-a265-4b51-978a-304e03b3fe6d"],"created_at":"2026-11-14T13:31:06.515Z","commitments":{"quote":{"lines":[{"title":"Synthetic manual customization","review":{"reason":"synthetic","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"line_id":"film","spec_id":"4a18bd29-3ba4-43db-885e-7e424536a326","currency":"CNY","quantity":1,"line_kind":"PRODUCTION","unit_minor":10000,"total_minor":10000,"spec_version":2,"specification":{"terms":"synthetic non-commercial","version":"synthetic1","deliverables":["synthetic manual film"],"service_tier":"test","final_seconds":90,"revision_limit":1,"sample_seconds":20,"customization_delivery":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":null,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","acceptance_calendar":{"version":"synthetic-calendar-1","timezone":"Asia/Shanghai","source_ref":"synthetic:no-holiday-claim","valid_from":"2025-01-01","valid_until":"2027-12-31","working_dates":[],"non_working_dates":[]},"preview_payment_order":"SCRIPT_BEFORE_INTERIM","acceptance_working_days":5}},"product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"channel":"ALIPAY","rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","currency":"CNY","expires_at":"2099-01-01T00:00:00.000Z","total_minor":10000,"installments":[{"key":"first","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null},{"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED","allocations":[{"line_id":"film","amount_minor":4000}],"apple_product_id":null},{"key":"last","trigger":"FINAL_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null}],"customization":{"request_id":"26ebb809-44e7-45b3-b07a-711084dcb4cf","submission_id":"6ab59431-c027-4b8e-b677-95c248142900","content_sha256":"2ee92847655f1fc72a3c5df8421e27b81c5f34c7a4bcd19747ee827252257afd"},"transaction_model":"PLATFORM_PRINCIPAL","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"},"platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"},"license_reservation_id":null,"payment_window_minutes":30},"quote_id":"80cac4f0-ae64-4069-8d0d-8159b5b30f47","quote_sha256":"d3e7705309628df8fe9cf02f8108febd7e84590f02ff7e2a1ce0966fecef6a25"},"rule_contents":[{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"}],"content_sha256":"4684088ba34d73ef1db046ccabfa48d3a267148b0e8a8be83ebccfaf2dab3e0a","current_status":"SEALED","format_version":"contract-content-v1","object_version":1,"signing_method":"NOT_SIGNED","contract_version_id":"ce89bab1-2f86-4543-a2b8-22db423c2807"},"financial":{"net_minor":0,"received_minor":0,"refunded_minor":0},"buyer_acknowledged_by":"12d96455-6933-4517-8651-808234f4c83c"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:47:202)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:47:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired buyer cannot prepare a new payment on an earlier order
+    not ok 10 - expired buyer cannot prepare a new payment on an earlier order
+      ---
+      duration_ms: 14.9226
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:48:13'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected rejection.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:48:92)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:48:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired buyer cannot replay payment preparation
+    not ok 11 - expired buyer cannot replay payment preparation
+      ---
+      duration_ms: 4.3946
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:49:13'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected rejection.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:49:77)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:49:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired buyer retains original order read and contract
+    ok 12 - expired buyer retains original order read and contract
+      ---
+      duration_ms: 7.9353
+      type: 'test'
+      ...
+    # Subtest: rejected buyer cannot accept a new current-contract quote
+    not ok 13 - rejected buyer cannot accept a new current-contract quote
+      ---
+      duration_ms: 22.1591
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:46:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"475b0904-417f-4527-bcc1-9fa282519197","actor":{"account_id":"12d96455-6933-4517-8651-808234f4c83c"},"acting_party":"0532b49a-4078-48c1-bbb3-84fe4e37b29f"},"data":{"id":"669f1d62-29f9-49b1-b67c-b7b9a7c503bc","kind":"ORDER","buyer_party_id":"0532b49a-4078-48c1-bbb3-84fe4e37b29f","merchant_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","parent_id":"0126c5bc-a6da-4492-8150-0b460e1769ec","order_id":null,"created_by":"12d96455-6933-4517-8651-808234f4c83c","current_status":"OPEN","object_version":1,"content_sha256":"72e5034171211bb0feecdc53c68e55d4fc91fdef4af7e36e7673bb3f779813dc","data":{"quote":{"lines":[{"title":"Synthetic manual customization","review":{"reason":"synthetic","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"line_id":"film","spec_id":"d683823d-747a-4f8d-9937-700f44166c20","currency":"CNY","quantity":1,"line_kind":"PRODUCTION","unit_minor":10000,"total_minor":10000,"spec_version":2,"specification":{"terms":"synthetic non-commercial","version":"synthetic1","deliverables":["synthetic manual film"],"service_tier":"test","final_seconds":90,"revision_limit":1,"sample_seconds":20,"customization_delivery":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":null,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","acceptance_calendar":{"version":"synthetic-calendar-1","timezone":"Asia/Shanghai","source_ref":"synthetic:no-holiday-claim","valid_from":"2025-01-01","valid_until":"2027-12-31","working_dates":[],"non_working_dates":[]},"preview_payment_order":"SCRIPT_BEFORE_INTERIM","acceptance_working_days":5}},"product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"channel":"ALIPAY","rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","currency":"CNY","expires_at":"2099-01-01T00:00:00.000Z","total_minor":10000,"installments":[{"key":"first","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null},{"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED","allocations":[{"line_id":"film","amount_minor":4000}],"apple_product_id":null},{"key":"last","trigger":"FINAL_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null}],"customization":{"request_id":"40a35f25-e270-4dc3-93c4-09bf0d4d48bb","submission_id":"97605c83-b99c-4a9f-9060-83a7a3eef3e1","content_sha256":"177b6314fb3d2e5b25447cbfeeb74f756db93cfbca1116384e2d2be10fe7f467"},"transaction_model":"PLATFORM_PRINCIPAL","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"},"platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"},"license_reservation_id":null,"payment_window_minutes":30},"contract":{"commitments":{"quote":{"channel":"ALIPAY","currency":"CNY","customization":{"content_sha256":"177b6314fb3d2e5b25447cbfeeb74f756db93cfbca1116384e2d2be10fe7f467","request_id":"40a35f25-e270-4dc3-93c4-09bf0d4d48bb","submission_id":"97605c83-b99c-4a9f-9060-83a7a3eef3e1"},"customization_finance":{"model":"V5_SELF_OPERATED","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1","id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","rule_key":"r04.synthetic","terms":{"customization_finance":{"model":"V5_SELF_OPERATED","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","rounding":"HALF_UP_PLATFORM_REMAINDER","rules":{"lines":[{"deductions":[],"line_id":"film","shares":[{"bps":10000,"party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","role":"PLATFORM"}]}],"release_condition":"DELIVERY_ACCEPTED","settlement_at":"2020-01-01T00:00:00.000Z","terms":"synthetic only","version":"synthetic1"}},"explicit":"synthetic no real agreement"},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"rules":{"lines":[{"deductions":[],"line_id":"film","shares":[{"bps":10000,"party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","role":"PLATFORM"}]}],"release_condition":"DELIVERY_ACCEPTED","settlement_at":"2020-01-01T00:00:00.000Z","terms":"synthetic only","version":"synthetic1"}},"expires_at":"2099-01-01T00:00:00.000Z","installments":[{"allocations":[{"amount_minor":3000,"line_id":"film"}],"apple_product_id":null,"key":"first","trigger":"ORDER_ACCEPTED"},{"allocations":[{"amount_minor":4000,"line_id":"film"}],"apple_product_id":null,"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED"},{"allocations":[{"amount_minor":3000,"line_id":"film"}],"apple_product_id":null,"key":"last","trigger":"FINAL_ACCEPTED"}],"license_reservation_id":null,"lines":[{"currency":"CNY","line_id":"film","line_kind":"PRODUCTION","product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","quantity":1,"review":{"account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93","decision":"APPROVED","reason":"synthetic"},"spec_id":"d683823d-747a-4f8d-9937-700f44166c20","spec_version":2,"specification":{"customization_delivery":{"acceptance_calendar":{"non_working_dates":[],"source_ref":"synthetic:no-holiday-claim","timezone":"Asia/Shanghai","valid_from":"2025-01-01","valid_until":"2027-12-31","version":"synthetic-calendar-1","working_dates":[]},"acceptance_hours":null,"acceptance_working_days":5,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","preview_payment_order":"SCRIPT_BEFORE_INTERIM","source_ref":"synthetic:test-only","version":"V5-Q05-Q06"},"deliverables":["synthetic manual film"],"final_seconds":90,"revision_limit":1,"sample_seconds":20,"service_tier":"test","terms":"synthetic non-commercial","version":"synthetic1"},"title":"Synthetic manual customization","total_minor":10000,"unit_minor":10000}],"payment_window_minutes":30,"review":{"account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93","decision":"APPROVED","reason":"synthetic independent"},"rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","total_minor":10000,"transaction_model":"PLATFORM_PRINCIPAL"},"quote_id":"0126c5bc-a6da-4492-8150-0b460e1769ec","quote_sha256":"5f55198d0d23585fde0633791d5f6bfeecb931b79176ab35a112bc4b64d992e0"},"content_sha256":"2be691e2b7ddd62fda4d19e8956d6ed2d6b794db95872f1754d364239d53f3f5","contract_version_id":"138fbdf0-78c3-4987-85e0-db0273c10045","created_at":"2026-11-14T13:31:07.335Z","current_status":"SEALED","format_version":"contract-content-v1","id":"c91cb5c0-b904-4bb3-8a3d-9a31beeff11e","object_version":1,"party_ids":["0532b49a-4078-48c1-bbb3-84fe4e37b29f","3da2223c-a265-4b51-978a-304e03b3fe6d"],"rule_contents":[{"content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1","id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","rule_key":"r04.synthetic","terms":{"customization_finance":{"model":"V5_SELF_OPERATED","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","rounding":"HALF_UP_PLATFORM_REMAINDER","rules":{"lines":[{"deductions":[],"line_id":"film","shares":[{"bps":10000,"party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","role":"PLATFORM"}]}],"release_condition":"DELIVERY_ACCEPTED","settlement_at":"2020-01-01T00:00:00.000Z","terms":"synthetic only","version":"synthetic1"}},"explicit":"synthetic no real agreement"},"version":"1"}],"signing_method":"NOT_SIGNED"},"buyer_acknowledged_by":"12d96455-6933-4517-8651-808234f4c83c","financial":{"received_minor":0,"refunded_minor":0,"net_minor":0}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:46:208)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:46:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected buyer cannot replay quote acceptance
+    not ok 14 - rejected buyer cannot replay quote acceptance
+      ---
+      duration_ms: 10.7936
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:47:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"2bbdcc4a-425e-4ac9-820e-15f7f30cd568","actor":{"account_id":"12d96455-6933-4517-8651-808234f4c83c"},"acting_party":"0532b49a-4078-48c1-bbb3-84fe4e37b29f"},"data":{"id":"a1fa1ca3-126e-4393-a6fc-2f7140d70828","kind":"ORDER","buyer_party_id":"0532b49a-4078-48c1-bbb3-84fe4e37b29f","merchant_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","parent_id":"80cac4f0-ae64-4069-8d0d-8159b5b30f47","order_id":null,"created_by":"12d96455-6933-4517-8651-808234f4c83c","current_status":"OPEN","object_version":1,"content_sha256":"5b717a11e39c83de23bfe4b54e0d62b1aa508e78216d4f91eca27261f5637769","data":{"quote":{"lines":[{"title":"Synthetic manual customization","review":{"reason":"synthetic","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"line_id":"film","spec_id":"4a18bd29-3ba4-43db-885e-7e424536a326","currency":"CNY","quantity":1,"line_kind":"PRODUCTION","unit_minor":10000,"total_minor":10000,"spec_version":2,"specification":{"terms":"synthetic non-commercial","version":"synthetic1","deliverables":["synthetic manual film"],"service_tier":"test","final_seconds":90,"revision_limit":1,"sample_seconds":20,"customization_delivery":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":null,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","acceptance_calendar":{"version":"synthetic-calendar-1","timezone":"Asia/Shanghai","source_ref":"synthetic:no-holiday-claim","valid_from":"2025-01-01","valid_until":"2027-12-31","working_dates":[],"non_working_dates":[]},"preview_payment_order":"SCRIPT_BEFORE_INTERIM","acceptance_working_days":5}},"product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"channel":"ALIPAY","rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","currency":"CNY","expires_at":"2099-01-01T00:00:00.000Z","total_minor":10000,"installments":[{"key":"first","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null},{"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED","allocations":[{"line_id":"film","amount_minor":4000}],"apple_product_id":null},{"key":"last","trigger":"FINAL_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null}],"customization":{"request_id":"26ebb809-44e7-45b3-b07a-711084dcb4cf","submission_id":"6ab59431-c027-4b8e-b677-95c248142900","content_sha256":"2ee92847655f1fc72a3c5df8421e27b81c5f34c7a4bcd19747ee827252257afd"},"transaction_model":"PLATFORM_PRINCIPAL","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"},"platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"},"license_reservation_id":null,"payment_window_minutes":30},"contract":{"id":"23cba7e9-cf7f-410e-955f-903d60206f9b","party_ids":["0532b49a-4078-48c1-bbb3-84fe4e37b29f","3da2223c-a265-4b51-978a-304e03b3fe6d"],"created_at":"2026-11-14T13:31:06.515Z","commitments":{"quote":{"lines":[{"title":"Synthetic manual customization","review":{"reason":"synthetic","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"line_id":"film","spec_id":"4a18bd29-3ba4-43db-885e-7e424536a326","currency":"CNY","quantity":1,"line_kind":"PRODUCTION","unit_minor":10000,"total_minor":10000,"spec_version":2,"specification":{"terms":"synthetic non-commercial","version":"synthetic1","deliverables":["synthetic manual film"],"service_tier":"test","final_seconds":90,"revision_limit":1,"sample_seconds":20,"customization_delivery":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":null,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","acceptance_calendar":{"version":"synthetic-calendar-1","timezone":"Asia/Shanghai","source_ref":"synthetic:no-holiday-claim","valid_from":"2025-01-01","valid_until":"2027-12-31","working_dates":[],"non_working_dates":[]},"preview_payment_order":"SCRIPT_BEFORE_INTERIM","acceptance_working_days":5}},"product_profile":{"type":"PRIVATE_CUSTOMIZATION","version":"V5"},"provider_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"e6ddac6c-5059-48f3-95b7-b569b9046c93"},"channel":"ALIPAY","rule_id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","currency":"CNY","expires_at":"2099-01-01T00:00:00.000Z","total_minor":10000,"installments":[{"key":"first","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null},{"key":"interim","trigger":"CUSTOMIZATION_SCRIPT_CONFIRMED","allocations":[{"line_id":"film","amount_minor":4000}],"apple_product_id":null},{"key":"last","trigger":"FINAL_ACCEPTED","allocations":[{"line_id":"film","amount_minor":3000}],"apple_product_id":null}],"customization":{"request_id":"26ebb809-44e7-45b3-b07a-711084dcb4cf","submission_id":"6ab59431-c027-4b8e-b677-95c248142900","content_sha256":"2ee92847655f1fc72a3c5df8421e27b81c5f34c7a4bcd19747ee827252257afd"},"transaction_model":"PLATFORM_PRINCIPAL","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","rule_snapshot":{"content":{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"},"platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"},"license_reservation_id":null,"payment_window_minutes":30},"quote_id":"80cac4f0-ae64-4069-8d0d-8159b5b30f47","quote_sha256":"d3e7705309628df8fe9cf02f8108febd7e84590f02ff7e2a1ce0966fecef6a25"},"rule_contents":[{"id":"9f294363-2616-449e-b1db-7ffd1dfbddc7","terms":{"explicit":"synthetic no real agreement","customization_finance":{"model":"V5_SELF_OPERATED","rules":{"lines":[{"shares":[{"bps":10000,"role":"PLATFORM","party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}],"line_id":"film","deductions":[]}],"terms":"synthetic only","version":"synthetic1","settlement_at":"2020-01-01T00:00:00.000Z","release_condition":"DELIVERY_ACCEPTED"},"rounding":"HALF_UP_PLATFORM_REMAINDER","platform_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d"}},"version":"1","rule_key":"r04.synthetic","content_sha256":"cfcd792255d5d5d4f4ac9776031f0a82c864a8438529a56dd96ca43c615cfad3","format_version":"rule-content-v1"}],"content_sha256":"4684088ba34d73ef1db046ccabfa48d3a267148b0e8a8be83ebccfaf2dab3e0a","current_status":"SEALED","format_version":"contract-content-v1","object_version":1,"signing_method":"NOT_SIGNED","contract_version_id":"ce89bab1-2f86-4543-a2b8-22db423c2807"},"financial":{"net_minor":0,"received_minor":0,"refunded_minor":0},"buyer_acknowledged_by":"12d96455-6933-4517-8651-808234f4c83c"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:47:202)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:47:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected buyer cannot prepare a new payment on an earlier order
+    not ok 15 - rejected buyer cannot prepare a new payment on an earlier order
+      ---
+      duration_ms: 9.3432
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:48:13'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected rejection.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:48:92)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:48:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected buyer cannot replay payment preparation
+    not ok 16 - rejected buyer cannot replay payment preparation
+      ---
+      duration_ms: 3.9822
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:49:13'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected rejection.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:49:77)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:49:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected buyer retains original order read and contract
+    ok 17 - rejected buyer retains original order read and contract
+      ---
+      duration_ms: 8.6296
+      type: 'test'
+      ...
+    # Subtest: restored identity returns the original successful acceptance and payment
+    ok 18 - restored identity returns the original successful acceptance and payment
+      ---
+      duration_ms: 14.6396
+      type: 'test'
+      ...
+    # Subtest: identity expiry after payment preparation but before dispatch stops the provider call
+    not ok 19 - identity expiry after payment preparation but before dispatch stops the provider call
+      ---
+      duration_ms: 37.2227
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:55:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"90e40379-6e3b-4027-a22a-725c69ca240f","actor":{"account_id":"12d96455-6933-4517-8651-808234f4c83c"},"acting_party":"0532b49a-4078-48c1-bbb3-84fe4e37b29f"},"data":{"id":"c53f11e2-d7cd-4577-a2a4-2fb02b7991e9","kind":"PAYMENT","buyer_party_id":"0532b49a-4078-48c1-bbb3-84fe4e37b29f","merchant_party_id":"3da2223c-a265-4b51-978a-304e03b3fe6d","parent_id":null,"order_id":"c2686202-de4b-4298-a8c2-c756ea12b4df","created_by":"12d96455-6933-4517-8651-808234f4c83c","current_status":"PENDING","object_version":3,"content_sha256":"432b9ddd217ab0f50a540b60d3b5c1bc0f99c4aacfd77d5fd89b794048c50d4c","data":{"proof":null,"title":"Synthetic manual customization","app_id":"synthetic.app","checkout":{"kind":"ALIPAY_APP","order_string":"synthetic-only"},"currency":"CNY","provider":"ALIPAY","expires_at":"2026-11-14T14:01:07.505Z","allocations":[{"line_id":"film","amount_minor":3000}],"environment":"SANDBOX","merchant_id":"synthetic.merchant","amount_minor":3000,"transaction_id":null,"config_revision":"identity-probe","installment_key":"first","apple_product_id":null,"consumer_request_key":"75adade0-48fd-4f82-b427-1b47764b6556","payment_window_minutes":30}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:57:253)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\customization-identity-probe.cjs:55:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: restored identity dispatches the original prepared payment exactly once
+    ok 20 - restored identity dispatches the original prepared payment exactly once
+      ---
+      duration_ms: 30.1013
+      type: 'test'
+      ...
+    # Subtest: unknown payment outcome is retained rather than creating a second charge
+    ok 21 - unknown payment outcome is retained rather than creating a second charge
+      ---
+      duration_ms: 38.5063
+      type: 'test'
+      ...
+    # Subtest: identity expiry still permits trusted reconciliation and reading original payment facts
+    ok 22 - identity expiry still permits trusted reconciliation and reading original payment facts
+      ---
+      duration_ms: 38.9774
+      type: 'test'
+      ...
+    1..22
+not ok 1 - current-contract customization buyer identity on acceptance and payment
+  ---
+  duration_ms: 9785.0882
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\customization-identity-probe.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '13 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 23
+# suites 0
+# pass 9
+# fail 14
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9988.6646

@@ -1,0 +1,210 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "05ce5201e41aad3e684d9d3f1dfc5bb5da58154c",
+  "run_id": "pm01-rank-boundaries-2026-11-13T17-03-16-802Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "CITY-MULTI-ARTIST-BOARDS",
+      "acceptance_id": "ACC-DEL-19.02",
+      "name": "城市多艺人排序与样本门槛",
+      "result": "LOCAL_PASS",
+      "scope": "同城两艺人真实订单/互动排序、同分稳定/异城及区类隔离、公开退出保留快照、好评复购样本及日数门槛；北京时间午夜与UTC午夜额度、旧键不重复扣款、双候选60/20/20、退分排除票及完全同分独审",
+      "remaining": "隔离库和合成资格/回执/媒体/受控时间；不代表真实活动、奖品履行、公示、所需端或维护者独立签收；大规模压力仍待",
+      "actual_checks": [
+        {
+          "name": "unconfigured starlight stays unavailable, growth is independent",
+          "file": "test/engagement-policy.test.cjs",
+          "line": 3,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 3.8818,
+          "error_code": null
+        },
+        {
+          "name": "refunded first purchase cannot grant repeat purchase bonus",
+          "file": "test/engagement-policy.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 9.1627,
+          "error_code": null
+        },
+        {
+          "name": "excluded artist cannot affect legitimate composite normalization",
+          "file": "test/engagement-policy.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.0157,
+          "error_code": null
+        },
+        {
+          "name": "review and repeat boards require sufficient independent samples and use their stated rates",
+          "file": "test/engagement-policy.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.2416,
+          "error_code": null
+        },
+        {
+          "name": "cold start and newcomer day limits are exact; same scores use a stable person order",
+          "file": "test/engagement-policy.test.cjs",
+          "line": 11,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.2485,
+          "error_code": null
+        },
+        {
+          "name": "referral comes from platform and preserves total, sandbox never allocates",
+          "file": "test/engagement-policy.test.cjs",
+          "line": 15,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 18.1579,
+          "error_code": null
+        },
+        {
+          "name": "two artists: stable ties, actual sale and growth order; another city/district/category is isolated",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 44,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 137.2579,
+          "error_code": null
+        },
+        {
+          "name": "actual deduplicated interactions affect each board without changing the original snapshot",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 51,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 71.5668,
+          "error_code": null
+        },
+        {
+          "name": "opt-out hides the current public projection while preserving frozen scores and re-opt-in restores it",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 58,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 67.9022,
+          "error_code": null
+        },
+        {
+          "name": "23:59:59.999 Beijing admits only ten votes; midnight resets exactly once, not at UTC midnight",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 64,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 421.227,
+          "error_code": null
+        },
+        {
+          "name": "multiple candidates combine official, frozen rank and valid votes; return points excludes that vote without restoring quota",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 74,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 109.6349,
+          "error_code": null
+        },
+        {
+          "name": "equal complete scores require a separately approved tie decision and issue one award only",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 82,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 257.9611,
+          "error_code": null
+        },
+        {
+          "name": "city rankings and championship: multi-person facts, Beijing midnight and independent tie review",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 12376.4874,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "CHAMPION-DAY-MULTI-SCORES",
+      "acceptance_id": "ACC-DEL-19.05",
+      "name": "北京时间日界与多候选评分",
+      "result": "LOCAL_PASS",
+      "scope": "同城两艺人真实订单/互动排序、同分稳定/异城及区类隔离、公开退出保留快照、好评复购样本及日数门槛；北京时间午夜与UTC午夜额度、旧键不重复扣款、双候选60/20/20、退分排除票及完全同分独审",
+      "remaining": "隔离库和合成资格/回执/媒体/受控时间；不代表真实活动、奖品履行、公示、所需端或维护者独立签收；大规模压力仍待",
+      "actual_checks": [
+        {
+          "name": "two artists: stable ties, actual sale and growth order; another city/district/category is isolated",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 44,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 137.2579,
+          "error_code": null
+        },
+        {
+          "name": "actual deduplicated interactions affect each board without changing the original snapshot",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 51,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 71.5668,
+          "error_code": null
+        },
+        {
+          "name": "opt-out hides the current public projection while preserving frozen scores and re-opt-in restores it",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 58,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 67.9022,
+          "error_code": null
+        },
+        {
+          "name": "23:59:59.999 Beijing admits only ten votes; midnight resets exactly once, not at UTC midnight",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 64,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 421.227,
+          "error_code": null
+        },
+        {
+          "name": "multiple candidates combine official, frozen rank and valid votes; return points excludes that vote without restoring quota",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 74,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 109.6349,
+          "error_code": null
+        },
+        {
+          "name": "equal complete scores require a separately approved tie decision and issue one award only",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 82,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 257.9611,
+          "error_code": null
+        },
+        {
+          "name": "city rankings and championship: multi-person facts, Beijing midnight and independent tie review",
+          "file": "test/rank-boundaries.integration.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 12376.4874,
+          "error_code": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,368 @@
+TAP version 13
+# Subtest: ordinary publishing and same-notice cooperation in isolated MySQL
+    # Subtest: new publishing rule requires independent approval; old rule and notices retain snapshots
+    ok 1 - new publishing rule requires independent approval; old rule and notices retain snapshots
+      ---
+      duration_ms: 195.881
+      type: 'test'
+      ...
+    # Subtest: never-funded adult can publish all five ordinary types without changing membership
+    ok 2 - never-funded adult can publish all five ordinary types without changing membership
+      ---
+      duration_ms: 499.9849
+      type: 'test'
+      ...
+    # Subtest: membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged
+    ok 3 - membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged
+      ---
+      duration_ms: 561.2119
+      type: 'test'
+      ...
+    # Subtest: unverified, child, expired, inactive, foreign identity and official impersonation remain rejected
+    ok 4 - unverified, child, expired, inactive, foreign identity and official impersonation remain rejected
+      ---
+      duration_ms: 122.7945
+      type: 'test'
+      ...
+    # Subtest: identity or ownership lost after submission is checked at review and public read
+    ok 5 - identity or ownership lost after submission is checked at review and public read
+      ---
+      duration_ms: 85.5499
+      type: 'test'
+      ...
+    # Subtest: organization scope and other project ownership cannot be bypassed with an ordinary rule
+    ok 6 - organization scope and other project ownership cannot be bypassed with an ordinary rule
+      ---
+      duration_ms: 82.2396
+      type: 'test'
+      ...
+    # Subtest: same notice receives reviewed artist submission then one support case after lost response recovery
+    ok 7 - same notice receives reviewed artist submission then one support case after lost response recovery
+      ---
+      duration_ms: 165.366
+      type: 'test'
+      ...
+    # Subtest: suspended account or party hides publication and blocks further cooperation
+    ok 8 - suspended account or party hides publication and blocks further cooperation
+      ---
+      duration_ms: 71.3547
+      type: 'test'
+      ...
+    # Subtest: independent support links actual quote and creates the same unpaid order without membership
+    ok 9 - independent support links actual quote and creates the same unpaid order without membership
+      ---
+      duration_ms: 316.1087
+      type: 'test'
+      ...
+    # Subtest: same notice order receives payment, scoped conversation and independently reviewed full refund
+    ok 10 - same notice order receives payment, scoped conversation and independently reviewed full refund
+      ---
+      duration_ms: 1032.8878
+      type: 'test'
+      ...
+    # Subtest: closing ordinary notice blocks new submissions while historical quote remains unchanged
+    ok 11 - closing ordinary notice blocks new submissions while historical quote remains unchanged
+      ---
+      duration_ms: 30.0029
+      type: 'test'
+      ...
+    # Subtest: notice withdrawal notifies each historical application once without changing submission or contract
+    ok 12 - notice withdrawal notifies each historical application once without changing submission or contract
+      ---
+      duration_ms: 589.3537
+      type: 'test'
+      ...
+    # Subtest: failure to record notice withdrawal notification rolls back closure and all prior events
+    ok 13 - failure to record notice withdrawal notification rolls back closure and all prior events
+      ---
+      duration_ms: 99.8897
+      type: 'test'
+      ...
+    1..13
+ok 1 - ordinary publishing and same-notice cooperation in isolated MySQL
+  ---
+  duration_ms: 13869.2863
+  type: 'test'
+  ...
+# Subtest: case-scoped independent quote options and submit-time rechecks
+    # Subtest: authentication, independent support role and no acting party are enforced
+    ok 1 - authentication, independent support role and no acting party are enforced
+      ---
+      duration_ms: 97.5511
+      type: 'test'
+      ...
+    # Subtest: revoked support role can neither list nor submit a previously selected quote
+    ok 2 - revoked support role can neither list nor submit a previously selected quote
+      ---
+      duration_ms: 67.7766
+      type: 'test'
+      ...
+    # Subtest: only minimal matching approved quote summary is returned
+    ok 3 - only minimal matching approved quote summary is returned
+      ---
+      duration_ms: 21.103
+      type: 'test'
+      ...
+    # Subtest: empty filtered pages retain a cursor; wrong parties/avatar, expiry and drafts never leak
+    ok 4 - empty filtered pages retain a cursor; wrong parties/avatar, expiry and drafts never leak
+      ---
+      duration_ms: 96.7744
+      type: 'test'
+      ...
+    # Subtest: quote becoming expired after listing is rejected at submission
+    ok 5 - quote becoming expired after listing is rejected at submission
+      ---
+      duration_ms: 39.4984
+      type: 'test'
+      ...
+    # Subtest: linked quote disappears from another case; stale submission cannot link twice
+    ok 6 - linked quote disappears from another case; stale submission cannot link twice
+      ---
+      duration_ms: 67.5567
+      type: 'test'
+      ...
+    # Subtest: withdrawn submission closes the case and prevents options and linking
+    ok 7 - withdrawn submission closes the case and prevents options and linking
+      ---
+      duration_ms: 99.2931
+      type: 'test'
+      ...
+    1..7
+ok 2 - case-scoped independent quote options and submit-time rechecks
+  ---
+  duration_ms: 11529.0186
+  type: 'test'
+  ...
+# Subtest: reviewed notice revisions retain history and fence old offers in isolated MySQL
+    # Subtest: new applications capture exact original notice; old order and outstanding quote share the same notice
+    ok 1 - new applications capture exact original notice; old order and outstanding quote share the same notice
+      ---
+      duration_ms: 1550.1478
+      type: 'test'
+      ...
+    # Subtest: pending revision is private, idempotent and does not replace published content
+    ok 2 - pending revision is private, idempotent and does not replace published content
+      ---
+      duration_ms: 102.743
+      type: 'test'
+      ...
+    # Subtest: independent rejection and withdrawal preserve live version; revoked author cannot publish
+    ok 3 - independent rejection and withdrawal preserve live version; revoked author cannot publish
+      ---
+      duration_ms: 79.7377
+      type: 'test'
+      ...
+    # Subtest: publication and notifications roll back together and same key can retry; competing base becomes stale
+    ok 4 - publication and notifications roll back together and same key can retry; competing base becomes stale
+      ---
+      duration_ms: 104.4114
+      type: 'test'
+      ...
+    # Subtest: new applications reject unseen revisions while retries retain their original accepted version
+    ok 5 - new applications reject unseen revisions while retries retain their original accepted version
+      ---
+      duration_ms: 65.8572
+      type: 'test'
+      ...
+    # Subtest: applicant must confirm exact current version without rewriting original snapshot; recipient cannot confirm for them
+    ok 6 - applicant must confirm exact current version without rewriting original snapshot; recipient cannot confirm for them
+      ---
+      duration_ms: 116.3511
+      type: 'test'
+      ...
+    # Subtest: confirmation cannot revive old quote; formed order is unchanged; new quote can be accepted
+    ok 7 - confirmation cannot revive old quote; formed order is unchanged; new quote can be accepted
+      ---
+      duration_ms: 218.466
+      type: 'test'
+      ...
+    # Subtest: new application binds revised notice and expired identity still blocks acknowledgment
+    ok 8 - new application binds revised notice and expired identity still blocks acknowledgment
+      ---
+      duration_ms: 106.8841
+      type: 'test'
+      ...
+    # Subtest: legacy missing snapshot is never fabricated; confirmation preserves that absence
+    ok 9 - legacy missing snapshot is never fabricated; confirmation preserves that absence
+      ---
+      duration_ms: 74.3008
+      type: 'test'
+      ...
+    # Subtest: simultaneous approvals cannot overwrite each other; exactly one revision takes effect
+    ok 10 - simultaneous approvals cannot overwrite each other; exactly one revision takes effect
+      ---
+      duration_ms: 123.2636
+      type: 'test'
+      ...
+    # Subtest: official revisions require current official author and independent reviewer
+    ok 11 - official revisions require current official author and independent reviewer
+      ---
+      duration_ms: 79.6336
+      type: 'test'
+      ...
+    1..11
+ok 3 - reviewed notice revisions retain history and fence old offers in isolated MySQL
+  ---
+  duration_ms: 12515.5177
+  type: 'test'
+  ...
+# Subtest: notices and one-way submissions in isolated MySQL
+    # Subtest: ordinary adult cannot publish by supplying a level; funding alone grants no points
+    ok 1 - ordinary adult cannot publish by supplying a level; funding alone grants no points
+      ---
+      duration_ms: 105.2001
+      type: 'test'
+      ...
+    # Subtest: independent review and public projection exclude evidence/contacts
+    ok 2 - independent review and public projection exclude evidence/contacts
+      ---
+      duration_ms: 69.7805
+      type: 'test'
+      ...
+    # Subtest: official posts need dedicated operator authority and independent reviewer
+    ok 3 - official posts need dedicated operator authority and independent reviewer
+      ---
+      duration_ms: 39.0914
+      type: 'test'
+      ...
+    # Subtest: three structured artist submission kinds and buyer intent retain concrete person/avatar
+    ok 4 - three structured artist submission kinds and buyer intent retain concrete person/avatar
+      ---
+      duration_ms: 179.2763
+      type: 'test'
+      ...
+    # Subtest: old-client new invitation resolves and freezes its public source without changing the retry body
+    ok 5 - old-client new invitation resolves and freezes its public source without changing the retry body
+      ---
+      duration_ms: 78.2019
+      type: 'test'
+      ...
+    # Subtest: omitting source cannot bypass a withdrawn listing or later review and recipient rechecks
+    ok 6 - omitting source cannot bypass a withdrawn listing or later review and recipient rechecks
+      ---
+      duration_ms: 116.1372
+      type: 'test'
+      ...
+    # Subtest: source resolution requires live public consent, halo, hosting and original material rights
+    ok 7 - source resolution requires live public consent, halo, hosting and original material rights
+      ---
+      duration_ms: 66.8681
+      type: 'test'
+      ...
+    # Subtest: ambiguous legacy public sources require an explicit source instead of guessing
+    ok 8 - ambiguous legacy public sources require an explicit source instead of guessing
+      ---
+      duration_ms: 58.4946
+      type: 'test'
+      ...
+    # Subtest: already stored source-less invitations retain their historical review and decision rules
+    ok 9 - already stored source-less invitations retain their historical review and decision rules
+      ---
+      duration_ms: 40.4285
+      type: 'test'
+      ...
+    # Subtest: pending submissions hidden from recipient; outsider and generic comments cannot bypass
+    ok 10 - pending submissions hidden from recipient; outsider and generic comments cannot bypass
+      ---
+      duration_ms: 38.8525
+      type: 'test'
+      ...
+    # Subtest: duplicate interest creates one case; no order or chat created
+    ok 11 - duplicate interest creates one case; no order or chat created
+      ---
+      duration_ms: 42.9555
+      type: 'test'
+      ...
+    # Subtest: concurrent opposite decisions produce one winner, stale version rejected
+    ok 12 - concurrent opposite decisions produce one winner, stale version rejected
+      ---
+      duration_ms: 67.3057
+      type: 'test'
+      ...
+    # Subtest: deadline failure never creates a customer service case
+    ok 13 - deadline failure never creates a customer service case
+      ---
+      duration_ms: 54.3891
+      type: 'test'
+      ...
+    # Subtest: withdrawal closes unlinked case and blocks later conversion
+    ok 14 - withdrawal closes unlinked case and blocks later conversion
+      ---
+      duration_ms: 82.3645
+      type: 'test'
+      ...
+    # Subtest: qualified organization still needs reviewed explicit publishing scope
+    ok 15 - qualified organization still needs reviewed explicit publishing scope
+      ---
+      duration_ms: 100.9881
+      type: 'test'
+      ...
+    # Subtest: finance facts cannot be self approved or credited twice using same receipt
+    ok 16 - finance facts cannot be self approved or credited twice using same receipt
+      ---
+      duration_ms: 45.6397
+      type: 'test'
+      ...
+    # Subtest: case association verifies actual quote, parties, avatar and immutable version
+    ok 17 - case association verifies actual quote, parties, avatar and immutable version
+      ---
+      duration_ms: 198.5334
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back case and decision together
+    ok 18 - audit failure rolls back case and decision together
+      ---
+      duration_ms: 75.4812
+      type: 'test'
+      ...
+    # Subtest: private submission file checks ownership, recipient consent and stored bytes
+    ok 19 - private submission file checks ownership, recipient consent and stored bytes
+      ---
+      duration_ms: 82.6878
+      type: 'test'
+      ...
+    # Subtest: a child or revoked consent cannot be submitted or read as a valid adult artist
+    ok 20 - a child or revoked consent cannot be submitted or read as a valid adult artist
+      ---
+      duration_ms: 22.1859
+      type: 'test'
+      ...
+    # Subtest: MCN may submit only for the specifically delegated person; withdrawal removes access
+    ok 21 - MCN may submit only for the specifically delegated person; withdrawal removes access
+      ---
+      duration_ms: 116.5896
+      type: 'test'
+      ...
+    # Subtest: rule API uses independent approval, rejection and closure; unauthenticated route remains closed
+    ok 22 - rule API uses independent approval, rejection and closure; unauthenticated route remains closed
+      ---
+      duration_ms: 63.5074
+      type: 'test'
+      ...
+    # Subtest: publication loss prevents new replies without changing historical quote snapshot
+    ok 23 - publication loss prevents new replies without changing historical quote snapshot
+      ---
+      duration_ms: 50.4539
+      type: 'test'
+      ...
+    # Subtest: lists and notifications use current permissions
+    ok 24 - lists and notifications use current permissions
+      ---
+      duration_ms: 54.8757
+      type: 'test'
+      ...
+    1..24
+ok 4 - notices and one-way submissions in isolated MySQL
+  ---
+  duration_ms: 9947.6466
+  type: 'test'
+  ...
+1..4
+# tests 59
+# suites 0
+# pass 59
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 21922.8145

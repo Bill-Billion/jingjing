@@ -1,0 +1,364 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "1d1e1a52025a959fb09b80032bfd22e038077a66",
+  "run_id": "pm01-benefit-wallet-2026-11-13T09-23-13-775Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "runtime_business_code_changed": false,
+  "checks": [
+    {
+      "id": "CO-ACTUAL-CREDIT",
+      "acceptance_id": "ACC-DEL-16.03",
+      "result": "LOCAL_PASS",
+      "scope": "实际20人成团同一权益领取、未付取消释放、支付核销及原期限",
+      "remaining": "所需端侧、真实服务及独立财务/维护者验收未代替；不关闭整组",
+      "actual_checks": [
+        {
+          "id": "CO-MODERN-04",
+          "name": "first payment qualifies twenty people; cutoff creates one noncash benefit and one original order",
+          "result": "PASS",
+          "records": {
+            "room_id": "8c1ef477-0e08-465e-b406-0f04b607501a",
+            "order_id": "ef7a740a-963e-4a2e-854d-2798aa079f6d",
+            "benefit_id": "597aabb4-cd17-4aa3-803e-a91d9092bada",
+            "eligible_at_cutoff": 20
+          }
+        },
+        {
+          "id": "CO-MODERN-05",
+          "name": "actual twenty-person benefit links once to reviewed credit with original owner and expiry",
+          "result": "PASS",
+          "records": {
+            "room_id": "8c1ef477-0e08-465e-b406-0f04b607501a",
+            "source_order_id": "ef7a740a-963e-4a2e-854d-2798aa079f6d",
+            "benefit_id": "597aabb4-cd17-4aa3-803e-a91d9092bada",
+            "grant_id": "a86870e3-ef80-4b5c-acd8-3accc0326ebb",
+            "original_expires_at": "2026-12-13T09:33:24.000Z",
+            "issued_once": true
+          }
+        },
+        {
+          "id": "CO-MODERN-06",
+          "name": "unpaid credit order cancellation releases the original grant without new cash or expiry",
+          "result": "PASS",
+          "records": {
+            "room_id": "8c1ef477-0e08-465e-b406-0f04b607501a",
+            "benefit_id": "597aabb4-cd17-4aa3-803e-a91d9092bada",
+            "grant_id": "a86870e3-ef80-4b5c-acd8-3accc0326ebb",
+            "cancelled_order_id": "c2d02008-8020-4159-aeb2-75f86a49ec36",
+            "expires_at": "2026-12-13T09:33:24.000Z",
+            "cash_received_minor": 0
+          }
+        },
+        {
+          "id": "CO-MODERN-11",
+          "name": "resumed original room consumes its original credit once on discounted payment",
+          "result": "PASS",
+          "records": {
+            "room_id": "8c1ef477-0e08-465e-b406-0f04b607501a",
+            "benefit_id": "597aabb4-cd17-4aa3-803e-a91d9092bada",
+            "grant_id": "a86870e3-ef80-4b5c-acd8-3accc0326ebb",
+            "credit_order_id": "e41660fc-15af-4136-98e3-fe91c6c37787",
+            "payment_id": "ccecff8e-71dc-4857-8aa0-77f09ecb9948",
+            "received_minor": 2700,
+            "credit_minor": 1000,
+            "grant_status": "USED"
+          }
+        },
+        {
+          "id": "CO-MODERN-18",
+          "name": "separate actual twenty-person credit keeps its deadline through delayed claim and release then expires",
+          "result": "PASS",
+          "records": {
+            "room_id": "d901a524-d3f2-43f4-8599-a8047119f214",
+            "source_order_id": "5c0d4e72-ab6a-4abc-a6ad-61102524331f",
+            "benefit_id": "ccf6a670-fa88-480b-8fa2-5ae70e743723",
+            "grant_id": "8b08446d-2fa7-441f-963a-897cb195bec9",
+            "original_expires_at": "2026-12-13T09:47:28.000Z",
+            "effective_status": "EXPIRED",
+            "late_claim_extends": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "CO-SOURCE-EXIT",
+      "acceptance_id": "ACC-DEL-16.04",
+      "result": "LOCAL_PASS",
+      "scope": "来源暂停/恢复、已用历史保留、原单退款后阻止新制作且不抹新单已付款",
+      "remaining": "所需端侧、真实服务及独立财务/维护者验收未代替；不关闭整组",
+      "actual_checks": [
+        {
+          "id": "CO-MODERN-10",
+          "name": "withdrawal pauses old production and downloads; independent recovery keeps old cutoff but requires new versions",
+          "result": "PASS",
+          "records": {
+            "room_id": "8c1ef477-0e08-465e-b406-0f04b607501a",
+            "project_id": "8d626ff3-4216-4ddc-8f35-c9026ea47ea3",
+            "original_cutoff": 20,
+            "current_production_members": 19,
+            "received_minor": 10000
+          }
+        },
+        {
+          "id": "CO-MODERN-11",
+          "name": "resumed original room consumes its original credit once on discounted payment",
+          "result": "PASS",
+          "records": {
+            "room_id": "8c1ef477-0e08-465e-b406-0f04b607501a",
+            "benefit_id": "597aabb4-cd17-4aa3-803e-a91d9092bada",
+            "grant_id": "a86870e3-ef80-4b5c-acd8-3accc0326ebb",
+            "credit_order_id": "e41660fc-15af-4136-98e3-fe91c6c37787",
+            "payment_id": "ccecff8e-71dc-4857-8aa0-77f09ecb9948",
+            "received_minor": 2700,
+            "credit_minor": 1000,
+            "grant_status": "USED"
+          }
+        },
+        {
+          "id": "CO-MODERN-12",
+          "name": "same paid room cancels through production review; three actual refunds revoke benefit and cannot revive old files",
+          "result": "PASS",
+          "records": {
+            "actors": {
+              "host": "b9da484b-50c9-499e-81e0-70981bec2c69",
+              "producer": "87043d01-7c70-410c-afaf-c23d28c65417",
+              "independent_reviewer": "93c7bc2d-149e-430e-9e7f-00fe8b7edbf2",
+              "withdrawn_member": "43bd9bf0-6e04-4ee2-bd36-cf99d59f8993"
+            },
+            "room_id": "8c1ef477-0e08-465e-b406-0f04b607501a",
+            "order_id": "ef7a740a-963e-4a2e-854d-2798aa079f6d",
+            "project_id": "8d626ff3-4216-4ddc-8f35-c9026ea47ea3",
+            "case_id": "2e02968a-b5f1-47b1-b5fb-8e090f3d738c",
+            "refund_ids": [
+              "c8d09935-3597-4536-b84b-1b96133e6376",
+              "86612d0e-d25f-4367-8336-343c72699c85",
+              "f7d1413c-0a2f-470d-a95f-a60ddc0742cd"
+            ],
+            "financial": {
+              "net_minor": 0,
+              "received_minor": 10000,
+              "refunded_minor": 10000
+            },
+            "benefit_status": "USED",
+            "consumed_history_retained": true
+          }
+        },
+        {
+          "id": "CO-MODERN-13",
+          "name": "refunded source blocks credit production but preserves recorded cash and consumed history",
+          "result": "PASS",
+          "records": {
+            "source_room_id": "8c1ef477-0e08-465e-b406-0f04b607501a",
+            "source_order_id": "ef7a740a-963e-4a2e-854d-2798aa079f6d",
+            "credit_order_id": "e41660fc-15af-4136-98e3-fe91c6c37787",
+            "grant_id": "a86870e3-ef80-4b5c-acd8-3accc0326ebb",
+            "automatic_cash_refund": false,
+            "production_blocked": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "WALLET-ACTUAL-SPEND",
+      "acceptance_id": "ACC-DEL-17.02",
+      "result": "LOCAL_PASS",
+      "scope": "同账户实际充值、会员过期余额消费和验收后积分",
+      "remaining": "所需端侧、真实服务及独立财务/维护者验收未代替；不关闭整组",
+      "actual_checks": [
+        {
+          "name": "two actual recharge receipts reach the first threshold without creating consumption growth",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "recharge_ids": [
+              "c26b246d-79a2-4df1-8559-192b0baf84e1",
+              "655d73dd-c2a5-4934-92fd-363b6dd9b66a"
+            ],
+            "balance_minor": 30000,
+            "valid_until": "2027-11-14T09:24:52.000Z"
+          }
+        },
+        {
+          "name": "expired membership still spends existing funds and actual stock acceptance establishes the original earning",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "order_id": "33d1cb4b-b07f-49bb-8ea4-c31817e5d695",
+            "payment_id": "aed33c8d-7171-46ee-890a-6bf333747294",
+            "spent_minor": 100,
+            "accepted_at": "2028-11-14T09:24:52.000Z",
+            "membership_active": false
+          }
+        },
+        {
+          "name": "actual accepted consumption matures and a later recharge restores membership without buying growth",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "earning_id": "9569682d-fce0-48eb-a412-0a49bb69c68c",
+            "order_id": "33d1cb4b-b07f-49bb-8ea4-c31817e5d695",
+            "recharge_id": "fc379a8a-d048-4825-aa75-feb821c1d98d",
+            "valid_until": "2029-11-22T09:24:52.000Z",
+            "growth": 10
+          }
+        }
+      ]
+    },
+    {
+      "id": "WALLET-PERIODS",
+      "acceptance_id": "ACC-DEL-17.03",
+      "result": "LOCAL_PASS",
+      "scope": "首次/续年/到期/恢复及退款后会员重算，余额保留",
+      "remaining": "所需端侧、真实服务及独立财务/维护者验收未代替；不关闭整组",
+      "actual_checks": [
+        {
+          "name": "two actual recharge receipts reach the first threshold without creating consumption growth",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "recharge_ids": [
+              "c26b246d-79a2-4df1-8559-192b0baf84e1",
+              "655d73dd-c2a5-4934-92fd-363b6dd9b66a"
+            ],
+            "balance_minor": 30000,
+            "valid_until": "2027-11-14T09:24:52.000Z"
+          }
+        },
+        {
+          "name": "renewal extends the same account once and expiry preserves every original balance lot",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "recharge_ids": [
+              "c26b246d-79a2-4df1-8559-192b0baf84e1",
+              "655d73dd-c2a5-4934-92fd-363b6dd9b66a",
+              "492b92dc-0bb1-4d79-bcd0-e0319c64a457"
+            ],
+            "expiry": "2028-11-13T09:24:52.000Z",
+            "balance_minor": 60000
+          }
+        },
+        {
+          "name": "actual accepted consumption matures and a later recharge restores membership without buying growth",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "earning_id": "9569682d-fce0-48eb-a412-0a49bb69c68c",
+            "order_id": "33d1cb4b-b07f-49bb-8ea4-c31817e5d695",
+            "recharge_id": "fc379a8a-d048-4825-aa75-feb821c1d98d",
+            "valid_until": "2029-11-22T09:24:52.000Z",
+            "growth": 10
+          }
+        },
+        {
+          "name": "unsent refund cancellation releases its hold; unknown result keeps it until original-route receipt settles once",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "recharge_id": "fc379a8a-d048-4825-aa75-feb821c1d98d",
+            "refund_case_id": "03c77334-1c26-44e8-8f2f-2717863f040d",
+            "refunded_minor": 30000,
+            "balance_minor": 59900,
+            "membership_active": false,
+            "growth_preserved": 10
+          }
+        },
+        {
+          "name": "a later recharge restores one year from its own receipt while original rules and settled refunds stay unchanged",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "recharge_id": "71fe48a3-2dcd-4a74-afdd-ca2c4a37d074",
+            "valid_until": "2029-12-02T09:24:52.000Z",
+            "balance_minor": 90000,
+            "original_rule_unchanged": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "WALLET-ORIGINAL-REFUND",
+      "acceptance_id": "ACC-DEL-17.04",
+      "result": "LOCAL_PASS",
+      "scope": "退款取消释放、未知占用、原路回执幂等及同消费退回原充值批次",
+      "remaining": "所需端侧、真实服务及独立财务/维护者验收未代替；不关闭整组",
+      "actual_checks": [
+        {
+          "name": "unsent refund cancellation releases its hold; unknown result keeps it until original-route receipt settles once",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "recharge_id": "fc379a8a-d048-4825-aa75-feb821c1d98d",
+            "refund_case_id": "03c77334-1c26-44e8-8f2f-2717863f040d",
+            "refunded_minor": 30000,
+            "balance_minor": 59900,
+            "membership_active": false,
+            "growth_preserved": 10
+          }
+        },
+        {
+          "name": "refund of the same accepted purchase restores its original recharge lot and reverses only its consumption growth",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "order_id": "33d1cb4b-b07f-49bb-8ea4-c31817e5d695",
+            "refund_id": "b4bd27a6-3075-468f-a758-3fe5174072fd",
+            "restored_recharge_id": "c26b246d-79a2-4df1-8559-192b0baf84e1",
+            "restored_minor": 100,
+            "growth": 0,
+            "balance_minor": 60000
+          }
+        }
+      ]
+    },
+    {
+      "id": "WALLET-GROWTH-REVERSAL",
+      "acceptance_id": "ACC-DEL-18.04",
+      "result": "LOCAL_PASS",
+      "scope": "充值不买成长、充值退款不抹消费成长、同消费退款冲回",
+      "remaining": "所需端侧、真实服务及独立财务/维护者验收未代替；不关闭整组",
+      "actual_checks": [
+        {
+          "name": "actual accepted consumption matures and a later recharge restores membership without buying growth",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "earning_id": "9569682d-fce0-48eb-a412-0a49bb69c68c",
+            "order_id": "33d1cb4b-b07f-49bb-8ea4-c31817e5d695",
+            "recharge_id": "fc379a8a-d048-4825-aa75-feb821c1d98d",
+            "valid_until": "2029-11-22T09:24:52.000Z",
+            "growth": 10
+          }
+        },
+        {
+          "name": "unsent refund cancellation releases its hold; unknown result keeps it until original-route receipt settles once",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "recharge_id": "fc379a8a-d048-4825-aa75-feb821c1d98d",
+            "refund_case_id": "03c77334-1c26-44e8-8f2f-2717863f040d",
+            "refunded_minor": 30000,
+            "balance_minor": 59900,
+            "membership_active": false,
+            "growth_preserved": 10
+          }
+        },
+        {
+          "name": "refund of the same accepted purchase restores its original recharge lot and reverses only its consumption growth",
+          "result": "PASS",
+          "records": {
+            "account_id": "95ebd8d2-7cd9-48c9-842c-b1f0610a25aa",
+            "order_id": "33d1cb4b-b07f-49bb-8ea4-c31817e5d695",
+            "refund_id": "b4bd27a6-3075-468f-a758-3fe5174072fd",
+            "restored_recharge_id": "c26b246d-79a2-4df1-8559-192b0baf84e1",
+            "restored_minor": 100,
+            "growth": 0,
+            "balance_minor": 60000
+          }
+        }
+      ]
+    }
+  ]
+}

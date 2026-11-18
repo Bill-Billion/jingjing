@@ -1,0 +1,160 @@
+TAP version 13
+# Subtest: explicit company buyer follows public artist invitation through a directly accepted commercial order
+    # Subtest: ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing
+    not ok 1 - ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing
+      ---
+      duration_ms: 86.7293
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\invitation-representative.integration.test.cjs:16:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":403,"meta":{"request_id":"9ec78cad-d298-46c0-b194-049adf788585","actor":{"account_id":"25ee5113-f99d-416d-b9cd-63f6a2e65de4"},"acting_party":"bc7117bc-67b9-46cb-a982-9caf12ba99b7"},"error":{"code":"ARTIST_PARTY_FORBIDDEN","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        403 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 403
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:16:22)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:20:169
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:16:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:19:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch
+    not ok 2 - pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch
+      ---
+      duration_ms: 8.6205
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\invitation-representative.integration.test.cjs:16:89'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        reviewNotice (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:18:69)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:24:61
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:16:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:23:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP
+    not ok 3 - representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP
+      ---
+      duration_ms: 57.8246
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\invitation-representative.integration.test.cjs:16:89'
+      failureType: 'testCodeFailure'
+      error: 'VERSION_CONFLICT'
+      code: 'VERSION_CONFLICT'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\representatives.js:42:108
+        command (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\repository.js:57:22)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\representatives.js:42:4
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async createGig (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:29:85)
+        async Object.commercialQuote (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\helpers\notices-seed.cjs:44:29)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:32:18
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:16:106)
+      ...
+    # Subtest: buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages
+    not ok 4 - buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages
+      ---
+      duration_ms: 32.1557
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\invitation-representative.integration.test.cjs:16:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":403,"meta":{"request_id":"d9fd7dd2-2533-4fd8-8c99-19075c01c39b","actor":{"account_id":"25ee5113-f99d-416d-b9cd-63f6a2e65de4"},"acting_party":"bc7117bc-67b9-46cb-a982-9caf12ba99b7"},"error":{"code":"GIG_PARTY_FORBIDDEN","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        403 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 403
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:16:22)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:39:15
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:16:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:34:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: independent support links that invitation to the exact quote, and the representative pays the original company order
+    not ok 5 - independent support links that invitation to the exact quote, and the representative pays the original company order
+      ---
+      duration_ms: 0.4082
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\invitation-representative.integration.test.cjs:16:89'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:44:64
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:16:112)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Test.start (node:internal/test_runner/test:944:17)
+        TestContext.test (node:internal/test_runner/test:373:20)
+        sub (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:16:89)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:43:8)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      ...
+    # Subtest: revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged
+    not ok 6 - revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged
+      ---
+      duration_ms: 0.2035
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\invitation-representative.integration.test.cjs:16:89'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:48:65
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:16:112)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Test.start (node:internal/test_runner/test:944:17)
+        TestContext.test (node:internal/test_runner/test:373:20)
+        sub (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:16:89)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\invitation-representative.integration.test.cjs:47:8)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      ...
+    1..6
+not ok 1 - explicit company buyer follows public artist invitation through a directly accepted commercial order
+  ---
+  duration_ms: 6967.344
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\invitation-representative.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '6 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 7
+# suites 0
+# pass 0
+# fail 7
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7157.2287

@@ -6,6 +6,9 @@ const {createReadinessRepository,assertUsable}=require('../providers/readiness')
 const {ref,id,error}=require('../party/policy');
 const {yuanToMinor,minorToYuan,amount}=require('./policy');
 function createTradeProviders(db,env={},testDependencies={}) {
+ // Inspection, lazy SDK construction and result verification share one snapshot.
+ // Recompose explicitly after changing credentials/products, then verify that revision.
+ env=Object.freeze({...env});
  const repository=testDependencies.readiness||createReadinessRepository(db);
  const environment=env.NODE_ENV==='production'?'PRODUCTION':'SANDBOX';
  const descriptor=code=>({provider_kind:'PaymentProvider',provider_code:code,capability_code:'order_payment',environment});

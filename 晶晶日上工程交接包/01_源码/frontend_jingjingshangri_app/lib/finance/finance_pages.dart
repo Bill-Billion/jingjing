@@ -562,10 +562,13 @@ class _RecordState extends State<_Record> {
           financeParagraph(g!.data['rules']['terms']),
           for (final line in g!.data['rules']['lines'])
             ExpansionTile(title: Text('分配明细 · ${line['line_id']}'), children: [
-              for (final share in line['shares'])
-                tradeFact(
-                    '${financeRoles[share['role']]!} · ${shortSupplyId(share['party_id'])}',
-                    percent(share['bps'])),
+              if (line['allocation'] != null)
+                ...allocationFacts(line['allocation'])
+              else
+                for (final share in line['shares'])
+                  tradeFact(
+                      '${financeRoles[share['role']]!} · ${shortSupplyId(share['party_id'])}',
+                      percent(share['bps'])),
               for (final fee in line['deductions']) ...[
                 tradeFact('费用承担主体', shortSupplyId(fee['party_id'])),
                 tradeFact('费用金额', financeMoneyText(fee['amount_minor'])),
@@ -584,6 +587,22 @@ class _RecordState extends State<_Record> {
                     fieldLabels: financeLabels))
           ])
         ])
+      ];
+  List<Widget> allocationFacts(dynamic a) => [
+        supplyNote('按本订单保存的两层分配计算，不使用之后改动的费率。'),
+        tradeFact('平台总收入（占订单净实付）', percent(a['platform_bps'])),
+        tradeFact('供给侧收入（占订单净实付）', percent(10000 - a['platform_bps'] as int)),
+        if (a['mcn_party_id'] == null)
+          supplyNote('当前没有机构抽成。')
+        else ...[
+          tradeFact('合作机构', shortSupplyId(a['mcn_party_id'])),
+          tradeFact('机构比例（占供给侧收入）', percent(a['mcn_supply_bps'])),
+        ],
+        if (a['referrer_party_id'] != null) ...[
+          tradeFact('直接推荐方', shortSupplyId(a['referrer_party_id'])),
+          tradeFact('推荐比例（占订单净实付，从平台收入内分出）', percent(a['referral_bps'])),
+        ],
+        supplyNote('具体金额以结算单为准；这里的比例不表示已经转账。'),
       ];
   String percent(int bps) =>
       '${bps ~/ 100}.${(bps % 100).toString().padLeft(2, '0')}%';
@@ -927,17 +946,28 @@ class _RecordState extends State<_Record> {
                 locked
                     ? null
                     : () async {
-                        setState(() => busy = true);
+                        final epoch = widget.session.epoch, owner = api.owner();
+                        setState(() {
+                          busy = true;
+                          error = null;
+                          notice = null;
+                        });
                         try {
                           final bytes = await api.evidence(x, id);
                           if (!mounted) return;
+                          api.check(epoch, owner);
                           await FilePicker.saveFile(
                               dialogTitle: '保存私有结算材料',
                               fileName: 'finance-evidence-$id.bin',
                               bytes: bytes);
+                          api.check(epoch, owner);
                           if (mounted) setState(() => notice = '已按当前权限读取材料。');
                         } on AccountError catch (e) {
                           if (mounted) setState(() => error = financeError(e));
+                        } catch (_) {
+                          if (mounted) {
+                            setState(() => error = '文件保存未完成，请检查设备后重试。');
+                          }
                         } finally {
                           if (mounted) setState(() => busy = false);
                         }

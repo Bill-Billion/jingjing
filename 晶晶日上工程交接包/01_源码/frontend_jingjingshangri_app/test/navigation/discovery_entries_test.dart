@@ -76,27 +76,21 @@ void main() {
         throwsA(isA<AccountError>()));
   });
 
-  testWidgets('查找不捏造匹配结果，跳转传入实际条件', (t) async {
-    String? opened;
-    await t.pumpWidget(MaterialApp(
-        onGenerateRoute: (settings) {
-          opened = settings.name;
-          return MaterialPageRoute<void>(
-              builder: (_) => const Scaffold(body: Text('真实目录')));
-        },
-        home: const DiscoverySearchPage(initialCity: '上海')));
-    expect(find.text('林知夏'), findsNothing);
+  testWidgets('搜索别名保留城市并向服务端发送关键词，不捏造匹配率', (t) async {
+    final adapter = FakeAccountAdapter();
+    final active = (await t.runAsync(() => buyerSession(adapter)))!;
+    await v5.host(t, active, const DiscoverySearchPage(initialCity: '上海'));
     expect(find.text('匹配 96%'), findsNothing);
-    expect(
-        t
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '智能匹配尚未开放'))
-            .onPressed,
-        isNull);
-    await t.enterText(find.byKey(const ValueKey('discovery-tag')), '悬疑');
-    await v5.reveal(t, find.text('查看所选目录'));
-    await t.tap(find.text('查看所选目录'));
-    await t.pumpAndSettle();
-    expect(Uri.parse(opened!).queryParameters, {'city': '上海', 'tag': '悬疑'});
+    await v5.reveal(t, find.byType(TextField).last);
+    await t.enterText(find.byType(TextField).last, '悬疑');
+    await v5.reveal(t, find.text('查找'));
+    await t.tap(find.text('查找'));
+    await v5.frames(t);
+    final request =
+        adapter.requests.lastWhere((r) => r.path == '/api/v1/discovery/search');
+    expect(request.queryParameters,
+        {'kind': 'ARTIST', 'limit': 20, 'city': '上海', 'q': '悬疑'});
+    expect(request.headers['X-Acting-Party'], isNull);
     expect(t.takeException(), isNull);
   });
 

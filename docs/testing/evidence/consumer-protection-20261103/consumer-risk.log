@@ -1,0 +1,95 @@
+TAP version 13
+# Subtest: reviewed consumer protection binds real operations, preserves recovery and controls queued notifications
+    # Subtest: no policy is explicitly unconfigured; self-review and foreign identities denied
+    ok 1 - no policy is explicitly unconfigured; self-review and foreign identities denied
+      ---
+      duration_ms: 159.5703
+      type: 'test'
+      ...
+    # Subtest: second real payment requires reviewed message; denial rolls back payment and operation key
+    ok 2 - second real payment requires reviewed message; denial rolls back payment and operation key
+      ---
+      duration_ms: 451.1114
+      type: 'test'
+      ...
+    # Subtest: two confirmed operations cannot reuse a stale activity snapshot concurrently
+    ok 3 - two confirmed operations cannot reuse a stale activity snapshot concurrently
+      ---
+      duration_ms: 238.7397
+      type: 'test'
+      ...
+    # Subtest: policy replacement and expiry require fresh explicit confirmation; unknown provider result is not resent
+    ok 4 - policy replacement and expiry require fresh explicit confirmation; unknown provider result is not resent
+      ---
+      duration_ms: 300.0659
+      type: 'test'
+      ...
+    # Subtest: prepared payment can recover by record id after policy changed, without a second payment
+    ok 5 - prepared payment can recover by record id after policy changed, without a second payment
+      ---
+      duration_ms: 224.6332
+      type: 'test'
+      ...
+    # Subtest: late verified payment and approved refund remain executable after consumer rule changes
+    ok 6 - late verified payment and approved refund remain executable after consumer rule changes
+      ---
+      duration_ms: 114.2879
+      type: 'test'
+      ...
+    # Subtest: recharge guard rolls back cash attempt, original request resumes after confirmation
+    ok 7 - recharge guard rolls back cash attempt, original request resumes after confirmation
+      ---
+      duration_ms: 46.0662
+      type: 'test'
+      ...
+    # Subtest: preference HTTP and old clients preserve new settings; night reminders do not require usage tracking
+    ok 8 - preference HTTP and old clients preserve new settings; night reminders do not require usage tracking
+      ---
+      duration_ms: 38.678
+      type: 'test'
+      ...
+    # Subtest: unconfigured sender reports unavailable; opt-out after enqueue suppresses send
+    ok 9 - unconfigured sender reports unavailable; opt-out after enqueue suppresses send
+      ---
+      duration_ms: 16.7799
+      type: 'test'
+      ...
+    # Subtest: queue respects current quiet hours and does not revive a deferred item after opt-out
+    ok 10 - queue respects current quiet hours and does not revive a deferred item after opt-out
+      ---
+      duration_ms: 23.0131
+      type: 'test'
+      ...
+    # Subtest: concurrent workers send once; marketing daily restraint also serializes separate messages
+    ok 11 - concurrent workers send once; marketing daily restraint also serializes separate messages
+      ---
+      duration_ms: 23.7051
+      type: 'test'
+      ...
+    # Subtest: business notifications enter real outbox, recheck permissions and retain station inbox when push closes
+    ok 12 - business notifications enter real outbox, recheck permissions and retain station inbox when push closes
+      ---
+      duration_ms: 167.7581
+      type: 'test'
+      ...
+    # Subtest: unknown push response is queried using original key, never automatically resent
+    ok 13 - unknown push response is queried using original key, never automatically resent
+      ---
+      duration_ms: 15.3323
+      type: 'test'
+      ...
+    1..13
+ok 1 - reviewed consumer protection binds real operations, preserves recovery and controls queued notifications
+  ---
+  duration_ms: 11131.7285
+  type: 'test'
+  ...
+1..1
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11362.5962

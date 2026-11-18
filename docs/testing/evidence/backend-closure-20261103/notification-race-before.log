@@ -1,0 +1,126 @@
+TAP version 13
+# Subtest: reviewed consumer protection binds real operations, preserves recovery and controls queued notifications
+    # Subtest: no policy is explicitly unconfigured; self-review and foreign identities denied
+    ok 1 - no policy is explicitly unconfigured; self-review and foreign identities denied
+      ---
+      duration_ms: 156.5385
+      type: 'test'
+      ...
+    # Subtest: second real payment requires reviewed message; denial rolls back payment and operation key
+    ok 2 - second real payment requires reviewed message; denial rolls back payment and operation key
+      ---
+      duration_ms: 379.95
+      type: 'test'
+      ...
+    # Subtest: two confirmed operations cannot reuse a stale activity snapshot concurrently
+    ok 3 - two confirmed operations cannot reuse a stale activity snapshot concurrently
+      ---
+      duration_ms: 211.4454
+      type: 'test'
+      ...
+    # Subtest: policy replacement and expiry require fresh explicit confirmation; unknown provider result is not resent
+    ok 4 - policy replacement and expiry require fresh explicit confirmation; unknown provider result is not resent
+      ---
+      duration_ms: 251.4174
+      type: 'test'
+      ...
+    # Subtest: prepared payment can recover by record id after policy changed, without a second payment
+    ok 5 - prepared payment can recover by record id after policy changed, without a second payment
+      ---
+      duration_ms: 182.6378
+      type: 'test'
+      ...
+    # Subtest: late verified payment and approved refund remain executable after consumer rule changes
+    ok 6 - late verified payment and approved refund remain executable after consumer rule changes
+      ---
+      duration_ms: 97.7989
+      type: 'test'
+      ...
+    # Subtest: recharge guard rolls back cash attempt, original request resumes after confirmation
+    ok 7 - recharge guard rolls back cash attempt, original request resumes after confirmation
+      ---
+      duration_ms: 39.0992
+      type: 'test'
+      ...
+    # Subtest: preference HTTP and old clients preserve new settings; night reminders do not require usage tracking
+    ok 8 - preference HTTP and old clients preserve new settings; night reminders do not require usage tracking
+      ---
+      duration_ms: 35.9817
+      type: 'test'
+      ...
+    # Subtest: unconfigured sender reports unavailable; opt-out after enqueue suppresses send
+    ok 9 - unconfigured sender reports unavailable; opt-out after enqueue suppresses send
+      ---
+      duration_ms: 16.3816
+      type: 'test'
+      ...
+    # Subtest: queue respects current quiet hours and does not revive a deferred item after opt-out
+    ok 10 - queue respects current quiet hours and does not revive a deferred item after opt-out
+      ---
+      duration_ms: 19.7129
+      type: 'test'
+      ...
+    # Subtest: concurrent workers send once; marketing daily restraint also serializes separate messages
+    ok 11 - concurrent workers send once; marketing daily restraint also serializes separate messages
+      ---
+      duration_ms: 18.4493
+      type: 'test'
+      ...
+    # Subtest: business notifications enter real outbox, recheck permissions and retain station inbox when push closes
+    ok 12 - business notifications enter real outbox, recheck permissions and retain station inbox when push closes
+      ---
+      duration_ms: 146.8363
+      type: 'test'
+      ...
+    # Subtest: unknown push response is queried using original key, never automatically resent
+    ok 13 - unknown push response is queried using original key, never automatically resent
+      ---
+      duration_ms: 14.6547
+      type: 'test'
+      ...
+    # Subtest: late unknown send result returns the accepted status already established by reconciliation
+    not ok 14 - late unknown send result returns the accepted status already established by reconciliation
+      ---
+      duration_ms: 15.1015
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\consumer-risk.integration.test.cjs:100:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'UNKNOWN'
+        - 'ACCEPTED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'ACCEPTED'
+      actual: 'UNKNOWN'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\consumer-risk.integration.test.cjs:107:10)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\consumer-risk.integration.test.cjs:100:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..14
+not ok 1 - reviewed consumer protection binds real operations, preserves recovery and controls queued notifications
+  ---
+  duration_ms: 9283.0692
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\consumer-risk.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 15
+# suites 0
+# pass 13
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9521.1767

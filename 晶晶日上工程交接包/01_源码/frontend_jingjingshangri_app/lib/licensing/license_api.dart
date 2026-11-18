@@ -80,25 +80,26 @@ class LicenseApi {
   Map<String, dynamic>? pending(String path) =>
       session.pending('POST', path, actingParty: owner());
   Future<LicenseRecord> write(String path, Map<String, dynamic> body,
-      {int? version, String? kind}) async {
+      {int? version, String? kind, String? expectedParent}) async {
     if (utf8.encode(jsonEncode(body)).length > 65536) {
       throw const AccountError(413, 'FORM_TOO_LARGE');
     }
     final party = owner(), epoch = session.epoch;
     final raw = await session.write('POST', path,
-        actingParty: party,
-        body: body,
-        version: version,
-        validate: (v) => LicenseRecord.parse(v, party, kind: kind));
+        actingParty: party, body: body, version: version, validate: (v) {
+      final r = LicenseRecord.parse(v, party, kind: kind);
+      licenseRequire(expectedParent == null || r.parent == expectedParent);
+    });
     check(epoch, party);
     return LicenseRecord.parse(raw, party, kind: kind);
   }
 
-  Future<LicenseRecord> retry(String path, {String? kind}) async {
+  Future<LicenseRecord> retry(String path,
+      {String? kind, String? expectedParent}) async {
     final value = pending(path);
     if (value == null) throw const AccountError(409, 'NO_PENDING_OPERATION');
     return write(path, Map<String, dynamic>.from(value['body']),
-        version: value['version'], kind: kind);
+        version: value['version'], kind: kind, expectedParent: expectedParent);
   }
 
   Future<String> reading(LicenseRecord record) async {

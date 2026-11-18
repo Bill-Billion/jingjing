@@ -41,9 +41,11 @@ class SupplyFiles extends StatefulWidget {
       required this.ids,
       this.onChanged,
       this.single = false,
+      this.acceptedPurposes,
       this.enabled = true});
   final SupplyApi api;
   final String purpose;
+  final Set<String>? acceptedPurposes;
   final List<String> ids;
   final ValueChanged<List<String>>? onChanged;
   final bool single, enabled;
@@ -73,7 +75,11 @@ class _SupplyFilesState extends State<SupplyFiles> {
     _metadata.removeWhere((id, _) => !widget.ids.contains(id));
     try {
       for (final id in widget.ids) {
-        final meta = await widget.api.asset(id, purpose: widget.purpose);
+        final meta = await widget.api.asset(id);
+        if (!(widget.acceptedPurposes ?? {widget.purpose})
+            .contains(meta['purpose'])) {
+          throw const AccountError(502, 'INVALID_RESPONSE');
+        }
         if (!mounted || ticket != _ticket) return;
         setState(() => _metadata[id] = meta);
       }

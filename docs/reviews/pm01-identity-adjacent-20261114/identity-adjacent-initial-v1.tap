@@ -1,0 +1,742 @@
+TAP version 13
+# Subtest: adjacent artist and stock operations require current actor identity
+    # Subtest: verified delegated actor can create an artist-owned look
+    ok 1 - verified delegated actor can create an artist-owned look
+      ---
+      duration_ms: 78.7686
+      type: 'test'
+      ...
+    # Subtest: verified delegated actor can submit a public listing
+    ok 2 - verified delegated actor can submit a public listing
+      ---
+      duration_ms: 27.816
+      type: 'test'
+      ...
+    # Subtest: verified organization actor can use compatible legacy creation
+    ok 3 - verified organization actor can use compatible legacy creation
+      ---
+      duration_ms: 17.5345
+      type: 'test'
+      ...
+    # Subtest: unverified actor rejects new look
+    not ok 4 - unverified actor rejects new look
+      ---
+      duration_ms: 17.1486
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"46d8bf4e-8c43-4dc7-b769-8dc92219cd65","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"dc8e237d-ac82-4ebd-83dc-69699f9a5d69","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LOOK","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"RECORDED","object_version":1,"content_sha256":"ceaf07ef39b67d212a1cf61c664d930929fc2dedd736c095f6c75582eb1ccc3c","data":{"consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic look","material_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"previous_version_id":"84832fa4-b298-4b6d-be4c-84e5a1c22911","revision":2}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified actor rejects look replay
+    not ok 5 - unverified actor rejects look replay
+      ---
+      duration_ms: 17.8456
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"d85b93c5-b882-497d-825d-42b0d65ce5cd","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"84832fa4-b298-4b6d-be4c-84e5a1c22911","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LOOK","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"RECORDED","object_version":1,"content_sha256":"3b090e04c94e5e5b102ffb70d11ca6af5adc0e81770441a096f7409215a8954b","data":{"consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic look","material_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"previous_version_id":null,"revision":1}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified actor rejects new public listing
+    not ok 6 - unverified actor rejects new public listing
+      ---
+      duration_ms: 19.5465
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"6d146398-2f49-47d5-a511-8c39ae1f01d7","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"b5381139-d68f-430a-b282-6b1dbba0f3b1","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LISTING","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"SUBMITTED","object_version":1,"content_sha256":"6d8b891360322481d7111b445c72ee4def6f3d121f82bdc34cf7354051fa2a6c","data":{"audition_public":false,"city":"synthetic","consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic public artist","introduction":"synthetic only","look_version_id":"84832fa4-b298-4b6d-be4c-84e5a1c22911","preview_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"tags":["synthetic"],"voice_version_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified actor rejects public listing replay
+    not ok 7 - unverified actor rejects public listing replay
+      ---
+      duration_ms: 13.4996
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"fb883a66-79af-4783-96c0-3e646d9b3a8c","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"12667572-5d6f-4208-834e-a6e160b347d5","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LISTING","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"SUBMITTED","object_version":1,"content_sha256":"6d8b891360322481d7111b445c72ee4def6f3d121f82bdc34cf7354051fa2a6c","data":{"audition_public":false,"city":"synthetic","consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic public artist","introduction":"synthetic only","look_version_id":"84832fa4-b298-4b6d-be4c-84e5a1c22911","preview_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"tags":["synthetic"],"voice_version_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified actor rejects new legacy avatar
+    not ok 8 - unverified actor rejects new legacy avatar
+      ---
+      duration_ms: 12.5711
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"0d630c93-ce68-4579-b819-2b0665b080bb","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"9e94dbce-833c-4ee9-b63f-e7c6ca1fc671","kind":"AVATAR","stream_ref":"9024cdeb-4052-4135-a4c3-41c5b8ce6e52","revision":1,"owner_party_id":"b0be6796-a871-46db-8b63-1b22fd88dffb","created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"RECORDED","object_version":1,"data":{"display_name":"synthetic legacy org avatar","material_asset_ids":["341dac09-100d-4d53-9330-7807ff68ac5e"],"provider_asset_ref":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified actor rejects legacy avatar replay
+    not ok 9 - unverified actor rejects legacy avatar replay
+      ---
+      duration_ms: 13.6697
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"02f98522-29a4-4ed7-b3b6-433789df1c88","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"6ec3d7db-b98c-4744-8230-3a92609c0225","data":{"display_name":"synthetic legacy org avatar","material_asset_ids":["341dac09-100d-4d53-9330-7807ff68ac5e"],"provider_asset_ref":null},"kind":"AVATAR","revision":1,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","stream_ref":"8719f0b6-b256-4e48-b426-e4a18c23e5a0","current_status":"RECORDED","object_version":1,"owner_party_id":"b0be6796-a871-46db-8b63-1b22fd88dffb"}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified actor retains existing artist reads
+    ok 10 - unverified actor retains existing artist reads
+      ---
+      duration_ms: 12.3536
+      type: 'test'
+      ...
+    # Subtest: expired actor rejects new look
+    not ok 11 - expired actor rejects new look
+      ---
+      duration_ms: 13.8497
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"4cd689fc-bacf-4575-987f-4d0db184fbd2","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"f8f86ad7-5281-4039-91d7-3cb1a9c96daf","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LOOK","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"RECORDED","object_version":1,"content_sha256":"b34d6dedb18c9f4c666866912b87732d942317a8b10ed744199b204449cc9816","data":{"consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic look","material_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"previous_version_id":"dc8e237d-ac82-4ebd-83dc-69699f9a5d69","revision":3}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor rejects look replay
+    not ok 12 - expired actor rejects look replay
+      ---
+      duration_ms: 12.6361
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"b03bfccd-62d2-400c-b666-1ade1fc08bda","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"84832fa4-b298-4b6d-be4c-84e5a1c22911","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LOOK","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"RECORDED","object_version":1,"content_sha256":"3b090e04c94e5e5b102ffb70d11ca6af5adc0e81770441a096f7409215a8954b","data":{"consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic look","material_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"previous_version_id":null,"revision":1}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor rejects new public listing
+    not ok 13 - expired actor rejects new public listing
+      ---
+      duration_ms: 16.6018
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"e28b3060-813d-4645-acce-dcb37483f536","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"4235030f-25f9-4206-af25-4980c2937814","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LISTING","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"SUBMITTED","object_version":1,"content_sha256":"6d8b891360322481d7111b445c72ee4def6f3d121f82bdc34cf7354051fa2a6c","data":{"audition_public":false,"city":"synthetic","consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic public artist","introduction":"synthetic only","look_version_id":"84832fa4-b298-4b6d-be4c-84e5a1c22911","preview_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"tags":["synthetic"],"voice_version_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor rejects public listing replay
+    not ok 14 - expired actor rejects public listing replay
+      ---
+      duration_ms: 11.7537
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"38746e04-c43d-4f47-8347-143e02dd72ff","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"12667572-5d6f-4208-834e-a6e160b347d5","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LISTING","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"SUBMITTED","object_version":1,"content_sha256":"6d8b891360322481d7111b445c72ee4def6f3d121f82bdc34cf7354051fa2a6c","data":{"audition_public":false,"city":"synthetic","consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic public artist","introduction":"synthetic only","look_version_id":"84832fa4-b298-4b6d-be4c-84e5a1c22911","preview_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"tags":["synthetic"],"voice_version_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor rejects new legacy avatar
+    not ok 15 - expired actor rejects new legacy avatar
+      ---
+      duration_ms: 10.9549
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"f4811b89-a3ac-436f-ac47-db954f61c7d6","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"08bbd93b-7594-459b-baa6-7c9723fb1054","kind":"AVATAR","stream_ref":"3ca6b69b-f2f2-4754-80a7-f0d9ed77e393","revision":1,"owner_party_id":"b0be6796-a871-46db-8b63-1b22fd88dffb","created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"RECORDED","object_version":1,"data":{"display_name":"synthetic legacy org avatar","material_asset_ids":["341dac09-100d-4d53-9330-7807ff68ac5e"],"provider_asset_ref":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor rejects legacy avatar replay
+    not ok 16 - expired actor rejects legacy avatar replay
+      ---
+      duration_ms: 8.4148
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"d081ac18-ab48-4898-8554-4b5640e0f914","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"6ec3d7db-b98c-4744-8230-3a92609c0225","data":{"display_name":"synthetic legacy org avatar","material_asset_ids":["341dac09-100d-4d53-9330-7807ff68ac5e"],"provider_asset_ref":null},"kind":"AVATAR","revision":1,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","stream_ref":"8719f0b6-b256-4e48-b426-e4a18c23e5a0","current_status":"RECORDED","object_version":1,"owner_party_id":"b0be6796-a871-46db-8b63-1b22fd88dffb"}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor retains existing artist reads
+    ok 17 - expired actor retains existing artist reads
+      ---
+      duration_ms: 13.8963
+      type: 'test'
+      ...
+    # Subtest: rejected actor rejects new look
+    not ok 18 - rejected actor rejects new look
+      ---
+      duration_ms: 12.2866
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"e89e61b7-2637-467f-aeb8-004fc9c05c8a","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"eb33b8ab-4621-4664-b3a9-c16e519ef913","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LOOK","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"RECORDED","object_version":1,"content_sha256":"3e070848a442f774fc0e1a9323b0e487b7f3070f4fa1cca83a004f6c9d6ffd77","data":{"consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic look","material_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"previous_version_id":"f8f86ad7-5281-4039-91d7-3cb1a9c96daf","revision":4}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected actor rejects look replay
+    not ok 19 - rejected actor rejects look replay
+      ---
+      duration_ms: 11.8055
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"408a9aed-52ce-4b8c-9c02-7f449a704698","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"84832fa4-b298-4b6d-be4c-84e5a1c22911","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LOOK","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"RECORDED","object_version":1,"content_sha256":"3b090e04c94e5e5b102ffb70d11ca6af5adc0e81770441a096f7409215a8954b","data":{"consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic look","material_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"previous_version_id":null,"revision":1}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected actor rejects new public listing
+    not ok 20 - rejected actor rejects new public listing
+      ---
+      duration_ms: 15.6876
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"7609f523-210b-4f6f-bb54-c16d8abe3ffc","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"1dd50b51-4fcc-4b7a-9b2b-8295b9d3997d","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LISTING","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"SUBMITTED","object_version":1,"content_sha256":"6d8b891360322481d7111b445c72ee4def6f3d121f82bdc34cf7354051fa2a6c","data":{"audition_public":false,"city":"synthetic","consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic public artist","introduction":"synthetic only","look_version_id":"84832fa4-b298-4b6d-be4c-84e5a1c22911","preview_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"tags":["synthetic"],"voice_version_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected actor rejects public listing replay
+    not ok 21 - rejected actor rejects public listing replay
+      ---
+      duration_ms: 9.4999
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"127b5e5e-dc2c-49fc-bdae-142882f72fc8","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"12667572-5d6f-4208-834e-a6e160b347d5","person_id":"59e682ff-e433-4b62-8a5b-cb94f96d72dc","kind":"LISTING","avatar_id":"76d5f82e-f85b-4db8-9e39-57849886f6d3","counterparty_id":null,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"SUBMITTED","object_version":1,"content_sha256":"6d8b891360322481d7111b445c72ee4def6f3d121f82bdc34cf7354051fa2a6c","data":{"audition_public":false,"city":"synthetic","consent_id":"fa6039e9-7910-4cb8-8b1f-64b35fbd19f8","display_name":"synthetic public artist","introduction":"synthetic only","look_version_id":"84832fa4-b298-4b6d-be4c-84e5a1c22911","preview_asset_ids":["4db86a13-9d91-4153-af23-66d0e1da090a"],"tags":["synthetic"],"voice_version_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected actor rejects new legacy avatar
+    not ok 22 - rejected actor rejects new legacy avatar
+      ---
+      duration_ms: 13.8794
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"8f6deab6-7a3f-45fe-9c03-10531fb55f6f","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"cadd50b3-6cf7-4a7e-b52f-5124cc3a49f7","kind":"AVATAR","stream_ref":"a8adebdb-97ef-4c98-a481-5ad4f3e1d02a","revision":1,"owner_party_id":"b0be6796-a871-46db-8b63-1b22fd88dffb","created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","current_status":"RECORDED","object_version":1,"data":{"display_name":"synthetic legacy org avatar","material_asset_ids":["341dac09-100d-4d53-9330-7807ff68ac5e"],"provider_asset_ref":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected actor rejects legacy avatar replay
+    not ok 23 - rejected actor rejects legacy avatar replay
+      ---
+      duration_ms: 8.7372
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:71:375'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"825fac9c-2598-4900-a0f2-fe1dfc5becfe","actor":{"account_id":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b"},"acting_party":"b0be6796-a871-46db-8b63-1b22fd88dffb"},"data":{"id":"6ec3d7db-b98c-4744-8230-3a92609c0225","data":{"display_name":"synthetic legacy org avatar","material_asset_ids":["341dac09-100d-4d53-9330-7807ff68ac5e"],"provider_asset_ref":null},"kind":"AVATAR","revision":1,"created_by":"7e92fb0e-c0f3-46b4-bb32-eb917762f62b","stream_ref":"8719f0b6-b256-4e48-b426-e4a18c23e5a0","current_status":"RECORDED","object_version":1,"owner_party_id":"b0be6796-a871-46db-8b63-1b22fd88dffb"}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:420)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:71:367)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected actor retains existing artist reads
+    ok 24 - rejected actor retains existing artist reads
+      ---
+      duration_ms: 9.2763
+      type: 'test'
+      ...
+    # Subtest: identity recovery returns original results without extra avatars
+    not ok 25 - identity recovery returns original results without extra avatars
+      ---
+      duration_ms: 31.3884
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:75:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        5 !== 2
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 2
+      actual: 5
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:75:394)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:75:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: verified stock buyer can place and replay one order
+    ok 26 - verified stock buyer can place and replay one order
+      ---
+      duration_ms: 44.7674
+      type: 'test'
+      ...
+    # Subtest: unverified buyer rejects stock new request
+    not ok 27 - unverified buyer rejects stock new request
+      ---
+      duration_ms: 16.4196
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:86:92'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'ARTIST_IDENTITY_REQUIRED'
+        - 'VERIFIED_ADULT_REQUIRED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'VERIFIED_ADULT_REQUIRED'
+      actual: 'ARTIST_IDENTITY_REQUIRED'
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:72)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:143)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:84)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified buyer rejects stock successful replay
+    not ok 28 - unverified buyer rejects stock successful replay
+      ---
+      duration_ms: 7.727
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:86:92'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"6cfb6319-cb6b-439f-802a-84e3534f0bb9","actor":{"account_id":"7ec8fecb-b219-43bf-9b78-722d0e3526f4"},"acting_party":"fb570e88-c74f-48a4-9cba-9f8c5b523afa"},"data":{"id":"6cc6d041-45e0-4dcb-bb82-3fec56b29972","kind":"ORDER","buyer_party_id":"fb570e88-c74f-48a4-9cba-9f8c5b523afa","merchant_party_id":"4cf93537-41a5-40f9-8d5f-58e59589c2b3","parent_id":null,"order_id":null,"created_by":"7ec8fecb-b219-43bf-9b78-722d0e3526f4","current_status":"OPEN","object_version":1,"content_sha256":"0ab744e4dc11b3dd9cb249e4faefe16bfea8fdf8727d1a7f8f02562f508cc80d","data":{"quote":{"lines":[{"title":"synthetic finished video","review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"5b57f72c-0973-454d-8bc2-b9d970b8dfd3"},"line_id":"stock","spec_id":"308ffd53-8997-446e-afa4-e7ce2c8bb6f4","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":100,"total_minor":100,"spec_version":2,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"4cf93537-41a5-40f9-8d5f-58e59589c2b3"}],"review":null,"channel":"ALIPAY","rule_id":"e6cedcd9-40e0-4cb7-a2ea-6bf146d5ecb3","currency":"CNY","expires_at":"2026-11-14T13:26:37.540Z","stock_video":{"license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","excluded":["COMMERCIAL_ADVERTISING","ADAPTATION","DISTRIBUTION","VOICE_SEPARATELY","AI_REGENERATION","SOURCE_OR_MODEL_FILES","NEW_AVATAR_CONTENT","EXCLUSIVE_BUYOUT"],"exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"limited_to_buyer":true,"personal_social_sharing":true},"listing_id":"db77964a-6d0b-403e-aee0-ef38e21f2e22","offer_sha256":"644a3918c75390771e0981af990b9fca5b71f94b65b96ff87c2a5a4ecf6a011a"},"total_minor":100,"installments":[{"key":"stock","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"stock","amount_minor":100}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30},"contract":{"id":"037b3a5e-6df5-4aa4-84ba-fcc9fcae3070","party_ids":["fb570e88-c74f-48a4-9cba-9f8c5b523afa","4cf93537-41a5-40f9-8d5f-58e59589c2b3"],"created_at":"2026-11-14T12:56:37.541Z","commitments":{"quote":{"lines":[{"title":"synthetic finished video","review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"5b57f72c-0973-454d-8bc2-b9d970b8dfd3"},"line_id":"stock","spec_id":"308ffd53-8997-446e-afa4-e7ce2c8bb6f4","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":100,"total_minor":100,"spec_version":2,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"4cf93537-41a5-40f9-8d5f-58e59589c2b3"}],"review":null,"channel":"ALIPAY","rule_id":"e6cedcd9-40e0-4cb7-a2ea-6bf146d5ecb3","currency":"CNY","expires_at":"2026-11-14T13:26:37.540Z","stock_video":{"license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","excluded":["COMMERCIAL_ADVERTISING","ADAPTATION","DISTRIBUTION","VOICE_SEPARATELY","AI_REGENERATION","SOURCE_OR_MODEL_FILES","NEW_AVATAR_CONTENT","EXCLUSIVE_BUYOUT"],"exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"limited_to_buyer":true,"personal_social_sharing":true},"listing_id":"db77964a-6d0b-403e-aee0-ef38e21f2e22","offer_sha256":"644a3918c75390771e0981af990b9fca5b71f94b65b96ff87c2a5a4ecf6a011a"},"total_minor":100,"installments":[{"key":"stock","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"stock","amount_minor":100}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30},"stock_offer_id":"db77964a-6d0b-403e-aee0-ef38e21f2e22","stock_offer_sha256":"644a3918c75390771e0981af990b9fca5b71f94b65b96ff87c2a5a4ecf6a011a"},"rule_contents":[{"id":"e6cedcd9-40e0-4cb7-a2ea-6bf146d5ecb3","terms":{"explicit":"synthetic stock terms"},"version":"1","rule_key":"stock.synthetic","content_sha256":"dad13923f9795642324f0adb03f7f338b99fd35cc8bf6719442cd13b1395e9a5","format_version":"rule-content-v1"}],"content_sha256":"7c92b4da7fe34cdfe5c4775c6519bcafca5ee32ae190d30ef226cdf96d2b329b","current_status":"SEALED","format_version":"contract-content-v1","object_version":1,"signing_method":"NOT_SIGNED","contract_version_id":"2b651c77-18df-4621-bee9-739f8e8aa327"},"financial":{"net_minor":0,"received_minor":0,"refunded_minor":0},"buyer_acknowledged_by":"7ec8fecb-b219-43bf-9b78-722d0e3526f4"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:143)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:84)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified buyer retains original order read
+    ok 29 - unverified buyer retains original order read
+      ---
+      duration_ms: 7.2482
+      type: 'test'
+      ...
+    # Subtest: expired buyer rejects stock new request
+    not ok 30 - expired buyer rejects stock new request
+      ---
+      duration_ms: 18.1184
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:86:92'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'ARTIST_IDENTITY_REQUIRED'
+        - 'VERIFIED_ADULT_REQUIRED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'VERIFIED_ADULT_REQUIRED'
+      actual: 'ARTIST_IDENTITY_REQUIRED'
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:72)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:143)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:84)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired buyer rejects stock successful replay
+    not ok 31 - expired buyer rejects stock successful replay
+      ---
+      duration_ms: 8.1025
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:86:92'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"1dff3ea2-b390-4020-91ef-954d43fd8896","actor":{"account_id":"7ec8fecb-b219-43bf-9b78-722d0e3526f4"},"acting_party":"fb570e88-c74f-48a4-9cba-9f8c5b523afa"},"data":{"id":"6cc6d041-45e0-4dcb-bb82-3fec56b29972","kind":"ORDER","buyer_party_id":"fb570e88-c74f-48a4-9cba-9f8c5b523afa","merchant_party_id":"4cf93537-41a5-40f9-8d5f-58e59589c2b3","parent_id":null,"order_id":null,"created_by":"7ec8fecb-b219-43bf-9b78-722d0e3526f4","current_status":"OPEN","object_version":1,"content_sha256":"0ab744e4dc11b3dd9cb249e4faefe16bfea8fdf8727d1a7f8f02562f508cc80d","data":{"quote":{"lines":[{"title":"synthetic finished video","review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"5b57f72c-0973-454d-8bc2-b9d970b8dfd3"},"line_id":"stock","spec_id":"308ffd53-8997-446e-afa4-e7ce2c8bb6f4","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":100,"total_minor":100,"spec_version":2,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"4cf93537-41a5-40f9-8d5f-58e59589c2b3"}],"review":null,"channel":"ALIPAY","rule_id":"e6cedcd9-40e0-4cb7-a2ea-6bf146d5ecb3","currency":"CNY","expires_at":"2026-11-14T13:26:37.540Z","stock_video":{"license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","excluded":["COMMERCIAL_ADVERTISING","ADAPTATION","DISTRIBUTION","VOICE_SEPARATELY","AI_REGENERATION","SOURCE_OR_MODEL_FILES","NEW_AVATAR_CONTENT","EXCLUSIVE_BUYOUT"],"exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"limited_to_buyer":true,"personal_social_sharing":true},"listing_id":"db77964a-6d0b-403e-aee0-ef38e21f2e22","offer_sha256":"644a3918c75390771e0981af990b9fca5b71f94b65b96ff87c2a5a4ecf6a011a"},"total_minor":100,"installments":[{"key":"stock","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"stock","amount_minor":100}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30},"contract":{"id":"037b3a5e-6df5-4aa4-84ba-fcc9fcae3070","party_ids":["fb570e88-c74f-48a4-9cba-9f8c5b523afa","4cf93537-41a5-40f9-8d5f-58e59589c2b3"],"created_at":"2026-11-14T12:56:37.541Z","commitments":{"quote":{"lines":[{"title":"synthetic finished video","review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"5b57f72c-0973-454d-8bc2-b9d970b8dfd3"},"line_id":"stock","spec_id":"308ffd53-8997-446e-afa4-e7ce2c8bb6f4","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":100,"total_minor":100,"spec_version":2,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"4cf93537-41a5-40f9-8d5f-58e59589c2b3"}],"review":null,"channel":"ALIPAY","rule_id":"e6cedcd9-40e0-4cb7-a2ea-6bf146d5ecb3","currency":"CNY","expires_at":"2026-11-14T13:26:37.540Z","stock_video":{"license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","excluded":["COMMERCIAL_ADVERTISING","ADAPTATION","DISTRIBUTION","VOICE_SEPARATELY","AI_REGENERATION","SOURCE_OR_MODEL_FILES","NEW_AVATAR_CONTENT","EXCLUSIVE_BUYOUT"],"exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"limited_to_buyer":true,"personal_social_sharing":true},"listing_id":"db77964a-6d0b-403e-aee0-ef38e21f2e22","offer_sha256":"644a3918c75390771e0981af990b9fca5b71f94b65b96ff87c2a5a4ecf6a011a"},"total_minor":100,"installments":[{"key":"stock","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"stock","amount_minor":100}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30},"stock_offer_id":"db77964a-6d0b-403e-aee0-ef38e21f2e22","stock_offer_sha256":"644a3918c75390771e0981af990b9fca5b71f94b65b96ff87c2a5a4ecf6a011a"},"rule_contents":[{"id":"e6cedcd9-40e0-4cb7-a2ea-6bf146d5ecb3","terms":{"explicit":"synthetic stock terms"},"version":"1","rule_key":"stock.synthetic","content_sha256":"dad13923f9795642324f0adb03f7f338b99fd35cc8bf6719442cd13b1395e9a5","format_version":"rule-content-v1"}],"content_sha256":"7c92b4da7fe34cdfe5c4775c6519bcafca5ee32ae190d30ef226cdf96d2b329b","current_status":"SEALED","format_version":"contract-content-v1","object_version":1,"signing_method":"NOT_SIGNED","contract_version_id":"2b651c77-18df-4621-bee9-739f8e8aa327"},"financial":{"net_minor":0,"received_minor":0,"refunded_minor":0},"buyer_acknowledged_by":"7ec8fecb-b219-43bf-9b78-722d0e3526f4"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:143)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:84)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired buyer retains original order read
+    ok 32 - expired buyer retains original order read
+      ---
+      duration_ms: 6.6601
+      type: 'test'
+      ...
+    # Subtest: rejected buyer rejects stock new request
+    not ok 33 - rejected buyer rejects stock new request
+      ---
+      duration_ms: 16.3266
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:86:92'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'ARTIST_IDENTITY_REQUIRED'
+        - 'VERIFIED_ADULT_REQUIRED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'VERIFIED_ADULT_REQUIRED'
+      actual: 'ARTIST_IDENTITY_REQUIRED'
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:72)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:143)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:84)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected buyer rejects stock successful replay
+    not ok 34 - rejected buyer rejects stock successful replay
+      ---
+      duration_ms: 8.8103
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:86:92'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"4dc98a4c-a5dc-4f5d-b415-744439f83843","actor":{"account_id":"7ec8fecb-b219-43bf-9b78-722d0e3526f4"},"acting_party":"fb570e88-c74f-48a4-9cba-9f8c5b523afa"},"data":{"id":"6cc6d041-45e0-4dcb-bb82-3fec56b29972","kind":"ORDER","buyer_party_id":"fb570e88-c74f-48a4-9cba-9f8c5b523afa","merchant_party_id":"4cf93537-41a5-40f9-8d5f-58e59589c2b3","parent_id":null,"order_id":null,"created_by":"7ec8fecb-b219-43bf-9b78-722d0e3526f4","current_status":"OPEN","object_version":1,"content_sha256":"0ab744e4dc11b3dd9cb249e4faefe16bfea8fdf8727d1a7f8f02562f508cc80d","data":{"quote":{"lines":[{"title":"synthetic finished video","review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"5b57f72c-0973-454d-8bc2-b9d970b8dfd3"},"line_id":"stock","spec_id":"308ffd53-8997-446e-afa4-e7ce2c8bb6f4","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":100,"total_minor":100,"spec_version":2,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"4cf93537-41a5-40f9-8d5f-58e59589c2b3"}],"review":null,"channel":"ALIPAY","rule_id":"e6cedcd9-40e0-4cb7-a2ea-6bf146d5ecb3","currency":"CNY","expires_at":"2026-11-14T13:26:37.540Z","stock_video":{"license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","excluded":["COMMERCIAL_ADVERTISING","ADAPTATION","DISTRIBUTION","VOICE_SEPARATELY","AI_REGENERATION","SOURCE_OR_MODEL_FILES","NEW_AVATAR_CONTENT","EXCLUSIVE_BUYOUT"],"exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"limited_to_buyer":true,"personal_social_sharing":true},"listing_id":"db77964a-6d0b-403e-aee0-ef38e21f2e22","offer_sha256":"644a3918c75390771e0981af990b9fca5b71f94b65b96ff87c2a5a4ecf6a011a"},"total_minor":100,"installments":[{"key":"stock","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"stock","amount_minor":100}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30},"contract":{"id":"037b3a5e-6df5-4aa4-84ba-fcc9fcae3070","party_ids":["fb570e88-c74f-48a4-9cba-9f8c5b523afa","4cf93537-41a5-40f9-8d5f-58e59589c2b3"],"created_at":"2026-11-14T12:56:37.541Z","commitments":{"quote":{"lines":[{"title":"synthetic finished video","review":{"reason":"synthetic independent","decision":"APPROVED","account_id":"5b57f72c-0973-454d-8bc2-b9d970b8dfd3"},"line_id":"stock","spec_id":"308ffd53-8997-446e-afa4-e7ce2c8bb6f4","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":100,"total_minor":100,"spec_version":2,"specification":{"terms":"Synthetic only; no commercial rights, no new generated works.","version":"synthetic-v1","stock_license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"personal_social_sharing":true}},"product_profile":{"type":"STOCK_VIDEO","version":"V5"},"provider_party_id":"4cf93537-41a5-40f9-8d5f-58e59589c2b3"}],"review":null,"channel":"ALIPAY","rule_id":"e6cedcd9-40e0-4cb7-a2ea-6bf146d5ecb3","currency":"CNY","expires_at":"2026-11-14T13:26:37.540Z","stock_video":{"license":{"scope":"PERSONAL_NONCOMMERCIAL","duration":"PERPETUAL","excluded":["COMMERCIAL_ADVERTISING","ADAPTATION","DISTRIBUTION","VOICE_SEPARATELY","AI_REGENERATION","SOURCE_OR_MODEL_FILES","NEW_AVATAR_CONTENT","EXCLUSIVE_BUYOUT"],"exclusive":false,"territory":"WORLDWIDE","aftercare_terms":"Synthetic: rights or delivery failure requires independent full-refund review.","acceptance_hours":72,"limited_to_buyer":true,"personal_social_sharing":true},"listing_id":"db77964a-6d0b-403e-aee0-ef38e21f2e22","offer_sha256":"644a3918c75390771e0981af990b9fca5b71f94b65b96ff87c2a5a4ecf6a011a"},"total_minor":100,"installments":[{"key":"stock","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"stock","amount_minor":100}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30},"stock_offer_id":"db77964a-6d0b-403e-aee0-ef38e21f2e22","stock_offer_sha256":"644a3918c75390771e0981af990b9fca5b71f94b65b96ff87c2a5a4ecf6a011a"},"rule_contents":[{"id":"e6cedcd9-40e0-4cb7-a2ea-6bf146d5ecb3","terms":{"explicit":"synthetic stock terms"},"version":"1","rule_key":"stock.synthetic","content_sha256":"dad13923f9795642324f0adb03f7f338b99fd35cc8bf6719442cd13b1395e9a5","format_version":"rule-content-v1"}],"content_sha256":"7c92b4da7fe34cdfe5c4775c6519bcafca5ee32ae190d30ef226cdf96d2b329b","current_status":"SEALED","format_version":"contract-content-v1","object_version":1,"signing_method":"NOT_SIGNED","contract_version_id":"2b651c77-18df-4621-bee9-739f8e8aa327"},"financial":{"net_minor":0,"received_minor":0,"refunded_minor":0},"buyer_acknowledged_by":"7ec8fecb-b219-43bf-9b78-722d0e3526f4"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:57:27)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:143)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\identity-adjacent-probe.cjs:86:84)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected buyer retains original order read
+    ok 35 - rejected buyer retains original order read
+      ---
+      duration_ms: 6.5743
+      type: 'test'
+      ...
+    # Subtest: buyer identity recovery preserves the original order and contract
+    ok 36 - buyer identity recovery preserves the original order and contract
+      ---
+      duration_ms: 7.0344
+      type: 'test'
+      ...
+    1..36
+not ok 1 - adjacent artist and stock operations require current actor identity
+  ---
+  duration_ms: 8243.7555
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\identity-adjacent-probe.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '25 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 37
+# suites 0
+# pass 11
+# fail 26
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8439.9022

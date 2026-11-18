@@ -1,0 +1,978 @@
+{
+  "database": "jx_test_40504_9da62b50436b",
+  "checks": [
+    {
+      "name": "approved notice to artist submission and interested recipient creates one support case",
+      "result": "PASS"
+    },
+    {
+      "name": "agency invitation requires artist consent; staff cannot silently accept",
+      "result": "PASS"
+    },
+    {
+      "name": "first commercial quote is accepted and genuinely enters paid state through simulated receipt",
+      "result": "PASS"
+    },
+    {
+      "name": "member alone has no artist messages or income; explicit scoped staff grant is necessary",
+      "result": "PASS"
+    },
+    {
+      "name": "reassignment changes income visibility; revocation immediately removes messages and dashboard",
+      "result": "PASS"
+    },
+    {
+      "name": "artist withdrawal removes old agency live access without erasing contract or old income",
+      "result": "PASS"
+    },
+    {
+      "name": "changing agency cannot transfer historic order, commission or messages to new agency",
+      "result": "PASS"
+    },
+    {
+      "name": "partial refund after agency switch reverses original amounts once and does not rewrite original contract",
+      "result": "PASS"
+    },
+    {
+      "name": "remaining full refund archives same conversation and clears original accrual without transferring it",
+      "result": "PASS"
+    }
+  ],
+  "http": [
+    {
+      "method": "POST",
+      "path": "/notices/rules",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": null,
+      "record_id": "9228a85b-c754-4df2-a612-1cf2f9d5ceb8",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/notices/records/9228a85b-c754-4df2-a612-1cf2f9d5ceb8/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "9228a85b-c754-4df2-a612-1cf2f9d5ceb8",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/notices/facts",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": null,
+      "record_id": "1a6280a2-1969-4abd-bfe3-6492ef8885f9",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/notices/records/1a6280a2-1969-4abd-bfe3-6492ef8885f9/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "1a6280a2-1969-4abd-bfe3-6492ef8885f9",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/notices/announcements",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "7060a85a-b0b8-436c-b323-403e8b6da342",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/notices/records/7060a85a-b0b8-436c-b323-403e8b6da342/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "7060a85a-b0b8-436c-b323-403e8b6da342",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/artists/people/292f78ea-e0a9-4fb1-9209-09f1bd57140b/consents",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "6ca2e671-977f-45e5-a533-e2dd14820869",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/artists/people/292f78ea-e0a9-4fb1-9209-09f1bd57140b/records/6ca2e671-977f-45e5-a533-e2dd14820869/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "6ca2e671-977f-45e5-a533-e2dd14820869",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/notices/submissions",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "1a83f74f-2a23-4b17-988f-473ed70be452",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/notices/records/1a83f74f-2a23-4b17-988f-473ed70be452",
+      "status": 404,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": null,
+      "error": "NOTICE_NOT_FOUND"
+    },
+    {
+      "method": "POST",
+      "path": "/notices/records/1a83f74f-2a23-4b17-988f-473ed70be452/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "1a83f74f-2a23-4b17-988f-473ed70be452",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/notices/submissions/1a83f74f-2a23-4b17-988f-473ed70be452/decision",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "1a83f74f-2a23-4b17-988f-473ed70be452",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/notices/records/d95dccb2-e9e6-42a9-b16a-1732b849ce35",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "d95dccb2-e9e6-42a9-b16a-1732b849ce35",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/relations",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "793d0395-6a35-4dd9-aa73-6cad8252fd24",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/relations/793d0395-6a35-4dd9-aa73-6cad8252fd24/decision",
+      "status": 409,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": "RELATION_ACCEPTANCE_REQUIRED"
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/relations/793d0395-6a35-4dd9-aa73-6cad8252fd24/decision",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "793d0395-6a35-4dd9-aa73-6cad8252fd24",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/artists/people/292f78ea-e0a9-4fb1-9209-09f1bd57140b/delegations",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "d902dcff-c2cf-45ee-bb64-a88285c7b943",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/rules",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": null,
+      "record_id": "5c7a7a17-c37a-4d7e-a082-416f6a492348",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/records/5c7a7a17-c37a-4d7e-a082-416f6a492348/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "5c7a7a17-c37a-4d7e-a082-416f6a492348",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/specifications",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "94d239e5-bb22-4604-a805-ad640080cbb9",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/94d239e5-bb22-4604-a805-ad640080cbb9/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "94d239e5-bb22-4604-a805-ad640080cbb9",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/requests",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "207e908c-5556-4d2f-b8b3-9d60050293e8",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/records/207e908c-5556-4d2f-b8b3-9d60050293e8/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "207e908c-5556-4d2f-b8b3-9d60050293e8",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/offers",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "63b7486c-e95c-4518-a3aa-df4f40cb2688",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/records/63b7486c-e95c-4518-a3aa-df4f40cb2688/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "63b7486c-e95c-4518-a3aa-df4f40cb2688",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/offers/63b7486c-e95c-4518-a3aa-df4f40cb2688/acceptance",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "63b7486c-e95c-4518-a3aa-df4f40cb2688",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/quotes",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "c1ac796d-c396-48c3-a271-c5c6868e275b",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/c1ac796d-c396-48c3-a271-c5c6868e275b/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "c1ac796d-c396-48c3-a271-c5c6868e275b",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/notices/cases/d95dccb2-e9e6-42a9-b16a-1732b849ce35/quote",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "d95dccb2-e9e6-42a9-b16a-1732b849ce35",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/quotes/c1ac796d-c396-48c3-a271-c5c6868e275b/acceptance",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "c32c7191-f206-421f-a95f-842540b5edec",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/notices/records/d95dccb2-e9e6-42a9-b16a-1732b849ce35",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "d95dccb2-e9e6-42a9-b16a-1732b849ce35",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 409,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": null,
+      "error": "COMMERCIAL_CONVERSATION_AWAITING_PAYMENT"
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/c32c7191-f206-421f-a95f-842540b5edec",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "c32c7191-f206-421f-a95f-842540b5edec",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/commissions",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "dc0dc844-eb1c-4d36-b5a9-6efc8d80de82",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 403,
+      "account_id": "165f3e34-1e85-4cd1-b8a6-f4fda4d653c9",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": "MCN_EMPLOYEE_SCOPE_REQUIRED"
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 403,
+      "account_id": "165f3e34-1e85-4cd1-b8a6-f4fda4d653c9",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": "MCN_EMPLOYEE_SCOPE_REQUIRED"
+    },
+    {
+      "method": "POST",
+      "path": "/engagement/mcn/staff",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "2fca0ede-5da4-4a74-bb4f-91cee5d48525",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/engagement/mcn/staff",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "fbf185d9-9fab-4d84-a1cf-06a08b9c66e7",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 200,
+      "account_id": "165f3e34-1e85-4cd1-b8a6-f4fda4d653c9",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 200,
+      "account_id": "165f3e34-1e85-4cd1-b8a6-f4fda4d653c9",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "b663a619-db50-44e3-b065-b55e1aa33341",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 200,
+      "account_id": "165f3e34-1e85-4cd1-b8a6-f4fda4d653c9",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/engagement/mcn/assignments",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "7750d3ea-db3e-4461-8a20-d9580cb67518",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 200,
+      "account_id": "165f3e34-1e85-4cd1-b8a6-f4fda4d653c9",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 200,
+      "account_id": "d88ede25-3760-4314-a805-d2aef7140ac6",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 404,
+      "account_id": "165f3e34-1e85-4cd1-b8a6-f4fda4d653c9",
+      "party_id": "2dfa1e84-45ec-4336-aec2-f394446e43c2",
+      "record_id": null,
+      "error": "GIG_NOT_FOUND"
+    },
+    {
+      "method": "POST",
+      "path": "/engagement/mcn/assignments",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "7750d3ea-db3e-4461-8a20-d9580cb67518",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 200,
+      "account_id": "165f3e34-1e85-4cd1-b8a6-f4fda4d653c9",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 200,
+      "account_id": "d88ede25-3760-4314-a805-d2aef7140ac6",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/engagement/mcn/staff/fbf185d9-9fab-4d84-a1cf-06a08b9c66e7/revoke",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "fbf185d9-9fab-4d84-a1cf-06a08b9c66e7",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 403,
+      "account_id": "d88ede25-3760-4314-a805-d2aef7140ac6",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": "MCN_EMPLOYEE_SCOPE_REQUIRED"
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 403,
+      "account_id": "d88ede25-3760-4314-a805-d2aef7140ac6",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": "MCN_EMPLOYEE_SCOPE_REQUIRED"
+    },
+    {
+      "method": "POST",
+      "path": "/artists/people/292f78ea-e0a9-4fb1-9209-09f1bd57140b/records/d902dcff-c2cf-45ee-bb64-a88285c7b943/withdrawals",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "d902dcff-c2cf-45ee-bb64-a88285c7b943",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 403,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": "ARTIST_DELEGATION_REQUIRED"
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 403,
+      "account_id": "165f3e34-1e85-4cd1-b8a6-f4fda4d653c9",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": "ARTIST_DELEGATION_REQUIRED"
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 200,
+      "account_id": "165f3e34-1e85-4cd1-b8a6-f4fda4d653c9",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/relations/793d0395-6a35-4dd9-aa73-6cad8252fd24/decision",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "793d0395-6a35-4dd9-aa73-6cad8252fd24",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/relations",
+      "status": 200,
+      "account_id": "894d1c8c-5e57-4e82-aecd-6c21056e43b1",
+      "party_id": "479ad198-8f81-4e62-97e1-06b801dfe2cd",
+      "record_id": "0fd6046f-d923-411c-a068-a882d25036cd",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/relations/0fd6046f-d923-411c-a068-a882d25036cd/decision",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "0fd6046f-d923-411c-a068-a882d25036cd",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/artists/people/292f78ea-e0a9-4fb1-9209-09f1bd57140b/delegations",
+      "status": 200,
+      "account_id": "cf8ece02-9e0e-4d12-8b79-a9af2dcf9a02",
+      "party_id": "98929365-8ce5-4183-9422-d0e04bae5542",
+      "record_id": "7ddfb559-2e3d-4099-93b7-3866f817598f",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 404,
+      "account_id": "894d1c8c-5e57-4e82-aecd-6c21056e43b1",
+      "party_id": "479ad198-8f81-4e62-97e1-06b801dfe2cd",
+      "record_id": null,
+      "error": "GIG_NOT_FOUND"
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/commissions",
+      "status": 404,
+      "account_id": "894d1c8c-5e57-4e82-aecd-6c21056e43b1",
+      "party_id": "479ad198-8f81-4e62-97e1-06b801dfe2cd",
+      "record_id": null,
+      "error": "GIG_NOT_FOUND"
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 200,
+      "account_id": "894d1c8c-5e57-4e82-aecd-6c21056e43b1",
+      "party_id": "479ad198-8f81-4e62-97e1-06b801dfe2cd",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/c32c7191-f206-421f-a95f-842540b5edec",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "c32c7191-f206-421f-a95f-842540b5edec",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/refunds",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "3fd5c568-a227-40b9-aad8-744fe00d4d40",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 409,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": null,
+      "error": "COMMERCIAL_CONVERSATION_FROZEN"
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/3fd5c568-a227-40b9-aad8-744fe00d4d40/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "3fd5c568-a227-40b9-aad8-744fe00d4d40",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/commissions",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "dc0dc844-eb1c-4d36-b5a9-6efc8d80de82",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/commissions/dc0dc844-eb1c-4d36-b5a9-6efc8d80de82/entries",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/commissions",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "dc0dc844-eb1c-4d36-b5a9-6efc8d80de82",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/commissions/dc0dc844-eb1c-4d36-b5a9-6efc8d80de82/entries",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/engagement/mcn/dashboard",
+      "status": 200,
+      "account_id": "894d1c8c-5e57-4e82-aecd-6c21056e43b1",
+      "party_id": "479ad198-8f81-4e62-97e1-06b801dfe2cd",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/refunds",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "9612099a-8011-4bd1-a86c-01adeab5b6ba",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/9612099a-8011-4bd1-a86c-01adeab5b6ba/reviews",
+      "status": 200,
+      "account_id": "4087ef45-4ffb-434f-9f16-f71019826224",
+      "party_id": null,
+      "record_id": "9612099a-8011-4bd1-a86c-01adeab5b6ba",
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/commissions",
+      "status": 200,
+      "account_id": "d4e851a9-4c8e-487a-b846-064df2f4a6ac",
+      "party_id": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+      "record_id": "dc0dc844-eb1c-4d36-b5a9-6efc8d80de82",
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": null,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+      "status": 409,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": null,
+      "error": "COMMERCIAL_CONVERSATION_ARCHIVED"
+    },
+    {
+      "method": "GET",
+      "path": "/notices/records/d95dccb2-e9e6-42a9-b16a-1732b849ce35",
+      "status": 200,
+      "account_id": "eb09da19-a655-4d9d-82b0-1a97e1ce4af9",
+      "party_id": "13e39d44-708c-4def-bff7-44b9ad7c4646",
+      "record_id": "d95dccb2-e9e6-42a9-b16a-1732b849ce35",
+      "error": null
+    }
+  ],
+  "web": [
+    {
+      "label": "employee-assigned-dashboard",
+      "route": "/engagement/dashboard",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/usage",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/engagement/mcn/dashboard",
+          "status": 200
+        }
+      ],
+      "result": "PASS",
+      "actual_page_submission": false
+    },
+    {
+      "label": "buyer-page-send",
+      "route": "/conversations/messages/c32c7191-f206-421f-a95f-842540b5edec",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/usage",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+          "status": 200
+        }
+      ],
+      "result": "PASS",
+      "actual_page_submission": true
+    },
+    {
+      "label": "employee-revoked-conversation",
+      "route": "/conversations/messages/c32c7191-f206-421f-a95f-842540b5edec",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/usage",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+          "status": 403
+        }
+      ],
+      "result": "PASS",
+      "actual_page_submission": false
+    },
+    {
+      "label": "buyer-refunded-archived",
+      "route": "/conversations/messages/c32c7191-f206-421f-a95f-842540b5edec",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/usage",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/gigs/orders/c32c7191-f206-421f-a95f-842540b5edec/conversation/messages",
+          "status": 200
+        }
+      ],
+      "result": "PASS",
+      "actual_page_submission": false
+    },
+    {
+      "label": "old-agency-refunded-income",
+      "route": "/engagement/dashboard",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/usage",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/engagement/mcn/dashboard",
+          "status": 200
+        }
+      ],
+      "result": "PASS",
+      "actual_page_submission": false
+    },
+    {
+      "label": "new-agency-no-old-income",
+      "route": "/engagement/dashboard",
+      "requests": [
+        {
+          "method": "GET",
+          "path": "/api/v1/me",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/me/parties",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/privacy/usage",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/engagement/mcn/dashboard",
+          "status": 200
+        }
+      ],
+      "result": "PASS",
+      "actual_page_submission": false
+    }
+  ],
+  "records": {
+    "notice_id": "7060a85a-b0b8-436c-b323-403e8b6da342",
+    "submission_id": "1a83f74f-2a23-4b17-988f-473ed70be452",
+    "case_id": "d95dccb2-e9e6-42a9-b16a-1732b849ce35",
+    "person_id": "292f78ea-e0a9-4fb1-9209-09f1bd57140b",
+    "avatar_id": "33dfecb4-da58-498e-ad1c-e56d9df582bd",
+    "old_agency": "7bdcf26e-d9a5-4b02-bdb8-b0d775dd0673",
+    "new_agency": "479ad198-8f81-4e62-97e1-06b801dfe2cd",
+    "relation_id": "793d0395-6a35-4dd9-aa73-6cad8252fd24",
+    "order_id": "c32c7191-f206-421f-a95f-842540b5edec",
+    "payment_id": "2aab51ab-3fa2-4da9-adda-785b1a3409fd",
+    "contract_sha256": "c914027f3da3c30cea10bda2d2bf6243502853f6cc7547396494f230245188bd",
+    "message_id": "b663a619-db50-44e3-b065-b55e1aa33341",
+    "refund_id": "3fd5c568-a227-40b9-aad8-744fe00d4d40",
+    "commission_id": "dc0dc844-eb1c-4d36-b5a9-6efc8d80de82",
+    "final_refund_id": "9612099a-8011-4bd1-a86c-01adeab5b6ba"
+  },
+  "cleanup": {
+    "browser_and_web_closed": true,
+    "server_stopped": true,
+    "database_dropped": true
+  }
+}

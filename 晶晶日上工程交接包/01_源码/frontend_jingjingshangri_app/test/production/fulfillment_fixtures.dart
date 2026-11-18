@@ -171,3 +171,19 @@ FakeAccountAdapter fulfillmentAdapter(
           }
           return null;
         });
+
+Map<String, dynamic> workingFulfillmentTerms() => {
+      ...fulfillmentTerms(),
+      'preview_payment_order': 'SCRIPT_BEFORE_INTERIM',
+      'acceptance_hours': null,
+      'acceptance_working_days': 5,
+      'acceptance_calendar': {
+        'version': 'synthetic-calendar',
+        'source_ref': 'synthetic-only',
+        'timezone': 'Asia/Shanghai',
+        'valid_from': '2026-01-01',
+        'valid_until': '2026-12-31',
+        'non_working_dates': ['2026-10-01'],
+        'working_dates': ['2026-10-10']
+      }
+    };

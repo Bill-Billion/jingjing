@@ -1,0 +1,327 @@
+TAP version 13
+# Subtest: guardian rules have no implicit amount or time default
+ok 1 - guardian rules have no implicit amount or time default
+  ---
+  duration_ms: 1.6154
+  type: 'test'
+  ...
+# Subtest: guardian night restrictions use China local time and cannot be disabled by a child
+ok 2 - guardian night restrictions use China local time and cannot be disabled by a child
+  ---
+  duration_ms: 0.7894
+  type: 'test'
+  ...
+# Subtest: new acceptance contract requires exactly 48 hours while retaining legacy shapes
+ok 3 - new acceptance contract requires exactly 48 hours while retaining legacy shapes
+  ---
+  duration_ms: 0.4637
+  type: 'test'
+  ...
+# Subtest: all four new referral rates must be configured in range, not just one field
+ok 4 - all four new referral rates must be configured in range, not just one field
+  ---
+  duration_ms: 0.575
+  type: 'test'
+  ...
+# Subtest: 20261029 contract rights tools use real isolated transactions and authenticated HTTP
+    # Subtest: 48h policy starts at original order creation, paid files only; old 72h snapshots remain
+    ok 1 - 48h policy starts at original order creation, paid files only; old 72h snapshots remain
+      ---
+      duration_ms: 415.3625
+      type: 'test'
+      ...
+    # Subtest: notice/counter-notice protects evidence, freezes access and independently restores only this hold
+    ok 2 - notice/counter-notice protects evidence, freezes access and independently restores only this hold
+      ---
+      duration_ms: 390.0281
+      type: 'test'
+      ...
+    # Subtest: closure reply deadline and verified execution deadline remain distinct; extensions need independent evidence
+    ok 3 - closure reply deadline and verified execution deadline remain distinct; extensions need independent evidence
+      ---
+      duration_ms: 133.0332
+      type: 'test'
+      ...
+    # Subtest: new referral rates enforce 10-15 percent without rewriting historical five-percent rules
+    ok 4 - new referral rates enforce 10-15 percent without rewriting historical five-percent rules
+      ---
+      duration_ms: 45.4595
+      type: 'test'
+      ...
+    # Subtest: new audition clock starts on reviewed delivery; actual material availability still gates timeout
+    ok 5 - new audition clock starts on reviewed delivery; actual material availability still gates timeout
+      ---
+      duration_ms: 537.743
+      type: 'test'
+      ...
+    # Subtest: guardian controls verify three parties, block actual minor transactions, isolate private data and run reviewed refunds
+    ok 6 - guardian controls verify three parties, block actual minor transactions, isolate private data and run reviewed refunds
+      ---
+      duration_ms: 446.368
+      type: 'test'
+      ...
+    1..6
+ok 5 - 20261029 contract rights tools use real isolated transactions and authenticated HTTP
+  ---
+  duration_ms: 14399.1661
+  type: 'test'
+  ...
+# Subtest: notification counts and exact-set read receipts through actual HTTP and commit races
+    # Subtest: four-channel counts are current-account and party scoped
+    ok 1 - four-channel counts are current-account and party scoped
+      ---
+      duration_ms: 149.8449
+      type: 'test'
+      ...
+    # Subtest: new message and a lower-ID late commit survive read-all
+    ok 2 - new message and a lower-ID late commit survive read-all
+      ---
+      duration_ms: 113.8294
+      type: 'test'
+      ...
+    # Subtest: single reads and selected-channel read-all share the same receipt table
+    ok 3 - single reads and selected-channel read-all share the same receipt table
+      ---
+      duration_ms: 98.621
+      type: 'test'
+      ...
+    # Subtest: account privacy is rechecked even within a shared party
+    ok 4 - account privacy is rechecked even within a shared party
+      ---
+      duration_ms: 35.5523
+      type: 'test'
+      ...
+    # Subtest: expired or damaged snapshots cannot clear messages
+    ok 5 - expired or damaged snapshots cannot clear messages
+      ---
+      duration_ms: 66.4655
+      type: 'test'
+      ...
+    # Subtest: concurrent read-all updates once and keeps other account read rows untouched
+    ok 6 - concurrent read-all updates once and keeps other account read rows untouched
+      ---
+      duration_ms: 46.446
+      type: 'test'
+      ...
+    # Subtest: same account switches valid identities without clearing the other inbox
+    ok 7 - same account switches valid identities without clearing the other inbox
+      ---
+      duration_ms: 137.7638
+      type: 'test'
+      ...
+    # Subtest: failed second receipt rolls back the whole bulk action; original request can recover
+    ok 8 - failed second receipt rolls back the whole bulk action; original request can recover
+      ---
+      duration_ms: 165.6708
+      type: 'test'
+      ...
+    1..8
+ok 6 - notification counts and exact-set read receipts through actual HTTP and commit races
+  ---
+  duration_ms: 13047.0422
+  type: 'test'
+  ...
+# Subtest: notification read and guardian copies through isolated MySQL HTTP
+    # Subtest: actual read receipt is personal only and never carries original private content
+    ok 1 - actual read receipt is personal only and never carries original private content
+      ---
+      duration_ms: 90.0079
+      type: 'test'
+      ...
+    # Subtest: pending guardian relation returns only summary without controls or child information
+    ok 2 - pending guardian relation returns only summary without controls or child information
+      ---
+      duration_ms: 15.4438
+      type: 'test'
+      ...
+    # Subtest: active relation exposes reviewed controls and today only, without proof and counterpart identities
+    ok 3 - active relation exposes reviewed controls and today only, without proof and counterpart identities
+      ---
+      duration_ms: 21.9211
+      type: 'test'
+      ...
+    # Subtest: real guardian request and reviewed refund expose processing facts, never fake execution
+    ok 4 - real guardian request and reviewed refund expose processing facts, never fake execution
+      ---
+      duration_ms: 37.168
+      type: 'test'
+      ...
+    # Subtest: child copies only own historical usage while guardian cannot bulk export child history
+    ok 5 - child copies only own historical usage while guardian cannot bulk export child history
+      ---
+      duration_ms: 31.1657
+      type: 'test'
+      ...
+    # Subtest: pagination request scope and account switching do not cross authorization
+    ok 6 - pagination request scope and account switching do not cross authorization
+      ---
+      duration_ms: 151.4274
+      type: 'test'
+      ...
+    # Subtest: identity remains valid until its exact same-day expiry
+    ok 7 - identity remains valid until its exact same-day expiry
+      ---
+      duration_ms: 22.8495
+      type: 'test'
+      ...
+    # Subtest: expired identity, suspended account and revoked relation remove details without hiding history
+    ok 8 - expired identity, suspended account and revoked relation remove details without hiding history
+      ---
+      duration_ms: 77.5617
+      type: 'test'
+      ...
+    # Subtest: read history survives source permission loss without reviving original content
+    ok 9 - read history survives source permission loss without reviving original content
+      ---
+      duration_ms: 11.5626
+      type: 'test'
+      ...
+    # Subtest: corrupt guardian snapshots fail closed
+    ok 10 - corrupt guardian snapshots fail closed
+      ---
+      duration_ms: 15.0216
+      type: 'test'
+      ...
+    1..10
+ok 7 - notification read and guardian copies through isolated MySQL HTTP
+  ---
+  duration_ms: 13853.2709
+  type: 'test'
+  ...
+# Subtest: personal participation and handling copies through isolated MySQL HTTP
+    # Subtest: unreviewed privacy proposal is not exported and records stay within owner
+    ok 1 - unreviewed privacy proposal is not exported and records stay within owner
+      ---
+      duration_ms: 104.7226
+      type: 'test'
+      ...
+    # Subtest: reviewed responses and public processing history exported without staff identifiers
+    ok 2 - reviewed responses and public processing history exported without staff identifiers
+      ---
+      duration_ms: 26.3083
+      type: 'test'
+      ...
+    # Subtest: earlier independently approved evidence remains controlled after a new response
+    ok 3 - earlier independently approved evidence remains controlled after a new response
+      ---
+      duration_ms: 126.0988
+      type: 'test'
+      ...
+    # Subtest: execution records explain state without claiming deletion or leaking job payload
+    ok 4 - execution records explain state without claiming deletion or leaking job payload
+      ---
+      duration_ms: 16.3191
+      type: 'test'
+      ...
+    # Subtest: notification copy distinguishes unknown simulated delivery and excludes organization/provider references
+    ok 5 - notification copy distinguishes unknown simulated delivery and excludes organization/provider references
+      ---
+      duration_ms: 6.6654
+      type: 'test'
+      ...
+    # Subtest: guardian and child get only their relation history, not counterpart IDs, evidence or new authority
+    ok 6 - guardian and child get only their relation history, not counterpart IDs, evidence or new authority
+      ---
+      duration_ms: 43.5261
+      type: 'test'
+      ...
+    # Subtest: ten allowed activity kinds export own fields, never global judgments/device data or organization work
+    ok 7 - ten allowed activity kinds export own fields, never global judgments/device data or organization work
+      ---
+      duration_ms: 49.7134
+      type: 'test'
+      ...
+    # Subtest: all categories enforce own request scope, identity and input limits
+    ok 8 - all categories enforce own request scope, identity and input limits
+      ---
+      duration_ms: 249.1343
+      type: 'test'
+      ...
+    # Subtest: hash corruption and interaction owner mismatch fail closed
+    ok 9 - hash corruption and interaction owner mismatch fail closed
+      ---
+      duration_ms: 46.9295
+      type: 'test'
+      ...
+    1..9
+ok 8 - personal participation and handling copies through isolated MySQL HTTP
+  ---
+  duration_ms: 13660.8636
+  type: 'test'
+  ...
+# Subtest: support stages are role bounded and replies are not judgments
+ok 9 - support stages are role bounded and replies are not judgments
+  ---
+  duration_ms: 1.2204
+  type: 'test'
+  ...
+# Subtest: support rejects excessive attachments and incomplete descriptions
+ok 10 - support rejects excessive attachments and incomplete descriptions
+  ---
+  duration_ms: 0.2765
+  type: 'test'
+  ...
+# Subtest: four message channels retain the established product categories
+ok 11 - four message channels retain the established product categories
+  ---
+  duration_ms: 18.241
+  type: 'test'
+  ...
+# Subtest: formal support actual HTTP submission, supplement, history and restricted evidence
+    # Subtest: authentication, ownership, source and input validation
+    ok 1 - authentication, ownership, source and input validation
+      ---
+      duration_ms: 213.1603
+      type: 'test'
+      ...
+    # Subtest: concurrent create retries produce one ticket and one immutable first entry
+    ok 2 - concurrent create retries produce one ticket and one immutable first entry
+      ---
+      duration_ms: 71.122
+      type: 'test'
+      ...
+    # Subtest: other account and self-review cannot see or handle private evidence
+    ok 3 - other account and self-review cannot see or handle private evidence
+      ---
+      duration_ms: 57.1613
+      type: 'test'
+      ...
+    # Subtest: permission is checked again after reading private storage
+    ok 4 - permission is checked again after reading private storage
+      ---
+      duration_ms: 14.6146
+      type: 'test'
+      ...
+    # Subtest: staff handling, applicant supplement, answer, close and reopen preserve history
+    ok 5 - staff handling, applicant supplement, answer, close and reopen preserve history
+      ---
+      duration_ms: 146.2943
+      type: 'test'
+      ...
+    # Subtest: revoked staff grant and party membership block later reads and replays
+    ok 6 - revoked staff grant and party membership block later reads and replays
+      ---
+      duration_ms: 32.6935
+      type: 'test'
+      ...
+    # Subtest: evidence retention and integrity are explicit; foreign attachment bytes never leak
+    ok 7 - evidence retention and integrity are explicit; foreign attachment bytes never leak
+      ---
+      duration_ms: 32.2675
+      type: 'test'
+      ...
+    1..7
+ok 12 - formal support actual HTTP submission, supplement, history and restricted evidence
+  ---
+  duration_ms: 13801.5981
+  type: 'test'
+  ...
+1..12
+# tests 52
+# suites 0
+# pass 52
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 14660.9395

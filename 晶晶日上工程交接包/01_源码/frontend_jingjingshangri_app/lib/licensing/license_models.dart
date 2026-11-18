@@ -1,3 +1,5 @@
+import '../rights/rights_models.dart';
+import 'procurement_models.dart';
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
 import '../supply/supply_models.dart';
@@ -9,7 +11,11 @@ const licenseRights = {
   'PROMOTE': '宣传',
   'SEQUEL': '续集',
   'AI_PROCESS': 'AI处理',
-  'AI_TRAIN': '训练'
+  'AI_TRAIN': '训练',
+  'COPY': '复制',
+  'NETWORK_DISTRIBUTE': '信息网络传播',
+  'COMPILE': '汇编',
+  'DERIVATIVES': '衍生作品'
 };
 const licensePurposes = {
   'PRIVATE': '私人使用',
@@ -64,7 +70,9 @@ const licenseKinds = {
   'GRANT': '已获许可',
   'PROJECT': '用途项目',
   'BINDING': '绑定记录',
-  'READING': '阅稿授权'
+  'READING': '阅稿授权',
+  'PROCUREMENT_EVENT': 'IP开发上线与撤回',
+  'ROYALTY_STATEMENT': 'IP收益账单（未转账）'
 };
 void licenseRequire(bool valid) {
   if (!valid) {
@@ -113,7 +121,13 @@ class LicenseTerms {
       'project_limit',
       'episode_limit',
       'terms_text'
+    ], [
+      'contract_kind'
     ]);
+    if (v.containsKey('contract_kind')) {
+      licenseRequire(isIPTerms(v) && _text(v['terms_text'], 8000));
+      return LicenseTerms._(Map.unmodifiable(v));
+    }
     licenseRequire(v['exclusive'] is bool &&
         _int(v['project_limit'], 1, 100000) &&
         _int(v['episode_limit'], 1, 100000) &&
@@ -136,8 +150,8 @@ class LicenseTerms {
   bool get developmentOpen {
     final now = DateTime.now().toUtc();
     return !now.isBefore(DateTime.parse(data['valid_from'])) &&
-        now.isBefore(DateTime.parse(data['development_until'])) &&
-        now.isBefore(DateTime.parse(data['valid_until']));
+        beforeLicenseEnd(data['development_until'], now) &&
+        beforeLicenseEnd(data['valid_until'], now);
   }
 
   String get summary =>
@@ -149,7 +163,8 @@ class LicenseTerms {
           (data['territories'] as List).contains(project.data['territory'])) &&
       ((data['languages'] as List).contains('ALL') ||
           (data['languages'] as List).contains(project.data['language'])) &&
-      project.data['episodes'] <= data['episode_limit'] &&
+      (data['episode_limit'] == null ||
+          project.data['episodes'] <= data['episode_limit']) &&
       (data['rights'] as List).any((x) => ['ADAPT', 'PRODUCE'].contains(x));
 }
 
@@ -179,6 +194,9 @@ void _review(dynamic value) {
       'received_minor',
       'payee_party_id',
       'receipt_ref'
+    ], [
+      'rights_chain_verified',
+      'settlement_annex_verified'
     ]);
     licenseRequire(_hash(t['signed_contract_sha256']) &&
         t['identity_verified'] == true &&
@@ -303,7 +321,9 @@ class LicenseRecord {
       'GRANT': ['ACTIVE', 'SUSPENDED'],
       'PROJECT': ['ACTIVE'],
       'BINDING': ['ACTIVE'],
-      'READING': ['IN_REVIEW', 'APPROVED', 'REJECTED', 'REVOKED']
+      'READING': ['IN_REVIEW', 'APPROVED', 'REJECTED', 'REVOKED'],
+      'PROCUREMENT_EVENT': ['IN_REVIEW', 'APPROVED', 'REJECTED'],
+      'ROYALTY_STATEMENT': ['IN_REVIEW', 'APPROVED', 'REJECTED']
     };
     licenseRequire(statuses[k]!.contains(v['current_status']));
     if (['PRODUCT', 'RESERVATION'].contains(k)) {
@@ -319,6 +339,7 @@ class LicenseRecord {
         'review',
         if (k == 'RESERVATION') ...['contract', 'expires_at']
       ], [
+        'procurement',
         'close_reason',
         'grant_id',
         'late_reason'
@@ -331,6 +352,7 @@ class LicenseRecord {
           _int(d['reservation_minutes'], 1, 10080));
       _money(d['price']);
       licenseRequire(d['payment_due_minor'] <= d['price']['amount_minor']);
+      licenseRequire(procurementMatches(d));
       LicenseTerms.parse(d['terms']);
       _review(d['review']);
       if (k == 'RESERVATION') {
@@ -373,7 +395,9 @@ class LicenseRecord {
         'activated_at',
         'reason'
       ], [
-        'suspension_reason'
+        'suspension_reason',
+        'procurement',
+        'withdrawal_request_id'
       ]);
       licenseRequire(supplyId(d['work_version_id']) &&
           supplyId(d['evidence_id']) &&
@@ -381,6 +405,7 @@ class LicenseRecord {
           _text(d['reason'], 2000));
       LicenseTerms.parse(d['terms']);
       _money(d['price']);
+      licenseRequire(procurementMatches(d));
       _contract(d['contract'], party);
     } else if (k == 'PROJECT') {
       _keys(d, ['title', 'purpose', 'territory', 'language', 'episodes']);
@@ -390,13 +415,13 @@ class LicenseRecord {
           RegExp(r'^[A-Z]{2}$').hasMatch(d['territory']) &&
           d['language'] is String &&
           RegExp(r'^[a-z]{2}$').hasMatch(d['language']) &&
-          _int(d['episodes'], 1, 100000));
+          _int(d['episodes'], 1));
     } else if (k == 'BINDING') {
       _keys(d, ['project_id', 'work_version_id', 'terms_sha256']);
       licenseRequire(supplyId(d['project_id']) &&
           supplyId(d['work_version_id']) &&
           _hash(d['terms_sha256']));
-    } else {
+    } else if (k == 'READING') {
       _keys(d, [
         'work_version_id',
         'reader_account_id',
@@ -419,13 +444,16 @@ class LicenseRecord {
     for (final key in ['close_reason', 'late_reason', 'suspension_reason']) {
       if (d.containsKey(key)) licenseRequire(_text(d[key], 2000));
     }
+    if (k == 'PROCUREMENT_EVENT') licenseRequire(isProcurementEvent(d));
+    if (k == 'ROYALTY_STATEMENT') licenseRequire(isRoyaltyData(d));
     if (d.containsKey('grant_id')) licenseRequire(supplyId(d['grant_id']));
     return LicenseRecord._(Map.unmodifiable(v));
   }
 }
 
-String licenseDate(String value) =>
-    DateTime.parse(value).toLocal().toString().split('.').first;
+String licenseDate(String? value) => value == null
+    ? '永久／无该期限'
+    : DateTime.parse(value).toLocal().toString().split('.').first;
 String licenseMoney(Map<String, dynamic> money, {int? amount}) {
   final currency = money['currency'] as String,
       minor = amount ?? money['amount_minor'] as int;
@@ -445,6 +473,9 @@ String licenseMoney(Map<String, dynamic> money, {int? amount}) {
 }
 
 String licenseError(Object error, {bool writing = false}) {
+  if (error is AccountError && rightsErrors.containsKey(error.code)) {
+    return rightsErrors[error.code]!;
+  }
   if (error is! AccountError) return '处理未完成，请重新读取当前记录。';
   if (error.code == 'CONTEXT_CHANGED') return '办事身份已变化，旧内容已清空。';
   if (error.code == 'LICENSE_PAYMENT_NOT_READY') {

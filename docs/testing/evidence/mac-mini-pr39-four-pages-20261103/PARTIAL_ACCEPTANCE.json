@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "kind": "partial_contract_extension_evidence",
+  "result": "LOCAL_VALIDATED_NOT_FORMAL_ACCEPTANCE",
+  "base_sha": "20a0a25ef69e18aaaf00941251dfb0f48dbb28ae",
+  "working_tree": true,
+  "checked_at": "2026-11-03T03:17:39.131771+00:00",
+  "source_manifest": "docs/testing/evidence/mac-mini-pr39-four-pages-20261103/SOURCE_MANIFEST.json",
+  "interface_version": "0.31.26-rc.1",
+  "migration": "0209",
+  "formal_151_pass_count": 0,
+  "items": [
+    {
+      "id": "FP-01",
+      "work": "运营财务日对账",
+      "groups": [
+        11,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-08.04",
+        "ACC-DEL-24.01",
+        "TASK-11",
+        "E2E-01"
+      ],
+      "expected": "同日同渠道五类账独立核对；有差异/自审/撤权不能通过；迟到事实不改历史，私有凭据不公开。",
+      "steps": [
+        "网页建立同一业务日现货报告，缺五类账时比对显示差异",
+        "导入收款/退款/分账/手续费/银行五类账与两份独立凭据",
+        "录入人自审拒绝，另一审核人通过，读取私有凭据",
+        "新增迟到事实，固定指纹分页409后清空重读，旧历史校验值不变，重开重新比对",
+        "撤销财务权限后刷新清除私有报告；普通用户拒绝"
+      ],
+      "actual": "9组网页办理中的4组财务主链通过。现货两笔各100分，手续费1分、银行199分；READY未冒称独审，REVIEWED后新增事实显示RECHECK_REQUIRED，重开后DIFFERENCES。全部财务请求不带机构身份头。",
+      "records": {
+        "report_id": "31b2cb17-348e-4013-b908-07e66d1e1360",
+        "scope": {
+          "business_date": "2026-11-02",
+          "merchant_party_id": "a79a941a-87da-4c9b-bfd9-df8ab058aed6",
+          "provider": "ALIPAY",
+          "environment": "SANDBOX",
+          "app_id": "SIMULATED_ONLY",
+          "merchant_id": "SIMULATED_ONLY"
+        },
+        "settled": [
+          {
+            "order_id": "1133a221-5c2f-48ad-9689-ecb4ea7aca2f",
+            "payment_id": "92c4973d-2fb9-4dd3-9bc9-b08f6e254184",
+            "external_reference": "synthetic.92c4973d-2fb9-4dd3-9bc9-b08f6e254184"
+          },
+          {
+            "order_id": "4c972ca2-0a7a-43c4-953a-2209696baaa6",
+            "payment_id": "6ae4cca2-6ee9-46e0-a688-bf5ce4573233",
+            "external_reference": "synthetic.6ae4cca2-6ee9-46e0-a688-bf5ce4573233"
+          }
+        ]
+      },
+      "evidence": [
+        "browser-results.json",
+        "browser.log",
+        "backend-combined.log",
+        "fp01-final-state-label.png"
+      ],
+      "limits": "运营Web范围，不新增客户App财务审核。合成现货日账；人工定制/试镜商单同日账和真实银行渠道未重验。"
+    },
+    {
+      "id": "FP-02",
+      "work": "本人月度限额和原请求恢复",
+      "groups": [
+        11,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-17.04",
+        "ACC-DEL-28.03",
+        "ACC-DEL-28.04"
+      ],
+      "expected": "金额只转分一次；0停新付费，空值不绕过平台规则；调低立即生效，提高等待后主动确认；未知付款占用不能重复消费。",
+      "steps": [
+        "网页修改后丢失响应，刷新页面后用原键核对，再GET最新限额",
+        "合成冷静期到期确认；两笔100分并发受150分限额约束，只能一笔进入待确认",
+        "将限额设0、申请提额/取消，取消未发付款释放占用，查看历史",
+        "Android实际修改充值限额，模拟响应已提交后丢失，原键恢复；提额等待、取消、历史、断网清空并重读",
+        "切换至另一测试账号核对不残留上一账号5元充值限额"
+      ],
+      "actual": "网页3组限额主链及窄屏/断网通过；Android限额前段断言通过，后段首次休息夹具失败后单独续跑休息段完成。未把首轮整个原生脚本标通过。退款不重置额度由MySQL专项覆盖。",
+      "records": {
+        "party_id": "faa684de-7871-495d-b94b-a9ed2504ca0b",
+        "pending_payment": {
+          "id": "0b391bc5-4786-4d99-b983-d8e047bfcc64",
+          "order_id": "9570b655-eea5-4f09-9da3-8cb5e7f5f58b"
+        }
+      },
+      "evidence": [
+        "browser-results.json",
+        "native-limits-first-run.json",
+        "native-limits-first-run.log",
+        "native-rest-results.json",
+        "backend-combined.log"
+      ],
+      "limits": "真实资金关闭；冷静期以合成记录到期夹具验证，没有等待实际24小时。新版消费预览/确认未接入。"
+    },
+    {
+      "id": "FP-03",
+      "work": "奖池七日公示",
+      "groups": [
+        14,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-26.02",
+        "E2E-07"
+      ],
+      "expected": "显示本版公示和最早开放时间；PUBLISHED不等于可抽；未满公示/到期只读，历史字段兼容。",
+      "steps": [
+        "网页读取新公示奖池，两个抽奖按钮禁用；后端拒绝且不扣钻",
+        "仅修改隔离夹具公示时间模拟七日已过，刷新后用同一已审奖池进行合成抽奖",
+        "Android读取同一个奖池公示信息；单测和MySQL补历史无字段/活动结束/重复请求"
+      ],
+      "actual": "实际网页完成公示只读至模拟到期抽奖，Android读取相同pool_id。单抽300/十连2700为晶钻，测试池只有合成试镜权益，不代表新合同正式奖池配置。",
+      "records": {
+        "pool_id": "686a0c67-0893-4b1c-83fd-c51071753efa"
+      },
+      "evidence": [
+        "browser-results.json",
+        "native-rest-results.json",
+        "fp03-publication-readonly.png",
+        "native-same-pool-publication.png",
+        "backend-combined.log"
+      ],
+      "limits": "未等待真实7天；未实际发奖。新合同成本/11项候选、理性消费确认和过频规则页面未接入，正式概率/成本未签认。"
+    },
+    {
+      "id": "FP-04",
+      "work": "服务端使用估计与定时休息",
+      "groups": [
+        4,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-28.04"
+      ],
+      "expected": "开启后前台估计，隐藏停止、不积压补发；全局单计时器；确认不等于已经休息；断网原键恢复，切号/关闭无残留。",
+      "steps": [
+        "浏览器保存15分钟并真实等待，31次读取记录真实时钟、前台可见状态和服务器计数",
+        "实际显示提醒，点击知道了后GET确认不再到期",
+        "Android用到期夹具显示提醒，提交后丢响应，使用原键原版本恢复并重读",
+        "Android实际HOME进入后台35秒，回前台GET；关闭提醒后停止采样",
+        "网页隐藏事件的状态机单测覆盖；真实Chrome隐藏尝试未成功，单列环境限制"
+      ],
+      "actual": {
+        "real_enable_at": "2026-11-03T02:57:05.289Z",
+        "run_started_at": "2026-11-03T02:56:59.348Z",
+        "real_due": {
+          "at": "2026-11-03T03:12:37.605Z",
+          "elapsed_ms": 932316,
+          "version": 31,
+          "day_seconds": 900,
+          "reminder_seconds": 900,
+          "rest_due": true,
+          "visibility": "visible"
+        },
+        "run_finished_at": "2026-11-03T03:12:38.898Z",
+        "real_clock_adjusted": false,
+        "android_background": {
+          "id": "native-actual-android-home-35seconds-no-heartbeat",
+          "result": "PASS",
+          "started_at": "2026-11-03T03:13:48.411Z",
+          "ended_at": "2026-11-03T03:14:23.654Z",
+          "duration_ms": 35243,
+          "pulse_count": 0
+        }
+      },
+      "evidence": [
+        "rest-real-time.json",
+        "rest-real-time.log",
+        "native-rest-results.json",
+        "native-background-results.json",
+        "native-background.log",
+        "rest-visibility.json",
+        "rest-real-due.png"
+      ],
+      "limits": "真实15分钟在Chromium页面执行，原生到期是独立合成夹具，不冒称Android实际等待15分钟；Android前后台为实际系统操作。Chrome标签/最小化未产生hidden，浏览器实际后台验证未通过；状态机单测通过。夜间/推送新字段尚未接入。"
+    }
+  ]
+}

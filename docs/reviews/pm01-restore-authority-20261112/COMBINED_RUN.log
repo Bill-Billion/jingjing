@@ -1,0 +1,205 @@
+TAP version 13
+# Subtest: durable recharge refund recovery and guardian delegation in isolated MySQL
+    # Subtest: task insert and case link are atomic; same case scheduling keeps one durable task
+    ok 1 - task insert and case link are atomic; same case scheduling keeps one durable task
+      ---
+      duration_ms: 114.1109
+      type: 'test'
+      ...
+    # Subtest: lost provider response persists UNKNOWN and worker restart only queries the original refund
+    ok 2 - lost provider response persists UNKNOWN and worker restart only queries the original refund
+      ---
+      duration_ms: 89.8606
+      type: 'test'
+      ...
+    # Subtest: expired lease cannot settle money or finish a job; a new lease queries and settles once
+    ok 3 - expired lease cannot settle money or finish a job; a new lease queries and settles once
+      ---
+      duration_ms: 85.0379
+      type: 'test'
+      ...
+    # Subtest: bad receipt blocks, never releases funds; current independent permission is required to resume
+    ok 4 - bad receipt blocks, never releases funds; current independent permission is required to resume
+      ---
+      duration_ms: 98.2328
+      type: 'test'
+      ...
+    # Subtest: missing adapter and changed merchant fail closed; cancelled queued cases never send
+    ok 5 - missing adapter and changed merchant fail closed; cancelled queued cases never send
+      ---
+      duration_ms: 117.2257
+      type: 'test'
+      ...
+    # Subtest: a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+    ok 6 - a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+      ---
+      duration_ms: 62.7548
+      type: 'test'
+      ...
+    # Subtest: consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+    ok 7 - consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+      ---
+      duration_ms: 343.3306
+      type: 'test'
+      ...
+    # Subtest: guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+    ok 8 - guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+      ---
+      duration_ms: 104.8004
+      type: 'test'
+      ...
+    # Subtest: revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+    ok 9 - revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+      ---
+      duration_ms: 110.6625
+      type: 'test'
+      ...
+    1..9
+ok 1 - durable recharge refund recovery and guardian delegation in isolated MySQL
+  ---
+  duration_ms: 8174.848
+  type: 'test'
+  ...
+# Subtest: restored refund rechecks current authority, provider binding and receipt facts
+    # Subtest: revoked independent authority blocks restored work and cannot authorize its retry; self-review still fails
+    ok 1 - revoked independent authority blocks restored work and cannot authorize its retry; self-review still fails
+      ---
+      duration_ms: 206.694
+      type: 'test'
+      ...
+    # Subtest: authority revoked during provider readiness is rechecked before any original-request query
+    ok 2 - authority revoked during provider readiness is rechecked before any original-request query
+      ---
+      duration_ms: 197.9615
+      type: 'test'
+      ...
+    # Subtest: missing adapter and changed merchant, revision or environment cannot reroute a restored refund
+    ok 3 - missing adapter and changed merchant, revision or environment cannot reroute a restored refund
+      ---
+      duration_ms: 883.135
+      type: 'test'
+      ...
+    # Subtest: unready provider and configuration changed during readiness cannot proceed
+    ok 4 - unready provider and configuration changed during readiness cannot proceed
+      ---
+      duration_ms: 382.0785
+      type: 'test'
+      ...
+    # Subtest: query transport loss and pending or unknown observations preserve reserved money and query only
+    ok 5 - query transport loss and pending or unknown observations preserve reserved money and query only
+      ---
+      duration_ms: 556.4669
+      type: 'test'
+      ...
+    # Subtest: wrong amount, merchant, source transaction and missing success reference never settle the restored case
+    ok 6 - wrong amount, merchant, source transaction and missing success reference never settle the restored case
+      ---
+      duration_ms: 670.1757
+      type: 'test'
+      ...
+    # Subtest: a lease lost while querying cannot settle; its replacement queries the same request and settles once
+    ok 7 - a lease lost while querying cannot settle; its replacement queries the same request and settles once
+      ---
+      duration_ms: 356.2945
+      type: 'test'
+      ...
+    # Subtest: definitive CLOSED releases only the original hold and cannot later be overwritten by success
+    ok 8 - definitive CLOSED releases only the original hold and cannot later be overwritten by success
+      ---
+      duration_ms: 7337.7332
+      type: 'test'
+      ...
+    1..8
+ok 2 - restored refund rechecks current authority, provider binding and receipt facts
+  ---
+  duration_ms: 25903.3657
+  type: 'test'
+  ...
+# Subtest: unknown recharge refund survives encrypted restore without enabling dispatch
+    # Subtest: unknown original send is frozen with reserved funds and the same durable task
+    ok 1 - unknown original send is frozen with reserved funds and the same durable task
+      ---
+      duration_ms: 723.5338
+      type: 'test'
+      ...
+    # Subtest: restored case, task, operation keys and wallet facts match while external bytes are explicitly absent
+    ok 2 - restored case, task, operation keys and wallet facts match while external bytes are explicitly absent
+      ---
+      duration_ms: 5736.3161
+      type: 'test'
+      ...
+    # Subtest: restored quarantine blocks HTTP bootstrap and worker without changing money or sending again
+    ok 3 - restored quarantine blocks HTTP bootstrap and worker without changing money or sending again
+      ---
+      duration_ms: 641.5313
+      type: 'test'
+      ...
+    # Subtest: restoring a still-running refund invalidates its old lease while preserving original request and attempts
+    ok 4 - restoring a still-running refund invalidates its old lease while preserving original request and attempts
+      ---
+      duration_ms: 6534.5546
+      type: 'test'
+      ...
+    # Subtest: the pre-restore lease cannot heartbeat, attach a provider id, or finish in the restored database
+    ok 5 - the pre-restore lease cannot heartbeat, attach a provider id, or finish in the restored database
+      ---
+      duration_ms: 3.9429
+      type: 'test'
+      ...
+    # Subtest: the original process cannot settle the restored refund using its copied lease
+    ok 6 - the original process cannot settle the restored refund using its copied lease
+      ---
+      duration_ms: 14.3401
+      type: 'test'
+      ...
+    # Subtest: read-only release inspection includes waiting and restored retry jobs without approving or executing them
+    ok 7 - read-only release inspection includes waiting and restored retry jobs without approving or executing them
+      ---
+      duration_ms: 170.8703
+      type: 'test'
+      ...
+    # Subtest: latest synthetic erasure replay is atomic, suppresses the original proof and account, and still cannot release recovery
+    ok 8 - latest synthetic erasure replay is atomic, suppresses the original proof and account, and still cannot release recovery
+      ---
+      duration_ms: 189.2737
+      type: 'test'
+      ...
+    # Subtest: isolated internal recovery queries only the original request and a lost completion write cannot settle twice
+    ok 9 - isolated internal recovery queries only the original request and a lost completion write cannot settle twice
+      ---
+      duration_ms: 226.9998
+      type: 'test'
+      ...
+    # Subtest: restoration does not reset an exhausted task attempt budget
+    ok 10 - restoration does not reset an exhausted task attempt budget
+      ---
+      duration_ms: 4.9013
+      type: 'test'
+      ...
+    # Subtest: rebacking up the restored database cannot carry old privacy approval or a live lease into another recovery
+    ok 11 - rebacking up the restored database cannot carry old privacy approval or a live lease into another recovery
+      ---
+      duration_ms: 7929.298
+      type: 'test'
+      ...
+    # Subtest: failure while invalidating restored leases rolls back all business rows and leaves quarantine
+    ok 12 - failure while invalidating restored leases rolls back all business rows and leaves quarantine
+      ---
+      duration_ms: 8366.1457
+      type: 'test'
+      ...
+    1..12
+ok 3 - unknown recharge refund survives encrypted restore without enabling dispatch
+  ---
+  duration_ms: 41385.7287
+  type: 'test'
+  ...
+1..3
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 76085.4106

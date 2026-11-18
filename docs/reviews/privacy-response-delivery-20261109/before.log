@@ -1,0 +1,65 @@
+TAP version 13
+# Subtest: privacy responses require the actual reviewed files before publication
+    # Subtest: a READY metadata row without stored bytes cannot be offered as a delivered copy
+    not ok 1 - a READY metadata row without stored bytes cannot be offered as a delivered copy
+      ---
+      duration_ms: 98.7017
+      type: 'test'
+      location: 'J:\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\privacy-response-delivery.integration.test.cjs:22:10'
+      failureType: 'testCodeFailure'
+      error: '{"status":200,"data":{"id":"3afddc24-992e-4791-9875-48edf7d44537","account_id":"42d0442e-48c9-49f4-aa31-6a50d4a3216c","request":{"type":"COPY","scopes":["PROFILE"],"details":"Synthetic machine readable personal copy"},"current_status":"AWAITING_REVIEW","object_version":3,"response_due_on":"2026-11-30","calendar_version":null,"deadline_basis":"WEEKDAY_ESTIMATE_NEEDS_CALENDAR","result":null,"proposal":{"outcome":"INFORMATION_PROVIDED","response":"Synthetic personal copy; verify remaining items separately","retentions":[],"remaining_actions":[],"evidence_asset_ids":["331a4414-4a75-4f3d-9ecf-ebbdcf653077"]},"proposal_sha256":"fb6cff8332967ee98ad283fd057f1f6978acd455b63a9594f760d24235f5ca1e","events":[{"id":"8be4acd7-cb43-4ba4-ac8b-99c6c0de2a6c","event_code":"SUBMITTED","object_version":1,"message":"已收到申请，尚未完成实际处理","created_at":"2026-11-09T04:34:04.804Z"},{"id":"90bb7004-38bf-4441-a78c-301616642507","event_code":"PROCESSING","object_version":2,"message":"工作人员已开始处理申请","created_at":"2026-11-09T04:34:04.823Z"},{"id":"c859152c-9c12-4a4b-90d4-1c2e59c69356","event_code":"REVIEW_PENDING","object_version":3,"message":"答复已拟好，正在等待另一位工作人员复核","created_at":"2026-11-09T04:34:04.835Z"}]},"body":{"meta":{"request_id":"7a27a59b-aca0-4510-b283-e929646b4b54","actor":{"account_id":"c73cca97-cc91-41d0-a744-2bca3d24a4b4"},"acting_party":null},"data":{"id":"3afddc24-992e-4791-9875-48edf7d44537","account_id":"42d0442e-48c9-49f4-aa31-6a50d4a3216c","request":{"type":"COPY","scopes":["PROFILE"],"details":"Synthetic machine readable personal copy"},"current_status":"AWAITING_REVIEW","object_version":3,"response_due_on":"2026-11-30","calendar_version":null,"deadline_basis":"WEEKDAY_ESTIMATE_NEEDS_CALENDAR","result":null,"proposal":{"outcome":"INFORMATION_PROVIDED","response":"Synthetic personal copy; verify remaining items separately","retentions":[],"remaining_actions":[],"evidence_asset_ids":["331a4414-4a75-4f3d-9ecf-ebbdcf653077"]},"proposal_sha256":"fb6cff8332967ee98ad283fd057f1f6978acd455b63a9594f760d24235f5ca1e","events":[{"id":"8be4acd7-cb43-4ba4-ac8b-99c6c0de2a6c","event_code":"SUBMITTED","object_version":1,"message":"已收到申请，尚未完成实际处理","created_at":"2026-11-09T04:34:04.804Z"},{"id":"90bb7004-38bf-4441-a78c-301616642507","event_code":"PROCESSING","object_version":2,"message":"工作人员已开始处理申请","created_at":"2026-11-09T04:34:04.823Z"},{"id":"c859152c-9c12-4a4b-90d4-1c2e59c69356","event_code":"REVIEW_PENDING","object_version":3,"message":"答复已拟好，正在等待另一位工作人员复核","created_at":"2026-11-09T04:34:04.835Z"}]}}}'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 200
+      operator: 'notStrictEqual'
+      stack: |-
+        rejects (J:\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\privacy-response-delivery.integration.test.cjs:14:26)
+        TestContext.<anonymous> (J:\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\privacy-response-delivery.integration.test.cjs:24:7)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (J:\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\privacy-response-delivery.integration.test.cjs:22:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: missing bytes at independent review do not publish; same request recovers after restoration
+    not ok 2 - missing bytes at independent review do not publish; same request recovers after restoration
+      ---
+      duration_ms: 57.4924
+      type: 'test'
+      location: 'J:\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\privacy-response-delivery.integration.test.cjs:27:10'
+      failureType: 'testCodeFailure'
+      error: '{"status":200,"data":{"id":"bc8c24ff-76e6-4b3e-b136-f1dce4113bb1","account_id":"42d0442e-48c9-49f4-aa31-6a50d4a3216c","request":{"type":"COPY","scopes":["PROFILE"],"details":"Synthetic machine readable personal copy"},"current_status":"RESPONDED","object_version":4,"response_due_on":"2026-11-30","calendar_version":null,"deadline_basis":"WEEKDAY_ESTIMATE_NEEDS_CALENDAR","result":{"files":[{"id":"331a4414-4a75-4f3d-9ecf-ebbdcf653077","byte_size":31,"media_type":"text/plain","content_sha256":"de39c3e4c552a98524b8f5d4a2d12c949906c0512eeedef74fe5e8c7814e997c"}],"outcome":"INFORMATION_PROVIDED","response":"Synthetic personal copy; verify remaining items separately","retentions":[],"verification":{"method":"INDEPENDENT_MANUAL_REVIEW","reason":"Synthetic independent verification","reviewer_account_id":"75983cec-50f5-4b2e-840a-973b34327c6a"},"execution_status":"MANUAL_RESPONSE_VERIFIED","remaining_actions":[],"evidence_asset_ids":["331a4414-4a75-4f3d-9ecf-ebbdcf653077"]},"proposal":{"outcome":"INFORMATION_PROVIDED","response":"Synthetic personal copy; verify remaining items separately","retentions":[],"remaining_actions":[],"evidence_asset_ids":["331a4414-4a75-4f3d-9ecf-ebbdcf653077"]},"proposal_sha256":"fb6cff8332967ee98ad283fd057f1f6978acd455b63a9594f760d24235f5ca1e","events":[{"id":"0624dda5-d176-4711-a3b6-c5478073e2dd","event_code":"SUBMITTED","object_version":1,"message":"已收到申请，尚未完成实际处理","created_at":"2026-11-09T04:34:04.857Z"},{"id":"56ff3130-33b3-4160-bb63-bcacdb0187ed","event_code":"PROCESSING","object_version":2,"message":"工作人员已开始处理申请","created_at":"2026-11-09T04:34:04.869Z"},{"id":"a344e5ae-9bb1-4c58-8532-93d8d8e472e1","event_code":"REVIEW_PENDING","object_version":3,"message":"答复已拟好，正在等待另一位工作人员复核","created_at":"2026-11-09T04:34:04.880Z"},{"id":"924d25f2-eb87-4fdf-b748-8e410dc4d785","event_code":"RESPONSE_AVAILABLE","object_version":4,"message":"已有审核后的答复，请同时查看仍待处理的事项","created_at":"2026-11-09T04:34:04.892Z"}]},"body":{"meta":{"request_id":"e8d4e141-28d0-42a4-bbae-3501ea14636c","actor":{"account_id":"75983cec-50f5-4b2e-840a-973b34327c6a"},"acting_party":null},"data":{"id":"bc8c24ff-76e6-4b3e-b136-f1dce4113bb1","account_id":"42d0442e-48c9-49f4-aa31-6a50d4a3216c","request":{"type":"COPY","scopes":["PROFILE"],"details":"Synthetic machine readable personal copy"},"current_status":"RESPONDED","object_version":4,"response_due_on":"2026-11-30","calendar_version":null,"deadline_basis":"WEEKDAY_ESTIMATE_NEEDS_CALENDAR","result":{"files":[{"id":"331a4414-4a75-4f3d-9ecf-ebbdcf653077","byte_size":31,"media_type":"text/plain","content_sha256":"de39c3e4c552a98524b8f5d4a2d12c949906c0512eeedef74fe5e8c7814e997c"}],"outcome":"INFORMATION_PROVIDED","response":"Synthetic personal copy; verify remaining items separately","retentions":[],"verification":{"method":"INDEPENDENT_MANUAL_REVIEW","reason":"Synthetic independent verification","reviewer_account_id":"75983cec-50f5-4b2e-840a-973b34327c6a"},"execution_status":"MANUAL_RESPONSE_VERIFIED","remaining_actions":[],"evidence_asset_ids":["331a4414-4a75-4f3d-9ecf-ebbdcf653077"]},"proposal":{"outcome":"INFORMATION_PROVIDED","response":"Synthetic personal copy; verify remaining items separately","retentions":[],"remaining_actions":[],"evidence_asset_ids":["331a4414-4a75-4f3d-9ecf-ebbdcf653077"]},"proposal_sha256":"fb6cff8332967ee98ad283fd057f1f6978acd455b63a9594f760d24235f5ca1e","events":[{"id":"0624dda5-d176-4711-a3b6-c5478073e2dd","event_code":"SUBMITTED","object_version":1,"message":"已收到申请，尚未完成实际处理","created_at":"2026-11-09T04:34:04.857Z"},{"id":"56ff3130-33b3-4160-bb63-bcacdb0187ed","event_code":"PROCESSING","object_version":2,"message":"工作人员已开始处理申请","created_at":"2026-11-09T04:34:04.869Z"},{"id":"a344e5ae-9bb1-4c58-8532-93d8d8e472e1","event_code":"REVIEW_PENDING","object_version":3,"message":"答复已拟好，正在等待另一位工作人员复核","created_at":"2026-11-09T04:34:04.880Z"},{"id":"924d25f2-eb87-4fdf-b748-8e410dc4d785","event_code":"RESPONSE_AVAILABLE","object_version":4,"message":"已有审核后的答复，请同时查看仍待处理的事项","created_at":"2026-11-09T04:34:04.892Z"}]}}}'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 200
+      operator: 'notStrictEqual'
+      stack: |-
+        rejects (J:\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\privacy-response-delivery.integration.test.cjs:14:26)
+        TestContext.<anonymous> (J:\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\privacy-response-delivery.integration.test.cjs:29:7)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (J:\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\privacy-response-delivery.integration.test.cjs:27:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..2
+not ok 1 - privacy responses require the actual reviewed files before publication
+  ---
+  duration_ms: 6826.6415
+  type: 'test'
+  location: 'J:\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\privacy-response-delivery.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 3
+# suites 0
+# pass 0
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7016.5068

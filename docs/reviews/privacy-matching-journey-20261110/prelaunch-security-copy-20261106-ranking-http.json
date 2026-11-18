@@ -1,0 +1,456 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rules",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "58d89a37-d370-4792-a8e5-bb9b0363337e",
+          "actor": {
+            "account_id": "a10a6814-22b6-4631-825a-d8c91985044e"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "RANKING_CONTRACT_POLICY_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rules",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "6600b4ff-c8f3-4360-ad34-fc88e1aa79d2",
+          "actor": {
+            "account_id": "a10a6814-22b6-4631-825a-d8c91985044e"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "RANKING_CONTRACT_RATE_MISMATCH",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rules",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "1e83475e-00ad-4dbf-bbbc-734b4533ab1e",
+          "actor": {
+            "account_id": "2973f675-8f5b-407f-bd71-094d23ef9dd2"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "ENGAGEMENT_OPERATOR_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rules",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "cd5ef17f-c724-4522-b8f7-b982be317df3",
+          "actor": {
+            "account_id": "a10a6814-22b6-4631-825a-d8c91985044e"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "687d544b-478c-4ec7-8982-5ac68164ec8d",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "a10a6814-22b6-4631-825a-d8c91985044e",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "b672f8853aaa6fc69191d63ecf2deff58c983c12ce35b2338c0cac58d8a4e0ae",
+          "data": {
+            "rule": {
+              "version": "synthetic-contract-20261029",
+              "terms": "Isolated fixture, not approved production rules",
+              "gp": {
+                "STOCK": 1,
+                "AUDITION": 3,
+                "CUSTOMIZATION": 5,
+                "COMMERCIAL": 5,
+                "five_star": 1,
+                "media": 2,
+                "repeat": 2,
+                "refund_penalty": 5
+              },
+              "thresholds": [
+                0,
+                30,
+                120,
+                400,
+                1000
+              ],
+              "retention_days": 90,
+              "retention_bps": 5000,
+              "rank": {
+                "window_days": 30,
+                "popularity_days": 7,
+                "newcomer_days": 30,
+                "cold_start_days": 7,
+                "review_min": 10,
+                "repeat_buyers_min": 20,
+                "bayes_n": 10,
+                "bayes_mean": 4,
+                "weights": [
+                  3000,
+                  2500,
+                  2000,
+                  1000,
+                  1500
+                ],
+                "halo_bps": [
+                  0,
+                  10000,
+                  13000,
+                  16000
+                ]
+              },
+              "starlight": null,
+              "risk_first_penalty": 25,
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": 7,
+                "CUSTOMIZATION": 7,
+                "COMMERCIAL": 7
+              },
+              "referral_bps": {
+                "STOCK": 500,
+                "AUDITION": 500,
+                "CUSTOMIZATION": 500,
+                "COMMERCIAL": 500
+              },
+              "ranking_contract_policy": "CONTRACT_20261029"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rules/5f209091-8ba9-4d2c-a877-2c981c7a0708/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "ca71cfe3-39aa-48dc-9ff4-19060afd4668",
+          "actor": {
+            "account_id": "c218b707-b37c-49a0-b72a-29bd83f09f1d"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "RANKING_CONTRACT_POLICY_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rules/687d544b-478c-4ec7-8982-5ac68164ec8d/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "4e18b3f9-dfde-4fce-a0af-31269a9206c7",
+          "actor": {
+            "account_id": "a10a6814-22b6-4631-825a-d8c91985044e"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "SELF_REVIEW_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rules/687d544b-478c-4ec7-8982-5ac68164ec8d/review",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "4a8f4ec7-7f45-41c2-88d3-427af7914c6a",
+          "actor": {
+            "account_id": "c218b707-b37c-49a0-b72a-29bd83f09f1d"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "687d544b-478c-4ec7-8982-5ac68164ec8d",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "a10a6814-22b6-4631-825a-d8c91985044e",
+          "current_status": "EFFECTIVE",
+          "object_version": 2,
+          "content_sha256": "8770235c72204612756863d01f47a2a3580c74361ccdfef5f64f87719029b19c",
+          "data": {
+            "rule": {
+              "gp": {
+                "STOCK": 1,
+                "media": 2,
+                "repeat": 2,
+                "AUDITION": 3,
+                "five_star": 1,
+                "COMMERCIAL": 5,
+                "CUSTOMIZATION": 5,
+                "refund_penalty": 5
+              },
+              "rank": {
+                "bayes_n": 10,
+                "weights": [
+                  3000,
+                  2500,
+                  2000,
+                  1000,
+                  1500
+                ],
+                "halo_bps": [
+                  0,
+                  10000,
+                  13000,
+                  16000
+                ],
+                "bayes_mean": 4,
+                "review_min": 10,
+                "window_days": 30,
+                "newcomer_days": 30,
+                "cold_start_days": 7,
+                "popularity_days": 7,
+                "repeat_buyers_min": 20
+              },
+              "terms": "Isolated fixture, not approved production rules",
+              "version": "synthetic-contract-20261029",
+              "starlight": null,
+              "thresholds": [
+                0,
+                30,
+                120,
+                400,
+                1000
+              ],
+              "referral_bps": {
+                "STOCK": 500,
+                "AUDITION": 500,
+                "COMMERCIAL": 500,
+                "CUSTOMIZATION": 500
+              },
+              "retention_bps": 5000,
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": 7,
+                "COMMERCIAL": 7,
+                "CUSTOMIZATION": 7
+              },
+              "retention_days": 90,
+              "risk_first_penalty": 25,
+              "ranking_contract_policy": "CONTRACT_20261029"
+            },
+            "review": {
+              "by": "c218b707-b37c-49a0-b72a-29bd83f09f1d",
+              "reason": "synthetic independent review"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rankings",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "412338fd-308e-4fa0-bc80-987a33a7d6f7",
+          "actor": {
+            "account_id": "a10a6814-22b6-4631-825a-d8c91985044e"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "RANKING_CONTRACT_POLICY_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rankings",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "c90cec3a-40bf-4e10-8617-9c2602bec9d7",
+          "actor": {
+            "account_id": "a10a6814-22b6-4631-825a-d8c91985044e"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "f57b6f10-89fc-4124-8551-eaf7eceb903c",
+          "kind": "RANK_SNAPSHOT",
+          "owner_party_id": null,
+          "parent_id": "687d544b-478c-4ec7-8982-5ac68164ec8d",
+          "created_by": "a10a6814-22b6-4631-825a-d8c91985044e",
+          "current_status": "PUBLISHED",
+          "object_version": 1,
+          "content_sha256": "59625e523597470539d4be97bc07e4e8dfee16330c2fe613ed51d8224bd37fba",
+          "data": {
+            "at": "2026-11-10T06:09:23.951Z",
+            "city": "test-city",
+            "district": "test-district",
+            "category": "test-category",
+            "calculation_version": "ENGAGEMENT_SCORING_V1",
+            "rule_snapshot": {
+              "id": "687d544b-478c-4ec7-8982-5ac68164ec8d",
+              "kind": "RULE",
+              "owner_party_id": null,
+              "parent_id": null,
+              "created_by": "a10a6814-22b6-4631-825a-d8c91985044e",
+              "current_status": "EFFECTIVE",
+              "object_version": 2,
+              "content_sha256": "8770235c72204612756863d01f47a2a3580c74361ccdfef5f64f87719029b19c",
+              "data": {
+                "rule": {
+                  "gp": {
+                    "STOCK": 1,
+                    "media": 2,
+                    "repeat": 2,
+                    "AUDITION": 3,
+                    "five_star": 1,
+                    "COMMERCIAL": 5,
+                    "CUSTOMIZATION": 5,
+                    "refund_penalty": 5
+                  },
+                  "rank": {
+                    "bayes_n": 10,
+                    "weights": [
+                      3000,
+                      2500,
+                      2000,
+                      1000,
+                      1500
+                    ],
+                    "halo_bps": [
+                      0,
+                      10000,
+                      13000,
+                      16000
+                    ],
+                    "bayes_mean": 4,
+                    "review_min": 10,
+                    "window_days": 30,
+                    "newcomer_days": 30,
+                    "cold_start_days": 7,
+                    "popularity_days": 7,
+                    "repeat_buyers_min": 20
+                  },
+                  "terms": "Isolated fixture, not approved production rules",
+                  "version": "synthetic-contract-20261029",
+                  "starlight": null,
+                  "thresholds": [
+                    0,
+                    30,
+                    120,
+                    400,
+                    1000
+                  ],
+                  "referral_bps": {
+                    "STOCK": 500,
+                    "AUDITION": 500,
+                    "COMMERCIAL": 500,
+                    "CUSTOMIZATION": 500
+                  },
+                  "retention_bps": 5000,
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": 7,
+                    "COMMERCIAL": 7,
+                    "CUSTOMIZATION": 7
+                  },
+                  "retention_days": 90,
+                  "risk_first_penalty": 25,
+                  "ranking_contract_policy": "CONTRACT_20261029"
+                },
+                "review": {
+                  "by": "c218b707-b37c-49a0-b72a-29bd83f09f1d",
+                  "reason": "synthetic independent review"
+                }
+              }
+            },
+            "boards": {
+              "sales": [],
+              "reviews": [],
+              "repeat": [],
+              "popularity": [],
+              "levels": [],
+              "newcomers": [],
+              "composite": []
+            },
+            "evidence": [],
+            "personalization": false,
+            "paid_advertising": false
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/engagement/rankings/e15f3933-63ee-46fb-81d6-496dfadec2e7",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "0f533fb2-b765-41ef-a62b-09548076b66c",
+          "actor": {
+            "account_id": "2973f675-8f5b-407f-bd71-094d23ef9dd2"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "e15f3933-63ee-46fb-81d6-496dfadec2e7",
+          "at": "2026-11-10T06:09:23.909Z",
+          "city": "test-city",
+          "district": "test-district",
+          "category": "test-category",
+          "rule_id": "5f209091-8ba9-4d2c-a877-2c981c7a0708",
+          "boards": {
+            "sales": [],
+            "levels": [],
+            "repeat": [],
+            "reviews": [],
+            "composite": [],
+            "newcomers": [],
+            "popularity": []
+          },
+          "personalized": false,
+          "paid_advertising": false
+        }
+      }
+    }
+  ]
+}

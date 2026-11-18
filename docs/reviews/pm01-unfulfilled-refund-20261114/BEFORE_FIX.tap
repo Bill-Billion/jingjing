@@ -1,0 +1,87 @@
+TAP version 13
+# Subtest: declined audition after MCN replacement closes original referral only after verified full refund
+    # Subtest: original referral and agency are captured by an independently reviewed paid booking
+    ok 1 - original referral and agency are captured by an independently reviewed paid booking
+      ---
+      duration_ms: 182.8183
+      type: 'test'
+      ...
+    # Subtest: agency replacement and later referral click cannot claim the original booking
+    ok 2 - agency replacement and later referral click cannot claim the original booking
+      ---
+      duration_ms: 67.6824
+      type: 'test'
+      ...
+    # Subtest: decline and reviewed refund request keep commission pending until money is verified returned
+    ok 3 - decline and reviewed refund request keep commission pending until money is verified returned
+      ---
+      duration_ms: 66.3712
+      type: 'test'
+      ...
+    # Subtest: verified full refund closes zero referral without inventing fulfillment or changing attribution
+    not ok 4 - verified full refund closes zero referral without inventing fulfillment or changing attribution
+      ---
+      duration_ms: 38.5313
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-audition-refund.integration.test.cjs:45:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'PENDING'
+        - 'REVERSED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'REVERSED'
+      actual: 'PENDING'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\referral-audition-refund.integration.test.cjs:48:36)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\referral-audition-refund.integration.test.cjs:45:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: original parties can reconcile zero old-order balance after verified refund
+    not ok 5 - original parties can reconcile zero old-order balance after verified refund
+      ---
+      duration_ms: 86.1022
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-audition-refund.integration.test.cjs:51:11'
+      failureType: 'testCodeFailure'
+      error: 'REFERRAL_AFTERCARE_NOT_READY'
+      code: 'REFERRAL_AFTERCARE_NOT_READY'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        Object.settlementReady (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\engagement\referrals.js:24:187)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async accrue (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\settlement\repository.js:6:189)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\settlement\repository.js:13:288
+        async command (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\settlement\context.js:23:473)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\settlement\context.js:24:317
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\referral-audition-refund.integration.test.cjs:55:231)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      ...
+    1..5
+not ok 1 - declined audition after MCN replacement closes original referral only after verified full refund
+  ---
+  duration_ms: 7317.038
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-audition-refund.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 6
+# suites 0
+# pass 3
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7509.8226

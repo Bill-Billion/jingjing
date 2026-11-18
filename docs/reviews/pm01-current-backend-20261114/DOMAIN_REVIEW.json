@@ -1,0 +1,3752 @@
+{
+  "base_commit": "91f845aa6f76c3f223a46af29adcfc1cd1adb199",
+  "source": "PM01 W01：分域审阅PR39，单列迁移、权限、钱账、授权、删除及发布配置",
+  "status": "BACKEND_SELF_REVIEW_AND_ISOLATED_REGRESSION_ONLY",
+  "domains": [
+    {
+      "domain": "迁移与恢复",
+      "files": [
+        "src/operations/backup.js",
+        "src/operations/recovery-check.js",
+        "src/operations/private-object-inventory.js",
+        "src/infrastructure/database/migrator.js",
+        "src/infrastructure/database/recovery-guard.js",
+        "test/migrations.test.cjs",
+        "test/migration-rollback.integration.test.cjs",
+        "test/release.integration.test.cjs",
+        "test/customization-handoff.integration.test.cjs"
+      ],
+      "test_files": [
+        "test/migrations.test.cjs",
+        "test/migration-rollback.integration.test.cjs",
+        "test/release.integration.test.cjs",
+        "test/customization-handoff.integration.test.cjs"
+      ],
+      "counts": {
+        "PASS": 39,
+        "FAIL": 0,
+        "SKIP": 1,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false,
+      "changed_source_files": [],
+      "actual_checks": [
+        {
+          "name": "0224 upgrades with a legacy first-reader receipt unchanged and repeated 0225 application is idempotent",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 481.4199,
+          "error_code": null
+        },
+        {
+          "name": "a new representative must personally read the current preview and notification before taking over",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 399.9864,
+          "error_code": null
+        },
+        {
+          "name": "another viewer never overwrites a completed receipt and each actor feedback uses their own read",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 396.2235,
+          "error_code": null
+        },
+        {
+          "name": "failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 795.199,
+          "error_code": null
+        },
+        {
+          "name": "concurrent current company viewers create one observation each and one immutable final deadline",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 458.9529,
+          "error_code": null
+        },
+        {
+          "name": "same company completes final acceptance and last payment; duplicate final downloads keep one completion fact",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 311.3385,
+          "error_code": null
+        },
+        {
+          "name": "personal retained delivery and feedback copy uses the same actual company journey",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 94,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1038.5026,
+          "error_code": null
+        },
+        {
+          "name": "company delivery handoff preserves first receipt, current authority and original final payment",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 36571.1509,
+          "error_code": null
+        },
+        {
+          "name": "CLI safety rejects live targets and emits no credentials",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 60,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 212.2481,
+          "error_code": null
+        },
+        {
+          "name": "read-only diagnostics see waiting work without requiring a release manifest",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 416.8806,
+          "error_code": null
+        },
+        {
+          "name": "backup commands create an authenticated pre-change artifact and refuse overwrite",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 68,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1799.1951,
+          "error_code": null
+        },
+        {
+          "name": "actual failed migration retains prior committed DDL and is observable without rewriting history",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 73,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 950.6818,
+          "error_code": null
+        },
+        {
+          "name": "restore refuses wrong hash and a populated target without destroying the failed scene",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 90,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 584.2924,
+          "error_code": null
+        },
+        {
+          "name": "actual restore command reestablishes pre-change money, authority and original task in a new quarantined database",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 97,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 24459.7393,
+          "error_code": null
+        },
+        {
+          "name": "post-recovery observation blocks runtime and never claims migration recovery is service cutover",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 110,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 980.5319,
+          "error_code": null
+        },
+        {
+          "name": "diagnostics report blocked, failed and expired jobs without executing or exposing private references",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 117,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 458.7139,
+          "error_code": null
+        },
+        {
+          "name": "empty database is diagnosed as unavailable without creating schema",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 129,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 387.1411,
+          "error_code": null
+        },
+        {
+          "name": "failed migration is diagnosed and recovered through isolated maintenance commands",
+          "file": "test/migration-rollback.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 70878.022,
+          "error_code": null
+        },
+        {
+          "name": "场景1 全新库：一次迁移到最新，版本齐全、新增工程表存在",
+          "file": "test/migrations.test.cjs",
+          "line": 29,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 103.4169,
+          "error_code": null
+        },
+        {
+          "name": "场景2 旧库升级：缺列老库经迁移补齐到最新且不重建已有表数据",
+          "file": "test/migrations.test.cjs",
+          "line": 53,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 214.4824,
+          "error_code": null
+        },
+        {
+          "name": "场景3 重复执行幂等：第二次全部跳过、结构与版本不重复",
+          "file": "test/migrations.test.cjs",
+          "line": 98,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 93.186,
+          "error_code": null
+        },
+        {
+          "name": "等价性：001 初始迁移结构 == 改造前生产库（58表/列集合一致）",
+          "file": "test/migrations.test.cjs",
+          "line": 113,
+          "nesting": 0,
+          "status": "SKIP",
+          "duration_ms": 0.5884,
+          "error_code": null
+        },
+        {
+          "name": "006 adds sample URL and classifies no historical digest; existing manually added URL survives",
+          "file": "test/migrations.test.cjs",
+          "line": 147,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 39.4111,
+          "error_code": null
+        },
+        {
+          "name": "legacy inspection is read-only and retains unsafe-size integers, raw money and binary",
+          "file": "test/release.integration.test.cjs",
+          "line": 39,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 8.5453,
+          "error_code": null
+        },
+        {
+          "name": "source declaration and active WAL reject before unsafe copy",
+          "file": "test/release.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2.7513,
+          "error_code": null
+        },
+        {
+          "name": "archiving twice preserves old facts without creating active identities, payment receipts or licenses",
+          "file": "test/release.integration.test.cjs",
+          "line": 41,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 28.1964,
+          "error_code": null
+        },
+        {
+          "name": "concurrent archives converge and manifest tampering is detected",
+          "file": "test/release.integration.test.cjs",
+          "line": 42,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 88.9403,
+          "error_code": null
+        },
+        {
+          "name": "modified archive payload fails without partial writes",
+          "file": "test/release.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 0.5013,
+          "error_code": null
+        },
+        {
+          "name": "backup includes immutable payment and pending-job facts",
+          "file": "test/release.integration.test.cjs",
+          "line": 44,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 808.9952,
+          "error_code": null
+        },
+        {
+          "name": "encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite",
+          "file": "test/release.integration.test.cjs",
+          "line": 45,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 64.0541,
+          "error_code": null
+        },
+        {
+          "name": "restore to a fresh database matches every row while leaving runtime quarantined",
+          "file": "test/release.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 23976.6702,
+          "error_code": null
+        },
+        {
+          "name": "restore never overwrites an existing database or accepts the wrong source checksum",
+          "file": "test/release.integration.test.cjs",
+          "line": 47,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 95.0859,
+          "error_code": null
+        },
+        {
+          "name": "invalid foreign key rolls back all imported rows and preserves quarantine",
+          "file": "test/release.integration.test.cjs",
+          "line": 48,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 22760.8577,
+          "error_code": null
+        },
+        {
+          "name": "schema injection or renamed column is rejected without executing backup SQL",
+          "file": "test/release.integration.test.cjs",
+          "line": 49,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 22101.0796,
+          "error_code": null
+        },
+        {
+          "name": "release checks do not confuse filled forms, sandbox providers or running process with launch approval",
+          "file": "test/release.integration.test.cjs",
+          "line": 50,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 161.2061,
+          "error_code": null
+        },
+        {
+          "name": "registered provider evidence remains version-bound and never substitutes for a live check",
+          "file": "test/release.integration.test.cjs",
+          "line": 51,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 309.7827,
+          "error_code": null
+        },
+        {
+          "name": "sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity",
+          "file": "test/release.integration.test.cjs",
+          "line": 52,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 762.3986,
+          "error_code": null
+        },
+        {
+          "name": "concurrent duplicate writes preserve one business object and one set of receipts",
+          "file": "test/release.integration.test.cjs",
+          "line": 53,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 65.2964,
+          "error_code": null
+        },
+        {
+          "name": "HTTP security failures never expose SQL, credentials or accept forged payment flags",
+          "file": "test/release.integration.test.cjs",
+          "line": 54,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 9.3073,
+          "error_code": null
+        },
+        {
+          "name": "release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load",
+          "file": "test/release.integration.test.cjs",
+          "line": 8,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 128870.3792,
+          "error_code": null
+        }
+      ],
+      "meaning": "Selected assertions within this full run; domain counts overlap and do not prove every original requirement or independent approval."
+    },
+    {
+      "domain": "权限与办理人交接",
+      "files": [
+        "src/modules/party/representatives.js",
+        "src/modules/governance/operator-access.js",
+        "src/modules/privacy/representative-copy.js",
+        "test/party.integration.test.cjs",
+        "test/notice-representative.integration.test.cjs",
+        "test/audition-representative.integration.test.cjs",
+        "test/invitation-representative.integration.test.cjs",
+        "test/customization-representative.integration.test.cjs",
+        "test/customization-handoff.integration.test.cjs",
+        "test/privacy-representative-copy.integration.test.cjs",
+        "test/production-text.integration.test.cjs",
+        "test/text-moderation.integration.test.cjs"
+      ],
+      "test_files": [
+        "test/party.integration.test.cjs",
+        "test/notice-representative.integration.test.cjs",
+        "test/audition-representative.integration.test.cjs",
+        "test/invitation-representative.integration.test.cjs",
+        "test/customization-representative.integration.test.cjs",
+        "test/customization-handoff.integration.test.cjs",
+        "test/privacy-representative-copy.integration.test.cjs",
+        "test/production-text.integration.test.cjs",
+        "test/text-moderation.integration.test.cjs"
+      ],
+      "counts": {
+        "PASS": 80,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false,
+      "changed_source_files": [
+        "src/modules/media/service.js",
+        "src/modules/production/repository.js",
+        "src/modules/works/repository.js"
+      ],
+      "actual_checks": [
+        {
+          "name": "ordinary or invoice-only member cannot book; explicit trade grant preserves identity and company gates",
+          "file": "test/audition-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 265.5142,
+          "error_code": null
+        },
+        {
+          "name": "safety review remains independent and current representative checks out the original company order",
+          "file": "test/audition-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 183.5539,
+          "error_code": null
+        },
+        {
+          "name": "company switching and buyer delegation cannot impersonate the artist or read their offer administration",
+          "file": "test/audition-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 143.7008,
+          "error_code": null
+        },
+        {
+          "name": "revocation blocks same booking reads, messages, creation and checkout replay without changing the contract",
+          "file": "test/audition-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 124.705,
+          "error_code": null
+        },
+        {
+          "name": "company-specific sample consent and independent delivery review still precede buyer downloads",
+          "file": "test/audition-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 109.2605,
+          "error_code": null
+        },
+        {
+          "name": "losing representative rights during sample transport returns no bytes or viewed receipt; new grant allows actual receipt",
+          "file": "test/audition-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 592.6265,
+          "error_code": null
+        },
+        {
+          "name": "a second company booking can be cancelled and independently refunded by the authorized buyer with original ownership",
+          "file": "test/audition-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 216.7578,
+          "error_code": null
+        },
+        {
+          "name": "explicit enterprise buyer representative completes and reverses original audition bookings",
+          "file": "test/audition-representative.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 19170.0089,
+          "error_code": null
+        },
+        {
+          "name": "0224 upgrades with a legacy first-reader receipt unchanged and repeated 0225 application is idempotent",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 481.4199,
+          "error_code": null
+        },
+        {
+          "name": "a new representative must personally read the current preview and notification before taking over",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 399.9864,
+          "error_code": null
+        },
+        {
+          "name": "another viewer never overwrites a completed receipt and each actor feedback uses their own read",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 396.2235,
+          "error_code": null
+        },
+        {
+          "name": "failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 795.199,
+          "error_code": null
+        },
+        {
+          "name": "concurrent current company viewers create one observation each and one immutable final deadline",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 458.9529,
+          "error_code": null
+        },
+        {
+          "name": "same company completes final acceptance and last payment; duplicate final downloads keep one completion fact",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 311.3385,
+          "error_code": null
+        },
+        {
+          "name": "personal retained delivery and feedback copy uses the same actual company journey",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 94,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1038.5026,
+          "error_code": null
+        },
+        {
+          "name": "company delivery handoff preserves first receipt, current authority and original final payment",
+          "file": "test/customization-handoff.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 36571.1509,
+          "error_code": null
+        },
+        {
+          "name": "ordinary member may author a private request without financial order authority",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 202.6344,
+          "error_code": null
+        },
+        {
+          "name": "author uploads and submits private bytes; a second trade delegate and owner cannot read raw request drafts",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 159.8659,
+          "error_code": null
+        },
+        {
+          "name": "invoice-only and offered trade grants cannot accept a quote; accepted current trade grant confirms the same company order",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 213.299,
+          "error_code": null
+        },
+        {
+          "name": "original company order proceeds to independently reviewed manual project without granting producer powers",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 169.9952,
+          "error_code": null
+        },
+        {
+          "name": "accepted representatives list and read fulfillment; only original author can read private story via buyer delegation",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 127.0631,
+          "error_code": null
+        },
+        {
+          "name": "representative views independent delivery and accepts the same script to unlock contractual interim payment",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 458.4013,
+          "error_code": null
+        },
+        {
+          "name": "company project pagination includes delegated orders without opening the other author story",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 151.8601,
+          "error_code": null
+        },
+        {
+          "name": "revocation during original attachment download blocks bytes; reads, lists and successful write replays recheck current authority",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 134.9383,
+          "error_code": null
+        },
+        {
+          "name": "removing current membership blocks author request and original bytes while preserving the submitted version",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 41.1902,
+          "error_code": null
+        },
+        {
+          "name": "expired grants and changed owner membership block delegates without deleting original records",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 50.0526,
+          "error_code": null
+        },
+        {
+          "name": "enterprise customization: current trade authority, fulfillment and private author boundaries",
+          "file": "test/customization-representative.integration.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 34344.3048,
+          "error_code": null
+        },
+        {
+          "name": "ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing",
+          "file": "test/invitation-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 288.4469,
+          "error_code": null
+        },
+        {
+          "name": "pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch",
+          "file": "test/invitation-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 179.662,
+          "error_code": null
+        },
+        {
+          "name": "representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP",
+          "file": "test/invitation-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 529.7941,
+          "error_code": null
+        },
+        {
+          "name": "buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages",
+          "file": "test/invitation-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 126.2959,
+          "error_code": null
+        },
+        {
+          "name": "independent support links that invitation to the exact quote, and the representative pays the original company order",
+          "file": "test/invitation-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 182.0322,
+          "error_code": null
+        },
+        {
+          "name": "revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged",
+          "file": "test/invitation-representative.integration.test.cjs",
+          "line": 16,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 121.6806,
+          "error_code": null
+        },
+        {
+          "name": "explicit company buyer follows public artist invitation through a directly accepted commercial order",
+          "file": "test/invitation-representative.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 33599.4193,
+          "error_code": null
+        },
+        {
+          "name": "ordinary and invoice-only members cannot publish; active trade authority does not grant qualification or operator powers",
+          "file": "test/notice-representative.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 270.7094,
+          "error_code": null
+        },
+        {
+          "name": "review rechecks a pending representative author, while a published company notice survives later revocation",
+          "file": "test/notice-representative.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 129.5497,
+          "error_code": null
+        },
+        {
+          "name": "only reviewed company-specific submissions are visible; buyer cannot impersonate artist and transport revocation returns no material",
+          "file": "test/notice-representative.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 184.0577,
+          "error_code": null
+        },
+        {
+          "name": "notice revisions require current representative authority at approval and retain the original artist acknowledgement boundary",
+          "file": "test/notice-representative.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 242.5139,
+          "error_code": null
+        },
+        {
+          "name": "independent support links the exact company quote; representative accepts the original order and payment opens its conversation",
+          "file": "test/notice-representative.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 606.4904,
+          "error_code": null
+        },
+        {
+          "name": "company representative can withdraw its notice without erasing the accepted paid contract or granting seller authority",
+          "file": "test/notice-representative.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 64.1415,
+          "error_code": null
+        },
+        {
+          "name": "enterprise representative handles the original notice submission and linked commercial order",
+          "file": "test/notice-representative.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 35423.0093,
+          "error_code": null
+        },
+        {
+          "name": "upgrading from the seven prior migrations preserves data and applies only new tables",
+          "file": "test/party.integration.test.cjs",
+          "line": 19,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 23946.2777,
+          "error_code": null
+        },
+        {
+          "name": "default authentication is denied and caller actor/roles cannot be injected",
+          "file": "test/party.integration.test.cjs",
+          "line": 47,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 72.2589,
+          "error_code": null
+        },
+        {
+          "name": "same verified subject registers one account and one personal party under concurrency",
+          "file": "test/party.integration.test.cjs",
+          "line": 54,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 38.1976,
+          "error_code": null
+        },
+        {
+          "name": "organization creation is idempotent without overwriting the personal party",
+          "file": "test/party.integration.test.cjs",
+          "line": 62,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 69.8501,
+          "error_code": null
+        },
+        {
+          "name": "individual authors and organizations can request multiple capabilities without activating business",
+          "file": "test/party.integration.test.cjs",
+          "line": 69,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 102.6929,
+          "error_code": null
+        },
+        {
+          "name": "pending invitation grants no membership and only its intended account can respond",
+          "file": "test/party.integration.test.cjs",
+          "line": 78,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 90.503,
+          "error_code": null
+        },
+        {
+          "name": "cross-party identifiers and outsider mutation are rejected",
+          "file": "test/party.integration.test.cjs",
+          "line": 88,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 53.4459,
+          "error_code": null
+        },
+        {
+          "name": "concurrent same-key acceptance produces one membership and one audit event",
+          "file": "test/party.integration.test.cjs",
+          "line": 94,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 74.6476,
+          "error_code": null
+        },
+        {
+          "name": "concurrent invitations to the same person produce only one pending invitation",
+          "file": "test/party.integration.test.cjs",
+          "line": 102,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 93.7146,
+          "error_code": null
+        },
+        {
+          "name": "accept and revoke races yield one transition and never create membership after revocation",
+          "file": "test/party.integration.test.cjs",
+          "line": 107,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 81.5471,
+          "error_code": null
+        },
+        {
+          "name": "declined, revoked, stale and expired invitations cannot activate membership",
+          "file": "test/party.integration.test.cjs",
+          "line": 114,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 382.7657,
+          "error_code": null
+        },
+        {
+          "name": "suspended accounts and parties cannot mutate or replay successful operations",
+          "file": "test/party.integration.test.cjs",
+          "line": 129,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 74.1501,
+          "error_code": null
+        },
+        {
+          "name": "pending acceptance rechecks the inviter and idempotent replay rechecks the owner",
+          "file": "test/party.integration.test.cjs",
+          "line": 138,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 84.4348,
+          "error_code": null
+        },
+        {
+          "name": "removal preserves identity/history, affects only one organization, and forbids replay after revocation",
+          "file": "test/party.integration.test.cjs",
+          "line": 150,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 140.021,
+          "error_code": null
+        },
+        {
+          "name": "audit failure rolls back invitation, membership and replay result together",
+          "file": "test/party.integration.test.cjs",
+          "line": 167,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 72.3878,
+          "error_code": null
+        },
+        {
+          "name": "input rejects missing versions, unknown fields and invalid or past expiry",
+          "file": "test/party.integration.test.cjs",
+          "line": 180,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 52.83,
+          "error_code": null
+        },
+        {
+          "name": "accepted identity and audit survive reconnect without provider calls or a process cache",
+          "file": "test/party.integration.test.cjs",
+          "line": 188,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 89.0117,
+          "error_code": null
+        },
+        {
+          "name": "MySQL party identity, consent, authority and transactional audit",
+          "file": "test/party.integration.test.cjs",
+          "line": 10,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 33017.1937,
+          "error_code": null
+        },
+        {
+          "name": "copies only grants received or issued by this account, redacts other people and preserves request status",
+          "file": "test/privacy-representative-copy.integration.test.cjs",
+          "line": 17,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 90.623,
+          "error_code": null
+        },
+        {
+          "name": "scope, requester, acting identity and cursor remain bound to this privacy request",
+          "file": "test/privacy-representative-copy.integration.test.cjs",
+          "line": 17,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 45.0259,
+          "error_code": null
+        },
+        {
+          "name": "revoked and expired grants remain as personal history without implying live authority",
+          "file": "test/privacy-representative-copy.integration.test.cjs",
+          "line": 17,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 32.8949,
+          "error_code": null
+        },
+        {
+          "name": "leaving the company removes business access but not this account historical privacy copy",
+          "file": "test/privacy-representative-copy.integration.test.cjs",
+          "line": 17,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 33.1757,
+          "error_code": null
+        },
+        {
+          "name": "personal enterprise representation copy through the original privacy request",
+          "file": "test/privacy-representative-copy.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 32061.8402,
+          "error_code": null
+        },
+        {
+          "name": "same project long script remains unsubmitable until full independent moderation",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 480.717,
+          "error_code": null
+        },
+        {
+          "name": "independent review cannot approve a task after its original producer lost the assignment",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 356.3808,
+          "error_code": null
+        },
+        {
+          "name": "original full script bytes reach only the same buyer after media and version reviews",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 313.0598,
+          "error_code": null
+        },
+        {
+          "name": "legacy version source cannot gain a new approval during a current rights dispute",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 417.0392,
+          "error_code": null
+        },
+        {
+          "name": "long production script preserves same project, source rights and independent moderation through delivery",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 43861.0152,
+          "error_code": null
+        },
+        {
+          "name": "600 Unicode characters retain existing single-request behavior",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 205.4028,
+          "error_code": null
+        },
+        {
+          "name": "601 characters include the actual tail and require full-file independent review",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 247.3457,
+          "error_code": null
+        },
+        {
+          "name": "tail high risk rejects the original whole document and cannot be manually approved",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 163.6685,
+          "error_code": null
+        },
+        {
+          "name": "unknown second response preserves first receipt and never resends either segment on manual retry",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 147.6706,
+          "error_code": null
+        },
+        {
+          "name": "withdrawn account stops later segments; restored authority resumes only known unsubmitted tail",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 357.7707,
+          "error_code": null
+        },
+        {
+          "name": "interrupted final database write recovers all known receipts without new provider requests",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 214.0464,
+          "error_code": null
+        },
+        {
+          "name": "different response identity and malformed UTF8 never yield a publishable result",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 136.5969,
+          "error_code": null
+        },
+        {
+          "name": "manual approval rechecks actual original bytes and current owner, not only stored file metadata",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 37,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 155.2107,
+          "error_code": null
+        },
+        {
+          "name": "known provider preflight disable keeps an unsubmitted segment recoverable after independent revalidation",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 226.1034,
+          "error_code": null
+        },
+        {
+          "name": "supply review cannot approve an organization task after the original owner membership is suspended",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 319.6662,
+          "error_code": null
+        },
+        {
+          "name": "complete long-text moderation uses original private file, durable segment receipts and independent review",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 33712.519,
+          "error_code": null
+        }
+      ],
+      "meaning": "Selected assertions within this full run; domain counts overlap and do not prove every original requirement or independent approval."
+    },
+    {
+      "domain": "钱账与逆向处理",
+      "files": [
+        "src/modules/settlement/review.js",
+        "src/modules/settlement/recovery.js",
+        "src/modules/trade/providers.js",
+        "test/settlement.integration.test.cjs",
+        "test/settlement-evidence-restriction.integration.test.cjs",
+        "test/refund-restore-authority.integration.test.cjs",
+        "test/refund-restore.integration.test.cjs",
+        "test/referral-window.integration.test.cjs",
+        "test/redemption-lottery.integration.test.cjs",
+        "test/redemption-checkout.integration.test.cjs",
+        "test/support/lottery-interview-nonselection.cjs",
+        "test/support/lottery-credit-completion.cjs"
+      ],
+      "test_files": [
+        "test/settlement.integration.test.cjs",
+        "test/settlement-evidence-restriction.integration.test.cjs",
+        "test/refund-restore-authority.integration.test.cjs",
+        "test/refund-restore.integration.test.cjs",
+        "test/referral-window.integration.test.cjs",
+        "test/redemption-lottery.integration.test.cjs",
+        "test/redemption-checkout.integration.test.cjs",
+        "test/support/lottery-interview-nonselection.cjs",
+        "test/support/lottery-credit-completion.cjs"
+      ],
+      "counts": {
+        "PASS": 94,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false,
+      "changed_source_files": [
+        "src/modules/engagement/referrals.js",
+        "src/modules/redemption/fulfillment.js"
+      ],
+      "actual_checks": [
+        {
+          "name": "one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases",
+          "file": "test/redemption-checkout.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 490.2545,
+          "error_code": null
+        },
+        {
+          "name": "new 30/40/30 coupon quote and contract preserve net amounts and script milestone",
+          "file": "test/redemption-checkout.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 435.8847,
+          "error_code": null
+        },
+        {
+          "name": "unaccepted hold can be released, stale preview and unauthorized access rejected",
+          "file": "test/redemption-checkout.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 233.1037,
+          "error_code": null
+        },
+        {
+          "name": "actual drawn credit keeps its original grant through unknown payment and refund without restoring the prize",
+          "file": "test/redemption-checkout.integration.test.cjs",
+          "line": 42,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 526.3776,
+          "error_code": null
+        },
+        {
+          "name": "full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse",
+          "file": "test/redemption-checkout.integration.test.cjs",
+          "line": 69,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1839.9649,
+          "error_code": null
+        },
+        {
+          "name": "co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source",
+          "file": "test/redemption-checkout.integration.test.cjs",
+          "line": 103,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 839.4346,
+          "error_code": null
+        },
+        {
+          "name": "same actual drawn production credit completes all four stages and original refunds without restoring prize or draw stake",
+          "file": "test/support/lottery-credit-completion.cjs",
+          "line": 6,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2119.2492,
+          "error_code": null
+        },
+        {
+          "name": "same 30/40/30 coupon order completes, earns net-consumption points and refunds without restoring a used coupon",
+          "file": "test/redemption-checkout.integration.test.cjs",
+          "line": 119,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2114.4742,
+          "error_code": null
+        },
+        {
+          "name": "coupon checkout preserves original promises and real payment facts",
+          "file": "test/redemption-checkout.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 42126.5365,
+          "error_code": null
+        },
+        {
+          "name": "creator cannot approve; rules and finance require separate reviewers; unpublished draw denied",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 331.0063,
+          "error_code": null
+        },
+        {
+          "name": "newly reviewed pools publish seven-day notice before drawing; no points or stock deducted",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 75.6256,
+          "error_code": null
+        },
+        {
+          "name": "reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 81.9851,
+          "error_code": null
+        },
+        {
+          "name": "retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 255.7185,
+          "error_code": null
+        },
+        {
+          "name": "insufficient points rolls back draw, stock and command; retired version preserves old results",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 54,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 534.9008,
+          "error_code": null
+        },
+        {
+          "name": "ten guarantee survives mostly no-win pool and records actual conditional draws",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 220.6974,
+          "error_code": null
+        },
+        {
+          "name": "new-contract pool cannot draw before a consumer policy is independently reviewed",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 66,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 420.4573,
+          "error_code": null
+        },
+        {
+          "name": "rational confirmation and participation limits precede point deduction; recovery returns original winners",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 73,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 351.6467,
+          "error_code": null
+        },
+        {
+          "name": "same actual winning interview cancels pending schedule on extension and fallback without redrawing",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 85,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 745.9596,
+          "error_code": null
+        },
+        {
+          "name": "same drawn interview expires then receives one reviewed fallback; retired-pool replay preserves original winners and stake",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 112,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 569.5601,
+          "error_code": null
+        },
+        {
+          "name": "actual winning interview not selected can receive one reviewed fallback without redrawing or cancelling the completed appointment",
+          "file": "test/support/lottery-interview-nonselection.cjs",
+          "line": 48,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 714.1456,
+          "error_code": null
+        },
+        {
+          "name": "not-selected interview can extend once, preserve the first attempt, and resolve a second unsuccessful attempt on the same grant",
+          "file": "test/support/lottery-interview-nonselection.cjs",
+          "line": 57,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 920.15,
+          "error_code": null
+        },
+        {
+          "name": "completed interview without an explicit not-selected result stays ineligible for this remedy",
+          "file": "test/support/lottery-interview-nonselection.cjs",
+          "line": 64,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 877.2823,
+          "error_code": null
+        },
+        {
+          "name": "verified winner without any avatar cannot bind invented material but can extend and receive the original fallback on the same draw",
+          "file": "test/support/lottery-interview-nonselection.cjs",
+          "line": 67,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 502.6161,
+          "error_code": null
+        },
+        {
+          "name": "unbound winning remedy can finish after prize expiry but revoked reviewer cannot execute or replay its result",
+          "file": "test/support/lottery-interview-nonselection.cjs",
+          "line": 75,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 396.992,
+          "error_code": null
+        },
+        {
+          "name": "same drawn interview with withdrawn production consent blocks use but keeps the independently reviewed remedy available",
+          "file": "test/support/lottery-interview-nonselection.cjs",
+          "line": 88,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 771.953,
+          "error_code": null
+        },
+        {
+          "name": "lottery actual HTTP: immutable odds, independent review, stock and atomic points",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 40221.6243,
+          "error_code": null
+        },
+        {
+          "name": "HTTP checkout retains the valid original referral beyond 100 other-merchant clicks",
+          "file": "test/referral-window.integration.test.cjs",
+          "line": 52,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2114.2622,
+          "error_code": null
+        },
+        {
+          "name": "other categories and excluded supplier referrals cannot conceal the eligible earlier click",
+          "file": "test/referral-window.integration.test.cjs",
+          "line": 59,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2178.0487,
+          "error_code": null
+        },
+        {
+          "name": "202 tied microsecond timestamps preserve id ordering through multiple pages",
+          "file": "test/referral-window.integration.test.cjs",
+          "line": 65,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 964.143,
+          "error_code": null
+        },
+        {
+          "name": "latest eligible click applies only to new orders; replay creates no second commission",
+          "file": "test/referral-window.integration.test.cjs",
+          "line": 71,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 192.6992,
+          "error_code": null
+        },
+        {
+          "name": "the seven-day cutoff is inclusive and one millisecond older is ineligible",
+          "file": "test/referral-window.integration.test.cjs",
+          "line": 79,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 228.1795,
+          "error_code": null
+        },
+        {
+          "name": "exhausting several pages without an eligible link returns an unattributed order",
+          "file": "test/referral-window.integration.test.cjs",
+          "line": 88,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 695.7555,
+          "error_code": null
+        },
+        {
+          "name": "corrupted retained click content still fails instead of silently skipping evidence",
+          "file": "test/referral-window.integration.test.cjs",
+          "line": 91,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 172.2769,
+          "error_code": null
+        },
+        {
+          "name": "seven-day referral survives unrelated clicks and exact timestamp page boundaries",
+          "file": "test/referral-window.integration.test.cjs",
+          "line": 8,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 39433.1512,
+          "error_code": null
+        },
+        {
+          "name": "revoked independent authority blocks restored work and cannot authorize its retry; self-review still fails",
+          "file": "test/refund-restore-authority.integration.test.cjs",
+          "line": 75,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 310.6584,
+          "error_code": null
+        },
+        {
+          "name": "authority revoked during provider readiness is rechecked before any original-request query",
+          "file": "test/refund-restore-authority.integration.test.cjs",
+          "line": 81,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 328.4075,
+          "error_code": null
+        },
+        {
+          "name": "missing adapter and changed merchant, revision or environment cannot reroute a restored refund",
+          "file": "test/refund-restore-authority.integration.test.cjs",
+          "line": 86,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1094.5234,
+          "error_code": null
+        },
+        {
+          "name": "unready provider and configuration changed during readiness cannot proceed",
+          "file": "test/refund-restore-authority.integration.test.cjs",
+          "line": 94,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 448.7059,
+          "error_code": null
+        },
+        {
+          "name": "query transport loss and pending or unknown observations preserve reserved money and query only",
+          "file": "test/refund-restore-authority.integration.test.cjs",
+          "line": 99,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 686.7132,
+          "error_code": null
+        },
+        {
+          "name": "wrong amount, merchant, source transaction and missing success reference never settle the restored case",
+          "file": "test/refund-restore-authority.integration.test.cjs",
+          "line": 104,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 947.7512,
+          "error_code": null
+        },
+        {
+          "name": "a lease lost while querying cannot settle; its replacement queries the same request and settles once",
+          "file": "test/refund-restore-authority.integration.test.cjs",
+          "line": 110,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 461.3367,
+          "error_code": null
+        },
+        {
+          "name": "definitive CLOSED releases only the original hold and cannot later be overwritten by success",
+          "file": "test/refund-restore-authority.integration.test.cjs",
+          "line": 123,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 33647.1306,
+          "error_code": null
+        },
+        {
+          "name": "restored refund rechecks current authority, provider binding and receipt facts",
+          "file": "test/refund-restore-authority.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 104382.4892,
+          "error_code": null
+        },
+        {
+          "name": "unknown original send is frozen with reserved funds and the same durable task",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 48,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 924.9864,
+          "error_code": null
+        },
+        {
+          "name": "restored case, task, operation keys and wallet facts match while external bytes are explicitly absent",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 58,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 23537.2617,
+          "error_code": null
+        },
+        {
+          "name": "restored quarantine blocks HTTP bootstrap and worker without changing money or sending again",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 73,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 686.475,
+          "error_code": null
+        },
+        {
+          "name": "restoring a still-running refund invalidates its old lease while preserving original request and attempts",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 83,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 25488.2825,
+          "error_code": null
+        },
+        {
+          "name": "the pre-restore lease cannot heartbeat, attach a provider id, or finish in the restored database",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 104,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 4.4652,
+          "error_code": null
+        },
+        {
+          "name": "the original process cannot settle the restored refund using its copied lease",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 110,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 13.5982,
+          "error_code": null
+        },
+        {
+          "name": "read-only release inspection includes waiting and restored retry jobs without approving or executing them",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 116,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 174.6908,
+          "error_code": null
+        },
+        {
+          "name": "latest synthetic erasure replay is atomic, suppresses the original proof and account, and still cannot release recovery",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 127,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 218.0227,
+          "error_code": null
+        },
+        {
+          "name": "isolated internal recovery queries only the original request and a lost completion write cannot settle twice",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 148,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 235.2844,
+          "error_code": null
+        },
+        {
+          "name": "restoration does not reset an exhausted task attempt budget",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 170,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 6.0909,
+          "error_code": null
+        },
+        {
+          "name": "rebacking up the restored database cannot carry old privacy approval or a live lease into another recovery",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 176,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 32728.3981,
+          "error_code": null
+        },
+        {
+          "name": "failure while invalidating restored leases rolls back all business rows and leaves quarantine",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 189,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 30128.0494,
+          "error_code": null
+        },
+        {
+          "name": "unknown recharge refund survives encrypted restore without enabling dispatch",
+          "file": "test/refund-restore.integration.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 164601.5382,
+          "error_code": null
+        },
+        {
+          "name": "existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations",
+          "file": "test/settlement-evidence-restriction.integration.test.cjs",
+          "line": 14,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 23931.9524,
+          "error_code": null
+        },
+        {
+          "name": "legally read payout evidence restricted before approval cannot mark money paid; releasing restores same request",
+          "file": "test/settlement-evidence-restriction.integration.test.cjs",
+          "line": 93,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 314.9843,
+          "error_code": null
+        },
+        {
+          "name": "new adjustment cannot reference restricted evidence and does not create a draft or ledger entry",
+          "file": "test/settlement-evidence-restriction.integration.test.cjs",
+          "line": 106,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 126.6477,
+          "error_code": null
+        },
+        {
+          "name": "approved agreement evidence later restricted blocks fresh payouts even when destination evidence remains valid",
+          "file": "test/settlement-evidence-restriction.integration.test.cjs",
+          "line": 112,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 265.4249,
+          "error_code": null
+        },
+        {
+          "name": "restricted finance evidence cannot approve money or create new drafts",
+          "file": "test/settlement-evidence-restriction.integration.test.cjs",
+          "line": 10,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 36489.0934,
+          "error_code": null
+        },
+        {
+          "name": "existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 14,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 24218.9351,
+          "error_code": null
+        },
+        {
+          "name": "authentication, explicit rules and independent review are required",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 88,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 69.1592,
+          "error_code": null
+        },
+        {
+          "name": "rejected draft can be replaced while history stays; active agreement cannot change",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 93,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 155.1748,
+          "error_code": null
+        },
+        {
+          "name": "restricted finance evidence respects overlapping restrictions and restrictions activated during storage read",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 100,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 453.2679,
+          "error_code": null
+        },
+        {
+          "name": "settlement review and every party confirmation precede available balance",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 116,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 276.2561,
+          "error_code": null
+        },
+        {
+          "name": "settlement detail and list isolate participant balances while payer and reviewer retain original snapshot",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 132,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 32.1036,
+          "error_code": null
+        },
+        {
+          "name": "concurrent withdrawals reserve available amount once and exact retries reuse request",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 140,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 130.7221,
+          "error_code": null
+        },
+        {
+          "name": "request approval is not paid; only independent bank evidence books actual payout",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 146,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 142.3779,
+          "error_code": null
+        },
+        {
+          "name": "dispute after payout requests blocks new approval but preserves verified failure and cancellation facts",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 153,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 391.8652,
+          "error_code": null
+        },
+        {
+          "name": "return and failed payouts keep facts and release reservation for a new request",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 176,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 313.8573,
+          "error_code": null
+        },
+        {
+          "name": "disputes notify parties, freeze new payouts, retain replies and all decisions",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 184,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 96.5176,
+          "error_code": null
+        },
+        {
+          "name": "refund reduces future entitlement, preserves old settlement and actual payout",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 192,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 288.8794,
+          "error_code": null
+        },
+        {
+          "name": "adjustment is balanced, separately reviewed and forces new settlement confirmation",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 204,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 236.8333,
+          "error_code": null
+        },
+        {
+          "name": "reconciliation compares verified facts without turning imported rows into money",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 207,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 75.8302,
+          "error_code": null
+        },
+        {
+          "name": "daily books include verified refunds, actual split payments and returned split money, not reservations",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 212,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 40.7138,
+          "error_code": null
+        },
+        {
+          "name": "external release statement is accrued revenue, not cash received or automatic payout",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 228,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 216.0734,
+          "error_code": null
+        },
+        {
+          "name": "same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 234,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 173.0575,
+          "error_code": null
+        },
+        {
+          "name": "partial receipts, duplicate bank references and statement corrections never rewrite history",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 250,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 375.6038,
+          "error_code": null
+        },
+        {
+          "name": "record permissions, private proof integrity, stale membership and disabled automatic payout",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 267,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 64.0649,
+          "error_code": null
+        },
+        {
+          "name": "late customer payment review and unaccepted delivery block payouts even with prior agreement",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 274,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 128.8113,
+          "error_code": null
+        },
+        {
+          "name": "notification cursor can retrieve newly recorded events, and different parties keep their own feed",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 279,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 41.7003,
+          "error_code": null
+        },
+        {
+          "name": "audit failure rolls back adjustment and idempotency reservation; stale review fails",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 285,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 58.3519,
+          "error_code": null
+        },
+        {
+          "name": "refund after verified payout creates recovery due without inventing received money",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 292,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 166.2098,
+          "error_code": null
+        },
+        {
+          "name": "recovery case keeps original debtor and independently reviewed claim separate from received money",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 298,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 165.051,
+          "error_code": null
+        },
+        {
+          "name": "independent administrative closure does not forgive debt or invent a receipt; reapplication retains old case",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 312,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 276.6859,
+          "error_code": null
+        },
+        {
+          "name": "partial recovery remains unreceived until independent review, then posts only the received amount once",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 329,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 135.8656,
+          "error_code": null
+        },
+        {
+          "name": "linking split amounts from a verified return is bounded and never posts the bank return again",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 341,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 121.1063,
+          "error_code": null
+        },
+        {
+          "name": "competing partial receipts recheck cumulative amount at approval and preserve the rejected candidate",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 352,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 326.293,
+          "error_code": null
+        },
+        {
+          "name": "claim closes only after verified receipts are linked, while prior claims and original settlement remain immutable",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 360,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 97.1202,
+          "error_code": null
+        },
+        {
+          "name": "remaining return closes original payout without changing original paid evidence or old settlement",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 371,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 145.157,
+          "error_code": null
+        },
+        {
+          "name": "personal income uses posted own shares including payout returns; no other party amounts or estimated revenue",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 382,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 167.3076,
+          "error_code": null
+        },
+        {
+          "name": "actual recovery cases reach the same personal copy request through independent delivery",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 390,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 550.8844,
+          "error_code": null
+        },
+        {
+          "name": "finance actual HTTP: separately verified receipts, accrual, payouts and corrections",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 10,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 39944.4764,
+          "error_code": null
+        }
+      ],
+      "meaning": "Selected assertions within this full run; domain counts overlap and do not prove every original requirement or independent approval."
+    },
+    {
+      "domain": "人格、合同与使用授权",
+      "files": [
+        "src/modules/artists/context.js",
+        "src/modules/governance/business-gate.js",
+        "src/modules/production/provider.js",
+        "test/cast-rights.integration.test.cjs",
+        "test/projects.integration.test.cjs",
+        "test/licensing.integration.test.cjs",
+        "test/production-text.integration.test.cjs",
+        "test/text-moderation.integration.test.cjs"
+      ],
+      "test_files": [
+        "test/cast-rights.integration.test.cjs",
+        "test/projects.integration.test.cjs",
+        "test/licensing.integration.test.cjs",
+        "test/production-text.integration.test.cjs",
+        "test/text-moderation.integration.test.cjs"
+      ],
+      "counts": {
+        "PASS": 70,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false,
+      "changed_source_files": [
+        "src/modules/media/service.js",
+        "src/modules/production/repository.js",
+        "src/modules/works/repository.js"
+      ],
+      "actual_checks": [
+        {
+          "name": "withdrawn archive blocks start and files while original payment and script remain unchanged",
+          "file": "test/cast-rights.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 729.9918,
+          "error_code": null
+        },
+        {
+          "name": "archive expiry future start wrong grantee purpose and feature reject without creating a project",
+          "file": "test/cast-rights.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 578.7378,
+          "error_code": null
+        },
+        {
+          "name": "face-only rights cannot add voice; explicit voice grants permit it and later withdrawal blocks reuse",
+          "file": "test/cast-rights.integration.test.cjs",
+          "line": 52,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1012.0886,
+          "error_code": null
+        },
+        {
+          "name": "another person look and new-generation use cannot be substituted into existing-material cast",
+          "file": "test/cast-rights.integration.test.cjs",
+          "line": 70,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 543.1012,
+          "error_code": null
+        },
+        {
+          "name": "cast rights: current archive permission and explicit face/voice use",
+          "file": "test/cast-rights.integration.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 37288.0878,
+          "error_code": null
+        },
+        {
+          "name": "product requires approved source, explicit conditions and an independent reviewer",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 49,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 83.6408,
+          "error_code": null
+        },
+        {
+          "name": "catalog is paged and never exposes the private original script",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 53,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 12.6678,
+          "error_code": null
+        },
+        {
+          "name": "reservation snapshots exact terms and price with safe repeat requests",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 54,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 40.6334,
+          "error_code": null
+        },
+        {
+          "name": "uploading evidence never activates a license; foreign or mismatched evidence rejected",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 56,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 50.9994,
+          "error_code": null
+        },
+        {
+          "name": "reviewer can fetch the linked private evidence, outsiders cannot",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 57,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 23.4055,
+          "error_code": null
+        },
+        {
+          "name": "approval requires explicit matching signature identity amount and recipient verification",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 58,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 110.5253,
+          "error_code": null
+        },
+        {
+          "name": "linked license order must actually receive its license fee before issuing the grant",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 64,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 182.5769,
+          "error_code": null
+        },
+        {
+          "name": "independent evidence approval permits one grant, not a fabricated payment transaction",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 77,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 55.3612,
+          "error_code": null
+        },
+        {
+          "name": "the same external receipt cannot issue another license",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 78,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 84.7057,
+          "error_code": null
+        },
+        {
+          "name": "unlisting and later prices do not rewrite an acquired license",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 83,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 216.9581,
+          "error_code": null
+        },
+        {
+          "name": "real project binding enforces purpose and quota under concurrent requests",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 84,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 119.1486,
+          "error_code": null
+        },
+        {
+          "name": "project adaptation is enabled only for the bound recipient and approved source",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 85,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 76.0345,
+          "error_code": null
+        },
+        {
+          "name": "licensed adaptation and combined paid order can enter production without losing the license link",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 86,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 97.6636,
+          "error_code": null
+        },
+        {
+          "name": "verified license fee refund immediately prevents further project adaptations",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 95,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 60.5181,
+          "error_code": null
+        },
+        {
+          "name": "same original across different versions prevents concurrent exclusive sales",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 101,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 188.4186,
+          "error_code": null
+        },
+        {
+          "name": "active nonexclusive grant blocks a later exclusive sale in the same scope",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 102,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 54.1358,
+          "error_code": null
+        },
+        {
+          "name": "late evidence cannot reactivate an expired hold",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 103,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 80.9818,
+          "error_code": null
+        },
+        {
+          "name": "controlled reading requires named account, independent approval and watermark on actual text",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 104,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 64.631,
+          "error_code": null
+        },
+        {
+          "name": "expired or corrupt reading never delivers private text",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 105,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 28.9877,
+          "error_code": null
+        },
+        {
+          "name": "reading expiry and revocation take effect without exposing original file URLs",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 109,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 27.3744,
+          "error_code": null
+        },
+        {
+          "name": "suspension preserves contract and prevents subsequent adaptation",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 110,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 166.2645,
+          "error_code": null
+        },
+        {
+          "name": "audit failure rolls back commands and catalog writes",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 111,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 202.1556,
+          "error_code": null
+        },
+        {
+          "name": "revoked operator cannot reuse prior authorization",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 112,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 20.3713,
+          "error_code": null
+        },
+        {
+          "name": "licensing HTTP, conflict protection, conditions, binding and controlled reading with isolated MySQL",
+          "file": "test/licensing.integration.test.cjs",
+          "line": 8,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 33910.4682,
+          "error_code": null
+        },
+        {
+          "name": "same project long script remains unsubmitable until full independent moderation",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 480.717,
+          "error_code": null
+        },
+        {
+          "name": "independent review cannot approve a task after its original producer lost the assignment",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 356.3808,
+          "error_code": null
+        },
+        {
+          "name": "original full script bytes reach only the same buyer after media and version reviews",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 313.0598,
+          "error_code": null
+        },
+        {
+          "name": "legacy version source cannot gain a new approval during a current rights dispute",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 417.0392,
+          "error_code": null
+        },
+        {
+          "name": "long production script preserves same project, source rights and independent moderation through delivery",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 43861.0152,
+          "error_code": null
+        },
+        {
+          "name": "existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations",
+          "file": "test/projects.integration.test.cjs",
+          "line": 14,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 22022.7999,
+          "error_code": null
+        },
+        {
+          "name": "authenticated catalogue and explicit public scope; private purpose does not imply release",
+          "file": "test/projects.integration.test.cjs",
+          "line": 61,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 68.4279,
+          "error_code": null
+        },
+        {
+          "name": "inviting someone does not enlist them; only their current owner can accept",
+          "file": "test/projects.integration.test.cjs",
+          "line": 62,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 51.9258,
+          "error_code": null
+        },
+        {
+          "name": "selection and final confirmation are separate; self-selection is forbidden",
+          "file": "test/projects.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 60.0609,
+          "error_code": null
+        },
+        {
+          "name": "parallel selection reserves only one role slot and outsiders never see another application",
+          "file": "test/projects.integration.test.cjs",
+          "line": 66,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 278.8431,
+          "error_code": null
+        },
+        {
+          "name": "expired or private-only consent blocks public use without changing historical terms",
+          "file": "test/projects.integration.test.cjs",
+          "line": 73,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 72.3416,
+          "error_code": null
+        },
+        {
+          "name": "private exclusive script license remains non-distributable through the real license and production gates",
+          "file": "test/projects.integration.test.cjs",
+          "line": 76,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 299.6908,
+          "error_code": null
+        },
+        {
+          "name": "paid roles need a separate paid order line; production fees cannot be counted twice",
+          "file": "test/projects.integration.test.cjs",
+          "line": 92,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 651.2593,
+          "error_code": null
+        },
+        {
+          "name": "rights layers, real funding references and all signers are required",
+          "file": "test/projects.integration.test.cjs",
+          "line": 99,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 171.033,
+          "error_code": null
+        },
+        {
+          "name": "confirmation order and content hash prevent consenting to another version",
+          "file": "test/projects.integration.test.cjs",
+          "line": 100,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 158.4473,
+          "error_code": null
+        },
+        {
+          "name": "edition needs accepted paid final, independent review, and fresh multi-party agreement",
+          "file": "test/projects.integration.test.cjs",
+          "line": 101,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 217.4792,
+          "error_code": null
+        },
+        {
+          "name": "channel evidence is reviewed independently; no external API is silently enabled",
+          "file": "test/projects.integration.test.cjs",
+          "line": 102,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 43.4526,
+          "error_code": null
+        },
+        {
+          "name": "restricted edition material blocks confirmation and new release without rewriting accepted history",
+          "file": "test/projects.integration.test.cjs",
+          "line": 118,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 311.6445,
+          "error_code": null
+        },
+        {
+          "name": "restricted channel proof disappears from catalogue and blocks a new release",
+          "file": "test/projects.integration.test.cjs",
+          "line": 121,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 148.6817,
+          "error_code": null
+        },
+        {
+          "name": "internal corrections and rejection preserve attempts; resubmission links predecessor",
+          "file": "test/projects.integration.test.cjs",
+          "line": 125,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 209.9398,
+          "error_code": null
+        },
+        {
+          "name": "claimed external success is pending until independent proof review and valid transition",
+          "file": "test/projects.integration.test.cjs",
+          "line": 127,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 99.9103,
+          "error_code": null
+        },
+        {
+          "name": "pending external publication cannot be approved using restricted channel or edition proof; original key recovers after release",
+          "file": "test/projects.integration.test.cjs",
+          "line": 128,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 667.0165,
+          "error_code": null
+        },
+        {
+          "name": "external corrections and rejection each allow a new traceable attempt",
+          "file": "test/projects.integration.test.cjs",
+          "line": 139,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 422.0398,
+          "error_code": null
+        },
+        {
+          "name": "external publication is evidence-based; revoked consent blocks new distribution but allows withdrawal proof",
+          "file": "test/projects.integration.test.cjs",
+          "line": 140,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 112.9665,
+          "error_code": null
+        },
+        {
+          "name": "new edition never inherits old agreements; old edition cannot be confirmed",
+          "file": "test/projects.integration.test.cjs",
+          "line": 141,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 367.8135,
+          "error_code": null
+        },
+        {
+          "name": "private evidence never has a public fallback; outsider and other signer cannot download",
+          "file": "test/projects.integration.test.cjs",
+          "line": 142,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 36.4756,
+          "error_code": null
+        },
+        {
+          "name": "audit failure rolls back edits; repeated operations are idempotent and stale versions fail",
+          "file": "test/projects.integration.test.cjs",
+          "line": 143,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 112.2364,
+          "error_code": null
+        },
+        {
+          "name": "membership is checked again after login; a removed owner cannot act using an old token",
+          "file": "test/projects.integration.test.cjs",
+          "line": 144,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 16.7822,
+          "error_code": null
+        },
+        {
+          "name": "withdrawal preserves history and blocks reuse; cancellation does not pretend to refund",
+          "file": "test/projects.integration.test.cjs",
+          "line": 145,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 47.529,
+          "error_code": null
+        },
+        {
+          "name": "projects actual HTTP: cast, version approval and external release evidence",
+          "file": "test/projects.integration.test.cjs",
+          "line": 10,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 38701.4984,
+          "error_code": null
+        },
+        {
+          "name": "600 Unicode characters retain existing single-request behavior",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 205.4028,
+          "error_code": null
+        },
+        {
+          "name": "601 characters include the actual tail and require full-file independent review",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 247.3457,
+          "error_code": null
+        },
+        {
+          "name": "tail high risk rejects the original whole document and cannot be manually approved",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 163.6685,
+          "error_code": null
+        },
+        {
+          "name": "unknown second response preserves first receipt and never resends either segment on manual retry",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 147.6706,
+          "error_code": null
+        },
+        {
+          "name": "withdrawn account stops later segments; restored authority resumes only known unsubmitted tail",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 357.7707,
+          "error_code": null
+        },
+        {
+          "name": "interrupted final database write recovers all known receipts without new provider requests",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 214.0464,
+          "error_code": null
+        },
+        {
+          "name": "different response identity and malformed UTF8 never yield a publishable result",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 136.5969,
+          "error_code": null
+        },
+        {
+          "name": "manual approval rechecks actual original bytes and current owner, not only stored file metadata",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 37,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 155.2107,
+          "error_code": null
+        },
+        {
+          "name": "known provider preflight disable keeps an unsubmitted segment recoverable after independent revalidation",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 226.1034,
+          "error_code": null
+        },
+        {
+          "name": "supply review cannot approve an organization task after the original owner membership is suspended",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 319.6662,
+          "error_code": null
+        },
+        {
+          "name": "complete long-text moderation uses original private file, durable segment receipts and independent review",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 33712.519,
+          "error_code": null
+        }
+      ],
+      "meaning": "Selected assertions within this full run; domain counts overlap and do not prove every original requirement or independent approval."
+    },
+    {
+      "domain": "资料删除与恢复后限制",
+      "files": [
+        "src/modules/privacy/execution.js",
+        "src/modules/privacy/erasure.js",
+        "src/modules/privacy/closure.js",
+        "src/operations/privacy-recovery.js",
+        "test/privacy-execution.integration.test.cjs",
+        "test/privacy-cross-module.integration.test.cjs",
+        "test/privacy-response-delivery.integration.test.cjs"
+      ],
+      "test_files": [
+        "test/privacy-execution.integration.test.cjs",
+        "test/privacy-cross-module.integration.test.cjs",
+        "test/privacy-response-delivery.integration.test.cjs"
+      ],
+      "counts": {
+        "PASS": 52,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false,
+      "changed_source_files": [],
+      "actual_checks": [
+        {
+          "name": "commercial-evidence becomes unreadable after independently approved restriction and restores only after release",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 39,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 205.4887,
+          "error_code": null
+        },
+        {
+          "name": "commercial-evidence restriction appearing during storage transport blocks returning stale bytes",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 138.2246,
+          "error_code": null
+        },
+        {
+          "name": "commercial-evidence releasing one of two independent restrictions cannot restore content",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 50,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 279.6903,
+          "error_code": null
+        },
+        {
+          "name": "commercial-evidence losing operator access during storage transport cannot return content",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 59,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 42.7606,
+          "error_code": null
+        },
+        {
+          "name": "release-channel-evidence becomes unreadable after independently approved restriction and restores only after release",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 39,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 257.5965,
+          "error_code": null
+        },
+        {
+          "name": "release-channel-evidence restriction appearing during storage transport blocks returning stale bytes",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 130.1762,
+          "error_code": null
+        },
+        {
+          "name": "release-channel-evidence releasing one of two independent restrictions cannot restore content",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 50,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 291.9488,
+          "error_code": null
+        },
+        {
+          "name": "release-channel-evidence losing operator access during storage transport cannot return content",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 59,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 31.3945,
+          "error_code": null
+        },
+        {
+          "name": "approved raw-material erasure rechecks a new live avatar reference and keeps stored bytes",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 67,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 131.4889,
+          "error_code": null
+        },
+        {
+          "name": "personal original copy cannot bypass restrictions or grant handlers raw evidence access",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 75,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 860.6055,
+          "error_code": null
+        },
+        {
+          "name": "revoked handling permission cannot execute an approved restriction",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 92,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 75.3958,
+          "error_code": null
+        },
+        {
+          "name": "privacy restrictions protect commercial and release evidence across their original download routes",
+          "file": "test/privacy-cross-module.integration.test.cjs",
+          "line": 7,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 36137.294,
+          "error_code": null
+        },
+        {
+          "name": "copy only returns own explicitly requested profile and cannot enumerate another account",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 22,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 32.9894,
+          "error_code": null
+        },
+        {
+          "name": "personal copy includes own stories and buyer order index without exposing another person or contract body",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 23,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 305.8109,
+          "error_code": null
+        },
+        {
+          "name": "paid history allows only proven completed buyer work and rejects incomplete work or pending refund",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 235.8673,
+          "error_code": null
+        },
+        {
+          "name": "correction requires independent approval and actually updates profile",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 44,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 42.407,
+          "error_code": null
+        },
+        {
+          "name": "deletion lists readable own materials and reviewed policies; referenced files require review",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 45,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 896.034,
+          "error_code": null
+        },
+        {
+          "name": "missing effective policy cannot authorize deletion",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 60,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 62.9547,
+          "error_code": null
+        },
+        {
+          "name": "file removal is bound to owner and exact storage configuration",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 62,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 964.0617,
+          "error_code": null
+        },
+        {
+          "name": "unknown deletion result remains pending; retry checks same object and records current-object-only result",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 67.8312,
+          "error_code": null
+        },
+        {
+          "name": "queued erasure rechecks changed target before any storage call, then recovers the same approved object",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 64,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 429.6636,
+          "error_code": null
+        },
+        {
+          "name": "lost provider reply after deletion recovers once without claiming backups or request completion",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 82,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 125.4531,
+          "error_code": null
+        },
+        {
+          "name": "complaint restricts actual download and approved release restores only that restriction",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 94,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 103.4124,
+          "error_code": null
+        },
+        {
+          "name": "closing sole organization owner is blocked and leaves login intact",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 95,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 40.4266,
+          "error_code": null
+        },
+        {
+          "name": "zero remaining wallet balance cannot hide an unresolved original recharge refund case during closure",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 96,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 88.6653,
+          "error_code": null
+        },
+        {
+          "name": "account closure revokes old sessions and personal identity while retaining request evidence",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 105,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 83.1584,
+          "error_code": null
+        },
+        {
+          "name": "lost closure response keeps sessions closed and operators can reconcile the single executed request",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 106,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 607.7456,
+          "error_code": null
+        },
+        {
+          "name": "new closure clock requires verified identity and actual execution before completion",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 123,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 218.2114,
+          "error_code": null
+        },
+        {
+          "name": "stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 143,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 808.9346,
+          "error_code": null
+        },
+        {
+          "name": "HTTP exposes the same scoped proposal, review, execution and export flow",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 151,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 290.7485,
+          "error_code": null
+        },
+        {
+          "name": "restoring an actual older backup requires replaying latest erasure register before access",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 166,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 34430.7565,
+          "error_code": null
+        },
+        {
+          "name": "reviewed privacy execution changes actual records and preserves unresolved boundaries",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 69937.5102,
+          "error_code": null
+        },
+        {
+          "name": "a READY metadata row without stored bytes cannot be offered as a delivered copy",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 23,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 151.5795,
+          "error_code": null
+        },
+        {
+          "name": "missing bytes at independent review do not publish; same request recovers after restoration",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 28,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 178.9413,
+          "error_code": null
+        },
+        {
+          "name": "operator actual-file preview is scoped to current proposal and does not publish the draft",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 41,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 147.4969,
+          "error_code": null
+        },
+        {
+          "name": "tampered bytes cannot pass even when metadata still looks ready",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 50,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 62.2784,
+          "error_code": null
+        },
+        {
+          "name": "replacing both metadata and bytes cannot reuse the previously submitted digest",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 55,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 86.8536,
+          "error_code": null
+        },
+        {
+          "name": "restricted evidence is blocked both before submission and before approval",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 62,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 118.4621,
+          "error_code": null
+        },
+        {
+          "name": "legacy pending drafts require rejection and resubmission, not silent approval",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 70,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 115.3673,
+          "error_code": null
+        },
+        {
+          "name": "partial delivery remains follow-up; subsequent replies preserve both downloadable versions",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 76,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 181.058,
+          "error_code": null
+        },
+        {
+          "name": "no failed approval creates a response notification, history or successful command",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 84,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 220.6211,
+          "error_code": null
+        },
+        {
+          "name": "clients cannot forge the server attachment snapshot or submit another operator evidence",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 90,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 87.9772,
+          "error_code": null
+        },
+        {
+          "name": "same application exports actual scoped records, delivers reviewed bytes and reopens without losing history",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 97,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2173.3919,
+          "error_code": null
+        },
+        {
+          "name": "real selected rows form the same request file, without other people or provider internals",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 156,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 13.8447,
+          "error_code": null
+        },
+        {
+          "name": "lost submission result uses original key; an unapproved file stays private",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 168,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 40.841,
+          "error_code": null
+        },
+        {
+          "name": "revoked operator or reviewer cannot recover an old operation or approve",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 178,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 46.5198,
+          "error_code": null
+        },
+        {
+          "name": "missing file blocks review; restoration and lost approval recover one answer only",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 186,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 55.6281,
+          "error_code": null
+        },
+        {
+          "name": "downloaded bytes match the reviewed snapshot and same business identifiers",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 193,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 18.7207,
+          "error_code": null
+        },
+        {
+          "name": "account disabled during file transport cannot receive bytes; restored account can retry",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 198,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 30.0577,
+          "error_code": null
+        },
+        {
+          "name": "reopened follow-up preserves reviewed file without claiming all personal data finished",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 205,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 34.6522,
+          "error_code": null
+        },
+        {
+          "name": "one material and trade copy stays recoverable and scoped through actual delivery",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 141,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 1552.6499,
+          "error_code": null
+        },
+        {
+          "name": "privacy responses require the actual reviewed files before publication",
+          "file": "test/privacy-response-delivery.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 36511.1216,
+          "error_code": null
+        }
+      ],
+      "meaning": "Selected assertions within this full run; domain counts overlap and do not prove every original requirement or independent approval."
+    },
+    {
+      "domain": "发布配置与外部服务",
+      "files": [
+        "src/operations/release-check.js",
+        "src/modules/governance/business-gate.js",
+        "test/release.integration.test.cjs",
+        "test/provider-readiness.integration.test.cjs",
+        "test/provider-foundation.test.cjs",
+        "test/production-text.integration.test.cjs",
+        "test/text-moderation.integration.test.cjs"
+      ],
+      "test_files": [
+        "test/release.integration.test.cjs",
+        "test/provider-readiness.integration.test.cjs",
+        "test/provider-foundation.test.cjs",
+        "test/production-text.integration.test.cjs",
+        "test/text-moderation.integration.test.cjs"
+      ],
+      "counts": {
+        "PASS": 55,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false,
+      "changed_source_files": [
+        "src/modules/media/moderation-text.js",
+        "src/modules/media/moderation-provider.js",
+        "src/modules/media/service.js"
+      ],
+      "actual_checks": [
+        {
+          "name": "same project long script remains unsubmitable until full independent moderation",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 480.717,
+          "error_code": null
+        },
+        {
+          "name": "independent review cannot approve a task after its original producer lost the assignment",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 356.3808,
+          "error_code": null
+        },
+        {
+          "name": "original full script bytes reach only the same buyer after media and version reviews",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 313.0598,
+          "error_code": null
+        },
+        {
+          "name": "legacy version source cannot gain a new approval during a current rights dispute",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 417.0392,
+          "error_code": null
+        },
+        {
+          "name": "long production script preserves same project, source rights and independent moderation through delivery",
+          "file": "test/production-text.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 43861.0152,
+          "error_code": null
+        },
+        {
+          "name": "all declared provider interfaces fail closed without implementations",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 11,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 3.5078,
+          "error_code": null
+        },
+        {
+          "name": "configuration alone, wrong environment, stale proof and disabled status never call a provider",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 19,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.0941,
+          "error_code": null
+        },
+        {
+          "name": "timeout reports unknown outcome, aborts and never automatically repeats payment",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 37,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 11.8972,
+          "error_code": null
+        },
+        {
+          "name": "provider error bodies and logger metadata do not leak credentials or private URLs",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 44,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.8639,
+          "error_code": null
+        },
+        {
+          "name": "private files require permission and verified configuration, never local fallback",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 61,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.6558,
+          "error_code": null
+        },
+        {
+          "name": "private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 70,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.3196,
+          "error_code": null
+        },
+        {
+          "name": "changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 84,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 773.7566,
+          "error_code": null
+        },
+        {
+          "name": "health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 93,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 63.702,
+          "error_code": null
+        },
+        {
+          "name": "OSS failures never produce a successful or public result; revocation is checked before each read",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 107,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.1271,
+          "error_code": null
+        },
+        {
+          "name": "legacy photo upload returns a clear failure and never creates a record when private storage is unavailable",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 119,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 270.4408,
+          "error_code": null
+        },
+        {
+          "name": "verified erasure confirms only the exact current object; access errors and changed bytes never pass",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 137,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.4074,
+          "error_code": null
+        },
+        {
+          "name": "private missing-object probe distinguishes exact absence from denied or uncertain reads",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 149,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.0449,
+          "error_code": null
+        },
+        {
+          "name": "database readiness requires applied migrations, not just a connection",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 18,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 22011.3609,
+          "error_code": null
+        },
+        {
+          "name": "recording is denied by default and requires genuine server-side evidence checking",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 5.2282,
+          "error_code": null
+        },
+        {
+          "name": "configuration is saved but does not authorize real calls",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 13.4417,
+          "error_code": null
+        },
+        {
+          "name": "verified evidence survives closing and reopening the database connection",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 18.7125,
+          "error_code": null
+        },
+        {
+          "name": "disabling and awaiting approval keep history but block new calls",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 24.3846,
+          "error_code": null
+        },
+        {
+          "name": "two concurrent updates cannot overwrite each other silently",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 13.0798,
+          "error_code": null
+        },
+        {
+          "name": "history write failure rolls back both status and version",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 52,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 7.6435,
+          "error_code": null
+        },
+        {
+          "name": "re-enabling requires fresh evidence and preserves earlier verification",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 58,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 8.687,
+          "error_code": null
+        },
+        {
+          "name": "capabilities have separate status even for the same provider",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2.5106,
+          "error_code": null
+        },
+        {
+          "name": "real isolated MySQL persists provider status, evidence and concurrent edits",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 9,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 31869.9345,
+          "error_code": null
+        },
+        {
+          "name": "legacy inspection is read-only and retains unsafe-size integers, raw money and binary",
+          "file": "test/release.integration.test.cjs",
+          "line": 39,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 8.5453,
+          "error_code": null
+        },
+        {
+          "name": "source declaration and active WAL reject before unsafe copy",
+          "file": "test/release.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2.7513,
+          "error_code": null
+        },
+        {
+          "name": "archiving twice preserves old facts without creating active identities, payment receipts or licenses",
+          "file": "test/release.integration.test.cjs",
+          "line": 41,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 28.1964,
+          "error_code": null
+        },
+        {
+          "name": "concurrent archives converge and manifest tampering is detected",
+          "file": "test/release.integration.test.cjs",
+          "line": 42,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 88.9403,
+          "error_code": null
+        },
+        {
+          "name": "modified archive payload fails without partial writes",
+          "file": "test/release.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 0.5013,
+          "error_code": null
+        },
+        {
+          "name": "backup includes immutable payment and pending-job facts",
+          "file": "test/release.integration.test.cjs",
+          "line": 44,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 808.9952,
+          "error_code": null
+        },
+        {
+          "name": "encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite",
+          "file": "test/release.integration.test.cjs",
+          "line": 45,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 64.0541,
+          "error_code": null
+        },
+        {
+          "name": "restore to a fresh database matches every row while leaving runtime quarantined",
+          "file": "test/release.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 23976.6702,
+          "error_code": null
+        },
+        {
+          "name": "restore never overwrites an existing database or accepts the wrong source checksum",
+          "file": "test/release.integration.test.cjs",
+          "line": 47,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 95.0859,
+          "error_code": null
+        },
+        {
+          "name": "invalid foreign key rolls back all imported rows and preserves quarantine",
+          "file": "test/release.integration.test.cjs",
+          "line": 48,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 22760.8577,
+          "error_code": null
+        },
+        {
+          "name": "schema injection or renamed column is rejected without executing backup SQL",
+          "file": "test/release.integration.test.cjs",
+          "line": 49,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 22101.0796,
+          "error_code": null
+        },
+        {
+          "name": "release checks do not confuse filled forms, sandbox providers or running process with launch approval",
+          "file": "test/release.integration.test.cjs",
+          "line": 50,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 161.2061,
+          "error_code": null
+        },
+        {
+          "name": "registered provider evidence remains version-bound and never substitutes for a live check",
+          "file": "test/release.integration.test.cjs",
+          "line": 51,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 309.7827,
+          "error_code": null
+        },
+        {
+          "name": "sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity",
+          "file": "test/release.integration.test.cjs",
+          "line": 52,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 762.3986,
+          "error_code": null
+        },
+        {
+          "name": "concurrent duplicate writes preserve one business object and one set of receipts",
+          "file": "test/release.integration.test.cjs",
+          "line": 53,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 65.2964,
+          "error_code": null
+        },
+        {
+          "name": "HTTP security failures never expose SQL, credentials or accept forged payment flags",
+          "file": "test/release.integration.test.cjs",
+          "line": 54,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 9.3073,
+          "error_code": null
+        },
+        {
+          "name": "release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load",
+          "file": "test/release.integration.test.cjs",
+          "line": 8,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 128870.3792,
+          "error_code": null
+        },
+        {
+          "name": "600 Unicode characters retain existing single-request behavior",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 205.4028,
+          "error_code": null
+        },
+        {
+          "name": "601 characters include the actual tail and require full-file independent review",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 247.3457,
+          "error_code": null
+        },
+        {
+          "name": "tail high risk rejects the original whole document and cannot be manually approved",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 163.6685,
+          "error_code": null
+        },
+        {
+          "name": "unknown second response preserves first receipt and never resends either segment on manual retry",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 147.6706,
+          "error_code": null
+        },
+        {
+          "name": "withdrawn account stops later segments; restored authority resumes only known unsubmitted tail",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 357.7707,
+          "error_code": null
+        },
+        {
+          "name": "interrupted final database write recovers all known receipts without new provider requests",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 214.0464,
+          "error_code": null
+        },
+        {
+          "name": "different response identity and malformed UTF8 never yield a publishable result",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 136.5969,
+          "error_code": null
+        },
+        {
+          "name": "manual approval rechecks actual original bytes and current owner, not only stored file metadata",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 37,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 155.2107,
+          "error_code": null
+        },
+        {
+          "name": "known provider preflight disable keeps an unsubmitted segment recoverable after independent revalidation",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 226.1034,
+          "error_code": null
+        },
+        {
+          "name": "supply review cannot approve an organization task after the original owner membership is suspended",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 319.6662,
+          "error_code": null
+        },
+        {
+          "name": "complete long-text moderation uses original private file, durable segment receipts and independent review",
+          "file": "test/text-moderation.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 33712.519,
+          "error_code": null
+        }
+      ],
+      "meaning": "Selected assertions within this full run; domain counts overlap and do not prove every original requirement or independent approval."
+    }
+  ],
+  "previous_full_source": "abb5cf63fe82bd1afb3d44cdf1230c3f475ff0e2"
+}

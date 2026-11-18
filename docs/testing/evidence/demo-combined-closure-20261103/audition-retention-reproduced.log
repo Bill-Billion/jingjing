@@ -1,0 +1,114 @@
+TAP version 13
+# Subtest: booking scoped delivery options preserve person recipient and live permissions
+    # Subtest: unpaid booking cannot browse delivery materials
+    ok 1 - unpaid booking cannot browse delivery materials
+      ---
+      duration_ms: 59.3182
+      type: 'test'
+      ...
+    # Subtest: six linked photos paginate once; video separate; no storage paths or private evidence
+    ok 2 - six linked photos paginate once; video separate; no storage paths or private evidence
+      ---
+      duration_ms: 72.723
+      type: 'test'
+      ...
+    # Subtest: consent matches booking person avatar purpose and recipient; foreign and other-avatar consents excluded
+    ok 3 - consent matches booking person avatar purpose and recipient; foreign and other-avatar consents excluded
+      ---
+      duration_ms: 54.236
+      type: 'test'
+      ...
+    # Subtest: buyer operator stranger spoofed identity and missing identity cannot enumerate
+    ok 4 - buyer operator stranger spoofed identity and missing identity cannot enumerate
+      ---
+      duration_ms: 52.5343
+      type: 'test'
+      ...
+    # Subtest: invalid types limits and caller-selected person rejected
+    ok 5 - invalid types limits and caller-selected person rejected
+      ---
+      duration_ms: 23.3595
+      type: 'test'
+      ...
+    # Subtest: unlinked same-owner upload and another persons linked upload excluded
+    ok 6 - unlinked same-owner upload and another persons linked upload excluded
+      ---
+      duration_ms: 39.198
+      type: 'test'
+      ...
+    # Subtest: unused linked material can be reviewed for deletion before any audition delivery uses it
+    ok 7 - unused linked material can be reviewed for deletion before any audition delivery uses it
+      ---
+      duration_ms: 80.2803
+      type: 'test'
+      ...
+    # Subtest: actual submission still validates chosen options and cannot reuse selection during review
+    ok 8 - actual submission still validates chosen options and cannot reuse selection during review
+      ---
+      duration_ms: 33.0393
+      type: 'test'
+      ...
+    # Subtest: submitted audition materials disclose retention reason without private booking data
+    not ok 9 - submitted audition materials disclose retention reason without private booking data
+      ---
+      duration_ms: 20.4922
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\auditions-delivery-options.integration.test.cjs:61:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'READY_FOR_REVIEW'
+        - 'DEPENDENCY_REVIEW'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'DEPENDENCY_REVIEW'
+      actual: 'READY_FOR_REVIEW'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:63:116)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:61:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: prior approved deletion is refused after delivery references the asset and leaves the file intact
+    not ok 10 - prior approved deletion is refused after delivery references the asset and leaves the file intact
+      ---
+      duration_ms: 39.3625
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\auditions-delivery-options.integration.test.cjs:66:11'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected rejection.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:67:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\auditions-delivery-options.integration.test.cjs:66:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..10
+not ok 1 - booking scoped delivery options preserve person recipient and live permissions
+  ---
+  duration_ms: 9894.5697
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\auditions-delivery-options.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 11
+# suites 0
+# pass 8
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10169.996

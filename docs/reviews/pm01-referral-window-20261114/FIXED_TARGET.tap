@@ -1,0 +1,59 @@
+TAP version 13
+# Subtest: seven-day referral survives unrelated clicks and exact timestamp page boundaries
+    # Subtest: HTTP checkout retains the valid original referral beyond 100 other-merchant clicks
+    ok 1 - HTTP checkout retains the valid original referral beyond 100 other-merchant clicks
+      ---
+      duration_ms: 897.5325
+      type: 'test'
+      ...
+    # Subtest: other categories and excluded supplier referrals cannot conceal the eligible earlier click
+    ok 2 - other categories and excluded supplier referrals cannot conceal the eligible earlier click
+      ---
+      duration_ms: 808.2106
+      type: 'test'
+      ...
+    # Subtest: 202 tied microsecond timestamps preserve id ordering through multiple pages
+    ok 3 - 202 tied microsecond timestamps preserve id ordering through multiple pages
+      ---
+      duration_ms: 359.1382
+      type: 'test'
+      ...
+    # Subtest: latest eligible click applies only to new orders; replay creates no second commission
+    ok 4 - latest eligible click applies only to new orders; replay creates no second commission
+      ---
+      duration_ms: 85.455
+      type: 'test'
+      ...
+    # Subtest: the seven-day cutoff is inclusive and one millisecond older is ineligible
+    ok 5 - the seven-day cutoff is inclusive and one millisecond older is ineligible
+      ---
+      duration_ms: 63.1603
+      type: 'test'
+      ...
+    # Subtest: exhausting several pages without an eligible link returns an unattributed order
+    ok 6 - exhausting several pages without an eligible link returns an unattributed order
+      ---
+      duration_ms: 338.6303
+      type: 'test'
+      ...
+    # Subtest: corrupted retained click content still fails instead of silently skipping evidence
+    ok 7 - corrupted retained click content still fails instead of silently skipping evidence
+      ---
+      duration_ms: 47.8398
+      type: 'test'
+      ...
+    1..7
+ok 1 - seven-day referral survives unrelated clicks and exact timestamp page boundaries
+  ---
+  duration_ms: 9474.543
+  type: 'test'
+  ...
+1..1
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9683.7429

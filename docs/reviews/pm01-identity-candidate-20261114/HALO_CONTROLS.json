@@ -1,0 +1,58 @@
+{
+  "result": "PASS",
+  "checks": [
+    {
+      "name": "unpaid application rejected without phantom submission",
+      "result": "PASS",
+      "service_id": "f9d2bef0-91a1-4973-b918-6fc1ae52ceab",
+      "order_id": "83b0acfc-0c91-49b7-8f17-f13341f04d7e"
+    },
+    {
+      "name": "fee paid but not certified",
+      "result": "PASS",
+      "service_id": "8935e9ab-b8bf-47f6-b0f1-758a8f50b7ff",
+      "order_id": "95ce9c85-5053-421c-bd5d-a6485114a512",
+      "payment_id": "ade2187d-6ff8-457d-97e6-6e62b38d3dcb",
+      "fee_minor": 1000,
+      "halo_level": 1
+    },
+    {
+      "name": "invalid materials fixed and concurrent retry uses one paid application",
+      "result": "PASS",
+      "application_id": "12219c53-68a5-4ccf-9adf-ffd518f2bc51",
+      "service_id": "8935e9ab-b8bf-47f6-b0f1-758a8f50b7ff",
+      "approved": false
+    },
+    {
+      "name": "same application supplements once without charging and independent approval consumes original fee",
+      "result": "PASS",
+      "application_id": "12219c53-68a5-4ccf-9adf-ffd518f2bc51",
+      "service_id": "8935e9ab-b8bf-47f6-b0f1-758a8f50b7ff",
+      "payment_id": "ade2187d-6ff8-457d-97e6-6e62b38d3dcb",
+      "supplements": 1,
+      "original_materials_retained": true
+    },
+    {
+      "name": "synthetic future clock expires effective identity/certification but preserves approved history and fee",
+      "result": "PASS",
+      "application_id": "12219c53-68a5-4ccf-9adf-ffd518f2bc51",
+      "original_valid_until": "2027-11-14T14:25:15.679Z",
+      "original_sha256": "6b728a51f2e2ee655c558019a91003e52b0daf862ebd697e9b062912bcf532c9"
+    },
+    {
+      "name": "original certification boundary removes only that certification while renewed identity and free base remain valid",
+      "result": "PASS",
+      "application_id": "12219c53-68a5-4ccf-9adf-ffd518f2bc51",
+      "identity_record_id": "3a362a18-e0bb-4ea0-94b0-93375024470b",
+      "base_qualification_id": "32ab7f25-5dba-4ef3-a229-cf46285d72d8",
+      "original_valid_until": "2027-11-14T14:25:15.679Z",
+      "halo_before": 2,
+      "halo_at_deadline": 1,
+      "new_payment_count": 0
+    }
+  ],
+  "limits": [
+    "Synthetic receipt and future clock; separate boundary uses trusted synthetic identity renewal and independently approved free base qualification",
+    "No real certification material or payment provider; no frontend"
+  ]
+}

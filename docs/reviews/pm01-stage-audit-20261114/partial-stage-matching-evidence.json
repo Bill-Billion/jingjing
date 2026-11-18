@@ -1,0 +1,178 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "7b50815dbf483264e86a42a451af39e8cd50be39",
+  "run_id": "pm01-stage-audit-2026-11-14T01-50-55-861Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "CURRENT-MATCHING-AUDIT",
+      "acceptance_id": "ACC-DEL-04.03",
+      "name": "当前版本明确筛选与授权偏好组合复验",
+      "result": "LOCAL_PASS",
+      "scope": "复验既有14份后端测试；四类目录条件、同意/退出、现货付款退款依据、预算许可、游标及下架；不是新增功能",
+      "remaining": "城市规则与现货依据是既有实施方案；前端组合入口未接、本轮不运行页面，真实服务及维护者验收未完成。",
+      "actual_checks": [
+        {
+          "name": "500 long-city candidates paginate without exceeding fingerprint limits, and truncation stays explicit",
+          "file": "test/recommendations-boundaries.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 29.1776,
+          "error_code": null
+        },
+        {
+          "name": "preference change while reading public candidates rejects stale result",
+          "file": "test/recommendations-boundaries.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.587,
+          "error_code": null
+        },
+        {
+          "name": "default nonpersonal catalogue, bound cursor and no price adjustment",
+          "file": "test/recommendations.integration.test.cjs",
+          "line": 18,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 112.5108,
+          "error_code": null
+        },
+        {
+          "name": "explicit opt-in ranks valid browsed city; opt-out invalidates old cursor",
+          "file": "test/recommendations.integration.test.cjs",
+          "line": 19,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 147.3767,
+          "error_code": null
+        },
+        {
+          "name": "withdrawn source is removed; disabled history stops influencing recommendations",
+          "file": "test/recommendations.integration.test.cjs",
+          "line": 20,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 60.2185,
+          "error_code": null
+        },
+        {
+          "name": "strict input and identity boundaries, all supported public sources",
+          "file": "test/recommendations.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 70.4101,
+          "error_code": null
+        },
+        {
+          "name": "recommendations isolated MySQL and HTTP",
+          "file": "test/recommendations.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 22776.3466,
+          "error_code": null
+        },
+        {
+          "name": "default matching and original filter order remain equal; strict inputs and no-store",
+          "file": "test/recommended-matches.integration.test.cjs",
+          "line": 20,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 147.8654,
+          "error_code": null
+        },
+        {
+          "name": "browsing consent alone does not activate personalization; explicit opt-in ranks the browsed city",
+          "file": "test/recommended-matches.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 133.7397,
+          "error_code": null
+        },
+        {
+          "name": "unpaid order does not rank; actual synthetic payment outranks browsing without changing rights or price",
+          "file": "test/recommended-matches.integration.test.cjs",
+          "line": 31,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 407.4502,
+          "error_code": null
+        },
+        {
+          "name": "cursor cannot move across accounts, conditions, legacy endpoint or changed preferences",
+          "file": "test/recommended-matches.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 326.9511,
+          "error_code": null
+        },
+        {
+          "name": "approved refund is not repayment; completed refund removes purchase influence and invalidates prior cursor",
+          "file": "test/recommended-matches.integration.test.cjs",
+          "line": 42,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 275.9858,
+          "error_code": null
+        },
+        {
+          "name": "history off clears browsing influence; source withdrawn after selection is not returned or purchasable",
+          "file": "test/recommended-matches.integration.test.cjs",
+          "line": 50,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 146.5491,
+          "error_code": null
+        },
+        {
+          "name": "recommended matching combines actual stock rights and budget with consented purchases and browsing",
+          "file": "test/recommended-matches.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 23980.313,
+          "error_code": null
+        },
+        {
+          "name": "bounded matching filters all scanned candidates before paging and never reads opted-out activity",
+          "file": "test/recommended-matches.test.cjs",
+          "line": 12,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 22.5058,
+          "error_code": null
+        },
+        {
+          "name": "matching cursor binds filters, account and endpoint; preference changes during reading reject stale output",
+          "file": "test/recommended-matches.test.cjs",
+          "line": 18,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 26.3393,
+          "error_code": null
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-stage-audit-20261114/FINAL_BACKEND.json",
+          "sha256": "609db7edbd96a3ee5316128d879e40df22611db52d4ab312aff79ce85fbaed57"
+        },
+        {
+          "path": "docs/reviews/pm01-stage-audit-20261114/FINAL_CONTRACT.json",
+          "sha256": "ff576418d7ae20ee026593e488fb6bae2bbd0594f909c2da1fc32e7910f45d1f"
+        },
+        {
+          "path": "docs/reviews/pm01-stage-audit-20261114/SOURCE_MANIFEST.json",
+          "sha256": "e3fa8d4cc8ce28308a732581bd2f1c6e0a0a9a101749f72c6ae0d454b4d074ed"
+        }
+      ]
+    }
+  ]
+}

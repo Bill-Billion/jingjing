@@ -2,7 +2,25 @@
 
 这是仅供隔离验收使用的工具，不是正式客服系统，不挂载到生产服务器。产品入口仍使用现有Flutter/Vue页面和原业务API。当前甲方自由体验模式只需打开链接，不使用邀请码或业务路线下拉框；下面邀请模式作为兼容方式保留，不用于当前客户入口。最新准备与限制见 docs/testing/CLIENT_FREE_EXPLORATION_20261026.md。
 
+2026-10-28构建冻结更新：新会话配置固定App、网页与测试门户资源摘要；启动及响应时核验，原目录重建不能在同一版本中静默生效。旧配置缺清单会拒绝启动。重新准备时使用新的会话目录、原 `campaign` 与原 `expires_at` 上限；不能覆盖原反馈或自动延期。只处理反馈的 `review_only` 无需业务构建。完整验收与定版命令见 [执行办法](../../docs/collaboration/client-complete-20261028/ACCEPTANCE.md)。
+
 ## 旧邀请模式准备顺序（当前自由体验按上述专用说明）
+
+2026-11-04新增的持续自由体验请先读下节；旧邀请方式不再作为当前客户的操作入口。
+
+## 多人各自操作，不共用订单（2026-11-04）
+
+当前工具支持2–8套独立、已保留的合成数据库。`run-isolated-explore.cjs` 读取 `.local` 内的私有计划，逐个启动原库、固定网页构建，然后只监听本机。计划字段为 `synthetic_only: true`、`hours`（1–72）、`databases`（不同的保留测试库名），以及 `options` 内的 `folder`、`campaign`、`port`、本机 `origin`、`builds.app/workspace`。路径和口令不要写进共享交接或示例。
+
+由后端准备与运行：`node scripts/client-testing/run-isolated-explore.cjs <本机私有计划文件>`。用户只打开已启动的网站，不负责执行命令。原库、附件不能重置；自动检查使用另一批资料。构建可以放仓库 `.local` 下的冻结目录，不必覆盖旧测试人正在使用的构建。
+
+每个浏览器第一次进入分配自己的整套业务资料；切本人、机构、运营岗位仍在该套内。席位不足明确拒绝，不回退共用资料。保留浏览器 Cookie、反馈批次和原数据库才可恢复原人原单；新浏览器或清除 Cookie 会新占席位，这不是正式跨设备账号登录。增加新资料可以扩容，替换或移除旧席位拒绝恢复，账号和主体不能跨席位重复。
+
+停止时仅在本轮 config.json 同目录写 `stop` 文件；编排工具关闭本轮门户和内部服务，保留数据库、附件及反馈。不要关闭共用MySQL。重启须用新的会话目录、原 campaign 和相同资料顺序；开放期限须按实际授权重新确定，不能自动延长旧公网窗口。新启动方式仅支持本机 origin，不会自动打通外网。
+
+新增 `visitor-isolation.test.cjs` 覆盖不同浏览器代理隔离、切岗位旧令牌失效、反馈隔离、重启/扩容不换人及伪造拒绝；`persistent-login-restart-check.cjs` 用隔离数据库核短信登录后的重启、旧登录请求不复活和原订单保留。测试记录和新接口交接见 [后端整包交接](../../docs/collaboration/client-complete-20261028/TONIGHT_BACKEND_HANDOFF_20261104.md)。
+
+## 旧邀请模式的具体步骤（历史兼容）
 
 1. 从本轮受测代码构建。Flutter使用本仓库test/support/client_testing_main.dart，CLIENT_TEST_ONLY=true，base-href /app/，输出到App工程.local/client-web，并指定--no-web-resources-cdn。本专用入口只在运行时读取当前邀请身份，不包含任何账号令牌。普通lib/main.dart构建不加载测试入口。
 2. Vue先运行npm run type-check，再运行npm run build-only -- --base /workspace/ --outDir .local/client-web，VITE_API_ORIGIN留空。同源测试启动脚本在测试服务器提供HTML时注入，不进入正式构建。
@@ -33,8 +51,10 @@ node scripts/client-testing/review.cjs <批次名>生成独立问题工作台配
 
 browser-check.mjs默认仅本机。公网检查须显式设置CLIENT_TEST_PUBLIC_ORIGIN等于当前私有配置中的HTTPS地址，并设置CLIENT_TEST_SESSION；只接受本轮trycloudflare测试域名。public-check.mjs同样要求明确地址和本机私有会话，检查公开路径、会话和身份边界。公网调用不放进自动CI。
 
-反馈加密备份与恢复命令仍见docs/operations/client-testing/FIXED_HOSTING_20261026.md。业务库目前只验证保留重启，独立备份恢复未完成。
+反馈加密备份与恢复命令仍见docs/operations/client-testing/FIXED_HOSTING_20261026.md。11月3日新增业务库与私有附件加密备份/新库恢复，179表、131附件及原已付款文件、同订单反馈的9项演练已通过。详见[恢复说明](../../docs/operations/client-testing/BUSINESS_RECOVERY_20261103.md)。最终候选构建和回退验收仍单列，不因恢复演练通过自动定版。
 
 ## 艺人和机构测试扩充
 
 JX_RETAIN_CLIENT_ARTISTS=true可显式保留艺人合成资料及模拟附件，仍由persistent-story.cjs加载，原短会话默认清理行为不变。新路线、实际公网检查与其他业务清单见docs/testing/CLIENT_ROUTES_20261026.md；不直接放开所有业务。工具检查同时运行synthetic-files.test.cjs。artist-browser-check的实际脚本名为artists-browser-check.mjs，PUBLIC_ORIGIN约束与其他公网检查一致。平台报价邀请必须对应平台机构；过期报价保持过期，不自动改期限。
+
+本机重新准备会话时，私有plan的options.expires_at应填原到期时间；run-isolated-explore按原时间与各后台有效期取更早值，过期拒绝启动，不自动续期。窗口检查使用local-run-window.test.cjs。

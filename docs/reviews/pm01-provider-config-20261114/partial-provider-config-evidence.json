@@ -1,0 +1,1267 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "836a3b076d5c8ba4f80735ea778b00191d3885f3",
+  "run_id": "pm01-provider-config-2026-11-14T02-24-48-557Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "PROVIDER-CONFIG-VERIFICATION",
+      "acceptance_id": "ACC-DEL-29.03",
+      "name": "供应商配置与验证记录一致性",
+      "result": "LOCAL_PASS",
+      "scope": "隔离后端核供应商默认拒绝、环境/实际配置/证据历史绑定、持久化与并发；支付原配置快照和短信实际参数变更阻断，私有OSS、制作/模型删除与签署启用门禁现版复验。",
+      "remaining": "真实厂商沙箱/正式证据未取得；实名/长期数字人具体binding为空，自动电子签实际任务绑定缺；合成SDK或测试授权不能升级为正式启用。",
+      "actual_checks": [
+        {
+          "name": "probes work; missing provider evidence and legacy tokens do not grant login",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 51,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 234.456,
+          "error_code": null
+        },
+        {
+          "name": "duplicate SMS requests dispatch once and keep phone/code out of storage and response",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 59,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 29.3448,
+          "error_code": null
+        },
+        {
+          "name": "login consumes once and replays the same protected session even with reordered JSON",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 68,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 68.5836,
+          "error_code": null
+        },
+        {
+          "name": "saved identity outside page one resolves current membership without selecting another identity",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 81,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 146.6008,
+          "error_code": null
+        },
+        {
+          "name": "identity recovery returns fresh roles after an authorized member relationship changes",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 103,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 104.8513,
+          "error_code": null
+        },
+        {
+          "name": "attempt counters commit on failure; expired and superseded codes are rejected",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 118,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 228.156,
+          "error_code": null
+        },
+        {
+          "name": "different concurrent login keys cannot mint two sessions from one code",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 126,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 30.2043,
+          "error_code": null
+        },
+        {
+          "name": "untrusted identities, malformed bodies and oversized input fail without exposing secrets",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 132,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 33.3552,
+          "error_code": null
+        },
+        {
+          "name": "provider uncertainty neither reports SENT nor resends an identical request",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 140,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 31.9798,
+          "error_code": null
+        },
+        {
+          "name": "actual SMS provider composition logs in via HTTP and unknown dispatch cannot login or resend",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 148,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 139.2308,
+          "error_code": null
+        },
+        {
+          "name": "HTTP invitations require the intended recipient; removal preserves personal identity",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 187,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 192.6811,
+          "error_code": null
+        },
+        {
+          "name": "rename replays original result, rejects stale versions and cursors from another account/resource",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 219,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 117.1525,
+          "error_code": null
+        },
+        {
+          "name": "an uncertain committed organization and rename replay the original result without duplicate writes",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 233,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 60.24,
+          "error_code": null
+        },
+        {
+          "name": "an uncertain committed login replays one session and does not send another SMS",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 249,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 49.2223,
+          "error_code": null
+        },
+        {
+          "name": "pending command can be retried, while changed content with the same key cannot",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 259,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 44.5371,
+          "error_code": null
+        },
+        {
+          "name": "unknown service failures do not advertise automatic retry or expose internal errors",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 271,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 9.0089,
+          "error_code": null
+        },
+        {
+          "name": "declining and owner revocation create no membership; unknown caller fields are rejected",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 278,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 112.8353,
+          "error_code": null
+        },
+        {
+          "name": "logout, expiry and account suspension are enforced on subsequent HTTP calls",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 292,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 114.438,
+          "error_code": null
+        },
+        {
+          "name": "rate limits survive a fresh repository and browser origins are explicit",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 301,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 30.3182,
+          "error_code": null
+        },
+        {
+          "name": "rate limits report real remaining seconds through HTTP, including limits after SMS reservation",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 310,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 77.7488,
+          "error_code": null
+        },
+        {
+          "name": "audit failure rolls back account, session and consumption; retry works after repair",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 327,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 32.4772,
+          "error_code": null
+        },
+        {
+          "name": "sessions survive fresh composition and expired secrets can be removed",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 333,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 38.0367,
+          "error_code": null
+        },
+        {
+          "name": "actual server entry starts only with explicit MySQL configuration and leaves SMS disabled",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 338,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 366.9652,
+          "error_code": null
+        },
+        {
+          "name": "real MySQL and HTTP account lifecycle",
+          "file": "test/account-api.integration.test.cjs",
+          "line": 12,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 11573.0915,
+          "error_code": null
+        },
+        {
+          "name": "auth requires explicit secret and encrypted replay binds to its request",
+          "file": "test/auth-security.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 2.4389,
+          "error_code": null
+        },
+        {
+          "name": "auth security configuration rejects invalid bounds",
+          "file": "test/auth-security.test.cjs",
+          "line": 12,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.3372,
+          "error_code": null
+        },
+        {
+          "name": "configured SMS refuses SDK debug logging before any network call",
+          "file": "test/auth-security.test.cjs",
+          "line": 16,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 8.5259,
+          "error_code": null
+        },
+        {
+          "name": "valid login alone cannot record, review or seal; request principals cannot be forged",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 45,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 11.4395,
+          "error_code": null
+        },
+        {
+          "name": "draft source requires an explicit review; immutable content then becomes an unsigned snapshot",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 51,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 42.0712,
+          "error_code": null
+        },
+        {
+          "name": "a revised promise creates a new version and cannot replace old source or snapshot",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 59,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 58.722,
+          "error_code": null
+        },
+        {
+          "name": "retries and concurrent reviews produce one source and one accepted version",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 66,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 30.9924,
+          "error_code": null
+        },
+        {
+          "name": "unrelated readers, missing rules and unknown terms are not silently accepted",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 72,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 15.139,
+          "error_code": null
+        },
+        {
+          "name": "withdrawal prevents first sealing but does not delete already preserved history",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 79,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 72.2789,
+          "error_code": null
+        },
+        {
+          "name": "source audit failure rolls back both content and retry record",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 87,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 18.5045,
+          "error_code": null
+        },
+        {
+          "name": "modified source content and withdrawn reader membership fail before sealing",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 95,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 40.0293,
+          "error_code": null
+        },
+        {
+          "name": "default service blocks all external business actions even for preserved contracts",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 103,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 18.0126,
+          "error_code": null
+        },
+        {
+          "name": "service state requires matching environment, configuration revision and verification evidence",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 111,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 33.9862,
+          "error_code": null
+        },
+        {
+          "name": "command defaults to offline preview and requires a real session before execution",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 128,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 175.6966,
+          "error_code": null
+        },
+        {
+          "name": "reviewed persisted source is returned through the real authorized HTTP endpoint",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 138,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 418.5017,
+          "error_code": null
+        },
+        {
+          "name": "reviewed contract sources and business service checks use real isolated MySQL",
+          "file": "test/governance-service.integration.test.cjs",
+          "line": 15,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 10118.9933,
+          "error_code": null
+        },
+        {
+          "name": "only the subject sees model targets; organization and operator cannot act as the subject",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 66,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 50.6737,
+          "error_code": null
+        },
+        {
+          "name": "scope, version, consent ownership and explicit withdrawal are required",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 76,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 45.5687,
+          "error_code": null
+        },
+        {
+          "name": "action-record failure rolls back consent, audit, request and outbox together",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 83,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 149.4193,
+          "error_code": null
+        },
+        {
+          "name": "withdrawal retries are idempotent and authorization is actually unusable",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 90,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 38.1931,
+          "error_code": null
+        },
+        {
+          "name": "deletion and privacy action are atomic; failed recording creates no external job",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 100,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 36.4712,
+          "error_code": null
+        },
+        {
+          "name": "same deletion is queued once; order need not be paid to exercise withdrawal",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 107,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 49.3099,
+          "error_code": null
+        },
+        {
+          "name": "missing provider configuration leaves a visible failure and never calls upstream",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 128,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 34.5552,
+          "error_code": null
+        },
+        {
+          "name": "changed provider account cannot receive a deletion for the former account",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 133,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 30.2613,
+          "error_code": null
+        },
+        {
+          "name": "accepted task and an unconfirmed deletion receipt do not mean deleted",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 137,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 71.0711,
+          "error_code": null
+        },
+        {
+          "name": "verified receipt completes only that model and retry recovers without resubmitting",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 144,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 68.7882,
+          "error_code": null
+        },
+        {
+          "name": "tampered result cannot be exposed as successful deletion",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 154,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 10.3778,
+          "error_code": null
+        },
+        {
+          "name": "personal creation list shows only own training tasks and paginates without exposing provider details",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 177,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 47.9404,
+          "error_code": null
+        },
+        {
+          "name": "waiting and blocked creation remain distinct from a registered or deleted model",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 188,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 10.7076,
+          "error_code": null
+        },
+        {
+          "name": "a subject can discover consent before any model exists and withdraw through the existing action",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 193,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 34.3842,
+          "error_code": null
+        },
+        {
+          "name": "registered late result keeps the model deletion state and never closes the personal request",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 199,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 18.2397,
+          "error_code": null
+        },
+        {
+          "name": "wrong task binding or foreign model cannot be exposed as a personal result",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 207,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 34.7281,
+          "error_code": null
+        },
+        {
+          "name": "personal withdrawal and model deletion use real transactions and durable provider results",
+          "file": "test/privacy-actions.integration.test.cjs",
+          "line": 9,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 10747.548,
+          "error_code": null
+        },
+        {
+          "name": "one project per order line; project approval is independent and requires evidence",
+          "file": "test/production.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 158.4433,
+          "error_code": null
+        },
+        {
+          "name": "no production before agreed first payment; final payment stays closed",
+          "file": "test/production.integration.test.cjs",
+          "line": 41,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 54.7578,
+          "error_code": null
+        },
+        {
+          "name": "private upload retries return same file; outsiders and unassigned buyer cannot upload",
+          "file": "test/production.integration.test.cjs",
+          "line": 42,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 45.0663,
+          "error_code": null
+        },
+        {
+          "name": "simultaneous upload retries do not write the same private object twice",
+          "file": "test/production.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 37.0566,
+          "error_code": null
+        },
+        {
+          "name": "script acceptance precedes sample; customer cannot accept unpublished or old version",
+          "file": "test/production.integration.test.cjs",
+          "line": 44,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 265.0529,
+          "error_code": null
+        },
+        {
+          "name": "unconfigured long-lived provider stays visibly disabled and queues no fake success",
+          "file": "test/production.integration.test.cjs",
+          "line": 45,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 20.6783,
+          "error_code": null
+        },
+        {
+          "name": "durable generation recovers by original key after lost worker lease without resubmission",
+          "file": "test/production.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 281.3603,
+          "error_code": null
+        },
+        {
+          "name": "withdrawal during first external send still records the pending task",
+          "file": "test/production.integration.test.cjs",
+          "line": 84,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 60.0139,
+          "error_code": null
+        },
+        {
+          "name": "a changed provider identity cannot query the old model",
+          "file": "test/production.integration.test.cjs",
+          "line": 89,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 24.6634,
+          "error_code": null
+        },
+        {
+          "name": "failed audit rolls back the late model and original result together",
+          "file": "test/production.integration.test.cjs",
+          "line": 94,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 130.2814,
+          "error_code": null
+        },
+        {
+          "name": "recovery queries once more and quarantines the late model instead of making it usable",
+          "file": "test/production.integration.test.cjs",
+          "line": 103,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 55.641,
+          "error_code": null
+        },
+        {
+          "name": "the late model is visible to its subject and uses the existing personal deletion path",
+          "file": "test/production.integration.test.cjs",
+          "line": 113,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 98.9863,
+          "error_code": null
+        },
+        {
+          "name": "withdrawal while a result query is in flight also quarantines the resulting model",
+          "file": "test/production.integration.test.cjs",
+          "line": 126,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 135.3602,
+          "error_code": null
+        },
+        {
+          "name": "withdrawal before first dispatch sends nothing, and ambiguous recovery never resubmits",
+          "file": "test/production.integration.test.cjs",
+          "line": 135,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 73.7709,
+          "error_code": null
+        },
+        {
+          "name": "withdrawal during creation preserves late assets for deletion without new creation",
+          "file": "test/production.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 584.5704,
+          "error_code": null
+        },
+        {
+          "name": "new sample invalidates previous confirmation; feedback versions are not overwritten",
+          "file": "test/production.integration.test.cjs",
+          "line": 144,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 154.5813,
+          "error_code": null
+        },
+        {
+          "name": "concurrent decisions use version check; only buyer can accept",
+          "file": "test/production.integration.test.cjs",
+          "line": 145,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 102.851,
+          "error_code": null
+        },
+        {
+          "name": "final acceptance and final delivery are separate; tail cannot unlock itself",
+          "file": "test/production.integration.test.cjs",
+          "line": 146,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 220.1105,
+          "error_code": null
+        },
+        {
+          "name": "completed delivery cannot be silently replaced by producer",
+          "file": "test/production.integration.test.cjs",
+          "line": 147,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 40.6685,
+          "error_code": null
+        },
+        {
+          "name": "an active marking requirement blocks already accepted files without processing evidence",
+          "file": "test/production.integration.test.cjs",
+          "line": 148,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 25.2181,
+          "error_code": null
+        },
+        {
+          "name": "private bytes verified and permission rechecked before download",
+          "file": "test/production.integration.test.cjs",
+          "line": 149,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 20.7075,
+          "error_code": null
+        },
+        {
+          "name": "reassigning a producer requires current membership and project version",
+          "file": "test/production.integration.test.cjs",
+          "line": 150,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 27.9114,
+          "error_code": null
+        },
+        {
+          "name": "audit failure rolls back a production mutation and idempotency key",
+          "file": "test/production.integration.test.cjs",
+          "line": 151,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 52.3711,
+          "error_code": null
+        },
+        {
+          "name": "refund blocks further delivery even though historical acceptance is retained",
+          "file": "test/production.integration.test.cjs",
+          "line": 152,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 59.2872,
+          "error_code": null
+        },
+        {
+          "name": "production actual HTTP: private versions, explicit acceptance and payment gates",
+          "file": "test/production.integration.test.cjs",
+          "line": 10,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 16120.2092,
+          "error_code": null
+        },
+        {
+          "name": "all declared provider interfaces fail closed without implementations",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 11,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 4.071,
+          "error_code": null
+        },
+        {
+          "name": "configuration alone, wrong environment, stale proof and disabled status never call a provider",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 19,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 2.0768,
+          "error_code": null
+        },
+        {
+          "name": "timeout reports unknown outcome, aborts and never automatically repeats payment",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 37,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 13.9328,
+          "error_code": null
+        },
+        {
+          "name": "provider error bodies and logger metadata do not leak credentials or private URLs",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 44,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.6233,
+          "error_code": null
+        },
+        {
+          "name": "private files require permission and verified configuration, never local fallback",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 61,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.4813,
+          "error_code": null
+        },
+        {
+          "name": "private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 70,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.7241,
+          "error_code": null
+        },
+        {
+          "name": "changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 84,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 359.0539,
+          "error_code": null
+        },
+        {
+          "name": "health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 93,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 76.6788,
+          "error_code": null
+        },
+        {
+          "name": "OSS failures never produce a successful or public result; revocation is checked before each read",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 107,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.4204,
+          "error_code": null
+        },
+        {
+          "name": "legacy photo upload returns a clear failure and never creates a record when private storage is unavailable",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 119,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 70.1895,
+          "error_code": null
+        },
+        {
+          "name": "verified erasure confirms only the exact current object; access errors and changed bytes never pass",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 137,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.8508,
+          "error_code": null
+        },
+        {
+          "name": "private missing-object probe distinguishes exact absence from denied or uncertain reads",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 149,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.5607,
+          "error_code": null
+        },
+        {
+          "name": "database readiness requires applied migrations, not just a connection",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 18,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 8034.202,
+          "error_code": null
+        },
+        {
+          "name": "recording is denied by default and requires genuine server-side evidence checking",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 4.8509,
+          "error_code": null
+        },
+        {
+          "name": "configuration is saved but does not authorize real calls",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 8.59,
+          "error_code": null
+        },
+        {
+          "name": "verified evidence survives closing and reopening the database connection",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 11.9232,
+          "error_code": null
+        },
+        {
+          "name": "disabling and awaiting approval keep history but block new calls",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 18.4651,
+          "error_code": null
+        },
+        {
+          "name": "two concurrent updates cannot overwrite each other silently",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 7.3693,
+          "error_code": null
+        },
+        {
+          "name": "history write failure rolls back both status and version",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 52,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 5.107,
+          "error_code": null
+        },
+        {
+          "name": "re-enabling requires fresh evidence and preserves earlier verification",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 58,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 5.6487,
+          "error_code": null
+        },
+        {
+          "name": "capabilities have separate status even for the same provider",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2.4432,
+          "error_code": null
+        },
+        {
+          "name": "real isolated MySQL persists provider status, evidence and concurrent edits",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 9,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 14126.3789,
+          "error_code": null
+        },
+        {
+          "name": "signed bytes match independent crypto, fixed HTTPS and preserved zero",
+          "file": "test/sms-transport.test.cjs",
+          "line": 22,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 93.5938,
+          "error_code": null
+        },
+        {
+          "name": "success sends once and returns no private payload",
+          "file": "test/sms-transport.test.cjs",
+          "line": 30,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 2.3043,
+          "error_code": null
+        },
+        {
+          "name": "redirect, error, absent/invalid/multiple message IDs fail without retry",
+          "file": "test/sms-transport.test.cjs",
+          "line": 31,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 4.4791,
+          "error_code": null
+        },
+        {
+          "name": "malformed, oversized, truncated response and connection failures remain unknown",
+          "file": "test/sms-transport.test.cjs",
+          "line": 36,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 2.5213,
+          "error_code": null
+        },
+        {
+          "name": "total timeout destroys hanging request once",
+          "file": "test/sms-transport.test.cjs",
+          "line": 39,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 18.4646,
+          "error_code": null
+        },
+        {
+          "name": "cancellation before send does nothing; in flight destroys request",
+          "file": "test/sms-transport.test.cjs",
+          "line": 40,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.0989,
+          "error_code": null
+        },
+        {
+          "name": "rejects multiple recipients and malformed codes",
+          "file": "test/sms-transport.test.cjs",
+          "line": 44,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.4016,
+          "error_code": null
+        },
+        {
+          "name": "default real transport is blocked by network guard",
+          "file": "test/sms-transport.test.cjs",
+          "line": 45,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 32.6593,
+          "error_code": null
+        },
+        {
+          "name": "provider snapshots configuration and rejects debugging or invalid environment",
+          "file": "test/sms-transport.test.cjs",
+          "line": 46,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.2087,
+          "error_code": null
+        },
+        {
+          "name": "SMS proof revision binds the actual account, credentials, signature, template and region",
+          "file": "test/sms-transport.test.cjs",
+          "line": 51,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.216,
+          "error_code": null
+        },
+        {
+          "name": "real Alipay RSA2 notification validation rejects tampering and wrong merchant",
+          "file": "test/trade-providers.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 563.8562,
+          "error_code": null
+        },
+        {
+          "name": "Alipay query and refund always request signature verification",
+          "file": "test/trade-providers.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 63.4127,
+          "error_code": null
+        },
+        {
+          "name": "Apple verified transaction selects exact order and product, no latest receipt fallback",
+          "file": "test/trade-providers.test.cjs",
+          "line": 7,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 343.8708,
+          "error_code": null
+        },
+        {
+          "name": "Apple official verifier rejects malformed JWS; disabled configuration cannot dispatch",
+          "file": "test/trade-providers.test.cjs",
+          "line": 8,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 594.1964,
+          "error_code": null
+        },
+        {
+          "name": "verified Alipay composition signs only its original app and callback; a changed composition needs new proof",
+          "file": "test/trade-providers.test.cjs",
+          "line": 9,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 171.2866,
+          "error_code": null
+        },
+        {
+          "name": "Apple transaction verification retains the verified bundle after caller configuration changes",
+          "file": "test/trade-providers.test.cjs",
+          "line": 20,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 123.0367,
+          "error_code": null
+        },
+        {
+          "name": "independent review and immutable explicitly priced specification",
+          "file": "test/trade.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 212.566,
+          "error_code": null
+        },
+        {
+          "name": "unconfigured provider makes no payment attempt and cannot report success",
+          "file": "test/trade.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 9.249,
+          "error_code": null
+        },
+        {
+          "name": "payment creation is idempotent and ownership enforced",
+          "file": "test/trade.integration.test.cjs",
+          "line": 31,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 78.635,
+          "error_code": null
+        },
+        {
+          "name": "unsigned notifications and client paid fields never mark paid",
+          "file": "test/trade.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 8.5429,
+          "error_code": null
+        },
+        {
+          "name": "wrong amount currency merchant or environment rejected before receipt",
+          "file": "test/trade.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 41.0275,
+          "error_code": null
+        },
+        {
+          "name": "concurrent verified observations credit once; out of order pending cannot erase receipt",
+          "file": "test/trade.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 71.9342,
+          "error_code": null
+        },
+        {
+          "name": "refund reservations prevent concurrent excessive refunds and require separate review",
+          "file": "test/trade.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 105.4042,
+          "error_code": null
+        },
+        {
+          "name": "unknown dispatch cannot be blindly submitted again",
+          "file": "test/trade.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 96.0482,
+          "error_code": null
+        },
+        {
+          "name": "production acceptance cannot be claimed by client to unlock final payment",
+          "file": "test/trade.integration.test.cjs",
+          "line": 37,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 65.1606,
+          "error_code": null
+        },
+        {
+          "name": "verified late payments are retained for manual review",
+          "file": "test/trade.integration.test.cjs",
+          "line": 38,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 99.1537,
+          "error_code": null
+        },
+        {
+          "name": "Apple purchase and full refund retain gross receipt and refund facts separately",
+          "file": "test/trade.integration.test.cjs",
+          "line": 39,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 126.1366,
+          "error_code": null
+        },
+        {
+          "name": "cancelled order preserves later verified cash and requires review",
+          "file": "test/trade.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 77.8549,
+          "error_code": null
+        },
+        {
+          "name": "two actual charges on one installment are retained without pretending order is normally paid",
+          "file": "test/trade.integration.test.cjs",
+          "line": 41,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 227.2542,
+          "error_code": null
+        },
+        {
+          "name": "legacy 99 and 4901 amounts and reported status are preserved as reference only",
+          "file": "test/trade.integration.test.cjs",
+          "line": 42,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 53.711,
+          "error_code": null
+        },
+        {
+          "name": "unknown historical rules enter an independently reviewed reference queue without becoming payable",
+          "file": "test/trade.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 69.4554,
+          "error_code": null
+        },
+        {
+          "name": "audit failure rolls back order mutation and request key",
+          "file": "test/trade.integration.test.cjs",
+          "line": 60,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 20.5081,
+          "error_code": null
+        },
+        {
+          "name": "trade actual HTTP and isolated MySQL money, ownership and concurrency",
+          "file": "test/trade.integration.test.cjs",
+          "line": 8,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 15672.5035,
+          "error_code": null
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-provider-config-20261114/FINAL_BACKEND.json",
+          "sha256": "8189e18d32deb0b14e197d191d7bad21f10cdc6bea010b6e058c941af4c716bb"
+        },
+        {
+          "path": "docs/reviews/pm01-provider-config-20261114/FINAL_CONTRACT.json",
+          "sha256": "54f2a8b25b433bda3ece5ae7d7b7353bc1b67feaa4512f2c4ac6cd5f7ac14d2f"
+        },
+        {
+          "path": "docs/reviews/pm01-provider-config-20261114/SOURCE_MANIFEST.json",
+          "sha256": "7b21d3ed607e91f295acdbbe0c2d7daa6e2b973eb82f17f115fce723b4fa1f8d"
+        }
+      ]
+    }
+  ]
+}

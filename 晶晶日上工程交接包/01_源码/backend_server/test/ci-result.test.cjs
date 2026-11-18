@@ -16,3 +16,12 @@ test('CI only permits the named missing legacy snapshot skip, never skipped MySQ
   assert.equal(assessResult({ exitCode: 0, log: 'ok 1 - MySQL # SKIP\n' + summary(2, 0, 1), allowedSkips: 1, allowLegacySkip: true }).ok, false);
   assert.equal(assessResult({ exitCode: 0, log: legacy.replace('# pass 2', '# pass 1'), allowedSkips: 1, allowLegacySkip: true }).ok, false);
 });
+
+test('an actual child timeout preserves its diagnostic and cannot pass even after printing complete TAP totals', () => {
+  const child=require('node:child_process').spawnSync(process.execPath,['-e',`process.stdout.write(${JSON.stringify(summary(1,0,0))});setInterval(()=>{},1000);`],{encoding:'utf8',timeout:1000,windowsHide:true});
+  assert.equal(child.error?.code,'ETIMEDOUT');
+  const result=assessResult({exitCode:child.status,log:child.stdout||'',processError:child.error,signal:child.signal});
+  assert.equal(result.ok,false);assert.equal(result.process_error_code,'ETIMEDOUT');assert.equal(result.signal,child.signal);
+  assert.equal(assessResult({exitCode:0,log:summary(1,0,0),signal:'SIGTERM'}).ok,false);
+  assert.equal(assessResult({exitCode:0,log:summary(1,0,0),processError:{code:'ENOBUFS'}}).ok,false);
+});

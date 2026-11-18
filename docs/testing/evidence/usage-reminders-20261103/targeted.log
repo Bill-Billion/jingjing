@@ -1,0 +1,83 @@
+TAP version 13
+# Subtest: foreground reports count elapsed time once; burst retries cannot erase fractions
+ok 1 - foreground reports count elapsed time once; burst retries cannot erase fractions
+  ---
+  duration_ms: 2.4373
+  type: 'test'
+  ...
+# Subtest: idle interval is not usage; exact boundary and midnight are handled
+ok 2 - idle interval is not usage; exact boundary and midnight are handled
+  ---
+  duration_ms: 0.1572
+  type: 'test'
+  ...
+# Subtest: reminders use current preference, are advisory, and idle clears stale due status
+ok 3 - reminders use current preference, are advisory, and idle clears stale due status
+  ---
+  duration_ms: 0.1887
+  type: 'test'
+  ...
+# Subtest: personal usage reminders work across devices without tracking background time
+    # Subtest: disabled default never creates tracking state; input cannot claim elapsed time
+    ok 1 - disabled default never creates tracking state; input cannot claim elapsed time
+      ---
+      duration_ms: 83.1817
+      type: 'test'
+      ...
+    # Subtest: only account owner can access; institution header cannot select another person
+    ok 2 - only account owner can access; institution header cannot select another person
+      ---
+      duration_ms: 37.6638
+      type: 'test'
+      ...
+    # Subtest: two concurrent devices count one interval and produce rest reminder
+    ok 3 - two concurrent devices count one interval and produce rest reminder
+      ---
+      duration_ms: 31.7117
+      type: 'test'
+      ...
+    # Subtest: acknowledgement is versioned and retryable, does not reset daily total
+    ok 4 - acknowledgement is versioned and retryable, does not reset daily total
+      ---
+      duration_ms: 44.3653
+      type: 'test'
+      ...
+    # Subtest: background gaps add no time and clear a stale reminder
+    ok 5 - background gaps add no time and clear a stale reminder
+      ---
+      duration_ms: 16.7129
+      type: 'test'
+      ...
+    # Subtest: preference change and disable reset state atomically; stale acknowledgement cannot revive it
+    ok 6 - preference change and disable reset state atomically; stale acknowledgement cannot revive it
+      ---
+      duration_ms: 44.8987
+      type: 'test'
+      ...
+    # Subtest: failed statistics reset rolls preference update back
+    ok 7 - failed statistics reset rolls preference update back
+      ---
+      duration_ms: 21.7968
+      type: 'test'
+      ...
+    # Subtest: tampering and suspended accounts fail closed, even on replay
+    ok 8 - tampering and suspended accounts fail closed, even on replay
+      ---
+      duration_ms: 15.7541
+      type: 'test'
+      ...
+    1..8
+ok 4 - personal usage reminders work across devices without tracking background time
+  ---
+  duration_ms: 7793.8199
+  type: 'test'
+  ...
+1..4
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8016.7237

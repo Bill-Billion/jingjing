@@ -1,0 +1,84 @@
+TAP version 13
+# Subtest: company delivery handoff preserves first receipt, current authority and original final payment
+    # Subtest: 0224 upgrades with a legacy first-reader receipt unchanged and repeated 0225 application is idempotent
+    ok 1 - 0224 upgrades with a legacy first-reader receipt unchanged and repeated 0225 application is idempotent
+      ---
+      duration_ms: 291.6464
+      type: 'test'
+      ...
+    # Subtest: a new representative must personally read the current preview and notification before taking over
+    ok 2 - a new representative must personally read the current preview and notification before taking over
+      ---
+      duration_ms: 242.255
+      type: 'test'
+      ...
+    # Subtest: another viewer never overwrites a completed receipt and each actor feedback uses their own read
+    ok 3 - another viewer never overwrites a completed receipt and each actor feedback uses their own read
+      ---
+      duration_ms: 223.4747
+      type: 'test'
+      ...
+    # Subtest: failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version
+    ok 4 - failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version
+      ---
+      duration_ms: 309.5583
+      type: 'test'
+      ...
+    # Subtest: concurrent current company viewers create one observation each and one immutable final deadline
+    ok 5 - concurrent current company viewers create one observation each and one immutable final deadline
+      ---
+      duration_ms: 225.1792
+      type: 'test'
+      ...
+    # Subtest: same company completes final acceptance and last payment; duplicate final downloads keep one completion fact
+    ok 6 - same company completes final acceptance and last payment; duplicate final downloads keep one completion fact
+      ---
+      duration_ms: 133.9524
+      type: 'test'
+      ...
+    # Subtest: personal retained delivery and feedback copy uses the same actual company journey
+        # Subtest: own delivery reads, own signoff and authored feedback are copyable after business revocation without company documents
+        ok 1 - own delivery reads, own signoff and authored feedback are copyable after business revocation without company documents
+          ---
+          duration_ms: 86.0876
+          type: 'test'
+          ...
+        # Subtest: request scope, requester identity, section cursors and operator work state apply to every page
+        ok 2 - request scope, requester identity, section cursors and operator work state apply to every page
+          ---
+          duration_ms: 73.899
+          type: 'test'
+          ...
+        # Subtest: retained legacy receipt fills a missing new-table row without duplicate observations or trusting corrupt source content
+        ok 3 - retained legacy receipt fills a missing new-table row without duplicate observations or trusting corrupt source content
+          ---
+          duration_ms: 26.0761
+          type: 'test'
+          ...
+        # Subtest: leaving the company retains personal action history and a same-request file remains subject to independent release
+        ok 4 - leaving the company retains personal action history and a same-request file remains subject to independent release
+          ---
+          duration_ms: 97.0564
+          type: 'test'
+          ...
+        1..4
+    ok 7 - personal retained delivery and feedback copy uses the same actual company journey
+      ---
+      duration_ms: 299.4531
+      type: 'test'
+      ...
+    1..7
+ok 1 - company delivery handoff preserves first receipt, current authority and original final payment
+  ---
+  duration_ms: 8574.0209
+  type: 'test'
+  ...
+1..1
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8931.7574

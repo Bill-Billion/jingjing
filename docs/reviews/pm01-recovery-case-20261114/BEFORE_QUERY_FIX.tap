@@ -1,0 +1,317 @@
+TAP version 13
+# Subtest: finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+    # Subtest: existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+    ok 1 - existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+      ---
+      duration_ms: 5072.9686
+      type: 'test'
+      ...
+    # Subtest: authentication, explicit rules and independent review are required
+    ok 2 - authentication, explicit rules and independent review are required
+      ---
+      duration_ms: 45.9742
+      type: 'test'
+      ...
+    # Subtest: rejected draft can be replaced while history stays; active agreement cannot change
+    ok 3 - rejected draft can be replaced while history stays; active agreement cannot change
+      ---
+      duration_ms: 112.4304
+      type: 'test'
+      ...
+    # Subtest: restricted finance evidence respects overlapping restrictions and restrictions activated during storage read
+    ok 4 - restricted finance evidence respects overlapping restrictions and restrictions activated during storage read
+      ---
+      duration_ms: 186.3831
+      type: 'test'
+      ...
+    # Subtest: settlement review and every party confirmation precede available balance
+    ok 5 - settlement review and every party confirmation precede available balance
+      ---
+      duration_ms: 152.1575
+      type: 'test'
+      ...
+    # Subtest: settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+    ok 6 - settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+      ---
+      duration_ms: 25.0141
+      type: 'test'
+      ...
+    # Subtest: concurrent withdrawals reserve available amount once and exact retries reuse request
+    ok 7 - concurrent withdrawals reserve available amount once and exact retries reuse request
+      ---
+      duration_ms: 71.7544
+      type: 'test'
+      ...
+    # Subtest: request approval is not paid; only independent bank evidence books actual payout
+    ok 8 - request approval is not paid; only independent bank evidence books actual payout
+      ---
+      duration_ms: 80.0659
+      type: 'test'
+      ...
+    # Subtest: dispute after payout requests blocks new approval but preserves verified failure and cancellation facts
+    ok 9 - dispute after payout requests blocks new approval but preserves verified failure and cancellation facts
+      ---
+      duration_ms: 169.9903
+      type: 'test'
+      ...
+    # Subtest: return and failed payouts keep facts and release reservation for a new request
+    ok 10 - return and failed payouts keep facts and release reservation for a new request
+      ---
+      duration_ms: 151.8682
+      type: 'test'
+      ...
+    # Subtest: disputes notify parties, freeze new payouts, retain replies and all decisions
+    ok 11 - disputes notify parties, freeze new payouts, retain replies and all decisions
+      ---
+      duration_ms: 59.5156
+      type: 'test'
+      ...
+    # Subtest: refund reduces future entitlement, preserves old settlement and actual payout
+    ok 12 - refund reduces future entitlement, preserves old settlement and actual payout
+      ---
+      duration_ms: 148.3377
+      type: 'test'
+      ...
+    # Subtest: adjustment is balanced, separately reviewed and forces new settlement confirmation
+    ok 13 - adjustment is balanced, separately reviewed and forces new settlement confirmation
+      ---
+      duration_ms: 98.9532
+      type: 'test'
+      ...
+    # Subtest: reconciliation compares verified facts without turning imported rows into money
+    ok 14 - reconciliation compares verified facts without turning imported rows into money
+      ---
+      duration_ms: 28.4304
+      type: 'test'
+      ...
+    # Subtest: daily books include verified refunds, actual split payments and returned split money, not reservations
+    ok 15 - daily books include verified refunds, actual split payments and returned split money, not reservations
+      ---
+      duration_ms: 22.121
+      type: 'test'
+      ...
+    # Subtest: external release statement is accrued revenue, not cash received or automatic payout
+    ok 16 - external release statement is accrued revenue, not cash received or automatic payout
+      ---
+      duration_ms: 101.754
+      type: 'test'
+      ...
+    # Subtest: same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation
+    ok 17 - same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation
+      ---
+      duration_ms: 105.3831
+      type: 'test'
+      ...
+    # Subtest: partial receipts, duplicate bank references and statement corrections never rewrite history
+    ok 18 - partial receipts, duplicate bank references and statement corrections never rewrite history
+      ---
+      duration_ms: 219.6389
+      type: 'test'
+      ...
+    # Subtest: record permissions, private proof integrity, stale membership and disabled automatic payout
+    ok 19 - record permissions, private proof integrity, stale membership and disabled automatic payout
+      ---
+      duration_ms: 31.0202
+      type: 'test'
+      ...
+    # Subtest: late customer payment review and unaccepted delivery block payouts even with prior agreement
+    ok 20 - late customer payment review and unaccepted delivery block payouts even with prior agreement
+      ---
+      duration_ms: 32.2256
+      type: 'test'
+      ...
+    # Subtest: notification cursor can retrieve newly recorded events, and different parties keep their own feed
+    ok 21 - notification cursor can retrieve newly recorded events, and different parties keep their own feed
+      ---
+      duration_ms: 21.098
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back adjustment and idempotency reservation; stale review fails
+    ok 22 - audit failure rolls back adjustment and idempotency reservation; stale review fails
+      ---
+      duration_ms: 19.2861
+      type: 'test'
+      ...
+    # Subtest: refund after verified payout creates recovery due without inventing received money
+    ok 23 - refund after verified payout creates recovery due without inventing received money
+      ---
+      duration_ms: 97.3829
+      type: 'test'
+      ...
+    # Subtest: recovery case keeps original debtor and independently reviewed claim separate from received money
+    not ok 24 - recovery case keeps original debtor and independently reviewed claim separate from received money
+      ---
+      duration_ms: 9.0808
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:298:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'SERVICE_UNAVAILABLE'
+        - 'RECOVERY_EXCEEDS_DUE'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'RECOVERY_EXCEEDS_DUE'
+      actual: 'SERVICE_UNAVAILABLE'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:300:10)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:298:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: independent administrative closure does not forgive debt or invent a receipt; reapplication retains old case
+    not ok 25 - independent administrative closure does not forgive debt or invent a receipt; reapplication retains old case
+      ---
+      duration_ms: 0.677
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:312:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:313:41)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Test.start (node:internal/test_runner/test:944:17)
+        TestContext.test (node:internal/test_runner/test:373:20)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:312:10)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: partial recovery remains unreceived until independent review, then posts only the received amount once
+    not ok 26 - partial recovery remains unreceived until independent review, then posts only the received amount once
+      ---
+      duration_ms: 38.2076
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:324:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:329:54)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:324:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: linking split amounts from a verified return is bounded and never posts the bank return again
+    not ok 27 - linking split amounts from a verified return is bounded and never posts the bank return again
+      ---
+      duration_ms: 0.3829
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:336:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:337:41)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Test.start (node:internal/test_runner/test:944:17)
+        TestContext.test (node:internal/test_runner/test:373:20)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:336:10)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: competing partial receipts recheck cumulative amount at approval and preserve the rejected candidate
+    not ok 28 - competing partial receipts recheck cumulative amount at approval and preserve the rejected candidate
+      ---
+      duration_ms: 29.4678
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:347:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:350:10)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:347:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: claim closes only after verified receipts are linked, while prior claims and original settlement remain immutable
+    not ok 29 - claim closes only after verified receipts are linked, while prior claims and original settlement remain immutable
+      ---
+      duration_ms: 0.3727
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:355:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        fr (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:75:77)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:356:23)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Test.start (node:internal/test_runner/test:944:17)
+        TestContext.test (node:internal/test_runner/test:373:20)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:355:10)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: remaining return closes original payout without changing original paid evidence or old settlement
+    not ok 30 - remaining return closes original payout without changing original paid evidence or old settlement
+      ---
+      duration_ms: 25.7799
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:366:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'code')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:367:225)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:366:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: personal income uses posted own shares including payout returns; no other party amounts or estimated revenue
+    ok 31 - personal income uses posted own shares including payout returns; no other party amounts or estimated revenue
+      ---
+      duration_ms: 110.8486
+      type: 'test'
+      ...
+    1..31
+not ok 1 - finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+  ---
+  duration_ms: 9968.7642
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:10:1'
+  failureType: 'subtestsFailed'
+  error: '7 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 32
+# suites 0
+# pass 24
+# fail 8
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10355.9691

@@ -5,7 +5,20 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 
+typedef ConsumerTransport = Future<Map<String, dynamic>> Function(
+    String method, String path,
+    {Map<String, dynamic>? body, Map<String, dynamic>? query, String? key});
+typedef ConsumptionGuard = Future<Map<String, dynamic>> Function(
+    String path,
+    Map<String, dynamic>? body,
+    String key,
+    String? party,
+    Future<Map<String, dynamic>> Function() send,
+    ConsumerTransport transport);
+
 const additionalBusinessPrefixes = [
+  '/api/v1/guardians/',
+  '/api/v1/infringement/',
   '/api/v1/stock/',
   '/api/v1/notices/',
   '/api/v1/auditions/',
@@ -15,6 +28,12 @@ const additionalBusinessPrefixes = [
   '/api/v1/redemption/',
   '/api/v1/privacy/',
   '/api/v1/media/',
+  '/api/v1/directory/',
+  '/api/v1/discovery/',
+  '/api/v1/me/collections/',
+  '/api/v1/me/business/',
+  '/api/v1/support/',
+  '/api/v1/invoices/',
 ];
 
 bool _privateRequestPath(String path) => [
@@ -45,11 +64,30 @@ class AccountApi {
             ));
 
   final Dio _dio;
+  ConsumptionGuard? consumptionGuard;
   int _supplyEpoch = 0;
+  int _accountEpoch = 0;
+  void clearAccountOperations() {
+    _accountEpoch++;
+    bool phone(String key) =>
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/me/phone-changes') ||
+        (jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/privacy/usage');
+    _keys.removeWhere((key, _) => phone(key));
+    _pending.removeWhere((key, _) => phone(key));
+    _running.removeWhere((key, _) => phone(key));
+  }
+
   void clearSupplyOperations() {
     _supplyEpoch++;
     bool supply(String key) =>
-        _privateRequestPath((jsonDecode(key) as List)[3].toString());
+        _privateRequestPath((jsonDecode(key) as List)[3].toString()) &&
+        !(jsonDecode(key) as List)[3]
+            .toString()
+            .startsWith('/api/v1/privacy/usage');
     _keys.removeWhere((key, _) => supply(key));
     _pending.removeWhere((key, _) => supply(key));
     _running.removeWhere((key, _) => supply(key));
@@ -89,6 +127,13 @@ class AccountApi {
                   .startsWith('/api/v1/gigs/'))
             {...entry.value, 'path': (jsonDecode(entry.key) as List)[3]}
       ];
+  void discardPending(String method, String path,
+      {String? token, String? party}) {
+    final scope = _scope(method, path, token, party);
+    final pending = _pending.remove(scope);
+    if (pending != null) _keys.remove(pending['fingerprint']);
+  }
+
   final _running = <String, Future<Map<String, dynamic>>>{};
   List<Map<String, dynamic>> productionPending(
           {String? token, String? party}) =>
@@ -153,13 +198,29 @@ class AccountApi {
     Map<String, dynamic>? body,
     Map<String, dynamic>? query,
     int? version,
+    String? operationKey,
     Uint8List? bytes,
+    void Function(int sent, int total)? onSendProgress,
     FutureOr<void> Function(Map<String, dynamic>)? validate,
   }) {
-    final writing = method != 'GET';
-    final supply = _privateRequestPath(path);
+    // Heartbeats are ephemeral samples, never queued or assigned a command key.
+    final usage = path.startsWith('/api/v1/privacy/usage');
+    final writing = method != 'GET' &&
+        !(method == 'POST' && path == '/api/v1/privacy/usage/pulse');
+    if (operationKey != null &&
+        (!writing ||
+            !RegExp(r'^/api/v1/cocreation/(?:rooms/[0-9a-f-]{36}/invite-links|invite-links/(?:claim|[0-9a-f-]{36}/revoke))$')
+                .hasMatch(path) ||
+            !RegExp(r'^app-[a-f0-9]{48}$').hasMatch(operationKey))) {
+      return Future.error(const AccountError(400, 'INVALID_OPERATION_KEY'));
+    }
+    final supply = _privateRequestPath(path) && !usage;
     final started = _supplyEpoch;
-    bool current() => !supply || started == _supplyEpoch;
+    final accountStarted = _accountEpoch;
+    final phone = path.startsWith('/api/v1/me/phone-changes') || usage;
+    bool current() =>
+        (!supply || started == _supplyEpoch) &&
+        (!phone || accountStarted == _accountEpoch);
     body = body == null
         ? null
         : Map<String, dynamic>.from(jsonDecode(jsonEncode(body)) as Map);
@@ -194,16 +255,67 @@ class AccountApi {
     if (writing && _running.containsKey(fingerprint)) {
       return _running[fingerprint]!;
     }
-    final key = writing ? _keys.putIfAbsent(fingerprint, _newKey) : null;
+    final key = writing
+        ? _keys.putIfAbsent(fingerprint, () => operationKey ?? _newKey())
+        : null;
+    if (operationKey != null && key != operationKey) {
+      return Future.error(const AccountError(409, 'PENDING_OPERATION_CHANGED'));
+    }
     String? resultId = unresolved?['resultId'];
-    final future = _send(method, path,
-            token: token,
-            party: party,
-            body: body,
-            query: query,
-            version: version,
-            key: key,
-            bytes: bytes)
+    Future<Map<String, dynamic>> send() {
+      if (!current()) {
+        return Future.error(const AccountError(0, 'CONTEXT_CHANGED'));
+      }
+      return _send(method, path,
+          token: token,
+          party: party,
+          body: body,
+          query: query,
+          version: version,
+          key: key,
+          bytes: bytes,
+          onSendProgress: onSendProgress == null
+              ? null
+              : (sent, total) {
+                  if (current()) onSendProgress(sent, total);
+                });
+    }
+
+    final consume = method == 'POST' &&
+        (path == '/api/v1/trade/payments' ||
+            path == '/api/v1/wallet/recharges' ||
+            path == '/api/v1/redemption/draws' ||
+            RegExp(r'^/api/v1/trade/payments/[a-f0-9-]{36}/reconciliation$')
+                .hasMatch(path));
+    Future<Map<String, dynamic>> transport(String m, String p,
+        {Map<String, dynamic>? body,
+        Map<String, dynamic>? query,
+        String? key}) {
+      if (!current()) {
+        return Future.error(const AccountError(0, 'CONTEXT_CHANGED'));
+      }
+      final originalPayment =
+          RegExp(r'^/api/v1/trade/payments/([a-f0-9-]{36})/reconciliation$')
+              .firstMatch(path);
+      final originalRead = m == 'GET' &&
+          originalPayment != null &&
+          p == '/api/v1/trade/records/${originalPayment[1]}';
+      if (!originalRead &&
+          !p.startsWith('/api/v1/wallet/consumer-risk/') &&
+          !RegExp(r'^/api/v1/redemption/pools/[a-f0-9-]{36}$').hasMatch(p)) {
+        return Future.error(const AccountError(400, 'CONSUMER_TARGET_INVALID'));
+      }
+      return _send(m, p,
+          token: token,
+          party: p.startsWith('/api/v1/redemption/pools/') ? null : party,
+          body: body,
+          query: query,
+          key: key);
+    }
+
+    final future = (consume && consumptionGuard != null
+            ? consumptionGuard!(path, body, key!, party, send, transport)
+            : send())
         .then((data) async {
       if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (data['id'] is String) resultId = data['id'];
@@ -222,6 +334,7 @@ class AccountApi {
         if (error.uncertain) {
           _pending[scope] = {
             'fingerprint': fingerprint,
+            'key': key,
             'body': body,
             'version': version,
             'bytes': bytes,
@@ -254,6 +367,7 @@ class AccountApi {
     int? version,
     String? key,
     Uint8List? bytes,
+    void Function(int sent, int total)? onSendProgress,
   }) async {
     final uri = Uri.tryParse(_dio.options.baseUrl);
     if (uri == null ||
@@ -266,6 +380,7 @@ class AccountApi {
         path,
         data: bytes ?? body,
         queryParameters: query,
+        onSendProgress: onSendProgress,
         options: Options(method: method, headers: {
           'Content-Type':
               bytes == null ? 'application/json' : 'application/octet-stream',
@@ -342,10 +457,19 @@ class AccountApi {
       final stockVideoPath = RegExp(
         r'^/api/v1/stock/(?:catalog/[a-fA-F0-9-]{36}/preview|listings/[a-fA-F0-9-]{36}/files/(?:full|preview)|purchases/[a-fA-F0-9-]{36}/content)$',
       ).hasMatch(path);
+      final stockCoverPath = RegExp(
+        r'^/api/v1/stock/catalog/[a-fA-F0-9-]{36}/cover$',
+      ).hasMatch(path);
+      final directoryCoverPath =
+          RegExp(r'^/api/v1/directory/organizations/[a-fA-F0-9-]{36}/cover$')
+              .hasMatch(path);
       if (response.statusCode == 200 &&
           response.data != null &&
           (mediaType == 'application/octet-stream' ||
-              stockVideoPath && mediaType == 'video/mp4')) {
+              stockVideoPath && mediaType == 'video/mp4' ||
+              stockCoverPath && mediaType == 'image/jpeg' ||
+              directoryCoverPath &&
+                  ['image/jpeg', 'image/png'].contains(mediaType))) {
         return Uint8List.fromList(response.data!);
       }
       String code = 'INVALID_BINARY_RESPONSE';
@@ -386,6 +510,14 @@ class AccountError implements Exception {
         return '上次操作还在处理中，请稍后重试原操作核对结果。';
       case 'PENDING_OPERATION_CHANGED':
         return '上次操作的结果尚未确认，请先重试原内容核对结果，再发起新的操作。';
+      case 'CONSUMER_POLICY_NOT_CONFIGURED':
+        return '活动保护规则待审核，暂不可参与。';
+      case 'LOTTERY_PARTICIPATION_LIMIT':
+        return '当前抽奖次数或当日晶钻消耗已达到规则上限，请稍后再参与，不要更换请求重复提交。';
+      case 'CONSUMER_RISK_PREVIEW_CHANGED':
+      case 'CONSUMER_RISK_CONFIRMATION_EXPIRED':
+      case 'CONSUMER_RISK_CONFIRMATION_REQUIRED':
+        return '消费提示需要更新，请重新读取并主动确认原操作。';
       case 'CONTEXT_CHANGED':
         return '账号或身份已切换，请在当前身份下重新操作。';
       case 'SMS_NOT_READY':

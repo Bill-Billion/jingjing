@@ -1,0 +1,112 @@
+TAP version 13
+# Subtest: received stock orders, refunds and returned rewards preserve original point debts
+    # Subtest: independently reviewed wallet and new 48-hour stock terms, zero initial points
+    ok 1 - independently reviewed wallet and new 48-hour stock terms, zero initial points
+      ---
+      duration_ms: 182.2446
+      type: 'test'
+      ...
+    # Subtest: two fresh paid orders earn nothing before real content read and buyer acceptance
+    ok 2 - two fresh paid orders earn nothing before real content read and buyer acceptance
+      ---
+      duration_ms: 920.4213
+      type: 'test'
+      ...
+    # Subtest: mature original order issues once under its captured rule; concurrent sync does not duplicate
+    ok 3 - mature original order issues once under its captured rule; concurrent sync does not duplicate
+      ---
+      duration_ms: 51.1416
+      type: 'test'
+      ...
+    # Subtest: a real reward exchange consumes four points once and retains original expiry
+    ok 4 - a real reward exchange consumes four points once and retains original expiry
+      ---
+      duration_ms: 75.3178
+      type: 'test'
+      ...
+    # Subtest: full cash refund succeeds despite spent points; debt prevents new exchange without using stock
+    ok 5 - full cash refund succeeds despite spent points; debt prevents new exchange without using stock
+      ---
+      duration_ms: 126.4069
+      type: 'test'
+      ...
+    # Subtest: later order earnings clear earlier debt without erasing the new consumption growth
+    ok 6 - later order earnings clear earlier debt without erasing the new consumption growth
+      ---
+      duration_ms: 25.5109
+      type: 'test'
+      ...
+    # Subtest: refunding the replacement earning creates its own shortage; free check-in pays debt without adding growth
+    not ok 7 - refunding the replacement earning creates its own shortage; free check-in pays debt without adding growth
+      ---
+      duration_ms: 29.1767
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-refund-entitlement-journey.integration.test.cjs:10:32'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"code":"IDEMPOTENCY_CONFLICT","message":"请求未通过校验或权限检查","retryable":false,"details":[]}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-refund-entitlement-journey.integration.test.cjs:20:23)
+        post (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-refund-entitlement-journey.integration.test.cjs:20:124)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async refund (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-refund-entitlement-journey.integration.test.cjs:52:231)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-refund-entitlement-journey.integration.test.cjs:63:12
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-refund-entitlement-journey.integration.test.cjs:10:70)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-refund-entitlement-journey.integration.test.cjs:62:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: independent reward remedy returns original spent points once, clears remaining debt and cannot resurrect growth
+    not ok 8 - independent reward remedy returns original spent points once, clears remaining debt and cannot resurrect growth
+      ---
+      duration_ms: 63.1109
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-refund-entitlement-journey.integration.test.cjs:10:32'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        10 !== 3
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 3
+      actual: 10
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-refund-entitlement-journey.integration.test.cjs:69:35
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-refund-entitlement-journey.integration.test.cjs:10:70)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-refund-entitlement-journey.integration.test.cjs:66:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..8
+not ok 1 - received stock orders, refunds and returned rewards preserve original point debts
+  ---
+  duration_ms: 8887.2238
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-refund-entitlement-journey.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 9
+# suites 0
+# pass 6
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9118.8032

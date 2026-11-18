@@ -1,0 +1,168 @@
+{
+  "result": "PASS",
+  "code_sha": "2755b7fe1c1ad31942eb6298ae9cd7e867eb87bf",
+  "environment": "isolated",
+  "dataset_id": "recovery-refund-review-synthetic-20261110",
+  "contract_version": "0.31.48-rc.1",
+  "rules_version": "TEST-20261028-2",
+  "summary": {
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0
+  },
+  "checks": [
+    {
+      "acceptance_id": "ACC-DEL-06.03",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "expired download session recovers the same purchased bytes but fresh login never bypasses revoked membership",
+        "payment activates the original business license; actual controlled bytes match and strangers cannot read",
+        "replacement publication leaves bought file and licence intact and prevents old reactivation"
+      ],
+      "assertion_review": "当前是每次重新核权的受控下载接口，不生成公开签名链接；会话真实过期后以合成新会话重新请求同一文件，旧会话仍401，撤权的新会话403。买家/个人与机构/已购版本/商用范围和期限检查分别覆盖，退款与撤权禁止新增下载。未使用真实OSS或执行实际短信登录，不声称外部签名URL已验收。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-06.03",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "one stock order survives lost response and refund review without duplicate money or licenses",
+        "consent withdrawal stops downloads, restoration does not silently expand the license",
+        "time-limited purchased license expires even while the original listing remains active"
+      ],
+      "assertion_review": "当前是每次重新核权的受控下载接口，不生成公开签名链接；会话真实过期后以合成新会话重新请求同一文件，旧会话仍401，撤权的新会话403。买家/个人与机构/已购版本/商用范围和期限检查分别覆盖，退款与撤权禁止新增下载。未使用真实OSS或执行实际短信登录，不声称外部签名URL已验收。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-07.04",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "refund reservations prevent concurrent excessive refunds and require separate review",
+        "unknown payment prevents cancel/reuse; trusted receipt consumes once; refund never returns used voucher",
+        "full cash refund succeeds despite spent points; debt prevents new exchange without using stock",
+        "last valid referral is frozen at checkout and receives only platform allocation"
+      ],
+      "assertion_review": "按订单行申请并独审；超额/并发拒绝，部分退款与成功回执防重，审批不记到账。定制券当前30/40/30按净额计算、已用券不返；现货现金退款照常，成长撤回，已花晶钻记待冲回、未来获得先抵扣。新10%直推退款自动冲回，独立清分不重复。按适用业务分别同单验收，不强行让现货用制作券。渠道回执为合成，真实原路到账仍未验证。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-07.04",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "one stock order survives lost response and refund review without duplicate money or licenses",
+        "later order earnings clear earlier debt without erasing the new consumption growth",
+        "refunding the replacement earning creates its own shortage; free check-in pays debt without adding growth",
+        "independent reward remedy returns original spent points once, clears remaining debt and cannot resurrect growth"
+      ],
+      "assertion_review": "按订单行申请并独审；超额/并发拒绝，部分退款与成功回执防重，审批不记到账。定制券当前30/40/30按净额计算、已用券不返；现货现金退款照常，成长撤回，已花晶钻记待冲回、未来获得先抵扣。新10%直推退款自动冲回，独立清分不重复。按适用业务分别同单验收，不强行让现货用制作券。渠道回执为合成，真实原路到账仍未验证。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-08.03",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "old nonstandard commission remains payable and immutable after new-order switch",
+        "unknown historical rules enter an independently reviewed reference queue without becoming payable"
+      ],
+      "assertion_review": "已知历史订单按原费率/快照重放，新规则不覆盖旧合同；无法判定的外部旧单由授权运营显式登记NEEDS_REVIEW，独立人员审核，仅VERIFIED_REFERENCE_ONLY，未知金额/条款保留，无付款事实/权益/新费率写入。录入者和交易方不能自审，越权/重复导入/旧版本操作受限。这是人工登记复核流程，不是自动识别所有旧库异常或自动迁移付款。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-08.03",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "contract cutover validates rates without rewriting historical allocations",
+        "new referral rates enforce 10-15 percent without rewriting historical five-percent rules"
+      ],
+      "assertion_review": "已知历史订单按原费率/快照重放，新规则不覆盖旧合同；无法判定的外部旧单由授权运营显式登记NEEDS_REVIEW，独立人员审核，仅VERIFIED_REFERENCE_ONLY，未知金额/条款保留，无付款事实/权益/新费率写入。录入者和交易方不能自审，越权/重复导入/旧版本操作受限。这是人工登记复核流程，不是自动识别所有旧库异常或自动迁移付款。"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/backend.junit.xml",
+      "sha256": "e572210e35ebc1e0898ff1fd3711697525ae876779400b682566ed179b638841"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/backend.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/contract-six-http-fixtures.json",
+      "sha256": "086bb49bf65d8da2cb3956ef125d6badf77fd8b23cc8cd5443e4e57ec995af71"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/coupon-refund-journey-20261110.json",
+      "sha256": "91b2fd38d65a059e193e9e3ae9dc8fe03dacc0f8757e9ab71cbdda8655bbf1bb"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/engagement-http-fixtures.json",
+      "sha256": "834f6966badf81a8b611743f9fa83a3ce2e3779be0ab17624419ecf6c7031f8e"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/legacy-reference-review-20261110.json",
+      "sha256": "ece7b61d0e971b27b8d1d16cd741436cb74b78fc0369e1f2d977e7e51975b725"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/marketplace-contract-http-fixtures.json",
+      "sha256": "eadef61a49998b7bc9d94acfd8aabf81a107e20511118cc1f1be1d448aa27cde"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/redemption-checkout-http-fixtures.json",
+      "sha256": "46e5689c96eb1653bf1ae5ac214725cfcbecb9c41a994e3da24eaf98f20514c7"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/referral-refund-journey-20261110.json",
+      "sha256": "c0b5903203503d5bf9d639ef52705e1a634e3975c9782b043e17f488405e66c9"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/run.json",
+      "sha256": "ced73566419452170a9aee8e3b6447dd6f6c185e294c78af193f056ad14231f8"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/runtime-contract.json",
+      "sha256": "42de0c8ed9a40b394fbe59e4adab467264eb09fb6f5209e426c14188ce544ff1"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/stock-commercial-http-fixtures.json",
+      "sha256": "84e1a0718c933971da6f5b95744f9959641fb261ccb0626bcd239b424fb2d08d"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/stock-download-recovery-20261110.json",
+      "sha256": "75002d0cd7bca1c97027a5815ddfc8ea03774acb62efa412a45171e654b98968"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/stock-http-fixtures.json",
+      "sha256": "81c05bbdd72e3313ac4c97e9dfe9caed57a5c742003fca0f155d507521cf91bc"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/trade-http-fixtures.json",
+      "sha256": "6413cdb43ff3982310a248efb621c29d6aeb762e0d96ad9da69c876a1bc7aead"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/wallet-refund-entitlement-fixtures.json",
+      "sha256": "3ba64b8254561c4874e0ec2dc829c3f0237b538cefd085f20748711b081038dc"
+    },
+    {
+      "path": "docs/reviews/recovery-refund-review-20261110/wallet-refund-entitlement-result.json",
+      "sha256": "2587d105c405b1c02d04ce8a2ce8b66dd69d34325a937aa84ffb43730b71141b"
+    }
+  ],
+  "test_execution": {
+    "testcases": 131,
+    "failures": 0,
+    "skipped": 0,
+    "files": 13
+  },
+  "limits": [
+    "API criteria only; no app/web/native acceptance",
+    "Synthetic payment/refund/PRODUCTION-labelled records only, no live provider",
+    "Explicit operator registration for unknown legacy source; reference-only review never grants rights or payment"
+  ]
+}

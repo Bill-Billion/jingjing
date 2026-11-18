@@ -1,0 +1,84 @@
+TAP version 13
+# Subtest: organization-batch isolated MySQL and HTTP
+    # Subtest: mixed results commit independently and rejected result survives reopen
+    ok 1 - mixed results commit independently and rejected result survives reopen
+      ---
+      duration_ms: 165.0552
+      type: 'test'
+      ...
+    # Subtest: lost first response can find original batch without mutation, scoped to current creator and institution
+    ok 2 - lost first response can find original batch without mutation, scoped to current creator and institution
+      ---
+      duration_ms: 68.9954
+      type: 'test'
+      ...
+    # Subtest: same request and lost receipt replay do not repeat assignment; changed payload rejected
+    ok 3 - same request and lost receipt replay do not repeat assignment; changed payload rejected
+      ---
+      duration_ms: 113.7309
+      type: 'test'
+      ...
+    # Subtest: parallel retries return one batch and one business mutation
+    ok 4 - parallel retries return one batch and one business mutation
+      ---
+      duration_ms: 65.8333
+      type: 'test'
+      ...
+    # Subtest: one batch contains valid, unauthorized and stale-version items; duplicate request preserves the successful mutation
+    ok 5 - one batch contains valid, unauthorized and stale-version items; duplicate request preserves the successful mutation
+      ---
+      duration_ms: 129.3973
+      type: 'test'
+      ...
+    # Subtest: foreign accounts, personal identities, invalid batches and revoked membership
+    ok 6 - foreign accounts, personal identities, invalid batches and revoked membership
+      ---
+      duration_ms: 61.2731
+      type: 'test'
+      ...
+    1..6
+ok 1 - organization-batch isolated MySQL and HTTP
+  ---
+  duration_ms: 10479.8832
+  type: 'test'
+  ...
+# Subtest: organization merchandise batch isolated MySQL and HTTP
+    # Subtest: artist and stock submission retain original independent-review state
+    ok 1 - artist and stock submission retain original independent-review state
+      ---
+      duration_ms: 208.2414
+      type: 'test'
+      ...
+    # Subtest: price change creates a reviewable new specification without changing listing or old price
+    ok 2 - price change creates a reviewable new specification without changing listing or old price
+      ---
+      duration_ms: 83.6612
+      type: 'test'
+      ...
+    # Subtest: MCN assignment reuses booking and current artist delegation
+    ok 3 - MCN assignment reuses booking and current artist delegation
+      ---
+      duration_ms: 344.1359
+      type: 'test'
+      ...
+    # Subtest: revoked artist authorization hides receipts and prevents replay
+    ok 4 - revoked artist authorization hides receipts and prevents replay
+      ---
+      duration_ms: 23.8598
+      type: 'test'
+      ...
+    1..4
+ok 2 - organization merchandise batch isolated MySQL and HTTP
+  ---
+  duration_ms: 10690.766
+  type: 'test'
+  ...
+1..2
+# tests 12
+# suites 0
+# pass 12
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10908.051

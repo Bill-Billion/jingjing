@@ -1,0 +1,263 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "ef808905fc93c0be073fcebeb250b1812080377e",
+  "run_id": "pm01-mcn-supplier-2026-11-13T17-15-13-507Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "MCN-SUPPLIER-BROKER-SEPARATION",
+      "acceptance_id": "ACC-DEL-25.04",
+      "name": "机构供给收入与经纪应计分列",
+      "result": "LOCAL_PASS",
+      "scope": "实际两人现货机构供给与经纪订单各一笔，供给82/经纪16/机构98分列，逐人授权和分单/转派原键、创建期间/多艺人去重/沙盒及未付排除、40KEEP后49+16及全退后0+16、原合同保留；无已入账财务不伪造余额；三类市场分配及旧经纪规则单元",
+      "remaining": "隔离资料，非真实清分/打款；供给角色实际HTTP仅现货，试镜/商单供给角色本轮为规则单元及原业务关联回归，非新增三条实际全链；仅已冻结marketplace_finance供给及既有经纪来源，不猜其他自营承制合同收入；所需端/独立财务签收仍待",
+      "actual_checks": [
+        {
+          "name": "frozen marketplace roles distinguish supplier and agency income across all three marketplace products",
+          "file": "test/mcn-income-policy.test.cjs",
+          "line": 3,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 6.7738,
+          "error_code": null
+        },
+        {
+          "name": "legacy agency commission keeps its frozen calculation and unrelated organizations cannot reinterpret it",
+          "file": "test/mcn-income-policy.test.cjs",
+          "line": 11,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.432,
+          "error_code": null
+        },
+        {
+          "name": "both artists authorize an actual two-person listing which is independently reviewed and purchased",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 47,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 300.1156,
+          "error_code": null
+        },
+        {
+          "name": "single-person and read-only employees cannot receive a multi-artist order",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 57,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 158.8339,
+          "error_code": null
+        },
+        {
+          "name": "batch dispatch returns per-item results and repeated successful dispatch never doubles money",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 106.46,
+          "error_code": null
+        },
+        {
+          "name": "reassignment changes the current employee, while replaying an old key cannot reclaim the order",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 69,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 133.623,
+          "error_code": null
+        },
+        {
+          "name": "failed assignment audit rolls back both the reassignment and command; original key can retry",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 74,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 109.9598,
+          "error_code": null
+        },
+        {
+          "name": "another MCN cannot dispatch an order whose frozen agreement names this institution",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 80,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 13.269,
+          "error_code": null
+        },
+        {
+          "name": "revoking one participant scope hides the whole order and refuses command replay",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 84,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 72.3237,
+          "error_code": null
+        },
+        {
+          "name": "closed artists and suspended personal parties reject dispatch and replay but do not erase owner history",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 89,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 117.1914,
+          "error_code": null
+        },
+        {
+          "name": "same actual order partially refunds with retained licence and recalculated agency income",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 105,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 158.3028,
+          "error_code": null
+        },
+        {
+          "name": "ending cooperation revokes staff reads and replays while retaining owner history and original refund terms",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 110,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 164.296,
+          "error_code": null
+        },
+        {
+          "name": "MCN actual multi-artist stock sale, assignment, batch and same-order refund",
+          "file": "test/mcn-stock-orders.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 11961.6608,
+          "error_code": null
+        },
+        {
+          "name": "same agency sees its actual supplier sale and artist brokerage sale exactly once with separate income roles",
+          "file": "test/mcn-supplier.integration.test.cjs",
+          "line": 60,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 45.5697,
+          "error_code": null
+        },
+        {
+          "name": "supplier assignment still requires every artist delegation and separate read-income permission",
+          "file": "test/mcn-supplier.integration.test.cjs",
+          "line": 66,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 277.2288,
+          "error_code": null
+        },
+        {
+          "name": "created period and person filters count an order once; wrong account and another organization see no money",
+          "file": "test/mcn-supplier.integration.test.cjs",
+          "line": 75,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 41.5975,
+          "error_code": null
+        },
+        {
+          "name": "sandbox and unpaid supplier orders remain identifiable but do not inflate verified production totals or posted income",
+          "file": "test/mcn-supplier.integration.test.cjs",
+          "line": 81,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 344.0936,
+          "error_code": null
+        },
+        {
+          "name": "overlapping roles and inconsistent supplier snapshots fail closed without rewriting the original contract",
+          "file": "test/mcn-supplier.integration.test.cjs",
+          "line": 88,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 49.9316,
+          "error_code": null
+        },
+        {
+          "name": "partial refund recomputes supplier accrual using original rounding and retains only independently allowed access",
+          "file": "test/mcn-supplier.integration.test.cjs",
+          "line": 100,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 136.8486,
+          "error_code": null
+        },
+        {
+          "name": "ended artist delegation removes staff history but owner retains original supplier order and full-refund accounting",
+          "file": "test/mcn-supplier.integration.test.cjs",
+          "line": 103,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 141.5367,
+          "error_code": null
+        },
+        {
+          "name": "MCN supplier and broker income: real orders, role separation and access",
+          "file": "test/mcn-supplier.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 16090.5218,
+          "error_code": null
+        },
+        {
+          "name": "all categories enumerate explicit sources; paid purchases return original IDs and statuses without file links",
+          "file": "test/personal-center.integration.test.cjs",
+          "line": 22,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 121.1639,
+          "error_code": null
+        },
+        {
+          "name": "order is by stored creation time, ties are stable; signed pagination isolates scopes",
+          "file": "test/personal-center.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 88.292,
+          "error_code": null
+        },
+        {
+          "name": "unrelated account and alternate identity cannot see private orders or snapshots; member revocation takes effect",
+          "file": "test/personal-center.integration.test.cjs",
+          "line": 37,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 61.7928,
+          "error_code": null
+        },
+        {
+          "name": "one corrupted source reports retryable failure without hiding successful sources; fixing original record restores same request",
+          "file": "test/personal-center.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 50.6131,
+          "error_code": null
+        },
+        {
+          "name": "withdrawing snapshot reader access removes old entry and original detail remains denied",
+          "file": "test/personal-center.integration.test.cjs",
+          "line": 48,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 28.7814,
+          "error_code": null
+        },
+        {
+          "name": "personal center uses original business permissions, real dates and independent source recovery",
+          "file": "test/personal-center.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 26294.6096,
+          "error_code": null
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "1d43700acf58727139ede2156e090debe6f93b37",
+  "run_id": "pm01-representative-copy-2026-11-14T04-08-23-239Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "frontend_run": false,
+  "real_services": false,
+  "checks": [
+    {
+      "id": "REPRESENTATIVE-COPY-AND-ATTACHMENTS",
+      "acceptance_ids": [
+        "ACC-DEL-01.04",
+        "ACC-DEL-23.01"
+      ],
+      "name": "企业代办本人授权副本及同申请附件",
+      "result": "LOCAL_PASS",
+      "scope": "本人授予/接收授权记录按原CONTRACTS请求脱敏取数，撤权/离职仍可取本人保留历史；INVOICES代表仅上传读取自己的REVIEW_EVIDENCE，同申请独审取附件，撤权与传输后重查。",
+      "remaining": "本人授权摘要已接原申请，原始法律授权文件及整份资料实际交付/独审签收仍不能替代；其他业务入口、正式主体变更及真实服务/设备验收继续。",
+      "actual_checks": [
+        {
+          "name": "copies only grants received or issued by this account, redacts other people and preserves request status",
+          "result": "PASS"
+        },
+        {
+          "name": "scope, requester, acting identity and cursor remain bound to this privacy request",
+          "result": "PASS"
+        },
+        {
+          "name": "revoked and expired grants remain as personal history without implying live authority",
+          "result": "PASS"
+        },
+        {
+          "name": "leaving the company removes business access but not this account historical privacy copy",
+          "result": "PASS"
+        },
+        {
+          "name": "explicit representative offer requires reviewed organization, existing member and owner; no authority before acceptance",
+          "result": "PASS"
+        },
+        {
+          "name": "accepted trade representative buys and pays company stock without scout membership; invoice scope stays separate",
+          "result": "PASS"
+        },
+        {
+          "name": "accepted invoice grant creates and recovers the same request; delegates cannot manage membership or self-review",
+          "result": "PASS"
+        },
+        {
+          "name": "another company and header mismatch cannot inherit order, invoice, grant or pagination authority",
+          "result": "PASS"
+        },
+        {
+          "name": "scope revocation blocks reads, downloads and old checkout replay while retaining invoice authority and original contract",
+          "result": "PASS"
+        },
+        {
+          "name": "expired, suspended and removed memberships stop grants; rejoining does not restore old authority",
+          "result": "PASS"
+        },
+        {
+          "name": "declined, revoked pending and stale authority changes cannot activate; replay cannot issue a duplicate grant",
+          "result": "PASS"
+        },
+        {
+          "name": "independent handlers issue the delegated request; invoice withdrawal blocks the file, old write and recovery",
+          "result": "PASS"
+        },
+        {
+          "name": "revocation during private attachment transport prevents returning already-read bytes",
+          "result": "PASS"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-representative-copy-20261114/PERSONAL_COPY_JOURNEY.json",
+          "sha256": "d8e4e55f3f2a729a65cd1dc043d7466df92975d8c3d53c52402b7b0b2f713f78"
+        },
+        {
+          "path": "docs/reviews/pm01-representative-copy-20261114/REPRESENTATIVE_JOURNEY.json",
+          "sha256": "93ff5136f5331cfc144d37213bef0daac866e7255d71b4547b6bd959be1017a5"
+        },
+        {
+          "path": "docs/reviews/pm01-representative-copy-20261114/FINAL_BACKEND.json",
+          "sha256": "3bc25a2b2dc753342188f2cfc92e559c837c7571351bd9a89eb38362a7c4d334"
+        },
+        {
+          "path": "docs/reviews/pm01-representative-copy-20261114/FINAL_CONTRACT.json",
+          "sha256": "5504a9966ea8ee2dc2d0ab8be9d2ea6b003106bdf092d327d85fea95e1d172fd"
+        },
+        {
+          "path": "docs/reviews/pm01-representative-copy-20261114/SOURCE_MANIFEST.json",
+          "sha256": "656bdc366f1973f6c7b5d1a498bc6f0285b3908c05c729f7e36103a20f3729cf"
+        }
+      ]
+    }
+  ]
+}

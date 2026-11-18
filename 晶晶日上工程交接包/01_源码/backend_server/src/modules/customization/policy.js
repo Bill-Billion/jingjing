@@ -44,18 +44,17 @@ function normalizeAnswers(template,input,{submission=false}={}){
   if(typeof answer!=='string')fail(400,'answers.'+key,'INVALID_TYPE');
   const f=fields.get(key);
   if(Array.from(answer).length>(f.type==='TEXT'?(f.max_length||MAX_TEXT_LENGTH):MAX_TEXT_LENGTH))fail(400,'answers.'+key,'TOO_LONG');
-  if(f.type==='PRIVATE_ATTACHMENT'&&answer!=='')fail(400,'answers.'+key,'ATTACHMENT_NOT_SUPPORTED');
+  if(f.type==='PRIVATE_ATTACHMENT'&&answer!==''){try{id(answer);}catch{fail(400,'answers.'+key,'INVALID_ATTACHMENT_REFERENCE');}}
   if(f.type==='CHOICE'&&answer!==''&&!f.options.includes(answer))problems.push({field:'answers.'+key,reason:'INVALID_CHOICE'});
  }
  if(submission)for(const f of template.fields){
-  if(f.type==='PRIVATE_ATTACHMENT'&&f.required)problems.push({field:'answers.'+f.key,reason:'ATTACHMENT_SUBMISSION_NOT_READY'});
-  else if(f.required&&(!Object.hasOwn(value,f.key)||!value[f.key].trim()))problems.push({field:'answers.'+f.key,reason:'REQUIRED'});
+  if(f.required&&(!Object.hasOwn(value,f.key)||!value[f.key].trim()))problems.push({field:'answers.'+f.key,reason:'REQUIRED'});
  }
  if(problems.length)throw Object.assign(error('CUSTOMIZATION_VALIDATION_FAILED',422),{details:problems});
  return value;
 }
 function validateSubmission(template,answers){return normalizeAnswers(template,answers,{submission:true});}
-function availability(template){const blocked=template.fields.some(f=>f.type==='PRIVATE_ATTACHMENT'&&f.required);return {submission_available:!blocked,unavailable_reason:blocked?'ATTACHMENT_SUBMISSION_NOT_READY':null};}
+function availability(){return {submission_available:true,unavailable_reason:null};}
 function page({after='',limit=20,current_status=null}={}, {operations=false}={}){
  if(after!=='')id(after);if(!Number.isInteger(limit)||limit<1||limit>100)fail(400,'limit','INVALID_TYPE');
  if(current_status!==null&&!(operations?['SUBMITTED','INTAKE']:['DRAFT','SUBMITTED','INTAKE']).includes(current_status))fail(400,'current_status','INVALID_TYPE');

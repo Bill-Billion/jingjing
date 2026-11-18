@@ -181,7 +181,7 @@ Widget productionCurrentTasks(
                     ? '本次未读取到交付指定版本，请从正式交付记录核对。'
                     : !receiptVersion.current(project)
                         ? '交付指向历史版本；旧版收讫不代表当前版本已收讫。'
-                        : receipt['started_at'] != null
+                        : receipt['notified_at'] != null
                             ? '该正式版本已明确收讫；版本验收仍另行核对。'
                             : receipt['view_observed_at'] == null
                                 ? '先真实打开本次正式版本，再核对通知与明确收讫。'
@@ -191,7 +191,7 @@ Widget productionCurrentTasks(
           '原订单款项',
           order == null
               ? '请由买方或商户负责人核对原订单，当前未读取款项记录。'
-              : '${tradeStatuses[order.status]}；已核实收款 ${tradeMoney(order.data['financial']['received_minor'])}，退款 ${tradeMoney(order.data['financial']['refunded_minor'])}。'),
+              : '${tradeStatuses[order.status]}；订单记账收款 ${tradeMoney(order.data['financial']['received_minor'])}，记账退款 ${tradeMoney(order.data['financial']['refunded_minor'])}。'),
       supplyNote('最终原片每次下载仍须重新核验当前版本、财务状态与有效权利。'),
     ]),
   ]);

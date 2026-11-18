@@ -7,6 +7,7 @@ import 'app_visual.dart';
 import 'account_api.dart';
 import 'account_session.dart';
 import '../trade/trade_widgets.dart';
+import '../privacy/closure_reference.dart';
 
 const _capabilities = {
   'AUTHOR': '作者',
@@ -47,6 +48,7 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   late AccountSession _session;
   int? _seenEpoch;
+  String? _identityScope;
   int _load = 0;
   bool _busy = false;
   String? _error;
@@ -70,7 +72,12 @@ class _AccountPageState extends State<AccountPage> {
       _error = null;
       _notice = null;
       _busy = false;
-      if (_session.isLoggedIn) {
+      final scope = '${_session.loginEpoch}:${_session.partyId}';
+      final identityChanged = scope != _identityScope;
+      _identityScope = scope;
+      // Permission changes clear private content, but must not recursively
+      // reload a stale list followed by a newer detail for the same identity.
+      if (_session.isLoggedIn && identityChanged) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) _refresh(retryUnavailable: false);
         });
@@ -428,7 +435,8 @@ class _AccountPageState extends State<AccountPage> {
             actingParty: session.partyId);
     final body = !session.isLoggedIn
         ? Center(
-            child: Padding(
+            child: SingleChildScrollView(
+                child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               const Icon(Icons.manage_accounts_outlined,
@@ -438,6 +446,7 @@ class _AccountPageState extends State<AccountPage> {
               const SizedBox(height: 10),
               Text(session.authNotice ?? '使用短信验证码登录，再选择代表谁办事。',
                   textAlign: TextAlign.center),
+              const ClosureReferenceNotice(),
               if (session.hasPendingLogout)
                 TextButton(
                     onPressed: session.retryLogout,
@@ -449,7 +458,7 @@ class _AccountPageState extends State<AccountPage> {
                           builder: (_) => const LoginPage())),
                   child: const Text('手机号登录')),
             ]),
-          ))
+          )))
         : RefreshIndicator(
             onRefresh: _refresh,
             child: ListView(
@@ -457,6 +466,10 @@ class _AccountPageState extends State<AccountPage> {
               padding: const EdgeInsets.fromLTRB(20, 40, 20, 32),
               children: [
                 tradeHeading('账号与身份', eyebrow: '你的资料 / 代表谁办事'),
+                if (session.account?['id'] is String)
+                  ClosureReferenceNotice(
+                      key: ValueKey(session.account!['id']),
+                      accountId: session.account!['id']),
                 if (_busy) const LinearProgressIndicator(),
                 if (_error != null || session.partyNotice != null)
                   Card(
@@ -503,7 +516,12 @@ class _AccountPageState extends State<AccountPage> {
                           () => Navigator.pushNamed(
                               context, '/privacy?view=correction'),
                           icon: Icons.edit_outlined),
-                      _small('偏好单独保存。展示名更正按本人申请处理，提交申请不表示资料已修改；手机号不能在此变更。'),
+                      _button(
+                          '更换本人手机号',
+                          () => Navigator.pushNamed(
+                              context, '/account/phone-change'),
+                          icon: Icons.phonelink_lock_outlined),
+                      _small('偏好单独保存。展示名更正按本人申请处理；换号需要原、新手机号分别验证并明确确认。'),
                     ],
                     subtitle: '管理账号、机构和成员，按授权阅读保存的合同。'),
                 const Text('选择办事身份',

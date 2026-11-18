@@ -1,0 +1,357 @@
+{
+  "source": "docs/sources/pm01-20261111/03_本轮施工任务与验收.md",
+  "source_sha256": "2743d0b1e4bf807035761dfd8c64b5197733852dbc4c53e12680ddae99c37825",
+  "meaning": "原文复核入口，不新增36个任务，不表示其他33步未实现",
+  "steps": [
+    {
+      "id": "W11.1",
+      "work": "完成现货购买、下载与退款",
+      "source_quote": "由页面创建新订单，付款核验后取得许可与文件",
+      "status": "SELECTED_CODE_AND_ASSERTIONS_READ_NOT_RERUN",
+      "meaning": "核现货上架权属、未付款拒下载、受信付款发权与一次到账；本轮未验页面下单，也未重跑此文件",
+      "source_refs": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/stock/context.js",
+          "sha256": "af060274f452bda52f6a4be5c6cb73e20333f9c9ed094e5dc13ea5609f347ab3"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/stock.integration.test.cjs",
+          "sha256": "bb907357c31f98b0f88f634ce03c2cc153efb9617c8f68ece88596acac768fa4"
+        }
+      ]
+    },
+    {
+      "id": "W11.2",
+      "work": "完成现货购买、下载与退款",
+      "source_quote": "同一订单走取消、部分/全部退款、会话到期和失权",
+      "status": "SELECTED_CODE_AND_ASSERTIONS_READ_NOT_RERUN",
+      "meaning": "逐案金额与KEEP/REVOKE、待回款暂停、退款幂等和会话恢复已有指定断言；本轮未重跑整笔现货",
+      "source_refs": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/stock/refund-policy.js",
+          "sha256": "360ee30ceeae5caed83351cbc40d649ed3e8f97f166567788108975d9e4dc9ac"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/stock.integration.test.cjs",
+          "sha256": "bb907357c31f98b0f88f634ce03c2cc153efb9617c8f68ece88596acac768fa4"
+        }
+      ]
+    },
+    {
+      "id": "W11.3",
+      "work": "完成现货购买、下载与退款",
+      "source_quote": "核商用范围、历史48小时规则、积分与佣金冲回",
+      "status": "SELECTED_CODE_AND_ASSERTIONS_READ_NOT_RERUN",
+      "meaning": "商用范围与按快照48小时门禁可定位；七天推荐分页已有第74轮证据，不能据此替代所有退款积分/佣金逆向复验",
+      "source_refs": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/stock/policy.js",
+          "sha256": "e1b86256a23baa2c2d85be161527c9bc0cf5e142eacf00da52422b79ac81a3f6"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/trade/acceptance-policy.js",
+          "sha256": "25d787fbebeb3a6c77436ecb94d2d388366401d24ddf3722542481fe933ac248"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/stock-policy.test.cjs",
+          "sha256": "ce7ab2e7358aaa524281ab14c27af3b75ee02e64fd48aa04ecbd858bde2ce24e"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/referral-window.integration.test.cjs",
+          "sha256": "31c9415a171fdcf676775b5f5c98429940f1ad8d84669e85a4d7aaa98736783e"
+        }
+      ]
+    },
+    {
+      "id": "W12.1",
+      "work": "完成一笔人工定制的全程办理",
+      "source_quote": "从故事草稿、补件、报价到合同与30/40/30付款",
+      "status": "SELECTED_CODE_AND_ASSERTIONS_READ_NOT_RERUN",
+      "meaning": "已读30/40/30及旧30/60/10不追改、报价切换断言；故事草稿/补件全步骤本轮未复核",
+      "source_refs": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/customization/quote-policy.js",
+          "sha256": "72543ac67195fccf6004c24a7a370abdc8ac67a5d508e27536fa1237cedd17da"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/customization-contract-cutover.integration.test.cjs",
+          "sha256": "b30d4834bd83858ad64a7a38630ae214ce89791042fc8963a2a7770c2b881b25"
+        }
+      ]
+    },
+    {
+      "id": "W12.2",
+      "work": "完成一笔人工定制的全程办理",
+      "source_quote": "用页面完成派单、正式交稿、独审、反馈及最终下载",
+      "status": "SELECTED_CODE_AND_ASSERTIONS_READ_NOT_RERUN",
+      "meaning": "已读本人实际读取/通知、撤权、重发、四阶段尾款下载断言；页面派单/独审全程本轮未运行",
+      "source_refs": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/production/payment-gate.js",
+          "sha256": "6870851f2509a17a04f19f4dc345d9482623e4d8c927b54c3d43f76e4ccb1e35"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/customization-handoff.integration.test.cjs",
+          "sha256": "685235426adf889d7c7d10b6aa88296b875b56bb9b52799b6bbb44cfc1202d40"
+        }
+      ]
+    },
+    {
+      "id": "W12.3",
+      "work": "完成一笔人工定制的全程办理",
+      "source_quote": "演练中款前缺确认、返修、暂停和付款未知恢复",
+      "status": "SELECTED_CODE_AND_ASSERTIONS_READ_NOT_RERUN",
+      "meaning": "已读中款缺确认拒绝、暂停与晚到付款转退款义务断言；返修加价全分支本轮未复核",
+      "source_refs": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/production/payment-gate.js",
+          "sha256": "6870851f2509a17a04f19f4dc345d9482623e4d8c927b54c3d43f76e4ccb1e35"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/customization-delivery.integration.test.cjs",
+          "sha256": "d2a86abf0659ff607c9df743033712e1f23f1ed76efa6477db84f2ada9ba71b2"
+        }
+      ]
+    },
+    {
+      "id": "W13.1",
+      "work": "完成同一试镜的履约与售后",
+      "source_quote": "预约、接拒单、样本交付、审核、确认用同一记录",
+      "status": "SELECTED_CODE_AND_ASSERTIONS_READ_NOT_RERUN",
+      "meaning": "已有付费后接单、交样文件与当前授权复核及实际读取断言；本轮未重跑完整试镜记录",
+      "source_refs": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/auditions/context.js",
+          "sha256": "debb7c41c67b98aaae0006843e660858fd324d79e762bfb1a6ffece3be484bfa"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/auditions.integration.test.cjs",
+          "sha256": "f5662025da9b93a071521eaf97d77c30965f936b0696753bd218aeb0ca3770c1"
+        }
+      ]
+    },
+    {
+      "id": "W13.2",
+      "work": "完成同一试镜的履约与售后",
+      "source_quote": "分别演练出发前取消、拒绝接单、安全争议和退款",
+      "status": "SELECTED_CODE_AND_ASSERTIONS_READ_NOT_RERUN",
+      "meaning": "已读同已接单试镜出发前取消、关闭会话、实际退款回执及重复不重记账断言；其余安全分支需结合已有证据继续复核",
+      "source_refs": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/auditions/context.js",
+          "sha256": "debb7c41c67b98aaae0006843e660858fd324d79e762bfb1a6ffece3be484bfa"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/auditions.integration.test.cjs",
+          "sha256": "f5662025da9b93a071521eaf97d77c30965f936b0696753bd218aeb0ca3770c1"
+        }
+      ]
+    },
+    {
+      "id": "W13.3",
+      "work": "完成同一试镜的履约与售后",
+      "source_quote": "核一口价含交通、22%抽成及T+1状态",
+      "status": "SELECTED_CODE_AND_ASSERTIONS_READ_NOT_RERUN",
+      "meaning": "rule要求平台2200bps；financeGate要求履约后86400000毫秒且无争议/付款待审；不等于真实T+1出款已接通",
+      "source_refs": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/auditions/context.js",
+          "sha256": "debb7c41c67b98aaae0006843e660858fd324d79e762bfb1a6ffece3be484bfa"
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/auditions.integration.test.cjs",
+          "sha256": "f5662025da9b93a071521eaf97d77c30965f936b0696753bd218aeb0ca3770c1"
+        }
+      ]
+    },
+    {
+      "id": "W14.1",
+      "work": "完成通告到商单的双向合作",
+      "source_quote": "普通个人发通告、他人投稿、独审、有意向与客服转单",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W14.2",
+      "work": "完成通告到商单的双向合作",
+      "source_quote": "报价到订单、会话开通、四阶段制作与验收",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W14.3",
+      "work": "完成通告到商单的双向合作",
+      "source_quote": "取消/退款/撤回时分别核消息权限和账目",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W15.1",
+      "work": "完成共创开拍、交付与退出",
+      "source_quote": "同房间本人授权去重、10人开拍与20人权益",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W15.2",
+      "work": "完成共创开拍、交付与退出",
+      "source_quote": "运营页面实际上传、独审、通知和参与者收片",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W15.3",
+      "work": "完成共创开拍、交付与退出",
+      "source_quote": "未成团、成员退出、撤权及整包退款有明确结果",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W16.1",
+      "work": "完成积分换券、用券及退款冲回",
+      "source_quote": "消费取得晶钻、固定兑换、锁券与新30/40/30订单付款",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W16.2",
+      "work": "完成积分换券、用券及退款冲回",
+      "source_quote": "失败释放原预留，未知结果查原订单",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W16.3",
+      "work": "完成积分换券、用券及退款冲回",
+      "source_quote": "退款关联原消费积分、优惠和佣金，不重复恢复",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W17.1",
+      "work": "完成抽奖后的全部奖品兑现",
+      "source_quote": "沿已审奖池十连及未知结果恢复，结果与扣分同记录",
+      "status": "PARTIAL_REVIEW_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W17.2",
+      "work": "完成抽奖后的全部奖品兑现",
+      "source_quote": "分别核面试卡、制作金、免单、曝光等奖品的可执行终点",
+      "status": "PARTIAL_REVIEW_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W17.3",
+      "work": "完成抽奖后的全部奖品兑现",
+      "source_quote": "到期、无可用档期、无有效数字人、取消和申诉给出补救",
+      "status": "SPECIFIED_NO_AVATAR_COMBINATIONS_RUNTIME_VERIFIED",
+      "meaning": "实际中奖未建数字人、撤回制作授权、跨到期和审核撤权恢复已验；其他原条件及真实/所需端/独审不由此关闭"
+    },
+    {
+      "id": "W18.1",
+      "work": "完成钱包、会员与成长的逆向操作",
+      "source_quote": "首次充值、续年、冻结、到期与恢复",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W18.2",
+      "work": "完成钱包、会员与成长的逆向操作",
+      "source_quote": "同账核取消、误充退款、成长冲回和余额保留",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W18.3",
+      "work": "完成钱包、会员与成长的逆向操作",
+      "source_quote": "普通通告发布不再随星探到期被整体关闭",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W19.1",
+      "work": "完成曝光、月冠军与排名异常",
+      "source_quote": "绑定本人合法资产、独立审核、真实可执行排期与到期",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W19.2",
+      "work": "完成曝光、月冠军与排名异常",
+      "source_quote": "月冠军投票、评选结果与奖励对应",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W19.3",
+      "work": "完成曝光、月冠军与排名异常",
+      "source_quote": "处理并列、作弊申诉、内容下架和授权撤回",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W20.1",
+      "work": "完成机构员工与本人权限交接",
+      "source_quote": "本人接受机构合作，明确逐人授权及员工派单",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W20.2",
+      "work": "完成机构员工与本人权限交接",
+      "source_quote": "沿同一批记录撤权、换机构、七日旧单交接",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W20.3",
+      "work": "完成机构员工与本人权限交接",
+      "source_quote": "旧账保留，旧授权不因交接自动恢复",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W21.1",
+      "work": "完成隐私申请、注销与实际处理",
+      "source_quote": "分类查看与复制、删除/注销核验及独审",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W21.2",
+      "work": "完成隐私申请、注销与实际处理",
+      "source_quote": "本人同一申请下载已审核文件；未完成项目如实保留",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W21.3",
+      "work": "完成隐私申请、注销与实际处理",
+      "source_quote": "检查保留依据、供应商执行结果、恢复和误操作",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W22.1",
+      "work": "完成参演变更、发行与收入清算",
+      "source_quote": "同项目原合同、加价、降价和换角分别保留依据",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W22.2",
+      "work": "完成参演变更、发行与收入清算",
+      "source_quote": "各参与者确认、发行凭据、收入到账及独立清算",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    },
+    {
+      "id": "W22.3",
+      "work": "完成参演变更、发行与收入清算",
+      "source_quote": "旧演员与新演员订单隔离，固定片酬不自动获得分红",
+      "status": "NOT_RECHECKED_THIS_ROUND",
+      "meaning": "本轮不作全量符合结论，既有证据继续保留"
+    }
+  ]
+}

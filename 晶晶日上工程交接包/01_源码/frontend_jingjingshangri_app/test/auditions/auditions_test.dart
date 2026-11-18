@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -5,13 +7,108 @@ import 'package:jingjingshangri_app/account/account_api.dart';
 import 'package:jingjingshangri_app/auditions/auditions_api.dart';
 import 'package:jingjingshangri_app/auditions/auditions_models.dart';
 import 'package:jingjingshangri_app/auditions/auditions_pages.dart';
+import 'package:jingjingshangri_app/auditions/auditions_actions.dart';
 import 'package:jingjingshangri_app/stock/v5_support.dart';
 import '../account/fake_account_api.dart';
 import '../stock/v5_test_host.dart';
 import '../trade/trade_api_test.dart' show buyerSession;
 import 'auditions_fixtures.dart';
+import 'package:jingjingshangri_app/auditions/auditions_offer_form.dart';
+import '../artists/artists_fixtures.dart' as artist;
 
 void main() {
+  testWidgets('本单双方可补交本人依据，其他身份不可代交，原请求支持中断恢复', (t) async {
+    final record = auditionBooking(status: 'DISPUTED')
+      ..['conversation_status'] = 'FROZEN';
+    record['data']['dispute'] = {
+      'id': auditionOfferId,
+      'owner_party_id': personId,
+      'reason': '合成安全争议',
+      'evidence_asset_ids': <String>[]
+    };
+    final a = FakeAccountAdapter(
+        handler: (r) => r.path.endsWith('/records/$auditionId')
+            ? envelope(record)
+            : FakeAccountAdapter().defaultReply(r));
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    final api = AuditionsApi(s);
+    expect(
+        api.recoveryLabel(
+            '/api/v1/auditions/bookings/$auditionId/dispute-evidence'),
+        '本单办理');
+    await host(
+        t,
+        s,
+        AuditionActionPage(
+            session: s, id: auditionId, action: 'dispute-evidence'));
+    expect(t.widget<V5Form>(find.byType(V5Form)).canSubmit, isTrue);
+    s.select(identity(orgId, owner: true));
+    await frames(t);
+    expect(t.widget<V5Form>(find.byType(V5Form)).canSubmit, isTrue);
+    s.select(identity(invitedOrgId, owner: true));
+    await frames(t);
+    expect(t.widget<V5Form>(find.byType(V5Form)).canSubmit, isFalse);
+    expect(
+        a.requests.where(
+            (r) => r.method == 'POST' && r.path.endsWith('/dispute-evidence')),
+        isEmpty);
+  });
+
+  testWidgets('首次试镜从当前经营规则和授权选择，不借旧方案', (t) async {
+    final a = FakeAccountAdapter(handler: (r) {
+      if (r.path == '/api/v1/artists/people') {
+        return envelope({
+          'items': [artist.personData()],
+          'next_cursor': null
+        });
+      }
+      if (r.path == '/api/v1/artists/people/${artist.personKey}') {
+        return envelope(artist.detailData()..['halo_level'] = 2);
+      }
+      if (r.path == '/api/v1/auditions/offer-options') {
+        return envelope({
+          'items': r.queryParameters['kind'] == 'RULE'
+              ? [
+                  {
+                    'id': artist.specKey,
+                    'person_id': artist.personKey,
+                    'version': '测试1',
+                    'terms': {'version': '测试1', 'terms': '交通已包含，具体取样约定'}
+                  }
+                ]
+              : [
+                  {
+                    'id': artist.recordKey,
+                    'person_id': artist.personKey,
+                    'avatar_id': artist.avatarKey,
+                    'avatar_name': '本人形象',
+                    'public_consent_id': artist.recordKey,
+                    'valid_until': '2099-01-01T00:00:00.000Z'
+                  }
+                ],
+          'next_cursor': null
+        });
+      }
+      return FakeAccountAdapter().defaultReply(r);
+    });
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    await host(t, s, AuditionOfferForm(session: s));
+    await t.tap(find.byType(DropdownButtonFormField<String>).first);
+    await frames(t);
+    await t.tap(find.text('本人测试艺人').last);
+    await frames(t);
+    final form = t.widget<V5Form>(find.byType(V5Form));
+    expect(form.canSubmit, isTrue);
+    expect(
+        form.fields.firstWhere((f) => f.keyName == 'rule_id').choices!.length,
+        1);
+    expect(a.requests.where((r) => r.path == '/api/v1/auditions/records'),
+        isEmpty);
+    expect(a.requests.where((r) => r.queryParameters['kind'] == 'CONSENT'),
+        isEmpty);
+    expect(t.takeException(), isNull);
+  });
+
   test('隐藏价格仍为未公开，试镜绝不冒授出演权或接受错误材料数量', () {
     expect(AuditionOffer(auditionPublic(publicPrice: false)).raw['unit_minor'],
         isNull);
@@ -160,6 +257,104 @@ void main() {
         a.requests.where(
             (r) => r.path.endsWith('/receipt') || r.path.endsWith('/confirm')),
         isEmpty);
+    expect(t.takeException(), isNull);
+  });
+
+  testWidgets('读取取样后收讫表单使用刷新后的预约版本', (t) async {
+    final bytes = base64Decode(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGOo6pr1HwAFvgKesG1tBwAAAABJRU5ErkJggg==');
+    var version = 4;
+    final a = FakeAccountAdapter(handler: (r) {
+      if (r.path.endsWith('/records/$auditionId')) {
+        return envelope(auditionBooking(version: version, bytes: bytes));
+      }
+      if (r.path.endsWith('/supplements')) {
+        return envelope({'booking_id': auditionId, 'items': []});
+      }
+      if (r.path.contains('/materials/')) {
+        version = 5; // 服务端实际读取素材时更新预约版本。
+        return ResponseBody.fromBytes(bytes, 200, headers: {
+          Headers.contentTypeHeader: ['application/octet-stream']
+        });
+      }
+      return FakeAccountAdapter().defaultReply(r);
+    });
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    await host(t, s, const AuditionsPage(mode: 'booking', id: auditionId));
+    final initial = find
+        .byWidgetPredicate((w) => w is V5Form && w.suffix.endsWith('/receipt'));
+    await reveal(t, initial);
+    expect(t.state<V5FormState>(initial).version, 4);
+    final firstId = auditionPhotos.first;
+    final hash =
+        auditionBooking(bytes: bytes)['data']['delivery']['hashes'][firstId];
+    final media = find.byKey(ValueKey('$firstId:$hash'));
+    await reveal(t, media);
+    await t.tap(find.descendant(of: media, matching: find.text('实际读取第1张取样照片')));
+    for (var i = 0; i < 4; i++) {
+      await t.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 100)));
+      await frames(t);
+    }
+    expect(
+        a.requests.where((r) => r.path.endsWith('/records/$auditionId')).length,
+        2,
+        reason: find
+            .byType(Text)
+            .evaluate()
+            .map((e) => (e.widget as Text).data)
+            .join(' | '));
+    await reveal(t, initial);
+    expect(t.state<V5FormState>(initial).version, 5);
+    expect(t.takeException(), isNull);
+  });
+
+  testWidgets('并发读取取样的迟到旧预约不能覆盖新版本', (t) async {
+    final bytes = base64Decode(
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGOo6pr1HwAFvgKesG1tBwAAAABJRU5ErkJggg==');
+    final delayed = Completer<ResponseBody>();
+    var version = 4, reads = 0;
+    final a = FakeAccountAdapter(handler: (r) {
+      if (r.path.endsWith('/records/$auditionId')) {
+        reads++;
+        if (reads == 2) return delayed.future;
+        return envelope(auditionBooking(version: version, bytes: bytes));
+      }
+      if (r.path.endsWith('/supplements')) {
+        return envelope({'booking_id': auditionId, 'items': []});
+      }
+      if (r.path.contains('/materials/')) {
+        version++;
+        return ResponseBody.fromBytes(bytes, 200, headers: {
+          Headers.contentTypeHeader: ['application/octet-stream']
+        });
+      }
+      return FakeAccountAdapter().defaultReply(r);
+    });
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    await host(t, s, const AuditionsPage(mode: 'booking', id: auditionId));
+    for (var i = 0; i < 2; i++) {
+      final id = auditionPhotos[i];
+      final hash =
+          auditionBooking(bytes: bytes)['data']['delivery']['hashes'][id];
+      final media = find.byKey(ValueKey('$id:$hash'));
+      await reveal(t, media);
+      await t.tap(find.descendant(
+          of: media, matching: find.text('实际读取第${i + 1}张取样照片')));
+      for (var j = 0; j < 4; j++) {
+        await t.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 100)));
+        await frames(t);
+      }
+    }
+    expect(reads, 3);
+    final receipt = find
+        .byWidgetPredicate((w) => w is V5Form && w.suffix.endsWith('/receipt'));
+    await reveal(t, receipt);
+    expect(t.state<V5FormState>(receipt).version, 6);
+    delayed.complete(envelope(auditionBooking(version: 5, bytes: bytes)));
+    await frames(t);
+    expect(t.state<V5FormState>(receipt).version, 6);
     expect(t.takeException(), isNull);
   });
 

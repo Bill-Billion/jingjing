@@ -1,0 +1,77 @@
+TAP version 13
+# Subtest: reviewed notice revisions retain history and fence old offers in isolated MySQL
+    # Subtest: new applications capture exact original notice; old order and outstanding quote share the same notice
+    ok 1 - new applications capture exact original notice; old order and outstanding quote share the same notice
+      ---
+      duration_ms: 645.7837
+      type: 'test'
+      ...
+    # Subtest: pending revision is private, idempotent and does not replace published content
+    ok 2 - pending revision is private, idempotent and does not replace published content
+      ---
+      duration_ms: 89.7435
+      type: 'test'
+      ...
+    # Subtest: independent rejection and withdrawal preserve live version; revoked author cannot publish
+    ok 3 - independent rejection and withdrawal preserve live version; revoked author cannot publish
+      ---
+      duration_ms: 75.5446
+      type: 'test'
+      ...
+    # Subtest: publication and notifications roll back together and same key can retry; competing base becomes stale
+    ok 4 - publication and notifications roll back together and same key can retry; competing base becomes stale
+      ---
+      duration_ms: 85.9656
+      type: 'test'
+      ...
+    # Subtest: applicant must confirm exact current version without rewriting original snapshot; recipient cannot confirm for them
+    ok 5 - applicant must confirm exact current version without rewriting original snapshot; recipient cannot confirm for them
+      ---
+      duration_ms: 108.4816
+      type: 'test'
+      ...
+    # Subtest: confirmation cannot revive old quote; formed order is unchanged; new quote can be accepted
+    ok 6 - confirmation cannot revive old quote; formed order is unchanged; new quote can be accepted
+      ---
+      duration_ms: 184.6919
+      type: 'test'
+      ...
+    # Subtest: new application binds revised notice and expired identity still blocks acknowledgment
+    ok 7 - new application binds revised notice and expired identity still blocks acknowledgment
+      ---
+      duration_ms: 80.7692
+      type: 'test'
+      ...
+    # Subtest: legacy missing snapshot is never fabricated; confirmation preserves that absence
+    ok 8 - legacy missing snapshot is never fabricated; confirmation preserves that absence
+      ---
+      duration_ms: 54.4353
+      type: 'test'
+      ...
+    # Subtest: simultaneous approvals cannot overwrite each other; exactly one revision takes effect
+    ok 9 - simultaneous approvals cannot overwrite each other; exactly one revision takes effect
+      ---
+      duration_ms: 73.3352
+      type: 'test'
+      ...
+    # Subtest: official revisions require current official author and independent reviewer
+    ok 10 - official revisions require current official author and independent reviewer
+      ---
+      duration_ms: 71.6347
+      type: 'test'
+      ...
+    1..10
+ok 1 - reviewed notice revisions retain history and fence old offers in isolated MySQL
+  ---
+  duration_ms: 9032.8099
+  type: 'test'
+  ...
+1..1
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9234.0988

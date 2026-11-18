@@ -27,7 +27,15 @@ function createPrivacyHandlers(db,options={}){
  }
  async function run(job){
   try{
-   const r=await db.withTransaction(tx=>state(tx,job));if(r.current_status==='EXECUTED')return {status:'SUCCEEDED',result_ref:r.id};
+   const r=await db.withTransaction(async tx=>{
+    const current=await state(tx,job);
+    // Recheck the approved target before an irreversible provider call, including after queue recovery.
+    if(current.current_status!=='EXECUTED'){
+     const snapshot=current.payload.snapshot,asset=await one(tx,'SELECT * FROM supply_assets WHERE id=? FOR UPDATE',[current.target_id]);
+     if(!asset||asset.current_status!=='ERASURE_PENDING'||asset.object_key!==snapshot.object_key||asset.content_sha256!==snapshot.content_sha256)throw error('PRIVACY_TARGET_CHANGED',409);
+    }
+    return current;
+   });if(r.current_status==='EXECUTED')return {status:'SUCCEEDED',result_ref:r.id};
    const snapshot=r.payload.snapshot;
    if(digest(snapshot.storage)!==digest(await store.descriptor()))throw error('PRIVACY_STORAGE_CONFIGURATION_CHANGED',409);
    const result=await store.erase(snapshot.object_key,snapshot.content_sha256);

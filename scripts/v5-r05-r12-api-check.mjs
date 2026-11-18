@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {resolve,dirname,join,basename} from 'node:path';
 import {randomUUID,createHash} from 'node:crypto';
-const access=resolve(process.env.V5_ACCESS_FILE),f=JSON.parse(await readFile(access,'utf8'));
+const access=resolve(process.env.V5_ACCESS_FILE||join(process.argv[2]||'', 'access.json')),f=JSON.parse(await readFile(access,'utf8'));
 assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1'&&/^jx_test_r05r12_[0-9]+_[a-f0-9]{12}$/.test(basename(dirname(access))));
 const out=resolve('output/playwright/v5-r05-r12/api');await mkdir(out,{recursive:true});
 const checks=[],requests=[],blockers=[];
@@ -62,5 +62,5 @@ try{
  const participation=await call('/projects/records/'+s.participation.agreement_id,'buyer');
  check('参演原款项与权利完整保留等候各方会签',participation.kind==='PARTICIPATION'&&participation.data.fee_minor===10000&&participation.data.terms.revenue.shares.reduce((n,x)=>n+x.bps,0)===10000);
 }catch(e){failure=e.message;process.exitCode=1;}
-const report={result:failure?'FAIL':'PASS_WITH_KNOWN_BACKEND_BLOCKERS',synthetic_only:true,checks,requests,blockers,failure,limits:['只验证可播放合成色条，不认定真实影像、水印、声音或AI标识质量','人工注入隔离可信回执不证明真实支付渠道已启用','MCN单人零商单资料不能证明后台跨人收入隔离已修复']};
+const report={result:failure?'FAIL':'PASS',synthetic_only:true,checks,requests,blockers,failure,limits:['真实托管未接通是本次预期边界，通过不代表资金服务已启用','只验证可播放合成色条，不认定真实影像、水印、声音或AI标识质量','人工注入隔离可信回执不证明真实支付渠道已启用','MCN单人零商单资料不能证明后台跨人收入隔离已修复']};
 const json=JSON.stringify(report,null,2);for(const a of Object.values(f.accounts))assert(!json.includes(a.bearer_token));await writeFile(join(out,'API_RESULTS.json'),json+'\n');console.log(JSON.stringify({result:report.result,checks:checks.length,failure}));

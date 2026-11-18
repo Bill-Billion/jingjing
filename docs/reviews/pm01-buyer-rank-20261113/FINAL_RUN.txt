@@ -1,0 +1,611 @@
+TAP version 13
+# Subtest: buyer ranking: current identity, frozen facts and own-account evidence
+    # Subtest: expired and closed personal identity disappear immediately from current public ranking
+    ok 1 - expired and closed personal identity disappear immediately from current public ranking
+      ---
+      duration_ms: 67.7894
+      type: 'test'
+      ...
+    # Subtest: registration alone is not independently verified organization identity
+    ok 2 - registration alone is not independently verified organization identity
+      ---
+      duration_ms: 11.7234
+      type: 'test'
+      ...
+    # Subtest: only an operator and an effective configured rule can create a traceable snapshot
+    ok 3 - only an operator and an effective configured rule can create a traceable snapshot
+      ---
+      duration_ms: 50.5168
+      type: 'test'
+      ...
+    # Subtest: independently reviewed organization identity is required and current validity is rechecked
+    ok 4 - independently reviewed organization identity is required and current validity is rechecked
+      ---
+      duration_ms: 65.5421
+      type: 'test'
+      ...
+    # Subtest: one immutable snapshot freezes weighted facts, excludes gifts and exposes no private sources
+    ok 5 - one immutable snapshot freezes weighted facts, excludes gifts and exposes no private sources
+      ---
+      duration_ms: 55.9114
+      type: 'test'
+      ...
+    # Subtest: current withdrawal, changed city, identity expiry and organization loss hide old public entries without rewriting scores
+    ok 6 - current withdrawal, changed city, identity expiry and organization loss hide old public entries without rewriting scores
+      ---
+      duration_ms: 83.2416
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back both snapshot and personal entries; original request can retry
+    ok 7 - audit failure rolls back both snapshot and personal entries; original request can retry
+      ---
+      duration_ms: 82.9324
+      type: 'test'
+      ...
+    # Subtest: same-order refund changes a new snapshot while original amounts and rule remain available
+    ok 8 - same-order refund changes a new snapshot while original amounts and rule remain available
+      ---
+      duration_ms: 132.1676
+      type: 'test'
+      ...
+    # Subtest: risk exclusion and changed reviewed weights affect only subsequent snapshots
+    ok 9 - risk exclusion and changed reviewed weights affect only subsequent snapshots
+      ---
+      duration_ms: 115.0276
+      type: 'test'
+      ...
+    # Subtest: snapshot index paginates exact city and refuses foreign cursor; tampered snapshots fail closed
+    ok 10 - snapshot index paginates exact city and refuses foreign cursor; tampered snapshots fail closed
+      ---
+      duration_ms: 67.2456
+      type: 'test'
+      ...
+    # Subtest: same privacy request contains only own frozen rank sources, including after public withdrawal
+    ok 11 - same privacy request contains only own frozen rank sources, including after public withdrawal
+      ---
+      duration_ms: 53.5871
+      type: 'test'
+      ...
+    1..11
+ok 1 - buyer ranking: current identity, frozen facts and own-account evidence
+  ---
+  duration_ms: 10790.5154
+  type: 'test'
+  ...
+# Subtest: public organization and editorial artist directory with isolated MySQL
+    # Subtest: unverified capability cannot be advertised and personal/foreign identities denied
+    ok 1 - unverified capability cannot be advertised and personal/foreign identities denied
+      ---
+      duration_ms: 91.2938
+      type: 'test'
+      ...
+    # Subtest: first submission retry retains one record; private evidence stays private before review
+    ok 2 - first submission retry retains one record; private evidence stays private before review
+      ---
+      duration_ms: 78.4683
+      type: 'test'
+      ...
+    # Subtest: independent reviewer reads evidence and requires explicit checks; same owner rejected
+    ok 3 - independent reviewer reads evidence and requires explicit checks; same owner rejected
+      ---
+      duration_ms: 49.0576
+      type: 'test'
+      ...
+    # Subtest: public projection and cover are exact, current and free of private fields
+    ok 4 - public projection and cover are exact, current and free of private fields
+      ---
+      duration_ms: 31.9386
+      type: 'test'
+      ...
+    # Subtest: server search and city aliases, cursor cannot cross query or role boundaries
+    ok 5 - server search and city aliases, cursor cannot cross query or role boundaries
+      ---
+      duration_ms: 68.6588
+      type: 'test'
+      ...
+    # Subtest: public pagination visits every organization and binds cursor to filters
+    ok 6 - public pagination visits every organization and binds cursor to filters
+      ---
+      duration_ms: 113.3192
+      type: 'test'
+      ...
+    # Subtest: concurrent approved replacements serialize; both histories retained and only one public
+    ok 7 - concurrent approved replacements serialize; both histories retained and only one public
+      ---
+      duration_ms: 59.2671
+      type: 'test'
+      ...
+    # Subtest: capability revocation and corrupt/withdrawn images never leak cached bytes
+    ok 8 - capability revocation and corrupt/withdrawn images never leak cached bytes
+      ---
+      duration_ms: 49.4375
+      type: 'test'
+      ...
+    # Subtest: editorial recommendation needs independent review and is not star certification
+    ok 9 - editorial recommendation needs independent review and is not star certification
+      ---
+      duration_ms: 66.417
+      type: 'test'
+      ...
+    # Subtest: expired recommendation is hidden; revoked underlying public consent immediately hides selection
+    ok 10 - expired recommendation is hidden; revoked underlying public consent immediately hides selection
+      ---
+      duration_ms: 22.7114
+      type: 'test'
+      ...
+    # Subtest: publisher filter traverses all notice pages without including other publishers
+    ok 11 - publisher filter traverses all notice pages without including other publishers
+      ---
+      duration_ms: 80.551
+      type: 'test'
+      ...
+    1..11
+ok 2 - public organization and editorial artist directory with isolated MySQL
+  ---
+  duration_ms: 10495.9509
+  type: 'test'
+  ...
+# Subtest: unconfigured starlight stays unavailable, growth is independent
+ok 3 - unconfigured starlight stays unavailable, growth is independent
+  ---
+  duration_ms: 4.1022
+  type: 'test'
+  ...
+# Subtest: refunded first purchase cannot grant repeat purchase bonus
+ok 4 - refunded first purchase cannot grant repeat purchase bonus
+  ---
+  duration_ms: 8.4755
+  type: 'test'
+  ...
+# Subtest: excluded artist cannot affect legitimate composite normalization
+ok 5 - excluded artist cannot affect legitimate composite normalization
+  ---
+  duration_ms: 0.9815
+  type: 'test'
+  ...
+# Subtest: referral comes from platform and preserves total, sandbox never allocates
+ok 6 - referral comes from platform and preserves total, sandbox never allocates
+  ---
+  duration_ms: 18.7827
+  type: 'test'
+  ...
+# Subtest: engagement real database journey and permission boundaries
+    # Subtest: reviewed rules, self-review refusal and explicit unconfigured starlight
+    ok 1 - reviewed rules, self-review refusal and explicit unconfigured starlight
+      ---
+      duration_ms: 110.2193
+      type: 'test'
+      ...
+    # Subtest: profile belongs to verified artist, repeated interaction deduplicates
+    ok 2 - profile belongs to verified artist, repeated interaction deduplicates
+      ---
+      duration_ms: 58.1795
+      type: 'test'
+      ...
+    # Subtest: own visible ranking profile can be selected without revealing another person
+    ok 3 - own visible ranking profile can be selected without revealing another person
+      ---
+      duration_ms: 58.6077
+      type: 'test'
+      ...
+    # Subtest: sandbox orders excluded; verified fixture receipts and fulfillment create rank facts
+    ok 4 - sandbox orders excluded; verified fixture receipts and fulfillment create rank facts
+      ---
+      duration_ms: 345.6602
+      type: 'test'
+      ...
+    # Subtest: reward inventory reviewed independently and competition cannot over-reserve
+    ok 5 - reward inventory reviewed independently and competition cannot over-reserve
+      ---
+      duration_ms: 101.2855
+      type: 'test'
+      ...
+    # Subtest: votes debit once; concurrent daily cap, outsider access and appeal return
+    ok 6 - votes debit once; concurrent daily cap, outsider access and appeal return
+      ---
+      duration_ms: 115.2001
+      type: 'test'
+      ...
+    # Subtest: appeal return first clears debt from the very same refunded earning lot
+    ok 7 - appeal return first clears debt from the very same refunded earning lot
+      ---
+      duration_ms: 258.6218
+      type: 'test'
+      ...
+    # Subtest: candidate with operator permission cannot adjudicate votes for self; independent review retains the same spent points
+    ok 8 - candidate with operator permission cannot adjudicate votes for self; independent review retains the same spent points
+      ---
+      duration_ms: 68.946
+      type: 'test'
+      ...
+    # Subtest: same vote appeal restoration preserves withdrawal and original debit until explicit public opt-in
+    ok 9 - same vote appeal restoration preserves withdrawal and original debit until explicit public opt-in
+      ---
+      duration_ms: 124.3614
+      type: 'test'
+      ...
+    # Subtest: appeals block finalization; confirmed award and proof-backed redemption
+    ok 10 - appeals block finalization; confirmed award and proof-backed redemption
+      ---
+      duration_ms: 87.4286
+      type: 'test'
+      ...
+    # Subtest: starlight configuration is independent, version frozen, no exchange
+    ok 11 - starlight configuration is independent, version frozen, no exchange
+      ---
+      duration_ms: 104.7699
+      type: 'test'
+      ...
+    # Subtest: last valid referral is frozen at checkout and receives only platform allocation
+    ok 12 - last valid referral is frozen at checkout and receives only platform allocation
+      ---
+      duration_ms: 870.8425
+      type: 'test'
+      ...
+    # Subtest: staff need accepted membership and artist-scoped grant; revoke immediately denies access
+    ok 13 - staff need accepted membership and artist-scoped grant; revoke immediately denies access
+      ---
+      duration_ms: 116.3406
+      type: 'test'
+      ...
+    # Subtest: exact score tie blocks award until two independent operators review; exposure is dated
+    ok 14 - exact score tie blocks award until two independent operators review; exposure is dated
+      ---
+      duration_ms: 355.5584
+      type: 'test'
+      ...
+    # Subtest: same installation across accounts counts once and generic POST cannot forge a listen
+    ok 15 - same installation across accounts counts once and generic POST cannot forge a listen
+      ---
+      duration_ms: 27.6792
+      type: 'test'
+      ...
+    # Subtest: automatic growth work requires current lease and schedules continuation
+    ok 16 - automatic growth work requires current lease and schedules continuation
+      ---
+      duration_ms: 54.3053
+      type: 'test'
+      ...
+    # Subtest: front-end can discover rankings, events and remaining votes without operator access
+    ok 17 - front-end can discover rankings, events and remaining votes without operator access
+      ---
+      duration_ms: 101.4336
+      type: 'test'
+      ...
+    # Subtest: seller with operator permission cannot exclude or restore buyer review of own order
+    ok 18 - seller with operator permission cannot exclude or restore buyer review of own order
+      ---
+      duration_ms: 58.1389
+      type: 'test'
+      ...
+    # Subtest: ranked artist cannot moderate own popularity evidence; independent appeal preserves original interaction
+    ok 19 - ranked artist cannot moderate own popularity evidence; independent appeal preserves original interaction
+      ---
+      duration_ms: 48.6659
+      type: 'test'
+      ...
+    # Subtest: confirmed manipulation removes order facts and independent appeal restores them
+    ok 20 - confirmed manipulation removes order facts and independent appeal restores them
+      ---
+      duration_ms: 99.6828
+      type: 'test'
+      ...
+    # Subtest: city buyer list has separate organization facts; only reviewed weights enable ranking
+    ok 21 - city buyer list has separate organization facts; only reviewed weights enable ranking
+      ---
+      duration_ms: 97.0425
+      type: 'test'
+      ...
+    # Subtest: MCN can assign an actual booking only to a currently delegated employee
+    ok 22 - MCN can assign an actual booking only to a currently delegated employee
+      ---
+      duration_ms: 309.6958
+      type: 'test'
+      ...
+    # Subtest: recommendation preference does not personalize public rankings; participation withdrawal removes historic visibility
+    ok 23 - recommendation preference does not personalize public rankings; participation withdrawal removes historic visibility
+      ---
+      duration_ms: 113.8361
+      type: 'test'
+      ...
+    # Subtest: artist cannot erase operator exclusion by editing public profile
+    ok 24 - artist cannot erase operator exclusion by editing public profile
+      ---
+      duration_ms: 38.316
+      type: 'test'
+      ...
+    # Subtest: MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation
+        # Subtest: income filters use order creation UTC boundaries, keep actual receipts separate, and count each order once
+        ok 1 - income filters use order creation UTC boundaries, keep actual receipts separate, and count each order once
+          ---
+          duration_ms: 77.6012
+          type: 'test'
+          ...
+        # Subtest: income retains gross receipts and refunds, excludes sandbox totals, and does not invent artist attribution
+        ok 2 - income retains gross receipts and refunds, excludes sandbox totals, and does not invent artist attribution
+          ---
+          duration_ms: 42.0679
+          type: 'test'
+          ...
+        # Subtest: frozen multi-artist stock history filters either artist without doubling receipts or trusting assignments
+        ok 3 - frozen multi-artist stock history filters either artist without doubling receipts or trusting assignments
+          ---
+          duration_ms: 189.2528
+          type: 'test'
+          ...
+        1..3
+    ok 25 - MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation
+      ---
+      duration_ms: 596.0771
+      type: 'test'
+      ...
+    # Subtest: HTTP routes require authentication and preserve response envelope
+    ok 26 - HTTP routes require authentication and preserve response envelope
+      ---
+      duration_ms: 12.1527
+      type: 'test'
+      ...
+    # Subtest: leaving public participation hides old competition result and rejoining restores its unchanged facts
+    ok 27 - leaving public participation hides old competition result and rejoining restores its unchanged facts
+      ---
+      duration_ms: 68.8561
+      type: 'test'
+      ...
+    # Subtest: operator exclusion hides the same published result; only independent recovery restores original facts
+    ok 28 - operator exclusion hides the same published result; only independent recovery restores original facts
+      ---
+      duration_ms: 100.2798
+      type: 'test'
+      ...
+    # Subtest: same interaction restoration cannot undo profile exclusion or opt-out and leaves the other winner visible
+    ok 29 - same interaction restoration cannot undo profile exclusion or opt-out and leaves the other winner visible
+      ---
+      duration_ms: 124.6381
+      type: 'test'
+      ...
+    # Subtest: withdrawing public consent immediately removes the selectable profile
+    ok 30 - withdrawing public consent immediately removes the selectable profile
+      ---
+      duration_ms: 26.963
+      type: 'test'
+      ...
+    # Subtest: restoring an interaction after public consent withdrawal cannot restore public ranking or results
+    ok 31 - restoring an interaction after public consent withdrawal cannot restore public ranking or results
+      ---
+      duration_ms: 53.1553
+      type: 'test'
+      ...
+    1..31
+ok 7 - engagement real database journey and permission boundaries
+  ---
+  duration_ms: 14363.3437
+  type: 'test'
+  ...
+# Subtest: personal participation and handling copies through isolated MySQL HTTP
+    # Subtest: unreviewed privacy proposal is not exported and records stay within owner
+    ok 1 - unreviewed privacy proposal is not exported and records stay within owner
+      ---
+      duration_ms: 68.9014
+      type: 'test'
+      ...
+    # Subtest: reviewed responses and public processing history exported without staff identifiers
+    ok 2 - reviewed responses and public processing history exported without staff identifiers
+      ---
+      duration_ms: 22.0899
+      type: 'test'
+      ...
+    # Subtest: earlier independently approved evidence remains controlled after a new response
+    ok 3 - earlier independently approved evidence remains controlled after a new response
+      ---
+      duration_ms: 176.6758
+      type: 'test'
+      ...
+    # Subtest: execution records explain state without claiming deletion or leaking job payload
+    ok 4 - execution records explain state without claiming deletion or leaking job payload
+      ---
+      duration_ms: 11.9877
+      type: 'test'
+      ...
+    # Subtest: notification copy distinguishes unknown simulated delivery and excludes organization/provider references
+    ok 5 - notification copy distinguishes unknown simulated delivery and excludes organization/provider references
+      ---
+      duration_ms: 5.9398
+      type: 'test'
+      ...
+    # Subtest: guardian and child get only their relation history, not counterpart IDs, evidence or new authority
+    ok 6 - guardian and child get only their relation history, not counterpart IDs, evidence or new authority
+      ---
+      duration_ms: 27.3785
+      type: 'test'
+      ...
+    # Subtest: ten allowed activity kinds export own fields, never global judgments/device data or organization work
+    ok 7 - ten allowed activity kinds export own fields, never global judgments/device data or organization work
+      ---
+      duration_ms: 40.3469
+      type: 'test'
+      ...
+    # Subtest: all categories enforce own request scope, identity and input limits
+    ok 8 - all categories enforce own request scope, identity and input limits
+      ---
+      duration_ms: 195.499
+      type: 'test'
+      ...
+    # Subtest: hash corruption and interaction owner mismatch fail closed
+    ok 9 - hash corruption and interaction owner mismatch fail closed
+      ---
+      duration_ms: 37.2663
+      type: 'test'
+      ...
+    1..9
+ok 8 - personal participation and handling copies through isolated MySQL HTTP
+  ---
+  duration_ms: 10730.476
+  type: 'test'
+  ...
+# Subtest: ranking-contract isolated MySQL and HTTP
+    # Subtest: new-contract mode rejects old or mismatched submitted rules
+    ok 1 - new-contract mode rejects old or mismatched submitted rules
+      ---
+      duration_ms: 88.8493
+      type: 'test'
+      ...
+    # Subtest: independent review rejects old pending rule and self approval
+    ok 2 - independent review rejects old pending rule and self approval
+      ---
+      duration_ms: 34.5196
+      type: 'test'
+      ...
+    # Subtest: new snapshots require contract rules; original-key retries and historical reads survive
+    ok 3 - new snapshots require contract rules; original-key retries and historical reads survive
+      ---
+      duration_ms: 56.905
+      type: 'test'
+      ...
+    1..3
+ok 9 - ranking-contract isolated MySQL and HTTP
+  ---
+  duration_ms: 10742.2723
+  type: 'test'
+  ...
+# Subtest: contract ranking rejects changed weights/coefficients but preserves historical rules
+ok 10 - contract ranking rejects changed weights/coefficients but preserves historical rules
+  ---
+  duration_ms: 4.0709
+  type: 'test'
+  ...
+# Subtest: equal facts apply 1.0/1.3/1.6 multipliers and leave legacy calculations unchanged
+ok 11 - equal facts apply 1.0/1.3/1.6 multipliers and leave legacy calculations unchanged
+  ---
+  duration_ms: 9.1601
+  type: 'test'
+  ...
+# Subtest: wallet ledger, custody boundary and order points in isolated MySQL
+    # Subtest: independent rule review, stale rule hash and client balance forgery rejected
+    ok 1 - independent rule review, stale rule hash and client balance forgery rejected
+      ---
+      duration_ms: 177.2429
+      type: 'test'
+      ...
+    # Subtest: other accounts, organizations, revoked identity and unopened custody are blocked
+    ok 2 - other accounts, organizations, revoked identity and unopened custody are blocked
+      ---
+      duration_ms: 35.0649
+      type: 'test'
+      ...
+    # Subtest: only matching verified custody receipt credits balance once; topup yields zero growth
+    ok 3 - only matching verified custody receipt credits balance once; topup yields zero growth
+      ---
+      duration_ms: 42.4219
+      type: 'test'
+      ...
+    # Subtest: original recharge refund assessment is read-only, personal and bound to the credited channel
+    ok 4 - original recharge refund assessment is read-only, personal and bound to the credited channel
+      ---
+      duration_ms: 39.4478
+      type: 'test'
+      ...
+    # Subtest: new order captures original rule and payment without fulfillment earns nothing
+    ok 5 - new order captures original rule and payment without fulfillment earns nothing
+      ---
+      duration_ms: 285.6275
+      type: 'test'
+      ...
+    # Subtest: aftercare deadline and unresolved case block points; mature order credits exactly once
+    ok 6 - aftercare deadline and unresolved case block points; mature order credits exactly once
+      ---
+      duration_ms: 272.7604
+      type: 'test'
+      ...
+    # Subtest: concurrent point reservations cannot overspend; exact replay and release are safe
+    ok 7 - concurrent point reservations cannot overspend; exact replay and release are safe
+      ---
+      duration_ms: 105.9665
+      type: 'test'
+      ...
+    # Subtest: verified refund continues even when points spent; growth reversed and shortage explicit
+    ok 8 - verified refund continues even when points spent; growth reversed and shortage explicit
+      ---
+      duration_ms: 170.59
+      type: 'test'
+      ...
+    # Subtest: future points first recover refund shortfall; recovered debt does not erase new consumption growth
+    ok 9 - future points first recover refund shortfall; recovered debt does not erase new consumption growth
+      ---
+      duration_ms: 142.7919
+      type: 'test'
+      ...
+    # Subtest: expired batches cannot be used; materialized expiry preserves earned growth
+    ok 10 - expired batches cannot be used; materialized expiry preserves earned growth
+      ---
+      duration_ms: 26.6106
+      type: 'test'
+      ...
+    # Subtest: expired adult verification preserves balance history but disables displayed membership
+    ok 11 - expired adult verification preserves balance history but disables displayed membership
+      ---
+      duration_ms: 18.3786
+      type: 'test'
+      ...
+    # Subtest: sixth level requires private evidence and separate current operator review
+    ok 12 - sixth level requires private evidence and separate current operator review
+      ---
+      duration_ms: 46.7542
+      type: 'test'
+      ...
+    # Subtest: custody order reservation is atomic, unknown payments retain funds, refund restores original lots
+    ok 13 - custody order reservation is atomic, unknown payments retain funds, refund restores original lots
+      ---
+      duration_ms: 409.4825
+      type: 'test'
+      ...
+    # Subtest: refund assessment never treats imported refunds, unknown allocations or another lot as spendable money
+    ok 14 - refund assessment never treats imported refunds, unknown allocations or another lot as spendable money
+      ---
+      duration_ms: 40.5143
+      type: 'test'
+      ...
+    # Subtest: wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain
+    ok 15 - wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain
+      ---
+      duration_ms: 8.0013
+      type: 'test'
+      ...
+    # Subtest: automatic maintenance grants mature earnings; a lost lease cannot mutate points
+    ok 16 - automatic maintenance grants mature earnings; a lost lease cannot mutate points
+      ---
+      duration_ms: 140.5491
+      type: 'test'
+      ...
+    # Subtest: each fulfillment adapter requires its own actual completion source, not a paid flag
+    ok 17 - each fulfillment adapter requires its own actual completion source, not a paid flag
+      ---
+      duration_ms: 101.4301
+      type: 'test'
+      ...
+    # Subtest: free awards require published amounts and real events; concurrent check-in awards once without growth
+    ok 18 - free awards require published amounts and real events; concurrent check-in awards once without growth
+      ---
+      duration_ms: 43.8013
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back rule creation; stored digest corruption fails closed
+    ok 19 - audit failure rolls back rule creation; stored digest corruption fails closed
+      ---
+      duration_ms: 22.3445
+      type: 'test'
+      ...
+    1..19
+ok 12 - wallet ledger, custody boundary and order points in isolated MySQL
+  ---
+  duration_ms: 13542.2219
+  type: 'test'
+  ...
+1..12
+# tests 99
+# suites 0
+# pass 99
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 28540.1662

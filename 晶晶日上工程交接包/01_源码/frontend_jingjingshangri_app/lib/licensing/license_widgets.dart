@@ -87,8 +87,8 @@ Widget licenseTermsView(LicenseTerms terms) {
         Expanded(child: _termDate('有效至', licenseDate(d['valid_until']))),
       ]),
       const SizedBox(height: 16),
-      supplyFact(
-          '项目 / 集数额度', '${d['project_limit']} 个项目 / ${d['episode_limit']} 集'),
+      supplyFact('项目 / 集数额度',
+          '${d['project_limit'] == null ? '不限制项目数量' : '${d['project_limit']} 个项目'} / ${d['episode_limit'] == null ? '不限制集数' : '${d['episode_limit']} 集'}'),
     ]),
     Card(
         child: ExpansionTile(
@@ -130,7 +130,8 @@ Widget licenseGrantTerms(LicenseTerms terms) {
       supplyFact('许可开始', licenseDate(d['valid_from'])),
     ]),
     supplyCard('项目与集数约定', [
-      supplyFact('额度', '${d['project_limit']} 个项目 / ${d['episode_limit']} 集')
+      supplyFact('额度',
+          '${d['project_limit'] == null ? '不限制项目数量' : '${d['project_limit']} 个项目'} / ${d['episode_limit'] == null ? '不限制集数' : '${d['episode_limit']} 集'}')
     ]),
     Card(
         child: ExpansionTile(

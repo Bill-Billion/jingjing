@@ -1,7 +1,8 @@
-import 'dart:convert';
+import '../contracts/marketplace_allocation.dart';
+import '../rights/rights_models.dart';
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
-import '../gigs/gig_models.dart' show gigCommercial;
+import '../gigs/gig_models.dart' show gigCommercial, GigRecord;
 import '../finance/finance_models.dart' show financeRules;
 
 const tradeKinds = {
@@ -148,6 +149,7 @@ const tradeStatuses = {
 };
 const tradeTriggers = {
   'ORDER_ACCEPTED': '确认订单后付款',
+  'CUSTOMIZATION_SCRIPT_CONFIRMED': '脚本／图纸确认后付中款40%',
   'CUSTOMIZATION_INTERIM_CONFIRMED': '定制中间补款条件确认后付款',
   'SAMPLE_ACCEPTED': '样片验收后付款',
   'FINAL_ACCEPTED': '成片验收后付款'
@@ -221,17 +223,78 @@ const artistServiceNames = {
   'AVATAR_HOSTING': '数字人托管',
   'HALO_REVIEW': '认证资料审核',
 };
+bool customizationDay(dynamic value) {
+  if (value is! String || !RegExp(r'^20\d{2}-\d{2}-\d{2}$').hasMatch(value)) {
+    return false;
+  }
+  final date = DateTime.tryParse('${value}T00:00:00Z');
+  return date != null && date.toIso8601String().substring(0, 10) == value;
+}
+
+void validateCustomizationCalendar(dynamic value) {
+  final c = tradeMap(value);
+  tradeRequire(c.length == 7 &&
+      _text(c['version'], 128) &&
+      _text(c['source_ref'], 128) &&
+      c['timezone'] == 'Asia/Shanghai' &&
+      customizationDay(c['valid_from']) &&
+      customizationDay(c['valid_until']));
+  final from = DateTime.parse(c['valid_from']),
+      until = DateTime.parse(c['valid_until']);
+  tradeRequire(
+      !until.isBefore(from) && until.difference(from).inDays <= 3 * 366);
+  final seen = <String>{};
+  for (final key in ['non_working_dates', 'working_dates']) {
+    tradeRequire(c[key] is List && c[key].length <= 1100);
+    for (final day in c[key]) {
+      tradeRequire(customizationDay(day) &&
+          day.compareTo(c['valid_from']) >= 0 &&
+          day.compareTo(c['valid_until']) <= 0 &&
+          seen.add(day));
+    }
+  }
+}
+
 void validateCustomizationDeliveryTerms(dynamic value) {
-  final d = tradeMap(value);
-  tradeRequire(d.length == 5 &&
+  final d = tradeMap(value), working = d.containsKey('acceptance_working_days');
+  tradeRequire(d.length == (working ? 7 : 5) &&
       _text(d['version'], 128) &&
       _text(d['source_ref'], 128) &&
       _text(d['cancellation_terms']) &&
-      ['PREVIEW_BEFORE_INTERIM', 'INTERIM_BEFORE_PREVIEW']
-          .contains(d['preview_payment_order']) &&
-      d['acceptance_hours'] is int &&
-      d['acceptance_hours'] >= 1 &&
-      d['acceptance_hours'] <= 720);
+      [
+        'PREVIEW_BEFORE_INTERIM',
+        'INTERIM_BEFORE_PREVIEW',
+        'SCRIPT_BEFORE_INTERIM'
+      ].contains(d['preview_payment_order']));
+  if (working) {
+    tradeRequire(d['acceptance_working_days'] == 5 &&
+        d['acceptance_hours'] == null &&
+        d['preview_payment_order'] == 'SCRIPT_BEFORE_INTERIM');
+    validateCustomizationCalendar(d['acceptance_calendar']);
+  } else {
+    tradeRequire(d['acceptance_hours'] is int &&
+        d['acceptance_hours'] >= 1 &&
+        d['acceptance_hours'] <= 720);
+  }
+}
+
+String customizationAcceptanceLabel(Map<String, dynamic> terms) =>
+    terms['acceptance_working_days'] == 5
+        ? '最终成片5个工作日；节假日和调休按本单约定（北京时间），其余阶段须明确确认'
+        : "${terms['acceptance_hours']} 小时（原订单约定）";
+String customizationDeadlineLabel(Map<String, dynamic> receipt) {
+  if (receipt['deadline_at'] == null) {
+    return receipt['deadline_basis']?['mode'] == 'EXPLICIT_CONFIRMATION'
+        ? '本阶段须明确确认成果，不自动倒计时'
+        : '尚待确认收到';
+  }
+  if (receipt['deadline_basis']?['mode'] != 'WORKING_DAYS') {
+    return DateTime.parse(receipt['deadline_at']).toLocal().toString();
+  }
+  final date = DateTime.parse(receipt['deadline_at'])
+      .toUtc()
+      .add(const Duration(hours: 8));
+  return '${date.toIso8601String().substring(0, 19).replaceFirst('T', ' ')}（北京时间）';
 }
 
 bool tradeCustomizationRulesReady(TradeRecord order) =>
@@ -247,37 +310,18 @@ bool tradeCustomizationRulesReady(TradeRecord order) =>
             .every((l) => l['specification']['customization_delivery'] != null);
 
 void validateTradeSpecification(dynamic value) => _spec(value);
-void validateTradeStockLicense(dynamic value, {bool snapshot = false}) {
-  final d = tradeMap(value);
-  tradeRequire(d.length == (snapshot ? 9 : 7) &&
-      d['scope'] == 'PERSONAL_NONCOMMERCIAL' &&
-      d['exclusive'] == false &&
-      d['territory'] == 'WORLDWIDE' &&
-      d['duration'] == 'PERPETUAL' &&
-      d['personal_social_sharing'] == true &&
-      d['acceptance_hours'] is int &&
-      d['acceptance_hours'] >= 1 &&
-      d['acceptance_hours'] <= 720 &&
-      _text(d['aftercare_terms']));
-  if (snapshot) {
-    const excluded = [
-      'COMMERCIAL_ADVERTISING',
-      'ADAPTATION',
-      'DISTRIBUTION',
-      'VOICE_SEPARATELY',
-      'AI_REGENERATION',
-      'SOURCE_OR_MODEL_FILES',
-      'NEW_AVATAR_CONTENT',
-      'EXCLUSIVE_BUYOUT'
-    ];
-    tradeRequire(d['limited_to_buyer'] == true &&
-        jsonEncode(d['excluded']) == jsonEncode(excluded));
-  }
-}
+void validateTradeStockLicense(dynamic value, {bool snapshot = false}) =>
+    tradeRequire(isStockTerms(value, snapshot: snapshot));
 
 void validateTradeAuditionTerms(dynamic value) {
   final d = tradeMap(value);
-  tradeRequire(d.length == 7 && _text(d['version'], 128) && _text(d['terms']));
+  final modern = d.containsKey('acceptance_policy');
+  tradeRequire(d.length == (modern ? 8 : 7) &&
+      _text(d['version'], 128) &&
+      _text(d['terms']) &&
+      (!modern ||
+          d['acceptance_policy'] == 'CONTRACT_20261029' &&
+              d['acceptance_hours'] == 48));
   for (final entry in {
     'accept_hours': 168,
     'acceptance_hours': 720,
@@ -310,6 +354,9 @@ void _spec(dynamic value, {bool participation = false}) {
         d.length == 2 && _text(d['version'], 128) && _text(d['terms']));
     return;
   }
+  if (d.containsKey('copyright_terms')) {
+    tradeRequire(isCopyrightTerms(d['copyright_terms']));
+  }
   if (d.containsKey('stock_license')) {
     tradeRequire(
         d.length == 3 && _text(d['version'], 128) && _text(d['terms']));
@@ -338,7 +385,10 @@ void _spec(dynamic value, {bool participation = false}) {
         v['retry_limit'] is int &&
         v['retry_limit'] >= 0 &&
         v['retry_limit'] <= 100 &&
-        v['failure_policy'] == 'REFUND_UNDELIVERED');
+        (v['failure_policy'] == 'REFUND_UNDELIVERED' ||
+            v['rule_version'] == 'CONTRACT_20261029' &&
+                v['kind'] == 'HALO_REVIEW' &&
+                v['failure_policy'] == 'REVIEW_FEE_NON_REFUNDABLE'));
     switch (v['kind']) {
       case 'AVATAR_CREATION':
         tradeRequire(v['unit'] == 'PERSON_FIRST' &&
@@ -372,6 +422,9 @@ void _spec(dynamic value, {bool participation = false}) {
 }
 
 void _quote(Map<String, dynamic> d) {
+  if (d.containsKey('customization_copyright')) {
+    tradeRequire(isCopyrightSnapshot(d['customization_copyright']));
+  }
   final fullCoverage = d['discount'] is Map &&
       d['discount']['coverage'] == 'FULL' &&
       d['total_minor'] == 0;
@@ -442,16 +495,46 @@ void _quote(Map<String, dynamic> d) {
       tradeRequire(d['customization'] != null &&
           finance['model'] == 'V5_SELF_OPERATED' &&
           isContractId('${finance['platform_party_id']}') &&
-          finance['rounding'] == 'HALF_UP_PLATFORM_REMAINDER' &&
+          [
+            'HALF_UP_PLATFORM_REMAINDER',
+            'LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN'
+          ].contains(finance['rounding']) &&
           snapshot['current_status'] == 'EFFECTIVE' &&
           DateTime.tryParse('${snapshot['effective_at']}') != null);
       financeRules(finance['rules']);
+      tradeRequire((finance['rules']['lines'] as List).every((line) =>
+          line is Map &&
+          line.containsKey('shares') &&
+          !line.containsKey('allocation')));
       tradeRequire(
           finance['rules']['release_condition'] == 'DELIVERY_ACCEPTED');
       ContractApi.validateRule(tradeMap(snapshot['content']));
       tradeRequire(snapshot['content']['id'] == d['rule_id']);
     } on AccountError {
       tradeRequire(false);
+    }
+  }
+  if (d['marketplace_finance'] != null) {
+    final snap = tradeMap(d['marketplace_finance']),
+        a = tradeMap(snap['allocation']);
+    tradeRequire(marketplaceAllocationValid(a));
+    final savedRule = tradeMap(snap['rule_snapshot']),
+        rule = tradeMap(savedRule['content']);
+    ContractApi.validateRule(rule);
+    tradeRequire(rule['id'] == d['rule_id'] &&
+        savedRule['current_status'] == 'EFFECTIVE' &&
+        DateTime.tryParse('${savedRule['effective_at']}') != null &&
+        DateTime.tryParse('${snap['captured_at']}') != null &&
+        d['customization_finance'] == null);
+    if (snap['relation_snapshot'] == null) {
+      tradeRequire(a['mcn_party_id'] == null && a['mcn_supply_bps'] == 0);
+    } else {
+      final r = GigRecord.parse(snap['relation_snapshot']);
+      tradeRequire(r.kind == 'RELATION' &&
+          r.status == 'ACTIVE' &&
+          r.owner == a['mcn_party_id'] &&
+          r.counterparty == a['supplier_party_id'] &&
+          r.data['v5_terms']?['supply_share_bps'] == a['mcn_supply_bps']);
     }
   }
   if (d['commercial'] != null) {
@@ -634,7 +717,7 @@ String tradeChannel(dynamic channel) =>
     '未知渠道';
 
 String tradeSpecificationTitle(Map<String, dynamic> spec) =>
-    '${spec['service_tier'] ?? (spec['stock_license'] != null ? '现成视频个人许可' : spec['audition'] != null ? '试镜预约服务' : '参演约定')} / ${spec['version']}';
+    '${spec['service_tier'] ?? (spec['stock_license'] != null ? (spec['stock_license']['scope'] == 'COMMERCIAL_LIMITED' ? '现成视频商用许可' : '现成视频个人许可') : spec['audition'] != null ? '试镜预约服务' : '参演约定')} / ${spec['version']}';
 
 void validateTradeQuoteData(dynamic value) => _quote(tradeMap(value));
 
@@ -821,6 +904,28 @@ Map<String, int> tradeRefundRemaining(
 
 String tradeError(Object e, {bool writing = false}) {
   if (e is! AccountError) return '返回内容无法识别，请重新读取。';
+  const contractErrors = {
+    'CONSUMER_MONTHLY_LIMIT_EXCEEDED':
+        '本次操作超过你设置的月度额度，请到个人月度限额核对占用和待确认金额；不要重复付款。',
+    'CONSUMER_LIMIT_COOLING_PERIOD': '提高额度还需要等待，请刷新并核对最早可确认时间。',
+    'CONSUMER_LIMIT_CHANGE_NOT_PENDING': '该提额申请已处理或不存在，请读取当前记录。',
+    'CONSUMER_LIMIT_UNCHANGED': '额度与当前设置相同，请读取当前记录。',
+    'CONSUMER_USAGE_REVIEW_REQUIRED': '本月记录需要核对，暂不显示可用额度，请联系平台。',
+    'FINANCE_ROUNDING_REVIEW_REQUIRED': '历史分钱存在尾差异常，旧账保留，暂停新增付款并等待人工复核。',
+    'MARKETPLACE_CONTRACT_RULE_REQUIRED':
+        '缺少已生效的分配规则，请工作人员维护现货18%或商单22%规则后核对原请求。',
+    'MARKETPLACE_CONTRACT_RATE_MISMATCH': '分配规则类别或费率不符，请工作人员核对，暂不能进入付款。',
+    'COMMERCIAL_CONTRACT_RATE_MISMATCH': '提案仍采用旧费率，请核对新版商单约定。',
+    'MCN_V5_TERMS_REQUIRED': '机构协议尚无双方确认的供给收益比例，请双方重新约定，不自动换算。',
+    'COMMERCIAL_CONTRACT_OFFER_REQUIRED': '此旧提案不适用于新版报价，请核对已确认的新提案。',
+    'COMMERCIAL_CONTRACT_OFFER_CHANGED': '提案、规则或机构关系不一致，请核对原条款。',
+    'COMMERCIAL_SOURCE_REQUIRED': '请先选择已由买家确认的正式商单提案。',
+    'CUSTOMIZATION_CONTRACT_VERSION_REQUIRED': '该规格已不用于新报价，请选择新版；旧订单保留原约定。',
+    'CUSTOMIZATION_CALENDAR_COVERAGE_REQUIRED':
+        '该日期的验收安排尚未确认，请联系平台处理；仍可主动确认成果或提出异议。',
+    'CUSTOMIZATION_ACCEPTANCE_CLOCK_MISMATCH': '验收计时记录需核对，暂不自动确认。',
+  };
+  if (contractErrors.containsKey(e.code)) return contractErrors[e.code]!;
   if (e.code == 'INVALID_TRADE_RESPONSE') {
     return writing ? '返回内容无法核对，操作结果未知。请恢复原请求核对。' : '交易记录格式无法识别，请重新读取。';
   }

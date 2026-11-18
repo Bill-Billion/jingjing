@@ -1,0 +1,95 @@
+TAP version 13
+# Subtest: invoice header and amounts do not invent tax rules or allow invalid money
+ok 1 - invoice header and amounts do not invent tax rules or allow invalid money
+  ---
+  duration_ms: 1.5987
+  type: 'test'
+  ...
+# Subtest: production invoice issuance requires explicit valid issuer configuration; simulation cannot masquerade as real
+ok 2 - production invoice issuance requires explicit valid issuer configuration; simulation cannot masquerade as real
+  ---
+  duration_ms: 0.8708
+  type: 'test'
+  ...
+# Subtest: invoice original-order HTTP lifecycle and controlled documents
+    # Subtest: unpaid, zero cash, foreign party, missing headers and forged fields fail
+    ok 1 - unpaid, zero cash, foreign party, missing headers and forged fields fail
+      ---
+      duration_ms: 174.1991
+      type: 'test'
+      ...
+    # Subtest: concurrent duplicate requests occupy once, competing requests cannot overbook
+    ok 2 - concurrent duplicate requests occupy once, competing requests cannot overbook
+      ---
+      duration_ms: 312.4298
+      type: 'test'
+      ...
+    # Subtest: identity separation and independent staff permissions
+    ok 3 - identity separation and independent staff permissions
+      ---
+      duration_ms: 44.97
+      type: 'test'
+      ...
+    # Subtest: request additional materials, preserve history, reject stale changes
+    ok 4 - request additional materials, preserve history, reject stale changes
+      ---
+      duration_ms: 86.0157
+      type: 'test'
+      ...
+    # Subtest: test document is labeled, pending file hidden, recorder cannot verify, independent reviewer can issue
+    ok 5 - test document is labeled, pending file hidden, recorder cannot verify, independent reviewer can issue
+      ---
+      duration_ms: 94.0151
+      type: 'test'
+      ...
+    # Subtest: late pending and completed refunds flag correction; zero correction preserves old document
+    ok 6 - late pending and completed refunds flag correction; zero correction preserves old document
+      ---
+      duration_ms: 143.5272
+      type: 'test'
+      ...
+    # Subtest: withdrawal and rejected documents free only appropriate reservation; retry cannot resurrect
+    ok 7 - withdrawal and rejected documents free only appropriate reservation; retry cannot resurrect
+      ---
+      duration_ms: 196.2989
+      type: 'test'
+      ...
+    # Subtest: sandbox disabled blocks issuance and corrupted financial source never becomes invoice basis
+    ok 8 - sandbox disabled blocks issuance and corrupted financial source never becomes invoice basis
+      ---
+      duration_ms: 126.3972
+      type: 'test'
+      ...
+    # Subtest: manual production-file branch stays disabled until configured and rechecks file access after transport
+    ok 9 - manual production-file branch stays disabled until configured and rechecks file access after transport
+      ---
+      duration_ms: 227.9028
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back reservation and idempotency record; grant revocation blocks retries
+    ok 10 - audit failure rolls back reservation and idempotency record; grant revocation blocks retries
+      ---
+      duration_ms: 136.1998
+      type: 'test'
+      ...
+    # Subtest: operator history, document list and private download preserve historical scope
+    ok 11 - operator history, document list and private download preserve historical scope
+      ---
+      duration_ms: 33.9346
+      type: 'test'
+      ...
+    1..11
+ok 3 - invoice original-order HTTP lifecycle and controlled documents
+  ---
+  duration_ms: 8186.6521
+  type: 'test'
+  ...
+1..3
+# tests 14
+# suites 0
+# pass 14
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8402.2621

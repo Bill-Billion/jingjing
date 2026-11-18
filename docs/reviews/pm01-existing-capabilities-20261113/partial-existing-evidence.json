@@ -1,0 +1,334 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "0c831612c9eeeb3bed573b43e76c51eefc383c33",
+  "run_id": "backend-acceptance-2026-11-13T12-23-51-061Z-608691",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "new_runtime_code": false,
+  "new_test_run": false,
+  "same_run_report": "docs/reviews/pm01-conversation-risk-20261113/FINAL_BACKEND.json",
+  "checks": [
+    {
+      "id": "FREE-CREATION-IS-NOT-MODEL",
+      "acceptance_id": "ACC-DEL-03.02",
+      "name": "免费创建与长期资产区分",
+      "result": "LOCAL_PASS",
+      "scope": "新免费申请不收费；旧已收费创建保留原金额和规格；脸/声材料与独审后仅交付档案，长期模型仍NOT_ENABLED",
+      "remaining": "真实长期模型ID、供应商复用及实存交付仍缺",
+      "actual_checks": [
+        {
+          "name": "cutover exposes free options, filters old offers and blocks old new purchases",
+          "file": "test/artists-contract.integration.test.cjs",
+          "line": 60,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 39.7729,
+          "error_code": null
+        },
+        {
+          "name": "pending historical creation is not silently replaced and can finish its original payment",
+          "file": "test/artists-contract.integration.test.cjs",
+          "line": 66,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 58.3723,
+          "error_code": null
+        },
+        {
+          "name": "free creation failure records no refund, requires independent operator and is retryable",
+          "file": "test/artists-contract.integration.test.cjs",
+          "line": 81,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 53.3634,
+          "error_code": null
+        },
+        {
+          "name": "free archive needs owned files and both face and voice; never enables a provider model",
+          "file": "test/artists-contract.integration.test.cjs",
+          "line": 87,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 217.5285,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "FREE-HOSTING-AND-OLD-TERM",
+      "acceptance_id": "ACC-DEL-03.03",
+      "name": "免费托管与旧月费历史",
+      "result": "LOCAL_PASS",
+      "scope": "新免费托管并发合一、无到期/订单/自动扣费，不能启旧续费提醒；旧付费托管原期不因重试延长，到期保留本人档案和文件",
+      "remaining": "使用合成到期状态；真实云存储连续可用、所有历史许可及实体设备未完整验证",
+      "actual_checks": [
+        {
+          "name": "free hosting is perpetual and deduplicates simultaneous requests without money records",
+          "file": "test/artists-contract.integration.test.cjs",
+          "line": 74,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 71.0639,
+          "error_code": null
+        },
+        {
+          "name": "paid hosting is linked to one avatar; duplicate sync never extends the paid term",
+          "file": "test/artists.integration.test.cjs",
+          "line": 59,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 199.4085,
+          "error_code": null
+        },
+        {
+          "name": "renewal reminder can be cancelled; unpaid service cancellation requires cancelling its real order",
+          "file": "test/artists.integration.test.cjs",
+          "line": 236,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 121.8139,
+          "error_code": null
+        },
+        {
+          "name": "expired hosting removes new listing eligibility but retains delivered archive and owned files",
+          "file": "test/artists.integration.test.cjs",
+          "line": 250,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 37.8431,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "AVATAR-MATERIAL-PURPOSE",
+      "acceptance_id": "ACC-DEL-03.04",
+      "name": "素材绑定与具体用途",
+      "result": "LOCAL_PASS",
+      "scope": "具体素材版本/脸声/公开/采集授权分别核查；试镜交样经独审不授予演出权，买方不能用艺人私有底板授权生成",
+      "remaining": "外部长时复用与全部用途组合仍缺，真实供应商和各端另验",
+      "actual_checks": [
+        {
+          "name": "consent needs independent review; rejected and withdrawn rights cannot create versions",
+          "file": "test/artists.integration.test.cjs",
+          "line": 56,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 56.5582,
+          "error_code": null
+        },
+        {
+          "name": "withdrawal blocks reads and delivery despite another valid consent",
+          "file": "test/artists.integration.test.cjs",
+          "line": 152,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 41.1095,
+          "error_code": null
+        },
+        {
+          "name": "new consent alone cannot reauthorize the old version; explicit replacement can",
+          "file": "test/artists.integration.test.cjs",
+          "line": 158,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 96.0126,
+          "error_code": null
+        },
+        {
+          "name": "voice uses its own original authorization, not the face consent",
+          "file": "test/artists.integration.test.cjs",
+          "line": 164,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 71.6346,
+          "error_code": null
+        },
+        {
+          "name": "archive material consent stays tied to the exact latest submitted versions",
+          "file": "test/artists.integration.test.cjs",
+          "line": 136,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 483.3411,
+          "error_code": null
+        },
+        {
+          "name": "delivery requires correct count, authorization and arrival",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 60,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 106.7556,
+          "error_code": null
+        },
+        {
+          "name": "new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 136,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 54.6255,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "LOTTERY-POINTS-ATOMIC-REPLAY",
+      "acceptance_id": "ACC-DEL-21.02",
+      "name": "抽奖扣分、发奖与未知结果恢复",
+      "result": "LOCAL_PASS",
+      "scope": "同键原中奖不重扣；最后库存并发仅一成功，积分不足不留抽奖/库存占用；消费确认和频次限制在扣分前",
+      "remaining": "真实参与资格/设备断网与奖品实际履行未以合成结果代替",
+      "actual_checks": [
+        {
+          "name": "retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 165.1514,
+          "error_code": null
+        },
+        {
+          "name": "insufficient points rolls back draw, stock and command; retired version preserves old results",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 54,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 410.9882,
+          "error_code": null
+        },
+        {
+          "name": "rational confirmation and participation limits precede point deduction; recovery returns original winners",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 73,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 296.0913,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "LOTTERY-EFFECTIVE-ODDS-VERSION",
+      "acceptance_id": "ACC-DEL-21.03",
+      "name": "抽奖有效概率、公示与锁版本",
+      "result": "LOCAL_PASS",
+      "scope": "规则与财务独立审核，七日公示后开抽，旧摘要拒绝；十连条件保底、成本和有效概率一起计算，中奖锁原版本",
+      "remaining": "隔离夹具推进公示时间；合成成本不代表正式成本，实际获批奖池/公示/随机性审计和生产启用未完成",
+      "actual_checks": [
+        {
+          "name": "V2 distribution includes ten-draw guarantee rather than advertising independent odds",
+          "file": "test/redemption-lottery-policy.test.cjs",
+          "line": 9,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 2.1378,
+          "error_code": null
+        },
+        {
+          "name": "nine misses force only last draw, 2700 charged as one batch; single costs 300",
+          "file": "test/redemption-lottery-policy.test.cjs",
+          "line": 15,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.6865,
+          "error_code": null
+        },
+        {
+          "name": "an earlier qualifying prize leaves tenth unchanged; exact random boundaries and invalid entropy",
+          "file": "test/redemption-lottery-policy.test.cjs",
+          "line": 18,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.7233,
+          "error_code": null
+        },
+        {
+          "name": "incorrect sum, duplicate prize, disabled final interview, missing guarantee and fractional price reject",
+          "file": "test/redemption-lottery-policy.test.cjs",
+          "line": 22,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.344,
+          "error_code": null
+        },
+        {
+          "name": "contract publication has a full seven-day waiting period and cannot outlive the pool",
+          "file": "test/redemption-lottery-policy.test.cjs",
+          "line": 26,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.0257,
+          "error_code": null
+        },
+        {
+          "name": "creator cannot approve; rules and finance require separate reviewers; unpublished draw denied",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 431.5125,
+          "error_code": null
+        },
+        {
+          "name": "newly reviewed pools publish seven-day notice before drawing; no points or stock deducted",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 62.42,
+          "error_code": null
+        },
+        {
+          "name": "ten guarantee survives mostly no-win pool and records actual conditional draws",
+          "file": "test/redemption-lottery.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 463.4899,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "id": "RELEASE-ACTUAL-CASH",
+      "acceptance_id": "ACC-DEL-27.04",
+      "name": "发行收入按实际账单与到账",
+      "result": "LOCAL_PASS",
+      "scope": "同发行账单净额80000分为应收，未到账可提0；部分/全部到账、重复凭据和账单更正独审，旧清分失效，旧账单保持",
+      "remaining": "渠道账单与到账均合成，无真实上游款/税费凭据或正式清分，不以订单金额估发行收益",
+      "actual_checks": [
+        {
+          "name": "external release statement is accrued revenue, not cash received or automatic payout",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 219,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 164.6671,
+          "error_code": null
+        },
+        {
+          "name": "same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 225,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 131.9554,
+          "error_code": null
+        },
+        {
+          "name": "partial receipts, duplicate bank references and statement corrections never rewrite history",
+          "file": "test/settlement.integration.test.cjs",
+          "line": 241,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 465.2011,
+          "error_code": null
+        }
+      ]
+    }
+  ]
+}

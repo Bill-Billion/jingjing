@@ -1,0 +1,318 @@
+{
+  "synthetic_only": true,
+  "evidence": [
+    {
+      "command": "recovery-check",
+      "exit_code": 1,
+      "output": {
+        "result": "BLOCKED",
+        "code": "ISOLATED_TARGET_REQUIRED"
+      }
+    },
+    {
+      "command": "recovery-check",
+      "exit_code": 0,
+      "output": {
+        "format": "JX_RECOVERY_OBSERVATION_V1",
+        "generated_at": "2026-11-12T16:07:14.623Z",
+        "schema": {
+          "readable": true,
+          "ready": true,
+          "counts": {
+            "APPLIED": 212
+          }
+        },
+        "recovery": {
+          "readable": true,
+          "status": "NOT_RESTORED",
+          "privacy_replayed": false
+        },
+        "jobs": {
+          "readable": true,
+          "counts": {
+            "RETRY": 1,
+            "BLOCKED": 2
+          },
+          "expired_running": 0
+        },
+        "alerts": [
+          {
+            "code": "JOBS_WAITING",
+            "severity": "INFO"
+          },
+          {
+            "code": "JOBS_BLOCKED",
+            "severity": "WARNING"
+          }
+        ],
+        "attention_required": true,
+        "observation_only": true,
+        "production_release": "NOT_APPROVED",
+        "runtime_started": false,
+        "external_transport_checked": false
+      }
+    },
+    {
+      "command": "key-create",
+      "exit_code": 0,
+      "output": {
+        "result": "CREATED",
+        "key_printed": false
+      }
+    },
+    {
+      "command": "backup",
+      "exit_code": 0,
+      "output": {
+        "result": "BACKED_UP",
+        "payload_sha256": "9a11d2cd2cbf45a6f1a59e1b854f76b5b6a7778611cc3e7b6d543cc445634c8c",
+        "file_sha256": "a6c6200a94a2e907a95d1a916cc39438736e21cae948d170e990e48a8fbe0498",
+        "tables": 179,
+        "external_objects_included": false
+      }
+    },
+    {
+      "command": "backup",
+      "exit_code": 1,
+      "output": {
+        "result": "BLOCKED",
+        "code": "EEXIST"
+      }
+    },
+    {
+      "command": "recovery-check",
+      "exit_code": 0,
+      "output": {
+        "format": "JX_RECOVERY_OBSERVATION_V1",
+        "generated_at": "2026-11-12T16:07:17.429Z",
+        "schema": {
+          "readable": false,
+          "ready": false,
+          "code": "MIGRATION_DRIFT"
+        },
+        "recovery": {
+          "readable": true,
+          "status": "NOT_RESTORED",
+          "privacy_replayed": false
+        },
+        "jobs": {
+          "readable": true,
+          "counts": {
+            "RETRY": 1,
+            "BLOCKED": 2
+          },
+          "expired_running": 0
+        },
+        "alerts": [
+          {
+            "code": "MIGRATION_DRIFT",
+            "severity": "BLOCKED"
+          },
+          {
+            "code": "JOBS_WAITING",
+            "severity": "INFO"
+          },
+          {
+            "code": "JOBS_BLOCKED",
+            "severity": "WARNING"
+          }
+        ],
+        "attention_required": true,
+        "observation_only": true,
+        "production_release": "NOT_APPROVED",
+        "runtime_started": false,
+        "external_transport_checked": false
+      }
+    },
+    {
+      "command": "restore",
+      "exit_code": 1,
+      "output": {
+        "result": "BLOCKED",
+        "code": "RESTORE_TARGET_NOT_EMPTY"
+      }
+    },
+    {
+      "command": "restore",
+      "exit_code": 1,
+      "output": {
+        "result": "BLOCKED",
+        "code": "BACKUP_CHECKSUM_MISMATCH"
+      }
+    },
+    {
+      "command": "restore",
+      "exit_code": 0,
+      "output": {
+        "result": "MATCHED",
+        "tables": 179,
+        "rows": 350,
+        "payload_sha256": "9a11d2cd2cbf45a6f1a59e1b854f76b5b6a7778611cc3e7b6d543cc445634c8c",
+        "runtime_status": "QUARANTINED",
+        "comparison_excludes": [
+          "platform_schema_metadata.recovery_status"
+        ],
+        "invalidated_job_leases": 0,
+        "external_objects_restored": false
+      }
+    },
+    {
+      "command": "recovery-check",
+      "exit_code": 0,
+      "output": {
+        "format": "JX_RECOVERY_OBSERVATION_V1",
+        "generated_at": "2026-11-12T16:07:41.637Z",
+        "schema": {
+          "readable": true,
+          "ready": true,
+          "counts": {
+            "APPLIED": 212
+          }
+        },
+        "recovery": {
+          "readable": true,
+          "status": "QUARANTINED",
+          "privacy_replayed": false
+        },
+        "jobs": {
+          "readable": true,
+          "counts": {
+            "RETRY": 1,
+            "BLOCKED": 2
+          },
+          "expired_running": 0
+        },
+        "alerts": [
+          {
+            "code": "RESTORE_REVIEW_REQUIRED",
+            "severity": "BLOCKED"
+          },
+          {
+            "code": "JOBS_WAITING",
+            "severity": "INFO"
+          },
+          {
+            "code": "JOBS_BLOCKED",
+            "severity": "WARNING"
+          }
+        ],
+        "attention_required": true,
+        "observation_only": true,
+        "production_release": "NOT_APPROVED",
+        "runtime_started": false,
+        "external_transport_checked": false
+      }
+    },
+    {
+      "command": "recovery-check",
+      "exit_code": 0,
+      "output": {
+        "format": "JX_RECOVERY_OBSERVATION_V1",
+        "generated_at": "2026-11-12T16:07:42.686Z",
+        "schema": {
+          "readable": true,
+          "ready": true,
+          "counts": {
+            "APPLIED": 212
+          }
+        },
+        "recovery": {
+          "readable": true,
+          "status": "QUARANTINED",
+          "privacy_replayed": false
+        },
+        "jobs": {
+          "readable": true,
+          "counts": {
+            "RUNNING": 1,
+            "RETRY": 1,
+            "FAILED": 1,
+            "BLOCKED": 3
+          },
+          "expired_running": 1
+        },
+        "alerts": [
+          {
+            "code": "RESTORE_REVIEW_REQUIRED",
+            "severity": "BLOCKED"
+          },
+          {
+            "code": "JOBS_WAITING",
+            "severity": "INFO"
+          },
+          {
+            "code": "JOBS_BLOCKED",
+            "severity": "WARNING"
+          },
+          {
+            "code": "JOBS_FAILED",
+            "severity": "WARNING"
+          },
+          {
+            "code": "JOB_LEASE_EXPIRED",
+            "severity": "WARNING"
+          }
+        ],
+        "attention_required": true,
+        "observation_only": true,
+        "production_release": "NOT_APPROVED",
+        "runtime_started": false,
+        "external_transport_checked": false
+      }
+    },
+    {
+      "command": "recovery-check",
+      "exit_code": 0,
+      "output": {
+        "format": "JX_RECOVERY_OBSERVATION_V1",
+        "generated_at": "2026-11-12T16:07:43.111Z",
+        "schema": {
+          "readable": true,
+          "ready": false,
+          "counts": {
+            "PENDING": 212
+          }
+        },
+        "recovery": {
+          "readable": false,
+          "status": "UNAVAILABLE",
+          "privacy_replayed": false
+        },
+        "jobs": {
+          "readable": false
+        },
+        "alerts": [
+          {
+            "code": "SCHEMA_NOT_READY",
+            "severity": "BLOCKED"
+          },
+          {
+            "code": "RECOVERY_METADATA_UNAVAILABLE",
+            "severity": "BLOCKED"
+          },
+          {
+            "code": "JOBS_UNAVAILABLE",
+            "severity": "BLOCKED"
+          }
+        ],
+        "attention_required": true,
+        "observation_only": true,
+        "production_release": "NOT_APPROVED",
+        "runtime_started": false,
+        "external_transport_checked": false
+      }
+    }
+  ],
+  "prechange_refund_id": "53418d8f-e602-46a9-b99a-f234a296ac23",
+  "reserved_minor": 1000,
+  "original_send_count": 1,
+  "source_failure_preserved": true,
+  "money_authority_and_task_matched": true,
+  "production_release": "NOT_APPROVED",
+  "limits": [
+    "database recovery rehearsal only; no application release switch",
+    "synthetic failed migration and pre-change backup",
+    "restored runtime remains quarantined; no provider execution",
+    "external private bytes and post-backup external changes are not restored"
+  ]
+}

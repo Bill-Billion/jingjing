@@ -1,0 +1,132 @@
+TAP version 13
+# Subtest: notification counts and exact-set read receipts through actual HTTP and commit races
+    # Subtest: four-channel counts are current-account and party scoped
+    ok 1 - four-channel counts are current-account and party scoped
+      ---
+      duration_ms: 123.6248
+      type: 'test'
+      ...
+    # Subtest: new message and a lower-ID late commit survive read-all
+    ok 2 - new message and a lower-ID late commit survive read-all
+      ---
+      duration_ms: 98.5904
+      type: 'test'
+      ...
+    # Subtest: single reads and selected-channel read-all share the same receipt table
+    ok 3 - single reads and selected-channel read-all share the same receipt table
+      ---
+      duration_ms: 101.2889
+      type: 'test'
+      ...
+    # Subtest: account privacy is rechecked even within a shared party
+    ok 4 - account privacy is rechecked even within a shared party
+      ---
+      duration_ms: 31.4245
+      type: 'test'
+      ...
+    # Subtest: expired or damaged snapshots cannot clear messages
+    ok 5 - expired or damaged snapshots cannot clear messages
+      ---
+      duration_ms: 50.5832
+      type: 'test'
+      ...
+    # Subtest: concurrent read-all updates once and keeps other account read rows untouched
+    ok 6 - concurrent read-all updates once and keeps other account read rows untouched
+      ---
+      duration_ms: 38.9698
+      type: 'test'
+      ...
+    # Subtest: same account switches valid identities without clearing the other inbox
+    ok 7 - same account switches valid identities without clearing the other inbox
+      ---
+      duration_ms: 87.4644
+      type: 'test'
+      ...
+    # Subtest: failed second receipt rolls back the whole bulk action; original request can recover
+    ok 8 - failed second receipt rolls back the whole bulk action; original request can recover
+      ---
+      duration_ms: 69.5223
+      type: 'test'
+      ...
+    1..8
+ok 1 - notification counts and exact-set read receipts through actual HTTP and commit races
+  ---
+  duration_ms: 8378.668
+  type: 'test'
+  ...
+# Subtest: support stages are role bounded and replies are not judgments
+ok 2 - support stages are role bounded and replies are not judgments
+  ---
+  duration_ms: 1.3826
+  type: 'test'
+  ...
+# Subtest: support rejects excessive attachments and incomplete descriptions
+ok 3 - support rejects excessive attachments and incomplete descriptions
+  ---
+  duration_ms: 0.2833
+  type: 'test'
+  ...
+# Subtest: four message channels retain the established product categories
+ok 4 - four message channels retain the established product categories
+  ---
+  duration_ms: 10.3569
+  type: 'test'
+  ...
+# Subtest: formal support actual HTTP submission, supplement, history and restricted evidence
+    # Subtest: authentication, ownership, source and input validation
+    ok 1 - authentication, ownership, source and input validation
+      ---
+      duration_ms: 191.4154
+      type: 'test'
+      ...
+    # Subtest: concurrent create retries produce one ticket and one immutable first entry
+    ok 2 - concurrent create retries produce one ticket and one immutable first entry
+      ---
+      duration_ms: 65.718
+      type: 'test'
+      ...
+    # Subtest: other account and self-review cannot see or handle private evidence
+    ok 3 - other account and self-review cannot see or handle private evidence
+      ---
+      duration_ms: 53.6705
+      type: 'test'
+      ...
+    # Subtest: permission is checked again after reading private storage
+    ok 4 - permission is checked again after reading private storage
+      ---
+      duration_ms: 19.654
+      type: 'test'
+      ...
+    # Subtest: staff handling, applicant supplement, answer, close and reopen preserve history
+    ok 5 - staff handling, applicant supplement, answer, close and reopen preserve history
+      ---
+      duration_ms: 130.7885
+      type: 'test'
+      ...
+    # Subtest: revoked staff grant and party membership block later reads and replays
+    ok 6 - revoked staff grant and party membership block later reads and replays
+      ---
+      duration_ms: 30.6791
+      type: 'test'
+      ...
+    # Subtest: evidence retention and integrity are explicit; foreign attachment bytes never leak
+    ok 7 - evidence retention and integrity are explicit; foreign attachment bytes never leak
+      ---
+      duration_ms: 27.06
+      type: 'test'
+      ...
+    1..7
+ok 5 - formal support actual HTTP submission, supplement, history and restricted evidence
+  ---
+  duration_ms: 8698.0046
+  type: 'test'
+  ...
+1..5
+# tests 20
+# suites 0
+# pass 20
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8913.1618

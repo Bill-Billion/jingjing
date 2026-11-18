@@ -1,0 +1,289 @@
+TAP version 13
+# Subtest: self-service monthly limits constrain actual orders and custody attempts without changing financial facts
+    # Subtest: settings work before wallet opening; private and versioned, duplicate retry changes once
+    ok 1 - settings work before wallet opening; private and versioned, duplicate retry changes once
+      ---
+      duration_ms: 222.0861
+      type: 'test'
+      ...
+    # Subtest: concurrent purchases cannot exceed cap; failure rolls back payment and request key
+    ok 2 - concurrent purchases cannot exceed cap; failure rolls back payment and request key
+      ---
+      duration_ms: 221.8718
+      type: 'test'
+      ...
+    # Subtest: lowering takes effect before unsent dispatch; unknown provider result stays reserved
+    ok 3 - lowering takes effect before unsent dispatch; unknown provider result stays reserved
+      ---
+      duration_ms: 767.1399
+      type: 'test'
+      ...
+    # Subtest: raise/removal need cooling, cancellation preserves active limit and history is immutable
+    ok 4 - raise/removal need cooling, cancellation preserves active limit and history is immutable
+      ---
+      duration_ms: 141.1893
+      type: 'test'
+      ...
+    # Subtest: refund returns money by existing rules, but does not reset gross spending budget
+    ok 5 - refund returns money by existing rules, but does not reset gross spending budget
+      ---
+      duration_ms: 83.7947
+      type: 'test'
+      ...
+    # Subtest: closed unpaid attempt releases budget; cancelled order and idempotent retries never mint money
+    ok 6 - closed unpaid attempt releases budget; cancelled order and idempotent retries never mint money
+      ---
+      duration_ms: 226.5695
+      type: 'test'
+      ...
+    # Subtest: custody topups obey separate personal cap and existing platform rule; actual service stays disabled
+    ok 7 - custody topups obey separate personal cap and existing platform rule; actual service stays disabled
+      ---
+      duration_ms: 78.3194
+      type: 'test'
+      ...
+    # Subtest: cancelling an unsent custody payment releases reserved cash atomically; cap denial leaves no cash hold
+    ok 8 - cancelling an unsent custody payment releases reserved cash atomically; cap denial leaves no cash hold
+      ---
+      duration_ms: 246.7097
+      type: 'test'
+      ...
+    # Subtest: month boundary retains older unknown attempts and late receipts without double counting
+    ok 9 - month boundary retains older unknown attempts and late receipts without double counting
+      ---
+      duration_ms: 157.8663
+      type: 'test'
+      ...
+    # Subtest: old orders count when user first sets a limit; suspension and tampering cannot bypass privacy
+    ok 10 - old orders count when user first sets a limit; suspension and tampering cannot bypass privacy
+      ---
+      duration_ms: 40.1442
+      type: 'test'
+      ...
+    1..10
+ok 1 - self-service monthly limits constrain actual orders and custody attempts without changing financial facts
+  ---
+  duration_ms: 11688.3181
+  type: 'test'
+  ...
+# Subtest: reviewed consumer protection binds real operations, preserves recovery and controls queued notifications
+    # Subtest: no policy is explicitly unconfigured; self-review and foreign identities denied
+    ok 1 - no policy is explicitly unconfigured; self-review and foreign identities denied
+      ---
+      duration_ms: 183.4226
+      type: 'test'
+      ...
+    # Subtest: second real payment requires reviewed message; denial rolls back payment and operation key
+    ok 2 - second real payment requires reviewed message; denial rolls back payment and operation key
+      ---
+      duration_ms: 559.8194
+      type: 'test'
+      ...
+    # Subtest: two confirmed operations cannot reuse a stale activity snapshot concurrently
+    ok 3 - two confirmed operations cannot reuse a stale activity snapshot concurrently
+      ---
+      duration_ms: 625.6138
+      type: 'test'
+      ...
+    # Subtest: policy replacement and expiry require fresh explicit confirmation; unknown provider result is not resent
+    ok 4 - policy replacement and expiry require fresh explicit confirmation; unknown provider result is not resent
+      ---
+      duration_ms: 353.3791
+      type: 'test'
+      ...
+    # Subtest: prepared payment can recover by record id after policy changed, without a second payment
+    ok 5 - prepared payment can recover by record id after policy changed, without a second payment
+      ---
+      duration_ms: 228.4393
+      type: 'test'
+      ...
+    # Subtest: late verified payment and approved refund remain executable after consumer rule changes
+    ok 6 - late verified payment and approved refund remain executable after consumer rule changes
+      ---
+      duration_ms: 113.2551
+      type: 'test'
+      ...
+    # Subtest: recharge guard rolls back cash attempt, original request resumes after confirmation
+    ok 7 - recharge guard rolls back cash attempt, original request resumes after confirmation
+      ---
+      duration_ms: 41.9886
+      type: 'test'
+      ...
+    # Subtest: preference HTTP and old clients preserve new settings; night reminders do not require usage tracking
+    ok 8 - preference HTTP and old clients preserve new settings; night reminders do not require usage tracking
+      ---
+      duration_ms: 34.7063
+      type: 'test'
+      ...
+    # Subtest: unconfigured sender reports unavailable; opt-out after enqueue suppresses send
+    ok 9 - unconfigured sender reports unavailable; opt-out after enqueue suppresses send
+      ---
+      duration_ms: 16.3603
+      type: 'test'
+      ...
+    # Subtest: queue respects current quiet hours and does not revive a deferred item after opt-out
+    ok 10 - queue respects current quiet hours and does not revive a deferred item after opt-out
+      ---
+      duration_ms: 21.8196
+      type: 'test'
+      ...
+    # Subtest: concurrent workers send once; marketing daily restraint also serializes separate messages
+    ok 11 - concurrent workers send once; marketing daily restraint also serializes separate messages
+      ---
+      duration_ms: 22.4277
+      type: 'test'
+      ...
+    # Subtest: business notifications enter real outbox, recheck permissions and retain station inbox when push closes
+    ok 12 - business notifications enter real outbox, recheck permissions and retain station inbox when push closes
+      ---
+      duration_ms: 157.9953
+      type: 'test'
+      ...
+    # Subtest: unknown push response is queried using original key, never automatically resent
+    ok 13 - unknown push response is queried using original key, never automatically resent
+      ---
+      duration_ms: 16.3184
+      type: 'test'
+      ...
+    # Subtest: late unknown send result returns the accepted status already established by reconciliation
+    ok 14 - late unknown send result returns the accepted status already established by reconciliation
+      ---
+      duration_ms: 16.0989
+      type: 'test'
+      ...
+    1..14
+ok 2 - reviewed consumer protection binds real operations, preserves recovery and controls queued notifications
+  ---
+  duration_ms: 11876.4821
+  type: 'test'
+  ...
+# Subtest: wallet ledger, custody boundary and order points in isolated MySQL
+    # Subtest: independent rule review, stale rule hash and client balance forgery rejected
+    ok 1 - independent rule review, stale rule hash and client balance forgery rejected
+      ---
+      duration_ms: 199.1969
+      type: 'test'
+      ...
+    # Subtest: other accounts, organizations, revoked identity and unopened custody are blocked
+    ok 2 - other accounts, organizations, revoked identity and unopened custody are blocked
+      ---
+      duration_ms: 53.8078
+      type: 'test'
+      ...
+    # Subtest: only matching verified custody receipt credits balance once; topup yields zero growth
+    ok 3 - only matching verified custody receipt credits balance once; topup yields zero growth
+      ---
+      duration_ms: 64.3769
+      type: 'test'
+      ...
+    # Subtest: original recharge refund assessment is read-only, personal and bound to the credited channel
+    ok 4 - original recharge refund assessment is read-only, personal and bound to the credited channel
+      ---
+      duration_ms: 42.0435
+      type: 'test'
+      ...
+    # Subtest: new order captures original rule and payment without fulfillment earns nothing
+    ok 5 - new order captures original rule and payment without fulfillment earns nothing
+      ---
+      duration_ms: 209.7573
+      type: 'test'
+      ...
+    # Subtest: aftercare deadline and unresolved case block points; mature order credits exactly once
+    ok 6 - aftercare deadline and unresolved case block points; mature order credits exactly once
+      ---
+      duration_ms: 95.8466
+      type: 'test'
+      ...
+    # Subtest: concurrent point reservations cannot overspend; exact replay and release are safe
+    ok 7 - concurrent point reservations cannot overspend; exact replay and release are safe
+      ---
+      duration_ms: 193.6085
+      type: 'test'
+      ...
+    # Subtest: verified refund continues even when points spent; growth reversed and shortage explicit
+    ok 8 - verified refund continues even when points spent; growth reversed and shortage explicit
+      ---
+      duration_ms: 414.7112
+      type: 'test'
+      ...
+    # Subtest: future points first recover refund shortfall; recovered debt does not erase new consumption growth
+    ok 9 - future points first recover refund shortfall; recovered debt does not erase new consumption growth
+      ---
+      duration_ms: 262.5862
+      type: 'test'
+      ...
+    # Subtest: expired batches cannot be used; materialized expiry preserves earned growth
+    ok 10 - expired batches cannot be used; materialized expiry preserves earned growth
+      ---
+      duration_ms: 33.4589
+      type: 'test'
+      ...
+    # Subtest: expired adult verification preserves balance history but disables displayed membership
+    ok 11 - expired adult verification preserves balance history but disables displayed membership
+      ---
+      duration_ms: 22.9735
+      type: 'test'
+      ...
+    # Subtest: sixth level requires private evidence and separate current operator review
+    ok 12 - sixth level requires private evidence and separate current operator review
+      ---
+      duration_ms: 52.0585
+      type: 'test'
+      ...
+    # Subtest: custody order reservation is atomic, unknown payments retain funds, refund restores original lots
+    ok 13 - custody order reservation is atomic, unknown payments retain funds, refund restores original lots
+      ---
+      duration_ms: 612.6514
+      type: 'test'
+      ...
+    # Subtest: refund assessment never treats imported refunds, unknown allocations or another lot as spendable money
+    ok 14 - refund assessment never treats imported refunds, unknown allocations or another lot as spendable money
+      ---
+      duration_ms: 41.3557
+      type: 'test'
+      ...
+    # Subtest: wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain
+    ok 15 - wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain
+      ---
+      duration_ms: 11.7337
+      type: 'test'
+      ...
+    # Subtest: automatic maintenance grants mature earnings; a lost lease cannot mutate points
+    ok 16 - automatic maintenance grants mature earnings; a lost lease cannot mutate points
+      ---
+      duration_ms: 178.8339
+      type: 'test'
+      ...
+    # Subtest: each fulfillment adapter requires its own actual completion source, not a paid flag
+    ok 17 - each fulfillment adapter requires its own actual completion source, not a paid flag
+      ---
+      duration_ms: 96.087
+      type: 'test'
+      ...
+    # Subtest: free awards require published amounts and real events; concurrent check-in awards once without growth
+    ok 18 - free awards require published amounts and real events; concurrent check-in awards once without growth
+      ---
+      duration_ms: 47.113
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back rule creation; stored digest corruption fails closed
+    ok 19 - audit failure rolls back rule creation; stored digest corruption fails closed
+      ---
+      duration_ms: 20.7053
+      type: 'test'
+      ...
+    1..19
+ok 3 - wallet ledger, custody boundary and order points in isolated MySQL
+  ---
+  duration_ms: 11991.2873
+  type: 'test'
+  ...
+1..3
+# tests 46
+# suites 0
+# pass 46
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12226.5371

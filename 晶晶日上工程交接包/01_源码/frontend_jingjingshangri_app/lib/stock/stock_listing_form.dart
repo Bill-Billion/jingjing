@@ -1,3 +1,4 @@
+import '../rights/rights_models.dart';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -8,15 +9,15 @@ import '../artists/artists_api.dart';
 import '../artists/artists_models.dart';
 import '../supply/supply_api.dart';
 import '../supply/supply_files.dart';
-import '../trade/trade_api.dart';
 import '../trade/trade_widgets.dart';
 import 'stock_api.dart';
 import 'stock_models.dart';
 import 'v5_support.dart';
 
 class StockListingForm extends StatefulWidget {
-  const StockListingForm({super.key, required this.session});
+  const StockListingForm({super.key, required this.session, this.revisionId});
   final AccountSession session;
+  final String? revisionId;
   @override
   State<StockListingForm> createState() => _StockListingFormState();
 }
@@ -24,129 +25,265 @@ class StockListingForm extends StatefulWidget {
 class _StockListingFormState extends State<StockListingForm> {
   late final api = StockApi(widget.session),
       artists = ArtistsApi(widget.session);
-  final people = <ArtistPerson>[], existing = <StockListing>[];
-  final specs = <String, String>{},
-      rules = <String, String>{},
+  final people = <ArtistPerson>[];
+  GlobalKey<V5FormState> formKey = GlobalKey<V5FormState>();
+  final personSelector = GlobalKey<FormFieldState<String>>();
+  final countSelector = GlobalKey<FormFieldState<int>>();
+  final publications = <String, Map<String, dynamic>>{};
+  StockListing? previous;
+  String get suffix => widget.revisionId == null
+      ? '/listings'
+      : '/listings/${widget.revisionId}/revisions';
+  final rules = <String, String>{},
       participants = <String, Map<String, dynamic>>{},
       participantNames = <String, String>{};
   String? error, personId;
   int? count;
   bool busy = false, permitted = false;
   ArtistDetail? person;
+  final eligibility = <String, StockEligibility>{};
+  final eligibilityErrors = <String, String>{};
+  int request = 0;
+  late int epoch;
+  bool current(int ticket, int captured) =>
+      mounted && request == ticket && widget.session.epoch == captured;
+  void identityChanged() {
+    if (epoch == widget.session.epoch) return;
+    epoch = widget.session.epoch;
+    request++;
+    setState(() {
+      people.clear();
+      publications.clear();
+      participants.clear();
+      participantNames.clear();
+      rules.clear();
+      eligibility.clear();
+      eligibilityErrors.clear();
+      person = null;
+      personId = null;
+      previous = null;
+      count = null;
+      permitted = false;
+      busy = false;
+      error = null;
+      formKey = GlobalKey<V5FormState>();
+    });
+    load();
+  }
+
+  @override
+  void dispose() {
+    request++;
+    widget.session.removeListener(identityChanged);
+    api.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
+    epoch = widget.session.epoch;
+    widget.session.addListener(identityChanged);
     load();
   }
 
   Future<void> load() async {
+    final ticket = ++request, captured = widget.session.epoch;
     setState(() {
       busy = true;
       error = null;
     });
     try {
+      people.clear();
+      publications.clear();
+      participants.clear();
+      participantNames.clear();
+      rules.clear();
       String? cursor;
       final seen = <String>{};
       do {
         final r = await artists.people(cursor: cursor);
+        if (!current(ticket, captured)) return;
         people.addAll(r.items);
         cursor = r.cursor;
         if (cursor != null) v5Require(seen.add(cursor));
       } while (cursor != null);
-      for (final r in (await TradeApi(widget.session).all('SPEC')).where((r) =>
-          r.status == 'PUBLISHED' &&
-          r.data['product_profile']?['type'] == 'STOCK_VIDEO')) {
-        specs[r.id] = '${r.data['title']} · ${v5Money(r.data['unit_minor'])}';
+      for (final r in await api.salesPublications()) {
+        if (!current(ticket, captured)) return;
+        v5Require(v5Id(r['id']) &&
+            v5Id(r['spec_id']) &&
+            v5Id(r['rule_id']) &&
+            r['terms'] is String);
+        publications[r['id']] = r;
+        rules[r['id']] =
+            '${r['spec_title']} · ${v5Money(r['unit_minor'])} · ${r['title']}（${r['rule_version']}）';
       }
-      cursor = null;
-      seen.clear();
-      do {
-        final r = await api.listings(cursor: cursor);
-        existing.addAll(r.items);
-        cursor = r.cursor;
-        if (cursor != null) v5Require(seen.add(cursor));
-      } while (cursor != null);
-      for (final r in existing) {
-        rules[r.data['rule_id']] =
-            '原上架销售规则 · ${r.data['rule_snapshot']['content']['version']}';
-        for (final raw in r.data['participants']) {
-          final c = v5Map(raw), key = _participantKey(c);
-          participants[key] = c;
-          participantNames[key] =
-              '${people.where((p) => p.id == c['person_id']).map((p) => p.name).firstOrNull ?? '原作品出镜人'} · 原作品已授权引用';
-        }
+      if (widget.revisionId != null) {
+        final record = await api.listing(widget.revisionId!);
+        if (!current(ticket, captured)) return;
+        previous = record;
+        count = (previous!.data['participants'] as List).length;
+        personId = previous!.data['seller_person_id'];
+        await _person(personId!, ticket, captured);
       }
-      final op = api.pending('/listings');
+      final op = api.pending(suffix);
       if (op != null) {
         final b = v5Map(op['body']);
-        specs.putIfAbsent(b['spec_id'], () => '原请求商品规格（待核对）');
-        rules.putIfAbsent(b['rule_id'], () => '原请求规则（待核对）');
-        for (final raw in b['participants']) {
-          final c = v5Map(raw), key = _participantKey(c);
-          participants[key] = c;
-          participantNames.putIfAbsent(key, () => '原请求出镜授权（待核对）');
-        }
         count = (b['participants'] as List).length;
         personId = b['seller_person_id'];
-        await _person(personId!);
+        await _person(personId!, ticket, captured);
       }
-      if (mounted) setState(() {});
+      if (current(ticket, captured)) setState(() {});
     } on AccountError catch (e) {
-      if (mounted) setState(() => error = v5Error(e));
+      if (current(ticket, captured)) setState(() => error = v5Error(e));
     } finally {
-      if (mounted) setState(() => busy = false);
+      if (current(ticket, captured)) setState(() => busy = false);
     }
   }
 
   String _participantKey(Map<String, dynamic> p) =>
       '${p['person_id']}:${p['avatar_id']}:${p['consent_id']}';
-  Future<void> _person(String id) async {
+  Future<void> _person(String id, int ticket, int captured) async {
     final d = await artists.person(id);
     final actions = await artists.actions(d);
-    if (d.person.owner == api.owner()) {
-      final consent = await artists.allRecords(id, 'CONSENT');
-      for (final c in consent.where((c) =>
-          c.status == 'APPROVED' &&
-          c.data['grantee_party_id'] == api.owner() &&
-          ['STOCK_LICENSE', 'PUBLIC_DISPLAY']
-              .every((p) => (c.data['purposes'] as List).contains(p)) &&
-          (c.data['territories'] as List).contains('WORLDWIDE') &&
-          DateTime.parse(c.data['valid_from']).isBefore(DateTime.now()) &&
-          DateTime.parse(c.data['valid_until']).isAfter(DateTime.now()))) {
-        final p = {
-              'person_id': id,
-              'avatar_id': c.avatarId,
-              'consent_id': c.id
-            },
-            key = _participantKey(p);
-        participants[key] = p;
-        participantNames[key] =
-            '${d.person.name} · ${d.avatars.where((a) => a.id == c.avatarId).map((a) => a.name).firstOrNull ?? '原数字人'} · ${c.data['terms']}';
-      }
-    }
+    if (!current(ticket, captured)) return;
     person = d;
     permitted = actions.contains('SUBMIT_LISTING');
+    eligibility.clear();
+    eligibilityErrors.clear();
+    participants.clear();
+    participantNames.clear();
+    // After a seller is selected, check each available person separately; no institution-wide approval.
+    for (final p in people.toList()) {
+      try {
+        final status = await api.sellerEligibility(p.id);
+        if (!current(ticket, captured)) return;
+        eligibility[p.id] = status;
+        if (!status.eligible) continue;
+        final choices = await api.participantOptions(p.id);
+        if (!current(ticket, captured)) return;
+        for (final c in choices) {
+          v5Require(
+              c['person_id'] == p.id && c['seller_party_id'] == api.owner());
+          final value = {
+            'person_id': c['person_id'],
+            'avatar_id': c['avatar_id'],
+            'consent_id': c['consent_id']
+          };
+          v5Require(v5Id(value['avatar_id']) && v5Id(value['consent_id']));
+          final key = _participantKey(value);
+          participants[key] = value;
+          participantNames[key] =
+              '${c['person_name']} · ${c['avatar_name']} · ${(c['stock_commercial_uses'] as List? ?? []).map((v) => commercialUses[v] ?? v).join('、').isEmpty ? '未列明商用许可' : (c['stock_commercial_uses'] as List).map((v) => commercialUses[v] ?? v).join('、')} · ${(c['territories'] as List? ?? []).join('、')} · ${c['valid_from']} 至 ${c['valid_until']}';
+        }
+      } on AccountError catch (e) {
+        if (!current(ticket, captured)) return;
+        eligibility.remove(p.id);
+        eligibilityErrors[p.id] = v5Error(e);
+      }
+    }
+  }
+
+  Future<void> refreshEligibility() async {
+    final id = personId;
+    if (busy || id == null) return;
+    final ticket = ++request, captured = widget.session.epoch;
+    setState(() {
+      busy = true;
+      eligibility.clear();
+      eligibilityErrors.clear();
+      error = null;
+    });
+    try {
+      await _person(id, ticket, captured);
+    } on AccountError catch (e) {
+      if (current(ticket, captured)) setState(() => error = v5Error(e));
+    } finally {
+      if (current(ticket, captured)) setState(() => busy = false);
+    }
+  }
+
+  Future<void> recheck(Map<String, dynamic> body) async {
+    final captured = widget.session.epoch,
+        party = api.owner(),
+        ticket = request;
+    final ids = {
+      body['seller_person_id'] as String,
+      for (final p in body['participants'] as List) p['person_id'] as String
+    };
+    for (final id in ids) {
+      setState(() => eligibility.remove(id));
+      final status = await api.sellerEligibility(id);
+      api.check(captured, party);
+      if (!current(ticket, captured)) {
+        throw const AccountError(0, 'CONTEXT_CHANGED');
+      }
+      setState(() => eligibility[id] = status);
+      if (!status.eligible) {
+        throw AccountError(
+            409, (status.data['blocking_reasons'] as List).first as String);
+      }
+    }
   }
 
   Future<void> choose(String id) async {
+    if (id == personId) return;
+    final discard = await (formKey.currentState?.confirmDiscardChanges() ??
+        Future.value(true));
+    if (!mounted) return;
+    if (!discard) {
+      personSelector.currentState?.didChange(personId);
+      return;
+    }
+    final ticket = ++request, captured = widget.session.epoch;
     setState(() {
       busy = true;
       error = null;
+      eligibility.clear();
+      eligibilityErrors.clear();
+      participants.clear();
+      participantNames.clear();
+      permitted = false;
       personId = id;
       person = null;
+      count = null;
+      formKey = GlobalKey<V5FormState>();
     });
     try {
-      await _person(id);
-      if (mounted) setState(() {});
+      await _person(id, ticket, captured);
+      if (current(ticket, captured)) setState(() {});
     } on AccountError catch (e) {
-      if (mounted) setState(() => error = v5Error(e));
+      if (current(ticket, captured)) setState(() => error = v5Error(e));
     } finally {
-      if (mounted) setState(() => busy = false);
+      if (current(ticket, captured)) setState(() => busy = false);
     }
+  }
+
+  Future<void> chooseCount(int? value) async {
+    if (value == count) return;
+    final discard = await (formKey.currentState?.confirmDiscardChanges() ??
+        Future.value(true));
+    if (!mounted) return;
+    if (!discard) {
+      countSelector.currentState?.didChange(count);
+      return;
+    }
+    setState(() {
+      count = value;
+      formKey = GlobalKey<V5FormState>();
+    });
   }
 
   Map<String, dynamic> restore(Map<String, dynamic> b) => {
         ...b,
+        'publication_id': publications.entries
+            .where((e) =>
+                (b['sales_publication_id'] == null ||
+                    e.key == b['sales_publication_id']) &&
+                e.value['spec_id'] == b['spec_id'] &&
+                e.value['rule_id'] == b['rule_id'])
+            .map((e) => e.key)
+            .firstOrNull,
         'rights_evidence_ids': (b['rights_evidence_ids'] as List).join(', '),
         for (var i = 0; i < (b['participants'] as List).length; i++)
           'participant_$i': _participantKey(v5Map(b['participants'][i]))
@@ -155,7 +292,7 @@ class _StockListingFormState extends State<StockListingForm> {
   Widget build(BuildContext context) {
     final d = person;
     return V5Frame(api: api, title: '现成作品上架', children: [
-      tradeHeading('让完成的作品被看见', eyebrow: '具体艺人 / 本版个人许可'),
+      tradeHeading('让完成的作品被看见', eyebrow: '具体艺人 / 本版明确许可'),
       V5RecoveryPanel(
           api: api,
           label: api.recoveryLabel,
@@ -167,24 +304,41 @@ class _StockListingFormState extends State<StockListingForm> {
                   : r['order_id'] != null
                       ? '/stock/purchase?orderId=${r['order_id']}'
                       : '/stock/listing?listingId=${r['id']}')),
-      appNotice('选择本人可读的已发布商品规格、原规则及逐人授权。App不生成水印或冒认审核，机构批量经营走网页。'),
+      appNotice('先选商品与本版销售说明，再逐人选择当前身份获准使用的形象。提交时重新核对价格、资格与授权。'),
+      if (previous != null) appNotice('本次另存新版本并重新双审；原订单的许可和已购文件保留。'),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
+      if (!busy && (error != null || people.isEmpty)) ...[
+        if (error == null) appNotice('当前身份还没有可办理的真人档案。先完善本人资料，或切换到获准经营该人物的身份。'),
+        tradeButton('重新读取本人资格与商品', load, outline: true),
+        tradeButton('查看人物与授权', () => Navigator.pushNamed(context, '/artists'),
+            outline: true),
+      ],
       DropdownButtonFormField<String>(
+          key: personSelector,
           initialValue: personId,
           isExpanded: true,
           decoration: const InputDecoration(labelText: '卖方具体真人'),
           items: people
               .map((p) => DropdownMenuItem(value: p.id, child: Text(p.name)))
               .toList(),
-          onChanged: busy || api.pending('/listings') != null
-              ? null
-              : (v) => choose(v!)),
+          onChanged:
+              busy || api.pending(suffix) != null ? null : (v) => choose(v!)),
       if (d != null) ...[
-        tradeFact('实际光环资格', 'L${d.halo}；提交时服务器重新核对'),
-        if (!permitted || d.halo < 1)
-          appNotice('须有本人的有效 L1 和明确上架委托，不要求先购买 L2。'),
+        appNotice('卖方和每位出镜人分别需要有效实名、L1及主角光环人工审核。缴费、待审或补件不等于通过；内容及授权另行审核。'),
+        for (final p in people)
+          tradeFact(
+              p.id == personId ? '卖方：${p.name}' : '可选出镜人：${p.name}',
+              eligibility[p.id]?.summary ??
+                  eligibilityErrors[p.id] ??
+                  '尚未核对当前资格'),
+        if (!permitted) appNotice('当前身份尚无这位真人的明确上架委托。'),
+        tradeButton('重新核对上架资格', busy ? null : refreshEligibility,
+            outline: true),
+        tradeButton('查看人物与认证', () => Navigator.pushNamed(context, '/artists'),
+            outline: true),
         DropdownButtonFormField<int>(
+            key: countSelector,
             initialValue: count,
             isExpanded: true,
             decoration: const InputDecoration(labelText: '本作品可识别出镜人数'),
@@ -193,29 +347,32 @@ class _StockListingFormState extends State<StockListingForm> {
                 DropdownMenuItem(
                     value: i, child: Text(i == 0 ? '无可识别人物' : '$i 位（逐人选择已审授权）'))
             ],
-            onChanged: api.pending('/listings') != null
-                ? null
-                : (v) => setState(() => count = v)),
-        if (rules.isEmpty)
-          appNotice(
-              '暂不能完成首次上架：平台尚未提供可选择的有效销售规则目录。已填业务内容可保留，需平台补齐规则引用；不要求手填技术编号。'),
-        if (specs.isEmpty) appNotice('当前没有已发布现货规格，请先在网页完成商品与价格的独立审核。'),
+            onChanged: api.pending(suffix) != null ? null : chooseCount),
+        if (rules.isEmpty) appNotice('尚无已发布的商品与销售说明，请平台先完成规格绑定和独立审核，再返回刷新。'),
         if (count != null)
           V5Form(
-              key: ValueKey('$personId:$count'),
+              key: formKey,
               api: api,
               title: '本版上架材料',
               action: '提交内容与权利双审核',
-              suffix: '/listings',
-              canSubmit: permitted &&
-                  d.halo >= 1 &&
+              suffix: suffix,
+              version: previous?.version,
+              initial: previous == null ? const {} : restore(previous!.data),
+              reload: previous == null
+                  ? null
+                  : () async {
+                      previous = await api.listing(widget.revisionId!);
+                      return previous!.version;
+                    },
+              beforeSubmit: recheck,
+              canSubmit: !busy &&
+                  permitted &&
+                  eligibility[personId]?.eligible == true &&
                   rules.isNotEmpty &&
-                  specs.isNotEmpty &&
                   (count == 0 || participants.isNotEmpty),
               restore: restore,
               fields: [
-                V5Field('spec_id', '已发布现货规格与价格', choices: specs),
-                V5Field('rule_id', '本人原作品可读的销售规则', choices: rules),
+                V5Field('publication_id', '商品价格与已审核销售说明', choices: rules),
                 const V5Field('city', '城市'),
                 const V5Field('description', '作品内容与范围', type: 'multiline'),
                 for (var i = 0; i < count!; i++)
@@ -236,6 +393,11 @@ class _StockListingFormState extends State<StockListingForm> {
                         cast.length) {
                   throw const AccountError(400, 'DUPLICATE_STOCK_PERSON');
                 }
+                if (eligibility[d.person.id]?.eligible != true ||
+                    cast.any((p) =>
+                        eligibility[p!['person_id']]?.eligible != true)) {
+                  throw const AccountError(409, 'STOCK_HALO_REVIEW_REQUIRED');
+                }
                 final full = '${v['file_id'] ?? ''}',
                     preview = '${v['preview_file_id'] ?? ''}';
                 api.key(full);
@@ -244,10 +406,16 @@ class _StockListingFormState extends State<StockListingForm> {
                   throw const AccountError(
                       400, 'STOCK_SEPARATE_PREVIEW_REQUIRED');
                 }
+                final publication = publications[v['publication_id']];
+                if (publication == null) {
+                  throw const AccountError(
+                      409, 'STOCK_SALES_RULE_NOT_PUBLISHED');
+                }
                 return {
                   'seller_person_id': d.person.id,
-                  'spec_id': v['spec_id'],
-                  'rule_id': v['rule_id'],
+                  'sales_publication_id': publication['id'],
+                  'spec_id': publication['spec_id'],
+                  'rule_id': publication['rule_id'],
                   'city': v['city'],
                   'description': v['description'],
                   'file_id': full,
@@ -256,8 +424,8 @@ class _StockListingFormState extends State<StockListingForm> {
                   'rights_evidence_ids':
                       v5InputIds(v['rights_evidence_ids'] ?? ''),
                   'qualification': {
-                    'minimum_halo_level': 1,
-                    'source_ref': '已读真人档案 ${d.person.id} 的 L${d.halo}，提交时重新核对'
+                    'minimum_halo_level': 2,
+                    'source_ref': 'CONTRACT_20261029_19_ART5_23_SEC1'
                   },
                   'payment_window_minutes':
                       v5InputInt(v['payment_window_minutes'], max: 10080),
@@ -273,6 +441,8 @@ class _StockListingFormState extends State<StockListingForm> {
               onSuccess: (r) => Navigator.pushReplacementNamed(
                   context, '/stock/listing?listingId=${r['id']}'),
               extra: (v, set, enabled) => [
+                    if (publications[v['publication_id']] != null)
+                      appNotice(publications[v['publication_id']]!['terms']),
                     tradeFact('已选正式文件',
                         v['file_id'] == null ? '尚未上传或选择' : '本次已上传的私有正式文件'),
                     tradeFact(
@@ -288,6 +458,10 @@ class _StockListingFormState extends State<StockListingForm> {
                       SupplyFiles(
                           api: SupplyApi(widget.session),
                           purpose: 'RIGHTS_EVIDENCE',
+                          acceptedPurposes: const {
+                            'RIGHTS_EVIDENCE',
+                            'CONSENT_EVIDENCE'
+                          },
                           ids: v5InputIds(v['rights_evidence_ids'] ?? ''),
                           enabled: enabled,
                           onChanged: (ids) =>

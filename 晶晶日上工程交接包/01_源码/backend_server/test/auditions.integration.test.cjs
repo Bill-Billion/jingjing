@@ -9,11 +9,28 @@ test('audition booking, delivery, privacy and refunds in isolated MySQL',{skip:!
 
 
  const S=await require('./helpers/auditions-seed.cjs').seedAuditions(db),{seller,buyer,reviewer,outsider,buyer2,trade}=S;
- server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
+ let duringEvidenceRead=null;const storageFactory=()=>({...S.storageFactory(),async getBuffer(k){if(duringEvidenceRead){const action=duringEvidenceRead;duringEvidenceRead=null;await action();}return S.bytes.get(k);}});
+ server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:storageFactory}).listen(0,'127.0.0.1');await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1',fixtures=[];
  async function call(method,url,user=buyer,body,party=user.personal_party_id,headers={}){const h={Authorization:'Bearer '+user.token,...(party?{'X-Acting-Party':party}:{}),...headers};if(body!==undefined)h['Content-Type']='application/json';const res=await fetch(base+url,{method,headers:h,...(body===undefined?{}:{body:JSON.stringify(body)})});if(!res.headers.get('content-type')?.includes('json'))return {status:res.status,bytes:Buffer.from(await res.arrayBuffer())};const json=await res.json();fixtures.push({method,path:new URL(base+url).pathname,schema:res.status===200?(url==='/auditions/checkout'?'TradeRecordResponse':'AuditionResponse'):'ErrorResponse',value:json});return {status:res.status,data:json.data,error:json.error};}
  const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;},bad=(r,c)=>assert.equal(r.error?.code,c,JSON.stringify(r)),headers=(r,k=key())=>({'Idempotency-Key':k,...(r?{'If-Match':'"'+r.object_version+'"'}:{})});
  const read=(r,u=buyer)=>call('GET','/auditions/records/'+r.id,u),post=(r,action,u,body={},party=u.personal_party_id,k=key())=>call('POST','/auditions/bookings/'+r.id+'/'+action,u,body,party,headers(r,k));
  let offer,booking,order,paid;
+ await t.test('future or expired manual review cannot supply audition options or a new offer',async()=>{
+  const row=(await db.execute('SELECT data_json FROM artist_records WHERE id=?',[S.haloId]))[0][0];const original=typeof row.data_json==='string'?JSON.parse(row.data_json):row.data_json;
+  for(const patch of [{valid_from:'2098-01-01T00:00:00.000Z'},{valid_until:'2020-02-01T00:00:00.000Z'}]){
+   const data={...original,...patch};await db.execute('UPDATE artist_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),digest(data),S.haloId]);
+   bad(await call('GET','/auditions/offer-options?person_id='+seller.person.id+'&kind=RULE',seller),'AUDITION_L2_REQUIRED');
+   bad(await call('POST','/auditions/offers',seller,{offer:S.offer},seller.personal_party_id,headers()),'AUDITION_L2_REQUIRED');
+  }
+  await db.execute('UPDATE artist_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(original),digest(original),S.haloId]);
+ });
+ await t.test('first offer reads qualified rules and minimal authorizations with no prior offer',async()=>{
+  assert.equal(ok(await call('GET','/auditions/records?kind=OFFER',seller)).items.length,0);
+  const rules=ok(await call('GET','/auditions/offer-options?person_id='+seller.person.id+'&kind=RULE',seller));assert.equal(rules.items[0].id,S.ruleId);assert(!JSON.stringify(rules).includes('marketplace_finance'));
+  const choices=ok(await call('GET','/auditions/offer-options?person_id='+seller.person.id+'&kind=AUTHORIZATION',seller));assert.equal(choices.items[0].public_consent_id,S.publicConsent.id);assert(!JSON.stringify(choices).includes(S.evidence.id));
+  bad(await call('GET','/auditions/offer-options?person_id='+seller.person.id+'&kind=RULE',outsider),'ARTIST_NOT_FOUND');
+ });
+
  const reviewDelivery=async r=>ok(await post(r,'delivery-review',reviewer,{decision:'APPROVE',checks:{content_reviewed:true,files_viewable:true,consent_verified:true},reason:'synthetic independent media review'},null));
  async function makeBooking(){let r=ok(await call('POST','/auditions/bookings',buyer,{offer_id:offer.id,offer_sha256:offer.content_sha256,appointment:S.appointment},buyer.personal_party_id,headers()));return ok(await post(r,'reviews',reviewer,{decision:'APPROVE',checks:{purpose_verified:true,venue_verified:true,adult_parties_verified:true},reason:'synthetic independent'},null));}
  async function checkout(r){return ok(await call('POST','/auditions/checkout',buyer,{booking_id:r.id,booking_sha256:r.content_sha256},buyer.personal_party_id,headers()));}
@@ -38,16 +55,113 @@ test('audition booking, delivery, privacy and refunds in isolated MySQL',{skip:!
  await t.test('verified payment is idempotent and still needs artist acceptance',async()=>{paid=await S.payment(order);await trade.applyPayment(paid.proof);booking=ok(await read(booking));assert.equal(booking.current_status,'AWAITING_ACCEPTANCE');assert.equal(booking.conversation_status,'AWAITING_ACCEPTANCE');assert.equal((await db.execute('SELECT id FROM trade_journal WHERE order_id=?',[order.id]))[0].length,1);});
  await t.test('accept opens conversation; duplicate decision returns same booking',async()=>{const k=key(),before=booking;booking=ok(await post(before,'decision',seller,{decision:'ACCEPT',reason:'agreed'},seller.personal_party_id,k));const duplicate=ok(await post(before,'decision',seller,{decision:'ACCEPT',reason:'agreed'},seller.personal_party_id,k));assert.equal(duplicate.object_version,booking.object_version);assert.equal(booking.conversation_status,'OPEN');bad(await read(booking,buyer2),'ARTIST_NOT_FOUND');});
  await t.test('contact requires separate consent and is never embedded in booking/order',async()=>{booking=ok(await post(booking,'contact',buyer,{name:'Synthetic buyer',phone:'13900009801',consent:true}));const response=ok(await read(booking));assert.equal(JSON.stringify(response).includes('13900009801'),false);assert.equal(ok(await call('GET','/auditions/bookings/'+booking.id+'/contacts',seller)).contacts.BUYER.phone,'13900009801');});
- await t.test('conversation deduplicates, rejects bait, and unauthorized support cannot read',async()=>{const k=key(),url='/auditions/bookings/'+booking.id+'/messages';const a=ok(await call('POST',url,buyer,{body:'Agreed studio'},buyer.personal_party_id,headers(null,k)));assert.equal(ok(await call('POST',url,buyer,{body:'Agreed studio'},buyer.personal_party_id,headers(null,k))).id,a.id);bad(await call('POST',url,buyer,{body:'https://offsite.example'},buyer.personal_party_id,headers()),'MESSAGE_REQUIRES_MODERATION');bad(await call('GET',url,reviewer,undefined,null),'AUDITION_SUPPORT_NOT_ASSIGNED');assert.equal(ok(await call('GET',url,seller)).items.length,1);});
+ await t.test('conversation deduplicates, rejects bait, and unauthorized support cannot read',async()=>{const k=key(),url='/auditions/bookings/'+booking.id+'/messages';const a=ok(await call('POST',url,buyer,{body:'Agreed studio'},buyer.personal_party_id,headers(null,k)));assert.equal(ok(await call('POST',url,buyer,{body:'Agreed studio'},buyer.personal_party_id,headers(null,k))).id,a.id);bad(await call('POST',url,buyer,{body:'https://offsite.example'},buyer.personal_party_id,headers()),'MESSAGE_REQUIRES_MODERATION');bad(await call('GET',url,reviewer,undefined,null),'AUDITION_SUPPORT_NOT_ASSIGNED');assert.equal(ok(await call('GET',url,seller)).items.length,1);const notification=(await db.execute("SELECT * FROM ops_events WHERE domain='AUDITION_MESSAGE' AND record_id=?",[a.id]))[0];assert.equal(notification.length,1);await db.execute('INSERT INTO audition_reads(booking_id,account_id,message_id) VALUES (?,?,?)',[booking.id,seller.account_id,a.id]);assert.equal(ok(await call('GET',url,seller)).items[0].is_read,false);ok(await call('POST',url+'/read',seller,{message_ids:[a.id]},seller.personal_party_id,headers()));assert.equal(ok(await call('GET',url,seller)).items[0].is_read,true);assert.equal((await db.execute('SELECT event_id FROM ops_reads WHERE account_id=? AND party_id=? AND event_id=?',[seller.account_id,seller.personal_party_id,notification[0].id]))[0].length,1);});
  await t.test('departed safety case freezes contact and settlement without credit penalty',async()=>{booking=ok(await post(booking,'travel',seller,{action:'DEPART',evidence_asset_ids:[S.arrival.id]}));booking=ok(await post(booking,'cancel',seller,{reason:'unsafe venue change',safety:true,evidence_asset_ids:[S.arrival.id]}));assert.equal(booking.current_status,'DISPUTED');assert.equal(booking.conversation_status,'FROZEN');bad(await call('GET','/auditions/bookings/'+booking.id+'/contacts'),'AUDITION_CONTACT_NOT_AVAILABLE');await assert.rejects(db.withTransaction(async tx=>require('../src/modules/auditions/context').financeGate(tx,await require('../src/modules/auditions/context').order(tx,order.id))),{code:'AUDITION_SETTLEMENT_NOT_READY'});booking=ok(await post(booking,'resolution',reviewer,{decision:'RESUME',refund_minor:0,reason:'resolved with genuine evidence',evidence_asset_ids:[S.arrival.id]},null));});
  await t.test('delivery requires correct count, authorization and arrival',async()=>{bad(await post(booking,'delivery',seller,{delivery:S.delivery}),'AUDITION_NOT_DELIVERABLE');booking=await patch(booking,{appointment:{...booking.data.appointment,starts_at:'2026-01-01T00:00:00.000Z',ends_at:'2026-01-01T01:00:00.000Z'}});booking=ok(await post(booking,'travel',seller,{action:'ARRIVE',evidence_asset_ids:[S.arrival.id]}));bad(await post(booking,'delivery',seller,{delivery:{...S.delivery,photos:S.delivery.photos.slice(0,5)}}),'AUDITION_DELIVERY_COUNT_MISMATCH');booking=ok(await post(booking,'delivery',seller,{delivery:S.delivery}));bad(await call('GET','/auditions/bookings/'+booking.id+'/materials/'+S.delivery.photos[0]),'AUDITION_DELIVERY_REVIEW_REQUIRED');booking=await reviewDelivery(booking);assert.equal(booking.performance_rights_granted,false);});
+ await t.test('paid audition conversation provides a scoped working draft and reviewed personal copy',async()=>{
+  const paid=await paidBooking();let r=ok(await post(paid.r,'decision',seller,{decision:'ACCEPT',reason:'Synthetic agreed audition'}));
+  ok(await call('POST','/auditions/bookings/'+r.id+'/messages',buyer,{body:'Synthetic applicant confirms public venue'},buyer.personal_party_id,headers()));
+  ok(await call('POST','/auditions/bookings/'+r.id+'/messages',seller,{body:'Synthetic counterparty confirms appointment'},seller.personal_party_id,headers()));
+  await require('./support/privacy-business-copy.cjs').verify({base,db,source:'AUDITION',sourceId:r.id,buyer,handler:reviewer,reviewer:outsider,outsider:buyer2,upload:(u,body)=>S.supply.upload(u.ctx,{party_id:u.personal_party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body,operation_key:key()})});
+  r=ok(await read(r));ok(await post(r,'cancel',buyer,{reason:'Synthetic copy scenario complete; release reserved appointment',safety:false,evidence_asset_ids:[]}));
+ });
  await t.test('actual private bytes required before receipt and acceptance',async()=>{bad(await post(booking,'receipt',buyer),'AUDITION_RECEIPT_NOT_READY');const r=await call('GET','/auditions/bookings/'+booking.id+'/materials/'+S.delivery.photos[0]);assert.equal(r.status,200);assert.ok(r.bytes.length);for(const asset of [...S.delivery.photos.slice(1),...S.delivery.videos])assert.equal((await call('GET','/auditions/bookings/'+booking.id+'/materials/'+asset)).status,200);booking=ok(await read(booking));booking=ok(await post(booking,'receipt',buyer));assert.ok(booking.data.deadline_at);booking=ok(await post(booking,'confirm',buyer));assert.equal(booking.current_status,'FULFILLED');assert.equal(booking.conversation_status,'ARCHIVED');bad(await call('POST','/auditions/bookings/'+booking.id+'/messages',buyer,{body:'post completion'},buyer.personal_party_id,headers()),'AUDITION_CONVERSATION_ARCHIVED');});
+ await t.test('MCN same-order income follows actual pending, accepted, declined, expired and refunded audition outcomes',async()=>{
+  const org=await S.parties.createOrganization(outsider.ctx,{display_name:'Synthetic audition income history',operation_key:key()});
+  await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[org.party_id]);
+  const G=require('../src/modules/gigs/repository').createGigsRepository(db,{resolvePrincipal:S.resolvePrincipal});
+  const proof=await S.supply.upload(outsider.ctx,{party_id:org.party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from('Synthetic MCN cooperation evidence'),operation_key:key()});
+  const relation={scope:'COMMERCIAL',valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',exclusive:false,terms:'Synthetic direct cooperation for booking income test',commission:{platform_bps:2200,mcn_bps:0},evidence_asset_ids:[proof.id],v5_terms:{version:'V5',supply_share_bps:2000}};
+  let relationRecord=await G.relation(outsider.ctx,{party_id:org.party_id,artist_party_id:seller.personal_party_id,...relation,operation_key:key()});
+  relationRecord=await G.relationDecision(seller.ctx,{party_id:seller.personal_party_id,record_id:relationRecord.id,expected_version:relationRecord.object_version,decision:'ACCEPT',reason:'Artist accepts synthetic cooperation',operation_key:key()});const rel=relationRecord.id;
+  const invite=await S.parties.inviteMember(outsider.ctx,{party_id:org.party_id,invitee_account_id:buyer2.account_id,expires_at:'2099-01-01T00:00:00.000Z',operation_key:key()});
+  await S.parties.respondInvitation(buyer2.ctx,{party_id:org.party_id,invitation_id:invite.invitation_id,expected_version:1,decision:'ACCEPT',operation_key:key()});
+  const delegation=await S.artists.createDelegation(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,delegation:{organization_party_id:org.party_id,relation_id:rel,actions:['READ_PROFILE','MANAGE_AUDITIONS'],valid_from:relation.valid_from,valid_until:relation.valid_until,evidence_asset_ids:[S.evidence.id],terms:'Synthetic income and booking management'},operation_key:key()});
+  const E=require('../src/modules/engagement/repository').createEngagementRepository(db,{resolvePrincipal:S.resolvePrincipal});
+  const grant=await E.staffGrant(outsider.ctx,{party_id:org.party_id,account_id:buyer2.account_id,person_ids:[seller.person.id],actions:['READ_INCOME','MANAGE_AUDITIONS'],valid_until:'2099-01-01T00:00:00.000Z',operation_key:key()});
+  async function income(o,u=outsider){const url='/engagement/mcn/dashboard?order_id='+o.id+'&person_id='+seller.person.id;const response=await fetch(base+url,{headers:{Authorization:'Bearer '+u.token,'X-Acting-Party':org.party_id}});const json=await response.json();fixtures.push({method:'GET',path:'/api/v1/engagement/mcn/dashboard',schema:response.status===200?'EngagementResponse':'ErrorResponse',value:json});assert.equal(response.status,200,JSON.stringify(json));return json.data;}
+  const records=[];
+  try{
+   for(const decision of ['ACCEPT','DECLINE','EXPIRE']){
+    const x=await paidBooking();let v=await income(x.o);assert.equal(v.orders.length,1);assert.deepEqual(v.orders[0].person_ids,[seller.person.id]);assert.equal(v.orders[0].attribution_basis,'AUDITION_ORDER_SNAPSHOT');assert.equal(v.orders[0].audition.acceptance_result,'PENDING');assert.equal(v.orders[0].order_received_minor,10000);assert.equal(v.total_order_received_minor,0); // Mock payment is not production income.
+    assert.deepEqual((await income(x.o,buyer2)).orders,[]);
+    await E.assign(outsider.ctx,{party_id:org.party_id,booking_id:x.r.id,account_id:buyer2.account_id,operation_key:key()});assert.equal((await income(x.o,buyer2)).orders.length,1);
+    let r;
+    if(decision==='EXPIRE'){r=await patch(x.r,{accept_by:'2020-01-01T00:00:00.000Z'});r=ok(await post(r,'expire',buyer));}
+    else r=ok(await post(x.r,'decision',seller,{decision,reason:'Synthetic same-order result'}));
+    const expected={ACCEPT:'ACCEPTED',DECLINE:'DECLINED',EXPIRE:'EXPIRED'}[decision];
+    v=await income(x.o);assert.equal(v.orders[0].audition.acceptance_result,expected);assert.equal(v.orders[0].audition.status,r.current_status);
+    assert.equal(JSON.stringify(v.orders[0]).includes(S.appointment.address),false);assert.equal(JSON.stringify(v.orders[0]).includes('Synthetic same-order result'),false);
+    if(decision==='ACCEPT'){assert.ok(v.orders[0].audition.accepted_at);r=ok(await post(r,'cancel',buyer,{reason:'Clear synthetic schedule',safety:false,evidence_asset_ids:[]}));}
+    let refund=await trade.read(reviewer.ctx,{record_id:r.data.refund_id,party_id:null});refund=await trade.review(reviewer.ctx,{record_id:refund.id,expected_version:refund.object_version,decision:'APPROVED',reason:'Synthetic result refund',operation_key:key()});await trade.claim(reviewer.ctx,refund.id,null,'REFUND');
+    await trade.applyRefund(refund.id,{...S.config,refund_id:refund.id,payment_id:x.p.payment.id,transaction_id:x.p.proof.transaction_id,currency:'CNY',amount_minor:10000,status:'SUCCEEDED'});
+    v=await income(x.o);assert.equal(v.orders[0].audition.status,'REFUNDED');assert.equal(v.orders[0].audition.acceptance_result,expected);assert.equal(v.orders[0].order_refunded_minor,10000);assert.equal(v.orders[0].mcn_accrual_minor,0);assert.equal(v.orders[0].contract_sha256,digest(x.o.data.contract));records.push({order_id:x.o.id,booking_id:x.r.id,acceptance_result:expected,refunded:true});
+   }
+   await E.revokeStaff(outsider.ctx,{party_id:org.party_id,record_id:grant.id,expected_version:grant.object_version,reason:'Scope ended',operation_key:key()});
+   await assert.rejects(E.mcnDashboard(buyer2.ctx,{party_id:org.party_id}),{code:'MCN_EMPLOYEE_SCOPE_REQUIRED'});
+   await fs.writeFile(path.resolve(__dirname,'../../../../.local/mcn-audition-outcomes.json'),JSON.stringify({synthetic_only:true,actual_http_business_actions:true,records,no_frontend:true},null,2));
+  }finally{
+   await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:delegation.id,expected_version:delegation.object_version,reason:'Close synthetic income delegation',operation_key:key()});
+   await G.relationDecision(seller.ctx,{party_id:seller.personal_party_id,record_id:relationRecord.id,expected_version:relationRecord.object_version,decision:'END',reason:'Close synthetic cooperation',operation_key:key()});
+  }
+ });
  await t.test('decline creates one refund request; verified provider refund required for refunded status',async()=>{const x=await paidBooking();let r=ok(await post(x.r,'decision',seller,{decision:'DECLINE',reason:'unavailable'}));assert.equal(r.current_status,'REFUND_REQUIRED');assert.equal(r.refund_is_verified,false);let refund=await trade.read(reviewer.ctx,{record_id:r.data.refund_id,party_id:null});assert.equal(refund.data.amount_minor,10000);refund=await trade.review(reviewer.ctx,{record_id:refund.id,expected_version:refund.object_version,decision:'APPROVED',reason:'verified synthetic cancellation',operation_key:key()});await trade.claim(reviewer.ctx,refund.id,null,'REFUND');await trade.applyRefund(refund.id,{...S.config,refund_id:refund.id,payment_id:x.p.payment.id,transaction_id:x.p.proof.transaction_id,currency:'CNY',amount_minor:10000,status:'SUCCEEDED'});r=ok(await read(r));assert.equal(r.current_status,'REFUNDED');assert.equal(r.refund_is_verified,true);});
  await t.test('unaccepted expiry cannot be accepted, goes through refund request',async()=>{const x=await paidBooking();const r=await patch(x.r,{accept_by:'2020-01-01T00:00:00.000Z'});bad(await post(r,'decision',seller,{decision:'ACCEPT',reason:'too late'}),'AUDITION_NOT_ACCEPTABLE');assert.equal(ok(await post(r,'expire',buyer)).current_status,'REFUND_REQUIRED');});
  await t.test('minor cannot create offer or buy even if client says otherwise',async()=>{await db.execute("UPDATE artist_people SET age_band='MINOR' WHERE id=?",[buyer.person.id]);await assert.rejects(S.auditions.book(buyer.ctx,{party_id:buyer.personal_party_id,offer_id:offer.id,offer_sha256:offer.content_sha256,appointment:S.appointment,operation_key:key()}),{code:'VERIFIED_ADULT_REQUIRED'});await db.execute("UPDATE artist_people SET age_band='ADULT' WHERE id=?",[buyer.person.id]);});
 
  await t.test('legacy order comments cannot bypass dedicated conversation gate',async()=>{bad(await call('POST','/operations/objects/TRADE/'+order.id+'/comments',buyer,{reply_to:null,body:'bypass'},buyer.personal_party_id,headers()),'USE_AUDITION_CONVERSATION');});
  await t.test('automated expiry is lease fenced and creates only one refund request',async()=>{const x=await paidBooking();let r=await patch(x.r,{accept_by:'2020-01-01T00:00:00.000Z'});const jobId=r.data.expiry_job_id,token=key();await db.execute("UPDATE platform_jobs SET status='RUNNING',lease_owner='synthetic-worker',lease_token=?,lease_until=TIMESTAMPADD(SECOND,60,CURRENT_TIMESTAMP(6)) WHERE id=?",[token,jobId]);const job={id:jobId,payload_ref:r.id,lease_owner:'synthetic-worker',lease_token:token};await assert.rejects(S.auditions.expireJob({...job,lease_token:key()}),{code:'LEASE_LOST'});await S.auditions.expireJob(job);await S.auditions.expireJob(job);r=ok(await read(r));assert.equal(r.current_status,'REFUND_REQUIRED');assert.equal((await db.execute("SELECT id FROM trade_records WHERE order_id=? AND kind='REFUND'",[x.o.id]))[0].length,1);});
+ await t.test('one accepted booking cancels before departure, freezes conversation and verifies refund once',async()=>{
+  const x=await paidBooking(),contract=structuredClone(x.o.data.contract);
+  let r=ok(await post(x.r,'decision',seller,{decision:'ACCEPT',reason:'Synthetic same-booking acceptance'}));
+  r=ok(await post(r,'contact',buyer,{name:'Synthetic cancellation buyer',phone:'13900009801',consent:true}));
+  const input={reason:'Synthetic before-departure cancellation',safety:false,evidence_asset_ids:[]},op=key(),before=r;
+  r=ok(await post(before,'cancel',buyer,input,buyer.personal_party_id,op));
+  assert.deepEqual(ok(await post(before,'cancel',buyer,input,buyer.personal_party_id,op)),r);
+  assert.equal(r.current_status,'REFUND_REQUIRED');assert.equal(r.refund_is_verified,false);
+  bad(await call('GET','/auditions/bookings/'+r.id+'/contacts'),'AUDITION_CONTACT_NOT_AVAILABLE');
+  assert.notEqual((await call('POST','/auditions/bookings/'+r.id+'/messages',buyer,{body:'Cannot restart a cancelled job'},buyer.personal_party_id,headers())).status,200);
+  assert.notEqual((await post(r,'travel',seller,{action:'DEPART',evidence_asset_ids:[S.arrival.id]})).status,200);
+  bad(await read(r,buyer2),'ARTIST_NOT_FOUND');
+  let refund=await trade.read(reviewer.ctx,{record_id:r.data.refund_id,party_id:null});
+  refund=await trade.review(reviewer.ctx,{record_id:refund.id,expected_version:refund.object_version,decision:'APPROVED',reason:'Independent cancellation check',operation_key:key()});
+  assert.equal(ok(await read(r)).refund_is_verified,false);
+  await trade.claim(reviewer.ctx,refund.id,null,'REFUND');
+  const proof={...S.config,refund_id:refund.id,payment_id:x.p.payment.id,transaction_id:x.p.proof.transaction_id,currency:'CNY',amount_minor:10000,status:'SUCCEEDED'};
+  await trade.applyRefund(refund.id,proof);await trade.applyRefund(refund.id,proof);
+  r=ok(await read(r));assert.equal(r.current_status,'REFUNDED');assert.equal(r.refund_is_verified,true);
+  const final=await trade.read(buyer.ctx,{record_id:x.o.id,party_id:buyer.personal_party_id});assert.deepEqual(final.data.contract,contract);
+  assert.deepEqual(final.data.financial,{received_minor:10000,refunded_minor:10000,net_minor:0});
+  assert.equal((await db.execute("SELECT id FROM trade_journal WHERE order_id=? AND direction='REFUND'",[x.o.id]))[0].length,1);
+  await fs.writeFile(path.resolve(__dirname,'../../../../.local/pm01-audition-aftercare-records.json'),JSON.stringify({synthetic_only:true,database:name,surface:'API',booking_id:r.id,order_id:x.o.id,payment_id:x.p.payment.id,refund_id:refund.id,actors:{buyer:buyer.account_id,artist:seller.account_id,independent_reviewer:reviewer.account_id},financial:final.data.financial,conversation_status:r.conversation_status,performance_rights_granted:r.performance_rights_granted,limits:['Synthetic identity, materials and trusted payment/refund receipts','No page, native or live provider acceptance']},null,2));
+ });
+ await t.test('partial and full refunds followed by payment review freeze booking and T+1 settlement',async()=>{
+  for(const refundMinor of [4000,10000]){
+  const x=await paidBooking();let r=ok(await post(x.r,'decision',seller,{decision:'ACCEPT',reason:'Synthetic partial refund journey'}));
+  r=ok(await post(r,'travel',seller,{action:'DEPART',evidence_asset_ids:[S.arrival.id]}));
+  r=ok(await post(r,'cancel',seller,{reason:'Unsafe changed venue',safety:true,evidence_asset_ids:[S.arrival.id]}));
+  r=ok(await post(r,'resolution',reviewer,{decision:'REFUND',refund_minor:refundMinor,reason:'Independent partial refund decision',evidence_asset_ids:[S.arrival.id]},null));
+  let refund=await trade.read(reviewer.ctx,{record_id:r.data.refund_id,party_id:null});
+  refund=await trade.review(reviewer.ctx,{record_id:refund.id,expected_version:refund.object_version,decision:'APPROVED',reason:'Independent refund',operation_key:key()});
+  await trade.claim(reviewer.ctx,refund.id,null,'REFUND');
+  await trade.applyRefund(refund.id,{...S.config,refund_id:refund.id,payment_id:x.p.payment.id,transaction_id:x.p.proof.transaction_id,currency:'CNY',amount_minor:refundMinor,status:'SUCCEEDED'});
+  r=ok(await read(r));const settledStatus=refundMinor===10000?'REFUNDED':'PARTIAL_REFUND_SETTLED';assert.equal(r.current_status,settledStatus);
+  const gate=()=>db.withTransaction(async tx=>require('../src/modules/auditions/context').financeGate(tx,await require('../src/modules/auditions/context').order(tx,x.o.id)));
+  if(refundMinor<10000)await assert.rejects(gate,{code:'AUDITION_SETTLEMENT_NOT_READY'});else await gate();
+  r=await patch(r,{fulfilled_at:'2020-01-01T00:00:00.000Z'});await gate();
+  await trade.applyPayment({...x.p.proof,status:'REVIEW_REQUIRED'});
+  const orderNow=await trade.read(buyer.ctx,{record_id:x.o.id,party_id:buyer.personal_party_id});
+  assert.equal(orderNow.current_status,'PAYMENT_REVIEW_REQUIRED');
+  r=ok(await read(r));assert.equal(r.current_status,'PAYMENT_REVIEW_REQUIRED');
+  await assert.rejects(gate,{code:'AUDITION_SETTLEMENT_NOT_READY'});
+  assert.notEqual(r.conversation_status,'OPEN');
+  // Historical booking snapshots may lag the order: settlement must still fail closed.
+  const staleData={...r.data,status:settledStatus};
+  await db.execute('UPDATE audition_records SET current_status=?,data_json=?,data_sha256=? WHERE id=?',[settledStatus,JSON.stringify(staleData),digest(staleData),r.id]);
+  await assert.rejects(gate,{code:'AUDITION_SETTLEMENT_NOT_READY'});
+  }
+ });
+
  await t.test('before departure cancellation is full refund even for safety reason',async()=>{const x=await paidBooking();let r=ok(await post(x.r,'decision',seller,{decision:'ACCEPT',reason:'yes'}));r=ok(await post(r,'cancel',buyer,{reason:'changed plan',safety:true,evidence_asset_ids:[]}));assert.equal(r.current_status,'REFUND_REQUIRED');assert.equal(r.data.refund_minor,10000);});
 
  await t.test('custody channel is captured at checkout without changing old contracts or claiming real payment',async()=>{
@@ -66,8 +180,55 @@ test('audition booking, delivery, privacy and refunds in isolated MySQL',{skip:!
   let job=await viewed();const [[file]]=await db.execute('SELECT object_key FROM supply_assets WHERE id=?',[S.delivery.videos[0]]),bytes=S.bytes.get(file.object_key);S.bytes.delete(file.object_key);const handler=require('../src/modules/auditions/acceptance-handler').createAuditionHandlers(db,{storageFactory:S.storageFactory}).get('AUDITION_ACCEPTANCE');await handler.execute(job);r=ok(await read(r));assert.equal(r.current_status,'DELIVERED');assert.equal(r.data.deadline_at,null);bad(await post(r,'receipt',buyer),'AUDITION_RECEIPT_NOT_READY');S.bytes.set(file.object_key,bytes);job=await viewed();await assert.rejects(S.auditions.finishTimeout({...job,lease_token:key()},true),{code:'LEASE_LOST'});await handler.execute(job);await handler.execute(job);r=ok(await read(r));assert.equal(r.current_status,'FULFILLED');assert.equal(r.data.acceptance_method,'AGREED_TIMEOUT');await assert.rejects(db.withTransaction(async tx=>require('../src/modules/auditions/context').financeGate(tx,await require('../src/modules/auditions/context').order(tx,x.o.id))),{code:'AUDITION_SETTLEMENT_NOT_READY'});r=await patch(r,{fulfilled_at:'2020-01-01T00:00:00.000Z'});await db.withTransaction(async tx=>require('../src/modules/auditions/context').financeGate(tx,await require('../src/modules/auditions/context').order(tx,x.o.id)));assert.equal((await call('GET','/auditions/bookings/'+r.id+'/materials/'+S.delivery.photos[0])).status,200);
  });
  await t.test('same artist cannot accept two overlapping appointments and one can be rescheduled later',async()=>{const x=await paidBooking(),y=await paidBooking();const replies=await Promise.all([x,y].map(z=>post(z.r,'decision',seller,{decision:'ACCEPT',reason:'same slot'})));assert.equal(replies.filter(z=>z.status===200).length,1);assert.equal(replies.filter(z=>z.error?.code==='AUDITION_SCHEDULE_CONFLICT').length,1,JSON.stringify(replies));for(const z of [x,y]){const r=ok(await read(z.r));ok(await post(r,'cancel',buyer,{reason:'release synthetic slot',safety:false,evidence_asset_ids:[]}));}});
+ await t.test('independent support reads only live linked dispute evidence, and access ends on resolution',async()=>{
+  const x=await paidBooking();let r=ok(await post(x.r,'decision',seller,{decision:'ACCEPT',reason:'synthetic test'}));
+  r=ok(await post(r,'travel',seller,{action:'DEPART',evidence_asset_ids:[S.arrival.id]}));
+  r=ok(await post(r,'cancel',seller,{reason:'synthetic safety case',safety:true,evidence_asset_ids:[]}));
+  bad(await post(r,'cancel',seller,{reason:'duplicate case',safety:true,evidence_asset_ids:[]}),'AUDITION_DISPUTE_ALREADY_OPEN');
+  assert([403,404].includes((await post(r,'dispute-evidence',outsider,{evidence_asset_ids:[S.arrival.id]})).status));
+  bad(await post(r,'dispute-evidence',buyer,{evidence_asset_ids:[S.arrival.id]}),'PRIVATE_MATERIAL_NOT_READY');
+  const buyerEvidence=await S.supply.upload(buyer.ctx,{party_id:buyer.personal_party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from('synthetic buyer evidence'),operation_key:key()});
+  r=ok(await post(r,'dispute-evidence',buyer,{evidence_asset_ids:[buyerEvidence.id]}));
+  bad(await post(r,'dispute-evidence',seller,{evidence_asset_ids:[S.delivery.photos[0]]}),'PRIVATE_MATERIAL_NOT_READY');
+  const evidenceKey=key(),before=r;r=ok(await post(before,'dispute-evidence',seller,{evidence_asset_ids:[S.arrival.id]},seller.personal_party_id,evidenceKey));
+  assert.deepEqual(r.data.dispute.evidence_asset_ids,[buyerEvidence.id,S.arrival.id]);assert.equal(ok(await post(before,'dispute-evidence',seller,{evidence_asset_ids:[S.arrival.id]},seller.personal_party_id,evidenceKey)).object_version,r.object_version);
+  assert.equal(ok(await post(r,'dispute-evidence',seller,{evidence_asset_ids:[S.arrival.id]})).object_version,r.object_version);
+  bad(await post(r,'resolution',reviewer,{decision:'RESUME',refund_minor:0,reason:'unlinked evidence',evidence_asset_ids:[S.evidence.id]},null),'AUDITION_EVIDENCE_NOT_AVAILABLE');
+  const route='/auditions/bookings/'+r.id+'/dispute-evidence/';
+  bad(await call('GET',route+S.arrival.id,outsider,undefined,null),'AUDITION_OPERATOR_FORBIDDEN');
+  bad(await call('GET',route+S.evidence.id,reviewer,undefined,null),'AUDITION_EVIDENCE_NOT_AVAILABLE');
+  await require('../src/modules/governance/operator-access').maintainOperatorGrant(db,{account_id:seller.account_id,action:'AUDITION_SUPPORT',enabled:true,expected_version:0,expires_at:null,authority_ref:'synthetic:case-test',reason:'synthetic only'});
+  bad(await call('GET',route+S.arrival.id,seller,undefined,null),'SELF_REVIEW_FORBIDDEN');
+  const file=await call('GET',route+S.arrival.id,reviewer,undefined,null);assert.equal(file.status,200);assert.equal(file.bytes.toString(),S.bytes.get((await db.execute('SELECT object_key FROM supply_assets WHERE id=?',[S.arrival.id]))[0][0].object_key).toString());
+  assert.equal((await call('GET',route+buyerEvidence.id,reviewer,undefined,null)).status,200);
+  const requestId=key(),executionId=key(),restrictionId=key(),empty=JSON.stringify({});
+  await db.execute('INSERT INTO privacy_requests(id,account_id,request_json,request_sha256,response_due_on) VALUES (?,?,?,?,?)',[requestId,seller.account_id,empty,digest({}),'2099-01-01']);
+  await db.execute("INSERT INTO privacy_executions(id,request_id,action_code,target_id,proposed_by,current_status,payload_json,payload_sha256) VALUES (?,?,?,?,?,'EXECUTED',?,?)",[executionId,requestId,'RESTRICT_CONTENT',S.arrival.id,seller.account_id,empty,digest({})]);
+  await db.execute("INSERT INTO content_restrictions(id,target_kind,target_id,execution_id) VALUES (?,'ASSET',?,?)",[restrictionId,S.arrival.id,executionId]);
+  bad(await call('GET',route+S.arrival.id,reviewer,undefined,null),'CONTENT_RESTRICTED');bad(await call('GET',route+S.arrival.id,outsider,undefined,null),'AUDITION_OPERATOR_FORBIDDEN');
+  bad(await post(r,'resolution',reviewer,{decision:'RESUME',refund_minor:0,reason:'restricted evidence',evidence_asset_ids:[S.arrival.id]},null),'CONTENT_RESTRICTED');
+  await db.execute("UPDATE content_restrictions SET current_status='RELEASED' WHERE id=?",[restrictionId]);assert.equal((await call('GET',route+S.arrival.id,reviewer,undefined,null)).status,200);
+  duringEvidenceRead=()=>db.execute("UPDATE content_restrictions SET current_status='ACTIVE' WHERE id=?",[restrictionId]);bad(await call('GET',route+S.arrival.id,reviewer,undefined,null),'CONTENT_RESTRICTED');await db.execute("UPDATE content_restrictions SET current_status='RELEASED' WHERE id=?",[restrictionId]);
+  async function reviewerGrant(enabled){const [[grant]]=await db.execute("SELECT object_version FROM governance_operator_grants WHERE account_id=? AND action_code='AUDITION_SUPPORT'",[reviewer.account_id]);await require('../src/modules/governance/operator-access').maintainOperatorGrant(db,{account_id:reviewer.account_id,action:'AUDITION_SUPPORT',enabled,expected_version:grant.object_version,expires_at:null,authority_ref:'synthetic:case-test',reason:'synthetic only'});}
+  duringEvidenceRead=()=>reviewerGrant(false);try{bad(await call('GET',route+S.arrival.id,reviewer,undefined,null),'AUDITION_OPERATOR_FORBIDDEN');}finally{await reviewerGrant(true);}
+  const [[asset]]=await db.execute('SELECT object_key FROM supply_assets WHERE id=?',[S.arrival.id]),bytes=S.bytes.get(asset.object_key);S.bytes.set(asset.object_key,Buffer.from('corrupted'));
+  const corrupted=await call('GET',route+S.arrival.id,reviewer,undefined,null);assert.equal(corrupted.status,503);assert.equal(corrupted.error.code,'SERVICE_UNAVAILABLE');S.bytes.set(asset.object_key,bytes);
+  r=ok(await post(r,'resolution',reviewer,{decision:'RESUME',refund_minor:0,reason:'synthetic independent review',evidence_asset_ids:[S.arrival.id]},null));
+  bad(await call('GET',route+S.arrival.id,reviewer,undefined,null),'AUDITION_EVIDENCE_NOT_AVAILABLE');
+  bad(await post(r,'dispute-evidence',seller,{evidence_asset_ids:[S.arrival.id]}),'AUDITION_DISPUTE_REQUIRED');
+ });
  await t.test('MCN requires this persons explicit audition delegation and loses access immediately on withdrawal',async()=>{const org=await S.parties.createOrganization(outsider.ctx,{display_name:'Synthetic audition MCN',operation_key:key()});await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[org.party_id]);const relation=key(),data={valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',accepted_by:seller.account_id,scope:'COMMERCIAL',v5_terms:{version:'V5',supply_share_bps:2000},evidence_asset_ids:[]};await db.execute("INSERT INTO gig_records(id,kind,owner_party_id,counterparty_id,created_by,current_status,data_json,data_sha256) VALUES (?,'RELATION',?,?,?,'ACTIVE',?,?)",[relation,org.party_id,seller.personal_party_id,outsider.account_id,JSON.stringify(data),digest(data)]);bad(await call('GET','/auditions/records/'+booking.id,outsider,undefined,org.party_id),'ARTIST_DELEGATION_REQUIRED');const d=await S.artists.createDelegation(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,delegation:{organization_party_id:org.party_id,relation_id:relation,actions:['MANAGE_AUDITIONS'],valid_from:data.valid_from,valid_until:data.valid_until,evidence_asset_ids:[S.evidence.id],terms:'synthetic scoped mandate'},operation_key:key()});assert.equal(ok(await call('GET','/auditions/records/'+booking.id,outsider,undefined,org.party_id)).id,booking.id);await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:d.id,expected_version:d.object_version,reason:'mandate withdrawn',operation_key:key()});bad(await call('GET','/auditions/records/'+booking.id,outsider,undefined,org.party_id),'ARTIST_DELEGATION_REQUIRED');});
  await t.test('withdrawn sample consent closes buyer file access without deleting artist archive',async()=>{await S.artists.withdraw(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,record_id:S.sampleConsent.id,expected_version:S.sampleConsent.object_version,reason:'stop trial use',operation_key:key()});bad(await call('GET','/auditions/bookings/'+booking.id+'/materials/'+S.delivery.photos[0]),'AUDITION_SAMPLE_CONSENT_REQUIRED');assert.equal((await db.execute("SELECT id FROM artist_records WHERE id=? AND kind='LOOK'",[booking.data.baseplate_id]))[0].length,1);});
+
+ await t.test('retired offer rule blocks new publication and booking, preserving original paid record',async()=>{
+  const pending=ok(await call('POST','/auditions/offers',seller,{offer:S.offer},seller.personal_party_id,headers()));
+  await db.execute("UPDATE governance_rules SET current_status='RETIRED' WHERE id=?",[S.ruleId]);
+  assert.equal(ok(await call('GET','/auditions/offer-options?person_id='+seller.person.id+'&kind=RULE',seller)).items.length,0);
+  bad(await call('POST','/auditions/offers/'+pending.id+'/reviews',reviewer,{decision:'APPROVE',reason:'retired'},null,headers(pending)),'RULE_NOT_EFFECTIVE');
+  assert.equal(ok(await call('GET','/auditions/catalog',buyer,undefined,null)).items.length,0);
+  assert.equal(ok(await read(booking)).id,booking.id);
+  await db.execute("UPDATE governance_rules SET current_status='EFFECTIVE' WHERE id=?",[S.ruleId]);
+ });
  const out=process.env.JX_AUDITION_HTTP_FIXTURES||path.resolve(__dirname,'../../../..','.local/auditions-http-fixtures.json');await fs.mkdir(path.dirname(out),{recursive:true});await fs.writeFile(out,JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
  }finally{if(server)await new Promise(r=>server.close(r));if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}
 });

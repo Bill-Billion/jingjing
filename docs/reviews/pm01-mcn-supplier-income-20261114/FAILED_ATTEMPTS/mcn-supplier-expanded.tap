@@ -1,0 +1,106 @@
+﻿TAP version 13
+# Subtest: MCN supplier and broker income: real orders, role separation and access
+    # Subtest: same agency sees its actual supplier sale and artist brokerage sale exactly once with separate income roles
+    ok 1 - same agency sees its actual supplier sale and artist brokerage sale exactly once with separate income roles
+      ---
+      duration_ms: 36.1238
+      type: 'test'
+      ...
+    # Subtest: supplier assignment still requires every artist delegation and separate read-income permission
+    ok 2 - supplier assignment still requires every artist delegation and separate read-income permission
+      ---
+      duration_ms: 202.1026
+      type: 'test'
+      ...
+    # Subtest: created period and person filters count an order once; wrong account and another organization see no money
+    ok 3 - created period and person filters count an order once; wrong account and another organization see no money
+      ---
+      duration_ms: 28.6255
+      type: 'test'
+      ...
+    # Subtest: sandbox and unpaid supplier orders remain identifiable but do not inflate verified production totals or posted income
+    not ok 4 - sandbox and unpaid supplier orders remain identifiable but do not inflate verified production totals or posted income
+      ---
+      duration_ms: 19.2917
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\mcn-supplier.integration.test.cjs:81:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":409,"meta":{"request_id":"d9a3ca92-c85f-412d-8ac2-03d7ad08adeb","actor":{"account_id":"81da1079-7058-403a-a9c0-854b0edc6360"},"acting_party":"029d4228-4cdc-48f6-8ad5-025e8bc5f35c"},"error":{"code":"STOCK_ORDER_ALREADY_EXISTS","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\mcn-supplier.integration.test.cjs:42:23)
+        okCall (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\mcn-supplier.integration.test.cjs:46:32)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\mcn-supplier.integration.test.cjs:82:18)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\mcn-supplier.integration.test.cjs:81:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: overlapping roles and inconsistent supplier snapshots fail closed without rewriting the original contract
+    not ok 5 - overlapping roles and inconsistent supplier snapshots fail closed without rewriting the original contract
+      ---
+      duration_ms: 34.7791
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\mcn-supplier.integration.test.cjs:87:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":503,"meta":{"request_id":"d1a4ad30-041b-4387-ab8e-bc40c5e52dd3","actor":{"account_id":"96069774-74b5-4307-83b9-f7f6231923ff"},"acting_party":"65b79205-7743-4219-9678-47f1f54ad90f"},"error":{"code":"SERVICE_UNAVAILABLE","message":"服务暂不可用，请稍后核对状态","retryable":false,"details":[]}}
+        + actual - expected
+        
+        + 'SERVICE_UNAVAILABLE'
+        - 'STORED_CONTENT_MISMATCH'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'STORED_CONTENT_MISMATCH'
+      actual: 'SERVICE_UNAVAILABLE'
+      operator: 'strictEqual'
+      stack: |-
+        bad (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\mcn-supplier.integration.test.cjs:42:98)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\mcn-supplier.integration.test.cjs:91:9)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\mcn-supplier.integration.test.cjs:87:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: partial refund recomputes supplier accrual using original rounding and retains only independently allowed access
+    ok 6 - partial refund recomputes supplier accrual using original rounding and retains only independently allowed access
+      ---
+      duration_ms: 111.0216
+      type: 'test'
+      ...
+    # Subtest: ended artist delegation removes staff history but owner retains original supplier order and full-refund accounting
+    ok 7 - ended artist delegation removes staff history but owner retains original supplier order and full-refund accounting
+      ---
+      duration_ms: 105.0829
+      type: 'test'
+      ...
+    1..7
+not ok 1 - MCN supplier and broker income: real orders, role separation and access
+  ---
+  duration_ms: 8398.1194
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\mcn-supplier.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 8
+# suites 0
+# pass 5
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8601.9974

@@ -1,0 +1,105 @@
+[
+  {
+    "name": "Vue 服务端搜索与真实媒体",
+    "status": "PASS",
+    "details": "ARTIST 与 STOCK/北京code/城市故事关键词返回真实记录；现货2秒/预览1秒；试镜隐藏价格显示未公开。"
+  },
+  {
+    "name": "Vue 机构详情与分页",
+    "status": "PASS",
+    "organization_id": "ecbdc5ec-480b-4f7b-bced-d90b83ae73b2",
+    "first_page": 20,
+    "total_after_next": 23
+  },
+  {
+    "name": "Vue 收藏与真实访问足迹",
+    "status": "PASS",
+    "target_id": "1db884ba-530f-4826-90ca-8540598c6593",
+    "details": "默认关闭；详情收藏后列表可重开；开启后实际重开产生足迹；清空后列表为空且开关保持开启。"
+  },
+  {
+    "name": "App/Vue 同账号收藏与足迹同步",
+    "status": "PASS",
+    "details": "App看到Vue创建的同一收藏；网页清空后App足迹为空；App二次确认关闭后history_enabled=false。"
+  },
+  {
+    "name": "同一工单App/Vue完整处理",
+    "status": "PASS",
+    "ticket_id": "19509315-f9d5-475e-8160-75114396661d",
+    "versions": "1→8",
+    "details": "Vue两附件提交→独立客服受理/要求补件→App上传并明确补交→客服再受理/答复→本人关闭/重开；原两附件和新补件保留。"
+  },
+  {
+    "name": "补件后原附件受控下载",
+    "status": "PASS",
+    "ticket_id": "19509315-f9d5-475e-8160-75114396661d",
+    "asset_id": "2cac201d-7c07-4803-bf20-8f5c492a1be1",
+    "byte_size": 54,
+    "exact_bytes_match": true
+  },
+  {
+    "case": "通知批量已读保留查询后新增消息",
+    "result": "PASS",
+    "detail": "个人身份查询时5条；fixture另产生1条；点击全部已读后仅原5条已读，新1条未读"
+  },
+  {
+    "case": "过期通知快照需重新确认",
+    "result": "PASS",
+    "detail": "fixture使快照过期；点击全部已读收到NOTIFICATION_SNAPSHOT_EXPIRED，页面刷新计数保留1未读，未自动重发批量已读"
+  },
+  {
+    "case": "消息身份隔离及双端一致",
+    "result": "PASS",
+    "detail": "Vue个人保留1新未读，App同账号显示1；切Vue组织身份仍有自己原1未读，不含个人工单"
+  },
+  {
+    "case": "App通知回到原业务",
+    "result": "PASS",
+    "detail": "最新反馈提醒打开support/ticket?ticketId=57c856e0-01cb-4aee-80ae-a37fa4f89f60，标题一致"
+  },
+  {
+    "case": "Vue切身份清理旧工单",
+    "result": "PASS",
+    "detail": "组织通知准确打开机构工单；切个人身份后原工单标题、事件与附件清除，显示SUPPORT_NOT_FOUND"
+  },
+  {
+    "case": "App服务端搜索与作品详情",
+    "result": "PASS",
+    "detail": "作品+北京+城市故事筛选命中真实listing479ef163，进入原详情显示已审核封面及完整0:02/预览0:01"
+  },
+  {
+    "case": "App机构详情与通告续页",
+    "result": "PASS",
+    "detail": "显示已审蓝色合成封面、北京市和制作能力；读取20条后继续至最后3条（10/16/13），下一页入口消失"
+  },
+  {
+    "case": "两端机构封面失效与恢复",
+    "result": "PASS",
+    "detail": "fixture暂移除cover物件，两端刷新清旧图并显示重新读取主图；恢复物件后明确重试重新出现图像"
+  },
+  {
+    "case": "客服权限撤销清旧材料",
+    "result": "PASS",
+    "detail": "工单v8显示3份材料；fixture移除SUPPORT_HANDLE后刷新返回SUPPORT_OPERATOR_FORBIDDEN，旧标题、事件、附件与处理按钮消失"
+  },
+  {
+    "case": "机构申请独立审核版本替换与撤回",
+    "result": "PASS",
+    "detail": "有效负责人PENDING_REVIEW机构可提交新版本abaf2294；上传新主图与私有证明；未审时公众仍读旧版；独立审核读取57字节证明并5项核对通过后公开第二版；本人撤回后Vue公开详情清除标题、封面、通告并显示DIRECTORY_NOT_FOUND"
+  },
+  {
+    "case": "精选提出与独立审核跨端展示",
+    "result": "PASS",
+    "detail": "独立提案者提交精选5d3197ee，经另一审核人3项核对通过；App刷新显示第二版运营推荐，明确不代表明星认证"
+  },
+  {
+    "case": "撤回艺人的收藏清理与跨端取消",
+    "result": "PASS",
+    "detail": "fixture撤回公开艺人；App/Vue刷新均只显示内容已不可用，不再有旧标题、城市或详情入口；App取消后两端清单均为空"
+  },
+  {
+    "case": "最终App公共资料404不封锁其他页面",
+    "result": "PASS",
+    "detail": "最终main.dart.js 2e429515…：已撤回机构显示局部失效与返回目录；不重新登录依次进入精选（艺人撤回后的真实空列表）、搜索并切作品，成功找到479ef163有效影片"
+  }
+]

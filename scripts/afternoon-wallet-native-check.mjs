@@ -1,0 +1,60 @@
+import assert from 'node:assert/strict';
+import {readFile,writeFile,mkdir,unlink} from 'node:fs/promises';
+import {resolve,join} from 'node:path';
+import {createRequire} from 'node:module';
+import {randomBytes,randomUUID,createHash} from 'node:crypto';
+import http from 'node:http';
+import {execFileSync,spawn} from 'node:child_process';
+import {pathToFileURL} from 'node:url';
+const backend=resolve('晶晶日上工程交接包/01_源码/backend_server'),webRoot=resolve('晶晶日上工程交接包/01_源码/frontend_ops_workspace'),appDir=resolve('晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app'),out=resolve('.local/afternoon-wallet-20261104');
+const req=createRequire(join(backend,'package.json')),wr=createRequire(join(webRoot,'package.json')),load=p=>req(join(backend,p));
+load('scripts/test-network-guard.cjs');
+const mysql=req('mysql2/promise'),{openDatabase}=load('src/infrastructure/database'),{migrate}=load('src/infrastructure/database/migrator');
+const {chromium}=wr('playwright-core'),{preview}=await import(pathToFileURL(wr.resolve('vite'))),key=()=>randomUUID();
+const env=JSON.parse(await readFile(process.env.JX_MYSQL_TEST_ENV_FILE,'utf8'));
+for(const [k,v] of Object.entries({NODE_ENV:'test',DB_CLIENT:'mysql',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'}))assert.equal(env[k],v);
+await mkdir(out,{recursive:true});const database='jx_test_wallet_ui_'+randomBytes(8).toString('hex');
+const result={synthetic_only:true,database,started_at:new Date().toISOString(),steps:[],records:{},cleanup:{},failures:[]},secret=randomBytes(32).toString('base64url'),writes=[];
+const watched=['scripts/afternoon-wallet-native-check.mjs','contracts/openapi.yaml','晶晶日上工程交接包/01_源码/backend_server/src/modules/wallet/repository.js','晶晶日上工程交接包/01_源码/backend_server/src/modules/wallet/custody.js','晶晶日上工程交接包/01_源码/backend_server/src/testing/payment-simulator.js','晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/wallet/wallet_pages.dart','晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/wallet/wallet_models.dart','晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/wallet/wallet_api.dart','晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/stock/v5_support.dart','晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/integration_test/afternoon_wallet_local_test.dart','晶晶日上工程交接包/01_源码/frontend_ops_workspace/src/business/wallet.ts','晶晶日上工程交接包/01_源码/frontend_ops_workspace/src/views/BusinessView.vue','晶晶日上工程交接包/01_源码/frontend_ops_workspace/dist/index.html'];
+async function hashes(){return Object.fromEntries(await Promise.all(watched.map(async p=>[p,createHash('sha256').update(await readFile(resolve(p))).digest('hex')])));}
+result.source_sha256=await hashes();
+let control,db,server,proxy,web,browser,reverse,defines,created=false,S,W,sim,base,lost=false,finished=false;
+const record=(name,detail={})=>{result.steps.push({name,...detail});console.log('PASS '+name)};
+try{
+ control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE});
+ await control.query('CREATE DATABASE '+mysql.escapeId(database)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');created=true;db=await openDatabase({...env,MYSQL_DATABASE:database});await migrate(db);
+ S=await load('test/helpers/stock-seed.cjs').seedStock(db);
+ W=load('src/modules/wallet/repository').createWalletRepository(db,{resolvePrincipal:S.resolvePrincipal});
+ for(const u of [S.outsider,S.reviewer])await load('src/modules/governance/operator-access').maintainOperatorGrant(db,{account_id:u.account_id,action:'WALLET_RULE_REVIEW',enabled:true,expected_version:0,expires_at:null,authority_ref:'synthetic:wallet-ui',reason:'isolated test only'});
+ let rule=await W.createRule(S.outsider.ctx,{rule:load('test/helpers/wallet-rule.cjs'),operation_key:key()});rule=await W.reviewRule(S.reviewer.ctx,{record_id:rule.id,expected_version:rule.object_version,decision:'APPROVE',reason:'synthetic independent review',operation_key:key()});
+ sim=await load('src/testing/payment-simulator').createPaymentSimulator(db,{...env,MYSQL_DATABASE:database,JX_PAYMENT_SIMULATOR_ENABLED:'true'},{merchant_party_id:S.seller.personal_party_id,resolvePrincipal:S.resolvePrincipal});
+ const app=load('src/http/account-api').createAccountApi({db,secret:S.secret,supplyStorageFactory:S.storageFactory,tradeProvidersFactory:()=>sim});server=http.createServer(app);await new Promise((y,n)=>{server.once('error',n);server.listen(0,'127.0.0.1',y)});base='http://127.0.0.1:'+server.address().port+'/api/v1';
+ const webPort=5199,origin='http://127.0.0.1:'+webPort;web=await preview({root:webRoot,configFile:false,build:{outDir:join(webRoot,'dist')},preview:{host:'127.0.0.1',port:webPort,strictPort:true,proxy:{'/api':{target:new URL(base).origin}}}});browser=await chromium.launch({executablePath:process.env.CHROME_BIN||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
+ proxy=http.createServer(async(q,s)=>{try{
+  if(q.url==='/__wallet/control'){
+   assert.equal(q.headers.authorization,'Bearer '+secret);const chunks=[];for await(const c of q)chunks.push(c);const x=JSON.parse(Buffer.concat(chunks));let data={ok:true};
+   if(x.action==='setup'){const u=S.buyer;data={account:{account_id:u.account_id,party_id:u.personal_party_id,bearer_token:u.token}};}
+   else if(x.action==='verify-open'){const v=await W.summary(S.buyer.ctx,{party_id:S.buyer.personal_party_id});assert.equal(v.recorded_balance_minor,0);result.records.account_id=v.account_id;record('native-wallet-open',{account_id:v.account_id});}
+   else if(x.action==='capture'){await writeFile(join(out,'after-retry.png'),execFileSync(reverse.adb,['-s',reverse.device,'exec-out','screencap','-p']));}
+   else if(x.action==='verify-topup'){
+    const v=await W.summary(S.buyer.ctx,{party_id:S.buyer.personal_party_id});assert.equal(v.recorded_balance_minor,30000);assert.equal(v.qualifying_growth,0);assert.equal(v.available_points,0);assert.equal(v.membership.level,1);assert.equal(writes.length,2);assert.equal(writes[0].key,writes[1].key);assert.equal(writes[0].amount_minor,30000);assert.equal(writes[1].amount_minor,30000);
+    const rows=await W.records(S.buyer.ctx,{party_id:S.buyer.personal_party_id,kind:'RECHARGE'});assert.equal(rows.items.length,1);result.records.recharge_id=rows.items[0].id;record('native-topup-same-key-recovery',{recharge_id:rows.items[0].id,balance_minor:v.recorded_balance_minor,growth:v.qualifying_growth,level:v.membership.level,same_key:true});
+    const c=await browser.newContext({viewport:{width:1440,height:1100},locale:'zh-CN'});await c.addInitScript(({token,party})=>{sessionStorage.setItem('ops.session.token',token);sessionStorage.setItem('ops.session.selected',party)},{token:S.buyer.token,party:S.buyer.personal_party_id});const p=await c.newPage();p.setDefaultTimeout(15000);p.on('pageerror',e=>result.failures.push(e.message));const response=p.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/wallet/summary'&&r.status()===200);await p.goto(origin+'/wallet/summary');const w=await (await response).json();assert.equal(w.data.account_id,v.account_id);assert.equal(w.data.recorded_balance_minor,30000);await p.waitForLoadState('networkidle');const body=await p.locator('body').innerText();console.log('WALLET_WEB_BODY',body.slice(0,2200));assert(body.includes('本人账目与资格'));await p.screenshot({path:join(out,'wallet-same-account.png'),fullPage:true});record('web-same-wallet-read',{account_id:v.account_id,balance_minor:30000});finished=true;data={balance_minor:v.recorded_balance_minor,growth:v.qualifying_growth,level:v.membership.level,same_key:true};
+   }else throw Error('unknown control');
+   s.setHeader('Content-Type','application/json');s.end(JSON.stringify(data));return;
+  }
+  const u=new URL(q.url,base);
+  s.on('finish',()=>console.log('WALLET_HTTP',q.method,u.pathname,s.statusCode));
+  if(q.method==='POST'&&u.pathname==='/api/v1/wallet/recharges'){
+   assert.equal(q.headers.authorization,'Bearer '+S.buyer.token);assert.equal(q.headers['x-acting-party'],S.buyer.personal_party_id);const chunks=[];for await(const c of q)chunks.push(c);const input=JSON.parse(Buffer.concat(chunks));assert.deepEqual(Object.keys(input),['amount_minor']);writes.push({key:q.headers['idempotency-key'],amount_minor:input.amount_minor});
+   const answer=await sim.topup(S.buyer.ctx,{party_id:S.buyer.personal_party_id,amount_minor:input.amount_minor,operation_key:q.headers['idempotency-key']});
+   if(!lost){lost=true;s.writeHead(503,{'Content-Type':'application/json'});s.end(JSON.stringify({error:{code:'SYNTHETIC_RESPONSE_LOST',message:'synthetic response lost after commit',retryable:true}}));}
+   else{s.writeHead(200,{'Content-Type':'application/json'});s.end(JSON.stringify({data:answer.record}));}return;
+  }
+  const target=http.request(u,{method:q.method,headers:q.headers},r=>{s.writeHead(r.statusCode,r.headers);r.pipe(s);});target.on('error',()=>{s.writeHead(503);s.end()});q.pipe(target);
+ }catch(e){result.failures.push(e.stack);console.error('WALLET_CONTROL',e.stack);s.writeHead(e.status||409,{'Content-Type':'application/json'});s.end(JSON.stringify({error:{code:e.code||'SYNTHETIC_CONTROL_FAILED'}}));}});
+ await new Promise((y,n)=>{proxy.once('error',n);proxy.listen(0,'127.0.0.1',y)});const port=proxy.address().port,tc=resolve('../toolchains'),adb=join(tc,'android-sdk/platform-tools/adb'),device=process.env.ANDROID_SERIAL||'emulator-5554';assert(/^emulator-\d+$/.test(device));execFileSync(adb,['-s',device,'reverse',`tcp:${port}`,`tcp:${port}`]);reverse={adb,device,port};defines=join(out,'defines.json');await writeFile(defines,JSON.stringify({NATIVE_ORIGIN:'http://127.0.0.1:'+port,NATIVE_CONTROL:secret,CLIENT_TEST_ONLY:'true'}),{mode:0o600});
+ const childEnv={...process.env,PUB_CACHE:join(tc,'pub-cache'),ANDROID_HOME:join(tc,'android-sdk'),ANDROID_USER_HOME:join(tc,'android-user'),ANDROID_AVD_HOME:join(tc,'avd'),GRADLE_USER_HOME:join(tc,'gradle'),JAVA_HOME:join(tc,'jdk17/jdk-17.0.21+9/Contents/Home'),XDG_CONFIG_HOME:resolve('.local/team-next-stage-20261104/config'),FLUTTER_SUPPRESS_ANALYTICS:'true'};childEnv.PATH=[join(tc,'flutter/bin'),join(childEnv.JAVA_HOME,'bin'),join(tc,'android-sdk/platform-tools'),process.env.PATH].join(':');
+ const child=spawn(join(tc,'flutter/bin/flutter'),['test','integration_test/afternoon_wallet_local_test.dart','-d',device,'--no-pub','--timeout','15m','--dart-define-from-file='+defines,'--reporter','expanded'],{cwd:appDir,env:childEnv,stdio:'inherit'});assert.equal(await new Promise((y,n)=>{child.once('error',n);child.once('exit',y)}),0);assert(finished&&lost);assert.deepEqual(result.failures,[]);assert.deepEqual(await hashes(),result.source_sha256,'source changed during test');result.passed=true;
+}catch(e){result.passed=false;result.error=e.stack;process.exitCode=1;console.error(e.stack)}
+finally{if(defines)await unlink(defines).catch(()=>{});if(reverse){try{execFileSync(reverse.adb,['-s',reverse.device,'reverse','--remove',`tcp:${reverse.port}`]);result.cleanup.reverse_removed=true}catch{result.cleanup.reverse_removed=false}}await browser?.close();if(web)await new Promise(r=>web.httpServer.close(r));if(proxy){proxy.closeAllConnections();await new Promise(r=>proxy.close(r))}if(server){server.closeAllConnections();await new Promise(r=>server.close(r))}await db?.close();if(created&&/^jx_test_wallet_ui_[a-f0-9]{16}$/.test(database)){await control.query('DROP DATABASE '+mysql.escapeId(database));result.cleanup.database_removed=true}await control?.end();result.cleanup.services_stopped=true;result.finished_at=new Date().toISOString();await writeFile(join(out,'result.json'),JSON.stringify(result,null,2));}

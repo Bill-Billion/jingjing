@@ -1,0 +1,111 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "ee16f3f1874500ae27016401314a3ec7a8eb831b",
+  "run_id": "pm01-recovery-case-2026-11-14T05-45-47-204Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "frontend_run": false,
+  "real_services": false,
+  "checks": [
+    {
+      "id": "RECOVERY-CASE-VERIFIED-RETURNS",
+      "acceptance_ids": [
+        "ACC-DEL-20.04"
+      ],
+      "name": "独立追偿案件与原已审分次回款关联",
+      "result": "LOCAL_PASS",
+      "scope": "原订单账本欠额建立独立追偿案件、原收款方隔离与独审；金额变化阻断旧申请，并发只留一个；已审原回款分次关联、拒旧款和重复超额，关联/关闭不入账或免债。",
+      "remaining": "新追偿案件的本人副本及同申请交付、其他企业入口/定制本人故事边界、完整本人资料/受控原件、真实渠道回款/准备金实际流程、设备及维护者独立验收仍待。",
+      "actual_checks": {
+        "synthetic_only": true,
+        "frontend_run": false,
+        "real_services": false,
+        "order_id": "6c6cdc28-0fd4-4359-ac6a-bd49debcd30a",
+        "agreement_id": "61f58f65-7279-402d-956e-514d2087a8bf",
+        "cancelled_case_id": "502fbf3b-d822-4a0b-a838-8e355f1c353c",
+        "case": {
+          "id": "58f83424-fd2a-4c42-a1cb-ceb450f8e4d3",
+          "kind": "RECOVERY",
+          "agreement_id": "61f58f65-7279-402d-956e-514d2087a8bf",
+          "owner_party_id": "bff3a166-a714-4540-b009-5e42aad751fb",
+          "created_by": "043f5db8-cc41-4f40-8e33-9a1c68d005c9",
+          "current_status": "RECOVERED",
+          "object_version": 5,
+          "content_sha256": "a9092b5c9ad262b3c9a24727d8e840729333f3923e48c7e8756803358509d8e4",
+          "data": {
+            "basis": {
+              "source_id": "6c6cdc28-0fd4-4359-ac6a-bd49debcd30a",
+              "source_type": "ORDER",
+              "facts_sha256": "69407b7f587366e37c2ed5982ab8ca4b6c38f7f0625b44ce2fe6729ff2a5c14a",
+              "ledger_cursor": "19",
+              "source_sha256": "5dbc43b6790b0782f0a674661c24bea48216edc129a61e11255e58eff71ff66f",
+              "recovery_due_minor": 200
+            },
+            "reason": "synthetic replacement with unchanged debt",
+            "review": {
+              "method": "INDEPENDENT_MANUAL_EVIDENCE_REVIEW",
+              "reason": "synthetic independent finance review",
+              "decision": "APPROVED",
+              "verification": {
+                "amount_verified": true,
+                "parties_verified": true,
+                "contract_verified": true,
+                "evidence_verified": true
+              },
+              "reviewer_account_id": "896daa6b-28b2-4a54-a88d-1a577a430d82"
+            },
+            "meaning": "CLAIM_ONLY_NOT_RECEIVED_OR_DEBT_WRITEOFF",
+            "receipts": [
+              {
+                "amount_minor": 40,
+                "content_sha256": "b10537ddd0e7c95c91168e2ed840f706f324d528377202aec947f813ee344bac",
+                "ledger_entry_id": "20",
+                "payout_evidence_id": "cc7d2a22-6461-4281-8415-bffae00e463b"
+              },
+              {
+                "amount_minor": 40,
+                "content_sha256": "b10537ddd0e7c95c91168e2ed840f706f324d528377202aec947f813ee344bac",
+                "ledger_entry_id": "20",
+                "payout_evidence_id": "cc7d2a22-6461-4281-8415-bffae00e463b"
+              },
+              {
+                "payout_evidence_id": "ebd2af97-c741-4e60-865b-a6169f427cbc",
+                "content_sha256": "6f5f7e73720f0000077e87d13d609b212a3c8cefd326c7acf7b450fa02e28a4e",
+                "ledger_entry_id": "21",
+                "amount_minor": 120
+              }
+            ],
+            "amount_minor": 200,
+            "received_minor": 200,
+            "evidence_asset_id": "a4e6e202-d482-4b89-a777-d9e5a7d3a39f",
+            "recipient_party_id": "bff3a166-a714-4540-b009-5e42aad751fb"
+          }
+        },
+        "limits": [
+          "SANDBOX synthetic bank evidence, no actual external recovery",
+          "Case cancellation does not forgive debt",
+          "Recovery receipt links do not post money; pre-existing reviewed return does",
+          "No reserve levy, automatic debit or marketplace payout enabled"
+        ]
+      },
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-recovery-case-20261114/RECOVERY_JOURNEY.json",
+          "sha256": "f87b67fbf798eb9fc637d724d4e33ff08250ec2ebe00de38c0827e7fbdd9306c"
+        },
+        {
+          "path": "docs/reviews/pm01-recovery-case-20261114/FINAL_BACKEND.json",
+          "sha256": "a1b09945b9eab6f5134507c8da222b39fd9c1b2c5571ef1075a4c652b3292180"
+        },
+        {
+          "path": "docs/reviews/pm01-recovery-case-20261114/FINAL_CONTRACT.json",
+          "sha256": "1f7dab191121ed103d33f47399ec80a2f3e1a03007e25d23f88b6160d6175400"
+        },
+        {
+          "path": "docs/reviews/pm01-recovery-case-20261114/SOURCE_MANIFEST.json",
+          "sha256": "fd70b2fc8ca978dc586a4d94ff62b788aad0207bf50906ad1fbf1dff43c9d00e"
+        }
+      ]
+    }
+  ]
+}

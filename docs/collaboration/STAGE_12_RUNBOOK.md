@@ -48,11 +48,44 @@ node scripts/release-tools.cjs legacy-inspect --file <脱敏副本路径> --sour
 
 恢复成功仍会保留 `recovery_status=QUARANTINED`。正式API和后台程序启动都会拒绝使用它；没有“一键解锁”命令。不能为了启动而删除标记，也不能把返回的MATCHED理解为可以恢复收款。原后台任务、旧会话、外部交易编号仍在库中：先核对外部最终结果、重置必要凭据、处理会话和未完成任务，再经独立审阅决定如何放行。
 
+2026-11-12补强：快照逐表比较通过后，在同一恢复事务内作废RUNNING任务的旧执行资格，将其改为RETRY并清除租约，返回`invalidated_job_leases`数量；原任务/业务编号、渠道任务号、尝试次数、次数上限和原定执行时间保持。MATCHED不是所有运行字段原封不动的声明，需同时记录这些恢复保护。新执行者后续沿既有原请求查询，不能把恢复当成重新发送或重置次数。作废步骤失败时恢复业务行整体回滚，隔离标记保留；任务不会自动启动。具体同案钱账和隐私组合见[本批报告](../reviews/pm01-restore-fencing-20261112/REPORT.md)。
+
+发布前检查的`pending_jobs`同时列出PENDING、RETRY、RUNNING、BLOCKED、FAILED各状态数量，避免遗漏刚恢复后等待重试的任务。此检查仍只读，`production_release`始终NOT_APPROVED，不能将“能看到任务”当成获准执行。
+
 当前是有明确大小上限的应用数据备份：总内容64MiB、单表10万行，只支持本项目同版MySQL/InnoDB结构；不覆盖大规模物理备份、binlog时间点恢复、数据库账号/授权、主机配置、触发器或外部私有文件。正式规模超出时须另做受控备份方案并验收，不能静默截断。文件mode=0600不代表Windows访问控制已经设置，实际保管人须限制Windows目录/文件权限。加密无法弥补同目录同时泄露备份与密钥。
 
 备份使用只读一致性快照，并与仓库迁移共用锁；所有建表改表须走该迁移流程，维护期间禁止管理员绕过锁执行DDL。[MySQL一致性读取说明](https://dev.mysql.com/doc/refman/8.4/en/innodb-consistent-read.html)说明了快照与DDL的限制。
 
 ## 出问题后按什么顺序处理
+
+### 与加密备份绑定的私有文件清单（2026-11-13）
+
+W26/W28独立准备新增两条离线命令，从backend_server运行，无需数据库连接，不使用供应商凭据或网络：
+
+```text
+node scripts/release-tools.cjs object-inventory --file <加密备份> --key-file <密钥文件> --sha256 <备份payload_sha256> --output <受控清单路径>
+node scripts/release-tools.cjs object-verify --file <同一加密备份> --key-file <密钥文件> --sha256 <同一payload_sha256> --object-root <受控本地文件目录>
+```
+
+清单覆盖supply_assets和customization_attachments的原生对象引用；发现新object_key表而未支持时拒绝，避免悄悄漏表。清单包含对象路径及引用，必须保存在受控目录，不能提交Git或发到聊天；mode=0600不替代Windows目录访问权限。控制台仅输出数量/摘要，逐件结果使用不可读业务含义的对象标记。
+
+按清单local_file字段放入已取得的本地文件，名字为对象路径SHA256加.bin，不能按对象路径直接拼接磁盘路径。工具检查每件文件大小及SHA256，区分缺失、错大小、错内容、异常链接/目录、超出50MiB本地核对上限等情况。它每次重新读取加密备份，不相信被编辑过的导出清单；已有清单拒绝覆盖。它不会下载、上传、恢复或删除文件。
+
+两条命令可追加`--manifest <最新privacy-register文件> --register-sha256 <该登记摘要>`，核对快照后新增的删除登记。快照自带墓碑/恢复登记、最新登记、非READY或撤销状态均保守标记DO_NOT_RESTORE；登记指向的文件不在旧备份中也保留限制。未提供最新登记时明确标记latest_register_supplied=false，不能用快照登记代替当前隐私核查。
+
+object-verify退出0只表示观测完成；要检查counts和all_reference_bytes_match。被限制文件仍在本地只报告SUPPRESSED_PRESENT，不读取内容或代删除；缺失只代表所选本地目录没有它，不证明供应商或历史版本已删除。即使所有参考字节一致，recovery_authorized仍false：实际桶/对象版本、ACL、当前授权、快照后的变化及供应商恢复必须另验。数据库中的任意JSON/外部URL不在原生对象表覆盖声明内。[证据与限制](../reviews/pm01-private-objects-20261113/REPORT.md)。
+
+2026-11-13新增只读故障观测命令（仅隔离库）：
+
+```text
+node scripts/release-tools.cjs recovery-check --env-file <测试配置> --database <随机隔离库>
+```
+
+无需上线材料清单。即使当前代码与已尝试迁移不一致，也会输出迁移异常、恢复隔离、待处理/阻塞/失败任务和过期执行权的聚合信息；不输出业务正文、任务引用或凭证。命令返回0只表示观测成功，必须另看`attention_required`和`alerts`；`production_release`始终NOT_APPROVED。JOBS_WAITING只是现状提示，不代表超过业务时限；WARNING/BLOCKED需要检查。这是按需本地诊断，不是已接通告警推送或全天候监控。
+
+迁移失败时，后端负责人chengcongcong222先停止相关写入/任务并保存失败现场及失败版本，运行观测；核对变更前备份的版本、内容摘要、文件摘要与密钥，再用已有restore命令恢复到另一个空白隔离库。失败库不删表、不改迁移历史，也不原地覆盖。新库恢复后重新运行recovery-check，逐项核对业务记录、金额、授权和原任务。仍隔离，原请求只能先核查外部最终结果；正式运行与回切必须由维护者及业务/资金/隐私责任人审阅后另行决定。
+
+本机已用实际key-create/backup/restore/recovery-check命令演练合成迁移失败后的数据库恢复，未切换应用发布目录、流量或实际服务；不将这种数据库恢复演练称为生产部署回退完成。[本批证据](../reviews/pm01-rollback-drill-20261112/REPORT.md)。历史deploy_ops/deploy_release.sh与STAGING_RUNBOOK.md面向旧SQLite部署，不作为当前MySQL候选回退指令。
 
 |情况|本侧先做什么|继续运行前必须确认|
 |---|---|---|

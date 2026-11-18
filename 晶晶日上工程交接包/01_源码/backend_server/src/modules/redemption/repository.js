@@ -44,6 +44,7 @@ function createRedemptionRepository(db,{resolvePrincipal=async()=>null}={}){
     if(['STOCK','POOL'].includes(r.kind))keys=[...r.data.evidence_asset_ids,...Object.values(r.data.reviews||{}).map(v=>v.evidence_asset_id)];
     else if(['SCHEDULE','GRANT','REMEDY'].includes(r.kind)){
      const g=r.kind==='GRANT'?r:await C.load(tx,r.parent_id,'GRANT','FOR SHARE'),stock=await C.load(tx,g.parent_id,'STOCK','FOR SHARE');party=stock.owner_party_id;keys=[r.data.evidence_asset_id,r.data.delivery?.evidence_asset_id,r.data.resolution?.evidence_asset_id].filter(Boolean);
+     if(r.kind==='GRANT')keys.push(...(await tx.execute("SELECT * FROM redemption_records WHERE kind='DELIVERY_EVIDENCE' AND parent_id=? AND owner_party_id=? AND current_status='SUBMITTED'",[g.id,party]))[0].map(C.checked).map(x=>x.data.asset_id));
     }
     if(!keys.includes(id(i.asset_id)))throw error('REWARD_EVIDENCE_NOT_FOUND',404);
     await A.assets(tx,[i.asset_id],party,['REVIEW_EVIDENCE','RIGHTS_EVIDENCE','WORK_CONTENT']);return A.one(tx,'SELECT * FROM supply_assets WHERE id=?',[i.asset_id]);
@@ -63,6 +64,6 @@ function createRedemptionRepository(db,{resolvePrincipal=async()=>null}={}){
   async grant(ctx,i){return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await A.owner(tx,a,i.party_id);const r=await C.load(tx,i.record_id,'GRANT','FOR SHARE');if(r.owner_party_id!==i.party_id)throw error('REDEMPTION_NOT_FOUND',404);return P.view(r,await A.now(tx));});},
   async queue(ctx,i){return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await C.operator(tx,a,'REDEMPTION_REVIEW');if(!['STOCK','GRANT','SCHEDULE','REMEDY','COUPON_HOLD','POOL','DRAW'].includes(i.kind))throw error('INVALID_LIST',400);const limit=i.limit??20;P.integer(limit,1,100);if(i.after)id(i.after);const rows=(await tx.execute('SELECT * FROM redemption_records WHERE kind=? AND id>? ORDER BY id LIMIT ?',[i.kind,i.after||'',limit+1]))[0].map(C.checked);return {items:rows.slice(0,limit),next_cursor:rows.length>limit?rows[limit-1].id:null};});}
  };
- Object.assign(api,require('./fulfillment').methods({db,actor}),require('./checkout').methods({db,actor}),require('./lottery').methods({db,actor}),require('./service-credit').methods({db,actor}));return api;
+ Object.assign(api,require('./fulfillment').methods({db,actor}),require('./delivery-evidence').methods({db,actor}),require('./checkout').methods({db,actor}),require('./lottery').methods({db,actor}),require('./service-credit').methods({db,actor}));return api;
 }
 module.exports={createRedemptionRepository,issue,stockEvidence};

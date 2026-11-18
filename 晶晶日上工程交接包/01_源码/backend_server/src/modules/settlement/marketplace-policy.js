@@ -12,7 +12,7 @@ function mcnTerms(value){
 }
 function config(v){
  shape(v,['model','product_type','fee_base','platform_party_id','platform_bps','referral_bps','rounding']);
- if(v.model!=='V5_TWO_LAYER'||!TYPES.includes(v.product_type)||v.fee_base!=='NET_PAID'||v.rounding!=='HALF_UP_PLATFORM_REMAINDER')throw error('INVALID_MARKETPLACE_RULE',400);
+ if(v.model!=='V5_TWO_LAYER'||!TYPES.includes(v.product_type)||v.fee_base!=='NET_PAID'||!require('./rounding-policy').valid(v.rounding))throw error('INVALID_MARKETPLACE_RULE',400);
  id(v.platform_party_id);rate(v.platform_bps);rate(v.referral_bps);
  if(v.referral_bps>v.platform_bps)throw error('REFERRAL_EXCEEDS_PLATFORM',400);
  return copy(v);
@@ -33,6 +33,7 @@ function split(net,v){
  // Use exact fractions until the final fen: a supply share is NOT a GMV share.
  const n=BigInt(net),p=BigInt(v.platform_bps),m=BigInt(v.mcn_supply_bps),r=BigInt(v.referral_bps),scale=100000000n;
  const weights={PLATFORM:(p-r)*10000n,SUPPLIER:(10000n-p)*(10000n-m),MCN:(10000n-p)*m,REFERRER:r*10000n};
+ if(v.rounding===require('./rounding-policy').MODERN)return {net_minor:net,...require('./rounding-policy').allocate(net,participants(v).map(x=>({...x,weight:weights[x.role]})),v.platform_party_id,scale)};
  const entries=participants(v).map(x=>({...x,amount_minor:Number((n*weights[x.role]+scale/2n)/scale)}));
  const rounding_diff_minor=net-entries.reduce((s,x)=>s+x.amount_minor,0);
  entries.find(x=>x.role==='PLATFORM').amount_minor+=rounding_diff_minor;

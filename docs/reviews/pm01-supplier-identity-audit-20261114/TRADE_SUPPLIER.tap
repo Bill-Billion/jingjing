@@ -1,0 +1,597 @@
+TAP version 13
+# Subtest: explicit company buyer follows public artist invitation through a directly accepted commercial order
+    # Subtest: ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing
+    ok 1 - ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing
+      ---
+      duration_ms: 412.3743
+      type: 'test'
+      ...
+    # Subtest: pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch
+    ok 2 - pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch
+      ---
+      duration_ms: 134.1054
+      type: 'test'
+      ...
+    # Subtest: representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP
+    ok 3 - representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP
+      ---
+      duration_ms: 374.3071
+      type: 'test'
+      ...
+    # Subtest: buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages
+    ok 4 - buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages
+      ---
+      duration_ms: 116.7015
+      type: 'test'
+      ...
+    # Subtest: independent support links that invitation to the exact quote, and the representative pays the original company order
+    ok 5 - independent support links that invitation to the exact quote, and the representative pays the original company order
+      ---
+      duration_ms: 361.0035
+      type: 'test'
+      ...
+    # Subtest: revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged
+    ok 6 - revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged
+      ---
+      duration_ms: 118.327
+      type: 'test'
+      ...
+    # Subtest: EXPIRED supplier cannot use new SPEC
+    not ok 7 - EXPIRED supplier cannot use new SPEC
+      ---
+      duration_ms: 16.3109
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"5ab87647-c677-4f29-80fa-4a77e2a63b43","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"a1e29c48-42c3-45bf-b3f3-1845cfa248b7","kind":"SPEC","buyer_party_id":null,"merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"c78c60b4b82312e894bfb9dc37c94f74e95ba0a5ae2c7da71076f15b722f7f14","data":{"title":"Synthetic commercial delivery","provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","line_kind":"OTHER","unit_minor":10001,"currency":"CNY","specification":{"deliverables":["synthetic commercial material"],"final_seconds":0,"revision_limit":1,"sample_seconds":0,"service_tier":"test","terms":"synthetic terms","version":"1"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED supplier cannot use successful SPEC replay
+    not ok 8 - EXPIRED supplier cannot use successful SPEC replay
+      ---
+      duration_ms: 12.9885
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"71cb8dcd-4140-48c1-9791-98fc133e551d","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"1db455e7-b720-4f88-979a-cc372dd23cad","kind":"SPEC","buyer_party_id":null,"merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"c78c60b4b82312e894bfb9dc37c94f74e95ba0a5ae2c7da71076f15b722f7f14","data":{"title":"Synthetic commercial delivery","review":null,"currency":"CNY","line_kind":"OTHER","unit_minor":10001,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED supplier cannot pass independent SPEC review
+    not ok 9 - EXPIRED supplier cannot pass independent SPEC review
+      ---
+      duration_ms: 24.8424
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"ec855cca-66fd-4270-ba8e-ce6a0e32bac5","actor":{"account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"acting_party":null},"data":{"id":"1db455e7-b720-4f88-979a-cc372dd23cad","kind":"SPEC","buyer_party_id":null,"merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"PUBLISHED","object_version":2,"content_sha256":"4ac3e5cf9cbc04221d326a99dc20fbde07fab2be91965868528289f268dc55ac","data":{"title":"Synthetic commercial delivery","review":{"decision":"APPROVED","reason":"Synthetic current supplier identity review","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"currency":"CNY","line_kind":"OTHER","unit_minor":10001,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:329
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED supplier may read its authorized historical SPEC
+    ok 10 - EXPIRED supplier may read its authorized historical SPEC
+      ---
+      duration_ms: 8.0099
+      type: 'test'
+      ...
+    # Subtest: EXPIRED supplier identity recovery retains original successful SPEC key
+    ok 11 - EXPIRED supplier identity recovery retains original successful SPEC key
+      ---
+      duration_ms: 6.7661
+      type: 'test'
+      ...
+    # Subtest: EXPIRED supplier cannot use new QUOTE
+    not ok 12 - EXPIRED supplier cannot use new QUOTE
+      ---
+      duration_ms: 21.6267
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"fc236690-664c-4016-87af-93b4468c7d3b","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"1b7ed834-ad08-414e-9cf5-170cacaf2ca0","kind":"QUOTE","buyer_party_id":"a3d9c29f-2c64-4be2-9b13-968b6fd6c037","merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"2b6ea72d8fd86158af0f2b53139a2e630284284162e77b33aa9cb9b1e6889e3f","data":{"lines":[{"line_id":"commercial","spec_id":"85a0059d-82bd-4577-baef-6c065b587743","spec_version":2,"quantity":1,"total_minor":10001,"title":"Synthetic commercial delivery","review":{"reason":"synthetic","decision":"APPROVED","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"currency":"CNY","line_kind":"OTHER","unit_minor":10001,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}],"installments":[{"allocations":[{"amount_minor":10001,"line_id":"commercial"}],"apple_product_id":null,"key":"full","trigger":"ORDER_ACCEPTED"}],"total_minor":10001,"currency":"CNY","channel":"ALIPAY","transaction_model":"DIRECT_SUPPLIER","rule_id":"d21c59cf-4490-4c68-8b18-64b02b675cfc","expires_at":"2098-01-01T00:00:00.000Z","payment_window_minutes":30,"license_reservation_id":null,"review":null,"commercial":{"ranking_opt_in":false,"offer_id":"231f604d-f63e-4cdd-a1a5-60217b2dce2a","offer_sha256":"d0bc7c15d9687a2b06f22a9e7ff74a21cb5191e24480b946d0206146e306a2de","gig_id":"8baa6c5c-e6bb-4ada-bf2f-c245cedf921b","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"category":"TEST","terms":"synthetic historical commercial test","commission":{"mcn_bps":0,"platform_bps":2000},"relation":null,"avatar_id":"125b663b-047a-4d4a-b34a-3de5a4a0ec9a","consent_id":"640986a9-09d7-4416-b7ad-9150722930a6","rule_id":"3a9f9118-736e-4f8e-8e6e-da12be034449"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED supplier cannot use successful QUOTE replay
+    not ok 13 - EXPIRED supplier cannot use successful QUOTE replay
+      ---
+      duration_ms: 10.9958
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"c047533a-6b1c-42be-a40e-a44aff25c0bc","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"1ca28a9b-dc3b-442e-8a8d-84d9a276f069","kind":"QUOTE","buyer_party_id":"a3d9c29f-2c64-4be2-9b13-968b6fd6c037","merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"2b6ea72d8fd86158af0f2b53139a2e630284284162e77b33aa9cb9b1e6889e3f","data":{"lines":[{"title":"Synthetic commercial delivery","review":{"reason":"synthetic","decision":"APPROVED","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"line_id":"commercial","spec_id":"85a0059d-82bd-4577-baef-6c065b587743","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":10001,"total_minor":10001,"spec_version":2,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}],"review":null,"channel":"ALIPAY","rule_id":"d21c59cf-4490-4c68-8b18-64b02b675cfc","currency":"CNY","commercial":{"scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"terms":"synthetic historical commercial test","gig_id":"8baa6c5c-e6bb-4ada-bf2f-c245cedf921b","rule_id":"3a9f9118-736e-4f8e-8e6e-da12be034449","category":"TEST","offer_id":"231f604d-f63e-4cdd-a1a5-60217b2dce2a","relation":null,"avatar_id":"125b663b-047a-4d4a-b34a-3de5a4a0ec9a","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"640986a9-09d7-4416-b7ad-9150722930a6","offer_sha256":"d0bc7c15d9687a2b06f22a9e7ff74a21cb5191e24480b946d0206146e306a2de","ranking_opt_in":false},"expires_at":"2098-01-01T00:00:00.000Z","total_minor":10001,"installments":[{"key":"full","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"commercial","amount_minor":10001}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED supplier cannot pass independent QUOTE review
+    not ok 14 - EXPIRED supplier cannot pass independent QUOTE review
+      ---
+      duration_ms: 19.0157
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"b8884246-b3f0-416b-b059-2dd6e36285de","actor":{"account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"acting_party":null},"data":{"id":"1ca28a9b-dc3b-442e-8a8d-84d9a276f069","kind":"QUOTE","buyer_party_id":"a3d9c29f-2c64-4be2-9b13-968b6fd6c037","merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"APPROVED","object_version":2,"content_sha256":"7be55d28435a939636cba2ac57fa1ee23485fafd4aa9bfdb40bde984825920fa","data":{"lines":[{"title":"Synthetic commercial delivery","review":{"reason":"synthetic","decision":"APPROVED","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"line_id":"commercial","spec_id":"85a0059d-82bd-4577-baef-6c065b587743","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":10001,"total_minor":10001,"spec_version":2,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}],"review":{"decision":"APPROVED","reason":"Synthetic current supplier identity review","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"channel":"ALIPAY","rule_id":"d21c59cf-4490-4c68-8b18-64b02b675cfc","currency":"CNY","commercial":{"scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"terms":"synthetic historical commercial test","gig_id":"8baa6c5c-e6bb-4ada-bf2f-c245cedf921b","rule_id":"3a9f9118-736e-4f8e-8e6e-da12be034449","category":"TEST","offer_id":"231f604d-f63e-4cdd-a1a5-60217b2dce2a","relation":null,"avatar_id":"125b663b-047a-4d4a-b34a-3de5a4a0ec9a","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"640986a9-09d7-4416-b7ad-9150722930a6","offer_sha256":"d0bc7c15d9687a2b06f22a9e7ff74a21cb5191e24480b946d0206146e306a2de","ranking_opt_in":false},"expires_at":"2098-01-01T00:00:00.000Z","total_minor":10001,"installments":[{"key":"full","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"commercial","amount_minor":10001}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:329
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED supplier may read its authorized historical QUOTE
+    ok 15 - EXPIRED supplier may read its authorized historical QUOTE
+      ---
+      duration_ms: 5.2972
+      type: 'test'
+      ...
+    # Subtest: EXPIRED supplier identity recovery retains original successful QUOTE key
+    ok 16 - EXPIRED supplier identity recovery retains original successful QUOTE key
+      ---
+      duration_ms: 8.8231
+      type: 'test'
+      ...
+    # Subtest: REJECTED supplier cannot use new SPEC
+    not ok 17 - REJECTED supplier cannot use new SPEC
+      ---
+      duration_ms: 19.0155
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"6996b9c1-a3d9-4787-9b67-3f08d5bc875a","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"da69371d-bbf3-4185-941e-3cbddc2f7368","kind":"SPEC","buyer_party_id":null,"merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"c78c60b4b82312e894bfb9dc37c94f74e95ba0a5ae2c7da71076f15b722f7f14","data":{"title":"Synthetic commercial delivery","provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","line_kind":"OTHER","unit_minor":10001,"currency":"CNY","specification":{"deliverables":["synthetic commercial material"],"final_seconds":0,"revision_limit":1,"sample_seconds":0,"service_tier":"test","terms":"synthetic terms","version":"1"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED supplier cannot use successful SPEC replay
+    not ok 18 - REJECTED supplier cannot use successful SPEC replay
+      ---
+      duration_ms: 8.8287
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"4b630465-bb97-4927-a668-1a46cf4ec56f","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"fbe1be40-4cda-4d54-a4b4-413cfce8b64f","kind":"SPEC","buyer_party_id":null,"merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"c78c60b4b82312e894bfb9dc37c94f74e95ba0a5ae2c7da71076f15b722f7f14","data":{"title":"Synthetic commercial delivery","review":null,"currency":"CNY","line_kind":"OTHER","unit_minor":10001,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED supplier cannot pass independent SPEC review
+    not ok 19 - REJECTED supplier cannot pass independent SPEC review
+      ---
+      duration_ms: 15.803
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"d5eddf2f-9287-475a-8399-c0af08d1d0c6","actor":{"account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"acting_party":null},"data":{"id":"fbe1be40-4cda-4d54-a4b4-413cfce8b64f","kind":"SPEC","buyer_party_id":null,"merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"PUBLISHED","object_version":2,"content_sha256":"4ac3e5cf9cbc04221d326a99dc20fbde07fab2be91965868528289f268dc55ac","data":{"title":"Synthetic commercial delivery","review":{"decision":"APPROVED","reason":"Synthetic current supplier identity review","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"currency":"CNY","line_kind":"OTHER","unit_minor":10001,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:329
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED supplier may read its authorized historical SPEC
+    ok 20 - REJECTED supplier may read its authorized historical SPEC
+      ---
+      duration_ms: 5.3299
+      type: 'test'
+      ...
+    # Subtest: REJECTED supplier identity recovery retains original successful SPEC key
+    ok 21 - REJECTED supplier identity recovery retains original successful SPEC key
+      ---
+      duration_ms: 7.2915
+      type: 'test'
+      ...
+    # Subtest: REJECTED supplier cannot use new QUOTE
+    not ok 22 - REJECTED supplier cannot use new QUOTE
+      ---
+      duration_ms: 17.642
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"aaeb6ec6-2b53-41a3-abb8-1a107db804cd","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"fe437c1c-f249-4166-ba01-c75509e69b46","kind":"QUOTE","buyer_party_id":"a3d9c29f-2c64-4be2-9b13-968b6fd6c037","merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"2b6ea72d8fd86158af0f2b53139a2e630284284162e77b33aa9cb9b1e6889e3f","data":{"lines":[{"line_id":"commercial","spec_id":"85a0059d-82bd-4577-baef-6c065b587743","spec_version":2,"quantity":1,"total_minor":10001,"title":"Synthetic commercial delivery","review":{"reason":"synthetic","decision":"APPROVED","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"currency":"CNY","line_kind":"OTHER","unit_minor":10001,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}],"installments":[{"allocations":[{"amount_minor":10001,"line_id":"commercial"}],"apple_product_id":null,"key":"full","trigger":"ORDER_ACCEPTED"}],"total_minor":10001,"currency":"CNY","channel":"ALIPAY","transaction_model":"DIRECT_SUPPLIER","rule_id":"d21c59cf-4490-4c68-8b18-64b02b675cfc","expires_at":"2098-01-01T00:00:00.000Z","payment_window_minutes":30,"license_reservation_id":null,"review":null,"commercial":{"ranking_opt_in":false,"offer_id":"231f604d-f63e-4cdd-a1a5-60217b2dce2a","offer_sha256":"d0bc7c15d9687a2b06f22a9e7ff74a21cb5191e24480b946d0206146e306a2de","gig_id":"8baa6c5c-e6bb-4ada-bf2f-c245cedf921b","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"category":"TEST","terms":"synthetic historical commercial test","commission":{"mcn_bps":0,"platform_bps":2000},"relation":null,"avatar_id":"125b663b-047a-4d4a-b34a-3de5a4a0ec9a","consent_id":"640986a9-09d7-4416-b7ad-9150722930a6","rule_id":"3a9f9118-736e-4f8e-8e6e-da12be034449"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED supplier cannot use successful QUOTE replay
+    not ok 23 - REJECTED supplier cannot use successful QUOTE replay
+      ---
+      duration_ms: 10.2307
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"80774770-8b58-4c12-ae28-aa204952cedb","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"3bea29de-6cb6-48ff-bfc1-f99e69a950c5","kind":"QUOTE","buyer_party_id":"a3d9c29f-2c64-4be2-9b13-968b6fd6c037","merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"2b6ea72d8fd86158af0f2b53139a2e630284284162e77b33aa9cb9b1e6889e3f","data":{"lines":[{"title":"Synthetic commercial delivery","review":{"reason":"synthetic","decision":"APPROVED","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"line_id":"commercial","spec_id":"85a0059d-82bd-4577-baef-6c065b587743","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":10001,"total_minor":10001,"spec_version":2,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}],"review":null,"channel":"ALIPAY","rule_id":"d21c59cf-4490-4c68-8b18-64b02b675cfc","currency":"CNY","commercial":{"scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"terms":"synthetic historical commercial test","gig_id":"8baa6c5c-e6bb-4ada-bf2f-c245cedf921b","rule_id":"3a9f9118-736e-4f8e-8e6e-da12be034449","category":"TEST","offer_id":"231f604d-f63e-4cdd-a1a5-60217b2dce2a","relation":null,"avatar_id":"125b663b-047a-4d4a-b34a-3de5a4a0ec9a","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"640986a9-09d7-4416-b7ad-9150722930a6","offer_sha256":"d0bc7c15d9687a2b06f22a9e7ff74a21cb5191e24480b946d0206146e306a2de","ranking_opt_in":false},"expires_at":"2098-01-01T00:00:00.000Z","total_minor":10001,"installments":[{"key":"full","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"commercial","amount_minor":10001}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED supplier cannot pass independent QUOTE review
+    not ok 24 - REJECTED supplier cannot pass independent QUOTE review
+      ---
+      duration_ms: 17.4855
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"202d0105-94fd-40e0-8b81-c182de94ad56","actor":{"account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"acting_party":null},"data":{"id":"3bea29de-6cb6-48ff-bfc1-f99e69a950c5","kind":"QUOTE","buyer_party_id":"a3d9c29f-2c64-4be2-9b13-968b6fd6c037","merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"APPROVED","object_version":2,"content_sha256":"7be55d28435a939636cba2ac57fa1ee23485fafd4aa9bfdb40bde984825920fa","data":{"lines":[{"title":"Synthetic commercial delivery","review":{"reason":"synthetic","decision":"APPROVED","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"line_id":"commercial","spec_id":"85a0059d-82bd-4577-baef-6c065b587743","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":10001,"total_minor":10001,"spec_version":2,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}],"review":{"decision":"APPROVED","reason":"Synthetic current supplier identity review","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"channel":"ALIPAY","rule_id":"d21c59cf-4490-4c68-8b18-64b02b675cfc","currency":"CNY","commercial":{"scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"terms":"synthetic historical commercial test","gig_id":"8baa6c5c-e6bb-4ada-bf2f-c245cedf921b","rule_id":"3a9f9118-736e-4f8e-8e6e-da12be034449","category":"TEST","offer_id":"231f604d-f63e-4cdd-a1a5-60217b2dce2a","relation":null,"avatar_id":"125b663b-047a-4d4a-b34a-3de5a4a0ec9a","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"640986a9-09d7-4416-b7ad-9150722930a6","offer_sha256":"d0bc7c15d9687a2b06f22a9e7ff74a21cb5191e24480b946d0206146e306a2de","ranking_opt_in":false},"expires_at":"2098-01-01T00:00:00.000Z","total_minor":10001,"installments":[{"key":"full","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"commercial","amount_minor":10001}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:329
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED supplier may read its authorized historical QUOTE
+    ok 25 - REJECTED supplier may read its authorized historical QUOTE
+      ---
+      duration_ms: 5.4477
+      type: 'test'
+      ...
+    # Subtest: REJECTED supplier identity recovery retains original successful QUOTE key
+    ok 26 - REJECTED supplier identity recovery retains original successful QUOTE key
+      ---
+      duration_ms: 6.5189
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED supplier cannot use new SPEC
+    not ok 27 - UNVERIFIED supplier cannot use new SPEC
+      ---
+      duration_ms: 13.3746
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"f93708d8-de8b-4595-9ad0-8b4dcda345f7","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"a3a11e7a-0d2e-4592-adec-f342cd074bdd","kind":"SPEC","buyer_party_id":null,"merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"c78c60b4b82312e894bfb9dc37c94f74e95ba0a5ae2c7da71076f15b722f7f14","data":{"title":"Synthetic commercial delivery","provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","line_kind":"OTHER","unit_minor":10001,"currency":"CNY","specification":{"deliverables":["synthetic commercial material"],"final_seconds":0,"revision_limit":1,"sample_seconds":0,"service_tier":"test","terms":"synthetic terms","version":"1"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED supplier cannot use successful SPEC replay
+    not ok 28 - UNVERIFIED supplier cannot use successful SPEC replay
+      ---
+      duration_ms: 9.8092
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"3c37e400-994d-455f-8aa7-fdd32c01e0e8","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"76d13c8a-707a-4caa-83e4-ef6b8e01313e","kind":"SPEC","buyer_party_id":null,"merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"c78c60b4b82312e894bfb9dc37c94f74e95ba0a5ae2c7da71076f15b722f7f14","data":{"title":"Synthetic commercial delivery","review":null,"currency":"CNY","line_kind":"OTHER","unit_minor":10001,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED supplier cannot pass independent SPEC review
+    not ok 29 - UNVERIFIED supplier cannot pass independent SPEC review
+      ---
+      duration_ms: 12.3484
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"2729f43c-2699-44cf-b982-2be7e7fef012","actor":{"account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"acting_party":null},"data":{"id":"76d13c8a-707a-4caa-83e4-ef6b8e01313e","kind":"SPEC","buyer_party_id":null,"merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"PUBLISHED","object_version":2,"content_sha256":"4ac3e5cf9cbc04221d326a99dc20fbde07fab2be91965868528289f268dc55ac","data":{"title":"Synthetic commercial delivery","review":{"decision":"APPROVED","reason":"Synthetic current supplier identity review","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"currency":"CNY","line_kind":"OTHER","unit_minor":10001,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:329
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED supplier may read its authorized historical SPEC
+    ok 30 - UNVERIFIED supplier may read its authorized historical SPEC
+      ---
+      duration_ms: 5.9434
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED supplier identity recovery retains original successful SPEC key
+    ok 31 - UNVERIFIED supplier identity recovery retains original successful SPEC key
+      ---
+      duration_ms: 6.7884
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED supplier cannot use new QUOTE
+    not ok 32 - UNVERIFIED supplier cannot use new QUOTE
+      ---
+      duration_ms: 21.9839
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"cc82dac2-a940-49b5-ba85-b8f5874f621e","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"54803534-61be-40c0-8ce2-ed756e8a7c21","kind":"QUOTE","buyer_party_id":"a3d9c29f-2c64-4be2-9b13-968b6fd6c037","merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"2b6ea72d8fd86158af0f2b53139a2e630284284162e77b33aa9cb9b1e6889e3f","data":{"lines":[{"line_id":"commercial","spec_id":"85a0059d-82bd-4577-baef-6c065b587743","spec_version":2,"quantity":1,"total_minor":10001,"title":"Synthetic commercial delivery","review":{"reason":"synthetic","decision":"APPROVED","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"currency":"CNY","line_kind":"OTHER","unit_minor":10001,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}],"installments":[{"allocations":[{"amount_minor":10001,"line_id":"commercial"}],"apple_product_id":null,"key":"full","trigger":"ORDER_ACCEPTED"}],"total_minor":10001,"currency":"CNY","channel":"ALIPAY","transaction_model":"DIRECT_SUPPLIER","rule_id":"d21c59cf-4490-4c68-8b18-64b02b675cfc","expires_at":"2098-01-01T00:00:00.000Z","payment_window_minutes":30,"license_reservation_id":null,"review":null,"commercial":{"ranking_opt_in":false,"offer_id":"231f604d-f63e-4cdd-a1a5-60217b2dce2a","offer_sha256":"d0bc7c15d9687a2b06f22a9e7ff74a21cb5191e24480b946d0206146e306a2de","gig_id":"8baa6c5c-e6bb-4ada-bf2f-c245cedf921b","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"category":"TEST","terms":"synthetic historical commercial test","commission":{"mcn_bps":0,"platform_bps":2000},"relation":null,"avatar_id":"125b663b-047a-4d4a-b34a-3de5a4a0ec9a","consent_id":"640986a9-09d7-4416-b7ad-9150722930a6","rule_id":"3a9f9118-736e-4f8e-8e6e-da12be034449"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED supplier cannot use successful QUOTE replay
+    not ok 33 - UNVERIFIED supplier cannot use successful QUOTE replay
+      ---
+      duration_ms: 11.4053
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"a7535e80-4cde-4afb-a5fb-11e0a6420101","actor":{"account_id":"5034e9f5-a87a-4214-b088-a6ff497bdb7d"},"acting_party":"9f434899-f5c2-4798-b9dd-6f3702b26e84"},"data":{"id":"c767aba4-adc4-4539-a632-a3f2d3cc9578","kind":"QUOTE","buyer_party_id":"a3d9c29f-2c64-4be2-9b13-968b6fd6c037","merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"IN_REVIEW","object_version":1,"content_sha256":"2b6ea72d8fd86158af0f2b53139a2e630284284162e77b33aa9cb9b1e6889e3f","data":{"lines":[{"title":"Synthetic commercial delivery","review":{"reason":"synthetic","decision":"APPROVED","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"line_id":"commercial","spec_id":"85a0059d-82bd-4577-baef-6c065b587743","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":10001,"total_minor":10001,"spec_version":2,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}],"review":null,"channel":"ALIPAY","rule_id":"d21c59cf-4490-4c68-8b18-64b02b675cfc","currency":"CNY","commercial":{"scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"terms":"synthetic historical commercial test","gig_id":"8baa6c5c-e6bb-4ada-bf2f-c245cedf921b","rule_id":"3a9f9118-736e-4f8e-8e6e-da12be034449","category":"TEST","offer_id":"231f604d-f63e-4cdd-a1a5-60217b2dce2a","relation":null,"avatar_id":"125b663b-047a-4d4a-b34a-3de5a4a0ec9a","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"640986a9-09d7-4416-b7ad-9150722930a6","offer_sha256":"d0bc7c15d9687a2b06f22a9e7ff74a21cb5191e24480b946d0206146e306a2de","ranking_opt_in":false},"expires_at":"2098-01-01T00:00:00.000Z","total_minor":10001,"installments":[{"key":"full","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"commercial","amount_minor":10001}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:255
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:65:133)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED supplier cannot pass independent QUOTE review
+    not ok 34 - UNVERIFIED supplier cannot pass independent QUOTE review
+      ---
+      duration_ms: 17.1021
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"e6a0da68-c4fd-4e4b-a223-202cae30648b","actor":{"account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"acting_party":null},"data":{"id":"c767aba4-adc4-4539-a632-a3f2d3cc9578","kind":"QUOTE","buyer_party_id":"a3d9c29f-2c64-4be2-9b13-968b6fd6c037","merchant_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84","parent_id":null,"order_id":null,"created_by":"5034e9f5-a87a-4214-b088-a6ff497bdb7d","current_status":"APPROVED","object_version":2,"content_sha256":"7be55d28435a939636cba2ac57fa1ee23485fafd4aa9bfdb40bde984825920fa","data":{"lines":[{"title":"Synthetic commercial delivery","review":{"reason":"synthetic","decision":"APPROVED","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"line_id":"commercial","spec_id":"85a0059d-82bd-4577-baef-6c065b587743","currency":"CNY","quantity":1,"line_kind":"OTHER","unit_minor":10001,"total_minor":10001,"spec_version":2,"specification":{"terms":"synthetic terms","version":"1","deliverables":["synthetic commercial material"],"service_tier":"test","final_seconds":0,"revision_limit":1,"sample_seconds":0},"provider_party_id":"9f434899-f5c2-4798-b9dd-6f3702b26e84"}],"review":{"decision":"APPROVED","reason":"Synthetic current supplier identity review","account_id":"5b874ad8-49d4-42b4-af42-8b11407e9ac8"},"channel":"ALIPAY","rule_id":"d21c59cf-4490-4c68-8b18-64b02b675cfc","currency":"CNY","commercial":{"scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"terms":"synthetic historical commercial test","gig_id":"8baa6c5c-e6bb-4ada-bf2f-c245cedf921b","rule_id":"3a9f9118-736e-4f8e-8e6e-da12be034449","category":"TEST","offer_id":"231f604d-f63e-4cdd-a1a5-60217b2dce2a","relation":null,"avatar_id":"125b663b-047a-4d4a-b34a-3de5a4a0ec9a","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"640986a9-09d7-4416-b7ad-9150722930a6","offer_sha256":"d0bc7c15d9687a2b06f22a9e7ff74a21cb5191e24480b946d0206146e306a2de","ranking_opt_in":false},"expires_at":"2098-01-01T00:00:00.000Z","total_minor":10001,"installments":[{"key":"full","trigger":"ORDER_ACCEPTED","allocations":[{"line_id":"commercial","amount_minor":10001}],"apple_product_id":null}],"transaction_model":"DIRECT_SUPPLIER","license_reservation_id":null,"payment_window_minutes":30}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:329
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\trade-supplier-probe.cjs:66:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED supplier may read its authorized historical QUOTE
+    ok 35 - UNVERIFIED supplier may read its authorized historical QUOTE
+      ---
+      duration_ms: 6.3681
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED supplier identity recovery retains original successful QUOTE key
+    ok 36 - UNVERIFIED supplier identity recovery retains original successful QUOTE key
+      ---
+      duration_ms: 8.5816
+      type: 'test'
+      ...
+    1..36
+not ok 1 - explicit company buyer follows public artist invitation through a directly accepted commercial order
+  ---
+  duration_ms: 39372.9702
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\trade-supplier-probe.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '18 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 37
+# suites 0
+# pass 18
+# fail 19
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 39584.6547

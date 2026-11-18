@@ -1,0 +1,559 @@
+TAP version 13
+# Subtest: audition booking, delivery, privacy and refunds in isolated MySQL
+    # Subtest: future or expired manual review cannot supply audition options or a new offer
+    ok 1 - future or expired manual review cannot supply audition options or a new offer
+      ---
+      duration_ms: 97.0338
+      type: 'test'
+      ...
+    # Subtest: first offer reads qualified rules and minimal authorizations with no prior offer
+    ok 2 - first offer reads qualified rules and minimal authorizations with no prior offer
+      ---
+      duration_ms: 45.3692
+      type: 'test'
+      ...
+    # Subtest: only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage
+    ok 3 - only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage
+      ---
+      duration_ms: 50.945
+      type: 'test'
+      ...
+    # Subtest: visibility changes independent of public artist archive; price not leaked by catalog
+    ok 4 - visibility changes independent of public artist archive; price not leaked by catalog
+      ---
+      duration_ms: 53.0596
+      type: 'test'
+      ...
+    # Subtest: accepted private invitation exposes matching offers only; revoked invitation cannot book
+    ok 5 - accepted private invitation exposes matching offers only; revoked invitation cannot book
+      ---
+      duration_ms: 88.5829
+      type: 'test'
+      ...
+    # Subtest: unsafe place refused and stale price cannot book
+    ok 6 - unsafe place refused and stale price cannot book
+      ---
+      duration_ms: 12.0447
+      type: 'test'
+      ...
+    # Subtest: unpaid order cannot accept or open conversation; independent venue review required
+    ok 7 - unpaid order cannot accept or open conversation; independent venue review required
+      ---
+      duration_ms: 99.9432
+      type: 'test'
+      ...
+    # Subtest: verified payment is idempotent and still needs artist acceptance
+    ok 8 - verified payment is idempotent and still needs artist acceptance
+      ---
+      duration_ms: 63.7718
+      type: 'test'
+      ...
+    # Subtest: accept opens conversation; duplicate decision returns same booking
+    ok 9 - accept opens conversation; duplicate decision returns same booking
+      ---
+      duration_ms: 30.8617
+      type: 'test'
+      ...
+    # Subtest: contact requires separate consent and is never embedded in booking/order
+    ok 10 - contact requires separate consent and is never embedded in booking/order
+      ---
+      duration_ms: 29.3762
+      type: 'test'
+      ...
+    # Subtest: conversation deduplicates, rejects bait, and unauthorized support cannot read
+    ok 11 - conversation deduplicates, rejects bait, and unauthorized support cannot read
+      ---
+      duration_ms: 88.9628
+      type: 'test'
+      ...
+    # Subtest: departed safety case freezes contact and settlement without credit penalty
+    ok 12 - departed safety case freezes contact and settlement without credit penalty
+      ---
+      duration_ms: 49.7273
+      type: 'test'
+      ...
+    # Subtest: delivery requires correct count, authorization and arrival
+    ok 13 - delivery requires correct count, authorization and arrival
+      ---
+      duration_ms: 86.4421
+      type: 'test'
+      ...
+    # Subtest: paid audition conversation provides a scoped working draft and reviewed personal copy
+    ok 14 - paid audition conversation provides a scoped working draft and reviewed personal copy
+      ---
+      duration_ms: 408.5474
+      type: 'test'
+      ...
+    # Subtest: actual private bytes required before receipt and acceptance
+    ok 15 - actual private bytes required before receipt and acceptance
+      ---
+      duration_ms: 343.2077
+      type: 'test'
+      ...
+    # Subtest: decline creates one refund request; verified provider refund required for refunded status
+    ok 16 - decline creates one refund request; verified provider refund required for refunded status
+      ---
+      duration_ms: 115.1539
+      type: 'test'
+      ...
+    # Subtest: unaccepted expiry cannot be accepted, goes through refund request
+    ok 17 - unaccepted expiry cannot be accepted, goes through refund request
+      ---
+      duration_ms: 85.4422
+      type: 'test'
+      ...
+    # Subtest: minor cannot create offer or buy even if client says otherwise
+    ok 18 - minor cannot create offer or buy even if client says otherwise
+      ---
+      duration_ms: 5.3347
+      type: 'test'
+      ...
+    # Subtest: legacy order comments cannot bypass dedicated conversation gate
+    ok 19 - legacy order comments cannot bypass dedicated conversation gate
+      ---
+      duration_ms: 11.0125
+      type: 'test'
+      ...
+    # Subtest: automated expiry is lease fenced and creates only one refund request
+    ok 20 - automated expiry is lease fenced and creates only one refund request
+      ---
+      duration_ms: 85.694
+      type: 'test'
+      ...
+    # Subtest: one accepted booking cancels before departure, freezes conversation and verifies refund once
+    ok 21 - one accepted booking cancels before departure, freezes conversation and verifies refund once
+      ---
+      duration_ms: 173.1665
+      type: 'test'
+      ...
+    # Subtest: partial and full refunds followed by payment review freeze booking and T+1 settlement
+    ok 22 - partial and full refunds followed by payment review freeze booking and T+1 settlement
+      ---
+      duration_ms: 367.6806
+      type: 'test'
+      ...
+    # Subtest: before departure cancellation is full refund even for safety reason
+    ok 23 - before departure cancellation is full refund even for safety reason
+      ---
+      duration_ms: 116.1889
+      type: 'test'
+      ...
+    # Subtest: custody channel is captured at checkout without changing old contracts or claiming real payment
+    ok 24 - custody channel is captured at checkout without changing old contracts or claiming real payment
+      ---
+      duration_ms: 55.1703
+      type: 'test'
+      ...
+    # Subtest: unpaid cancellation uses trade and preserves cancelled appointment
+    ok 25 - unpaid cancellation uses trade and preserves cancelled appointment
+      ---
+      duration_ms: 59.7848
+      type: 'test'
+      ...
+    # Subtest: concurrent accept or decline produces one winner
+    ok 26 - concurrent accept or decline produces one winner
+      ---
+      duration_ms: 131.0855
+      type: 'test'
+      ...
+    # Subtest: reschedule needs other party plus independent venue review; support join/leave controls access
+    ok 27 - reschedule needs other party plus independent venue review; support join/leave controls access
+      ---
+      duration_ms: 262.7175
+      type: 'test'
+      ...
+    # Subtest: new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights
+    ok 28 - new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights
+      ---
+      duration_ms: 56.406
+      type: 'test'
+      ...
+    # Subtest: automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing
+    ok 29 - automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing
+      ---
+      duration_ms: 814.8026
+      type: 'test'
+      ...
+    # Subtest: same artist cannot accept two overlapping appointments and one can be rescheduled later
+    ok 30 - same artist cannot accept two overlapping appointments and one can be rescheduled later
+      ---
+      duration_ms: 186.6729
+      type: 'test'
+      ...
+    # Subtest: independent support reads only live linked dispute evidence, and access ends on resolution
+    ok 31 - independent support reads only live linked dispute evidence, and access ends on resolution
+      ---
+      duration_ms: 333.74
+      type: 'test'
+      ...
+    # Subtest: MCN requires this persons explicit audition delegation and loses access immediately on withdrawal
+    ok 32 - MCN requires this persons explicit audition delegation and loses access immediately on withdrawal
+      ---
+      duration_ms: 59.0106
+      type: 'test'
+      ...
+    # Subtest: withdrawn sample consent closes buyer file access without deleting artist archive
+    ok 33 - withdrawn sample consent closes buyer file access without deleting artist archive
+      ---
+      duration_ms: 11.6412
+      type: 'test'
+      ...
+    # Subtest: retired offer rule blocks new publication and booking, preserving original paid record
+    ok 34 - retired offer rule blocks new publication and booking, preserving original paid record
+      ---
+      duration_ms: 40.548
+      type: 'test'
+      ...
+    1..34
+ok 1 - audition booking, delivery, privacy and refunds in isolated MySQL
+  ---
+  duration_ms: 12481.7272
+  type: 'test'
+  ...
+# Subtest: gigs historical platform-share isolated MySQL and real HTTP cooperation, commissions and rankings
+    # Subtest: no login, no operator and no self-review
+    ok 1 - no login, no operator and no self-review
+      ---
+      duration_ms: 106.4063
+      type: 'test'
+      ...
+    # Subtest: MCN cannot silently add artist; artist acceptance is required
+    ok 2 - MCN cannot silently add artist; artist acceptance is required
+      ---
+      duration_ms: 38.5016
+      type: 'test'
+      ...
+    # Subtest: overlapping exclusive relation rejected and outsiders cannot read
+    ok 3 - overlapping exclusive relation rejected and outsiders cannot read
+      ---
+      duration_ms: 28.5242
+      type: 'test'
+      ...
+    # Subtest: relation display names require participant ownership and never alter saved terms
+    ok 4 - relation display names require participant ownership and never alter saved terms
+      ---
+      duration_ms: 63.6469
+      type: 'test'
+      ...
+    # Subtest: missing proofs, forbidden category and unreviewed publication blocked
+    ok 5 - missing proofs, forbidden category and unreviewed publication blocked
+      ---
+      duration_ms: 42.4038
+      type: 'test'
+      ...
+    # Subtest: private-only consent does not authorize commercial offer
+    ok 6 - private-only consent does not authorize commercial offer
+      ---
+      duration_ms: 74.3619
+      type: 'test'
+      ...
+    # Subtest: buyer accepts exact reviewed version and concurrent acceptance cannot overwrite
+    ok 7 - buyer accepts exact reviewed version and concurrent acceptance cannot overwrite
+      ---
+      duration_ms: 20.0806
+      type: 'test'
+      ...
+    # Subtest: new-rule switch blocks old pending quotes while old orders retain their contract
+    ok 8 - new-rule switch blocks old pending quotes while old orders retain their contract
+      ---
+      duration_ms: 34.9977
+      type: 'test'
+      ...
+    # Subtest: commercial commitments are included before quote and sealed in order
+    ok 9 - commercial commitments are included before quote and sealed in order
+      ---
+      duration_ms: 80.6075
+      type: 'test'
+      ...
+    # Subtest: no verified receipt means zero commission; verified receipt creates conserved accrual
+    ok 10 - no verified receipt means zero commission; verified receipt creates conserved accrual
+      ---
+      duration_ms: 61.5239
+      type: 'test'
+      ...
+    # Subtest: restricted commercial attachments stay blocked across concurrent restrictions and storage-read races
+    ok 11 - restricted commercial attachments stay blocked across concurrent restrictions and storage-read races
+      ---
+      duration_ms: 239.1828
+      type: 'test'
+      ...
+    # Subtest: commercial conversation needs payment, participant access and explicit contacts; support joins and freezes
+    ok 12 - commercial conversation needs payment, participant access and explicit contacts; support joins and freezes
+      ---
+      duration_ms: 221.6329
+      type: 'test'
+      ...
+    # Subtest: repeated reconciliation and command replay do not create duplicate entries
+    ok 13 - repeated reconciliation and command replay do not create duplicate entries
+      ---
+      duration_ms: 29.5839
+      type: 'test'
+      ...
+    # Subtest: daily ranking snapshot is deterministic and exposes no order IDs or receipt amounts
+    ok 14 - daily ranking snapshot is deterministic and exposes no order IDs or receipt amounts
+      ---
+      duration_ms: 33.9466
+      type: 'test'
+      ...
+    # Subtest: revoked MCN capability blocks new quotes
+    ok 15 - revoked MCN capability blocks new quotes
+      ---
+      duration_ms: 16.9976
+      type: 'test'
+      ...
+    # Subtest: real consent withdrawal blocks further commercial quotes without rewriting financial facts
+    ok 16 - real consent withdrawal blocks further commercial quotes without rewriting financial facts
+      ---
+      duration_ms: 31.4357
+      type: 'test'
+      ...
+    # Subtest: ending relation blocks new offers but preserves existing order commission
+    ok 17 - ending relation blocks new offers but preserves existing order commission
+      ---
+      duration_ms: 36.8509
+      type: 'test'
+      ...
+    # Subtest: verified partial refund reverses commission once with exact rounding
+    ok 18 - verified partial refund reverses commission once with exact rounding
+      ---
+      duration_ms: 73.3568
+      type: 'test'
+      ...
+    # Subtest: verified agency has only captured-order communication during handover, never after revoked consent or expiry
+    ok 19 - verified agency has only captured-order communication during handover, never after revoked consent or expiry
+      ---
+      duration_ms: 109.9985
+      type: 'test'
+      ...
+    # Subtest: seven-day handover captures only prior orders, has bilateral acknowledgement and keeps expiry explicit
+    ok 20 - seven-day handover captures only prior orders, has bilateral acknowledgement and keeps expiry explicit
+      ---
+      duration_ms: 58.3618
+      type: 'test'
+      ...
+    # Subtest: suspension removes discovery and notifies buyer and suppliers
+    ok 21 - suspension removes discovery and notifies buyer and suppliers
+      ---
+      duration_ms: 22.3717
+      type: 'test'
+      ...
+    # Subtest: evidence downloads are private and linked to exact record
+    ok 22 - evidence downloads are private and linked to exact record
+      ---
+      duration_ms: 19.387
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back records and command reservations
+    ok 23 - audit failure rolls back records and command reservations
+      ---
+      duration_ms: 15.2318
+      type: 'test'
+      ...
+    # Subtest: membership revocation immediately removes historic commission access
+    ok 24 - membership revocation immediately removes historic commission access
+      ---
+      duration_ms: 8.5899
+      type: 'test'
+      ...
+    # Subtest: retired rule cannot publish new gigs but historical accrual remains readable
+    ok 25 - retired rule cannot publish new gigs but historical accrual remains readable
+      ---
+      duration_ms: 21.3288
+      type: 'test'
+      ...
+    # Subtest: personal summaries retain ended MCN terms and historical commercial commissions without duplicating income
+    ok 26 - personal summaries retain ended MCN terms and historical commercial commissions without duplicating income
+      ---
+      duration_ms: 65.9188
+      type: 'test'
+      ...
+    1..26
+ok 2 - gigs historical platform-share isolated MySQL and real HTTP cooperation, commissions and rankings
+  ---
+  duration_ms: 9335.5707
+  type: 'test'
+  ...
+# Subtest: gigs 20261029 supply-share isolated MySQL and real HTTP cooperation, commissions and rankings
+    # Subtest: no login, no operator and no self-review
+    ok 1 - no login, no operator and no self-review
+      ---
+      duration_ms: 34.0686
+      type: 'test'
+      ...
+    # Subtest: MCN cannot silently add artist; artist acceptance is required
+    ok 2 - MCN cannot silently add artist; artist acceptance is required
+      ---
+      duration_ms: 24.3755
+      type: 'test'
+      ...
+    # Subtest: overlapping exclusive relation rejected and outsiders cannot read
+    ok 3 - overlapping exclusive relation rejected and outsiders cannot read
+      ---
+      duration_ms: 20.6385
+      type: 'test'
+      ...
+    # Subtest: relation display names require participant ownership and never alter saved terms
+    ok 4 - relation display names require participant ownership and never alter saved terms
+      ---
+      duration_ms: 55.9769
+      type: 'test'
+      ...
+    # Subtest: missing proofs, forbidden category and unreviewed publication blocked
+    ok 5 - missing proofs, forbidden category and unreviewed publication blocked
+      ---
+      duration_ms: 37.7295
+      type: 'test'
+      ...
+    # Subtest: private-only consent does not authorize commercial offer
+    ok 6 - private-only consent does not authorize commercial offer
+      ---
+      duration_ms: 34.5051
+      type: 'test'
+      ...
+    # Subtest: buyer accepts exact reviewed version and concurrent acceptance cannot overwrite
+    ok 7 - buyer accepts exact reviewed version and concurrent acceptance cannot overwrite
+      ---
+      duration_ms: 18.677
+      type: 'test'
+      ...
+    # Subtest: new-rule switch blocks old pending quotes while old orders retain their contract
+    ok 8 - new-rule switch blocks old pending quotes while old orders retain their contract
+      ---
+      duration_ms: 0.11
+      type: 'test'
+      ...
+    # Subtest: wrong product or rate cannot create a quote or silently fall back to old commissions
+    ok 9 - wrong product or rate cannot create a quote or silently fall back to old commissions
+      ---
+      duration_ms: 35.4834
+      type: 'test'
+      ...
+    # Subtest: new offer rejects old rates and legacy MCN share wording before buyer commits
+    ok 10 - new offer rejects old rates and legacy MCN share wording before buyer commits
+      ---
+      duration_ms: 4.9835
+      type: 'test'
+      ...
+    # Subtest: commercial commitments are included before quote and sealed in order
+    ok 11 - commercial commitments are included before quote and sealed in order
+      ---
+      duration_ms: 81.9078
+      type: 'test'
+      ...
+    # Subtest: no verified receipt means zero commission; verified receipt creates conserved accrual
+    ok 12 - no verified receipt means zero commission; verified receipt creates conserved accrual
+      ---
+      duration_ms: 41.0689
+      type: 'test'
+      ...
+    # Subtest: restricted commercial attachments stay blocked across concurrent restrictions and storage-read races
+    ok 13 - restricted commercial attachments stay blocked across concurrent restrictions and storage-read races
+      ---
+      duration_ms: 182.4537
+      type: 'test'
+      ...
+    # Subtest: commercial conversation needs payment, participant access and explicit contacts; support joins and freezes
+    ok 14 - commercial conversation needs payment, participant access and explicit contacts; support joins and freezes
+      ---
+      duration_ms: 184.2391
+      type: 'test'
+      ...
+    # Subtest: repeated reconciliation and command replay do not create duplicate entries
+    ok 15 - repeated reconciliation and command replay do not create duplicate entries
+      ---
+      duration_ms: 21.1028
+      type: 'test'
+      ...
+    # Subtest: daily ranking snapshot is deterministic and exposes no order IDs or receipt amounts
+    ok 16 - daily ranking snapshot is deterministic and exposes no order IDs or receipt amounts
+      ---
+      duration_ms: 20.5422
+      type: 'test'
+      ...
+    # Subtest: revoked MCN capability blocks new quotes
+    ok 17 - revoked MCN capability blocks new quotes
+      ---
+      duration_ms: 10.1313
+      type: 'test'
+      ...
+    # Subtest: real consent withdrawal blocks further commercial quotes without rewriting financial facts
+    ok 18 - real consent withdrawal blocks further commercial quotes without rewriting financial facts
+      ---
+      duration_ms: 22.1024
+      type: 'test'
+      ...
+    # Subtest: ending relation blocks new offers but preserves existing order commission
+    ok 19 - ending relation blocks new offers but preserves existing order commission
+      ---
+      duration_ms: 23.712
+      type: 'test'
+      ...
+    # Subtest: verified partial refund reverses commission once with exact rounding
+    ok 20 - verified partial refund reverses commission once with exact rounding
+      ---
+      duration_ms: 50.818
+      type: 'test'
+      ...
+    # Subtest: verified agency has only captured-order communication during handover, never after revoked consent or expiry
+    ok 21 - verified agency has only captured-order communication during handover, never after revoked consent or expiry
+      ---
+      duration_ms: 77.9317
+      type: 'test'
+      ...
+    # Subtest: seven-day handover captures only prior orders, has bilateral acknowledgement and keeps expiry explicit
+    ok 22 - seven-day handover captures only prior orders, has bilateral acknowledgement and keeps expiry explicit
+      ---
+      duration_ms: 41.5896
+      type: 'test'
+      ...
+    # Subtest: suspension removes discovery and notifies buyer and suppliers
+    ok 23 - suspension removes discovery and notifies buyer and suppliers
+      ---
+      duration_ms: 14.7402
+      type: 'test'
+      ...
+    # Subtest: evidence downloads are private and linked to exact record
+    ok 24 - evidence downloads are private and linked to exact record
+      ---
+      duration_ms: 13.0083
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back records and command reservations
+    ok 25 - audit failure rolls back records and command reservations
+      ---
+      duration_ms: 13.1102
+      type: 'test'
+      ...
+    # Subtest: membership revocation immediately removes historic commission access
+    ok 26 - membership revocation immediately removes historic commission access
+      ---
+      duration_ms: 8.4011
+      type: 'test'
+      ...
+    # Subtest: retired rule cannot publish new gigs but historical accrual remains readable
+    ok 27 - retired rule cannot publish new gigs but historical accrual remains readable
+      ---
+      duration_ms: 21.909
+      type: 'test'
+      ...
+    # Subtest: personal summaries retain ended MCN terms and historical commercial commissions without duplicating income
+    ok 28 - personal summaries retain ended MCN terms and historical commercial commissions without duplicating income
+      ---
+      duration_ms: 64.3739
+      type: 'test'
+      ...
+    1..28
+ok 3 - gigs 20261029 supply-share isolated MySQL and real HTTP cooperation, commissions and rankings
+  ---
+  duration_ms: 8661.9497
+  type: 'test'
+  ...
+1..3
+# tests 91
+# suites 0
+# pass 91
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 18393.2894

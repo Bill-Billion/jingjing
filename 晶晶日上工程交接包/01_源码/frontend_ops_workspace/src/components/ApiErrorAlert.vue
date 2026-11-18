@@ -32,6 +32,7 @@ const code = computed(() => props.error?.code || (props.error ? `HTTP ${props.er
         {{ props.error.requestId }}
       </span>
     </p>
+    <RouterLink v-if="props.error.code==='CONSUMER_MONTHLY_LIMIT_EXCEEDED'" to="/consumer/settings">查看个人月度限额与待确认金额</RouterLink>
   </div>
 </template>
 

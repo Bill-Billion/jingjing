@@ -1,0 +1,15 @@
+"use strict";
+const {shape,id,label,error}=require('../party/policy');
+const {copy}=require('../trade/policy');
+const P=require('./policy'),C=require('./context');
+const VERSION='CONTRACT_20261029';
+function mode(v){if(v===undefined)return 'LEGACY_COMPATIBLE';if(!['LEGACY_COMPATIBLE',VERSION].includes(v))throw error('INVALID_ARTIST_CONTRACT_POLICY',503);return v;}
+function current(spec){return spec?.service?.rule_version===VERSION;}
+function free(r){return r.data?.payment_requirement==='NONE'&&current(r.data.specification)&&['AVATAR_CREATION','AVATAR_HOSTING'].includes(r.data.kind)&&r.data.price_minor===0&&r.data.spec_id===null;}
+function freeSpecification(kind){if(!['AVATAR_CREATION','AVATAR_HOSTING'].includes(kind))throw error('INVALID_FREE_ARTIST_SERVICE',400);return {version:VERSION,service_tier:'基础免费服务',service:{kind,unit:kind==='AVATAR_CREATION'?'AVATAR':'AVATAR_PERPETUAL',rule_version:VERSION,source_ref:'contract:20261029:00:article3',retry_limit:0,hosting_months:null,halo_level:null,failure_policy:'NO_CASH_REFUND'},deliverables:[kind==='AVATAR_CREATION'?'本人授权的基础形象与声音档案':'数字人资产免费托管权益'],terms:'数字人创建（含基础形象与声音）、数字人资产/云托管均永久免费。免费权益不等于已完成建模或已启用云服务。'};}
+function materials(v){if(!v)throw error('HALO_CLASSIFIED_MATERIALS_REQUIRED',409);shape(v,['model_card_asset_id','lifestyle_asset_ids','full_body_asset_ids','personal_introduction','resume']);id(v.model_card_asset_id);P.list(v.lifestyle_asset_ids,id,10);P.list(v.full_body_asset_ids,id,10);label(v.personal_introduction,2000);label(v.resume,8000);return copy(v);}
+function materialIds(v){return [...new Set([v.model_card_asset_id,...v.lifestyle_asset_ids,...v.full_body_asset_ids])];}
+async function checkMaterials(tx,p,v){v=materials(v);await C.assets(tx,materialIds(v),p.owner_party_id,['REVIEW_EVIDENCE']);for(const assetId of materialIds(v)){const r=await C.one(tx,'SELECT media_type FROM supply_assets WHERE id=? FOR SHARE',[assetId]);const types=assetId===v.model_card_asset_id?['image/jpeg','image/png','image/webp','application/pdf']:['image/jpeg','image/png','image/webp'];if(!types.includes(r.media_type))throw error('HALO_MATERIAL_MEDIA_TYPE_INVALID',409);if((v.lifestyle_asset_ids.includes(assetId)||v.full_body_asset_ids.includes(assetId))&&!r.media_type.startsWith('image/'))throw error('HALO_MATERIAL_MEDIA_TYPE_INVALID',409);}return v;}
+async function checkFreeArchive(tx,versions){for(const kind of ['LOOK','VOICE']){const v=versions.find(v=>v.kind===kind);if(!v)throw error('FREE_ARCHIVE_FACE_VOICE_REQUIRED',409);let typed=false;for(const assetId of v.data.material_asset_ids){const asset=await C.one(tx,'SELECT media_type FROM supply_assets WHERE id=? FOR SHARE',[assetId]);if(asset&&asset.media_type.startsWith(kind==='LOOK'?'image/':'audio/'))typed=true;}if(!typed)throw error('FREE_ARCHIVE_MEDIA_TYPE_REQUIRED',409);}}
+function refundable(order){const service=order.data.quote.artist_service;if(service?.kind==='HALO_REVIEW'&&current(service.specification))throw error('HALO_REVIEW_FEE_NON_REFUNDABLE',409);}
+module.exports={VERSION,mode,current,free,freeSpecification,materials,materialIds,checkMaterials,checkFreeArchive,refundable};

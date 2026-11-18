@@ -1,0 +1,105 @@
+TAP version 13
+# Subtest: reward remedy preserves one grant and all pending schedules across invalid binding
+    # Subtest: return original points cancels the still-pending schedule atomically; rejection and replay cannot resurrect it
+    not ok 1 - return original points cancels the still-pending schedule atomically; rejection and replay cannot resurrect it
+      ---
+      duration_ms: 240.6758
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\reward-remedy-lifecycle.integration.test.cjs:63:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+
+        + 'IN_REVIEW'
+        - 'CANCELLED'
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'CANCELLED'
+      actual: 'IN_REVIEW'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:68:11)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:63:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: one-time interview extension cancels old pending slot and permits a fresh schedule
+    not ok 2 - one-time interview extension cancels old pending slot and permits a fresh schedule
+      ---
+      duration_ms: 145.0903
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\reward-remedy-lifecycle.integration.test.cjs:73:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+
+        + 'IN_REVIEW'
+        - 'CANCELLED'
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'CANCELLED'
+      actual: 'IN_REVIEW'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:77:11)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:73:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: rejected remedy preserves pending slot; stale and changed commands cannot change the outcome
+    ok 3 - rejected remedy preserves pending slot; stale and changed commands cannot change the outcome
+      ---
+      duration_ms: 154.0814
+      type: 'test'
+      ...
+    # Subtest: withdrawn public participation blocks acceptance but permits declining the original future slot
+    not ok 4 - withdrawn public participation blocks acceptance but permits declining the original future slot
+      ---
+      duration_ms: 165.6745
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\reward-remedy-lifecycle.integration.test.cjs:90:11'
+      failureType: 'testCodeFailure'
+      error: 'PUBLIC_ARTIST_NOT_AVAILABLE'
+      code: 'PUBLIC_ARTIST_NOT_AVAILABLE'
+      stack: |-
+        call (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:19:49)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:95:29)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\reward-remedy-lifecycle.integration.test.cjs:90:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: confirmed but no longer public award cannot finish; remedy cancels its approved slot once
+    ok 5 - confirmed but no longer public award cannot finish; remedy cancels its approved slot once
+      ---
+      duration_ms: 225.303
+      type: 'test'
+      ...
+    1..5
+not ok 1 - reward remedy preserves one grant and all pending schedules across invalid binding
+  ---
+  duration_ms: 8521.9582
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\reward-remedy-lifecycle.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '3 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 6
+# suites 0
+# pass 2
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8726.5934

@@ -1,0 +1,184 @@
+{
+  "result": "PASS",
+  "code_sha": "6b8f711c554412a177387f586d89d615aabae8e9",
+  "environment": "isolated",
+  "dataset_id": "stock-finance-synthetic-20261110",
+  "contract_version": "0.31.48-rc.1",
+  "rules_version": "TEST-20261028-2",
+  "summary": {
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0
+  },
+  "checks": [
+    {
+      "acceptance_id": "ACC-DEL-06.01",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "one stock order survives lost response and refund review without duplicate money or licenses",
+        "verified personal buyer needs neither own avatar nor company; unverified account blocked"
+      ],
+      "assertion_review": "买方无需故事或自有数字人即可从已审现货下单；现货商品走专用购买入口，不能混入定制报价。身份及已审目录为隔离合成前置。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-06.01",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "mixed legacy and V5 products roll back the quote; products require their dedicated source and checkout flows"
+      ],
+      "assertion_review": "买方无需故事或自有数字人即可从已审现货下单；现货商品走专用购买入口，不能混入定制报价。身份及已审目录为隔离合成前置。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-06.02",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "one stock order survives lost response and refund review without duplicate money or licenses",
+        "Alipay query and refund always request signature verification",
+        "trusted payment grants once and leaves clock stopped until actual receipt"
+      ],
+      "assertion_review": "本地生成密钥验证签名和防篡改；注入SDK断言查单验签开启；可信观察后一次发权/记账。重复付款准备不再调用供应商；商户/金额/币种/环境不符拒绝。分层隔离证据，不是支付宝实际沙箱或正式接入。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-06.02",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "real Alipay RSA2 notification validation rejects tampering and wrong merchant",
+        "unsigned notifications and client paid fields never mark paid",
+        "wrong amount currency merchant or environment rejected before receipt",
+        "concurrent verified observations credit once; out of order pending cannot erase receipt",
+        "payment creation is idempotent and ownership enforced",
+        "concurrent clicks with different keys cannot create duplicate purchase"
+      ],
+      "assertion_review": "本地生成密钥验证签名和防篡改；注入SDK断言查单验签开启；可信观察后一次发权/记账。重复付款准备不再调用供应商；商户/金额/币种/环境不符拒绝。分层隔离证据，不是支付宝实际沙箱或正式接入。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-06.04",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "one stock order survives lost response and refund review without duplicate money or licenses",
+        "notification read plus actual content access permits explicit receipt clock",
+        "settlement review and every party confirmation precede available balance",
+        "request approval is not paid; only independent bank evidence books actual payout",
+        "48h policy starts at original order creation, paid files only; old 72h snapshots remain"
+      ],
+      "assertion_review": "新合同规格强制48小时，计时基于原下单时间；未付不启动任务，付款仍不等于验收。旧72小时快照继续保留旧收讫起点；售后暂停。清分审核、各方确认和出款凭据独立记录。清分是独立模块合成来源，未证明真实出款或同一现货全程清分页面。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-06.04",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "stock acceptance duration must be supplied explicitly and remains frozen in the license",
+        "issue stops clock and prevents download until independent resolution",
+        "late customer payment review and unaccepted delivery block payouts even with prior agreement",
+        "new acceptance contract requires exactly 48 hours while retaining legacy shapes"
+      ],
+      "assertion_review": "新合同规格强制48小时，计时基于原下单时间；未付不启动任务，付款仍不等于验收。旧72小时快照继续保留旧收讫起点；售后暂停。清分审核、各方确认和出款凭据独立记录。清分是独立模块合成来源，未证明真实出款或同一现货全程清分页面。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-08.02",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "synthetic historical order drives actual finance API; changing its source or rates is rejected",
+        "zero receipt, partial and full refund conserve money and preserve the original MCN after termination",
+        "no verified receipt means zero commission; verified receipt creates conserved accrual",
+        "verified partial refund reverses commission once with exact rounding",
+        "old nonstandard commission remains payable and immutable after new-order switch"
+      ],
+      "assertion_review": "同时核计算器、实际财务来源API和应付同步。新旧商单按各自冻结费率入账退款，财务拒绝篡改来源/规则，当前规则或机构关系变化不重算旧快照；重复结算不重复记账。来源及回执合成，真实转款保持关闭。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-08.02",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "contract cutover validates rates without rewriting historical allocations",
+        "wrong product or rate cannot create a quote or silently fall back to old commissions"
+      ],
+      "assertion_review": "同时核计算器、实际财务来源API和应付同步。新旧商单按各自冻结费率入账退款，财务拒绝篡改来源/规则，当前规则或机构关系变化不重算旧快照；重复结算不重复记账。来源及回执合成，真实转款保持关闭。"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/backend.junit.xml",
+      "sha256": "b05e58c898ed3583f869cb9e5af9dfc35db43df0b4f060248961aa24e36c96fb"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/backend.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/contract-six-http-fixtures.json",
+      "sha256": "87346dd78c14161b321c58e56efeccc9eee7e5d4cfc9f5d2eb44b8d07bed4428"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/customization-quote-http-fixtures.json",
+      "sha256": "05873ac6f75ea9791cd1a7cdfc7e01e97e5079f0101fa28e18698b98f3257a83"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/finance-http-fixtures.json",
+      "sha256": "0aea38e269288371fa76203a9639e79ac8e3f1a293f815d44462a81f5bc2f86d"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/gigs-contract-http-fixtures.json",
+      "sha256": "be9e9fa15f52cafa452c21a6d66ef5bafbacd2e54e1c13cd09c7e207b6ca9fc9"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/gigs-http-fixtures.json",
+      "sha256": "b7d1b0b2be5efc33a1fe70d76bdc5f5cc4a7a72b7fa30ad3a768ccf660bb904e"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/marketplace-contract-http-fixtures.json",
+      "sha256": "54692486c7981dd619468fd05398551f30f2d3c12768b32c1c36bf0376e9b8ff"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/marketplace-http-fixtures.json",
+      "sha256": "47f0ffa5ec3bd1eff849eafa7d69e4b464ef578c70115357c8e6209c9e6204d6"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/run.json",
+      "sha256": "5163f49c2eaa39adb63b616bb23c928d537df2bdbfe3c6f6d73deef4b3f3e1c8"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/runtime-contract.json",
+      "sha256": "33078b7c698098401f221939ff88e1098e55f1403f9ca6aab44365e65a89e8a8"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/stock-http-fixtures.json",
+      "sha256": "705177fe3867eb217516b7686830cdf78bcb94822e3cd62b2a4fbcc73f9608a5"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/stock-payment-refund-journey-20261110.json",
+      "sha256": "bf33a99e9182bfe4f1276d326983f7399fdd67b2051e6fd99d1b622b8638b748"
+    },
+    {
+      "path": "docs/reviews/stock-finance-acceptance-20261110/trade-http-fixtures.json",
+      "sha256": "9ce62e938ecc11a5598ccd7ff45e15916f9fb7a373413d844989338f7328e103"
+    }
+  ],
+  "test_execution": {
+    "testcases": 192,
+    "failures": 0,
+    "skipped": 0,
+    "files": 13
+  },
+  "limits": [
+    "API clauses only; no complete app/web journey",
+    "Synthetic trusted receipts and fixture accounts/catalogue/finance sources",
+    "No live payment, payout, signing or private cloud storage verification"
+  ]
+}

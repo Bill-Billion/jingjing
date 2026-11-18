@@ -23,3 +23,11 @@ test('confirmed publishing thresholds cannot be weakened by an operator rule',()
  const rule={version:'test',...r,submission_days:30,terms:'synthetic',minimum_levels:{DRAMA:1,PERFORMANCE:1,COMMERCIAL:1,EVENT:1,RECRUITMENT:1,OFFICIAL:null}};
  assert.throws(()=>P.rule(rule),{code:'NOTICE_RULE_INVALID'});rule.minimum_levels.EVENT=3;assert.equal(P.rule(rule).minimum_levels.EVENT,3);
 });
+
+test('ordinary publishing requires an explicit supported rule and preserves legacy input',()=>{
+ const rule={version:'test',...r,submission_days:30,terms:'synthetic',minimum_levels:{DRAMA:1,PERFORMANCE:1,COMMERCIAL:1,EVENT:3,RECRUITMENT:1,OFFICIAL:null}};
+ assert.deepEqual(P.rule(rule),rule);
+ assert.equal(P.rule({...rule,publishing_policy:'VERIFIED_ADULT_20261111'}).publishing_policy,'VERIFIED_ADULT_20261111');
+ for(const publishing_policy of [null,'ANYONE',true])assert.throws(()=>P.rule({...rule,publishing_policy}),{code:'NOTICE_RULE_INVALID'});
+ assert.throws(()=>P.rule({...rule,publishing_policy:'VERIFIED_ADULT_20261111',minimum_levels:{...rule.minimum_levels,OFFICIAL:1}}),{code:'NOTICE_RULE_INVALID'});
+});

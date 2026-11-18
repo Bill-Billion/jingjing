@@ -1,0 +1,713 @@
+TAP version 13
+# Subtest: quick-city short and full names select the same values
+ok 1 - quick-city short and full names select the same values
+  ---
+  duration_ms: 1.5344
+  type: 'test'
+  ...
+# Subtest: unknown city and district names remain exact instead of stripping suffixes
+ok 2 - unknown city and district names remain exact instead of stripping suffixes
+  ---
+  duration_ms: 0.1553
+  type: 'test'
+  ...
+# Subtest: collection settings are explicit bounded values, invalid configuration fails
+ok 3 - collection settings are explicit bounded values, invalid configuration fails
+  ---
+  duration_ms: 1.9768
+  type: 'test'
+  ...
+# Subtest: collection targets and pagination reject private types or malformed inputs
+ok 4 - collection targets and pagination reject private types or malformed inputs
+  ---
+  duration_ms: 0.7417
+  type: 'test'
+  ...
+# Subtest: collection cursors bind account, type, filter and history version
+ok 5 - collection cursors bind account, type, filter and history version
+  ---
+  duration_ms: 1.3434
+  type: 'test'
+  ...
+# Subtest: personal collections, privacy preferences and retention through actual HTTP
+    # Subtest: history is off by default; reads are personal and reject acting identities
+    ok 1 - history is off by default; reads are personal and reject acting identities
+      ---
+      duration_ms: 98.6708
+      type: 'test'
+      ...
+    # Subtest: same favourite is unique, own-account only, and old replay cannot undo removal
+    ok 2 - same favourite is unique, own-account only, and old replay cannot undo removal
+      ---
+      duration_ms: 107.8637
+      type: 'test'
+      ...
+    # Subtest: explicit opt in, replayable visits and no automatic browsing from GET
+    ok 3 - explicit opt in, replayable visits and no automatic browsing from GET
+      ---
+      duration_ms: 74.8338
+      type: 'test'
+      ...
+    # Subtest: single delete and clear invalidate queued visits and cannot resurrect deleted data
+    ok 4 - single delete and clear invalidate queued visits and cannot resurrect deleted data
+      ---
+      duration_ms: 60.7924
+      type: 'test'
+      ...
+    # Subtest: bounded recent history, signed pagination and clear protect cursor scope
+    ok 5 - bounded recent history, signed pagination and clear protect cursor scope
+      ---
+      duration_ms: 117.878
+      type: 'test'
+      ...
+    # Subtest: disabling clears history; stale opt-in or visits cannot silently restore it
+    ok 6 - disabling clears history; stale opt-in or visits cannot silently restore it
+      ---
+      duration_ms: 47.9142
+      type: 'test'
+      ...
+    # Subtest: expiry removes stored rows, private content is not copied into collection/command tables
+    ok 7 - expiry removes stored rows, private content is not copied into collection/command tables
+      ---
+      duration_ms: 38.379
+      type: 'test'
+      ...
+    # Subtest: concurrent saves deduplicate and concurrent preference changes honor version
+    ok 8 - concurrent saves deduplicate and concurrent preference changes honor version
+      ---
+      duration_ms: 65.9586
+      type: 'test'
+      ...
+    # Subtest: withdrawn or blocked sources remain removable without old titles or private fields
+    ok 9 - withdrawn or blocked sources remain removable without old titles or private fields
+      ---
+      duration_ms: 52.7476
+      type: 'test'
+      ...
+    # Subtest: retention job checks its lease, physically purges inactive users and reschedules
+    ok 10 - retention job checks its lease, physically purges inactive users and reschedules
+      ---
+      duration_ms: 37.0692
+      type: 'test'
+      ...
+    1..10
+ok 6 - personal collections, privacy preferences and retention through actual HTTP
+  ---
+  duration_ms: 11083.4168
+  type: 'test'
+  ...
+# Subtest: stock favorites reuse actual publication and rights checks
+ok 7 - stock favorites reuse actual publication and rights checks
+  ---
+  duration_ms: 9057.27
+  type: 'test'
+  ...
+# Subtest: unified public search via HTTP and isolated MySQL
+    # Subtest: city source and strict authentication, identity and parameter validation
+    ok 1 - city source and strict authentication, identity and parameter validation
+      ---
+      duration_ms: 106.3361
+      type: 'test'
+      ...
+    # Subtest: published notices use full server search, aliases and stable pagination
+    ok 2 - published notices use full server search, aliases and stable pagination
+      ---
+      duration_ms: 173.1802
+      type: 'test'
+      ...
+    # Subtest: manual city browsing uses no coordinates and refuses unsupported location parameters without losing public results
+    ok 3 - manual city browsing uses no coordinates and refuses unsupported location parameters without losing public results
+      ---
+      duration_ms: 41.7242
+      type: 'test'
+      ...
+    # Subtest: closed public audition retains the same public artist detail and a scoped invitation context
+    ok 4 - closed public audition retains the same public artist detail and a scoped invitation context
+      ---
+      duration_ms: 46.862
+      type: 'test'
+      ...
+    # Subtest: closed notice and revoked artist authorization disappear on next search
+    ok 5 - closed notice and revoked artist authorization disappear on next search
+      ---
+      duration_ms: 64.4287
+      type: 'test'
+      ...
+    # Subtest: stock and audition repositories are connected and return actual empty catalogues
+    ok 6 - stock and audition repositories are connected and return actual empty catalogues
+      ---
+      duration_ms: 16.3206
+      type: 'test'
+      ...
+    1..6
+ok 8 - unified public search via HTTP and isolated MySQL
+  ---
+  duration_ms: 10869.4248
+  type: 'test'
+  ...
+# Subtest: public STOCK search preserves visibility and private price
+ok 9 - public STOCK search preserves visibility and private price
+  ---
+  duration_ms: 9139.0666
+  type: 'test'
+  ...
+# Subtest: public AUDITION search preserves visibility and private price
+ok 10 - public AUDITION search preserves visibility and private price
+  ---
+  duration_ms: 20644.4244
+  type: 'test'
+  ...
+# Subtest: city codes and aliases use identical filters; unknown city remains exact
+ok 11 - city codes and aliases use identical filters; unknown city remains exact
+  ---
+  duration_ms: 1.8741
+  type: 'test'
+  ...
+# Subtest: literal normalized public search excludes identifiers and non-public fields
+ok 12 - literal normalized public search excludes identifiers and non-public fields
+  ---
+  duration_ms: 0.4201
+  type: 'test'
+  ...
+# Subtest: search crosses scan budget, returns resumable empty page and finds beyond first 100 without duplicates
+ok 13 - search crosses scan budget, returns resumable empty page and finds beyond first 100 without duplicates
+  ---
+  duration_ms: 2.9793
+  type: 'test'
+  ...
+# Subtest: cursor rejects tampering, another account and changed filters; aliases and page size may change
+ok 14 - cursor rejects tampering, another account and changed filters; aliases and page size may change
+  ---
+  duration_ms: 1.8442
+  type: 'test'
+  ...
+# Subtest: permission filtering and service failure propagate instead of restoring stale results
+ok 15 - permission filtering and service failure propagate instead of restoring stale results
+  ---
+  duration_ms: 0.2314
+  type: 'test'
+  ...
+# Subtest: prelaunch matching, ranking explanation and identity copy isolated MySQL and HTTP
+    # Subtest: real public artist matched by city tag and level; wrong conditions and identities denied
+    ok 1 - real public artist matched by city tag and level; wrong conditions and identities denied
+      ---
+      duration_ms: 144.1266
+      type: 'test'
+      ...
+    # Subtest: notice purpose and pagination use actual published records
+    ok 2 - notice purpose and pagination use actual published records
+      ---
+      duration_ms: 108.5633
+      type: 'test'
+      ...
+    # Subtest: public explanation is bound to snapshot and excludes internal evidence and reviewers
+    ok 3 - public explanation is bound to snapshot and excludes internal evidence and reviewers
+      ---
+      duration_ms: 30.8817
+      type: 'test'
+      ...
+    # Subtest: legacy formula is not certified retroactively and corrupt or unknown snapshots fail closed
+    ok 4 - legacy formula is not certified retroactively and corrupt or unknown snapshots fail closed
+      ---
+      duration_ms: 39.7784
+      type: 'test'
+      ...
+    # Subtest: own identity verification status is available without provider tokens or original documents
+    ok 5 - own identity verification status is available without provider tokens or original documents
+      ---
+      duration_ms: 66.7485
+      type: 'test'
+      ...
+    # Subtest: withdrawn artist public consent removes matching candidate
+    ok 6 - withdrawn artist public consent removes matching candidate
+      ---
+      duration_ms: 23.0125
+      type: 'test'
+      ...
+    1..6
+ok 16 - prelaunch matching, ranking explanation and identity copy isolated MySQL and HTTP
+  ---
+  duration_ms: 10930.8705
+  type: 'test'
+  ...
+# Subtest: actual stock catalogue matches budget but cannot grant commercial rights to a personal license
+ok 17 - actual stock catalogue matches budget but cannot grant commercial rights to a personal license
+  ---
+  duration_ms: 11390.3767
+  type: 'test'
+  ...
+# Subtest: actual audition catalogue removes private prices from budget matches and closed booking from results
+ok 18 - actual audition catalogue removes private prices from budget matches and closed booking from results
+  ---
+  duration_ms: 21679.2275
+  type: 'test'
+  ...
+# Subtest: artist matching uses current invitation context then independent review and one support case
+ok 19 - artist matching uses current invitation context then independent review and one support case
+  ---
+  duration_ms: 20787.469
+  type: 'test'
+  ...
+# Subtest: notice matching supplies actual authorized submission choices; closed notice blocks stale selection
+ok 20 - notice matching supplies actual authorized submission choices; closed notice blocks stale selection
+  ---
+  duration_ms: 7591.5253
+  type: 'test'
+  ...
+# Subtest: matching uses explicit public prices and license rights, never unknown prices or automatic authorization
+ok 21 - matching uses explicit public prices and license rights, never unknown prices or automatic authorization
+  ---
+  duration_ms: 2.0503
+  type: 'test'
+  ...
+# Subtest: artist tags and levels / notice types cannot be silently replaced with unrelated filters
+ok 22 - artist tags and levels / notice types cannot be silently replaced with unrelated filters
+  ---
+  duration_ms: 0.9244
+  type: 'test'
+  ...
+# Subtest: scan limit permits subsequent pages, cursor binds account and every condition without reading history
+ok 23 - scan limit permits subsequent pages, cursor binds account and every condition without reading history
+  ---
+  duration_ms: 3.6808
+  type: 'test'
+  ...
+# Subtest: privacy-account-copy isolated MySQL and HTTP
+    # Subtest: account and owned artists; preferences default off; no auth secret
+    ok 1 - account and owned artists; preferences default off; no auth secret
+      ---
+      duration_ms: 77.9894
+      type: 'test'
+      ...
+    # Subtest: wallet and signed finance values are copied without credentials or review notes
+    ok 2 - wallet and signed finance values are copied without credentials or review notes
+      ---
+      duration_ms: 25.3703
+      type: 'test'
+      ...
+    # Subtest: account/scope/cursor/identity protections and corruption
+    ok 3 - account/scope/cursor/identity protections and corruption
+      ---
+      duration_ms: 59.7136
+      type: 'test'
+      ...
+    # Subtest: only settled purchases influence opted-in recommendations; opt-out does not inspect transaction history
+    ok 4 - only settled purchases influence opted-in recommendations; opt-out does not inspect transaction history
+      ---
+      duration_ms: 270.4589
+      type: 'test'
+      ...
+    1..4
+ok 24 - privacy-account-copy isolated MySQL and HTTP
+  ---
+  duration_ms: 21540.5225
+  type: 'test'
+  ...
+# Subtest: 500 long-city candidates paginate without exceeding fingerprint limits, and truncation stays explicit
+ok 25 - 500 long-city candidates paginate without exceeding fingerprint limits, and truncation stays explicit
+  ---
+  duration_ms: 29.1776
+  type: 'test'
+  ...
+# Subtest: preference change while reading public candidates rejects stale result
+ok 26 - preference change while reading public candidates rejects stale result
+  ---
+  duration_ms: 1.587
+  type: 'test'
+  ...
+# Subtest: recommendations isolated MySQL and HTTP
+    # Subtest: default nonpersonal catalogue, bound cursor and no price adjustment
+    ok 1 - default nonpersonal catalogue, bound cursor and no price adjustment
+      ---
+      duration_ms: 112.5108
+      type: 'test'
+      ...
+    # Subtest: explicit opt-in ranks valid browsed city; opt-out invalidates old cursor
+    ok 2 - explicit opt-in ranks valid browsed city; opt-out invalidates old cursor
+      ---
+      duration_ms: 147.3767
+      type: 'test'
+      ...
+    # Subtest: withdrawn source is removed; disabled history stops influencing recommendations
+    ok 3 - withdrawn source is removed; disabled history stops influencing recommendations
+      ---
+      duration_ms: 60.2185
+      type: 'test'
+      ...
+    # Subtest: strict input and identity boundaries, all supported public sources
+    ok 4 - strict input and identity boundaries, all supported public sources
+      ---
+      duration_ms: 70.4101
+      type: 'test'
+      ...
+    1..4
+ok 27 - recommendations isolated MySQL and HTTP
+  ---
+  duration_ms: 22776.3466
+  type: 'test'
+  ...
+# Subtest: recommended matching combines actual stock rights and budget with consented purchases and browsing
+    # Subtest: default matching and original filter order remain equal; strict inputs and no-store
+    ok 1 - default matching and original filter order remain equal; strict inputs and no-store
+      ---
+      duration_ms: 147.8654
+      type: 'test'
+      ...
+    # Subtest: browsing consent alone does not activate personalization; explicit opt-in ranks the browsed city
+    ok 2 - browsing consent alone does not activate personalization; explicit opt-in ranks the browsed city
+      ---
+      duration_ms: 133.7397
+      type: 'test'
+      ...
+    # Subtest: unpaid order does not rank; actual synthetic payment outranks browsing without changing rights or price
+    ok 3 - unpaid order does not rank; actual synthetic payment outranks browsing without changing rights or price
+      ---
+      duration_ms: 407.4502
+      type: 'test'
+      ...
+    # Subtest: cursor cannot move across accounts, conditions, legacy endpoint or changed preferences
+    ok 4 - cursor cannot move across accounts, conditions, legacy endpoint or changed preferences
+      ---
+      duration_ms: 326.9511
+      type: 'test'
+      ...
+    # Subtest: approved refund is not repayment; completed refund removes purchase influence and invalidates prior cursor
+    ok 5 - approved refund is not repayment; completed refund removes purchase influence and invalidates prior cursor
+      ---
+      duration_ms: 275.9858
+      type: 'test'
+      ...
+    # Subtest: history off clears browsing influence; source withdrawn after selection is not returned or purchasable
+    ok 6 - history off clears browsing influence; source withdrawn after selection is not returned or purchasable
+      ---
+      duration_ms: 146.5491
+      type: 'test'
+      ...
+    1..6
+ok 28 - recommended matching combines actual stock rights and budget with consented purchases and browsing
+  ---
+  duration_ms: 23980.313
+  type: 'test'
+  ...
+# Subtest: bounded matching filters all scanned candidates before paging and never reads opted-out activity
+ok 29 - bounded matching filters all scanned candidates before paging and never reads opted-out activity
+  ---
+  duration_ms: 22.5058
+  type: 'test'
+  ...
+# Subtest: matching cursor binds filters, account and endpoint; preference changes during reading reject stale output
+ok 30 - matching cursor binds filters, account and endpoint; preference changes during reading reject stale output
+  ---
+  duration_ms: 26.3393
+  type: 'test'
+  ...
+# Subtest: stock video commerce in isolated MySQL
+    # Subtest: empty seller obtains reviewed choices before first listing
+    ok 1 - empty seller obtains reviewed choices before first listing
+      ---
+      duration_ms: 66.0444
+      type: 'test'
+      ...
+    # Subtest: current L1 plus manual approval may list; legacy request flag cannot weaken server policy
+    ok 2 - current L1 plus manual approval may list; legacy request flag cannot weaken server policy
+      ---
+      duration_ms: 57.7988
+      type: 'test'
+      ...
+    # Subtest: seller can inspect missing manual approval; unrelated accounts cannot inspect qualification
+    ok 3 - seller can inspect missing manual approval; unrelated accounts cannot inspect qualification
+      ---
+      duration_ms: 58.5882
+      type: 'test'
+      ...
+    # Subtest: future, expired, rejected or withdrawn manual certification never grants listing
+    ok 4 - future, expired, rejected or withdrawn manual certification never grants listing
+      ---
+      duration_ms: 37.7014
+      type: 'test'
+      ...
+    # Subtest: each depicted person needs their own manual approval, not only the seller
+    ok 5 - each depicted person needs their own manual approval, not only the seller
+      ---
+      duration_ms: 45.5944
+      type: 'test'
+      ...
+    # Subtest: listing requires current L1 fact, not seller checkbox
+    ok 6 - listing requires current L1 fact, not seller checkbox
+      ---
+      duration_ms: 12.619
+      type: 'test'
+      ...
+    # Subtest: independent rights and content reviews required before public sale
+    ok 7 - independent rights and content reviews required before public sale
+      ---
+      duration_ms: 38.8461
+      type: 'test'
+      ...
+    # Subtest: catalog reveals no source, private evidence or contact data
+    ok 8 - catalog reveals no source, private evidence or contact data
+      ---
+      duration_ms: 35.4208
+      type: 'test'
+      ...
+    # Subtest: verified personal buyer needs neither own avatar nor company; unverified account blocked
+    ok 9 - verified personal buyer needs neither own avatar nor company; unverified account blocked
+      ---
+      duration_ms: 67.8435
+      type: 'test'
+      ...
+    # Subtest: losing manual approval hides existing offers and blocks new checkout and new-order payment
+    ok 10 - losing manual approval hides existing offers and blocks new checkout and new-order payment
+      ---
+      duration_ms: 37.593
+      type: 'test'
+      ...
+    # Subtest: unpaid and another buyer cannot download source
+    ok 11 - unpaid and another buyer cannot download source
+      ---
+      duration_ms: 21.1555
+      type: 'test'
+      ...
+    # Subtest: trusted payment grants once and leaves clock stopped until actual receipt
+    ok 12 - trusted payment grants once and leaves clock stopped until actual receipt
+      ---
+      duration_ms: 81.892
+      type: 'test'
+      ...
+    # Subtest: paid purchase keeps contract and access after new-sale qualification is withdrawn
+    ok 13 - paid purchase keeps contract and access after new-sale qualification is withdrawn
+      ---
+      duration_ms: 31.8871
+      type: 'test'
+      ...
+    # Subtest: ordinary unlisting leaves purchased license and contract unchanged
+    ok 14 - ordinary unlisting leaves purchased license and contract unchanged
+      ---
+      duration_ms: 35.5688
+      type: 'test'
+      ...
+    # Subtest: rights hold remains during re-review; two approvals restore purchased access
+    ok 15 - rights hold remains during re-review; two approvals restore purchased access
+      ---
+      duration_ms: 112.8699
+      type: 'test'
+      ...
+    # Subtest: notification read plus actual content access permits explicit receipt clock
+    ok 16 - notification read plus actual content access permits explicit receipt clock
+      ---
+      duration_ms: 29.7757
+      type: 'test'
+      ...
+    # Subtest: issue stops clock and prevents download until independent resolution
+    ok 17 - issue stops clock and prevents download until independent resolution
+      ---
+      duration_ms: 58.2253
+      type: 'test'
+      ...
+    # Subtest: refund approval is not refund success; actual full refund revokes license
+    ok 18 - refund approval is not refund success; actual full refund revokes license
+      ---
+      duration_ms: 64.9885
+      type: 'test'
+      ...
+    # Subtest: one stock order survives lost response and refund review without duplicate money or licenses
+    ok 19 - one stock order survives lost response and refund review without duplicate money or licenses
+      ---
+      duration_ms: 369.0511
+      type: 'test'
+      ...
+    # Subtest: expired download session recovers the same purchased bytes but fresh login never bypasses revoked membership
+    ok 20 - expired download session recovers the same purchased bytes but fresh login never bypasses revoked membership
+      ---
+      duration_ms: 192.2993
+      type: 'test'
+      ...
+    # Subtest: concurrent clicks with different keys cannot create duplicate purchase
+    ok 21 - concurrent clicks with different keys cannot create duplicate purchase
+      ---
+      duration_ms: 75.4268
+      type: 'test'
+      ...
+    # Subtest: changed reviewed offer requires buyer to confirm again; Apple needs reviewed product mapping
+    ok 22 - changed reviewed offer requires buyer to confirm again; Apple needs reviewed product mapping
+      ---
+      duration_ms: 63.0549
+      type: 'test'
+      ...
+    # Subtest: unlisting after preparing payment blocks dispatch; late cancelled receipt grants no access
+    ok 23 - unlisting after preparing payment blocks dispatch; late cancelled receipt grants no access
+      ---
+      duration_ms: 128.0522
+      type: 'test'
+      ...
+    # Subtest: stored full-file hash change cannot silently replace sold file
+    ok 24 - stored full-file hash change cannot silently replace sold file
+      ---
+      duration_ms: 131.9706
+      type: 'test'
+      ...
+    # Subtest: automatic acceptance checks actual private bytes and a current worker lease
+    ok 25 - automatic acceptance checks actual private bytes and a current worker lease
+      ---
+      duration_ms: 150.6496
+      type: 'test'
+      ...
+    # Subtest: missing private file stops the clock rather than falsely completing order
+    ok 26 - missing private file stops the clock rather than falsely completing order
+      ---
+      duration_ms: 146.3615
+      type: 'test'
+      ...
+    # Subtest: rights suspension invalidates old receipt even when review finishes before timer runs
+    ok 27 - rights suspension invalidates old receipt even when review finishes before timer runs
+      ---
+      duration_ms: 149.7144
+      type: 'test'
+      ...
+    # Subtest: explicit acceptance needs actual source access and cannot be done for another buyer
+    ok 28 - explicit acceptance needs actual source access and cannot be done for another buyer
+      ---
+      duration_ms: 109.8069
+      type: 'test'
+      ...
+    # Subtest: failed purchase audit rolls back order and purchase together
+    ok 29 - failed purchase audit rolls back order and purchase together
+      ---
+      duration_ms: 43.6357
+      type: 'test'
+      ...
+    # Subtest: seller and reviewer browse private files; buyer lists remain personal
+    ok 30 - seller and reviewer browse private files; buyer lists remain personal
+      ---
+      duration_ms: 62.8469
+      type: 'test'
+      ...
+    # Subtest: stock upload supports bounded video size independently of old 8MB materials
+    ok 31 - stock upload supports bounded video size independently of old 8MB materials
+      ---
+      duration_ms: 42.7934
+      type: 'test'
+      ...
+    # Subtest: MCN listing binds the actual L1 artist and stops new sales when delegation is withdrawn
+    ok 32 - MCN listing binds the actual L1 artist and stops new sales when delegation is withdrawn
+      ---
+      duration_ms: 132.701
+      type: 'test'
+      ...
+    # Subtest: first seller reads published rules and scoped consents without past listings
+    ok 33 - first seller reads published rules and scoped consents without past listings
+      ---
+      duration_ms: 20.1824
+      type: 'test'
+      ...
+    # Subtest: publication independent review, stale versions and withdrawals gate new sale
+    ok 34 - publication independent review, stale versions and withdrawals gate new sale
+      ---
+      duration_ms: 10.5666
+      type: 'test'
+      ...
+    # Subtest: rejected listing resubmits a separate version with replay and review protection
+    ok 35 - rejected listing resubmits a separate version with replay and review protection
+      ---
+      duration_ms: 51.9288
+      type: 'test'
+      ...
+    # Subtest: replacement publication leaves bought file and licence intact and prevents old reactivation
+    ok 36 - replacement publication leaves bought file and licence intact and prevents old reactivation
+      ---
+      duration_ms: 137.5469
+      type: 'test'
+      ...
+    # Subtest: publication routes require operator rights, independent review and exact version
+    ok 37 - publication routes require operator rights, independent review and exact version
+      ---
+      duration_ms: 62.2017
+      type: 'test'
+      ...
+    # Subtest: two rejected revisions and later replacements keep one active sale and original purchases
+    ok 38 - two rejected revisions and later replacements keep one active sale and original purchases
+      ---
+      duration_ms: 185.162
+      type: 'test'
+      ...
+    # Subtest: stopped sales publication blocks new listings and checkout but preserves old purchase
+    ok 39 - stopped sales publication blocks new listings and checkout but preserves old purchase
+      ---
+      duration_ms: 92.5767
+      type: 'test'
+      ...
+    # Subtest: reviewed stock refund 40 independently KEEP licence, old contract and cash journal unchanged by retries
+    ok 40 - reviewed stock refund 40 independently KEEP licence, old contract and cash journal unchanged by retries
+      ---
+      duration_ms: 279.836
+      type: 'test'
+      ...
+    # Subtest: reviewed stock refund 40 independently REVOKE licence, old contract and cash journal unchanged by retries
+    ok 41 - reviewed stock refund 40 independently REVOKE licence, old contract and cash journal unchanged by retries
+      ---
+      duration_ms: 272.188
+      type: 'test'
+      ...
+    # Subtest: reviewed stock refund 100 independently KEEP licence, old contract and cash journal unchanged by retries
+    ok 42 - reviewed stock refund 100 independently KEEP licence, old contract and cash journal unchanged by retries
+      ---
+      duration_ms: 219.8865
+      type: 'test'
+      ...
+    # Subtest: reviewed stock refund 100 independently REVOKE licence, old contract and cash journal unchanged by retries
+    ok 43 - reviewed stock refund 100 independently REVOKE licence, old contract and cash journal unchanged by retries
+      ---
+      duration_ms: 187.2918
+      type: 'test'
+      ...
+    # Subtest: payment review after 40 refund preserves independent KEEP licence decision while blocking access
+    ok 44 - payment review after 40 refund preserves independent KEEP licence decision while blocking access
+      ---
+      duration_ms: 142.2812
+      type: 'test'
+      ...
+    # Subtest: payment review after 40 refund preserves independent REVOKE licence decision while blocking access
+    ok 45 - payment review after 40 refund preserves independent REVOKE licence decision while blocking access
+      ---
+      duration_ms: 141.052
+      type: 'test'
+      ...
+    # Subtest: payment review after 100 refund preserves independent KEEP licence decision while blocking access
+    ok 46 - payment review after 100 refund preserves independent KEEP licence decision while blocking access
+      ---
+      duration_ms: 152.9583
+      type: 'test'
+      ...
+    # Subtest: payment review after 100 refund preserves independent REVOKE licence decision while blocking access
+    ok 47 - payment review after 100 refund preserves independent REVOKE licence decision while blocking access
+      ---
+      duration_ms: 153.8943
+      type: 'test'
+      ...
+    # Subtest: new consent withdrawal hides catalog and stops another download without rewriting sold history
+    ok 48 - new consent withdrawal hides catalog and stops another download without rewriting sold history
+      ---
+      duration_ms: 129.646
+      type: 'test'
+      ...
+    # Subtest: historical unpaid order retains original admission policy without admitting new purchases
+    ok 49 - historical unpaid order retains original admission policy without admitting new purchases
+      ---
+      duration_ms: 184.2509
+      type: 'test'
+      ...
+    1..49
+ok 31 - stock video commerce in isolated MySQL
+  ---
+  duration_ms: 13240.6943
+  type: 'test'
+  ...
+1..31
+# tests 116
+# suites 0
+# pass 116
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 77583.5433

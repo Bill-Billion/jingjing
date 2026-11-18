@@ -1,0 +1,253 @@
+TAP version 13
+# Subtest: failed migration is diagnosed and recovered through isolated maintenance commands
+    # Subtest: CLI safety rejects live targets and emits no credentials
+    ok 1 - CLI safety rejects live targets and emits no credentials
+      ---
+      duration_ms: 214.2888
+      type: 'test'
+      ...
+    # Subtest: read-only diagnostics see waiting work without requiring a release manifest
+    ok 2 - read-only diagnostics see waiting work without requiring a release manifest
+      ---
+      duration_ms: 356.5967
+      type: 'test'
+      ...
+    # Subtest: backup commands create an authenticated pre-change artifact and refuse overwrite
+    ok 3 - backup commands create an authenticated pre-change artifact and refuse overwrite
+      ---
+      duration_ms: 1546.5297
+      type: 'test'
+      ...
+    # Subtest: actual failed migration retains prior committed DDL and is observable without rewriting history
+    ok 4 - actual failed migration retains prior committed DDL and is observable without rewriting history
+      ---
+      duration_ms: 762.0318
+      type: 'test'
+      ...
+    # Subtest: restore refuses wrong hash and a populated target without destroying the failed scene
+    ok 5 - restore refuses wrong hash and a populated target without destroying the failed scene
+      ---
+      duration_ms: 523.5766
+      type: 'test'
+      ...
+    # Subtest: actual restore command reestablishes pre-change money, authority and original task in a new quarantined database
+    ok 6 - actual restore command reestablishes pre-change money, authority and original task in a new quarantined database
+      ---
+      duration_ms: 6104.0541
+      type: 'test'
+      ...
+    # Subtest: post-recovery observation blocks runtime and never claims migration recovery is service cutover
+    ok 7 - post-recovery observation blocks runtime and never claims migration recovery is service cutover
+      ---
+      duration_ms: 856.6983
+      type: 'test'
+      ...
+    # Subtest: diagnostics report blocked, failed and expired jobs without executing or exposing private references
+    ok 8 - diagnostics report blocked, failed and expired jobs without executing or exposing private references
+      ---
+      duration_ms: 590.2733
+      type: 'test'
+      ...
+    # Subtest: empty database is diagnosed as unavailable without creating schema
+    ok 9 - empty database is diagnosed as unavailable without creating schema
+      ---
+      duration_ms: 350.6752
+      type: 'test'
+      ...
+    1..9
+ok 1 - failed migration is diagnosed and recovered through isolated maintenance commands
+  ---
+  duration_ms: 19550.7335
+  type: 'test'
+  ...
+# Subtest: restored refund rechecks current authority, provider binding and receipt facts
+    # Subtest: revoked independent authority blocks restored work and cannot authorize its retry; self-review still fails
+    ok 1 - revoked independent authority blocks restored work and cannot authorize its retry; self-review still fails
+      ---
+      duration_ms: 188.252
+      type: 'test'
+      ...
+    # Subtest: authority revoked during provider readiness is rechecked before any original-request query
+    ok 2 - authority revoked during provider readiness is rechecked before any original-request query
+      ---
+      duration_ms: 194.2749
+      type: 'test'
+      ...
+    # Subtest: missing adapter and changed merchant, revision or environment cannot reroute a restored refund
+    ok 3 - missing adapter and changed merchant, revision or environment cannot reroute a restored refund
+      ---
+      duration_ms: 862.5221
+      type: 'test'
+      ...
+    # Subtest: unready provider and configuration changed during readiness cannot proceed
+    ok 4 - unready provider and configuration changed during readiness cannot proceed
+      ---
+      duration_ms: 364.1358
+      type: 'test'
+      ...
+    # Subtest: query transport loss and pending or unknown observations preserve reserved money and query only
+    ok 5 - query transport loss and pending or unknown observations preserve reserved money and query only
+      ---
+      duration_ms: 526.4691
+      type: 'test'
+      ...
+    # Subtest: wrong amount, merchant, source transaction and missing success reference never settle the restored case
+    ok 6 - wrong amount, merchant, source transaction and missing success reference never settle the restored case
+      ---
+      duration_ms: 705.9191
+      type: 'test'
+      ...
+    # Subtest: a lease lost while querying cannot settle; its replacement queries the same request and settles once
+    ok 7 - a lease lost while querying cannot settle; its replacement queries the same request and settles once
+      ---
+      duration_ms: 374.6996
+      type: 'test'
+      ...
+    # Subtest: definitive CLOSED releases only the original hold and cannot later be overwritten by success
+    ok 8 - definitive CLOSED releases only the original hold and cannot later be overwritten by success
+      ---
+      duration_ms: 7242.7989
+      type: 'test'
+      ...
+    1..8
+ok 2 - restored refund rechecks current authority, provider binding and receipt facts
+  ---
+  duration_ms: 25618.2256
+  type: 'test'
+  ...
+# Subtest: release evidence is commit-bound, time-bound and never self-approves launch
+ok 3 - release evidence is commit-bound, time-bound and never self-approves launch
+  ---
+  duration_ms: 1.007
+  type: 'test'
+  ...
+# Subtest: backup cells preserve exact integers and distinguish binary from plain text
+ok 4 - backup cells preserve exact integers and distinguish binary from plain text
+  ---
+  duration_ms: 1.0464
+  type: 'test'
+  ...
+# Subtest: maintenance CLI rejects unspecified operation, shell-shaped identifiers and live database names
+ok 5 - maintenance CLI rejects unspecified operation, shell-shaped identifiers and live database names
+  ---
+  duration_ms: 0.3452
+  type: 'test'
+  ...
+# Subtest: release config distinguishes unavailable and unsafe configuration without leaking values
+ok 6 - release config distinguishes unavailable and unsafe configuration without leaking values
+  ---
+  duration_ms: 0.3834
+  type: 'test'
+  ...
+# Subtest: release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load
+    # Subtest: legacy inspection is read-only and retains unsafe-size integers, raw money and binary
+    ok 1 - legacy inspection is read-only and retains unsafe-size integers, raw money and binary
+      ---
+      duration_ms: 5.6166
+      type: 'test'
+      ...
+    # Subtest: source declaration and active WAL reject before unsafe copy
+    ok 2 - source declaration and active WAL reject before unsafe copy
+      ---
+      duration_ms: 2.1228
+      type: 'test'
+      ...
+    # Subtest: archiving twice preserves old facts without creating active identities, payment receipts or licenses
+    ok 3 - archiving twice preserves old facts without creating active identities, payment receipts or licenses
+      ---
+      duration_ms: 42.3777
+      type: 'test'
+      ...
+    # Subtest: concurrent archives converge and manifest tampering is detected
+    ok 4 - concurrent archives converge and manifest tampering is detected
+      ---
+      duration_ms: 87.3703
+      type: 'test'
+      ...
+    # Subtest: modified archive payload fails without partial writes
+    ok 5 - modified archive payload fails without partial writes
+      ---
+      duration_ms: 0.4405
+      type: 'test'
+      ...
+    # Subtest: backup includes immutable payment and pending-job facts
+    ok 6 - backup includes immutable payment and pending-job facts
+      ---
+      duration_ms: 675.5998
+      type: 'test'
+      ...
+    # Subtest: encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite
+    ok 7 - encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite
+      ---
+      duration_ms: 56.539
+      type: 'test'
+      ...
+    # Subtest: restore to a fresh database matches every row while leaving runtime quarantined
+    ok 8 - restore to a fresh database matches every row while leaving runtime quarantined
+      ---
+      duration_ms: 6654.5533
+      type: 'test'
+      ...
+    # Subtest: restore never overwrites an existing database or accepts the wrong source checksum
+    ok 9 - restore never overwrites an existing database or accepts the wrong source checksum
+      ---
+      duration_ms: 35.832
+      type: 'test'
+      ...
+    # Subtest: invalid foreign key rolls back all imported rows and preserves quarantine
+    ok 10 - invalid foreign key rolls back all imported rows and preserves quarantine
+      ---
+      duration_ms: 6011.326
+      type: 'test'
+      ...
+    # Subtest: schema injection or renamed column is rejected without executing backup SQL
+    ok 11 - schema injection or renamed column is rejected without executing backup SQL
+      ---
+      duration_ms: 5318.9879
+      type: 'test'
+      ...
+    # Subtest: release checks do not confuse filled forms, sandbox providers or running process with launch approval
+    ok 12 - release checks do not confuse filled forms, sandbox providers or running process with launch approval
+      ---
+      duration_ms: 160.6605
+      type: 'test'
+      ...
+    # Subtest: registered provider evidence remains version-bound and never substitutes for a live check
+    ok 13 - registered provider evidence remains version-bound and never substitutes for a live check
+      ---
+      duration_ms: 303.3243
+      type: 'test'
+      ...
+    # Subtest: sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity
+    ok 14 - sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity
+      ---
+      duration_ms: 669.5893
+      type: 'test'
+      ...
+    # Subtest: concurrent duplicate writes preserve one business object and one set of receipts
+    ok 15 - concurrent duplicate writes preserve one business object and one set of receipts
+      ---
+      duration_ms: 44.346
+      type: 'test'
+      ...
+    # Subtest: HTTP security failures never expose SQL, credentials or accept forged payment flags
+    ok 16 - HTTP security failures never expose SQL, credentials or accept forged payment flags
+      ---
+      duration_ms: 8.6089
+      type: 'test'
+      ...
+    1..16
+ok 7 - release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load
+  ---
+  duration_ms: 32096.1013
+  type: 'test'
+  ...
+1..7
+# tests 40
+# suites 0
+# pass 40
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 78113.5975

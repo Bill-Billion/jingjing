@@ -13,7 +13,7 @@ export const auditions:Domain={key:'auditions',title:'试镜与取样',journal:'
 {key:'contacts',label:'双方联系卡',path:'/auditions/bookings/:record_id/contacts',party:'required'},
 {key:'itinerary',label:'本单行程',path:'/auditions/bookings/:record_id/itinerary',party:'required'},
 {key:'supplements',label:'已付款追加范围',path:'/auditions/bookings/:record_id/supplements',party:'required'},
-{key:'reviews',label:'独立试镜核验',path:'/auditions/records',detail:'/auditions/records/:record_id',party:'none',query:[select('kind','待核验类别',[['OFFER','试镜方案'],['BOOKING','预约及取样'],['SUPPLEMENT','追加范围']])],files:[{label:'核对实际取样材料',path:'/auditions/bookings/:record_id/materials/:asset_id',party:'none'}]}],operations:[
+{key:'reviews',label:'独立试镜核验',path:'/auditions/records',detail:'/auditions/records/:record_id',party:'none',query:[select('kind','待核验类别',[['OFFER','试镜方案'],['BOOKING','预约及取样'],['SUPPLEMENT','追加范围']])],files:[{label:'核对实际取样材料',path:'/auditions/bookings/:record_id/materials/:asset_id',party:'none'},{label:'核对当前争议依据',path:'/auditions/bookings/:record_id/dispute-evidence/:asset_id',party:'none',type:'private-evidence'}]}],operations:[
 op('offer','填写试镜方案','/auditions/offers',[group('offer','具体人物与服务',[id('person_id','真人'),id('avatar_id','数字人'),id('public_consent_id','公开预约展示授权'),id('rule_id','已审试镜商品规则'),text('title','方案标题',300),text('city','城市',300),text('service_area','服务区域',300),mode(),bool('public_booking','公开接受预约'),bool('public_price','公开价格'),money('unit_minor','试镜费用',1),rows('slots','可约时段',[date('starts_at','时段开始'),date('ends_at','时段结束')],60),long('terms','试镜范围、样片数量与不包含权利')])],'required',false,['offers']),
 op('visibility','调整方案公开范围','/auditions/offers/:record_id/visibility',[bool('public_booking','公开接受预约'),bool('public_price','公开价格')],'required',true,['offers']),
 op('booking','提出具体试镜预约','/auditions/bookings',[id('offer_id','已阅读的试镜方案'),hash('offer_sha256','方案本版校验值'),id('invitation_id','对应有效邀约',true),appointment()],'required',false,['catalog','invitations','bookings']),
@@ -24,6 +24,7 @@ op('delivery','提交本单实际取样','/auditions/bookings/:record_id/deliver
 op('receipt','确认取得本单全部材料','/auditions/bookings/:record_id/receipt',[],'required',true,['bookings']),
 op('confirm','明确确认本次取样履约','/auditions/bookings/:record_id/confirm',[],'required',true,['bookings']),
 op('cancel','申请取消或安全争议','/auditions/bookings/:record_id/cancel',[reason(),bool('safety','涉及安全问题'),ids('evidence_asset_ids','问题依据')],'required',true,['bookings']),
+op('dispute-evidence','为本次争议补交私有依据','/auditions/bookings/:record_id/dispute-evidence',[{...ids('evidence_asset_ids','本次补交依据',30),min:1}],'required',true,['bookings']),
 op('reschedule','申请本单改期','/auditions/bookings/:record_id/reschedule',[appointment(),reason()],'required',true,['bookings']),
 op('reschedule-response','对方明确回复改期','/auditions/bookings/:record_id/reschedule-response',[select('decision','本人决定',[['ACCEPT','接受'],['DECLINE','不同意']])],'required',true,['bookings']),
 op('contact','明确开放或撤回本人联系卡','/auditions/bookings/:record_id/contact',[text('name','本单联系人',100),{...text('phone','本人同意提供的手机',11),nullable:true},bool('consent','同意本单按当前权限查看联系卡')],'required',true,['bookings']),

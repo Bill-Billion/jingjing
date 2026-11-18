@@ -25,7 +25,7 @@ const onlyAdaptation = process.argv.includes('--only-adaptation')
 const onlyPendingNav = process.argv.includes('--only-pending-nav')
 const onlyFinalShots = process.argv.includes('--only-final-shots')
 assert(['localhost', '127.0.0.1'].includes(new URL(base).hostname))
-const evidence = resolve(root, 'docs/ux/pr14-ui/evidence')
+const evidence = resolve(root, process.env.PR14_EVIDENCE_DIR || 'docs/ux/pr14-ui/evidence')
 const shots = resolve(evidence, 'screenshots')
 await mkdir(shots, { recursive: true })
 const results = [], pageErrors = [], forbiddenConsole = [], screenshotCoverage = []
@@ -279,7 +279,7 @@ try {
       await page.setViewportSize({ width, height: 1000 })
       for (const link of links) {
         await openNavigation()
-        await page.locator('.workspace-nav a').filter({ hasText: link.label }).click()
+        await page.locator('.workspace-nav').getByRole('link', { name: link.label, exact: true }).click()
         await page.waitForURL(url => url.pathname === link.href)
         await openNavigation()
         assert.equal(await page.locator('.workspace-nav a').count(), links.length, `${link.label}: stable menus`)
@@ -635,7 +635,7 @@ try {
   if (onlyPendingNav) await check('未知写入阻止菜单跳转、保留原请求重试、成功后恢复导航', runPendingNavigation)
   if (onlyFinalShots) await check('最终390×844视口截图只有一套导航、真实正文可见且HTML按纯文本显示', runFinalScreenshots)
 } catch (cause) {
-  console.error(`Browser acceptance failed: ${redact(cause.message)}`)
+  console.error(`Browser acceptance failed: ${redact(cause.stack || cause.message)}`)
   for (const [name, actor] of Object.entries(actors)) await shot(actor.page, `pr14-web-last-${name}.png`).catch(() => {})
   process.exitCode = 1
 } finally {

@@ -144,3 +144,17 @@ test('verified erasure confirms only the exact current object; access errors and
   else{await assert.rejects(api.eraseCurrent('private/person/material',hash));if(['forbidden','changed'].includes(mode))assert.equal(calls,0);}
  }
 });
+
+
+test('private missing-object probe distinguishes exact absence from denied or uncertain reads',async()=>{
+ const {api,client}=privateFixture();const key='private/party-1/probe';
+ assert.equal((await api.getBufferIfExists(key)).toString(),'private');
+ client.get=async()=>{throw Object.assign(Error('synthetic absent'),{code:'NoSuchKey',status:404});};
+ assert.equal(await api.getBufferIfExists(key),null);
+ await assert.rejects(api.getBuffer(key),{code:'PROVIDER_CALL_FAILED'});
+ for(const cause of [{code:'NoSuchBucket',status:404},{code:'AccessDenied',status:403},{code:'NoSuchKey',status:503},{code:'ETIMEDOUT'}]){
+  client.get=async()=>{throw Object.assign(Error('synthetic provider failure'),cause);};
+  await assert.rejects(api.getBufferIfExists(key),{code:'PROVIDER_CALL_FAILED'});
+ }
+ await assert.rejects(privateFixture({authorize:async()=>false}).api.getBufferIfExists(key),{code:'PRIVATE_ASSET_FORBIDDEN'});
+});

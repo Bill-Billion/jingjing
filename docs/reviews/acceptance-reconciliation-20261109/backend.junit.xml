@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites>
+	<testsuite name="story intake HTTP, privacy, immutable submissions and rollback in isolated MySQL" time="12.877826" disabled="0" errors="0" tests="36" failures="0" skipped="0" hostname="DESKTOP-CCC">
+		<testcase name="empty configuration exposes no fabricated categories; only a publisher can publish immutable template versions" time="0.098638" classname="test"/>
+		<testcase name="an incomplete draft is private and can be restored, deliberately emptied and saved without old-value substitution" time="0.084471" classname="test"/>
+		<testcase name="listing returns necessary summaries without private answers or submission bodies" time="0.049201" classname="test"/>
+		<testcase name="publishing a newer category does not silently migrate existing drafts or their questions" time="0.031005" classname="test"/>
+		<testcase name="submit creates one immutable version and exposes that exact text to the intake operator" time="0.057161" classname="test"/>
+		<testcase name="intake records a responsible operator without rewriting the submission or implying payment/production approval" time="0.039310" classname="test"/>
+		<testcase name="idempotency protects a create or save from double creation and refuses changed content under the same key" time="0.058408" classname="test"/>
+		<testcase name="two concurrent saves with the same version cannot silently overwrite one another" time="0.034900" classname="test"/>
+		<testcase name="concurrent submission with different keys creates exactly one submitted version" time="0.028330" classname="test"/>
+		<testcase name="institution membership does not expose another member's private story, even to the institution owner" time="0.063826" classname="test"/>
+		<testcase name="removing membership immediately denies reads, writes and previously successful idempotent replays" time="0.042579" classname="test"/>
+		<testcase name="revoked operator grants deny detail, inbox and replay of a previously successful intake" time="0.060530" classname="test"/>
+		<testcase name="suspended accounts cannot replay an old creation or read previously accessible content" time="0.018808" classname="test"/>
+		<testcase name="required attachments reject missing files, public URLs and identifiers without an owned ready upload" time="0.045241" classname="test"/>
+		<testcase name="a valid long story can submit and replay even when the response contains more than 64 KiB of immutable content" time="0.071409" classname="test"/>
+		<testcase name="client-supplied state, authority and undeclared fields never become accepted story answers" time="0.043511" classname="test"/>
+		<testcase name="HTTP commands require authentication, an explicit party, idempotency and version headers" time="0.049541" classname="test"/>
+		<testcase name="HTTP enforces the 64 KiB JSON boundary and returns only fixed validation reasons, never story text" time="0.012252" classname="test"/>
+		<testcase name="HTTP preserves safe whole-form validation reasons without reflecting private answers or unknown field names" time="0.056175" classname="test"/>
+		<testcase name="pagination binds signed cursors to user, party, list type and filter" time="0.072546" classname="test"/>
+		<testcase name="failed audit rolls back creation and its deduplication record so a safe retry creates one draft" time="0.017291" classname="test"/>
+		<testcase name="failed submission audit rolls back state, immutable version and operation record together" time="0.023542" classname="test"/>
+		<testcase name="only a current operator can request scoped supplements after actual intake; request replay is stable" time="0.115889" classname="test"/>
+		<testcase name="supplement draft edits and responses are private and do not overwrite the submitted story" time="0.048226" classname="test"/>
+		<testcase name="every requested item needs an explicit response; clearing remains empty and never silently closes a request" time="0.060658" classname="test"/>
+		<testcase name="resubmission freezes a new version, preserves the first, and returns to operations without marking the material approved" time="0.047926" classname="test"/>
+		<testcase name="multiple supplement rounds retain all published versions and private history stays scoped to the request" time="0.083704" classname="test"/>
+		<testcase name="concurrent requests, draft saves and submissions each have a single winner" time="0.069791" classname="test"/>
+		<testcase name="revoked membership and operator grants block supplement reads and old command replay" time="0.103271" classname="test"/>
+		<testcase name="audit failure rolls back supplement request, private save and resubmission as complete transactions" time="0.067710" classname="test"/>
+		<testcase name="supplements permit attachment corrections but reject forged states and missing version" time="0.046794" classname="test"/>
+		<testcase name="private attachments upload, reopen, submit, supplement and retain immutable versions through HTTP" time="0.341504" classname="test"/>
+		<testcase name="free creation uses the existing publishing authority; unsubmitted files revoke and uncertain uploads recover" time="0.092189" classname="test"/>
+		<testcase name="missing upload retries repair the same row; unreadable, corrupt and no-longer-editable files do not overwrite" time="0.112134" classname="test"/>
+		<testcase name="story intake has no order, payment, refund or production side effects" time="0.020524" classname="test"/>
+		<testcase name="blessing video is a private human-readable request with explicit operator intake, never an automatic generation" time="0.062899" classname="test"/>
+	</testsuite>
+	<testsuite name="notices and one-way submissions in isolated MySQL" time="13.148980" disabled="0" errors="0" tests="24" failures="0" skipped="0" hostname="DESKTOP-CCC">
+		<testcase name="ordinary adult cannot publish by supplying a level; funding alone grants no points" time="0.102223" classname="test"/>
+		<testcase name="independent review and public projection exclude evidence/contacts" time="0.076544" classname="test"/>
+		<testcase name="official posts need dedicated operator authority and independent reviewer" time="0.037612" classname="test"/>
+		<testcase name="three structured artist submission kinds and buyer intent retain concrete person/avatar" time="0.176987" classname="test"/>
+		<testcase name="old-client new invitation resolves and freezes its public source without changing the retry body" time="0.077580" classname="test"/>
+		<testcase name="omitting source cannot bypass a withdrawn listing or later review and recipient rechecks" time="0.132434" classname="test"/>
+		<testcase name="source resolution requires live public consent, halo, hosting and original material rights" time="0.074377" classname="test"/>
+		<testcase name="ambiguous legacy public sources require an explicit source instead of guessing" time="0.064162" classname="test"/>
+		<testcase name="already stored source-less invitations retain their historical review and decision rules" time="0.034782" classname="test"/>
+		<testcase name="pending submissions hidden from recipient; outsider and generic comments cannot bypass" time="0.036594" classname="test"/>
+		<testcase name="duplicate interest creates one case; no order or chat created" time="0.041116" classname="test"/>
+		<testcase name="concurrent opposite decisions produce one winner, stale version rejected" time="0.066102" classname="test"/>
+		<testcase name="deadline failure never creates a customer service case" time="0.062405" classname="test"/>
+		<testcase name="withdrawal closes unlinked case and blocks later conversion" time="0.069922" classname="test"/>
+		<testcase name="qualified organization still needs reviewed explicit publishing scope" time="0.120245" classname="test"/>
+		<testcase name="finance facts cannot be self approved or credited twice using same receipt" time="0.040585" classname="test"/>
+		<testcase name="case association verifies actual quote, parties, avatar and immutable version" time="0.202914" classname="test"/>
+		<testcase name="audit failure rolls back case and decision together" time="0.154104" classname="test"/>
+		<testcase name="private submission file checks ownership, recipient consent and stored bytes" time="0.141747" classname="test"/>
+		<testcase name="a child or revoked consent cannot be submitted or read as a valid adult artist" time="0.029310" classname="test"/>
+		<testcase name="MCN may submit only for the specifically delegated person; withdrawal removes access" time="0.138599" classname="test"/>
+		<testcase name="rule API uses independent approval, rejection and closure; unauthenticated route remains closed" time="0.067552" classname="test"/>
+		<testcase name="publication loss prevents new replies without changing historical quote snapshot" time="0.072884" classname="test"/>
+		<testcase name="lists and notifications use current permissions" time="0.077381" classname="test"/>
+	</testsuite>
+	<testsuite name="organization-batch isolated MySQL and HTTP" time="11.520360" disabled="0" errors="0" tests="4" failures="0" skipped="0" hostname="DESKTOP-CCC">
+		<testcase name="mixed results commit independently and rejected result survives reopen" time="0.154662" classname="test"/>
+		<testcase name="same request and lost receipt replay do not repeat assignment; changed payload rejected" time="0.102183" classname="test"/>
+		<testcase name="parallel retries return one batch and one business mutation" time="0.060653" classname="test"/>
+		<testcase name="foreign accounts, personal identities, invalid batches and revoked membership" time="0.055087" classname="test"/>
+	</testsuite>
+	<testsuite name="organization merchandise batch isolated MySQL and HTTP" time="11.929542" disabled="0" errors="0" tests="4" failures="0" skipped="0" hostname="DESKTOP-CCC">
+		<testcase name="artist and stock submission retain original independent-review state" time="0.184652" classname="test"/>
+		<testcase name="price change creates a reviewable new specification without changing listing or old price" time="0.077267" classname="test"/>
+		<testcase name="MCN assignment reuses booking and current artist delegation" time="0.352608" classname="test"/>
+		<testcase name="revoked artist authorization hides receipts and prevents replay" time="0.020119" classname="test"/>
+	</testsuite>
+	<!-- tests 72 -->
+	<!-- suites 0 -->
+	<!-- pass 72 -->
+	<!-- fail 0 -->
+	<!-- cancelled 0 -->
+	<!-- skipped 0 -->
+	<!-- todo 0 -->
+	<!-- duration_ms 13379.273 -->
+</testsuites>

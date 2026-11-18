@@ -1,0 +1,110 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "8d664984d5997692838e9dd0c92c3cdf92eb6b46",
+  "run_id": "pm01-buyer-scale-2026-11-13T18-30-52-544Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "BUYER-RANK-SCALE-ATOMICITY",
+      "acceptance_id": "ACC-DEL-19.03",
+      "name": "退出档案不占参与候选及规模失败完整回滚",
+      "result": "LOCAL_PASS",
+      "scope": "500退出+1参与修复、100人快照、501候选/500内容体积、5000和5001非合格订单/赠分来源、180笔后端模拟已付订单的大型私人依据、记录/命令/审计回滚及旧快照/原键恢复",
+      "remaining": "批量身份与历史空订单/赠分为SQL合成；180笔付款回执及验收时间亦模拟；非真实吞吐或无限容量，500候选不保证内容可保存，超量需明确分批处理，分批实现/真实容量未证明；无端侧、独审或真实服务",
+      "actual_checks": [
+        {
+          "name": "500 opted-out profiles do not prevent one participating buyer from generating a snapshot",
+          "file": "test/buyer-rank-scale.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 19.5005,
+          "error_code": null
+        },
+        {
+          "name": "100 participating verified synthetic identities produce exactly 100 entries without duplicated or private public facts",
+          "file": "test/buyer-rank-scale.integration.test.cjs",
+          "line": 31,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 584.2093,
+          "error_code": null
+        },
+        {
+          "name": "501 participating profiles reject without a command, audit or partial snapshot; original key works after correction",
+          "file": "test/buyer-rank-scale.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 133.0184,
+          "error_code": null
+        },
+        {
+          "name": "500 participating profiles exceeding frozen content size reject atomically instead of silently truncating",
+          "file": "test/buyer-rank-scale.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 832.7984,
+          "error_code": null
+        },
+        {
+          "name": "5000 nonqualifying orders are bounded; the 5001st explicitly rejects and retry leaves no partial result",
+          "file": "test/buyer-rank-scale.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 744.7375,
+          "error_code": null
+        },
+        {
+          "name": "5000 gift lots contribute no consumption growth; the 5001st cannot produce half a snapshot",
+          "file": "test/buyer-rank-scale.integration.test.cjs",
+          "line": 38,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 680.1777,
+          "error_code": null
+        },
+        {
+          "name": "large private order evidence rolls back a previously inserted summary and all entries; original snapshot and retry survive",
+          "file": "test/buyer-rank-scale.integration.test.cjs",
+          "line": 42,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 20675.1866,
+          "error_code": null
+        },
+        {
+          "name": "buyer ranking bounded load, opted-out candidates and atomic snapshot failures",
+          "file": "test/buyer-rank-scale.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 36348.5429,
+          "error_code": null
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-buyer-scale-20261114/FINAL_BACKEND.json",
+          "sha256": "0ba59a778d45ffbf0c92271467c07a184321c6e25c852827c85f8c400fbc3743"
+        },
+        {
+          "path": "docs/reviews/pm01-buyer-scale-20261114/FINAL_CONTRACT.json",
+          "sha256": "5df206a05ba04dbaa8299b0cbd01b0dca6cc32d4de96b56b436a1bfb1e78ad52"
+        },
+        {
+          "path": "docs/reviews/pm01-buyer-scale-20261114/BUSINESS_RECORDS.json",
+          "sha256": "4e48255280cf36e5557082f713b2853224aad4933e7ea8d985c6fccb1ae55de7"
+        },
+        {
+          "path": "docs/reviews/pm01-buyer-scale-20261114/SOURCE_MANIFEST.json",
+          "sha256": "10007ebd86b1d15bb000ef206db54f3e4bddfb167be9bdb6656c2962ea5e72fa"
+        }
+      ]
+    }
+  ]
+}

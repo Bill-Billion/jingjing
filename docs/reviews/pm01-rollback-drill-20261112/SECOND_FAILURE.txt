@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: failed migration is diagnosed and recovered through isolated maintenance commands
+    # Subtest: CLI safety rejects live targets and emits no credentials
+    ok 1 - CLI safety rejects live targets and emits no credentials
+      ---
+      duration_ms: 212.7107
+      type: 'test'
+      ...
+    # Subtest: read-only diagnostics see waiting work without requiring a release manifest
+    ok 2 - read-only diagnostics see waiting work without requiring a release manifest
+      ---
+      duration_ms: 354.5401
+      type: 'test'
+      ...
+    # Subtest: backup commands create an authenticated pre-change artifact and refuse overwrite
+    ok 3 - backup commands create an authenticated pre-change artifact and refuse overwrite
+      ---
+      duration_ms: 1448.7683
+      type: 'test'
+      ...
+    # Subtest: actual failed migration retains prior committed DDL and is observable without rewriting history
+    ok 4 - actual failed migration retains prior committed DDL and is observable without rewriting history
+      ---
+      duration_ms: 765.3604
+      type: 'test'
+      ...
+    # Subtest: restore refuses wrong hash and a populated target without destroying the failed scene
+    ok 5 - restore refuses wrong hash and a populated target without destroying the failed scene
+      ---
+      duration_ms: 534.691
+      type: 'test'
+      ...
+    # Subtest: actual restore command reestablishes pre-change money, authority and original task in a new quarantined database
+    ok 6 - actual restore command reestablishes pre-change money, authority and original task in a new quarantined database
+      ---
+      duration_ms: 5763.5586
+      type: 'test'
+      ...
+    # Subtest: post-recovery observation blocks runtime and never claims migration recovery is service cutover
+    ok 7 - post-recovery observation blocks runtime and never claims migration recovery is service cutover
+      ---
+      duration_ms: 823.215
+      type: 'test'
+      ...
+    # Subtest: diagnostics report blocked, failed and expired jobs without executing or exposing private references
+    not ok 8 - diagnostics report blocked, failed and expired jobs without executing or exposing private references
+      ---
+      duration_ms: 10.0618
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\migration-rollback.integration.test.cjs:117:11'
+      failureType: 'testCodeFailure'
+      error: "Check constraint 'job_lease_valid' is violated."
+      code: 'ER_CHECK_CONSTRAINT_VIOLATED'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:31:60
+        withConnection (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:19:24)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\migration-rollback.integration.test.cjs:121:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\migration-rollback.integration.test.cjs:117:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: empty database is diagnosed as unavailable without creating schema
+    ok 9 - empty database is diagnosed as unavailable without creating schema
+      ---
+      duration_ms: 365.0657
+      type: 'test'
+      ...
+    1..9
+not ok 1 - failed migration is diagnosed and recovered through isolated maintenance commands
+  ---
+  duration_ms: 18825.4363
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\migration-rollback.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 10
+# suites 0
+# pass 8
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 19021.195

@@ -1,0 +1,297 @@
+TAP version 13
+# Subtest: finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+    # Subtest: existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+    ok 1 - existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+      ---
+      duration_ms: 5103.8024
+      type: 'test'
+      ...
+    # Subtest: authentication, explicit rules and independent review are required
+    ok 2 - authentication, explicit rules and independent review are required
+      ---
+      duration_ms: 48.9962
+      type: 'test'
+      ...
+    # Subtest: rejected draft can be replaced while history stays; active agreement cannot change
+    ok 3 - rejected draft can be replaced while history stays; active agreement cannot change
+      ---
+      duration_ms: 109.8957
+      type: 'test'
+      ...
+    # Subtest: restricted finance evidence respects overlapping restrictions and restrictions activated during storage read
+    ok 4 - restricted finance evidence respects overlapping restrictions and restrictions activated during storage read
+      ---
+      duration_ms: 183.3757
+      type: 'test'
+      ...
+    # Subtest: settlement review and every party confirmation precede available balance
+    ok 5 - settlement review and every party confirmation precede available balance
+      ---
+      duration_ms: 174.6569
+      type: 'test'
+      ...
+    # Subtest: settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+    ok 6 - settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+      ---
+      duration_ms: 23.1713
+      type: 'test'
+      ...
+    # Subtest: concurrent withdrawals reserve available amount once and exact retries reuse request
+    ok 7 - concurrent withdrawals reserve available amount once and exact retries reuse request
+      ---
+      duration_ms: 73.492
+      type: 'test'
+      ...
+    # Subtest: request approval is not paid; only independent bank evidence books actual payout
+    ok 8 - request approval is not paid; only independent bank evidence books actual payout
+      ---
+      duration_ms: 85.1883
+      type: 'test'
+      ...
+    # Subtest: dispute after payout requests blocks new approval but preserves verified failure and cancellation facts
+    ok 9 - dispute after payout requests blocks new approval but preserves verified failure and cancellation facts
+      ---
+      duration_ms: 162.5594
+      type: 'test'
+      ...
+    # Subtest: return and failed payouts keep facts and release reservation for a new request
+    ok 10 - return and failed payouts keep facts and release reservation for a new request
+      ---
+      duration_ms: 152.2038
+      type: 'test'
+      ...
+    # Subtest: disputes notify parties, freeze new payouts, retain replies and all decisions
+    ok 11 - disputes notify parties, freeze new payouts, retain replies and all decisions
+      ---
+      duration_ms: 51.1528
+      type: 'test'
+      ...
+    # Subtest: refund reduces future entitlement, preserves old settlement and actual payout
+    ok 12 - refund reduces future entitlement, preserves old settlement and actual payout
+      ---
+      duration_ms: 154.0419
+      type: 'test'
+      ...
+    # Subtest: adjustment is balanced, separately reviewed and forces new settlement confirmation
+    ok 13 - adjustment is balanced, separately reviewed and forces new settlement confirmation
+      ---
+      duration_ms: 98.7196
+      type: 'test'
+      ...
+    # Subtest: reconciliation compares verified facts without turning imported rows into money
+    ok 14 - reconciliation compares verified facts without turning imported rows into money
+      ---
+      duration_ms: 26.066
+      type: 'test'
+      ...
+    # Subtest: daily books include verified refunds, actual split payments and returned split money, not reservations
+    ok 15 - daily books include verified refunds, actual split payments and returned split money, not reservations
+      ---
+      duration_ms: 20.3952
+      type: 'test'
+      ...
+    # Subtest: external release statement is accrued revenue, not cash received or automatic payout
+    ok 16 - external release statement is accrued revenue, not cash received or automatic payout
+      ---
+      duration_ms: 105.9216
+      type: 'test'
+      ...
+    # Subtest: same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation
+    ok 17 - same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation
+      ---
+      duration_ms: 122.8348
+      type: 'test'
+      ...
+    # Subtest: partial receipts, duplicate bank references and statement corrections never rewrite history
+    ok 18 - partial receipts, duplicate bank references and statement corrections never rewrite history
+      ---
+      duration_ms: 212.5147
+      type: 'test'
+      ...
+    # Subtest: record permissions, private proof integrity, stale membership and disabled automatic payout
+    ok 19 - record permissions, private proof integrity, stale membership and disabled automatic payout
+      ---
+      duration_ms: 28.6215
+      type: 'test'
+      ...
+    # Subtest: late customer payment review and unaccepted delivery block payouts even with prior agreement
+    ok 20 - late customer payment review and unaccepted delivery block payouts even with prior agreement
+      ---
+      duration_ms: 34.0772
+      type: 'test'
+      ...
+    # Subtest: notification cursor can retrieve newly recorded events, and different parties keep their own feed
+    ok 21 - notification cursor can retrieve newly recorded events, and different parties keep their own feed
+      ---
+      duration_ms: 21.3139
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back adjustment and idempotency reservation; stale review fails
+    ok 22 - audit failure rolls back adjustment and idempotency reservation; stale review fails
+      ---
+      duration_ms: 23.2453
+      type: 'test'
+      ...
+    # Subtest: refund after verified payout creates recovery due without inventing received money
+    ok 23 - refund after verified payout creates recovery due without inventing received money
+      ---
+      duration_ms: 94.3625
+      type: 'test'
+      ...
+    # Subtest: recovery case keeps original debtor and independently reviewed claim separate from received money
+    ok 24 - recovery case keeps original debtor and independently reviewed claim separate from received money
+      ---
+      duration_ms: 89.6794
+      type: 'test'
+      ...
+    # Subtest: independent administrative closure does not forgive debt or invent a receipt; reapplication retains old case
+    ok 25 - independent administrative closure does not forgive debt or invent a receipt; reapplication retains old case
+      ---
+      duration_ms: 159.1392
+      type: 'test'
+      ...
+    # Subtest: partial recovery remains unreceived until independent review, then posts only the received amount once
+    ok 26 - partial recovery remains unreceived until independent review, then posts only the received amount once
+      ---
+      duration_ms: 71.588
+      type: 'test'
+      ...
+    # Subtest: linking split amounts from a verified return is bounded and never posts the bank return again
+    ok 27 - linking split amounts from a verified return is bounded and never posts the bank return again
+      ---
+      duration_ms: 58.1584
+      type: 'test'
+      ...
+    # Subtest: competing partial receipts recheck cumulative amount at approval and preserve the rejected candidate
+    ok 28 - competing partial receipts recheck cumulative amount at approval and preserve the rejected candidate
+      ---
+      duration_ms: 68.486
+      type: 'test'
+      ...
+    # Subtest: claim closes only after verified receipts are linked, while prior claims and original settlement remain immutable
+    ok 29 - claim closes only after verified receipts are linked, while prior claims and original settlement remain immutable
+      ---
+      duration_ms: 61.1456
+      type: 'test'
+      ...
+    # Subtest: remaining return closes original payout without changing original paid evidence or old settlement
+    ok 30 - remaining return closes original payout without changing original paid evidence or old settlement
+      ---
+      duration_ms: 83.5568
+      type: 'test'
+      ...
+    # Subtest: personal income uses posted own shares including payout returns; no other party amounts or estimated revenue
+    ok 31 - personal income uses posted own shares including payout returns; no other party amounts or estimated revenue
+      ---
+      duration_ms: 112.4368
+      type: 'test'
+      ...
+    # Subtest: actual recovery cases reach the same personal copy request through independent delivery
+        # Subtest: personal debtor and claimant can copy their retained cases, without third-party reasons, reviewer identities or original files
+        ok 1 - personal debtor and claimant can copy their retained cases, without third-party reasons, reviewer identities or original files
+          ---
+          duration_ms: 58.8203
+          type: 'test'
+          ...
+        # Subtest: same request scope and personal identity bind all pages, including operator exports and content integrity
+        not ok 2 - same request scope and personal identity bind all pages, including operator exports and content integrity
+          ---
+          duration_ms: 57.095
+          type: 'test'
+          location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\support\\privacy-recovery-copy.cjs:15:25'
+          failureType: 'testCodeFailure'
+          error: 'INVALID_ASSET_TYPE'
+          code: 'INVALID_ASSET_TYPE'
+          stack: |-
+            error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+            Object.reserveAsset (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\repository.js:132:503)
+            Object.upload (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\works\assets.js:13:42)
+            D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:36:25
+            process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:15:45)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async Object.verify (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:26:2)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:390:115)
+            async Test.run (node:internal/test_runner/test:1054:7)
+          ...
+        # Subtest: the actual same-request file remains private until independent review and revoked operator cannot preview bytes
+        not ok 3 - the actual same-request file remains private until independent review and revoked operator cannot preview bytes
+          ---
+          duration_ms: 0.8505
+          type: 'test'
+          location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\support\\privacy-recovery-copy.cjs:15:25'
+          failureType: 'testCodeFailure'
+          error: "Cannot read properties of undefined (reading 'id')"
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:39:250
+            TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:15:51)
+            Test.runInAsyncScope (node:async_hooks:214:14)
+            Test.run (node:internal/test_runner/test:1047:25)
+            Test.start (node:internal/test_runner/test:944:17)
+            TestContext.test (node:internal/test_runner/test:373:20)
+            sub (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:15:25)
+            Object.verify (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:38:8)
+            process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:390:115)
+          ...
+        # Subtest: copy does not unlock original bank documents; original operator revocation is rechecked during download
+        not ok 4 - copy does not unlock original bank documents; original operator revocation is rechecked during download
+          ---
+          duration_ms: 22.6608
+          type: 'test'
+          location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\support\\privacy-recovery-copy.cjs:15:25'
+          failureType: 'testCodeFailure'
+          error: "Cannot read properties of undefined (reading 'id')"
+          code: 'ERR_TEST_FAILURE'
+          name: 'TypeError'
+          stack: |-
+            D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:52:73
+            process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:15:45)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async Object.verify (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:48:2)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:390:115)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:390:2)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+          ...
+        1..4
+    not ok 32 - actual recovery cases reach the same personal copy request through independent delivery
+      ---
+      duration_ms: 153.3033
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:390:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        Object.verify (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\privacy-recovery-copy.cjs:56:351)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:390:115)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\settlement.integration.test.cjs:390:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..32
+not ok 1 - finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+  ---
+  duration_ms: 10676.176
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\settlement.integration.test.cjs:10:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 37
+# suites 0
+# pass 32
+# fail 5
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11045.1523

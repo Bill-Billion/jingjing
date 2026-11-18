@@ -1,3 +1,4 @@
+import '../rights/rights_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
@@ -225,14 +226,7 @@ String tradeDate(dynamic v) =>
 
 List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
   if (spec['stock_license'] is Map) {
-    final license = spec['stock_license'];
-    return [
-      tradeFact('许可用途', '仅买方本人非商业使用，可在个人社交账号分享'),
-      tradeFact('地区 / 期限', '全球 / 永久；非独家'),
-      tradeFact('确认期限', '${license['acceptance_hours']} 小时；从明确收讫后起算'),
-      tradeFact('售后约定', license['aftercare_terms']),
-      appNotice('商业广告、改编、发行、单独声音使用、再次AI生成、源文件及模型、新数字人内容和独家买断均须另行办理。'),
-    ];
+    return stockRightsFacts(tradeMap(spec['stock_license']));
   }
   if (spec['audition'] is Map) {
     final terms = spec['audition'];
@@ -254,6 +248,10 @@ List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
   final service = spec['service'];
   if (service is! Map) {
     return [
+      CopyrightFacts(
+          terms: spec['copyright_terms'] is Map
+              ? tradeMap(spec['copyright_terms'])
+              : null),
       tradeFact('样片 / 成片',
           '${spec['sample_seconds']} 秒 / ${spec['final_seconds']} 秒'),
       tradeFact('修改次数', spec['revision_limit']),
@@ -261,11 +259,16 @@ List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
         tradeFact(
             '预览与中间付款顺序',
             spec['customization_delivery']['preview_payment_order'] ==
-                    'PREVIEW_BEFORE_INTERIM'
-                ? '正式预览确认后，按原订单补款'
-                : '沿用本单先中间付款、再预览的历史约定'),
-        tradeFact('明确收讫后的原约定期限',
-            '${spec['customization_delivery']['acceptance_hours']} 小时'),
+                    'SCRIPT_BEFORE_INTERIM'
+                ? '脚本或图纸确认后支付中款40%，成片验收后支付尾款30%'
+                : spec['customization_delivery']['preview_payment_order'] ==
+                        'PREVIEW_BEFORE_INTERIM'
+                    ? '正式预览确认后，按原订单补款'
+                    : '沿用本单先中间付款、再预览的历史约定'),
+        tradeFact(
+            '明确收讫后的原约定期限',
+            customizationAcceptanceLabel(
+                tradeMap(spec['customization_delivery']))),
         tradeFact('取消约定', spec['customization_delivery']['cancellation_terms']),
       ]
     ];
@@ -279,7 +282,11 @@ List<Widget> tradeSpecificationFacts(Map<String, dynamic> spec) {
       tradeFact('认证审核', 'L${service['halo_level']}；付费不等于审核通过'),
     if (service['kind'] == 'AVATAR_CREATION')
       tradeFact('约定重试', '${service['retry_limit']} 次；档案交付不代表长期模型训练成功'),
-    tradeFact('未交付处理', '按原订单办理未交付退款，待退款与到账分别核对'),
+    tradeFact(
+        '费用处理',
+        service['failure_policy'] == 'REVIEW_FEE_NON_REFUNDABLE'
+            ? '本次人工审核费不支持常规退款；付款不代表通过，补件不重复收费。'
+            : '按原订单办理未交付退款，待退款与到账分别核对'),
     tradeFact(
         '服务规则 / 来源', '${service['rule_version']} / ${service['source_ref']}'),
   ];

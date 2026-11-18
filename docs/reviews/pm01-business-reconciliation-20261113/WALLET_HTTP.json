@@ -1,0 +1,1278 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/rules",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "bfdf12de-ef57-4b43-a2bb-ec3ae7342934",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "WALLET_OPERATOR_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/rules",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "c0adf215-9514-46d5-b2b0-9be4743bd1fe",
+          "actor": {
+            "account_id": "f6ccb3ac-1326-4244-bb76-f9f409f13a5a"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "f6ccb3ac-1326-4244-bb76-f9f409f13a5a",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "dda0d225eb8452b90d7a95b4f2f64ba51fb978db8a24ced51e8d66cf47cdb9e9",
+          "data": {
+            "rule": {
+              "version": "synthetic-v1",
+              "terms": "isolated test rule",
+              "topup_threshold_minor": 30000,
+              "membership_days": 365,
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "points_days": 365,
+              "hold_minutes": 10,
+              "aftercare_days": {
+                "STOCK": 7,
+                "CUSTOMIZATION": null,
+                "AUDITION": null,
+                "COMMERCIAL": null
+              },
+              "topup_limits": {
+                "single_minor": 50000,
+                "daily_minor": 100000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              }
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/rules/c9f7f827-3b99-43ad-b3a5-d85e0db0761a/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "c87fba18-4cf4-443a-a264-3315e4eccf33",
+          "actor": {
+            "account_id": "f6ccb3ac-1326-4244-bb76-f9f409f13a5a"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "SELF_REVIEW_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/rules/c9f7f827-3b99-43ad-b3a5-d85e0db0761a/review",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "d723b405-4e57-440e-b0a2-a60448649619",
+          "actor": {
+            "account_id": "05344b80-5cae-4d7e-9f14-dece96e6ba56"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "f6ccb3ac-1326-4244-bb76-f9f409f13a5a",
+          "current_status": "EFFECTIVE",
+          "object_version": 2,
+          "content_sha256": "ceb036afa995eb7601c482d71d0055e0fd71f87094167d12cf3c1d43c76f82ad",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "review": {
+              "by": "05344b80-5cae-4d7e-9f14-dece96e6ba56",
+              "reason": "synthetic independent rules",
+              "at": "2026-11-13T04:23:29.831Z"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/rules",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "955e7ac4-f15a-4ef4-9372-19edc4c54cdb",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+              "content_sha256": "ceb036afa995eb7601c482d71d0055e0fd71f87094167d12cf3c1d43c76f82ad",
+              "rule": {
+                "terms": "isolated test rule",
+                "version": "synthetic-v1",
+                "points_days": 365,
+                "hold_minutes": 10,
+                "topup_limits": {
+                  "daily_minor": 100000,
+                  "single_minor": 50000,
+                  "monthly_minor": 300000,
+                  "cooling_minutes": 1
+                },
+                "aftercare_days": {
+                  "STOCK": 7,
+                  "AUDITION": null,
+                  "COMMERCIAL": null,
+                  "CUSTOMIZATION": null
+                },
+                "membership_days": 365,
+                "points_per_yuan": 10,
+                "points_rounding": "FLOOR_NET_PAID",
+                "growth_thresholds": [
+                  10000,
+                  50000,
+                  200000,
+                  500000,
+                  1000000
+                ],
+                "topup_threshold_minor": 30000
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "f963b96f-922c-4ba2-b482-f7a0fa88c820",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "error": {
+          "code": "WALLET_RULE_CHANGED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "e9891f1f-d894-439d-b795-6ee815e38038",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "INVALID_INPUT",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "42f64e63-2980-4cf0-8e0d-8cd897948fb5",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "id": "87354d22-393a-48c1-acc4-f7733ca4b680",
+          "kind": "ACCOUNT",
+          "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+          "parent_id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+          "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "content_sha256": "3a46330c28a9317af7828ebd645fab8da3cd9105356c2c3f7737c8eee7e59814",
+          "data": {
+            "rule_id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+            "rule_sha256": "ceb036afa995eb7601c482d71d0055e0fd71f87094167d12cf3c1d43c76f82ad",
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "opened_at": "2026-11-13T04:23:29.880Z"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "6ffd93f0-b325-44d4-bdab-985fb29da40d",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "id": "87354d22-393a-48c1-acc4-f7733ca4b680",
+          "kind": "ACCOUNT",
+          "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+          "parent_id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+          "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "content_sha256": "3a46330c28a9317af7828ebd645fab8da3cd9105356c2c3f7737c8eee7e59814",
+          "data": {
+            "rule_id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+            "rule_sha256": "ceb036afa995eb7601c482d71d0055e0fd71f87094167d12cf3c1d43c76f82ad",
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "opened_at": "2026-11-13T04:23:29.880Z"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "5ff1a1e4-0b97-4b2b-9eed-1dee1a13c724",
+          "actor": {
+            "account_id": "46daaf73-d3b6-49cf-8c2e-e38a9718ec6b"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "error": {
+          "code": "ARTIST_PARTY_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/recharges",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "956a2553-b69a-43a8-a012-82a4b3669e99",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "error": {
+          "code": "CUSTODY_PROVIDER_NOT_CONNECTED",
+          "message": "资金托管服务尚未接通，暂不能充值",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "e506b32c-a654-422e-b49f-0d0385db1194",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "account_id": "87354d22-393a-48c1-acc4-f7733ca4b680",
+          "rule_id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 0,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 0,
+            "withdrawn": 0,
+            "net_issued": 0
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "435da8bb-c44b-4f99-81e4-49cf96626a9a",
+          "actor": {
+            "account_id": "f6ccb3ac-1326-4244-bb76-f9f409f13a5a"
+          },
+          "acting_party": "cb0ff9a5-b354-4d29-86e3-6e6c156c4fe2"
+        },
+        "error": {
+          "code": "VERIFIED_ADULT_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "6ea6ce67-1bab-4e05-a806-310be97a2457",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "id": "fce84165-bb16-4eb7-8f6a-c191ee24c460",
+          "kind": "EARNING",
+          "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+          "parent_id": "c2f0821d-22a4-40cd-91a4-28574c3a0af2",
+          "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+          "current_status": "PENDING",
+          "object_version": 1,
+          "content_sha256": "bc06f9c9916e52b52935256563c2de7d37c92cf0c450b19d890a6221c23a228b",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "spent": 0,
+            "points": 0,
+            "expired": 0,
+            "rule_id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+            "category": "STOCK",
+            "order_id": "c2f0821d-22a4-40cd-91a4-28574c3a0af2",
+            "reversed": 0,
+            "issued_at": null,
+            "expires_at": null,
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": null,
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          },
+          "pending_reason": "FULFILLMENT_PENDING",
+          "available_at": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "2af5b1fe-2f4c-40b9-bf8b-9177e958bc4f",
+          "actor": {
+            "account_id": "46daaf73-d3b6-49cf-8c2e-e38a9718ec6b"
+          },
+          "acting_party": "a9b59c5d-33c1-4462-8dfd-0fa87d1b8842"
+        },
+        "error": {
+          "code": "WALLET_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "c71b4930-b2eb-40e4-97c8-302515b861ba",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "id": "fce84165-bb16-4eb7-8f6a-c191ee24c460",
+          "kind": "EARNING",
+          "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+          "parent_id": "c2f0821d-22a4-40cd-91a4-28574c3a0af2",
+          "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+          "current_status": "ISSUED",
+          "object_version": 2,
+          "content_sha256": "8cd1823a8a59e9853b5f777e3790f1bcf265d37198f3114bfa8f99fac8eeb841",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "spent": 0,
+            "points": 10,
+            "expired": 0,
+            "rule_id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+            "category": "STOCK",
+            "order_id": "c2f0821d-22a4-40cd-91a4-28574c3a0af2",
+            "reversed": 0,
+            "issued_at": "2026-11-13T04:23:30.296Z",
+            "expires_at": "2027-11-13T04:23:30.296Z",
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": "2026-11-12T04:23:30.268Z",
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "9fbe8156-0cad-4549-83b1-55c25767f07c",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "account_id": "87354d22-393a-48c1-acc4-f7733ca4b680",
+          "rule_id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+          "currency": "CNY",
+          "recorded_balance_minor": 30000,
+          "available_balance_minor": 30000,
+          "reserved_balance_minor": 0,
+          "available_points": 0,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 10,
+            "withdrawn": 10,
+            "net_issued": 0
+          },
+          "points_pending_reversal": 4,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_REVERSAL_PENDING",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": true,
+            "level": 1,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": "2027-11-13T04:23:29.981Z",
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": null
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "c367bd8c-7f0b-40e6-8f8e-fcf1821f3ab5",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "account_id": "87354d22-393a-48c1-acc4-f7733ca4b680",
+          "rule_id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+          "currency": "CNY",
+          "recorded_balance_minor": 30000,
+          "available_balance_minor": 30000,
+          "reserved_balance_minor": 0,
+          "available_points": 6,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 20,
+            "withdrawn": 10,
+            "net_issued": 10
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "VERIFIED_ADULT_REQUIRED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 10,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": "2027-11-13T04:23:29.981Z",
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "VERIFIED_ADULT_REQUIRED"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/level-six",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "3e330536-5a91-4ec9-b9ca-f2ed0debf8ad",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "id": "4a2d0c2d-f361-4ed3-b1c8-61f863827473",
+          "kind": "LEVEL_REVIEW",
+          "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+          "parent_id": null,
+          "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "deade36aff1a68c5cb66487e42f734162439cf33356190dbf54a85814be3beea",
+          "data": {
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "terms": "synthetic review",
+            "evidence_asset_ids": [
+              "b03b2617-c564-463e-a1f2-c797aadc135e"
+            ],
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/level-six/4a2d0c2d-f361-4ed3-b1c8-61f863827473/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "45084402-dea6-406a-b191-a198b29d1eb1",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "WALLET_OPERATOR_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/level-six/4a2d0c2d-f361-4ed3-b1c8-61f863827473/review",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "19ce1347-94d8-4975-a58d-bbb9cc5a5897",
+          "actor": {
+            "account_id": "05344b80-5cae-4d7e-9f14-dece96e6ba56"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "4a2d0c2d-f361-4ed3-b1c8-61f863827473",
+          "kind": "LEVEL_REVIEW",
+          "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+          "parent_id": null,
+          "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+          "current_status": "APPROVED",
+          "object_version": 2,
+          "content_sha256": "3e9199c150350889402b027d5cd8047ff354a85fd521792317903361d89d515c",
+          "data": {
+            "terms": "synthetic review",
+            "review": {
+              "by": "05344b80-5cae-4d7e-9f14-dece96e6ba56",
+              "reason": "synthetic independent authority evidence",
+              "at": "2026-11-13T04:23:31.015Z"
+            },
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "evidence_asset_ids": [
+              "b03b2617-c564-463e-a1f2-c797aadc135e"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "b387176e-8765-4eb8-9c07-42e82cacf093",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "4a2d0c2d-f361-4ed3-b1c8-61f863827473",
+              "kind": "LEVEL_REVIEW",
+              "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+              "parent_id": null,
+              "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+              "current_status": "APPROVED",
+              "object_version": 2,
+              "content_sha256": "3e9199c150350889402b027d5cd8047ff354a85fd521792317903361d89d515c",
+              "data": {
+                "terms": "synthetic review",
+                "review": {
+                  "at": "2026-11-13T04:23:31.015Z",
+                  "by": "05344b80-5cae-4d7e-9f14-dece96e6ba56",
+                  "reason": "synthetic independent authority evidence"
+                },
+                "valid_from": "2020-01-01T00:00:00.000Z",
+                "valid_until": "2099-01-01T00:00:00.000Z",
+                "evidence_asset_ids": [
+                  "b03b2617-c564-463e-a1f2-c797aadc135e"
+                ]
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "d1735dae-863d-4786-a9e6-b867f5201b38",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "account_id": "87354d22-393a-48c1-acc4-f7733ca4b680",
+          "rule_id": "c9f7f827-3b99-43ad-b3a5-d85e0db0761a",
+          "currency": "CNY",
+          "recorded_balance_minor": 30000,
+          "available_balance_minor": 10000,
+          "reserved_balance_minor": 20000,
+          "available_points": 6,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 20,
+            "withdrawn": 10,
+            "net_issued": 10
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 10,
+          "membership": {
+            "active": true,
+            "level": 1,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": "2027-11-13T04:23:29.981Z",
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": null
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/trade/payments",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "07d1359e-ee2a-4995-9ea7-8fbedcc3eb06",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "error": {
+          "code": "CUSTODY_PROVIDER_NOT_CONNECTED",
+          "message": "资金托管服务尚未接通，暂不能充值",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "e99ce97b-944b-4de9-80c3-af263ff8926a",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "305c47db-a725-4242-beef-6dcd877759fb",
+              "kind": "CASH_SPEND",
+              "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+              "parent_id": "58abf305-46fb-4090-a32a-791f06c822d6",
+              "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+              "current_status": "RELEASED",
+              "object_version": 2,
+              "content_sha256": "e3c3007fb1cb1f565fa3ddb0398b83bc82c7dd7bfcd11a0648b67fa33b68c917",
+              "data": {
+                "binding": {
+                  "provider": "synthetic-custodian",
+                  "revision": "v1",
+                  "environment": "SANDBOX",
+                  "merchant_id": "synthetic-merchant"
+                },
+                "currency": "CNY",
+                "order_id": "b67ce219-4c4f-42a1-926c-ecc41814a493",
+                "account_id": "87354d22-393a-48c1-acc4-f7733ca4b680",
+                "payment_id": "58abf305-46fb-4090-a32a-791f06c822d6",
+                "refund_ids": [],
+                "allocations": [
+                  {
+                    "recharge_id": "1a8708c3-710e-46cb-bcc6-171a801abbc5",
+                    "amount_minor": 20000,
+                    "returned_minor": 0
+                  }
+                ],
+                "amount_minor": 20000,
+                "transaction_id": null
+              }
+            },
+            {
+              "id": "824662a1-4dce-40f5-a061-2c28f9294565",
+              "kind": "CASH_SPEND",
+              "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+              "parent_id": "e8f1711f-cba8-4fbf-8892-256af8e0d47c",
+              "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+              "current_status": "SPENT",
+              "object_version": 3,
+              "content_sha256": "8752743335502eb5d4183d6a9b770237af13312294a51d1a2202f98f707286e7",
+              "data": {
+                "binding": {
+                  "provider": "synthetic-custodian",
+                  "revision": "v1",
+                  "environment": "SANDBOX",
+                  "merchant_id": "synthetic-merchant"
+                },
+                "currency": "CNY",
+                "order_id": "853dd1ac-490c-4fcb-9a26-752ff39bef2d",
+                "account_id": "87354d22-393a-48c1-acc4-f7733ca4b680",
+                "payment_id": "e8f1711f-cba8-4fbf-8892-256af8e0d47c",
+                "refund_ids": [
+                  "014e24f9-f898-477c-a145-316b8a969111"
+                ],
+                "allocations": [
+                  {
+                    "recharge_id": "1a8708c3-710e-46cb-bcc6-171a801abbc5",
+                    "amount_minor": 20000,
+                    "returned_minor": 20000
+                  }
+                ],
+                "amount_minor": 20000,
+                "transaction_id": "synthetic:e8f1711f-cba8-4fbf-8892-256af8e0d47c"
+              }
+            },
+            {
+              "id": "ab0575d7-12b9-495a-9e33-0658a31ea96d",
+              "kind": "CASH_SPEND",
+              "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+              "parent_id": "28936dc4-7a1c-402a-8c08-6d1a1edcb060",
+              "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+              "current_status": "UNKNOWN",
+              "object_version": 2,
+              "content_sha256": "069da859ab5217c70dca99bc118ee27511c5fc21e533e6af5a7949f98de97286",
+              "data": {
+                "binding": {
+                  "provider": "synthetic-custodian",
+                  "revision": "v1",
+                  "environment": "SANDBOX",
+                  "merchant_id": "synthetic-merchant"
+                },
+                "currency": "CNY",
+                "order_id": "bc2d5e30-9d92-4d66-b6ad-6588629d64de",
+                "account_id": "87354d22-393a-48c1-acc4-f7733ca4b680",
+                "payment_id": "28936dc4-7a1c-402a-8c08-6d1a1edcb060",
+                "refund_ids": [],
+                "allocations": [
+                  {
+                    "recharge_id": "1a8708c3-710e-46cb-bcc6-171a801abbc5",
+                    "amount_minor": 20000,
+                    "returned_minor": 0
+                  }
+                ],
+                "amount_minor": 20000,
+                "transaction_id": null
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "a9119754-a89a-471a-9cb5-5912213b0c87",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "3b87a5a0-a2fd-4f42-86bc-c2f4e6674c42",
+              "kind": "CASH_REFUND",
+              "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+              "parent_id": "824662a1-4dce-40f5-a061-2c28f9294565",
+              "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+              "current_status": "SUCCEEDED",
+              "object_version": 1,
+              "content_sha256": "22928c6f95d2b25ce391951bafcda707cf822637b16cf3948832b3497721920c",
+              "data": {
+                "binding": {
+                  "provider": "synthetic-custodian",
+                  "revision": "v1",
+                  "environment": "SANDBOX",
+                  "merchant_id": "synthetic-merchant"
+                },
+                "currency": "CNY",
+                "refund_id": "014e24f9-f898-477c-a145-316b8a969111",
+                "payment_id": "e8f1711f-cba8-4fbf-8892-256af8e0d47c",
+                "amount_minor": 20000
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "de003458-9ca4-4504-bfc1-2a93297de014",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "8c38c73f-9e4b-4a8f-94b5-33a2f522ee13",
+              "kind": "CASH_RECONCILIATION",
+              "owner_party_id": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64",
+              "parent_id": "87354d22-393a-48c1-acc4-f7733ca4b680",
+              "created_by": "173828fd-c2b8-4081-845f-45a20dbc0578",
+              "current_status": "DIFFERENCE",
+              "object_version": 1,
+              "content_sha256": "434d2488202c96c4967243ab82f7e2003d011df9548138d3bcc667f220e91ff1",
+              "data": {
+                "binding": {
+                  "provider": "synthetic-custodian",
+                  "revision": "v1",
+                  "environment": "SANDBOX",
+                  "merchant_id": "synthetic-merchant"
+                },
+                "meaning": "OBSERVATION_ONLY_NO_BALANCE_ADJUSTMENT",
+                "observed_at": "2026-11-13T04:23:31.483Z",
+                "occurred_at": "2026-11-13T04:23:31.482Z",
+                "proof_sha256": "66258ea32f7d0967697e679dd6a09da2638d6e6156c310992b8cca4b06f1635b",
+                "statement_id": "synthetic:dec0f305-7fbe-4c99-b22e-fe1a3c1efd92",
+                "local_available_minor": 30000,
+                "provider_available_minor": 29999
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/check-in",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "b235f90e-fab1-48bd-831c-f5f8fea9454d",
+          "actor": {
+            "account_id": "173828fd-c2b8-4081-845f-45a20dbc0578"
+          },
+          "acting_party": "8d63deac-e3f2-4e11-81f6-b7cbe8c31c64"
+        },
+        "error": {
+          "code": "WALLET_FREE_REWARD_NOT_ENABLED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/check-in",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "55c71808-5750-4690-8c62-d1d824298b3c",
+          "actor": {
+            "account_id": "4a7b5294-8bb3-4151-8071-10af12fc2d41"
+          },
+          "acting_party": "f62617fd-c680-4b3b-a050-00175a9a2d0c"
+        },
+        "data": {
+          "id": "b3dbdf6f-36fa-4841-bb4a-8f0262467786",
+          "kind": "EARNING",
+          "owner_party_id": "f62617fd-c680-4b3b-a050-00175a9a2d0c",
+          "parent_id": null,
+          "created_by": "4a7b5294-8bb3-4151-8071-10af12fc2d41",
+          "current_status": "ISSUED",
+          "object_version": 1,
+          "content_sha256": "7fe7bf7f69e9c1638cc0f2c7cc6a934c693a0c4c56983d5bab6661050c8315b9",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-free",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": 2,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "spent": 0,
+            "points": 3,
+            "expired": 0,
+            "rule_id": "30fd151e-228b-418d-98e7-c55363a17086",
+            "reversed": 0,
+            "issued_at": "2026-11-13T04:23:32.289Z",
+            "event_kind": "DAILY_CHECKIN",
+            "expires_at": "2027-11-13T04:23:32.289Z",
+            "paid_minor": 0,
+            "source_ref": "2026-11-13",
+            "debt_offset": 0,
+            "occurred_at": "2026-11-13T04:23:32.288Z",
+            "source_kind": "FREE",
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        }
+      }
+    }
+  ]
+}

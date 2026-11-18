@@ -1,0 +1,673 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "12bdafba-ea62-405f-b2c6-d4162ab9a365",
+          "actor": {
+            "account_id": "c98e1dae-a604-4de4-92be-3b2233720d79"
+          },
+          "acting_party": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1"
+        },
+        "data": {
+          "id": "faf46084-0c06-4429-9d29-f78550b597a7",
+          "kind": "NOTICE",
+          "owner_party_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "c98e1dae-a604-4de4-92be-3b2233720d79",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "f79ff01aa63121bfa714d54cbeeefcd292ba70a0ea4dee4c9fbf1606e6152a2e",
+          "data": {
+            "rule_id": "228d9afb-5341-4837-9624-c724d91989d4",
+            "rule_sha256": "7ea02e0638dc7ac4654263b5e26daeb7c56f5bc50b4f01100353416345968747",
+            "notice": {
+              "accept_submissions": true,
+              "city": "synthetic-city",
+              "description": "synthetic only",
+              "details": {
+                "requirements": "adult",
+                "roles": "lead"
+              },
+              "project_id": null,
+              "title": "Synthetic film recruitment",
+              "type": "RECRUITMENT",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/faf46084-0c06-4429-9d29-f78550b597a7/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "bbe8c716-2fec-46af-af09-7aec73ad72f0",
+          "actor": {
+            "account_id": "240a1c9c-9e12-40b2-a7aa-2898bae65892"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "faf46084-0c06-4429-9d29-f78550b597a7",
+          "kind": "NOTICE",
+          "owner_party_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "c98e1dae-a604-4de4-92be-3b2233720d79",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "090bb561b0de35463b81fd0271b3c2fba865549802f80e6880019d79f9931d96",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "account_id": "240a1c9c-9e12-40b2-a7aa-2898bae65892",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "Synthetic matching journey review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "rule_id": "228d9afb-5341-4837-9624-c724d91989d4",
+            "rule_sha256": "7ea02e0638dc7ac4654263b5e26daeb7c56f5bc50b4f01100353416345968747"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/discovery/matches",
+      "schema": "DiscoveryMatchesResponse",
+      "value": {
+        "meta": {
+          "request_id": "06477d75-3f2c-470a-9c55-5d3215aec8ff",
+          "actor": {
+            "account_id": "c98e1dae-a604-4de4-92be-3b2233720d79"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "kind": "NOTICE",
+          "city": null,
+          "q": null,
+          "filters": {
+            "notice_type": "RECRUITMENT"
+          },
+          "algorithm_version": "EXPLICIT_BUSINESS_FILTERS_V1",
+          "personalized": false,
+          "price_personalized": false,
+          "requires_business_validation": true,
+          "principle": "EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER",
+          "items": [
+            {
+              "item": {
+                "id": "faf46084-0c06-4429-9d29-f78550b597a7",
+                "owner_party_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+                "object_version": 2,
+                "rule_id": "228d9afb-5341-4837-9624-c724d91989d4",
+                "notice": {
+                  "city": "synthetic-city",
+                  "type": "RECRUITMENT",
+                  "title": "Synthetic film recruitment",
+                  "details": {
+                    "roles": "lead",
+                    "requirements": "adult"
+                  },
+                  "project_id": null,
+                  "valid_from": "2020-01-01T00:00:00.000Z",
+                  "description": "synthetic only",
+                  "valid_until": "2099-01-01T00:00:00.000Z",
+                  "accept_submissions": true
+                },
+                "official": false,
+                "chat_enabled": false
+              },
+              "reasons": [
+                "PUBLIC_AVAILABLE",
+                "NOTICE_TYPE_MATCH"
+              ]
+            }
+          ],
+          "next_cursor": null,
+          "scan_limited": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/discovery/matches",
+      "schema": "DiscoveryMatchesResponse",
+      "value": {
+        "meta": {
+          "request_id": "ce76c4ce-4f9a-425e-9c9e-ea1e6a1f0d27",
+          "actor": {
+            "account_id": "c98e1dae-a604-4de4-92be-3b2233720d79"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "kind": "NOTICE",
+          "city": null,
+          "q": null,
+          "filters": {
+            "notice_type": "EVENT"
+          },
+          "algorithm_version": "EXPLICIT_BUSINESS_FILTERS_V1",
+          "personalized": false,
+          "price_personalized": false,
+          "requires_business_validation": true,
+          "principle": "EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER",
+          "items": [],
+          "next_cursor": null,
+          "scan_limited": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/submission-options",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "9f7bbe67-a2f5-451c-93ab-af2a1ab374c9",
+          "actor": {
+            "account_id": "40033c9d-acc6-4f28-8ae0-55c7a8957b1a"
+          },
+          "acting_party": "da587931-a274-4fc7-9689-783ffdac1e3e"
+        },
+        "data": {
+          "notice_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+          "rule_id": "228d9afb-5341-4837-9624-c724d91989d4",
+          "items": [
+            {
+              "person_id": "999af413-afed-47f2-bdb0-8acf5f79c77a",
+              "avatar_id": "2223bd46-eb8d-45a8-bdb9-020a505067b9",
+              "consent_id": "474dee1e-c360-4b1a-a98f-e0f41b533cd1",
+              "target_party_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "valid_until": "2099-01-01T00:00:00.000Z"
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "8298a6e5-6886-4a4f-b015-4641e81352ba",
+          "actor": {
+            "account_id": "40033c9d-acc6-4f28-8ae0-55c7a8957b1a"
+          },
+          "acting_party": "da587931-a274-4fc7-9689-783ffdac1e3e"
+        },
+        "data": {
+          "id": "76081763-5bb2-4880-afb5-aeb298addd0b",
+          "kind": "SUBMISSION",
+          "owner_party_id": "da587931-a274-4fc7-9689-783ffdac1e3e",
+          "counterparty_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+          "parent_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+          "created_by": "40033c9d-acc6-4f28-8ae0-55c7a8957b1a",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "1525267d90ce270b20f5789cb2d36d3931b9f5adb9717e3dc3224a5034dcd308",
+          "data": {
+            "submission": {
+              "avatar_id": "2223bd46-eb8d-45a8-bdb9-020a505067b9",
+              "consent_id": "474dee1e-c360-4b1a-a98f-e0f41b533cd1",
+              "content": "synthetic profile",
+              "kind": "PROFILE",
+              "material_asset_ids": [],
+              "notice_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+              "person_id": "999af413-afed-47f2-bdb0-8acf5f79c77a",
+              "purpose": "cooperation",
+              "role": null,
+              "target_party_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1"
+            },
+            "rule_id": "228d9afb-5341-4837-9624-c724d91989d4",
+            "rule_sha256": "7ea02e0638dc7ac4654263b5e26daeb7c56f5bc50b4f01100353416345968747",
+            "expires_at": "2026-12-10T06:54:56.643Z",
+            "review": null,
+            "decision": null,
+            "case_id": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "3c8b8774-c93a-4de8-97ad-82148b3b7b60",
+          "actor": {
+            "account_id": "40033c9d-acc6-4f28-8ae0-55c7a8957b1a"
+          },
+          "acting_party": "da587931-a274-4fc7-9689-783ffdac1e3e"
+        },
+        "data": {
+          "id": "76081763-5bb2-4880-afb5-aeb298addd0b",
+          "kind": "SUBMISSION",
+          "owner_party_id": "da587931-a274-4fc7-9689-783ffdac1e3e",
+          "counterparty_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+          "parent_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+          "created_by": "40033c9d-acc6-4f28-8ae0-55c7a8957b1a",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "1525267d90ce270b20f5789cb2d36d3931b9f5adb9717e3dc3224a5034dcd308",
+          "data": {
+            "submission": {
+              "avatar_id": "2223bd46-eb8d-45a8-bdb9-020a505067b9",
+              "consent_id": "474dee1e-c360-4b1a-a98f-e0f41b533cd1",
+              "content": "synthetic profile",
+              "kind": "PROFILE",
+              "material_asset_ids": [],
+              "notice_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+              "person_id": "999af413-afed-47f2-bdb0-8acf5f79c77a",
+              "purpose": "cooperation",
+              "role": null,
+              "target_party_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1"
+            },
+            "rule_id": "228d9afb-5341-4837-9624-c724d91989d4",
+            "rule_sha256": "7ea02e0638dc7ac4654263b5e26daeb7c56f5bc50b4f01100353416345968747",
+            "expires_at": "2026-12-10T06:54:56.643Z",
+            "review": null,
+            "decision": null,
+            "case_id": null
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/records/76081763-5bb2-4880-afb5-aeb298addd0b",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "05139440-4e5d-4865-af26-ab82b58e6c0d",
+          "actor": {
+            "account_id": "c98e1dae-a604-4de4-92be-3b2233720d79"
+          },
+          "acting_party": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1"
+        },
+        "error": {
+          "code": "NOTICE_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/submission-options",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "5804f726-2a28-48ed-b1e1-6cdf0c33d3ce",
+          "actor": {
+            "account_id": "5dccec3f-252e-47d2-955b-ec4ab1713ff4"
+          },
+          "acting_party": "da587931-a274-4fc7-9689-783ffdac1e3e"
+        },
+        "error": {
+          "code": "ARTIST_PARTY_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/76081763-5bb2-4880-afb5-aeb298addd0b/reviews",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "c68b953c-b604-4b49-b9d0-bcb8e59fe9d7",
+          "actor": {
+            "account_id": "240a1c9c-9e12-40b2-a7aa-2898bae65892"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "76081763-5bb2-4880-afb5-aeb298addd0b",
+          "kind": "SUBMISSION",
+          "owner_party_id": "da587931-a274-4fc7-9689-783ffdac1e3e",
+          "counterparty_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+          "parent_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+          "created_by": "40033c9d-acc6-4f28-8ae0-55c7a8957b1a",
+          "current_status": "SENT",
+          "object_version": 2,
+          "content_sha256": "f32994686445516f7c8b43b245b48bd2447eca138913e9504dadd055dd064cd1",
+          "data": {
+            "review": {
+              "account_id": "240a1c9c-9e12-40b2-a7aa-2898bae65892",
+              "decision": "APPROVE",
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "reason": "Synthetic matching journey review",
+              "method": "EXTERNAL_MANUAL_REVIEW"
+            },
+            "case_id": null,
+            "rule_id": "228d9afb-5341-4837-9624-c724d91989d4",
+            "decision": null,
+            "expires_at": "2026-12-10T06:54:56.643Z",
+            "submission": {
+              "kind": "PROFILE",
+              "role": null,
+              "content": "synthetic profile",
+              "purpose": "cooperation",
+              "avatar_id": "2223bd46-eb8d-45a8-bdb9-020a505067b9",
+              "notice_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+              "person_id": "999af413-afed-47f2-bdb0-8acf5f79c77a",
+              "consent_id": "474dee1e-c360-4b1a-a98f-e0f41b533cd1",
+              "target_party_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+              "material_asset_ids": []
+            },
+            "rule_sha256": "7ea02e0638dc7ac4654263b5e26daeb7c56f5bc50b4f01100353416345968747"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/76081763-5bb2-4880-afb5-aeb298addd0b/decision",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "f41c0152-a04e-4449-bf7b-a6e56bc58804",
+          "actor": {
+            "account_id": "c98e1dae-a604-4de4-92be-3b2233720d79"
+          },
+          "acting_party": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1"
+        },
+        "data": {
+          "id": "76081763-5bb2-4880-afb5-aeb298addd0b",
+          "kind": "SUBMISSION",
+          "owner_party_id": "da587931-a274-4fc7-9689-783ffdac1e3e",
+          "counterparty_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+          "parent_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+          "created_by": "40033c9d-acc6-4f28-8ae0-55c7a8957b1a",
+          "current_status": "INTERESTED",
+          "object_version": 3,
+          "content_sha256": "640223888986d9fc84275a95b74e6ceb741a6a2947a2a36e3d837884f547d2e2",
+          "data": {
+            "review": {
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "method": "EXTERNAL_MANUAL_REVIEW",
+              "reason": "Synthetic matching journey review",
+              "decision": "APPROVE",
+              "account_id": "240a1c9c-9e12-40b2-a7aa-2898bae65892"
+            },
+            "case_id": "1fb70a73-77d1-4534-b075-b0608614c717",
+            "rule_id": "228d9afb-5341-4837-9624-c724d91989d4",
+            "decision": "INTERESTED",
+            "expires_at": "2026-12-10T06:54:56.643Z",
+            "submission": {
+              "kind": "PROFILE",
+              "role": null,
+              "content": "synthetic profile",
+              "purpose": "cooperation",
+              "avatar_id": "2223bd46-eb8d-45a8-bdb9-020a505067b9",
+              "notice_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+              "person_id": "999af413-afed-47f2-bdb0-8acf5f79c77a",
+              "consent_id": "474dee1e-c360-4b1a-a98f-e0f41b533cd1",
+              "target_party_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+              "material_asset_ids": []
+            },
+            "rule_sha256": "7ea02e0638dc7ac4654263b5e26daeb7c56f5bc50b4f01100353416345968747"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/76081763-5bb2-4880-afb5-aeb298addd0b/decision",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "bc3f562c-9881-4527-86e8-1708e5fb06bf",
+          "actor": {
+            "account_id": "c98e1dae-a604-4de4-92be-3b2233720d79"
+          },
+          "acting_party": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1"
+        },
+        "data": {
+          "id": "76081763-5bb2-4880-afb5-aeb298addd0b",
+          "kind": "SUBMISSION",
+          "owner_party_id": "da587931-a274-4fc7-9689-783ffdac1e3e",
+          "counterparty_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+          "parent_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+          "created_by": "40033c9d-acc6-4f28-8ae0-55c7a8957b1a",
+          "current_status": "INTERESTED",
+          "object_version": 3,
+          "content_sha256": "640223888986d9fc84275a95b74e6ceb741a6a2947a2a36e3d837884f547d2e2",
+          "data": {
+            "review": {
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "method": "EXTERNAL_MANUAL_REVIEW",
+              "reason": "Synthetic matching journey review",
+              "decision": "APPROVE",
+              "account_id": "240a1c9c-9e12-40b2-a7aa-2898bae65892"
+            },
+            "case_id": "1fb70a73-77d1-4534-b075-b0608614c717",
+            "rule_id": "228d9afb-5341-4837-9624-c724d91989d4",
+            "decision": "INTERESTED",
+            "expires_at": "2026-12-10T06:54:56.643Z",
+            "submission": {
+              "kind": "PROFILE",
+              "role": null,
+              "content": "synthetic profile",
+              "purpose": "cooperation",
+              "avatar_id": "2223bd46-eb8d-45a8-bdb9-020a505067b9",
+              "notice_id": "faf46084-0c06-4429-9d29-f78550b597a7",
+              "person_id": "999af413-afed-47f2-bdb0-8acf5f79c77a",
+              "consent_id": "474dee1e-c360-4b1a-a98f-e0f41b533cd1",
+              "target_party_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+              "material_asset_ids": []
+            },
+            "rule_sha256": "7ea02e0638dc7ac4654263b5e26daeb7c56f5bc50b4f01100353416345968747"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/records/1fb70a73-77d1-4534-b075-b0608614c717",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "c85a7e44-3e2f-4b0f-98cb-d3a5b32b6732",
+          "actor": {
+            "account_id": "c98e1dae-a604-4de4-92be-3b2233720d79"
+          },
+          "acting_party": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1"
+        },
+        "data": {
+          "id": "1fb70a73-77d1-4534-b075-b0608614c717",
+          "kind": "CASE",
+          "owner_party_id": "da587931-a274-4fc7-9689-783ffdac1e3e",
+          "counterparty_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+          "parent_id": "76081763-5bb2-4880-afb5-aeb298addd0b",
+          "created_by": "c98e1dae-a604-4de4-92be-3b2233720d79",
+          "current_status": "WAITING_SUPPORT",
+          "object_version": 1,
+          "content_sha256": "0bae49ba83eb3315fe8d6460b3d5540f0f590afecee94f60fa282fadd5a5be96",
+          "data": {
+            "quote": null,
+            "closed_reason": null,
+            "submission_id": "76081763-5bb2-4880-afb5-aeb298addd0b"
+          },
+          "next_action": "WAIT_SUPPORT",
+          "chat_enabled": false,
+          "order_id": null,
+          "order_status": null
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/records/faf46084-0c06-4429-9d29-f78550b597a7/close",
+      "schema": "NoticeResponse",
+      "value": {
+        "meta": {
+          "request_id": "fe95f671-9383-4769-8c16-47b3eafb7636",
+          "actor": {
+            "account_id": "c98e1dae-a604-4de4-92be-3b2233720d79"
+          },
+          "acting_party": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1"
+        },
+        "data": {
+          "id": "faf46084-0c06-4429-9d29-f78550b597a7",
+          "kind": "NOTICE",
+          "owner_party_id": "2e683cc5-df8f-4c0a-9e43-4f269930d5a1",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "c98e1dae-a604-4de4-92be-3b2233720d79",
+          "current_status": "WITHDRAWN",
+          "object_version": 3,
+          "content_sha256": "bff415728e9cb25fe51a7729b53c7af31ab065e4e0e6fa6c25dec49ea3664572",
+          "data": {
+            "notice": {
+              "city": "synthetic-city",
+              "type": "RECRUITMENT",
+              "title": "Synthetic film recruitment",
+              "details": {
+                "roles": "lead",
+                "requirements": "adult"
+              },
+              "project_id": null,
+              "valid_from": "2020-01-01T00:00:00.000Z",
+              "description": "synthetic only",
+              "valid_until": "2099-01-01T00:00:00.000Z",
+              "accept_submissions": true
+            },
+            "review": {
+              "checks": {
+                "content_reviewed": true,
+                "materials_reviewed": true,
+                "no_private_contact": true
+              },
+              "method": "EXTERNAL_MANUAL_REVIEW",
+              "reason": "Synthetic matching journey review",
+              "decision": "APPROVE",
+              "account_id": "240a1c9c-9e12-40b2-a7aa-2898bae65892"
+            },
+            "rule_id": "228d9afb-5341-4837-9624-c724d91989d4",
+            "rule_sha256": "7ea02e0638dc7ac4654263b5e26daeb7c56f5bc50b4f01100353416345968747",
+            "closed_reason": "Synthetic recruitment closed after selection"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/discovery/matches",
+      "schema": "DiscoveryMatchesResponse",
+      "value": {
+        "meta": {
+          "request_id": "3e02fe5f-2423-425b-be4c-7ea0a36c493b",
+          "actor": {
+            "account_id": "c98e1dae-a604-4de4-92be-3b2233720d79"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "kind": "NOTICE",
+          "city": null,
+          "q": null,
+          "filters": {},
+          "algorithm_version": "EXPLICIT_BUSINESS_FILTERS_V1",
+          "personalized": false,
+          "price_personalized": false,
+          "requires_business_validation": true,
+          "principle": "EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER",
+          "items": [],
+          "next_cursor": null,
+          "scan_limited": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/notices/submission-options",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "033d7f51-c355-47e3-af46-c1d34d6d87eb",
+          "actor": {
+            "account_id": "40033c9d-acc6-4f28-8ae0-55c7a8957b1a"
+          },
+          "acting_party": "da587931-a274-4fc7-9689-783ffdac1e3e"
+        },
+        "error": {
+          "code": "NOTICE_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "e05513b9-6dd4-4449-9b64-6da23631baef",
+          "actor": {
+            "account_id": "40033c9d-acc6-4f28-8ae0-55c7a8957b1a"
+          },
+          "acting_party": "da587931-a274-4fc7-9689-783ffdac1e3e"
+        },
+        "error": {
+          "code": "NOTICE_NOT_OPEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    }
+  ]
+}

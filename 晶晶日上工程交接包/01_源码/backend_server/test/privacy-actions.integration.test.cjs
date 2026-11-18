@@ -21,7 +21,7 @@ test('personal withdrawal and model deletion use real transactions and durable p
     const {order} = await S.newOrder();
     async function consentFor(person) {
       const material = await S.upload(person, 'AVATAR_MATERIAL'), proof = await S.upload(person, 'CONSENT_EVIDENCE');
-      const avatar = await S.supply.createAvatar(person.ctx, {party_id:person.personal_party_id, display_name:'Synthetic deletion subject', material_asset_ids:[material.id], operation_key:key()});
+      const avatar = await require('./helpers/historical-avatar.cjs').seedHistoricalAvatar(db,person, {party_id:person.personal_party_id, display_name:'Synthetic deletion subject', material_asset_ids:[material.id], operation_key:key()});
       let consent = await S.supply.createConsent(person.ctx, {consent:{avatar_id:avatar.id, subject_party_id:person.personal_party_id,
         features:['FACE'], purposes:['PRIVATE','AI_TRAIN'], territories:['CN'], valid_from:'2020-01-01T00:00:00.000Z',
         valid_until:'2099-01-01T00:00:00.000Z', terms:'Synthetic rights fixture only', evidence_asset_ids:[proof.id]}, operation_key:key()});

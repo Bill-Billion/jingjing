@@ -1,0 +1,145 @@
+TAP version 13
+# Subtest: ordinary publishing and same-notice cooperation in isolated MySQL
+    # Subtest: new publishing rule requires independent approval; old rule and notices retain snapshots
+    ok 1 - new publishing rule requires independent approval; old rule and notices retain snapshots
+      ---
+      duration_ms: 158.9431
+      type: 'test'
+      ...
+    # Subtest: never-funded adult can publish all five ordinary types without changing membership
+    ok 2 - never-funded adult can publish all five ordinary types without changing membership
+      ---
+      duration_ms: 264.8213
+      type: 'test'
+      ...
+    # Subtest: membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged
+    ok 3 - membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged
+      ---
+      duration_ms: 107.8826
+      type: 'test'
+      ...
+    # Subtest: unverified, child, expired, inactive, foreign identity and official impersonation remain rejected
+    ok 4 - unverified, child, expired, inactive, foreign identity and official impersonation remain rejected
+      ---
+      duration_ms: 115.1597
+      type: 'test'
+      ...
+    # Subtest: identity or ownership lost after submission is checked at review and public read
+    ok 5 - identity or ownership lost after submission is checked at review and public read
+      ---
+      duration_ms: 87.6456
+      type: 'test'
+      ...
+    # Subtest: organization scope and other project ownership cannot be bypassed with an ordinary rule
+        # Subtest: qualified organization publishing rejects actor UNVERIFIED
+        not ok 1 - qualified organization publishing rejects actor UNVERIFIED
+          ---
+          duration_ms: 15.6655
+          type: 'test'
+          location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\notice-identity-probe.cjs:105:16'
+          failureType: 'testCodeFailure'
+          error: |-
+            {"status":200,"meta":{"request_id":"2cdbbbb0-98fd-4885-baaa-67c2da7051d1","actor":{"account_id":"39ff3658-f51c-466c-b357-2d989d10a6e5"},"acting_party":"f8f107ef-627e-47bd-92bd-023c7f44f2bc"},"data":{"id":"4285efa8-ac31-4a81-b9e2-14b1457725be","kind":"NOTICE","owner_party_id":"f8f107ef-627e-47bd-92bd-023c7f44f2bc","counterparty_id":null,"parent_id":null,"created_by":"39ff3658-f51c-466c-b357-2d989d10a6e5","current_status":"IN_REVIEW","object_version":1,"content_sha256":"20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5","data":{"rule_id":"4c448da8-d65a-46b1-9671-87482b8dde20","rule_sha256":"d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021","notice":{"accept_submissions":true,"city":"synthetic-city","description":"synthetic only","details":{"requirements":"adult","roles":"lead"},"project_id":null,"title":"Synthetic film recruitment","type":"RECRUITMENT","valid_from":"2020-01-01T00:00:00.000Z","valid_until":"2099-01-01T00:00:00.000Z"},"review":null}}}
+            
+            200 !== 409
+            
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected: 409
+          actual: 200
+          operator: 'strictEqual'
+          stack: |-
+            TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\notice-identity-probe.cjs:107:81)
+            process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\notice-identity-probe.cjs:105:5)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\notice-identity-probe.cjs:96:3)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+          ...
+        # Subtest: qualified organization publishing rejects actor REJECTED
+        not ok 2 - qualified organization publishing rejects actor REJECTED
+          ---
+          duration_ms: 17.2382
+          type: 'test'
+          location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\notice-identity-probe.cjs:105:16'
+          failureType: 'testCodeFailure'
+          error: |-
+            {"status":200,"meta":{"request_id":"da2f239c-c32c-4627-b1e9-6350a16e471c","actor":{"account_id":"39ff3658-f51c-466c-b357-2d989d10a6e5"},"acting_party":"f8f107ef-627e-47bd-92bd-023c7f44f2bc"},"data":{"id":"f4a82c96-13c8-442a-a9f8-d0606c87eb2f","kind":"NOTICE","owner_party_id":"f8f107ef-627e-47bd-92bd-023c7f44f2bc","counterparty_id":null,"parent_id":null,"created_by":"39ff3658-f51c-466c-b357-2d989d10a6e5","current_status":"IN_REVIEW","object_version":1,"content_sha256":"20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5","data":{"rule_id":"4c448da8-d65a-46b1-9671-87482b8dde20","rule_sha256":"d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021","notice":{"accept_submissions":true,"city":"synthetic-city","description":"synthetic only","details":{"requirements":"adult","roles":"lead"},"project_id":null,"title":"Synthetic film recruitment","type":"RECRUITMENT","valid_from":"2020-01-01T00:00:00.000Z","valid_until":"2099-01-01T00:00:00.000Z"},"review":null}}}
+            
+            200 !== 409
+            
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected: 409
+          actual: 200
+          operator: 'strictEqual'
+          stack: |-
+            TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\notice-identity-probe.cjs:107:81)
+            process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\notice-identity-probe.cjs:105:5)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\notice-identity-probe.cjs:96:3)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+          ...
+        # Subtest: qualified organization publishing rejects actor 2020-01-01 00:00:00.000
+        not ok 3 - qualified organization publishing rejects actor 2020-01-01 00:00:00.000
+          ---
+          duration_ms: 16.5948
+          type: 'test'
+          location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\notice-identity-probe.cjs:105:16'
+          failureType: 'testCodeFailure'
+          error: |-
+            {"status":200,"meta":{"request_id":"1a659782-d70b-43fe-a60f-c31b968f64ca","actor":{"account_id":"39ff3658-f51c-466c-b357-2d989d10a6e5"},"acting_party":"f8f107ef-627e-47bd-92bd-023c7f44f2bc"},"data":{"id":"21464a94-5731-47d3-b1b9-bfc936d0f873","kind":"NOTICE","owner_party_id":"f8f107ef-627e-47bd-92bd-023c7f44f2bc","counterparty_id":null,"parent_id":null,"created_by":"39ff3658-f51c-466c-b357-2d989d10a6e5","current_status":"IN_REVIEW","object_version":1,"content_sha256":"20481f827117e867f1edb6822e6bf176b33c7a8a0008e1608e41ed617d4cedf5","data":{"rule_id":"4c448da8-d65a-46b1-9671-87482b8dde20","rule_sha256":"d878673ebe72fa80b96e804f21c683b38c435b3b434d9395fe4fd5b2d15a0021","notice":{"accept_submissions":true,"city":"synthetic-city","description":"synthetic only","details":{"requirements":"adult","roles":"lead"},"project_id":null,"title":"Synthetic film recruitment","type":"RECRUITMENT","valid_from":"2020-01-01T00:00:00.000Z","valid_until":"2099-01-01T00:00:00.000Z"},"review":null}}}
+            
+            200 !== 409
+            
+          code: 'ERR_ASSERTION'
+          name: 'AssertionError'
+          expected: 409
+          actual: 200
+          operator: 'strictEqual'
+          stack: |-
+            TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\notice-identity-probe.cjs:107:81)
+            process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\notice-identity-probe.cjs:105:5)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\notice-identity-probe.cjs:96:3)
+            async Test.run (node:internal/test_runner/test:1054:7)
+            async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+          ...
+        1..3
+    not ok 6 - organization scope and other project ownership cannot be bypassed with an ordinary rule
+      ---
+      duration_ms: 130.92
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\notice-identity-probe.cjs:96:11'
+      failureType: 'subtestsFailed'
+      error: '3 subtests failed'
+      code: 'ERR_TEST_FAILURE'
+      stack: |-
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\notice-identity-probe.cjs:96:3)
+      ...
+    1..6
+not ok 1 - ordinary publishing and same-notice cooperation in isolated MySQL
+  ---
+  duration_ms: 10473.9244
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\notice-identity-probe.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 10
+# suites 0
+# pass 5
+# fail 5
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10671.3028

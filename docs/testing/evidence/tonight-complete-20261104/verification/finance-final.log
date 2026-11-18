@@ -1,0 +1,338 @@
+TAP version 13
+# Subtest: new stock commission cutover and frozen historical orders through real HTTP
+    # Subtest: missing
+    ok 1 - missing
+      ---
+      duration_ms: 2142.2576
+      type: 'test'
+      ...
+    # Subtest: wrong-rate
+    ok 2 - wrong-rate
+      ---
+      duration_ms: 1192.5497
+      type: 'test'
+      ...
+    # Subtest: wrong-type
+    ok 3 - wrong-type
+      ---
+      duration_ms: 399.1327
+      type: 'test'
+      ...
+    # Subtest: valid
+    ok 4 - valid
+      ---
+      duration_ms: 521.2412
+      type: 'test'
+      ...
+    # Subtest: valid-modern-rounding
+    ok 5 - valid-modern-rounding
+      ---
+      duration_ms: 535.596
+      type: 'test'
+      ...
+    # Subtest: old nonstandard commission remains payable and immutable after new-order switch
+    ok 6 - old nonstandard commission remains payable and immutable after new-order switch
+      ---
+      duration_ms: 463.0675
+      type: 'test'
+      ...
+    1..6
+ok 1 - new stock commission cutover and frozen historical orders through real HTTP
+  ---
+  duration_ms: 32838.8504
+  type: 'test'
+  ...
+# Subtest: V5 splits MCN from supply income and referral only from platform
+ok 2 - V5 splits MCN from supply income and referral only from platform
+  ---
+  duration_ms: 7.4976
+  type: 'test'
+  ...
+# Subtest: exact supply fractions survive refunds, tiny totals and maximum money
+ok 3 - exact supply fractions survive refunds, tiny totals and maximum money
+  ---
+  duration_ms: 10.6958
+  type: 'test'
+  ...
+# Subtest: new terms require explicit version and artists confirm the recorded supply share
+ok 4 - new terms require explicit version and artists confirm the recorded supply share
+  ---
+  duration_ms: 0.7007
+  type: 'test'
+  ...
+# Subtest: finance uses allocation without misrepresenting fractional supply shares as integer GMV percentages
+ok 5 - finance uses allocation without misrepresenting fractional supply shares as integer GMV percentages
+  ---
+  duration_ms: 3.7818
+  type: 'test'
+  ...
+# Subtest: contract cutover validates rates without rewriting historical allocations
+ok 6 - contract cutover validates rates without rewriting historical allocations
+  ---
+  duration_ms: 5.0845
+  type: 'test'
+  ...
+# Subtest: V5 two-layer previews, accepted MCN terms and real finance HTTP with synthetic order facts
+    # Subtest: preview is finance-only, uses approved rules and creates no order or money
+    ok 1 - preview is finance-only, uses approved rules and creates no order or money
+      ---
+      duration_ms: 188.0512
+      type: 'test'
+      ...
+    # Subtest: MCN invitation needs artist acceptance; omitted new rate records explicit 20 percent
+    ok 2 - MCN invitation needs artist acceptance; omitted new rate records explicit 20 percent
+      ---
+      duration_ms: 228.3338
+      type: 'test'
+      ...
+    # Subtest: synthetic historical order drives actual finance API; changing its source or rates is rejected
+    ok 3 - synthetic historical order drives actual finance API; changing its source or rates is rejected
+      ---
+      duration_ms: 344.6516
+      type: 'test'
+      ...
+    # Subtest: zero receipt, partial and full refund conserve money and preserve the original MCN after termination
+    ok 4 - zero receipt, partial and full refund conserve money and preserve the original MCN after termination
+      ---
+      duration_ms: 553.6978
+      type: 'test'
+      ...
+    # Subtest: new relations take 10/30/fractional percent only after artist confirmation; old unversioned terms cannot be reinterpreted
+    ok 5 - new relations take 10/30/fractional percent only after artist confirmation; old unversioned terms cannot be reinterpreted
+      ---
+      duration_ms: 745.6705
+      type: 'test'
+      ...
+    1..5
+ok 7 - V5 two-layer previews, accepted MCN terms and real finance HTTP with synthetic order facts
+  ---
+  duration_ms: 25223.3056
+  type: 'test'
+  ...
+# Subtest: restricted finance evidence cannot approve money or create new drafts
+    # Subtest: existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+    ok 1 - existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+      ---
+      duration_ms: 17182.8242
+      type: 'test'
+      ...
+    # Subtest: legally read payout evidence restricted before approval cannot mark money paid; releasing restores same request
+    ok 2 - legally read payout evidence restricted before approval cannot mark money paid; releasing restores same request
+      ---
+      duration_ms: 414.1686
+      type: 'test'
+      ...
+    # Subtest: new adjustment cannot reference restricted evidence and does not create a draft or ledger entry
+    ok 3 - new adjustment cannot reference restricted evidence and does not create a draft or ledger entry
+      ---
+      duration_ms: 115.8413
+      type: 'test'
+      ...
+    # Subtest: approved agreement evidence later restricted blocks fresh payouts even when destination evidence remains valid
+    ok 4 - approved agreement evidence later restricted blocks fresh payouts even when destination evidence remains valid
+      ---
+      duration_ms: 128.7559
+      type: 'test'
+      ...
+    1..4
+ok 8 - restricted finance evidence cannot approve money or create new drafts
+  ---
+  duration_ms: 36218.9171
+  type: 'test'
+  ...
+# Subtest: explicit 15 percent example is 15000 commission and 85000 supplier; not a default
+ok 9 - explicit 15 percent example is 15000 commission and 85000 supplier; not a default
+  ---
+  duration_ms: 31.2299
+  type: 'test'
+  ...
+# Subtest: integer rounding conserves minor units including negative reversals
+ok 10 - integer rounding conserves minor units including negative reversals
+  ---
+  duration_ms: 1.0563
+  type: 'test'
+  ...
+# Subtest: percentage totals, duplicate recipients and floating money are rejected
+ok 11 - percentage totals, duplicate recipients and floating money are rejected
+  ---
+  duration_ms: 0.3826
+  type: 'test'
+  ...
+# Subtest: license commission uses only its own line; production fee is separate
+ok 12 - license commission uses only its own line; production fee is separate
+  ---
+  duration_ms: 0.6985
+  type: 'test'
+  ...
+# Subtest: refund proportion and retained external cost are explicitly different
+ok 13 - refund proportion and retained external cost are explicitly different
+  ---
+  duration_ms: 0.5989
+  type: 'test'
+  ...
+# Subtest: balanced adjustments cannot invent funds or assign strangers
+ok 14 - balanced adjustments cannot invent funds or assign strangers
+  ---
+  duration_ms: 0.5656
+  type: 'test'
+  ...
+# Subtest: historical direct MCN commission includes MCN inside platform commission
+ok 15 - historical direct MCN commission includes MCN inside platform commission
+  ---
+  duration_ms: 3.6271
+  type: 'test'
+  ...
+# Subtest: channel fees already in external statement cannot be deducted twice
+ok 16 - channel fees already in external statement cannot be deducted twice
+  ---
+  duration_ms: 3.939
+  type: 'test'
+  ...
+# Subtest: finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+    # Subtest: existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+    ok 1 - existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations
+      ---
+      duration_ms: 17617.0306
+      type: 'test'
+      ...
+    # Subtest: authentication, explicit rules and independent review are required
+    ok 2 - authentication, explicit rules and independent review are required
+      ---
+      duration_ms: 88.3981
+      type: 'test'
+      ...
+    # Subtest: rejected draft can be replaced while history stays; active agreement cannot change
+    ok 3 - rejected draft can be replaced while history stays; active agreement cannot change
+      ---
+      duration_ms: 180.3977
+      type: 'test'
+      ...
+    # Subtest: restricted finance evidence respects overlapping restrictions and restrictions activated during storage read
+    ok 4 - restricted finance evidence respects overlapping restrictions and restrictions activated during storage read
+      ---
+      duration_ms: 360.4433
+      type: 'test'
+      ...
+    # Subtest: settlement review and every party confirmation precede available balance
+    ok 5 - settlement review and every party confirmation precede available balance
+      ---
+      duration_ms: 419.1399
+      type: 'test'
+      ...
+    # Subtest: settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+    ok 6 - settlement detail and list isolate participant balances while payer and reviewer retain original snapshot
+      ---
+      duration_ms: 57.3045
+      type: 'test'
+      ...
+    # Subtest: concurrent withdrawals reserve available amount once and exact retries reuse request
+    ok 7 - concurrent withdrawals reserve available amount once and exact retries reuse request
+      ---
+      duration_ms: 200.8254
+      type: 'test'
+      ...
+    # Subtest: request approval is not paid; only independent bank evidence books actual payout
+    ok 8 - request approval is not paid; only independent bank evidence books actual payout
+      ---
+      duration_ms: 220.013
+      type: 'test'
+      ...
+    # Subtest: dispute after payout requests blocks new approval but preserves verified failure and cancellation facts
+    ok 9 - dispute after payout requests blocks new approval but preserves verified failure and cancellation facts
+      ---
+      duration_ms: 611.059
+      type: 'test'
+      ...
+    # Subtest: return and failed payouts keep facts and release reservation for a new request
+    ok 10 - return and failed payouts keep facts and release reservation for a new request
+      ---
+      duration_ms: 352.2196
+      type: 'test'
+      ...
+    # Subtest: disputes notify parties, freeze new payouts, retain replies and all decisions
+    ok 11 - disputes notify parties, freeze new payouts, retain replies and all decisions
+      ---
+      duration_ms: 125.0938
+      type: 'test'
+      ...
+    # Subtest: refund reduces future entitlement, preserves old settlement and actual payout
+    ok 12 - refund reduces future entitlement, preserves old settlement and actual payout
+      ---
+      duration_ms: 471.7023
+      type: 'test'
+      ...
+    # Subtest: adjustment is balanced, separately reviewed and forces new settlement confirmation
+    ok 13 - adjustment is balanced, separately reviewed and forces new settlement confirmation
+      ---
+      duration_ms: 211.1119
+      type: 'test'
+      ...
+    # Subtest: reconciliation compares verified facts without turning imported rows into money
+    ok 14 - reconciliation compares verified facts without turning imported rows into money
+      ---
+      duration_ms: 58.261
+      type: 'test'
+      ...
+    # Subtest: daily books include verified refunds, actual split payments and returned split money, not reservations
+    ok 15 - daily books include verified refunds, actual split payments and returned split money, not reservations
+      ---
+      duration_ms: 38.0157
+      type: 'test'
+      ...
+    # Subtest: external release statement is accrued revenue, not cash received or automatic payout
+    ok 16 - external release statement is accrued revenue, not cash received or automatic payout
+      ---
+      duration_ms: 233.7537
+      type: 'test'
+      ...
+    # Subtest: partial receipts, duplicate bank references and statement corrections never rewrite history
+    ok 17 - partial receipts, duplicate bank references and statement corrections never rewrite history
+      ---
+      duration_ms: 443.2383
+      type: 'test'
+      ...
+    # Subtest: record permissions, private proof integrity, stale membership and disabled automatic payout
+    ok 18 - record permissions, private proof integrity, stale membership and disabled automatic payout
+      ---
+      duration_ms: 58.4652
+      type: 'test'
+      ...
+    # Subtest: late customer payment review and unaccepted delivery block payouts even with prior agreement
+    ok 19 - late customer payment review and unaccepted delivery block payouts even with prior agreement
+      ---
+      duration_ms: 67.7812
+      type: 'test'
+      ...
+    # Subtest: notification cursor can retrieve newly recorded events, and different parties keep their own feed
+    ok 20 - notification cursor can retrieve newly recorded events, and different parties keep their own feed
+      ---
+      duration_ms: 36.674
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back adjustment and idempotency reservation; stale review fails
+    ok 21 - audit failure rolls back adjustment and idempotency reservation; stale review fails
+      ---
+      duration_ms: 49.435
+      type: 'test'
+      ...
+    # Subtest: personal income uses posted own shares including payout returns; no other party amounts or estimated revenue
+    ok 22 - personal income uses posted own shares including payout returns; no other party amounts or estimated revenue
+      ---
+      duration_ms: 218.6719
+      type: 'test'
+      ...
+    1..22
+ok 17 - finance actual HTTP: separately verified receipts, accrual, payouts and corrections
+  ---
+  duration_ms: 42638.9597
+  type: 'test'
+  ...
+1..17
+# tests 54
+# suites 0
+# pass 54
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 43277.9075

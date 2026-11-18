@@ -8,9 +8,12 @@ class PrivateVideo {
   PrivateVideo._(this.controller, this.url);
   final VideoPlayerController controller;
   final String url;
-  static Future<PrivateVideo> create(Uint8List bytes) async {
-    final url =
-        html.Url.createObjectUrlFromBlob(html.Blob([bytes], 'video/mp4'));
+  static Future<PrivateVideo> create(Uint8List bytes,
+      {String mediaType = 'video/mp4'}) async {
+    if (!['video/mp4', 'audio/mpeg', 'audio/wav'].contains(mediaType)) {
+      throw ArgumentError.value(mediaType, 'mediaType');
+    }
+    final url = html.Url.createObjectUrlFromBlob(html.Blob([bytes], mediaType));
     return PrivateVideo._(
         VideoPlayerController.networkUrl(Uri.parse(url)), url);
   }

@@ -1,0 +1,429 @@
+TAP version 13
+# Subtest: personal withdrawal and model deletion use real transactions and durable provider results
+    # Subtest: only the subject sees model targets; organization and operator cannot act as the subject
+    ok 1 - only the subject sees model targets; organization and operator cannot act as the subject
+      ---
+      duration_ms: 72.9514
+      type: 'test'
+      ...
+    # Subtest: scope, version, consent ownership and explicit withdrawal are required
+    ok 2 - scope, version, consent ownership and explicit withdrawal are required
+      ---
+      duration_ms: 65.8997
+      type: 'test'
+      ...
+    # Subtest: action-record failure rolls back consent, audit, request and outbox together
+    ok 3 - action-record failure rolls back consent, audit, request and outbox together
+      ---
+      duration_ms: 57.1734
+      type: 'test'
+      ...
+    # Subtest: withdrawal retries are idempotent and authorization is actually unusable
+    ok 4 - withdrawal retries are idempotent and authorization is actually unusable
+      ---
+      duration_ms: 57.6628
+      type: 'test'
+      ...
+    # Subtest: deletion and privacy action are atomic; failed recording creates no external job
+    ok 5 - deletion and privacy action are atomic; failed recording creates no external job
+      ---
+      duration_ms: 60.465
+      type: 'test'
+      ...
+    # Subtest: same deletion is queued once; order need not be paid to exercise withdrawal
+    ok 6 - same deletion is queued once; order need not be paid to exercise withdrawal
+      ---
+      duration_ms: 66.733
+      type: 'test'
+      ...
+    # Subtest: missing provider configuration leaves a visible failure and never calls upstream
+    ok 7 - missing provider configuration leaves a visible failure and never calls upstream
+      ---
+      duration_ms: 41.8157
+      type: 'test'
+      ...
+    # Subtest: changed provider account cannot receive a deletion for the former account
+    ok 8 - changed provider account cannot receive a deletion for the former account
+      ---
+      duration_ms: 44.1333
+      type: 'test'
+      ...
+    # Subtest: accepted task and an unconfirmed deletion receipt do not mean deleted
+    ok 9 - accepted task and an unconfirmed deletion receipt do not mean deleted
+      ---
+      duration_ms: 109.6107
+      type: 'test'
+      ...
+    # Subtest: verified receipt completes only that model and retry recovers without resubmitting
+    ok 10 - verified receipt completes only that model and retry recovers without resubmitting
+      ---
+      duration_ms: 100.6489
+      type: 'test'
+      ...
+    # Subtest: tampered result cannot be exposed as successful deletion
+    ok 11 - tampered result cannot be exposed as successful deletion
+      ---
+      duration_ms: 13.7642
+      type: 'test'
+      ...
+    # Subtest: personal creation list shows only own training tasks and paginates without exposing provider details
+    ok 12 - personal creation list shows only own training tasks and paginates without exposing provider details
+      ---
+      duration_ms: 60.9976
+      type: 'test'
+      ...
+    # Subtest: waiting and blocked creation remain distinct from a registered or deleted model
+    ok 13 - waiting and blocked creation remain distinct from a registered or deleted model
+      ---
+      duration_ms: 15.3431
+      type: 'test'
+      ...
+    # Subtest: a subject can discover consent before any model exists and withdraw through the existing action
+    ok 14 - a subject can discover consent before any model exists and withdraw through the existing action
+      ---
+      duration_ms: 42.6542
+      type: 'test'
+      ...
+    # Subtest: registered late result keeps the model deletion state and never closes the personal request
+    ok 15 - registered late result keeps the model deletion state and never closes the personal request
+      ---
+      duration_ms: 23.9674
+      type: 'test'
+      ...
+    # Subtest: wrong task binding or foreign model cannot be exposed as a personal result
+    ok 16 - wrong task binding or foreign model cannot be exposed as a personal result
+      ---
+      duration_ms: 35.5568
+      type: 'test'
+      ...
+    1..16
+ok 1 - personal withdrawal and model deletion use real transactions and durable provider results
+  ---
+  duration_ms: 15264.2575
+  type: 'test'
+  ...
+# Subtest: privacy restrictions protect commercial and release evidence across their original download routes
+    # Subtest: commercial-evidence becomes unreadable after independently approved restriction and restores only after release
+    ok 1 - commercial-evidence becomes unreadable after independently approved restriction and restores only after release
+      ---
+      duration_ms: 211.8597
+      type: 'test'
+      ...
+    # Subtest: commercial-evidence restriction appearing during storage transport blocks returning stale bytes
+    ok 2 - commercial-evidence restriction appearing during storage transport blocks returning stale bytes
+      ---
+      duration_ms: 139.0194
+      type: 'test'
+      ...
+    # Subtest: commercial-evidence releasing one of two independent restrictions cannot restore content
+    ok 3 - commercial-evidence releasing one of two independent restrictions cannot restore content
+      ---
+      duration_ms: 299.9109
+      type: 'test'
+      ...
+    # Subtest: commercial-evidence losing operator access during storage transport cannot return content
+    ok 4 - commercial-evidence losing operator access during storage transport cannot return content
+      ---
+      duration_ms: 36.5701
+      type: 'test'
+      ...
+    # Subtest: release-channel-evidence becomes unreadable after independently approved restriction and restores only after release
+    ok 5 - release-channel-evidence becomes unreadable after independently approved restriction and restores only after release
+      ---
+      duration_ms: 161.1814
+      type: 'test'
+      ...
+    # Subtest: release-channel-evidence restriction appearing during storage transport blocks returning stale bytes
+    ok 6 - release-channel-evidence restriction appearing during storage transport blocks returning stale bytes
+      ---
+      duration_ms: 112.9897
+      type: 'test'
+      ...
+    # Subtest: release-channel-evidence releasing one of two independent restrictions cannot restore content
+    ok 7 - release-channel-evidence releasing one of two independent restrictions cannot restore content
+      ---
+      duration_ms: 230.2249
+      type: 'test'
+      ...
+    # Subtest: release-channel-evidence losing operator access during storage transport cannot return content
+    ok 8 - release-channel-evidence losing operator access during storage transport cannot return content
+      ---
+      duration_ms: 30.497
+      type: 'test'
+      ...
+    # Subtest: approved raw-material erasure rechecks a new live avatar reference and keeps stored bytes
+    ok 9 - approved raw-material erasure rechecks a new live avatar reference and keeps stored bytes
+      ---
+      duration_ms: 127.1086
+      type: 'test'
+      ...
+    # Subtest: revoked handling permission cannot execute an approved restriction
+    ok 10 - revoked handling permission cannot execute an approved restriction
+      ---
+      duration_ms: 64.7109
+      type: 'test'
+      ...
+    1..10
+ok 2 - privacy restrictions protect commercial and release evidence across their original download routes
+  ---
+  duration_ms: 15390.1651
+  type: 'test'
+  ...
+# Subtest: reviewed privacy execution changes actual records and preserves unresolved boundaries
+    # Subtest: copy only returns own explicitly requested profile and cannot enumerate another account
+    ok 1 - copy only returns own explicitly requested profile and cannot enumerate another account
+      ---
+      duration_ms: 30.3849
+      type: 'test'
+      ...
+    # Subtest: personal copy includes own stories and buyer order index without exposing another person or contract body
+    ok 2 - personal copy includes own stories and buyer order index without exposing another person or contract body
+      ---
+      duration_ms: 330.1902
+      type: 'test'
+      ...
+    # Subtest: paid history allows only proven completed buyer work and rejects incomplete work or pending refund
+    ok 3 - paid history allows only proven completed buyer work and rejects incomplete work or pending refund
+      ---
+      duration_ms: 214.6543
+      type: 'test'
+      ...
+    # Subtest: correction requires independent approval and actually updates profile
+    ok 4 - correction requires independent approval and actually updates profile
+      ---
+      duration_ms: 36.3427
+      type: 'test'
+      ...
+    # Subtest: deletion lists readable own materials and reviewed policies; referenced files require review
+    ok 5 - deletion lists readable own materials and reviewed policies; referenced files require review
+      ---
+      duration_ms: 268.236
+      type: 'test'
+      ...
+    # Subtest: missing effective policy cannot authorize deletion
+    ok 6 - missing effective policy cannot authorize deletion
+      ---
+      duration_ms: 9.7764
+      type: 'test'
+      ...
+    # Subtest: file removal is bound to owner and exact storage configuration
+    ok 7 - file removal is bound to owner and exact storage configuration
+      ---
+      duration_ms: 874.51
+      type: 'test'
+      ...
+    # Subtest: unknown deletion result remains pending; retry checks same object and records current-object-only result
+    ok 8 - unknown deletion result remains pending; retry checks same object and records current-object-only result
+      ---
+      duration_ms: 33.9953
+      type: 'test'
+      ...
+    # Subtest: complaint restricts actual download and approved release restores only that restriction
+    ok 9 - complaint restricts actual download and approved release restores only that restriction
+      ---
+      duration_ms: 72.2176
+      type: 'test'
+      ...
+    # Subtest: closing sole organization owner is blocked and leaves login intact
+    ok 10 - closing sole organization owner is blocked and leaves login intact
+      ---
+      duration_ms: 25.1277
+      type: 'test'
+      ...
+    # Subtest: account closure revokes old sessions and personal identity while retaining request evidence
+    ok 11 - account closure revokes old sessions and personal identity while retaining request evidence
+      ---
+      duration_ms: 51.2712
+      type: 'test'
+      ...
+    # Subtest: lost closure response keeps sessions closed and operators can reconcile the single executed request
+    ok 12 - lost closure response keeps sessions closed and operators can reconcile the single executed request
+      ---
+      duration_ms: 735.2597
+      type: 'test'
+      ...
+    # Subtest: new closure clock requires verified identity and actual execution before completion
+    ok 13 - new closure clock requires verified identity and actual execution before completion
+      ---
+      duration_ms: 151.9225
+      type: 'test'
+      ...
+    # Subtest: stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete
+    ok 14 - stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete
+      ---
+      duration_ms: 499.2407
+      type: 'test'
+      ...
+    # Subtest: HTTP exposes the same scoped proposal, review, execution and export flow
+    ok 15 - HTTP exposes the same scoped proposal, review, execution and export flow
+      ---
+      duration_ms: 260.4372
+      type: 'test'
+      ...
+    # Subtest: restoring an actual older backup requires replaying latest erasure register before access
+    ok 16 - restoring an actual older backup requires replaying latest erasure register before access
+      ---
+      duration_ms: 9717.1228
+      type: 'test'
+      ...
+    1..16
+ok 3 - reviewed privacy execution changes actual records and preserves unresolved boundaries
+  ---
+  duration_ms: 25832.3159
+  type: 'test'
+  ...
+# Subtest: privacy policy choices follow request ownership, action and reviewed retention scope
+    # Subtest: closure offers only its action and effective policy with a valid retention basis
+    ok 1 - closure offers only its action and effective policy with a valid retention basis
+      ---
+      duration_ms: 76.7811
+      type: 'test'
+      ...
+    # Subtest: correction and erasure use their own action, without requiring deletion policy for correction
+    ok 2 - correction and erasure use their own action, without requiring deletion policy for correction
+      ---
+      duration_ms: 56.7986
+      type: 'test'
+      ...
+    # Subtest: no login, another account, and an operator cannot enumerate personal request choices
+    ok 3 - no login, another account, and an operator cannot enumerate personal request choices
+      ---
+      duration_ms: 37.6818
+      type: 'test'
+      ...
+    # Subtest: filtered pages remain traversable and bad pagination is rejected
+    ok 4 - filtered pages remain traversable and bad pagination is rejected
+      ---
+      duration_ms: 54.685
+      type: 'test'
+      ...
+    # Subtest: operators only select content policies for complaint requests and need handling permission
+    ok 5 - operators only select content policies for complaint requests and need handling permission
+      ---
+      duration_ms: 34.8558
+      type: 'test'
+      ...
+    # Subtest: retention choices require handling access and reveal only the requested category
+    ok 6 - retention choices require handling access and reveal only the requested category
+      ---
+      duration_ms: 39.4114
+      type: 'test'
+      ...
+    # Subtest: selection is not execution: retired policy is removed and original proposal is rejected
+    ok 7 - selection is not execution: retired policy is removed and original proposal is rejected
+      ---
+      duration_ms: 18.5123
+      type: 'test'
+      ...
+    1..7
+ok 4 - privacy policy choices follow request ownership, action and reviewed retention scope
+  ---
+  duration_ms: 14342.3213
+  type: 'test'
+  ...
+# Subtest: 15-working-day platform target uses reviewed exception dates without inventing a retention term
+ok 5 - 15-working-day platform target uses reviewed exception dates without inventing a retention term
+  ---
+  duration_ms: 2.5697
+  type: 'test'
+  ...
+# Subtest: duplicate scopes and fake executed outcome are rejected
+ok 6 - duplicate scopes and fake executed outcome are rejected
+  ---
+  duration_ms: 2.6624
+  type: 'test'
+  ...
+# Subtest: personal requests stay account-private and responses remain distinct from actual deletion
+    # Subtest: preferences default off, optimistic version and account isolation
+    ok 1 - preferences default off, optimistic version and account isolation
+      ---
+      duration_ms: 129.1645
+      type: 'test'
+      ...
+    # Subtest: duplicate personal requests create once and outsiders cannot read or enumerate them
+    ok 2 - duplicate personal requests create once and outsiders cannot read or enumerate them
+      ---
+      duration_ms: 89.3718
+      type: 'test'
+      ...
+    # Subtest: handling and verification are separate; proposal never leaks before review
+    ok 3 - handling and verification are separate; proposal never leaks before review
+      ---
+      duration_ms: 90.3855
+      type: 'test'
+      ...
+    # Subtest: reviewed reply notifies only the personal inbox even when marketing is disabled
+    ok 4 - reviewed reply notifies only the personal inbox even when marketing is disabled
+      ---
+      duration_ms: 68.4161
+      type: 'test'
+      ...
+    # Subtest: approved copy download is private; appeals preserve previous response
+    ok 5 - approved copy download is private; appeals preserve previous response
+      ---
+      duration_ms: 46.6354
+      type: 'test'
+      ...
+    # Subtest: delete and closure applications cannot be recorded as executed by a reply
+    ok 6 - delete and closure applications cannot be recorded as executed by a reply
+      ---
+      duration_ms: 57.3981
+      type: 'test'
+      ...
+    # Subtest: holding all data or inventing retention authority is rejected
+    ok 7 - holding all data or inventing retention authority is rejected
+      ---
+      duration_ms: 40.521
+      type: 'test'
+      ...
+    # Subtest: reviewed retention policy permits only its category and bounded review date
+    ok 8 - reviewed retention policy permits only its category and bounded review date
+      ---
+      duration_ms: 48.7367
+      type: 'test'
+      ...
+    # Subtest: concurrent preference changes do not silently overwrite each other
+    ok 9 - concurrent preference changes do not silently overwrite each other
+      ---
+      duration_ms: 28.7829
+      type: 'test'
+      ...
+    # Subtest: event-write failure rolls request transition back
+    ok 10 - event-write failure rolls request transition back
+      ---
+      duration_ms: 47.808
+      type: 'test'
+      ...
+    # Subtest: notification failure rolls back reviewed result and immutable history together
+    ok 11 - notification failure rolls back reviewed result and immutable history together
+      ---
+      duration_ms: 74.2316
+      type: 'test'
+      ...
+    # Subtest: revoked handler permission cannot replay previously authorized commands
+    ok 12 - revoked handler permission cannot replay previously authorized commands
+      ---
+      duration_ms: 19.146
+      type: 'test'
+      ...
+    # Subtest: published calendar drives fifteen working days; old dates stay frozen and missing coverage stays estimated
+    ok 13 - published calendar drives fifteen working days; old dates stay frozen and missing coverage stays estimated
+      ---
+      duration_ms: 53.9215
+      type: 'test'
+      ...
+    1..13
+ok 7 - personal requests stay account-private and responses remain distinct from actual deletion
+  ---
+  duration_ms: 14653.767
+  type: 'test'
+  ...
+1..7
+# tests 69
+# suites 0
+# pass 69
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 26188.0604

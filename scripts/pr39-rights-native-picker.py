@@ -1,0 +1,25 @@
+import subprocess,time,xml.etree.ElementTree as ET,re,sys,os
+adb=os.environ.get('ADB_PATH','adb');out,name=sys.argv[1:]
+def call(*args):return subprocess.check_output([adb,'-s',os.environ.get('NATIVE_DEVICE_ID','emulator-5554'),*args],stderr=subprocess.DEVNULL,text=True)
+def tap(node):
+ n=list(map(int,re.findall(r'\d+',node.attrib['bounds'])));call('shell','input','tap',str((n[0]+n[2])//2),str((n[1]+n[3])//2))
+selected=False;attempts=0;menu=False
+for i in range(70):
+ time.sleep(.5)
+ try:
+  call('shell','uiautomator','dump','/sdcard/pr39-picker.xml');xml=call('shell','cat','/sdcard/pr39-picker.xml');root=ET.fromstring(xml);nodes=list(root.iter('node'));parents={c:p for p in root.iter() for c in p}
+ except Exception:continue
+ docs=any('documentsui' in n.attrib.get('package','') for n in nodes)
+ if selected and not docs:print('PICKER_RETURNED '+name,flush=True);sys.exit(0)
+ if not docs:continue
+ files=[n for n in nodes if n.attrib.get('text')=='pr39-synthetic.png']
+ if files and attempts<2:
+  node=files[0]
+  while node.attrib.get('clickable')!='true' and node in parents:node=parents[node]
+  tap(node);selected=True;attempts+=1;open(os.path.join(out,'picker-'+name+'.xml'),'w').write(xml);continue
+ if not selected:
+  downloads=[n for n in nodes if n.attrib.get('text')=='Downloads']
+  if downloads:tap(downloads[0]);continue
+  roots=[n for n in nodes if n.attrib.get('content-desc') in ['Show roots','显示根目录','打开抽屉式导航栏']]
+  if roots and not menu:tap(roots[0]);menu=True
+print('PICKER_FAILED '+name,flush=True);sys.exit(1)

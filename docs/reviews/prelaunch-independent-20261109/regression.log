@@ -1,0 +1,1174 @@
+TAP version 13
+# Subtest: quick-city short and full names select the same values
+ok 1 - quick-city short and full names select the same values
+  ---
+  duration_ms: 2.6814
+  type: 'test'
+  ...
+# Subtest: unknown city and district names remain exact instead of stripping suffixes
+ok 2 - unknown city and district names remain exact instead of stripping suffixes
+  ---
+  duration_ms: 0.3359
+  type: 'test'
+  ...
+# Subtest: unified public search via HTTP and isolated MySQL
+    # Subtest: city source and strict authentication, identity and parameter validation
+    ok 1 - city source and strict authentication, identity and parameter validation
+      ---
+      duration_ms: 213.1822
+      type: 'test'
+      ...
+    # Subtest: published notices use full server search, aliases and stable pagination
+    ok 2 - published notices use full server search, aliases and stable pagination
+      ---
+      duration_ms: 266.0927
+      type: 'test'
+      ...
+    # Subtest: closed notice and revoked artist authorization disappear on next search
+    ok 3 - closed notice and revoked artist authorization disappear on next search
+      ---
+      duration_ms: 179.9112
+      type: 'test'
+      ...
+    # Subtest: stock and audition repositories are connected and return actual empty catalogues
+    ok 4 - stock and audition repositories are connected and return actual empty catalogues
+      ---
+      duration_ms: 24.2922
+      type: 'test'
+      ...
+    1..4
+ok 3 - unified public search via HTTP and isolated MySQL
+  ---
+  duration_ms: 38691.3228
+  type: 'test'
+  ...
+# Subtest: public STOCK search preserves visibility and private price
+ok 4 - public STOCK search preserves visibility and private price
+  ---
+  duration_ms: 55329.2142
+  type: 'test'
+  ...
+# Subtest: public AUDITION search preserves visibility and private price
+ok 5 - public AUDITION search preserves visibility and private price
+  ---
+  duration_ms: 18755.1625
+  type: 'test'
+  ...
+# Subtest: city codes and aliases use identical filters; unknown city remains exact
+ok 6 - city codes and aliases use identical filters; unknown city remains exact
+  ---
+  duration_ms: 2.847
+  type: 'test'
+  ...
+# Subtest: literal normalized public search excludes identifiers and non-public fields
+ok 7 - literal normalized public search excludes identifiers and non-public fields
+  ---
+  duration_ms: 0.4574
+  type: 'test'
+  ...
+# Subtest: search crosses scan budget, returns resumable empty page and finds beyond first 100 without duplicates
+ok 8 - search crosses scan budget, returns resumable empty page and finds beyond first 100 without duplicates
+  ---
+  duration_ms: 5.8508
+  type: 'test'
+  ...
+# Subtest: cursor rejects tampering, another account and changed filters; aliases and page size may change
+ok 9 - cursor rejects tampering, another account and changed filters; aliases and page size may change
+  ---
+  duration_ms: 3.341
+  type: 'test'
+  ...
+# Subtest: permission filtering and service failure propagate instead of restoring stale results
+ok 10 - permission filtering and service failure propagate instead of restoring stale results
+  ---
+  duration_ms: 0.3901
+  type: 'test'
+  ...
+# Subtest: unconfigured starlight stays unavailable, growth is independent
+ok 11 - unconfigured starlight stays unavailable, growth is independent
+  ---
+  duration_ms: 13.2432
+  type: 'test'
+  ...
+# Subtest: refunded first purchase cannot grant repeat purchase bonus
+ok 12 - refunded first purchase cannot grant repeat purchase bonus
+  ---
+  duration_ms: 19.9457
+  type: 'test'
+  ...
+# Subtest: excluded artist cannot affect legitimate composite normalization
+ok 13 - excluded artist cannot affect legitimate composite normalization
+  ---
+  duration_ms: 1.7342
+  type: 'test'
+  ...
+# Subtest: referral comes from platform and preserves total, sandbox never allocates
+ok 14 - referral comes from platform and preserves total, sandbox never allocates
+  ---
+  duration_ms: 52.0386
+  type: 'test'
+  ...
+# Subtest: engagement real database journey and permission boundaries
+    # Subtest: reviewed rules, self-review refusal and explicit unconfigured starlight
+    ok 1 - reviewed rules, self-review refusal and explicit unconfigured starlight
+      ---
+      duration_ms: 189.2453
+      type: 'test'
+      ...
+    # Subtest: profile belongs to verified artist, repeated interaction deduplicates
+    ok 2 - profile belongs to verified artist, repeated interaction deduplicates
+      ---
+      duration_ms: 94.6615
+      type: 'test'
+      ...
+    # Subtest: own visible ranking profile can be selected without revealing another person
+    ok 3 - own visible ranking profile can be selected without revealing another person
+      ---
+      duration_ms: 112.4765
+      type: 'test'
+      ...
+    # Subtest: sandbox orders excluded; verified fixture receipts and fulfillment create rank facts
+    ok 4 - sandbox orders excluded; verified fixture receipts and fulfillment create rank facts
+      ---
+      duration_ms: 656.1654
+      type: 'test'
+      ...
+    # Subtest: reward inventory reviewed independently and competition cannot over-reserve
+    ok 5 - reward inventory reviewed independently and competition cannot over-reserve
+      ---
+      duration_ms: 322.4106
+      type: 'test'
+      ...
+    # Subtest: votes debit once; concurrent daily cap, outsider access and appeal return
+    ok 6 - votes debit once; concurrent daily cap, outsider access and appeal return
+      ---
+      duration_ms: 181.6039
+      type: 'test'
+      ...
+    # Subtest: appeal return first clears debt from the very same refunded earning lot
+    ok 7 - appeal return first clears debt from the very same refunded earning lot
+      ---
+      duration_ms: 371.5414
+      type: 'test'
+      ...
+    # Subtest: appeals block finalization; confirmed award and proof-backed redemption
+    ok 8 - appeals block finalization; confirmed award and proof-backed redemption
+      ---
+      duration_ms: 195.6957
+      type: 'test'
+      ...
+    # Subtest: starlight configuration is independent, version frozen, no exchange
+    ok 9 - starlight configuration is independent, version frozen, no exchange
+      ---
+      duration_ms: 165.3624
+      type: 'test'
+      ...
+    # Subtest: last valid referral is frozen at checkout and receives only platform allocation
+    ok 10 - last valid referral is frozen at checkout and receives only platform allocation
+      ---
+      duration_ms: 799.5463
+      type: 'test'
+      ...
+    # Subtest: staff need accepted membership and artist-scoped grant; revoke immediately denies access
+    ok 11 - staff need accepted membership and artist-scoped grant; revoke immediately denies access
+      ---
+      duration_ms: 173.2859
+      type: 'test'
+      ...
+    # Subtest: exact score tie blocks award until two independent operators review; exposure is dated
+    ok 12 - exact score tie blocks award until two independent operators review; exposure is dated
+      ---
+      duration_ms: 428.2584
+      type: 'test'
+      ...
+    # Subtest: same installation across accounts counts once and generic POST cannot forge a listen
+    ok 13 - same installation across accounts counts once and generic POST cannot forge a listen
+      ---
+      duration_ms: 32.7329
+      type: 'test'
+      ...
+    # Subtest: automatic growth work requires current lease and schedules continuation
+    ok 14 - automatic growth work requires current lease and schedules continuation
+      ---
+      duration_ms: 66.1605
+      type: 'test'
+      ...
+    # Subtest: front-end can discover rankings, events and remaining votes without operator access
+    ok 15 - front-end can discover rankings, events and remaining votes without operator access
+      ---
+      duration_ms: 98.7207
+      type: 'test'
+      ...
+    # Subtest: confirmed manipulation removes order facts and independent appeal restores them
+    ok 16 - confirmed manipulation removes order facts and independent appeal restores them
+      ---
+      duration_ms: 224.8703
+      type: 'test'
+      ...
+    # Subtest: city buyer list has separate organization facts; only reviewed weights enable ranking
+    ok 17 - city buyer list has separate organization facts; only reviewed weights enable ranking
+      ---
+      duration_ms: 403.1059
+      type: 'test'
+      ...
+    # Subtest: MCN can assign an actual booking only to a currently delegated employee
+    ok 18 - MCN can assign an actual booking only to a currently delegated employee
+      ---
+      duration_ms: 903.7972
+      type: 'test'
+      ...
+    # Subtest: artist cannot erase operator exclusion by editing public profile
+    ok 19 - artist cannot erase operator exclusion by editing public profile
+      ---
+      duration_ms: 70.4153
+      type: 'test'
+      ...
+    # Subtest: MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation
+    ok 20 - MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation
+      ---
+      duration_ms: 694.7706
+      type: 'test'
+      ...
+    # Subtest: HTTP routes require authentication and preserve response envelope
+    ok 21 - HTTP routes require authentication and preserve response envelope
+      ---
+      duration_ms: 13.443
+      type: 'test'
+      ...
+    # Subtest: withdrawing public consent immediately removes the selectable profile
+    ok 22 - withdrawing public consent immediately removes the selectable profile
+      ---
+      duration_ms: 21.7679
+      type: 'test'
+      ...
+    1..22
+ok 15 - engagement real database journey and permission boundaries
+  ---
+  duration_ms: 45689.6437
+  type: 'test'
+  ...
+# Subtest: organization-batch isolated MySQL and HTTP
+    # Subtest: mixed results commit independently and rejected result survives reopen
+    ok 1 - mixed results commit independently and rejected result survives reopen
+      ---
+      duration_ms: 506.0403
+      type: 'test'
+      ...
+    # Subtest: same request and lost receipt replay do not repeat assignment; changed payload rejected
+    ok 2 - same request and lost receipt replay do not repeat assignment; changed payload rejected
+      ---
+      duration_ms: 186.9539
+      type: 'test'
+      ...
+    # Subtest: parallel retries return one batch and one business mutation
+    ok 3 - parallel retries return one batch and one business mutation
+      ---
+      duration_ms: 108.8793
+      type: 'test'
+      ...
+    # Subtest: foreign accounts, personal identities, invalid batches and revoked membership
+    ok 4 - foreign accounts, personal identities, invalid batches and revoked membership
+      ---
+      duration_ms: 85.416
+      type: 'test'
+      ...
+    1..4
+ok 16 - organization-batch isolated MySQL and HTTP
+  ---
+  duration_ms: 22736.0635
+  type: 'test'
+  ...
+# Subtest: organization merchandise batch isolated MySQL and HTTP
+    # Subtest: artist and stock submission retain original independent-review state
+    ok 1 - artist and stock submission retain original independent-review state
+      ---
+      duration_ms: 366.6775
+      type: 'test'
+      ...
+    # Subtest: price change creates a reviewable new specification without changing listing or old price
+    ok 2 - price change creates a reviewable new specification without changing listing or old price
+      ---
+      duration_ms: 118.2981
+      type: 'test'
+      ...
+    # Subtest: MCN assignment reuses booking and current artist delegation
+    ok 3 - MCN assignment reuses booking and current artist delegation
+      ---
+      duration_ms: 732.2092
+      type: 'test'
+      ...
+    # Subtest: revoked artist authorization hides receipts and prevents replay
+    ok 4 - revoked artist authorization hides receipts and prevents replay
+      ---
+      duration_ms: 33.7992
+      type: 'test'
+      ...
+    1..4
+ok 17 - organization merchandise batch isolated MySQL and HTTP
+  ---
+  duration_ms: 39615.1668
+  type: 'test'
+  ...
+# Subtest: prelaunch matching, ranking explanation and identity copy isolated MySQL and HTTP
+    # Subtest: real public artist matched by city tag and level; wrong conditions and identities denied
+    ok 1 - real public artist matched by city tag and level; wrong conditions and identities denied
+      ---
+      duration_ms: 243.2732
+      type: 'test'
+      ...
+    # Subtest: notice purpose and pagination use actual published records
+    ok 2 - notice purpose and pagination use actual published records
+      ---
+      duration_ms: 180.7582
+      type: 'test'
+      ...
+    # Subtest: public explanation is bound to snapshot and excludes internal evidence and reviewers
+    ok 3 - public explanation is bound to snapshot and excludes internal evidence and reviewers
+      ---
+      duration_ms: 53.9212
+      type: 'test'
+      ...
+    # Subtest: legacy formula is not certified retroactively and corrupt or unknown snapshots fail closed
+    ok 4 - legacy formula is not certified retroactively and corrupt or unknown snapshots fail closed
+      ---
+      duration_ms: 70.6662
+      type: 'test'
+      ...
+    # Subtest: own identity verification status is available without provider tokens or original documents
+    ok 5 - own identity verification status is available without provider tokens or original documents
+      ---
+      duration_ms: 206.9138
+      type: 'test'
+      ...
+    # Subtest: withdrawn artist public consent removes matching candidate
+    ok 6 - withdrawn artist public consent removes matching candidate
+      ---
+      duration_ms: 26.9121
+      type: 'test'
+      ...
+    1..6
+ok 18 - prelaunch matching, ranking explanation and identity copy isolated MySQL and HTTP
+  ---
+  duration_ms: 37844.1759
+  type: 'test'
+  ...
+# Subtest: matching uses explicit public prices and license rights, never unknown prices or automatic authorization
+ok 19 - matching uses explicit public prices and license rights, never unknown prices or automatic authorization
+  ---
+  duration_ms: 1.8679
+  type: 'test'
+  ...
+# Subtest: artist tags and levels / notice types cannot be silently replaced with unrelated filters
+ok 20 - artist tags and levels / notice types cannot be silently replaced with unrelated filters
+  ---
+  duration_ms: 1.0932
+  type: 'test'
+  ...
+# Subtest: scan limit permits subsequent pages, cursor binds account and every condition without reading history
+ok 21 - scan limit permits subsequent pages, cursor binds account and every condition without reading history
+  ---
+  duration_ms: 4.07
+  type: 'test'
+  ...
+# Subtest: privacy-account-copy isolated MySQL and HTTP
+    # Subtest: account and owned artists; preferences default off; no auth secret
+    ok 1 - account and owned artists; preferences default off; no auth secret
+      ---
+      duration_ms: 89.7799
+      type: 'test'
+      ...
+    # Subtest: wallet and signed finance values are copied without credentials or review notes
+    ok 2 - wallet and signed finance values are copied without credentials or review notes
+      ---
+      duration_ms: 31.3725
+      type: 'test'
+      ...
+    # Subtest: account/scope/cursor/identity protections and corruption
+    ok 3 - account/scope/cursor/identity protections and corruption
+      ---
+      duration_ms: 444.8006
+      type: 'test'
+      ...
+    # Subtest: only settled purchases influence opted-in recommendations; opt-out does not inspect transaction history
+    ok 4 - only settled purchases influence opted-in recommendations; opt-out does not inspect transaction history
+      ---
+      duration_ms: 525.1245
+      type: 'test'
+      ...
+    1..4
+ok 22 - privacy-account-copy isolated MySQL and HTTP
+  ---
+  duration_ms: 22900.5394
+  type: 'test'
+  ...
+# Subtest: personal withdrawal and model deletion use real transactions and durable provider results
+    # Subtest: only the subject sees model targets; organization and operator cannot act as the subject
+    ok 1 - only the subject sees model targets; organization and operator cannot act as the subject
+      ---
+      duration_ms: 100.2914
+      type: 'test'
+      ...
+    # Subtest: scope, version, consent ownership and explicit withdrawal are required
+    ok 2 - scope, version, consent ownership and explicit withdrawal are required
+      ---
+      duration_ms: 95.9244
+      type: 'test'
+      ...
+    # Subtest: action-record failure rolls back consent, audit, request and outbox together
+    ok 3 - action-record failure rolls back consent, audit, request and outbox together
+      ---
+      duration_ms: 139.8514
+      type: 'test'
+      ...
+    # Subtest: withdrawal retries are idempotent and authorization is actually unusable
+    ok 4 - withdrawal retries are idempotent and authorization is actually unusable
+      ---
+      duration_ms: 69.1097
+      type: 'test'
+      ...
+    # Subtest: deletion and privacy action are atomic; failed recording creates no external job
+    ok 5 - deletion and privacy action are atomic; failed recording creates no external job
+      ---
+      duration_ms: 108.8841
+      type: 'test'
+      ...
+    # Subtest: same deletion is queued once; order need not be paid to exercise withdrawal
+    ok 6 - same deletion is queued once; order need not be paid to exercise withdrawal
+      ---
+      duration_ms: 75.3886
+      type: 'test'
+      ...
+    # Subtest: missing provider configuration leaves a visible failure and never calls upstream
+    ok 7 - missing provider configuration leaves a visible failure and never calls upstream
+      ---
+      duration_ms: 49.4857
+      type: 'test'
+      ...
+    # Subtest: changed provider account cannot receive a deletion for the former account
+    ok 8 - changed provider account cannot receive a deletion for the former account
+      ---
+      duration_ms: 44.2633
+      type: 'test'
+      ...
+    # Subtest: accepted task and an unconfirmed deletion receipt do not mean deleted
+    ok 9 - accepted task and an unconfirmed deletion receipt do not mean deleted
+      ---
+      duration_ms: 117.56
+      type: 'test'
+      ...
+    # Subtest: verified receipt completes only that model and retry recovers without resubmitting
+    ok 10 - verified receipt completes only that model and retry recovers without resubmitting
+      ---
+      duration_ms: 107.9341
+      type: 'test'
+      ...
+    # Subtest: tampered result cannot be exposed as successful deletion
+    ok 11 - tampered result cannot be exposed as successful deletion
+      ---
+      duration_ms: 28.1387
+      type: 'test'
+      ...
+    # Subtest: personal creation list shows only own training tasks and paginates without exposing provider details
+    ok 12 - personal creation list shows only own training tasks and paginates without exposing provider details
+      ---
+      duration_ms: 75.472
+      type: 'test'
+      ...
+    # Subtest: waiting and blocked creation remain distinct from a registered or deleted model
+    ok 13 - waiting and blocked creation remain distinct from a registered or deleted model
+      ---
+      duration_ms: 14.9398
+      type: 'test'
+      ...
+    # Subtest: a subject can discover consent before any model exists and withdraw through the existing action
+    ok 14 - a subject can discover consent before any model exists and withdraw through the existing action
+      ---
+      duration_ms: 46.9409
+      type: 'test'
+      ...
+    # Subtest: registered late result keeps the model deletion state and never closes the personal request
+    ok 15 - registered late result keeps the model deletion state and never closes the personal request
+      ---
+      duration_ms: 24.2974
+      type: 'test'
+      ...
+    # Subtest: wrong task binding or foreign model cannot be exposed as a personal result
+    ok 16 - wrong task binding or foreign model cannot be exposed as a personal result
+      ---
+      duration_ms: 49.1167
+      type: 'test'
+      ...
+    1..16
+ok 23 - personal withdrawal and model deletion use real transactions and durable provider results
+  ---
+  duration_ms: 41866.5689
+  type: 'test'
+  ...
+# Subtest: privacy-agreement-copy isolated MySQL and HTTP
+    # Subtest: copies both licensing sides, historical states and original sealed terms
+    ok 1 - copies both licensing sides, historical states and original sealed terms
+      ---
+      duration_ms: 90.342
+      type: 'test'
+      ...
+    # Subtest: procurement copy preserves consideration and annex text but excludes third-party evidence
+    ok 2 - procurement copy preserves consideration and annex text but excludes third-party evidence
+      ---
+      duration_ms: 25.8091
+      type: 'test'
+      ...
+    # Subtest: pagination is stable and section/account-bound
+    ok 3 - pagination is stable and section/account-bound
+      ---
+      duration_ms: 75.9318
+      type: 'test'
+      ...
+    # Subtest: participation personal confirmer and historical agreement without review notes
+    ok 4 - participation personal confirmer and historical agreement without review notes
+      ---
+      duration_ms: 17.4276
+      type: 'test'
+      ...
+    # Subtest: ended agency relationship remains available without private handover
+    ok 5 - ended agency relationship remains available without private handover
+      ---
+      duration_ms: 23.4131
+      type: 'test'
+      ...
+    # Subtest: scope, account, acting identity and malformed queries cannot broaden access
+    ok 6 - scope, account, acting identity and malformed queries cannot broaden access
+      ---
+      duration_ms: 90.0297
+      type: 'test'
+      ...
+    # Subtest: organization ownership does not turn its contracts into personal records
+    ok 7 - organization ownership does not turn its contracts into personal records
+      ---
+      duration_ms: 50.7376
+      type: 'test'
+      ...
+    # Subtest: amended agreement links to prior terms without transferring old payment or revealing evidence
+    ok 8 - amended agreement links to prior terms without transferring old payment or revealing evidence
+      ---
+      duration_ms: 18.4251
+      type: 'test'
+      ...
+    # Subtest: corrupt record or sealed snapshot fails closed
+    ok 9 - corrupt record or sealed snapshot fails closed
+      ---
+      duration_ms: 38.4445
+      type: 'test'
+      ...
+    1..9
+ok 24 - privacy-agreement-copy isolated MySQL and HTTP
+  ---
+  duration_ms: 29948.5485
+  type: 'test'
+  ...
+# Subtest: personal copy provides bounded records and actual private bytes without claiming complete fulfilment
+    # Subtest: seven categories are explicit; no automatic copy request completion
+    ok 1 - seven categories are explicit; no automatic copy request completion
+      ---
+      duration_ms: 168.7687
+      type: 'test'
+      ...
+    # Subtest: new and legacy authorizations paginate without leaking other people or review internals
+    ok 2 - new and legacy authorizations paginate without leaking other people or review internals
+      ---
+      duration_ms: 62.3341
+      type: 'test'
+      ...
+    # Subtest: same ID in two record domains is grouped, not lost between pages
+    ok 3 - same ID in two record domains is grouped, not lost between pages
+      ---
+      duration_ms: 23.6805
+      type: 'test'
+      ...
+    # Subtest: model record belongs to consent subject, not to uploader or producer
+    ok 4 - model record belongs to consent subject, not to uploader or producer
+      ---
+      duration_ms: 240.2336
+      type: 'test'
+      ...
+    # Subtest: stored authorization corruption cannot become a trusted copy
+    ok 5 - stored authorization corruption cannot become a trusted copy
+      ---
+      duration_ms: 25.7542
+      type: 'test'
+      ...
+    # Subtest: actual file bytes match recorded hash; wrong person, purpose and request scope rejected
+    ok 6 - actual file bytes match recorded hash; wrong person, purpose and request scope rejected
+      ---
+      duration_ms: 104.8375
+      type: 'test'
+      ...
+    # Subtest: withdrawn access during storage read cannot send bytes to the client
+    ok 7 - withdrawn access during storage read cannot send bytes to the client
+      ---
+      duration_ms: 26.0151
+      type: 'test'
+      ...
+    1..7
+ok 25 - personal copy provides bounded records and actual private bytes without claiming complete fulfilment
+  ---
+  duration_ms: 33753.1426
+  type: 'test'
+  ...
+# Subtest: privacy restrictions protect commercial and release evidence across their original download routes
+    # Subtest: commercial-evidence becomes unreadable after independently approved restriction and restores only after release
+    ok 1 - commercial-evidence becomes unreadable after independently approved restriction and restores only after release
+      ---
+      duration_ms: 358.9853
+      type: 'test'
+      ...
+    # Subtest: commercial-evidence restriction appearing during storage transport blocks returning stale bytes
+    ok 2 - commercial-evidence restriction appearing during storage transport blocks returning stale bytes
+      ---
+      duration_ms: 229.8938
+      type: 'test'
+      ...
+    # Subtest: commercial-evidence releasing one of two independent restrictions cannot restore content
+    ok 3 - commercial-evidence releasing one of two independent restrictions cannot restore content
+      ---
+      duration_ms: 290.294
+      type: 'test'
+      ...
+    # Subtest: commercial-evidence losing operator access during storage transport cannot return content
+    ok 4 - commercial-evidence losing operator access during storage transport cannot return content
+      ---
+      duration_ms: 42.0787
+      type: 'test'
+      ...
+    # Subtest: release-channel-evidence becomes unreadable after independently approved restriction and restores only after release
+    ok 5 - release-channel-evidence becomes unreadable after independently approved restriction and restores only after release
+      ---
+      duration_ms: 159.7244
+      type: 'test'
+      ...
+    # Subtest: release-channel-evidence restriction appearing during storage transport blocks returning stale bytes
+    ok 6 - release-channel-evidence restriction appearing during storage transport blocks returning stale bytes
+      ---
+      duration_ms: 115.8234
+      type: 'test'
+      ...
+    # Subtest: release-channel-evidence releasing one of two independent restrictions cannot restore content
+    ok 7 - release-channel-evidence releasing one of two independent restrictions cannot restore content
+      ---
+      duration_ms: 252.2911
+      type: 'test'
+      ...
+    # Subtest: release-channel-evidence losing operator access during storage transport cannot return content
+    ok 8 - release-channel-evidence losing operator access during storage transport cannot return content
+      ---
+      duration_ms: 29.6264
+      type: 'test'
+      ...
+    # Subtest: approved raw-material erasure rechecks a new live avatar reference and keeps stored bytes
+    ok 9 - approved raw-material erasure rechecks a new live avatar reference and keeps stored bytes
+      ---
+      duration_ms: 117.1812
+      type: 'test'
+      ...
+    # Subtest: revoked handling permission cannot execute an approved restriction
+    ok 10 - revoked handling permission cannot execute an approved restriction
+      ---
+      duration_ms: 64.415
+      type: 'test'
+      ...
+    1..10
+ok 26 - privacy restrictions protect commercial and release evidence across their original download routes
+  ---
+  duration_ms: 43841.2523
+  type: 'test'
+  ...
+# Subtest: reviewed privacy execution changes actual records and preserves unresolved boundaries
+    # Subtest: copy only returns own explicitly requested profile and cannot enumerate another account
+    ok 1 - copy only returns own explicitly requested profile and cannot enumerate another account
+      ---
+      duration_ms: 38.3451
+      type: 'test'
+      ...
+    # Subtest: personal copy includes own stories and buyer order index without exposing another person or contract body
+    ok 2 - personal copy includes own stories and buyer order index without exposing another person or contract body
+      ---
+      duration_ms: 404.1335
+      type: 'test'
+      ...
+    # Subtest: paid history allows only proven completed buyer work and rejects incomplete work or pending refund
+    ok 3 - paid history allows only proven completed buyer work and rejects incomplete work or pending refund
+      ---
+      duration_ms: 248.0109
+      type: 'test'
+      ...
+    # Subtest: correction requires independent approval and actually updates profile
+    ok 4 - correction requires independent approval and actually updates profile
+      ---
+      duration_ms: 43.785
+      type: 'test'
+      ...
+    # Subtest: deletion lists readable own materials and reviewed policies; referenced files require review
+    ok 5 - deletion lists readable own materials and reviewed policies; referenced files require review
+      ---
+      duration_ms: 405.498
+      type: 'test'
+      ...
+    # Subtest: missing effective policy cannot authorize deletion
+    ok 6 - missing effective policy cannot authorize deletion
+      ---
+      duration_ms: 13.3559
+      type: 'test'
+      ...
+    # Subtest: file removal is bound to owner and exact storage configuration
+    ok 7 - file removal is bound to owner and exact storage configuration
+      ---
+      duration_ms: 1535.8696
+      type: 'test'
+      ...
+    # Subtest: unknown deletion result remains pending; retry checks same object and records current-object-only result
+    ok 8 - unknown deletion result remains pending; retry checks same object and records current-object-only result
+      ---
+      duration_ms: 37.057
+      type: 'test'
+      ...
+    # Subtest: complaint restricts actual download and approved release restores only that restriction
+    ok 9 - complaint restricts actual download and approved release restores only that restriction
+      ---
+      duration_ms: 76.9252
+      type: 'test'
+      ...
+    # Subtest: closing sole organization owner is blocked and leaves login intact
+    ok 10 - closing sole organization owner is blocked and leaves login intact
+      ---
+      duration_ms: 32.8088
+      type: 'test'
+      ...
+    # Subtest: account closure revokes old sessions and personal identity while retaining request evidence
+    ok 11 - account closure revokes old sessions and personal identity while retaining request evidence
+      ---
+      duration_ms: 84.9681
+      type: 'test'
+      ...
+    # Subtest: lost closure response keeps sessions closed and operators can reconcile the single executed request
+    ok 12 - lost closure response keeps sessions closed and operators can reconcile the single executed request
+      ---
+      duration_ms: 897.8038
+      type: 'test'
+      ...
+    # Subtest: new closure clock requires verified identity and actual execution before completion
+    ok 13 - new closure clock requires verified identity and actual execution before completion
+      ---
+      duration_ms: 201.8181
+      type: 'test'
+      ...
+    # Subtest: stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete
+    ok 14 - stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete
+      ---
+      duration_ms: 568.8513
+      type: 'test'
+      ...
+    # Subtest: HTTP exposes the same scoped proposal, review, execution and export flow
+    ok 15 - HTTP exposes the same scoped proposal, review, execution and export flow
+      ---
+      duration_ms: 246.3129
+      type: 'test'
+      ...
+    # Subtest: restoring an actual older backup requires replaying latest erasure register before access
+    ok 16 - restoring an actual older backup requires replaying latest erasure register before access
+      ---
+      duration_ms: 62374.5726
+      type: 'test'
+      ...
+    1..16
+ok 27 - reviewed privacy execution changes actual records and preserves unresolved boundaries
+  ---
+  duration_ms: 97219.3639
+  type: 'test'
+  ...
+# Subtest: privacy policy choices follow request ownership, action and reviewed retention scope
+    # Subtest: closure offers only its action and effective policy with a valid retention basis
+    ok 1 - closure offers only its action and effective policy with a valid retention basis
+      ---
+      duration_ms: 49.4069
+      type: 'test'
+      ...
+    # Subtest: correction and erasure use their own action, without requiring deletion policy for correction
+    ok 2 - correction and erasure use their own action, without requiring deletion policy for correction
+      ---
+      duration_ms: 48.56
+      type: 'test'
+      ...
+    # Subtest: no login, another account, and an operator cannot enumerate personal request choices
+    ok 3 - no login, another account, and an operator cannot enumerate personal request choices
+      ---
+      duration_ms: 34.5982
+      type: 'test'
+      ...
+    # Subtest: filtered pages remain traversable and bad pagination is rejected
+    ok 4 - filtered pages remain traversable and bad pagination is rejected
+      ---
+      duration_ms: 47.6056
+      type: 'test'
+      ...
+    # Subtest: operators only select content policies for complaint requests and need handling permission
+    ok 5 - operators only select content policies for complaint requests and need handling permission
+      ---
+      duration_ms: 30.5286
+      type: 'test'
+      ...
+    # Subtest: retention choices require handling access and reveal only the requested category
+    ok 6 - retention choices require handling access and reveal only the requested category
+      ---
+      duration_ms: 34.8956
+      type: 'test'
+      ...
+    # Subtest: selection is not execution: retired policy is removed and original proposal is rejected
+    ok 7 - selection is not execution: retired policy is removed and original proposal is rejected
+      ---
+      duration_ms: 33.7106
+      type: 'test'
+      ...
+    1..7
+ok 28 - privacy policy choices follow request ownership, action and reviewed retention scope
+  ---
+  duration_ms: 62249.9963
+  type: 'test'
+  ...
+# Subtest: 15-working-day platform target uses reviewed exception dates without inventing a retention term
+ok 29 - 15-working-day platform target uses reviewed exception dates without inventing a retention term
+  ---
+  duration_ms: 2.182
+  type: 'test'
+  ...
+# Subtest: duplicate scopes and fake executed outcome are rejected
+ok 30 - duplicate scopes and fake executed outcome are rejected
+  ---
+  duration_ms: 1.0044
+  type: 'test'
+  ...
+# Subtest: privacy-security-copy isolated MySQL and HTTP
+    # Subtest: retained sessions distinguish active/revoked/expired; legacy timestamp remains unknown
+    ok 1 - retained sessions distinguish active/revoked/expired; legacy timestamp remains unknown
+      ---
+      duration_ms: 52.2752
+      type: 'test'
+      ...
+    # Subtest: copy reference is not a bearer credential or a stored credential cursor
+    ok 2 - copy reference is not a bearer credential or a stored credential cursor
+      ---
+      duration_ms: 29.625
+      type: 'test'
+      ...
+    # Subtest: session pagination returns each retained row exactly once
+    ok 3 - session pagination returns each retained row exactly once
+      ---
+      duration_ms: 35.4791
+      type: 'test'
+      ...
+    # Subtest: phone-change history is account-bound and only contains masked numbers
+    ok 4 - phone-change history is account-bound and only contains masked numbers
+      ---
+      duration_ms: 33.4313
+      type: 'test'
+      ...
+    # Subtest: scope/account/acting-party and malformed input do not broaden access or complete request
+    ok 5 - scope/account/acting-party and malformed input do not broaden access or complete request
+      ---
+      duration_ms: 53.1632
+      type: 'test'
+      ...
+    # Subtest: invalid timestamps and accidentally unmasked phone values fail closed
+    ok 6 - invalid timestamps and accidentally unmasked phone values fail closed
+      ---
+      duration_ms: 135.8653
+      type: 'test'
+      ...
+    # Subtest: actual auth cleanup invalidates removed cursor without fabricating historical login entries
+    ok 7 - actual auth cleanup invalidates removed cursor without fabricating historical login entries
+      ---
+      duration_ms: 38.034
+      type: 'test'
+      ...
+    # Subtest: account suspension prevents reuse of prior copy request
+    ok 8 - account suspension prevents reuse of prior copy request
+      ---
+      duration_ms: 19.0792
+      type: 'test'
+      ...
+    1..8
+ok 31 - privacy-security-copy isolated MySQL and HTTP
+  ---
+  duration_ms: 61517.138
+  type: 'test'
+  ...
+# Subtest: personal story copies keep drafts, formal history and private bytes separate
+    # Subtest: draft owner sees attachment metadata without exposing it to operations
+    ok 1 - draft owner sees attachment metadata without exposing it to operations
+      ---
+      duration_ms: 78.1264
+      type: 'test'
+      ...
+    # Subtest: unsubmitted correction is copied separately; operations still see formal one
+    ok 2 - unsubmitted correction is copied separately; operations still see formal one
+      ---
+      duration_ms: 27.6219
+      type: 'test'
+      ...
+    # Subtest: all formal versions and supplement rounds paginate independently and keep original content
+    ok 3 - all formal versions and supplement rounds paginate independently and keep original content
+      ---
+      duration_ms: 53.5596
+      type: 'test'
+      ...
+    # Subtest: other people, institution-owned stories, scope and cursor misuse cannot export
+    ok 4 - other people, institution-owned stories, scope and cursor misuse cannot export
+      ---
+      duration_ms: 75.1583
+      type: 'test'
+      ...
+    # Subtest: stored snapshot corruption is rejected rather than becoming trusted export
+    ok 5 - stored snapshot corruption is rejected rather than becoming trusted export
+      ---
+      duration_ms: 29.1932
+      type: 'test'
+      ...
+    # Subtest: both historical and current attachment bytes match; corrupt storage fails
+    ok 6 - both historical and current attachment bytes match; corrupt storage fails
+      ---
+      duration_ms: 41.5897
+      type: 'test'
+      ...
+    # Subtest: revoked file during transport is not returned; copy never completes request
+    ok 7 - revoked file during transport is not returned; copy never completes request
+      ---
+      duration_ms: 26.0036
+      type: 'test'
+      ...
+    1..7
+ok 32 - personal story copies keep drafts, formal history and private bytes separate
+  ---
+  duration_ms: 58648.7022
+  type: 'test'
+  ...
+# Subtest: personal trade copies preserve receipts, refunds and historical contracts
+    # Subtest: own buyer and seller paginate; organization membership gives no personal copy
+    ok 1 - own buyer and seller paginate; organization membership gives no personal copy
+      ---
+      duration_ms: 94.7733
+      type: 'test'
+      ...
+    # Subtest: gross and refund facts remain separate; no provider secrets or false completion
+    ok 2 - gross and refund facts remain separate; no provider secrets or false completion
+      ---
+      duration_ms: 76.884
+      type: 'test'
+      ...
+    # Subtest: redacted contract has its own checksum; source stays unchanged and unsigned
+    ok 3 - redacted contract has its own checksum; source stays unchanged and unsigned
+      ---
+      duration_ms: 16.7409
+      type: 'test'
+      ...
+    # Subtest: scope, account and cursor isolation apply to every request
+    ok 4 - scope, account and cursor isolation apply to every request
+      ---
+      duration_ms: 94.2699
+      type: 'test'
+      ...
+    # Subtest: corrupt records and inconsistent journal fail closed
+    ok 5 - corrupt records and inconsistent journal fail closed
+      ---
+      duration_ms: 83.8601
+      type: 'test'
+      ...
+    # Subtest: unknown payment and requested refund never become received or refunded money
+    ok 6 - unknown payment and requested refund never become received or refunded money
+      ---
+      duration_ms: 103.2574
+      type: 'test'
+      ...
+    # Subtest: disabled account is rechecked, reads do not complete the privacy request
+    ok 7 - disabled account is rechecked, reads do not complete the privacy request
+      ---
+      duration_ms: 18.2194
+      type: 'test'
+      ...
+    1..7
+ok 33 - personal trade copies preserve receipts, refunds and historical contracts
+  ---
+  duration_ms: 58149.4969
+  type: 'test'
+  ...
+# Subtest: personal requests stay account-private and responses remain distinct from actual deletion
+    # Subtest: preferences default off, optimistic version and account isolation
+    ok 1 - preferences default off, optimistic version and account isolation
+      ---
+      duration_ms: 126.0259
+      type: 'test'
+      ...
+    # Subtest: duplicate personal requests create once and outsiders cannot read or enumerate them
+    ok 2 - duplicate personal requests create once and outsiders cannot read or enumerate them
+      ---
+      duration_ms: 76.7842
+      type: 'test'
+      ...
+    # Subtest: handling and verification are separate; proposal never leaks before review
+    ok 3 - handling and verification are separate; proposal never leaks before review
+      ---
+      duration_ms: 90.1538
+      type: 'test'
+      ...
+    # Subtest: reviewed reply notifies only the personal inbox even when marketing is disabled
+    ok 4 - reviewed reply notifies only the personal inbox even when marketing is disabled
+      ---
+      duration_ms: 84.2143
+      type: 'test'
+      ...
+    # Subtest: approved copy download is private; appeals preserve previous response
+    ok 5 - approved copy download is private; appeals preserve previous response
+      ---
+      duration_ms: 46.6774
+      type: 'test'
+      ...
+    # Subtest: delete and closure applications cannot be recorded as executed by a reply
+    ok 6 - delete and closure applications cannot be recorded as executed by a reply
+      ---
+      duration_ms: 64.8921
+      type: 'test'
+      ...
+    # Subtest: holding all data or inventing retention authority is rejected
+    ok 7 - holding all data or inventing retention authority is rejected
+      ---
+      duration_ms: 42.5737
+      type: 'test'
+      ...
+    # Subtest: reviewed retention policy permits only its category and bounded review date
+    ok 8 - reviewed retention policy permits only its category and bounded review date
+      ---
+      duration_ms: 66.1404
+      type: 'test'
+      ...
+    # Subtest: concurrent preference changes do not silently overwrite each other
+    ok 9 - concurrent preference changes do not silently overwrite each other
+      ---
+      duration_ms: 18.4353
+      type: 'test'
+      ...
+    # Subtest: event-write failure rolls request transition back
+    ok 10 - event-write failure rolls request transition back
+      ---
+      duration_ms: 65.958
+      type: 'test'
+      ...
+    # Subtest: notification failure rolls back reviewed result and immutable history together
+    ok 11 - notification failure rolls back reviewed result and immutable history together
+      ---
+      duration_ms: 118.4432
+      type: 'test'
+      ...
+    # Subtest: revoked handler permission cannot replay previously authorized commands
+    ok 12 - revoked handler permission cannot replay previously authorized commands
+      ---
+      duration_ms: 23.8751
+      type: 'test'
+      ...
+    # Subtest: published calendar drives fifteen working days; old dates stay frozen and missing coverage stays estimated
+    ok 13 - published calendar drives fifteen working days; old dates stay frozen and missing coverage stays estimated
+      ---
+      duration_ms: 165.9845
+      type: 'test'
+      ...
+    1..13
+ok 34 - personal requests stay account-private and responses remain distinct from actual deletion
+  ---
+  duration_ms: 57605.5644
+  type: 'test'
+  ...
+# Subtest: ranking-contract isolated MySQL and HTTP
+    # Subtest: new-contract mode rejects old or mismatched submitted rules
+    ok 1 - new-contract mode rejects old or mismatched submitted rules
+      ---
+      duration_ms: 113.1993
+      type: 'test'
+      ...
+    # Subtest: independent review rejects old pending rule and self approval
+    ok 2 - independent review rejects old pending rule and self approval
+      ---
+      duration_ms: 51.0302
+      type: 'test'
+      ...
+    # Subtest: new snapshots require contract rules; original-key retries and historical reads survive
+    ok 3 - new snapshots require contract rules; original-key retries and historical reads survive
+      ---
+      duration_ms: 116.3342
+      type: 'test'
+      ...
+    1..3
+ok 35 - ranking-contract isolated MySQL and HTTP
+  ---
+  duration_ms: 56926.288
+  type: 'test'
+  ...
+# Subtest: contract ranking rejects changed weights/coefficients but preserves historical rules
+ok 36 - contract ranking rejects changed weights/coefficients but preserves historical rules
+  ---
+  duration_ms: 5.9744
+  type: 'test'
+  ...
+# Subtest: equal facts apply 1.0/1.3/1.6 multipliers and leave legacy calculations unchanged
+ok 37 - equal facts apply 1.0/1.3/1.6 multipliers and leave legacy calculations unchanged
+  ---
+  duration_ms: 9.0391
+  type: 'test'
+  ...
+# Subtest: 500 long-city candidates paginate without exceeding fingerprint limits, and truncation stays explicit
+ok 38 - 500 long-city candidates paginate without exceeding fingerprint limits, and truncation stays explicit
+  ---
+  duration_ms: 29.5432
+  type: 'test'
+  ...
+# Subtest: preference change while reading public candidates rejects stale result
+ok 39 - preference change while reading public candidates rejects stale result
+  ---
+  duration_ms: 1.8107
+  type: 'test'
+  ...
+# Subtest: recommendations isolated MySQL and HTTP
+    # Subtest: default nonpersonal catalogue, bound cursor and no price adjustment
+    ok 1 - default nonpersonal catalogue, bound cursor and no price adjustment
+      ---
+      duration_ms: 143.4447
+      type: 'test'
+      ...
+    # Subtest: explicit opt-in ranks valid browsed city; opt-out invalidates old cursor
+    ok 2 - explicit opt-in ranks valid browsed city; opt-out invalidates old cursor
+      ---
+      duration_ms: 170.1163
+      type: 'test'
+      ...
+    # Subtest: withdrawn source is removed; disabled history stops influencing recommendations
+    ok 3 - withdrawn source is removed; disabled history stops influencing recommendations
+      ---
+      duration_ms: 66.8039
+      type: 'test'
+      ...
+    # Subtest: strict input and identity boundaries, all supported public sources
+    ok 4 - strict input and identity boundaries, all supported public sources
+      ---
+      duration_ms: 91.3445
+      type: 'test'
+      ...
+    1..4
+ok 40 - recommendations isolated MySQL and HTTP
+  ---
+  duration_ms: 55613.0218
+  type: 'test'
+  ...
+1..40
+# tests 191
+# suites 0
+# pass 191
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 113098.3827

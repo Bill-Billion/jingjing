@@ -1,24 +1,37 @@
+import {saveWrite,savedWrite,removeWrite,type SavedWrite} from '@/api/pendingWrites'
 import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 import { ApiError, asApiError, newIdempotencyKey, outcomeUnknown } from '@/api/client'
-import { getLicense, listLicense, postLicense, readLicenseContent, readEvidenceBytes, type LicenseKind, type LicenseRecord, type LicenseWrite } from '@/api/modules/licensing'
+import { getLicense, listLicense, postLicense, readLicenseContent, readEvidenceBytes, readProcurementBytes, type LicenseKind, type LicenseRecord, type LicenseWrite } from '@/api/modules/licensing'
 import type { SupplyContext } from './useSupply'
 import type { SupplyIdentity } from '@/api/modules/supply'
 
 interface Pending { command: LicenseWrite; key: string; state: 'sending' | 'retry' | 'blocked' | 'refresh'; resultId?: string; done: (record: LicenseRecord) => void }
 /** Every request is scoped to the actor, party, navigation and session revision. Private state never leaves this page. */
-export function useLicensing(context: () => SupplyContext) {
+export function useLicensing(context: () => SupplyContext & {selectedId?:string;authority?:string}) {
   const rows = ref<LicenseRecord[]>([]), detail = ref<LicenseRecord | null>(null), related = ref<LicenseRecord[]>([]), nextCursor = ref<string | null>(null)
   const error = ref<ApiError | null>(null), notice = ref(''), content = ref(''), readerDeadline = ref(0), readerId = ref('')
   const pending = shallowRef<Pending | null>(null), writing = ref(false), reading = ref<Record<string,boolean>>({}), securityRevision = ref(0), conflictRevision = ref(0), retryAt = ref(0)
   let epoch = 0, disposed = false
   const tickets = new Map<string,number>(), aborts = new Map<string,AbortController>(), urls = new Set<string>()
   const busy = computed(() => writing.value || Object.values(reading.value).some(Boolean))
+  interface SavedLicense extends SavedWrite { license:LicenseWrite; resultId?:string }
+  function persist(p:Pending){const c=context();if(c.authority===undefined)return;saveWrite({namespace:'licensing',accountId:c.accountId,selectedId:c.selectedId||c.partyId||'',partyId:c.partyId,authority:c.authority,route:c.scope,path:p.command.path,method:'POST',key:p.key,body:p.command.body,ifMatch:p.command.version,license:p.command,resultId:p.resultId} as SavedLicense)}
+  function forget(p:Pending|null){if(p&&context().authority!==undefined)removeWrite(p.key)}
+  function restore(done:Pending['done']){
+    const c=context();if(!c.token||!c.accountId||c.authority===undefined||pending.value)return
+    try{const saved=savedWrite('licensing',c.accountId,c.partyId,c.scope) as SavedLicense|null;if(!saved)return
+      const command=saved.license
+      if(saved.authority!==c.authority||saved.selectedId!==(c.selectedId||c.partyId||'')){removeWrite(saved.key);notice.value='原身份或权限已变化，请先核对原业务。';return}
+      if(saved.method!=='POST'||!command||command.path!==saved.path||JSON.stringify(command.body)!==JSON.stringify(saved.body)||command.version!==saved.ifMatch||!['PRODUCT','RESERVATION','EVIDENCE','GRANT','PROJECT','BINDING','READING','ACTIVATION','PROCUREMENT_EVENT','ROYALTY_STATEMENT'].includes(command.resultKind)||!/^\/licensing\/(?:products|reservations|evidence|projects|readings|(?:records|grants|reservations)\/[0-9a-f-]{36}\/(?:reviews|closures|suspensions|activation|bindings|procurement-events|royalty-statements))$/.test(command.path))throw Error('INVALID_LICENSE_RECOVERY')
+      pending.value={command,key:saved.key,state:saved.resultId?'refresh':'retry',resultId:saved.resultId,done};notice.value='已找回原请求，请核对后恢复同一次操作。不会自动另建订单或账单。'
+    }catch{error.value=new ApiError({status:409,code:'CLIENT_RECOVERY_UNAVAILABLE',message:'无法核对保存的原许可请求，未发送新操作。请先核对原记录。'})}
+  }
   function clearContent() { content.value = ''; readerId.value = ''; readerDeadline.value = 0; aborts.get('content')?.abort(); tickets.set('content',(tickets.get('content') || 0) + 1) }
   function clear() { epoch++; for (const a of aborts.values()) a.abort(); aborts.clear(); rows.value = []; detail.value = null; related.value = []; nextCursor.value = null; pending.value = null; writing.value = false; reading.value = {}; error.value = null; notice.value = ''; retryAt.value = 0; clearContent(); for (const u of urls) URL.revokeObjectURL(u); urls.clear(); securityRevision.value++ }
   watch(() => [context().token,context().accountId,context().partyId,context().revision,context().scope],clear,{flush:'sync'})
   onScopeDispose(() => { disposed = true; clear() })
   function identity(): SupplyIdentity { const c = context(); if (!c.token || !c.accountId || c.partyId === '') throw new ApiError({status:400,code:'CLIENT_IDENTITY_REQUIRED',message:'请先读取账号并选择工作身份。'}); return {token:c.token,accountId:c.accountId,partyId:c.partyId} }
-  function failure(cause: unknown) { const e = asApiError(cause); if ([401,403,404].includes(e.status)) clear(); error.value = e; retryAt.value = e.retryAfterAt || 0 }
+  function failure(cause: unknown) { const e = asApiError(cause); if ([401,403,404].includes(e.status)) {if(e.status!==401)forget(pending.value);clear();} error.value = e; retryAt.value = e.retryAfterAt || 0 }
   function applyRecord(r: LicenseRecord) { detail.value = r; rows.value = rows.value.map(x => x.id === r.id ? r : x); related.value = related.value.map(x => x.id === r.id ? r : x); if (readerId.value === r.id && (r.kind !== 'READING' || r.current_status !== 'APPROVED' || Date.parse(r.data.valid_until) <= Date.now())) clearContent() }
   async function read<T>(name: string, task: (i: SupplyIdentity, signal: AbortSignal) => Promise<T>, apply?: (v: T) => void): Promise<T | null> {
     if (retryAt.value > Date.now()) return null
@@ -44,28 +57,28 @@ export function useLicensing(context: () => SupplyContext) {
     writing.value = true; error.value = null; notice.value = ''
     try {
       const i = identity()
-      if (!p.resultId) { p.state = 'sending'; const r = await postLicense(i,p.command,p.key,a.signal); if (!current()) return; p.resultId = r.id }
+      if (!p.resultId) { p.state = 'sending'; const r = await postLicense(i,p.command,p.key,a.signal); if (!current()) return; p.resultId = r.id; persist(p) }
       p.state = 'refresh'; const fresh = await getLicense(i,p.resultId,undefined,a.signal); if (!current()) return
       // Activation and binding change or relate to their parent. Refresh that version too.
       if (p.command.targetId && p.command.targetId !== fresh.id) { const parent = await getLicense(i,p.command.targetId,undefined,a.signal); if (!current()) return; rows.value = rows.value.map(x=>x.id===parent.id?parent:x); related.value = related.value.map(x=>x.id===parent.id?parent:x) }
-      pending.value = null; applyRecord(fresh)
+      forget(p); pending.value = null; applyRecord(fresh)
       notice.value = fresh.kind === 'RESERVATION' && fresh.current_status === 'REVIEW_REQUIRED' ? '本次预留已进入人工补救，尚未取得许可。' : `${p.command.label}已处理，已读取当前状态。`
       p.done(fresh)
     } catch (cause) {
       if (!current()) return
       const e = asApiError(cause)
       if ([401,403,404].includes(e.status)) {failure(e);return}
-      if (e.status === 412) { pending.value = null; conflictRevision.value++; clearContent(); notice.value = '记录已有变化。请核对最新内容后重新作出决定。'; if (p.command.targetId) { const fresh = await getLicense(identity(),p.command.targetId,undefined,a.signal).catch(cause=>{if(generation===epoch && !disposed)failure(cause);return null}); if (generation===epoch && !disposed) {if(fresh)applyRecord(fresh);else detail.value=null} } }
+      if (e.status === 412) { forget(p); pending.value = null; conflictRevision.value++; clearContent(); notice.value = '记录已有变化。请核对最新内容后重新作出决定。'; if (p.command.targetId) { const fresh = await getLicense(identity(),p.command.targetId,undefined,a.signal).catch(cause=>{if(generation===epoch && !disposed)failure(cause);return null}); if (generation===epoch && !disposed) {if(fresh)applyRecord(fresh);else detail.value=null} } }
       else if (e.code === 'IDEMPOTENCY_IN_PROGRESS') p.state = 'retry'
       else if (p.resultId) p.state = 'refresh'
       else if (e.status === 409) p.state = 'blocked'
       else if (outcomeUnknown(e)) p.state = 'retry'
-      else pending.value = null
+      else {forget(p);pending.value = null}
       if (generation===epoch && !disposed) {error.value=e;retryAt.value=e.retryAfterAt||0}
     } finally {if(generation===epoch && !disposed){writing.value=false;aborts.delete('write')}}
   }
-  async function write(command: LicenseWrite, done: Pending['done']) { if(pending.value||writing.value||retryAt.value>Date.now())return; const snapshot = {...command,body:JSON.parse(JSON.stringify(command.body))}; pending.value={command:snapshot,key:newIdempotencyKey(),state:'sending',done};await runPending() }
-  function acknowledgeConflict(){if(pending.value?.state==='blocked'){pending.value=null;error.value=null;conflictRevision.value++;notice.value='已结束本次操作。请刷新记录后重新填写。'}}
+  async function write(command: LicenseWrite, done: Pending['done']) { if(pending.value||writing.value||retryAt.value>Date.now())return; const snapshot = {...command,body:JSON.parse(JSON.stringify(command.body))}; const p:Pending={command:snapshot,key:newIdempotencyKey(),state:'sending',done};try{persist(p)}catch{error.value=new ApiError({status:409,code:'CLIENT_RECOVERY_UNAVAILABLE',message:'无法保存原请求以便失败恢复，本次没有发送。'});return}pending.value=p;await runPending() }
+  function acknowledgeConflict(){if(pending.value?.state==='blocked'){forget(pending.value);pending.value=null;error.value=null;conflictRevision.value++;notice.value='已结束本次操作。请刷新记录后重新填写。'}}
   async function readContent(id: string) {
     clearContent()
     return read('content',async(i,s)=>{
@@ -77,7 +90,7 @@ export function useLicensing(context: () => SupplyContext) {
     },({text,record})=>{if(record.kind!=='READING')return;content.value=text.watermarked_text;readerDeadline.value=Date.parse(record.data.valid_until);readerId.value=id;applyRecord(record)})
   }
   async function verifyReader() {const id=readerId.value;if(!id)return;if(readerDeadline.value<=Date.now()){clearContent();return}await read('reader-validation',(i,s)=>getLicense(i,id,'READING',s),r=>{if(readerId.value!==id)return;if(r.kind!=='READING'||r.current_status!=='APPROVED'||Date.parse(r.data.valid_until)<=Date.now()){clearContent();return}readerDeadline.value=Date.parse(r.data.valid_until)});if(error.value)clearContent()}
-  async function downloadEvidence(recordId: string, assetId: string) { await read('evidence-'+assetId,(i,s)=>readEvidenceBytes(i,recordId,assetId,s),bytes=>{const u=URL.createObjectURL(bytes);urls.add(u);const a=document.createElement('a');a.href=u;a.download=`${assetId}.bin`;a.click();window.setTimeout(()=>{URL.revokeObjectURL(u);urls.delete(u)},0)}) }
+  async function downloadEvidence(recordId: string, assetId: string, procurement=false) { await read('evidence-'+assetId,(i,s)=>(procurement?readProcurementBytes:readEvidenceBytes)(i,recordId,assetId,s),bytes=>{const u=URL.createObjectURL(bytes);urls.add(u);const a=document.createElement('a');a.href=u;a.download=`${assetId}.bin`;a.click();window.setTimeout(()=>{URL.revokeObjectURL(u);urls.delete(u)},0)}) }
   function canNavigate() { return pending.value === null }
-  return { rows,detail,related,nextCursor,error,notice,content,readerDeadline,readerId,pending,writing,reading,busy,securityRevision,conflictRevision,retryAt,clear,clearContent,read,loadList,loadAll,loadRecord,write,retry:runPending,acknowledgeConflict,readContent,verifyReader,downloadEvidence,canNavigate }
+  return { rows,detail,related,nextCursor,error,notice,content,readerDeadline,readerId,pending,restore,writing,reading,busy,securityRevision,conflictRevision,retryAt,clear,clearContent,read,loadList,loadAll,loadRecord,write,retry:runPending,acknowledgeConflict,readContent,verifyReader,downloadEvidence,canNavigate }
 }

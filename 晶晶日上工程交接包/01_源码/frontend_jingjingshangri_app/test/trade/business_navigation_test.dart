@@ -134,6 +134,8 @@ void main() {
     final session = (await tester.runAsync(() => buyerSession(adapter)))!;
     await nav.openApp(tester, session,
         route: '/trade/record?recordId=$orderId');
+    expect(find.textContaining('应付现金为0，无需支付首款、中款或尾款'), findsOneWidget);
+    expect(find.textContaining('先核对首款'), findsNothing);
     await reveal(tester, '取消订单并释放制作权益');
     await tester.tap(find.text('取消订单并释放制作权益'));
     await nav.frames(tester);

@@ -1,0 +1,124 @@
+{
+  "date": "2026-11-05",
+  "status": "EXPORTED_WITH_LIMITS",
+  "request": "核对队友离线APK通畅并导出包",
+  "remote_frontend_sha": "157b47e302210d7f651d841d726cc3e0c8f14d08",
+  "offline_source_sha": "b22abb8bd1263d7e49ddcf4b323fc03ebea95d62",
+  "apk_path": "D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\deliverables\\20261105_安卓离线演示复验\\jingjing-offline-demo-20261105.apk",
+  "apk_sha256": "1ff3f6b1612c677dd8dd38134e690a2cd747fec954db8cef869ecfdca7fa5113",
+  "exported": true,
+  "environment": {
+    "device": "emulator-5582",
+    "avd": "JX_OFFLINE_REVIEW_20261105",
+    "android": "15",
+    "abi": "x86_64",
+    "ready": false,
+    "physical_device_tested": false
+  },
+  "teammate_claims": {
+    "blessing_offline": "reported_pass",
+    "native_scenarios": 13,
+    "assertions": 80,
+    "restart": "reported_pass",
+    "independently_verified": false
+  },
+  "checks": [
+    {
+      "id": "OFF-01",
+      "work": "核对来源与安装包",
+      "expected": "提交号、构建命令、包名/版本、签名、ABI和SHA256能对应实际APK",
+      "status": "PASS"
+    },
+    {
+      "id": "OFF-02",
+      "work": "断网首次启动",
+      "expected": "飞行模式下打开，不请求真实短信或依赖测试网站，不无限加载",
+      "status": "PASS"
+    },
+    {
+      "id": "OFF-03",
+      "work": "祝福视频完整办理",
+      "expected": "需求、规格、模拟报价/付款、制作进度、播放/结果连续可办，不要求内部编号",
+      "status": "PASS"
+    },
+    {
+      "id": "OFF-04",
+      "work": "艺人和机构身份",
+      "expected": "切换后内容和动作符合当前身份，返回与重启不串身份、不循环跳页",
+      "status": "PASS"
+    },
+    {
+      "id": "OFF-05",
+      "work": "艺人业务",
+      "expected": "按实际报告逐场景复验，缺少材料、取消及返回有明确反馈",
+      "status": "PASS_WITH_DOCUMENTED_LIMITS"
+    },
+    {
+      "id": "OFF-06",
+      "work": "机构业务",
+      "expected": "管理具体艺人/形象，授权关系清楚，不把机构代办当本人同意",
+      "status": "PASS"
+    },
+    {
+      "id": "OFF-07",
+      "work": "通告业务",
+      "expected": "浏览、发起/报名/意向与后续结果有可理解路径；重复点击不重复产生结果",
+      "status": "PASS_WITH_DOCUMENTED_LIMITS"
+    },
+    {
+      "id": "OFF-08",
+      "work": "异常与恢复",
+      "expected": "退出、强制停止、重开、无可选资料和重复操作，已保存数据保留",
+      "status": "PASS_WITH_DOCUMENTED_LIMITS"
+    },
+    {
+      "id": "OFF-09",
+      "work": "媒体离线可用",
+      "expected": "样片实际断网播放、暂停/返回正常；无外部链接依赖导致空白",
+      "status": "PASS"
+    },
+    {
+      "id": "OFF-10",
+      "work": "反馈和演示边界",
+      "expected": "明确模拟付款/核验/作品；反馈能保留或说明如何交回，不假装已发送服务器",
+      "status": "PASS_WITH_DOCUMENTED_LIMITS"
+    },
+    {
+      "id": "OFF-11",
+      "work": "交付产物复验",
+      "expected": "从最终导出APK安装复测，导出APK+校验值+版本/操作说明+已知限制；实体手机未测直说",
+      "status": "PASS"
+    }
+  ],
+  "limits": [
+    "Physical Android device and other OS/ABIs not tested",
+    "Not all native fault branches covered; see REPORT.md",
+    "No actual provider calls or public service",
+    "Original emulator app/data/network and manual business DB not intentionally modified",
+    "Offline demo cannot replace formal backend integration acceptance"
+  ],
+  "requested_branch": "ux/android-offline-demo-20261105",
+  "branch_receipt_history": {
+    "repository": "Bill-Billion/jingjing",
+    "fetch": "remote_ref_not_found",
+    "ls_remote_matching_heads": [],
+    "github_offline_branch_search": [],
+    "github_pr_head_search": [],
+    "received": false
+  },
+  "branch_receipt": {
+    "repository": "Bill-Billion/jingjing",
+    "received": true,
+    "sha": "b22abb8bd1263d7e49ddcf4b323fc03ebea95d62"
+  },
+  "independent_checks": {
+    "offline_tests": 19,
+    "offline_tests_result": "PASS",
+    "dart_analysis": "PASS",
+    "apk_build": "PASS",
+    "native_segments_passed": 15,
+    "explicit_checks_passed": 83,
+    "export_reinstall_and_device_reboot": "PASS",
+    "video_play_pause_return": "PASS"
+  }
+}

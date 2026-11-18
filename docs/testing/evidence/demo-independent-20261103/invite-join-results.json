@@ -1,0 +1,72 @@
+{
+  "synthetic_only": true,
+  "completed": true,
+  "checks": [
+    {
+      "id": "INV-07",
+      "result": "PASS",
+      "label": "领邀请后本人另行确认材料和授权，原键恢复只增加一个参加人",
+      "room_id": "64d19586-4df6-45e5-b6d5-e0b5e70c21e9",
+      "member_id": "823807be-b2f4-4344-8968-7f2aea2076db"
+    },
+    {
+      "id": "INV-08",
+      "result": "PASS",
+      "label": "发起人不能读取新参与人的私有故事和完整参加材料"
+    }
+  ],
+  "evidence": [
+    {
+      "role": "co_actor_1",
+      "path": "/artists/people",
+      "status": 200
+    },
+    {
+      "role": "co_actor_1",
+      "path": "/cocreation/members",
+      "status": 200
+    },
+    {
+      "role": "co_actor_1",
+      "path": "/cocreation/members/970699c1-b683-48c0-9a4b-04046b7d2fd3",
+      "status": 200,
+      "id": "970699c1-b683-48c0-9a4b-04046b7d2fd3"
+    },
+    {
+      "role": "co_actor_1",
+      "path": "/cocreation/rooms/64d19586-4df6-45e5-b6d5-e0b5e70c21e9",
+      "status": 200,
+      "id": "64d19586-4df6-45e5-b6d5-e0b5e70c21e9"
+    },
+    {
+      "role": "buyer",
+      "path": "/cocreation/rooms/64d19586-4df6-45e5-b6d5-e0b5e70c21e9",
+      "status": 200,
+      "id": "64d19586-4df6-45e5-b6d5-e0b5e70c21e9"
+    },
+    {
+      "role": "co_actor_1",
+      "path": "/cocreation/rooms/64d19586-4df6-45e5-b6d5-e0b5e70c21e9/members",
+      "status": 200,
+      "id": "823807be-b2f4-4344-8968-7f2aea2076db"
+    },
+    {
+      "role": "co_actor_1",
+      "path": "/cocreation/rooms/64d19586-4df6-45e5-b6d5-e0b5e70c21e9/members",
+      "status": 200,
+      "id": "823807be-b2f4-4344-8968-7f2aea2076db"
+    },
+    {
+      "role": "buyer",
+      "path": "/cocreation/rooms/64d19586-4df6-45e5-b6d5-e0b5e70c21e9",
+      "status": 200,
+      "id": "64d19586-4df6-45e5-b6d5-e0b5e70c21e9"
+    },
+    {
+      "role": "buyer",
+      "path": "/cocreation/members/823807be-b2f4-4344-8968-7f2aea2076db",
+      "status": 404,
+      "error": "ARTIST_NOT_FOUND"
+    }
+  ]
+}

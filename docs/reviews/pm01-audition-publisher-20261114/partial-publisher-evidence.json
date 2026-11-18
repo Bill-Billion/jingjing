@@ -1,0 +1,141 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "32fd5919e8aa585d120c5679b4dcb6805f1c9597",
+  "run_id": "pm01-audition-publisher-2026-11-14T14-53-40-774Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "frontend_run": false,
+  "real_services": false,
+  "checks": [
+    {
+      "id": "AUDITION-PUBLISHER-CURRENT-IDENTITY",
+      "acceptance_ids": [
+        "ACC-DEL-02.01",
+        "ACC-DEL-09.01"
+      ],
+      "name": "试镜发布及重新开放的办事人实名",
+      "result": "LOCAL_PASS",
+      "scope": "试镜机构办事人的新服务提交和开启公开预约在命令重放前核当前成年实名；原读取、关闭预约、恢复后原操作及撤销艺人授权分别对照。",
+      "remaining": "仅本次12文件关联验证，非当前217文件全量；真实身份/试镜现场/所需端/独审仍待。关闭预约对已知未成年仍受既有统一限制，本轮未扩改该边界。",
+      "actual_checks": {
+        "records": [
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "agent without own identity cannot submit an artist audition offer",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "unverified agent cannot submit despite verified artist and agency authority",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "verified agent submits and independent reviewer publishes the same artist offer",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "valid agent can reopen and replay the original operation once",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "EXPIRED agent cannot use new offer",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "EXPIRED agent cannot use successful offer replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "EXPIRED agent cannot use new reopening",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "EXPIRED agent cannot use successful reopening replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "EXPIRED agent retains authorized old offer reads",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "REJECTED agent cannot use new offer",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "REJECTED agent cannot use successful offer replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "REJECTED agent cannot use new reopening",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "REJECTED agent cannot use successful reopening replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "REJECTED agent retains authorized old offer reads",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "UNVERIFIED agent cannot use new offer",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "UNVERIFIED agent cannot use successful offer replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "UNVERIFIED agent cannot use new reopening",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "UNVERIFIED agent cannot use successful reopening replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "UNVERIFIED agent retains authorized old offer reads",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "unverified agent can close booking without losing the old offer",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "identity recovery allows original create replay and a fresh reopening",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "valid identity does not replace revoked artist delegation",
+            "result": "PASS"
+          },
+          {
+            "file": "test/audition-publisher-identity.integration.test.cjs",
+            "name": "audition publication requires current agent identity while withdrawal and old reads survive",
+            "result": "PASS"
+          }
+        ]
+      }
+    }
+  ]
+}

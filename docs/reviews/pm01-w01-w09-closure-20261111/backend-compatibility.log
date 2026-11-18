@@ -1,0 +1,150 @@
+TAP version 13
+# Subtest: contract release mode blocks new old-rule quotes but preserves approved historical promises
+    # Subtest: new old-spec quote is rejected through HTTP and creates no quote record
+    ok 1 - new old-spec quote is rejected through HTTP and creates no quote record
+      ---
+      duration_ms: 91.2834
+      type: 'test'
+      ...
+    # Subtest: pending legacy quote cannot gain approval after cutover
+    ok 2 - pending legacy quote cannot gain approval after cutover
+      ---
+      duration_ms: 32.196
+      type: 'test'
+      ...
+    # Subtest: already approved quote can still be accepted without rewriting original hours or 30/60/10
+    ok 3 - already approved quote can still be accepted without rewriting original hours or 30/60/10
+      ---
+      duration_ms: 50.503
+      type: 'test'
+      ...
+    # Subtest: historical specification remains publishable for old-order amendments but cannot create a new ordinary quote
+    ok 4 - historical specification remains publishable for old-order amendments but cannot create a new ordinary quote
+      ---
+      duration_ms: 334.1438
+      type: 'test'
+      ...
+    # Subtest: new calendar specification quotes, independent review and contract snapshot use actual HTTP
+    ok 5 - new calendar specification quotes, independent review and contract snapshot use actual HTTP
+      ---
+      duration_ms: 702.8406
+      type: 'test'
+      ...
+    # Subtest: omitting product identity and story cannot bypass cutover through the legacy production quote path
+    ok 6 - omitting product identity and story cannot bypass cutover through the legacy production quote path
+      ---
+      duration_ms: 71.6532
+      type: 'test'
+      ...
+    # Subtest: expired reviewed calendar cannot form or approve a new quote
+    ok 7 - expired reviewed calendar cannot form or approve a new quote
+      ---
+      duration_ms: 117.9469
+      type: 'test'
+      ...
+    # Subtest: outsider cannot use the release setting to issue platform quotes
+    ok 8 - outsider cannot use the release setting to issue platform quotes
+      ---
+      duration_ms: 7.3456
+      type: 'test'
+      ...
+    1..8
+ok 1 - contract release mode blocks new old-rule quotes but preserves approved historical promises
+  ---
+  duration_ms: 11367.3621
+  type: 'test'
+  ...
+# Subtest: actual stock catalogue matches budget but cannot grant commercial rights to a personal license
+ok 2 - actual stock catalogue matches budget but cannot grant commercial rights to a personal license
+  ---
+  duration_ms: 10968.5192
+  type: 'test'
+  ...
+# Subtest: actual audition catalogue removes private prices from budget matches and closed booking from results
+ok 3 - actual audition catalogue removes private prices from budget matches and closed booking from results
+  ---
+  duration_ms: 7245.0411
+  type: 'test'
+  ...
+# Subtest: artist matching uses current invitation context then independent review and one support case
+ok 4 - artist matching uses current invitation context then independent review and one support case
+  ---
+  duration_ms: 6623.0133
+  type: 'test'
+  ...
+# Subtest: notice matching supplies actual authorized submission choices; closed notice blocks stale selection
+ok 5 - notice matching supplies actual authorized submission choices; closed notice blocks stale selection
+  ---
+  duration_ms: 6754.233
+  type: 'test'
+  ...
+# Subtest: real isolated MySQL persists provider status, evidence and concurrent edits
+    # Subtest: database readiness requires applied migrations, not just a connection
+    ok 1 - database readiness requires applied migrations, not just a connection
+      ---
+      duration_ms: 7554.1298
+      type: 'test'
+      ...
+    # Subtest: recording is denied by default and requires genuine server-side evidence checking
+    ok 2 - recording is denied by default and requires genuine server-side evidence checking
+      ---
+      duration_ms: 4.9996
+      type: 'test'
+      ...
+    # Subtest: configuration is saved but does not authorize real calls
+    ok 3 - configuration is saved but does not authorize real calls
+      ---
+      duration_ms: 12.8773
+      type: 'test'
+      ...
+    # Subtest: verified evidence survives closing and reopening the database connection
+    ok 4 - verified evidence survives closing and reopening the database connection
+      ---
+      duration_ms: 18.5509
+      type: 'test'
+      ...
+    # Subtest: disabling and awaiting approval keep history but block new calls
+    ok 5 - disabling and awaiting approval keep history but block new calls
+      ---
+      duration_ms: 19.7164
+      type: 'test'
+      ...
+    # Subtest: two concurrent updates cannot overwrite each other silently
+    ok 6 - two concurrent updates cannot overwrite each other silently
+      ---
+      duration_ms: 13.6304
+      type: 'test'
+      ...
+    # Subtest: history write failure rolls back both status and version
+    ok 7 - history write failure rolls back both status and version
+      ---
+      duration_ms: 8.6132
+      type: 'test'
+      ...
+    # Subtest: re-enabling requires fresh evidence and preserves earlier verification
+    ok 8 - re-enabling requires fresh evidence and preserves earlier verification
+      ---
+      duration_ms: 11.1995
+      type: 'test'
+      ...
+    # Subtest: capabilities have separate status even for the same provider
+    ok 9 - capabilities have separate status even for the same provider
+      ---
+      duration_ms: 2.5065
+      type: 'test'
+      ...
+    1..9
+ok 6 - real isolated MySQL persists provider status, evidence and concurrent edits
+  ---
+  duration_ms: 10815.367
+  type: 'test'
+  ...
+1..6
+# tests 23
+# suites 0
+# pass 23
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 31819.7401

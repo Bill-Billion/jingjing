@@ -144,6 +144,24 @@ class ProductionFulfillment {
           ['view_observed_at', 'notified_at', 'started_at', 'deadline_at'],
           _date);
       _nullable(r, ['buyer_account_id', 'job_id'], _id);
+      if (r['deadline_basis'] != null) {
+        final basis = productionMap(r['deadline_basis']);
+        productionRequire(
+            ['EXPLICIT_CONFIRMATION', 'WORKING_DAYS'].contains(basis['mode']));
+        if (basis['mode'] == 'EXPLICIT_CONFIRMATION') {
+          productionRequire(r['notified_at'] != null &&
+              r['started_at'] == null &&
+              r['deadline_at'] == null &&
+              r['job_id'] == null);
+        } else {
+          productionRequire(basis['days'] == 5 &&
+              basis['timezone'] == 'Asia/Shanghai' &&
+              basis['calendar_version'] is String &&
+              _hash(basis['calendar_sha256']) &&
+              customizationDay(basis['received_date']) &&
+              customizationDay(basis['deadline_date']));
+        }
+      }
       if (r['started_at'] != null) {
         productionRequire(r['view_observed_at'] != null &&
             r['notified_at'] != null &&

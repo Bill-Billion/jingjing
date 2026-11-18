@@ -42,6 +42,44 @@ class GigApi {
     return GigCatalogue.parse(d);
   }
 
+  Future<List<Map<String, dynamic>>> relationOptions() async {
+    final p = owner(),
+        epoch = session.epoch,
+        items = <Map<String, dynamic>>[],
+        seen = <String>{},
+        ids = <String>{};
+    String? cursor;
+    do {
+      final d = gigMap(
+          await session.read('/api/v1/gigs/relation-options',
+              actingParty: p,
+              query: {'limit': 20, if (cursor != null) 'cursor': cursor}),
+          keys: ['party_id', 'items', 'next_cursor']);
+      check(epoch, p);
+      gigRequire(d['party_id'] == p &&
+          (d['next_cursor'] == null || gigId(d['next_cursor'])));
+      for (final value in gigList(d['items'])) {
+        final r = gigMap(value, keys: [
+          'listing_id',
+          'person_id',
+          'avatar_id',
+          'artist_party_id',
+          'display_name',
+          'city'
+        ]);
+        gigRequire(['listing_id', 'person_id', 'avatar_id', 'artist_party_id']
+                .every((k) => gigId(r[k])) &&
+            gigText(r['display_name'], 120) &&
+            gigText(r['city'], 100) &&
+            ids.add(r['listing_id']));
+        items.add(r);
+      }
+      cursor = d['next_cursor'];
+      if (cursor != null) gigRequire(seen.add(cursor));
+    } while (cursor != null);
+    return items;
+  }
+
   Future<GigPage> page(String kind,
       {String? cursor, bool reviewer = false}) async {
     if (!gigKinds.containsKey(kind)) {
@@ -304,15 +342,22 @@ class GigApi {
             gigInt(r['revision'], min: 1, max: 100000));
         final data = gigMap(r['data']);
         if (kind == 'AVATAR') {
+          final modern = ['artist_person_id', 'archive_status', 'long_lived_model_status'].any(data.containsKey);
           gigMap(data, keys: [
             'display_name',
             'material_asset_ids',
-            'provider_asset_ref'
+            'provider_asset_ref',
+            if (modern) ...['artist_person_id', 'archive_status', 'long_lived_model_status']
           ]);
+          if (modern) {
+            gigRequire(gigId(data['artist_person_id']) &&
+                ['EMPTY', 'DELIVERED'].contains(data['archive_status']) &&
+                data['long_lived_model_status'] == 'NOT_ENABLED');
+          }
           gigRequire(gigText(data['display_name'], 120) &&
               data['provider_asset_ref'] == null &&
               r['current_status'] == 'RECORDED');
-          gigIds(data['material_asset_ids'], min: 1, max: 100);
+          gigIds(data['material_asset_ids'], min: modern ? 0 : 1, max: 100);
         } else {
           gigMap(data, keys: [
             'consent',

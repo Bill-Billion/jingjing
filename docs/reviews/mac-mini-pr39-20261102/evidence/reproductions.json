@@ -1,0 +1,70 @@
+{
+  "head": "8df249b59d3c83cdd8ca9aee0db08068b546d296",
+  "tested_at": "2026-11-02T03:43:26.192Z",
+  "type": "real Vue/Pinia source with synthetic HTTP; no live services",
+  "results": [
+    {
+      "id": "R1",
+      "case": "同一身份变为停用，旧合同缓存仍保留",
+      "actual": {
+        "selectedStatus": "SUSPENDED",
+        "revisionChanged": false,
+        "oldContentRetained": true
+      }
+    },
+    {
+      "id": "R1b",
+      "case": "身份详情明确拒绝后未清理旧上下文",
+      "actual": {
+        "selectedId": "00000002-0000-4000-8000-000000000001",
+        "revisionChanged": false,
+        "oldContentRetained": true
+      }
+    },
+    {
+      "id": "R2",
+      "case": "普通会话过期丢失开票原页返回地址",
+      "expected": {
+        "redirect": "/invoices/requests/00000010-0000-4000-8000-000000000001"
+      },
+      "actual": {
+        "route": "/login",
+        "redirect": null,
+        "afterLogin": "/workspace",
+        "sessionCleared": true
+      }
+    },
+    {
+      "id": "R3",
+      "case": "开票未知结果在页面重建后丢失，原操作变成新key",
+      "before": {
+        "pending": true,
+        "key": "aca68a1d-e3ee-4784-b793-062b126f13c3"
+      },
+      "actual": {
+        "pendingAfterReload": false,
+        "newKey": "543faea5-f0fb-4b03-ab97-019c3706fc59",
+        "differentKey": true,
+        "posts": 2
+      },
+      "limit": "仅证实前端key丢失；真实数据库重复记录需整链验证"
+    },
+    {
+      "id": "R4",
+      "case": "刷新后第二页已选身份被自动换回第一页首身份",
+      "actual": {
+        "before": "00000009-0000-4000-8000-000000000001",
+        "after": "00000002-0000-4000-8000-000000000001",
+        "requested": [
+          "/api/v1/me/parties?limit=20"
+        ]
+      },
+      "expected": "读取持久化选中身份详情或明确提示重新选择"
+    },
+    {
+      "id": "C1",
+      "case": "普通A→B→A迟到响应隔离",
+      "actual": "通过"
+    }
+  ]
+}

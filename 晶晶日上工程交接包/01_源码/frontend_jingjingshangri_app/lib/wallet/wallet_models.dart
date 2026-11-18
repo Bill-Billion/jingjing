@@ -98,6 +98,14 @@ class WalletSummary {
         raw['spending']?['enabled'] == false &&
         raw['custody']?['reason'] == 'CUSTODY_PROVIDER_NOT_CONNECTED' &&
         raw['spending']?['reason'] == 'CUSTODY_PROVIDER_NOT_CONNECTED');
+    if (raw['cumulative_points'] != null) {
+      final total = v5Map(raw['cumulative_points']);
+      v5Require(total['version'] == 'NET_ISSUED_V1' &&
+          v5Int(total['issued']) &&
+          v5Int(total['withdrawn']) &&
+          v5Int(total['net_issued']) &&
+          total['issued'] == total['withdrawn'] + total['net_issued']);
+    }
     final uses = v5Map(raw['point_uses']);
     v5Require(uses['vote_enabled'] is bool &&
         uses['redemption_enabled'] == false &&

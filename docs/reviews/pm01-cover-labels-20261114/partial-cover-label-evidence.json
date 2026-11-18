@@ -1,0 +1,145 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "64646e948f4bd8168b6eaa868548bebf8e67bf58",
+  "run_id": "pm01-cover-labels-2026-11-14T00-45-41-647Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "COVER-LABEL-HTTP-BYTES",
+      "acceptance_id": "ACC-DEL-24.03",
+      "name": "派生封面AI标签及实际HTTP字节",
+      "result": "LOCAL_PASS",
+      "scope": "实际处理任务/私有保存/现货审核/HTTP封面，限定AI标签写入JPEG注释，独立Pillow读取同一HTTP字节；像素标识/损坏标签/缓存凭据撤回/换政策/下架拒绝",
+      "remaining": "合成视频身份与规则、内存私有存储，不是真实供应商或合规认证；全部制作/付款下载交付、全部外部转码及正式独审未证明",
+      "actual_checks": [
+        {
+          "name": "partial or wrong-variant preview labels cannot become apparently complete cover metadata",
+          "file": "test/cover-marking.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.7456,
+          "error_code": null
+        },
+        {
+          "name": "damaged JPEG headers and oversized comments are rejected instead of appending an unbound label",
+          "file": "test/cover-marking.test.cjs",
+          "line": 13,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.4595,
+          "error_code": null
+        },
+        {
+          "name": "actual remuxed video with missing or wrong labels is refused before cover export",
+          "file": "test/cover-marking.test.cjs",
+          "line": 20,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 562.7792,
+          "error_code": null
+        },
+        {
+          "name": "review is required and request identity is explicit",
+          "file": "test/stock-media.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 122.3274,
+          "error_code": null
+        },
+        {
+          "name": "durations come from distinct actual files and cover pixels come only from preview",
+          "file": "test/stock-media.integration.test.cjs",
+          "line": 45,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 274.9344,
+          "error_code": null
+        },
+        {
+          "name": "unlisting blocks metadata and cover despite a warmed cache",
+          "file": "test/stock-media.integration.test.cjs",
+          "line": 57,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 20.1229,
+          "error_code": null
+        },
+        {
+          "name": "damaged stored bytes do not reuse a cached cover; missing tools never claim success",
+          "file": "test/stock-media.integration.test.cjs",
+          "line": 61,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 281.1093,
+          "error_code": null
+        },
+        {
+          "name": "unplayable approved fixture is rejected instead of invented duration",
+          "file": "test/stock-media.integration.test.cjs",
+          "line": 67,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 148.0973,
+          "error_code": null
+        },
+        {
+          "name": "actual processed preview labels survive JPEG HTTP delivery and cached policy checks",
+          "file": "test/stock-media.integration.test.cjs",
+          "line": 71,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 938.3356,
+          "error_code": null
+        },
+        {
+          "name": "withdrawn person authorization blocks both media routes",
+          "file": "test/stock-media.integration.test.cjs",
+          "line": 97,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 260.0947,
+          "error_code": null
+        },
+        {
+          "name": "actual stock cover and full/preview durations with isolated authorization",
+          "file": "test/stock-media.integration.test.cjs",
+          "line": 7,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 11729.2825,
+          "error_code": null
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-cover-labels-20261114/FINAL_BACKEND.json",
+          "sha256": "c045331c5b027ad1c27eb69473f0499667a768e3d1666f866efa15cc2f66137f"
+        },
+        {
+          "path": "docs/reviews/pm01-cover-labels-20261114/FINAL_CONTRACT.json",
+          "sha256": "fcea2cf9324e10527ac691756e922a024227a059c82ac34476924c4fdcc3d050"
+        },
+        {
+          "path": "docs/reviews/pm01-cover-labels-20261114/BUSINESS_RECORDS.json",
+          "sha256": "a44d3c57cd819d4d7d6477f5a64f0b5d00b5912447cedcb04fd62a97d7ba923f"
+        },
+        {
+          "path": "docs/reviews/pm01-cover-labels-20261114/INDEPENDENT_JPEG_READER.json",
+          "sha256": "a464b7db70de77fd62be27e612c318afe7bf983ce3e08a8e7206261ca220737e"
+        },
+        {
+          "path": "docs/reviews/pm01-cover-labels-20261114/DELIVERED_COVER.jpg",
+          "sha256": "aa07d042aca4b319196ae178e96996f7839fb8cbe9c6b85b446574355874d81b"
+        },
+        {
+          "path": "docs/reviews/pm01-cover-labels-20261114/SOURCE_MANIFEST.json",
+          "sha256": "f5217a46bed576f4a27bfba2fc141463a6aea15e9a1de20730e8989c2ae9a49c"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+TAP version 13
+# Subtest: same commercial order: agency switch, scoped employee, withdrawal and historic refund
+    # Subtest: agency invitation requires artist consent; staff cannot silently accept
+    ok 1 - agency invitation requires artist consent; staff cannot silently accept
+      ---
+      duration_ms: 131.2334
+      type: 'test'
+      ...
+    # Subtest: first commercial quote is accepted and genuinely enters paid state through simulated receipt
+    not ok 2 - first commercial quote is accepted and genuinely enters paid state through simulated receipt
+      ---
+      duration_ms: 249.2934
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\gigs-agency-history.integration.test.cjs:26:32'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":404,"meta":{"request_id":"fdde3e9d-e38d-4177-b42f-4bcc591b7548","actor":{"account_id":"626e073b-02ef-447e-8c84-868a3f3563df"},"acting_party":null},"error":{"code":"NOT_FOUND","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        404 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 404
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:25:22)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:43:16
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:26:52)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:36:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: member alone has no artist messages or income; explicit scoped staff grant is necessary
+    not ok 3 - member alone has no artist messages or income; explicit scoped staff grant is necessary
+      ---
+      duration_ms: 6.4044
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\gigs-agency-history.integration.test.cjs:26:32'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        404 !== 403
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 403
+      actual: 404
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:52:10
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:26:52)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:51:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: reassignment changes income visibility; revocation immediately removes messages and dashboard
+    not ok 4 - reassignment changes income visibility; revocation immediately removes messages and dashboard
+      ---
+      duration_ms: 16.772
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\gigs-agency-history.integration.test.cjs:26:32'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":403,"meta":{"request_id":"81124539-cd35-498d-8d31-b6910618f0f5","actor":{"account_id":"8b37b474-d998-454b-a347-54de1ac68f75"},"acting_party":"52d856f1-1da8-4aa4-a96a-8fc69c7a1ccf"},"error":{"code":"MCN_EMPLOYEE_SCOPE_REQUIRED","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        403 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 403
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:25:22)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:62:3
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:26:52)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:61:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: artist withdrawal removes old agency live access without erasing contract or old income
+    not ok 5 - artist withdrawal removes old agency live access without erasing contract or old income
+      ---
+      duration_ms: 18.4414
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\gigs-agency-history.integration.test.cjs:26:32'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        404 !== 403
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 403
+      actual: 404
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:69:10
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:26:52)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:67:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: changing agency cannot transfer historic order, commission or messages to new agency
+    ok 6 - changing agency cannot transfer historic order, commission or messages to new agency
+      ---
+      duration_ms: 88.7826
+      type: 'test'
+      ...
+    # Subtest: partial refund after agency switch reverses original amounts once and does not rewrite original contract
+    not ok 7 - partial refund after agency switch reverses original amounts once and does not rewrite original contract
+      ---
+      duration_ms: 0.5049
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\gigs-agency-history.integration.test.cjs:26:32'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:82:78
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:26:58)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Test.start (node:internal/test_runner/test:944:17)
+        TestContext.test (node:internal/test_runner/test:373:20)
+        check (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:26:32)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\gigs-agency-history.integration.test.cjs:81:8)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      ...
+    1..7
+not ok 1 - same commercial order: agency switch, scoped employee, withdrawal and historic refund
+  ---
+  duration_ms: 8087.2082
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\gigs-agency-history.integration.test.cjs:8:1'
+  failureType: 'subtestsFailed'
+  error: '5 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 8
+# suites 0
+# pass 2
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8512.1537

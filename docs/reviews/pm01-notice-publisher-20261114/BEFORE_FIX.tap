@@ -1,0 +1,375 @@
+TAP version 13
+# Subtest: notice revision and independent publication require current submitting actor identity
+    # Subtest: verified agency actor submits an idempotent private revision without replacing live content
+    ok 1 - verified agency actor submits an idempotent private revision without replacing live content
+      ---
+      duration_ms: 18.1095
+      type: 'test'
+      ...
+    # Subtest: EXPIRED actor cannot submit new revision
+    not ok 2 - EXPIRED actor cannot submit new revision
+      ---
+      duration_ms: 16.2613
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:35:102'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"cdbf99d5-489c-4073-9111-874b811970a5","actor":{"account_id":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4"},"acting_party":"6bd94484-47e4-4054-8ece-431c13071156"},"data":{"id":"0c5257b5-050d-45a6-b0bf-8fbbf6a5250d","kind":"NOTICE_REVISION","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"9144cb5114d4ebcceb12d1b78fc2a1a0d904889e6799d3be36c39ba4c3121768","data":{"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f","notice":{"accept_submissions":true,"city":"synthetic-city","description":"synthetic only","details":{"requirements":"adult","roles":"lead"},"project_id":null,"title":"Synthetic changed notice","type":"RECRUITMENT","valid_from":"2020-01-01T00:00:00.000Z","valid_until":"2099-01-01T00:00:00.000Z"},"base_snapshot":{"notice_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","object_version":2,"revision_id":null,"notice_sha256":"7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9","notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true}},"reason":"Synthetic corrected public terms","review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:208)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:94)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED actor cannot submit successful revision replay
+    not ok 3 - EXPIRED actor cannot submit successful revision replay
+      ---
+      duration_ms: 12.6699
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:35:102'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"d03bf5cf-9fe4-45f8-a9d2-5f56b178cc81","actor":{"account_id":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4"},"acting_party":"6bd94484-47e4-4054-8ece-431c13071156"},"data":{"id":"8ce19a38-d63e-45f8-8325-2f379d4d8487","kind":"NOTICE_REVISION","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"9144cb5114d4ebcceb12d1b78fc2a1a0d904889e6799d3be36c39ba4c3121768","data":{"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f","notice":{"accept_submissions":true,"city":"synthetic-city","description":"synthetic only","details":{"requirements":"adult","roles":"lead"},"project_id":null,"title":"Synthetic changed notice","type":"RECRUITMENT","valid_from":"2020-01-01T00:00:00.000Z","valid_until":"2099-01-01T00:00:00.000Z"},"base_snapshot":{"notice_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","object_version":2,"revision_id":null,"notice_sha256":"7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9","notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true}},"reason":"Synthetic corrected public terms","review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:208)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:94)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED actor retains authorized original notice and pending revision reads
+    ok 4 - EXPIRED actor retains authorized original notice and pending revision reads
+      ---
+      duration_ms: 13.2912
+      type: 'test'
+      ...
+    # Subtest: EXPIRED submitting actor prevents independent publication of NOTICE
+    not ok 5 - EXPIRED submitting actor prevents independent publication of NOTICE
+      ---
+      duration_ms: 13.8609
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:41:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"3b676ddb-ce9a-4ceb-b0fe-f83861fad323","actor":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637"},"acting_party":null},"data":{"id":"af14fec3-6340-4b6a-9c9f-07cb65b726c3","kind":"NOTICE","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":null,"created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"PUBLISHED","object_version":2,"content_sha256":"18b0e8e6d6f4e764b5cbfeffa7f40b45c9183ade3b8b1c53168b7cf797db1952","data":{"notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true},"review":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637","decision":"APPROVE","checks":{"content_reviewed":true,"materials_reviewed":true,"no_private_contact":true},"reason":"Independent synthetic publication","method":"EXTERNAL_MANUAL_REVIEW"},"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:192)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED submitting actor prevents independent publication of NOTICE_REVISION
+    not ok 6 - EXPIRED submitting actor prevents independent publication of NOTICE_REVISION
+      ---
+      duration_ms: 16.5811
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:41:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"4d64f154-c979-4180-b0d2-393bbfe02250","actor":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637"},"acting_party":null},"data":{"id":"8dbedc07-3a36-469d-9206-fa9cf9985eb3","kind":"NOTICE_REVISION","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":"71e13ac2-1156-47d6-a6fe-c3c2082189ec","created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"APPROVED","object_version":2,"content_sha256":"b3472c8ad0add4605f51c36215454db42101bbb65b505d57a8ff48cc51088ea9","data":{"notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic changed notice","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true},"reason":"Synthetic corrected public terms","review":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637","decision":"APPROVE","reason":"Independent synthetic publication","checks":{"content_reviewed":true,"materials_reviewed":true,"no_private_contact":true},"method":"EXTERNAL_MANUAL_REVIEW"},"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f","base_snapshot":{"notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true},"notice_id":"71e13ac2-1156-47d6-a6fe-c3c2082189ec","revision_id":null,"notice_sha256":"7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9","object_version":2}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:192)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED actor cannot submit new revision
+    not ok 7 - REJECTED actor cannot submit new revision
+      ---
+      duration_ms: 52.4195
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:35:102'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"64d207ee-29c6-4bee-9a94-018b0bcfd285","actor":{"account_id":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4"},"acting_party":"6bd94484-47e4-4054-8ece-431c13071156"},"data":{"id":"99574a1a-aea0-4128-bbe3-2840c92e0d7d","kind":"NOTICE_REVISION","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"9144cb5114d4ebcceb12d1b78fc2a1a0d904889e6799d3be36c39ba4c3121768","data":{"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f","notice":{"accept_submissions":true,"city":"synthetic-city","description":"synthetic only","details":{"requirements":"adult","roles":"lead"},"project_id":null,"title":"Synthetic changed notice","type":"RECRUITMENT","valid_from":"2020-01-01T00:00:00.000Z","valid_until":"2099-01-01T00:00:00.000Z"},"base_snapshot":{"notice_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","object_version":2,"revision_id":null,"notice_sha256":"7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9","notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true}},"reason":"Synthetic corrected public terms","review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:208)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:94)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED actor cannot submit successful revision replay
+    not ok 8 - REJECTED actor cannot submit successful revision replay
+      ---
+      duration_ms: 10.2644
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:35:102'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"dda96390-447b-4a64-84d7-f0293864cf88","actor":{"account_id":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4"},"acting_party":"6bd94484-47e4-4054-8ece-431c13071156"},"data":{"id":"8ce19a38-d63e-45f8-8325-2f379d4d8487","kind":"NOTICE_REVISION","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"9144cb5114d4ebcceb12d1b78fc2a1a0d904889e6799d3be36c39ba4c3121768","data":{"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f","notice":{"accept_submissions":true,"city":"synthetic-city","description":"synthetic only","details":{"requirements":"adult","roles":"lead"},"project_id":null,"title":"Synthetic changed notice","type":"RECRUITMENT","valid_from":"2020-01-01T00:00:00.000Z","valid_until":"2099-01-01T00:00:00.000Z"},"base_snapshot":{"notice_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","object_version":2,"revision_id":null,"notice_sha256":"7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9","notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true}},"reason":"Synthetic corrected public terms","review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:208)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:94)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED actor retains authorized original notice and pending revision reads
+    ok 9 - REJECTED actor retains authorized original notice and pending revision reads
+      ---
+      duration_ms: 11.9643
+      type: 'test'
+      ...
+    # Subtest: REJECTED submitting actor prevents independent publication of NOTICE
+    not ok 10 - REJECTED submitting actor prevents independent publication of NOTICE
+      ---
+      duration_ms: 61.9135
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:41:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"9f6edbd8-3775-4148-8b36-484ed0820920","actor":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637"},"acting_party":null},"data":{"id":"9a03c5e7-22bd-4ee8-ad05-767932368db5","kind":"NOTICE","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":null,"created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"PUBLISHED","object_version":2,"content_sha256":"18b0e8e6d6f4e764b5cbfeffa7f40b45c9183ade3b8b1c53168b7cf797db1952","data":{"notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true},"review":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637","decision":"APPROVE","checks":{"content_reviewed":true,"materials_reviewed":true,"no_private_contact":true},"reason":"Independent synthetic publication","method":"EXTERNAL_MANUAL_REVIEW"},"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:192)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED submitting actor prevents independent publication of NOTICE_REVISION
+    not ok 11 - REJECTED submitting actor prevents independent publication of NOTICE_REVISION
+      ---
+      duration_ms: 17.3512
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:41:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"95df35c4-ec1d-46d7-ac1b-1406c380b78a","actor":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637"},"acting_party":null},"data":{"id":"cc37a70b-1cea-4bf6-a5b0-5bfa8626d8c3","kind":"NOTICE_REVISION","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":"6958dfcb-2bbf-40cb-81b4-b9f8ae1162b4","created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"APPROVED","object_version":2,"content_sha256":"94aa4113b66df7c3deeae132cbb604ad2b3a2c841cd9fd125ff8fcaeafae143e","data":{"notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic changed notice","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true},"reason":"Synthetic corrected public terms","review":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637","decision":"APPROVE","reason":"Independent synthetic publication","checks":{"content_reviewed":true,"materials_reviewed":true,"no_private_contact":true},"method":"EXTERNAL_MANUAL_REVIEW"},"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f","base_snapshot":{"notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true},"notice_id":"6958dfcb-2bbf-40cb-81b4-b9f8ae1162b4","revision_id":null,"notice_sha256":"7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9","object_version":2}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:192)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED actor cannot submit new revision
+    not ok 12 - UNVERIFIED actor cannot submit new revision
+      ---
+      duration_ms: 15.0372
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:35:102'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"ad4f7850-116b-4444-b820-b2fd2211821c","actor":{"account_id":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4"},"acting_party":"6bd94484-47e4-4054-8ece-431c13071156"},"data":{"id":"35f4259b-e3bb-4392-83fb-998eb32237c4","kind":"NOTICE_REVISION","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"9144cb5114d4ebcceb12d1b78fc2a1a0d904889e6799d3be36c39ba4c3121768","data":{"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f","notice":{"accept_submissions":true,"city":"synthetic-city","description":"synthetic only","details":{"requirements":"adult","roles":"lead"},"project_id":null,"title":"Synthetic changed notice","type":"RECRUITMENT","valid_from":"2020-01-01T00:00:00.000Z","valid_until":"2099-01-01T00:00:00.000Z"},"base_snapshot":{"notice_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","object_version":2,"revision_id":null,"notice_sha256":"7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9","notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true}},"reason":"Synthetic corrected public terms","review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:208)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:94)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED actor cannot submit successful revision replay
+    not ok 13 - UNVERIFIED actor cannot submit successful revision replay
+      ---
+      duration_ms: 10.5915
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:35:102'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"2cf7f844-b67f-402d-a326-7a5d78697b36","actor":{"account_id":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4"},"acting_party":"6bd94484-47e4-4054-8ece-431c13071156"},"data":{"id":"8ce19a38-d63e-45f8-8325-2f379d4d8487","kind":"NOTICE_REVISION","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"9144cb5114d4ebcceb12d1b78fc2a1a0d904889e6799d3be36c39ba4c3121768","data":{"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f","notice":{"accept_submissions":true,"city":"synthetic-city","description":"synthetic only","details":{"requirements":"adult","roles":"lead"},"project_id":null,"title":"Synthetic changed notice","type":"RECRUITMENT","valid_from":"2020-01-01T00:00:00.000Z","valid_until":"2099-01-01T00:00:00.000Z"},"base_snapshot":{"notice_id":"3b0fd3b2-0db7-49ab-b89f-baeaf8206aa7","object_version":2,"revision_id":null,"notice_sha256":"7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9","notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true}},"reason":"Synthetic corrected public terms","review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:208)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:35:94)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED actor retains authorized original notice and pending revision reads
+    ok 14 - UNVERIFIED actor retains authorized original notice and pending revision reads
+      ---
+      duration_ms: 10.1408
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED submitting actor prevents independent publication of NOTICE
+    not ok 15 - UNVERIFIED submitting actor prevents independent publication of NOTICE
+      ---
+      duration_ms: 13.2072
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:41:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"bdd1a99c-dd81-4ba5-97ff-01260af5fb57","actor":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637"},"acting_party":null},"data":{"id":"8f90ffcf-4035-42e7-8b98-a9ceeed10968","kind":"NOTICE","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":null,"created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"PUBLISHED","object_version":2,"content_sha256":"18b0e8e6d6f4e764b5cbfeffa7f40b45c9183ade3b8b1c53168b7cf797db1952","data":{"notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true},"review":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637","decision":"APPROVE","checks":{"content_reviewed":true,"materials_reviewed":true,"no_private_contact":true},"reason":"Independent synthetic publication","method":"EXTERNAL_MANUAL_REVIEW"},"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:192)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED submitting actor prevents independent publication of NOTICE_REVISION
+    not ok 16 - UNVERIFIED submitting actor prevents independent publication of NOTICE_REVISION
+      ---
+      duration_ms: 13.7952
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:41:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"58d3c18b-2206-46d9-83b9-1a62a80dfc02","actor":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637"},"acting_party":null},"data":{"id":"60863caf-ba0a-41a0-b5c7-18361c13e191","kind":"NOTICE_REVISION","owner_party_id":"6bd94484-47e4-4054-8ece-431c13071156","counterparty_id":null,"parent_id":"471fd795-8ac6-4d70-87bb-fda9a77cd89a","created_by":"85d0c61a-4e83-4d52-a51f-7dee4bd3aee4","current_status":"APPROVED","object_version":2,"content_sha256":"86212f00e5c8ddda18c9ab0477c3e78c9c0e23f29e28a2ad001c437d3b4eded6","data":{"notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic changed notice","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true},"reason":"Synthetic corrected public terms","review":{"account_id":"721a67e2-a61c-4eef-a5c3-2c4c5987f637","decision":"APPROVE","reason":"Independent synthetic publication","checks":{"content_reviewed":true,"materials_reviewed":true,"no_private_contact":true},"method":"EXTERNAL_MANUAL_REVIEW"},"rule_id":"6503eceb-d4dd-4d94-8b1c-6e2c61dca8ec","rule_sha256":"14f144c3c46c43670b8ecfbaae4d0889b0b1740674e7a38ce1e4d2d66b4b8b1f","base_snapshot":{"notice":{"city":"synthetic-city","type":"RECRUITMENT","title":"Synthetic film recruitment","details":{"roles":"lead","requirements":"adult"},"project_id":null,"valid_from":"2020-01-01T00:00:00.000Z","description":"synthetic only","valid_until":"2099-01-01T00:00:00.000Z","accept_submissions":true},"notice_id":"471fd795-8ac6-4d70-87bb-fda9a77cd89a","revision_id":null,"notice_sha256":"7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9","object_version":2}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:20:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:192)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notice-publisher-identity.integration.test.cjs:41:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: expired actor may withdraw a pending revision and the published original
+    ok 17 - expired actor may withdraw a pending revision and the published original
+      ---
+      duration_ms: 18.2797
+      type: 'test'
+      ...
+    # Subtest: restored identity permits a fresh revised publication and preserves the notice identity
+    ok 18 - restored identity permits a fresh revised publication and preserves the notice identity
+      ---
+      duration_ms: 43.1887
+      type: 'test'
+      ...
+    # Subtest: official notices keep separate operator authority without demanding an artist profile
+    ok 19 - official notices keep separate operator authority without demanding an artist profile
+      ---
+      duration_ms: 36.4139
+      type: 'test'
+      ...
+    1..19
+not ok 1 - notice revision and independent publication require current submitting actor identity
+  ---
+  duration_ms: 8000.1239
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notice-publisher-identity.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '12 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 20
+# suites 0
+# pass 7
+# fail 13
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8185.6837

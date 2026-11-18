@@ -2,7 +2,7 @@ import type {RouteRecordRaw} from 'vue-router'
 const component=()=>import('@/views/OperationsView.vue')
 const page=(path:string,name:string,view:string,title:string,operator=false):RouteRecordRaw=>({path,name,component,meta:{operationsView:view,title,operationsOperator:operator}})
 export const operationsRoutes:RouteRecordRaw[]=[
- page('/operations/notifications/:eventId(\\d+)?','ops-notifications','notifications','我的业务通知'),
+ {path:'/operations/notifications/:eventId(\\d+)?',name:'ops-notifications',component:()=>import('@/views/NotificationsView.vue'),meta:{title:'我的业务通知'}},
  page('/operations/objects/:domain(TRADE|PRODUCTION|PROJECTS)/:recordId/comments','ops-comments','comments','订单或项目纯文本留言'),
  page('/operations/operator/objects/:domain(TRADE|PRODUCTION|PROJECTS)/:recordId/comments','ops-operator-comments','comments','订单或项目纯文本留言',true),
  page('/operations/moderation','ops-moderation','moderation','业务留言独立管理',true),

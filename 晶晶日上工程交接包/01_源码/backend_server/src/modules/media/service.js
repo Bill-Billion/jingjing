@@ -1,4 +1,5 @@
 "use strict";
+const {completeMarkingReceipt}=require('./marking-receipt');
 const {randomUUID,createHash}=require('node:crypto');
 const {id,ref,error}=require('../party/policy'),{digest}=require('../governance/content'),P=require('./policy');
 const parse=v=>typeof v==='string'?JSON.parse(v):v,sha=b=>createHash('sha256').update(b).digest('hex');
@@ -10,7 +11,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
  async function actor(ctx){const principal=await resolvePrincipal(ctx);if(!principal)throw error('AUTHENTICATION_REQUIRED',401);const [[a]]=await db.execute("SELECT * FROM identity_accounts WHERE subject_ref=? AND current_status='ACTIVE'",[ref(principal.subject_ref)]);if(!a)throw error('ACCOUNT_NOT_ACTIVE',403);return a;}
  async function source(ctx,i){let r;
   if(i.source_kind==='SUPPLY_ASSET'){r=await supply.assetAccess(ctx,id(i.source_id),id(i.party_id));if(r.owner_party_id!==i.party_id||!['AVATAR_MATERIAL','WORK_CONTENT'].includes(r.purpose))throw error('MEDIA_SOURCE_FORBIDDEN',403);}
-  else if(i.source_kind==='PRODUCTION_VERSION'){const file=await production.content(ctx,{record_id:id(i.source_id),party_id:id(i.party_id),variant:i.variant});await production.assertMediaProducer(ctx,{project_id:file.project_id,party_id:i.party_id});r={id:file.id,project_id:file.project_id,...file.data};}
+  else if(['PRODUCTION_VERSION','PRODUCTION_FILE'].includes(i.source_kind)){const file=await production.processingFile(ctx,{record_id:id(i.source_id),party_id:id(i.party_id),variant:i.variant,source_kind:i.source_kind});r={id:file.id,project_id:file.project_id,...file.data};}
   else throw error('MEDIA_SOURCE_INVALID',400);
   await db.withTransaction(tx=>require('../privacy/restrictions').assertUnrestricted(tx,'ASSET',r.id));return r;
  }
@@ -40,7 +41,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
   const a=await actor(ctx);if(!['APPROVE','REJECT'].includes(i.decision)||typeof i.reason!=='string'||!i.reason.trim()||i.reason.length>1000)throw error('MEDIA_REVIEW_INVALID',400);
   return db.withTransaction(async tx=>{
    const [[r]]=await tx.execute('SELECT * FROM media_tasks WHERE id=? FOR UPDATE',[id(i.task_id)]);if(!r)throw error('MEDIA_TASK_NOT_FOUND',404);
-   const grant=r.source_kind==='PRODUCTION_VERSION'?'PRODUCTION_REVIEW':'SUPPLY_REVIEW_CONTENT';
+   const grant=r.source_kind==='SUPPLY_ASSET'?'SUPPLY_REVIEW_CONTENT':'PRODUCTION_REVIEW';
    if(!await require('../governance/operator-access').authorizeOperator(tx,{account_id:a.id,action:grant}))throw error('MEDIA_REVIEW_FORBIDDEN',403);
    const [[member]]=await tx.execute("SELECT id FROM party_memberships WHERE account_id=? AND party_id=? AND current_status='ACTIVE' FOR SHARE",[a.id,r.party_id]);if(a.id===r.account_id||member)throw error('SELF_REVIEW_FORBIDDEN',403);
    if(r.task_kind!=='MODERATE_FILE'||r.current_status!=='EXECUTED'||!r.result_json)throw error('MODERATION_RESULT_REQUIRED',409);
@@ -49,35 +50,58 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
    if(r.result_sha256!==i.result_sha256)throw error('CONFIRMATION_VERSION_MISMATCH',409);
    if(result.decision!=='REVIEW'||typeof result.manual_review!=='string')throw error('MEDIA_REVIEW_NOT_PENDING',409);
    const rule=await P.load(tx,request.policy.id);if(rule.sha256!==result.policy_sha256)throw error('MEDIA_CONFIGURATION_CHANGED',409);
-   const [[owner]]=await tx.execute("SELECT id FROM identity_accounts WHERE id=? AND current_status='ACTIVE' FOR SHARE",[r.account_id]);if(!owner)throw error('ACCOUNT_NOT_ACTIVE',403);
+   const [[owner]]=await tx.execute("SELECT id,subject_ref FROM identity_accounts WHERE id=? AND current_status='ACTIVE' FOR SHARE",[r.account_id]);if(!owner)throw error('ACCOUNT_NOT_ACTIVE',403);
+   {
+    // Reuse the original actor's current business permissions inside this same transaction.
+    // The private context cannot be supplied by a request or grant authority to the reviewer.
+    const ownerContext={},resolveOwner=async ctx=>ctx===ownerContext?{subject_ref:owner.subject_ref}:null;
+    let current,metadata;
+    if(r.source_kind==='SUPPLY_ASSET'){
+     current=await require('../works/repository').createSupplyRepository(db,{resolvePrincipal:resolveOwner}).assetAccess(ownerContext,r.source_id,r.party_id,tx);metadata=current;
+     if(current.owner_party_id!==r.party_id||!['AVATAR_MATERIAL','WORK_CONTENT'].includes(current.purpose))throw error('MEDIA_SOURCE_CHANGED',409);
+    }else{
+     current=await require('../production/repository').createProductionRepository(db,{resolvePrincipal:resolveOwner}).processingFile(ownerContext,{record_id:r.source_id,party_id:r.party_id,variant:request.variant,source_kind:r.source_kind},tx);metadata=current.data;
+    }
+    if(current.id!==result.file_id||metadata.content_sha256!==result.output_sha256||metadata.content_sha256!==request.source_sha256||metadata.byte_size!==request.source_bytes)throw error('MEDIA_SOURCE_CHANGED',409);
+   }
    const [[file]]=await tx.execute('SELECT * FROM '+(r.source_kind==='SUPPLY_ASSET'?'supply_assets':'production_records')+' WHERE id=? FOR SHARE',[result.file_id]);if(!file||file.current_status!=='READY'||(r.source_kind==='SUPPLY_ASSET'?file.content_sha256:checked(file.data_json,file.data_sha256).content_sha256)!==result.output_sha256)throw error('MEDIA_SOURCE_CHANGED',409);
+   await require('../privacy/restrictions').assertUnrestricted(tx,'ASSET',file.id);
+   await readBody(r.source_kind==='SUPPLY_ASSET'?file:{id:file.id,...checked(file.data_json,file.data_sha256)});
    const next={...result,automated_decision:'REVIEW',decision:i.decision==='APPROVE'?'PASS':'REJECT',manual_review:{account_id:a.id,decision:i.decision,reason:i.reason,operation_key:operation}};
    await tx.execute('UPDATE media_tasks SET result_json=?,result_sha256=? WHERE id=?',[JSON.stringify(next),digest(next),r.id]);return dto({...r,result_json:next,result_sha256:digest(next)},tx);
   });
  },
- async readForReview(ctx,key){const a=await actor(ctx);return db.withTransaction(async tx=>{const [[r]]=await tx.execute('SELECT * FROM media_tasks WHERE id=?',[id(key)]);if(!r)throw error('MEDIA_TASK_NOT_FOUND',404);const grant=r.source_kind==='PRODUCTION_VERSION'?'PRODUCTION_REVIEW':'SUPPLY_REVIEW_CONTENT';if(!await require('../governance/operator-access').authorizeOperator(tx,{account_id:a.id,action:grant}))throw error('MEDIA_REVIEW_FORBIDDEN',403);return dto(r,tx);});},
+ async readForReview(ctx,key){const a=await actor(ctx);return db.withTransaction(async tx=>{const [[r]]=await tx.execute('SELECT * FROM media_tasks WHERE id=?',[id(key)]);if(!r)throw error('MEDIA_TASK_NOT_FOUND',404);const grant=r.source_kind==='SUPPLY_ASSET'?'SUPPLY_REVIEW_CONTENT':'PRODUCTION_REVIEW';if(!await require('../governance/operator-access').authorizeOperator(tx,{account_id:a.id,action:grant}))throw error('MEDIA_REVIEW_FORBIDDEN',403);return dto(r,tx);});},
  async run(job){
   let r;
   async function fenced(tx){const [[lease]]=await tx.execute("SELECT id FROM platform_jobs WHERE id=? AND status='RUNNING' AND lease_token=? AND lease_owner=? AND lease_until>CURRENT_TIMESTAMP(6) FOR UPDATE",[job.id,job.lease_token,job.lease_owner]);if(!lease)throw error('LEASE_LOST',409);const [[row]]=await tx.execute('SELECT * FROM media_tasks WHERE id=? AND job_id=? FOR UPDATE',[job.payload_ref,job.id]);if(!row)throw error('MEDIA_TASK_NOT_FOUND',404);return row;}
   try{
    r=await db.withTransaction(fenced);if(r.current_status==='EXECUTED')return {status:'SUCCEEDED',result_ref:r.id};const i=checked(r.request_json,r.request_sha256);
    // A restarted moderation task with unknown submission outcome must not submit again.
-   if(r.task_kind==='MODERATE_FILE'&&job.attempts>1&&!job.provider_task_id)throw error('MODERATION_SUBMISSION_NEEDS_REVIEW',409);
+   const textCheckpoint=r.output_checkpoint_json?checked(r.output_checkpoint_json,r.output_checkpoint_sha256):null;
+   const textProcessing=require('./moderation-text'),resumingText=textCheckpoint?.version===textProcessing.VERSION;
+   if(r.task_kind==='MODERATE_FILE'&&job.attempts>1&&!job.provider_task_id&&!resumingText)throw error('MODERATION_SUBMISSION_NEEDS_REVIEW',409);
    const ctx={media_worker_account:r.account_id},a=await actor(ctx);if(a.id!==r.account_id)throw error('MEDIA_ACTOR_MISMATCH',403);
    const f=await source(ctx,i),policy=await db.withTransaction(tx=>P.load(tx,i.policy.id));if(policy.sha256!==i.policy.sha256||f.id!==i.source_file_id||f.content_sha256!==i.source_sha256||f.byte_size!==i.source_bytes)throw error('MEDIA_SOURCE_CHANGED',409);
    if(digest(await descriptor(r.task_kind))!==digest(i.config))throw error('MEDIA_CONFIGURATION_CHANGED',409);
    const body=await readBody(f);let result;
    if(r.task_kind==='MODERATE_FILE'){
-    const reply=await moderator.run({media_type:f.media_type,body,object_key:f.object_key,data_id:r.id,provider_task_id:job.provider_task_id});
+    const textPlan=f.media_type==='text/plain'?textProcessing.plan(body):null;
+    if(resumingText&&!textPlan)throw error('MODERATION_TEXT_CHECKPOINT_MISMATCH',409);
+    const reply=textPlan?await textProcessing.execute({plan:textPlan,checkpoint:textCheckpoint,requestHash:r.request_sha256,sourceHash:f.content_sha256,taskId:r.id,
+     save:async checkpoint=>db.withTransaction(async tx=>{await fenced(tx);await tx.execute('UPDATE media_tasks SET output_checkpoint_json=?,output_checkpoint_sha256=? WHERE id=?',[JSON.stringify(checkpoint),digest(checkpoint),r.id]);}),
+     recheck:async()=>{await jobs.heartbeat(job,60000);const current=await source(ctx,i);if(current.content_sha256!==f.content_sha256||current.byte_size!==f.byte_size)throw error('MEDIA_SOURCE_CHANGED',409);const rule=await db.withTransaction(tx=>P.load(tx,i.policy.id));if(rule.sha256!==policy.sha256||digest(await descriptor(r.task_kind))!==digest(i.config))throw error('MEDIA_CONFIGURATION_CHANGED',409);},
+     inspect:input=>moderator.run(input)
+    }):await moderator.run({media_type:f.media_type,body,object_key:f.object_key,data_id:r.id,provider_task_id:job.provider_task_id});
     if(reply.pending===true){if(!reply.provider_task_id)throw error('MODERATION_RESULT_UNKNOWN',503);await jobs.saveProviderTask(job,reply.provider_task_id);return {status:'RETRY',error_code:'MODERATION_PENDING'};}
     if(reply.automated!==true||!['PASS','REVIEW','REJECT'].includes(reply.decision)||!reply.provider_request_id)throw error('MODERATION_RESULT_UNKNOWN',503);
-    result={file_id:f.id,output_sha256:f.content_sha256,policy_sha256:policy.sha256,decision:reply.decision,provider_request_id:reply.provider_request_id,manual_review:'STILL_REQUIRED'};
+    result={file_id:f.id,output_sha256:f.content_sha256,policy_sha256:policy.sha256,decision:reply.decision,provider_request_id:reply.provider_request_id,manual_review:'STILL_REQUIRED',...(reply.coverage?{coverage:reply.coverage}:{})};
    }else{
     let checkpoint=r.output_checkpoint_json?checked(r.output_checkpoint_json,r.output_checkpoint_sha256):null;
     if(!checkpoint){
      if(job.attempts>1)throw error('MEDIA_OUTPUT_RECONCILIATION_REQUIRED',409);
      const processed=await (marking||require('./marking').markVideo)(body,{ffmpeg:env.MEDIA_FFMPEG,ffprobe:env.MEDIA_FFPROBE,fontFile:env.MEDIA_FONT_FILE,ai_label:policy.rules.ai_label,preview_label:policy.rules.preview_label,variant:i.variant,policy_sha256:policy.sha256});
-     if(!Buffer.isBuffer(processed.body)||processed.receipt?.output_sha256!==sha(processed.body)||processed.receipt?.source_sha256!==sha(body)||processed.receipt?.policy_sha256!==policy.sha256||processed.receipt?.variant!==i.variant)throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
+     if(!Buffer.isBuffer(processed.body)||!completeMarkingReceipt(processed.receipt,i.variant,processed.body.length)||processed.receipt?.output_sha256!==sha(processed.body)||processed.receipt?.source_sha256!==sha(body)||processed.receipt?.policy_sha256!==policy.sha256||processed.receipt?.variant!==i.variant)throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
      await source(ctx,i);await db.withTransaction(fenced);
      const reserved=r.source_kind==='SUPPLY_ASSET'
       ?await supply.reserveAsset(ctx,{party_id:i.party_id,purpose:f.purpose,media_type:'video/mp4',body:processed.body,operation_key:r.id})
@@ -90,7 +114,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
      const saved=await call('put',out.object_key,c=>storage.put({key:out.object_key,body:processed.body,contentType:'video/mp4',isPrivate:true},c));
      if(saved.key!==out.object_key||saved.sha256!==sha(processed.body)||saved.size!==processed.body.length)throw error('PRIVATE_CONTENT_MISMATCH',503);
     }
-    if(checkpoint.request_sha256!==r.request_sha256||checkpoint.receipt.source_sha256!==f.content_sha256||checkpoint.receipt.policy_sha256!==policy.sha256||checkpoint.receipt.variant!==i.variant)throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
+    if(!completeMarkingReceipt(checkpoint.receipt,i.variant,checkpoint.byte_size)||checkpoint.request_sha256!==r.request_sha256||checkpoint.receipt.source_sha256!==f.content_sha256||checkpoint.receipt.policy_sha256!==policy.sha256||checkpoint.receipt.variant!==i.variant)throw error('MEDIA_OUTPUT_NOT_VERIFIED',503);
     const [[record]]=await db.execute('SELECT * FROM '+(r.source_kind==='SUPPLY_ASSET'?'supply_assets':'production_records')+' WHERE id=?',[checkpoint.file_id]);
     if(!record||!['UPLOADING','READY'].includes(record.current_status))throw error('MEDIA_OUTPUT_RECONCILIATION_REQUIRED',409);
     const out=r.source_kind==='SUPPLY_ASSET'?record:checked(record.data_json,record.data_sha256);
@@ -105,6 +129,7 @@ function createMediaService(db,{resolvePrincipal=async()=>null,env={},storageFac
     result={...checkpoint.receipt,file_id:record.id};
    }
    const current=await source(ctx,i);if(current.id!==f.id||current.content_sha256!==f.content_sha256)throw error('MEDIA_SOURCE_CHANGED',409);
+   if(r.task_kind==='MODERATE_FILE'&&f.media_type==='text/plain')await readBody(current);
    await db.withTransaction(async tx=>{await fenced(tx);const [[active]]=await tx.execute("SELECT id FROM identity_accounts WHERE id=? AND current_status='ACTIVE' FOR SHARE",[r.account_id]);if(!active)throw error('ACCOUNT_NOT_ACTIVE',403);const livePolicy=await P.load(tx,i.policy.id);if(livePolicy.sha256!==i.policy.sha256)throw error('MEDIA_CONFIGURATION_CHANGED',409);await tx.execute("UPDATE media_tasks SET current_status='EXECUTED',result_json=?,result_sha256=? WHERE id=?",[JSON.stringify(result),digest(result),r.id]);});
    return {status:'SUCCEEDED',result_ref:r.id};
   }catch(e){if(e.code==='LEASE_LOST')throw e;return {status:'BLOCKED',error_code:/^(MEDIA_|MODERATION_|PRIVATE_|PROVIDER_|CONTENT_|ACCOUNT_)[A-Z_]+$/.test(e.code||'')?e.code:'MEDIA_PROCESS_NEEDS_REVIEW'};}

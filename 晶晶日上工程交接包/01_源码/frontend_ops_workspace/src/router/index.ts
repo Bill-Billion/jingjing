@@ -8,7 +8,9 @@ import { financeRoutes } from './financeRoutes'
 import { operationsRoutes } from './operationsRoutes'
 import { customizationRoutes } from './customizationRoutes'
 import { artistsRoutes } from './artistsRoutes'
+import { clientServiceRoutes } from './clientServiceRoutes'
 import { businessRoutes } from './businessRoutes'
+import { captureFragment } from '@/cocreation/invite'
 
 /**
  * 路由表。
@@ -54,8 +56,8 @@ const router = createRouter({
     { path: '/supply/works/:recordId?', name: 'supply-work', component: () => import('@/views/SupplyView.vue'), meta: { title: '我的作品' } },
     { path: '/supply/reviews/:channel(profile|rights|content)/:recordId?', name: 'supply-review', component: () => import('@/views/SupplyView.vue'), meta: { title: '独立审核' } },
     { path: '/licensing/:section(products|projects|readings)/new', name: 'license-new', component: () => import('@/views/LicensingView.vue'), meta: { title: '填写许可与项目资料' } },
-    { path: '/licensing/reviews/:section(products|evidence|readings|activation|grants|projects|bindings)/:recordId?', name: 'license-review', component: () => import('@/views/LicensingView.vue'), meta: { title: '独立许可核验' } },
-    { path: '/licensing/:section(catalog|products|reservations|evidence|grants|projects|bindings|readings)/:recordId?', name: 'licensing', component: () => import('@/views/LicensingView.vue'), meta: { title: '剧本许可与项目' } },
+    { path: '/licensing/reviews/:section(products|evidence|readings|activation|grants|projects|bindings|procurement-events|royalty-statements)/:recordId?', name: 'license-review', component: () => import('@/views/LicensingView.vue'), meta: { title: '独立许可核验' } },
+    { path: '/licensing/:section(catalog|products|reservations|evidence|grants|projects|bindings|readings|procurement-events|royalty-statements)/:recordId?', name: 'licensing', component: () => import('@/views/LicensingView.vue'), meta: { title: '剧本许可与项目' } },
     ...tradeRoutes,
     ...gigsRoutes,
     ...productionRoutes,
@@ -65,6 +67,7 @@ const router = createRouter({
     ...customizationRoutes,
     ...artistsRoutes,
     ...businessRoutes,
+    ...clientServiceRoutes,
     // 开发自检页：整个路由项在构建时按 import.meta.env.DEV 决定要不要加。
     // 用 import.meta.env.DEV 而不是路由守卫里判断，是为了让生产构建干脆
     // 不产生这条路由、也不打包这个页面，而不是"能访问但被拦下"。
@@ -88,6 +91,11 @@ const router = createRouter({
 })
 
 router.beforeEach((to) => {
+  // Remove the bearer credential before the login guard can build a redirect query.
+  if (to.path === '/cocreation/invitations' && to.hash) {
+    captureFragment(to.hash)
+    return { path: to.path, replace: true }
+  }
   const session = useSessionStore()
   // 没有令牌却要进非公开页 → 回登录页，并记住原来想去哪
   if (!to.meta.public && !session.isLoggedIn) {

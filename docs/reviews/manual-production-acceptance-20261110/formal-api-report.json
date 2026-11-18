@@ -1,0 +1,239 @@
+{
+  "result": "PASS",
+  "code_sha": "ac239b482e79e79607a5dbdaa769b07e8ac9cf2d",
+  "environment": "isolated",
+  "dataset_id": "manual-production-acceptance-20261110-random-per-suite",
+  "contract_version": "0.31.48-rc.1",
+  "rules_version": "TEST-20261028-2",
+  "summary": {
+    "passed": 14,
+    "failed": 0,
+    "skipped": 0
+  },
+  "checks": [
+    {
+      "acceptance_id": "ACC-DEL-13.01",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "ordinary supplier approval does not permit new V5 script submission",
+        "permission withdrawal rejects new submissions without deleting history"
+      ],
+      "assertion_review": "启用V5供稿限制时，普通供应商新投稿和新许可商品入口均拒绝；运营授权撤回后旧作品仍可读，不删除原有身份和历史。此为V5接口行为，不冒称正式开关已经上线。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-13.01",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "licensing product creation is also restricted at the server"
+      ],
+      "assertion_review": "启用V5供稿限制时，普通供应商新投稿和新许可商品入口均拒绝；运营授权撤回后旧作品仍可读，不删除原有身份和历史。此为V5接口行为，不冒称正式开关已经上线。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-13.02",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "explicit intake permission allows audited platform entry but not self-review",
+        "original work retains separate authors and rights holders, foreign private material is denied",
+        "submission exposes materials to the appropriate reviewers, with no self approval"
+      ],
+      "assertion_review": "具备代录权限的运营提交具体私有文件和权利证据，留供稿审计；他人素材、错岗和自审拒绝。权属与内容分别审核，完成仍不是发许可或签约。合成证明仅验证权限与记录机制，不替代真实权属审查。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-13.02",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "rights and content approvals remain independent; no license or publishing success",
+        "permission withdrawal rejects new submissions without deleting history",
+        "original work retains separate authors and rights holders, foreign private material is denied"
+      ],
+      "assertion_review": "具备代录权限的运营提交具体私有文件和权利证据，留供稿审计；他人素材、错岗和自审拒绝。权属与内容分别审核，完成仍不是发许可或签约。合成证明仅验证权限与记录机制，不替代真实权属审查。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-14.04",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "one new story completes manual quotation and 30/40/30 delivery through the same HTTP order",
+        "platform quote, independent review and buyer confirmation use existing HTTP order and unsigned snapshot"
+      ],
+      "assertion_review": "新故事、正式提交、受理、独立报价和买方确认使用独立记录；确认订单实收仍0且未签署，未付款不能开工；同故事并发报价只产生一个订单。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-14.04",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "story intake has no order, payment, refund or production side effects",
+        "primitives never create cash, signatures or production and unbound existing order remains unaffected",
+        "two separately approved quotes racing acceptance create only one linked unpaid order"
+      ],
+      "assertion_review": "新故事、正式提交、受理、独立报价和买方确认使用独立记录；确认订单实收仍0且未签署，未付款不能开工；同故事并发报价只产生一个订单。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-15.01",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "one new story completes manual quotation and 30/40/30 delivery through the same HTTP order",
+        "blessing video is a private human-readable request with explicit operator intake, never an automatic generation"
+      ],
+      "assertion_review": "客户填写业务需求，由人工受理报价及制作。旧文生/图生视频接口返回410且供应商调用次数为0；长期服务缺配置返回未启用，不伪造成片。没有客户算力包或自动成片路径恢复。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-15.01",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "legacy customer video generation cannot call a paid provider even with a valid login",
+        "unconfigured long-lived provider stays visibly disabled and queues no fake success"
+      ],
+      "assertion_review": "客户填写业务需求，由人工受理报价及制作。旧文生/图生视频接口返回410且供应商调用次数为0；长期服务缺配置返回未启用，不伪造成片。没有客户算力包或自动成片路径恢复。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-15.02",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "one new story completes manual quotation and 30/40/30 delivery through the same HTTP order",
+        "one manual project binds immutable story and no-avatar scenic work is allowed",
+        "manual dispatch requires current team membership; outsider cannot assign or upload",
+        "person/avatar/version/consents bind actual performer, and manual material use does not require model hosting"
+      ],
+      "assertion_review": "同故事绑定原trade订单行、production项目、受派团队、具体权利和版本反馈下载；重复项目拒绝，补差仍回原项目，失败整笔回滚，不另造重复账务。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-15.02",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "creative amendment is independently quoted, accepted, paid once and attached to the original production",
+        "two separately approved quotes racing acceptance create only one linked unpaid order",
+        "audit failures roll back case, state and command together"
+      ],
+      "assertion_review": "同故事绑定原trade订单行、production项目、受派团队、具体权利和版本反馈下载；重复项目拒绝，补差仍回原项目，失败整笔回滚，不另造重复账务。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-15.03",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "one new story completes manual quotation and 30/40/30 delivery through the same HTTP order",
+        "new contract: current accepted script unlocks 40%, production and final 30% remain gated",
+        "new calendar specification quotes, independent review and contract snapshot use actual HTTP"
+      ],
+      "assertion_review": "新报价与合同冻结30/40/30；未确认最新脚本不收中款，最终确认和尾款缺一不交正式文件；新旧报价切换及旧30/60/10约定保留。模拟可信回执验证规则，不算真实支付宝接入或电子签验收。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-15.03",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "already approved quote can still be accepted without rewriting original hours or 30/60/10",
+        "pending legacy quote cannot gain approval after cutover",
+        "new old-spec quote is rejected through HTTP and creates no quote record",
+        "new contract: current accepted script unlocks 40%, production and final 30% remain gated"
+      ],
+      "assertion_review": "新报价与合同冻结30/40/30；未确认最新脚本不收中款，最终确认和尾款缺一不交正式文件；新旧报价切换及旧30/60/10约定保留。模拟可信回执验证规则，不算真实支付宝接入或电子签验收。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-15.04",
+      "case": "normal",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "one new story completes manual quotation and 30/40/30 delivery through the same HTTP order",
+        "platform correction is free; creative changes use purchased quota and then require new quote",
+        "creative amendment is independently quoted, accepted, paid once and attached to the original production",
+        "working-day final receipt freezes deadline; repeated acknowledgement cannot extend it"
+      ],
+      "assertion_review": "正式版本、预览和文件权限分开；平台纠错与额外创意修改不同处理，独立补差与原项目关联，工作日超时/争议/缺件/退款可追踪；服务未配置不假成功。实际文件为合成字节，不证明最终视频画质或水印质量。"
+    },
+    {
+      "acceptance_id": "ACC-DEL-15.04",
+      "case": "reverse",
+      "surface": "api",
+      "result": "PASS",
+      "test_cases": [
+        "script acceptance precedes sample; customer cannot accept unpublished or old version",
+        "private bytes verified and permission rechecked before download",
+        "file failure at timeout pauses instead of auto accepting unavailable content",
+        "unconfigured long-lived provider stays visibly disabled and queues no fake success",
+        "refund blocks further delivery even though historical acceptance is retained",
+        "new contract cancellation has reviewed cap, not automatic forfeiture of all received money"
+      ],
+      "assertion_review": "正式版本、预览和文件权限分开；平台纠错与额外创意修改不同处理，独立补差与原项目关联，工作日超时/争议/缺件/退款可追踪；服务未配置不假成功。实际文件为合成字节，不证明最终视频画质或水印质量。"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/backend.junit.xml",
+      "sha256": "43754ae7f4dd0165c36b5764c11f1a5893f6d98386474e26a703afc7e97d9364"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/backend.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/run.json",
+      "sha256": "66641d5049b74c86eba845e680eb93783a407f3656896a6c4871ea792f1538c6"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/manual-production-journey-20261110.json",
+      "sha256": "b334e78ccb027a02d712eb50dc63c56a8fc3e79226b3bffec34538b835319149"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/runtime-contract.json",
+      "sha256": "d453da4bc9ae5cffdf6cb59e9662bd31c7338f6155f2080e6fb556bcbf370882"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/customization-http-fixtures.json",
+      "sha256": "54e98934b683e211558ddd47677b7c97b01aed9eeeca08c010fb1519d3e563be"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/customization-quote-http-fixtures.json",
+      "sha256": "b3024d0d7d7bd3dedebeb3ff13f7320484ac34a1ec6ce6256d312fd707f0a53f"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/customization-delivery-http-fixtures.json",
+      "sha256": "649cb412aef9108243799064127be6343e4025bed2861a75897e7f976adea0a0"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/contract-cutover-http-fixtures.json",
+      "sha256": "16039e1f2a6ff4dfb2fa625fd4ed0076d01ac9206c94463db533d514ed741036"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/script-intake-http-fixtures.json",
+      "sha256": "e530984326ecbcefe0aae8a2e2d3d9cbddee3e82a683f5fc438347f262c60758"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/supply-http-fixtures.json",
+      "sha256": "a80858c2bd54b842ba13e88a3ab7e889647b621220e5d0a63ef6b32aa2453a75"
+    },
+    {
+      "path": "docs/reviews/manual-production-acceptance-20261110/production-http-fixtures.json",
+      "sha256": "264b2095f96db3a080a60fd32014d455587067623a8463d57950f20326ce1517"
+    }
+  ],
+  "test_execution": {
+    "test_cases": 144,
+    "failed": 0,
+    "skipped": 0
+  },
+  "limits": "按七条原登记api范围验收；App/网页/实体设备、真实付款/电子签/视频质量未验，12整链和原18组不自动通过。"
+}

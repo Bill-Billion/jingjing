@@ -1,0 +1,28 @@
+{
+  "database": "jx_test_34192_0836ae25a8cb",
+  "records": {},
+  "http": [
+    {
+      "method": "POST",
+      "path": "/gigs/rules",
+      "status": 200,
+      "error": null,
+      "record_id": "f3e21362-7d62-426c-af47-2b842ed99fd5"
+    },
+    {
+      "method": "POST",
+      "path": "/gigs/records/f3e21362-7d62-426c-af47-2b842ed99fd5/reviews",
+      "status": 403,
+      "error": "SELF_REVIEW_FORBIDDEN",
+      "record_id": null
+    }
+  ],
+  "web": [],
+  "checks": [],
+  "cleanup": {
+    "browser_closed": true,
+    "server_stopped": true,
+    "database_dropped": true
+  },
+  "failure": "AssertionError [ERR_ASSERTION]: {\"meta\":{\"request_id\":\"0c1dbebb-b774-429b-adcf-1748cc45f46d\",\"actor\":{\"account_id\":\"a36404c7-6b2d-4fdb-a456-a13c2165a15d\"},\"acting_party\":null},\"error\":{\"code\":\"SELF_REVIEW_FORBIDDEN\",\"message\":\"请求未通过校验或权限检查\",\"retryable\":false,\"details\":[]}}\n\n403 !== 200\n\n    at api (D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\gigs-fulfillment-dispute.integration.test.cjs:20:583)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async TestContext.<anonymous> (D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\gigs-fulfillment-dispute.integration.test.cjs:22:11)\n    at async Test.run (node:internal/test_runner/test:1054:7)\n    at async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)"
+}

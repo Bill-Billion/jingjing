@@ -44,7 +44,15 @@ test('cancellation before send does nothing; in flight destroys request',async()
 test('rejects multiple recipients and malformed codes',()=>{for(const x of [{...input,phone:'13900000001,13900000002'},{...input,phone:13900000001},{...input,code:'secret-text'}])assert.throws(()=>signedRequest(env,x),{code:'INVALID_SMS_INPUT'});});
 test('default real transport is blocked by network guard',async()=>{await assert.rejects(sendSms(env,input),{code:'PROVIDER_OUTCOME_UNKNOWN'});});
 test('provider snapshots configuration and rejects debugging or invalid environment',async()=>{
- const mutable={...env},p=createSmsProvider({},mutable);mutable.SMS_CONFIG_REVISION='later';assert.equal((await p.inspect()).config_revision,'fake-v1');
+ const mutable={...env},p=createSmsProvider({},mutable),revision=(await p.inspect()).config_revision;mutable.SMS_CONFIG_REVISION='later';assert.equal((await p.inspect()).config_revision,revision);
  assert.throws(()=>createSmsProvider({},{...env,NODE_DEBUG:'http'}),/SMS_DEBUG_LOGGING_FORBIDDEN/);assert.throws(()=>createSmsProvider({},{...env,DEBUG:'*'}),/SMS_DEBUG_LOGGING_FORBIDDEN/);
  assert.equal((await createSmsProvider({},{...env,NODE_ENV:'unsupported'}).inspect()).configured,false);
+});
+test('SMS proof revision binds the actual account, credentials, signature, template and region',async()=>{
+ const original=(await createSmsProvider({},env).inspect()).config_revision;
+ for(const field of ['VOLC_ACCESS_KEY_ID','VOLC_SECRET_ACCESS_KEY','SMS_ACCOUNT','SMS_SIGN_NAME','SMS_LOGIN_TEMPLATE_ID','SMS_REGION']){
+  const changed=(await createSmsProvider({},{...env,[field]:'changed-synthetic'}).inspect()).config_revision;
+  assert.notEqual(changed,original,field+' changed without invalidating verification');
+ }
+ const same=(await createSmsProvider({},{...env,SMS_REGION:'cn-north-1'}).inspect()).config_revision;assert.equal(same,original);
 });

@@ -1,0 +1,420 @@
+{
+  "synthetic_only": true,
+  "database": "jx_test_benefit_flow_ee9631b181ba3c54",
+  "checks": [
+    {
+      "name": "independently reviewed wallet and new 48-hour stock terms, zero initial points",
+      "result": "PASS",
+      "records": {
+        "rule_id": "3c3c3e60-b4d6-4876-9ab6-eff29fa7b44a",
+        "spec_id": "17f37f94-b633-4eae-92e6-42033b1d1d9b"
+      }
+    },
+    {
+      "name": "two fresh paid orders earn nothing before real content read and buyer acceptance",
+      "result": "PASS",
+      "records": {
+        "order_ids": [
+          "691aeb9c-fd72-4b5f-9561-4a8d0dc52486",
+          "cc098255-f618-4fea-8e4f-8c10f40dcba2"
+        ],
+        "payment_ids": [
+          "2838d7bc-05eb-4f4d-a292-1f0a4a7a0745",
+          "0db514be-570c-4c63-a1a9-34db2aca3da6"
+        ]
+      }
+    },
+    {
+      "name": "mature original order issues once under its captured rule; concurrent sync does not duplicate",
+      "result": "PASS",
+      "records": {
+        "earning_id": "21f3e0d0-96db-4f61-b221-51ad63c721c9",
+        "points": 10,
+        "expires_at": "2027-11-19T13:13:13.586Z"
+      }
+    },
+    {
+      "name": "a real reward exchange consumes four points once and retains original expiry",
+      "result": "PASS",
+      "records": {
+        "grant_id": "fd86c445-4f25-419c-81f5-66efb66895e1",
+        "spent": 4
+      }
+    },
+    {
+      "name": "full cash refund succeeds despite spent points; debt prevents new exchange without using stock",
+      "result": "PASS",
+      "records": {
+        "refund_id": "1e9e6775-4518-4be6-82be-b236adcd558d",
+        "pending_reversal": 4,
+        "inventory_remaining": 4
+      }
+    },
+    {
+      "name": "later order earnings clear earlier debt without erasing the new consumption growth",
+      "result": "PASS",
+      "records": {
+        "earning_id": "e6be151e-3592-481e-a1b1-b873f41717ee",
+        "offset": 4,
+        "available": 6,
+        "growth": 10
+      }
+    },
+    {
+      "name": "refunding the replacement earning creates its own shortage; free check-in pays debt without adding growth",
+      "result": "PASS",
+      "records": {
+        "refund_id": "481caad7-9fc7-4a92-a926-65e65849b903",
+        "pending_reversal": 1
+      }
+    },
+    {
+      "name": "independent reward remedy returns original spent points once, clears remaining debt and cannot resurrect growth",
+      "result": "PASS",
+      "records": {
+        "grant_id": "fd86c445-4f25-419c-81f5-66efb66895e1",
+        "remedy_id": "bd987157-94d9-494c-8ad2-c69ab4713b9d",
+        "available": 3,
+        "consumption_growth": 0,
+        "expiry_unchanged": true
+      }
+    }
+  ],
+  "requests": [
+    {
+      "method": "POST",
+      "path": "/wallet/rules",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/rules/3c3c3e60-b4d6-4876-9ab6-eff29fa7b44a/review",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/accounts",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/checkout",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/691aeb9c-fd72-4b5f-9561-4a8d0dc52486",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/691aeb9c-fd72-4b5f-9561-4a8d0dc52486/acceptance",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/checkout",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/cc098255-f618-4fea-8e4f-8c10f40dcba2",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/cc098255-f618-4fea-8e4f-8c10f40dcba2/acceptance",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 404,
+      "error": "WALLET_NOT_FOUND"
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/stock",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/stock/6d5d4d2a-c9e5-4841-a2a9-566150ba4ce8/review",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/exchanges",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/exchanges",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/691aeb9c-fd72-4b5f-9561-4a8d0dc52486",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/691aeb9c-fd72-4b5f-9561-4a8d0dc52486/cases",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/691aeb9c-fd72-4b5f-9561-4a8d0dc52486/case-resolution",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/refunds",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/1e9e6775-4518-4be6-82be-b236adcd558d/reviews",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/exchanges",
+      "status": 409,
+      "error": "POINTS_REVERSAL_PENDING"
+    },
+    {
+      "method": "GET",
+      "path": "/redemption/catalog",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/691aeb9c-fd72-4b5f-9561-4a8d0dc52486",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/earnings/sync",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/stock/purchases/cc098255-f618-4fea-8e4f-8c10f40dcba2",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/cc098255-f618-4fea-8e4f-8c10f40dcba2/cases",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/stock/purchases/cc098255-f618-4fea-8e4f-8c10f40dcba2/case-resolution",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/refunds",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/trade/records/481caad7-9fc7-4a92-a926-65e65849b903/reviews",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/check-in",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/wallet/check-in",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/redemption/grants/fd86c445-4f25-419c-81f5-66efb66895e1",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/grants/fd86c445-4f25-419c-81f5-66efb66895e1/remedies",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/remedies/bd987157-94d9-494c-8ad2-c69ab4713b9d/review",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "POST",
+      "path": "/redemption/remedies/bd987157-94d9-494c-8ad2-c69ab4713b9d/review",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/summary",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/redemption/grants/fd86c445-4f25-419c-81f5-66efb66895e1",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/wallet/records?kind=EARNING",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/691aeb9c-fd72-4b5f-9561-4a8d0dc52486",
+      "status": 200,
+      "error": null
+    },
+    {
+      "method": "GET",
+      "path": "/trade/records/cc098255-f618-4fea-8e4f-8c10f40dcba2",
+      "status": 200,
+      "error": null
+    }
+  ],
+  "limits": [
+    "API chain, not page/native acceptance",
+    "Approved seller and media review are synthetic fixtures; media protocol bytes are not playable",
+    "Payments/refunds are synthetic trusted receipts; no real money",
+    "Only isolated DB connection clock advances; business fulfillment rows are never patched"
+  ],
+  "result": "PASS",
+  "cleanup": {
+    "server_stopped": true,
+    "database_removed": true
+  }
+}

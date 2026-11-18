@@ -1,0 +1,146 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "a80c1e61031750e29a6ccaa934ff7200d144f563",
+  "run_id": "pm01-production-media-2026-11-14T01-38-50-898Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "PRODUCTION-MEDIA-DELIVERY",
+      "acceptance_id": "ACC-DEL-24.03",
+      "name": "完整人工制作实际标识与付款下载",
+      "result": "LOCAL_PASS",
+      "scope": "首次制作文件处理、READY与被指派制作方/撤换、生产审核权限、完整四阶段/付款下载实际元数据与像素、缺凭据审核确认下载阻断、存储读取后重查、旧版本处理和规则变化、首款退款失权、时限验收不造假",
+      "remaining": "本机FFmpeg合成黑色视频，身份/付款/审核结果/政策为合成，私有存储为内存；不证明真实供应商、法律标识格式或所有视频尺寸的可读性。退款样本结算首款3000，未把全额10000退款义务结清。端侧、真实服务与维护者签收未完成。",
+      "actual_checks": [
+        {
+          "name": "changed moderation requirements stop an already scheduled acceptance from confirming unavailable evidence",
+          "file": "test/customization-delivery.integration.test.cjs",
+          "line": 74,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 259.5065,
+          "error_code": null
+        },
+        {
+          "name": "first file can be moderated before its first version without weakening submission gates",
+          "file": "test/production-media.integration.test.cjs",
+          "line": 31,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 564.3324,
+          "error_code": null
+        },
+        {
+          "name": "only the assigned production account may process ready files; review requires production authority",
+          "file": "test/production-media.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 204.5229,
+          "error_code": null
+        },
+        {
+          "name": "queued file processing stops after the assigned production account changes",
+          "file": "test/production-media.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 154.1925,
+          "error_code": null
+        },
+        {
+          "name": "actual marked and moderated preview/final files pass every manual production stage",
+          "file": "test/production-media.integration.test.cjs",
+          "line": 34,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2815.3444,
+          "error_code": null
+        },
+        {
+          "name": "withdrawn receipt blocks buyer acceptance, paid download and review; old version source can still be repaired by its producer",
+          "file": "test/production-media.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 365.8094,
+          "error_code": null
+        },
+        {
+          "name": "paid HTTP bytes retain AI labels while only the preview has the commercial watermark",
+          "file": "test/production-media.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 245.9001,
+          "error_code": null
+        },
+        {
+          "name": "current marking and moderation evidence are rechecked before bytes and after storage returns",
+          "file": "test/production-media.integration.test.cjs",
+          "line": 37,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 150.1676,
+          "error_code": null
+        },
+        {
+          "name": "policy changes block previously accepted media without changing historical acceptance",
+          "file": "test/production-media.integration.test.cjs",
+          "line": 38,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 23.966,
+          "error_code": null
+        },
+        {
+          "name": "refund case and completed refund keep delivered bytes inaccessible and preserve accepted history",
+          "file": "test/production-media.integration.test.cjs",
+          "line": 39,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 122.4998,
+          "error_code": null
+        },
+        {
+          "name": "manual production processes private files before version submission and preserves labels through paid HTTP delivery",
+          "file": "test/production-media.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 30875.104,
+          "error_code": null
+        },
+        {
+          "name": "an active marking requirement blocks already accepted files without processing evidence",
+          "file": "test/production.integration.test.cjs",
+          "line": 148,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 31.1301,
+          "error_code": null
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-production-media-20261114/FINAL_BACKEND.json",
+          "sha256": "bed3f7ca75c5abb759937be3751e14d7087d143008522fc0398c4e14b90c4098"
+        },
+        {
+          "path": "docs/reviews/pm01-production-media-20261114/FINAL_CONTRACT.json",
+          "sha256": "e01ace29a3e84954d8d2ccb0486e39e0bc02bca8a1fb283731c80b03949ad898"
+        },
+        {
+          "path": "docs/reviews/pm01-production-media-20261114/BUSINESS_RECORDS.json",
+          "sha256": "181f12222e2491562567af4677c12473431614b70e1a4ff3612805bdfa8d367a"
+        },
+        {
+          "path": "docs/reviews/pm01-production-media-20261114/SOURCE_MANIFEST.json",
+          "sha256": "013ec7e34c5891a1217ff5596b0282636296f9a1fc155bd79346bdc96c750c23"
+        }
+      ]
+    }
+  ]
+}

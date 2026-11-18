@@ -45,8 +45,16 @@ class _V5MediaState extends State<V5Media> {
   void dispose() {
     ticket++;
     image = null;
-    video?.dispose();
+    releaseVideo();
     super.dispose();
+  }
+
+  Future<void> releaseVideo() async {
+    // Detach before awaiting native disposal: a parent/session rebuild must
+    // never render the controller whose asynchronous release has started.
+    final previous = video;
+    video = null;
+    await previous?.dispose();
   }
 
   Future<void> open({bool save = false}) async {
@@ -61,9 +69,10 @@ class _V5MediaState extends State<V5Media> {
       notice = null;
       image = null;
     });
-    await video?.dispose();
-    video = null;
     try {
+      await releaseVideo();
+      widget.api.check(epoch, party);
+      if (!mounted || t != ticket) return;
       final bytes = await widget.load();
       widget.api.check(epoch, party);
       if (!mounted || t != ticket) return;
@@ -130,8 +139,7 @@ class _V5MediaState extends State<V5Media> {
         }
       }
     } on AccountError catch (e) {
-      await video?.dispose();
-      video = null;
+      await releaseVideo();
       if (mounted && t == ticket) {
         setState(() {
           image = null;
@@ -139,8 +147,7 @@ class _V5MediaState extends State<V5Media> {
         });
       }
     } catch (_) {
-      await video?.dispose();
-      video = null;
+      await releaseVideo();
       if (mounted && t == ticket) {
         setState(() {
           image = null;

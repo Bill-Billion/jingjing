@@ -1,0 +1,82 @@
+{
+  "synthetic_only": true,
+  "database": "jx_test_32524_586d2e89fe3f",
+  "checks": [
+    {
+      "case": "payout-approval-after-restriction",
+      "evidence": "2c2972c1-a216-4373-9ad2-6c2052224930",
+      "payout": "d36f54ac-14e3-4acb-8d5c-617ee01f176a",
+      "asset": "aea409ed-7634-438e-a680-a51fd9261b04",
+      "privacy_request": "55219fe3-159a-4701-8dd6-626f7d7fdb30",
+      "expected_status": 409,
+      "actual_status": 409,
+      "actual_error": "CONTENT_RESTRICTED",
+      "before": {
+        "records": 4,
+        "entries": 2,
+        "audit": 13
+      },
+      "after": {
+        "records": 4,
+        "entries": 2,
+        "audit": 13
+      },
+      "payout_status": "APPROVED",
+      "evidence_status": "IN_REVIEW",
+      "before_paid": 0,
+      "after_paid": 0
+    },
+    {
+      "case": "same-payout-after-approved-release",
+      "evidence": "2c2972c1-a216-4373-9ad2-6c2052224930",
+      "payout": "d36f54ac-14e3-4acb-8d5c-617ee01f176a",
+      "result": "PASS",
+      "paid_minor": 1000
+    },
+    {
+      "case": "restricted-new-draft",
+      "asset": "aba50625-1a23-48d1-a087-1a2c2a6af830",
+      "expected_status": 409,
+      "actual_status": 409,
+      "actual_error": "CONTENT_RESTRICTED",
+      "before": {
+        "records": 4,
+        "entries": 3,
+        "audit": 15
+      },
+      "after": {
+        "records": 4,
+        "entries": 3,
+        "audit": 15
+      }
+    },
+    {
+      "case": "draft-after-approved-release",
+      "draft": "2256557f-b792-46a1-8af9-609884438816",
+      "result": "PASS"
+    },
+    {
+      "case": "restricted-approved-agreement-new-payout",
+      "agreement": "2762ceb0-6c18-4381-945f-8f30040768fc",
+      "asset": "aea409ed-7634-438e-a680-a51fd9261b04",
+      "destination_asset": "96b48a3e-4c13-4de2-8d39-e2fc1eca6304",
+      "expected_status": 409,
+      "actual_status": 200,
+      "actual_error": null,
+      "before": {
+        "records": 5,
+        "entries": 3,
+        "audit": 16
+      },
+      "after": {
+        "records": 6,
+        "entries": 3,
+        "audit": 17
+      }
+    }
+  ],
+  "cleanup": {
+    "database_removed": true,
+    "server_stopped": true
+  }
+}

@@ -1,0 +1,468 @@
+TAP version 13
+# Subtest: audition publication requires current agent identity while withdrawal and old reads survive
+    # Subtest: agent without own identity cannot submit an artist audition offer
+    not ok 1 - agent without own identity cannot submit an artist audition offer
+      ---
+      duration_ms: 71.1842
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:29:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"9a134228-89af-458f-9986-992da7529ca4","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"e28f8ffe-f12a-495b-ae47-4fab70f9c0f4","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"3243f3534a35c266a07306af7e2e89c87acac71b1bb34cd6d79000836312c373","data":{"offer":{"avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","city":"synthetic-city","mode":"ONLINE_MATERIALS","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b","public_price":true,"rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","service_area":"synthetic district","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","unit_minor":10000},"rules":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"rule_snapshot":{"content":{"content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1","id":"6856ae10-62fe-458d-865d-86e18b9ac07e","rule_key":"audition.synthetic","terms":{"audition":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"marketplace_finance":{"fee_base":"NET_PAID","model":"V5_TWO_LAYER","platform_bps":2200,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76","product_type":"AUDITION","referral_bps":660,"rounding":"HALF_UP_PLATFORM_REMAINDER"}},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:29:122)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:29:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unverified agent cannot submit despite verified artist and agency authority
+    not ok 2 - unverified agent cannot submit despite verified artist and agency authority
+      ---
+      duration_ms: 20.1317
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:31:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"b21eaeef-2571-4140-803d-6c63ad66a3c1","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"0c012d20-6745-45cd-b183-cb6af43ff25d","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"3243f3534a35c266a07306af7e2e89c87acac71b1bb34cd6d79000836312c373","data":{"offer":{"avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","city":"synthetic-city","mode":"ONLINE_MATERIALS","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b","public_price":true,"rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","service_area":"synthetic district","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","unit_minor":10000},"rules":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"rule_snapshot":{"content":{"content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1","id":"6856ae10-62fe-458d-865d-86e18b9ac07e","rule_key":"audition.synthetic","terms":{"audition":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"marketplace_finance":{"fee_base":"NET_PAID","model":"V5_TWO_LAYER","platform_bps":2200,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76","product_type":"AUDITION","referral_bps":660,"rounding":"HALF_UP_PLATFORM_REMAINDER"}},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:31:132)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:31:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: verified agent submits and independent reviewer publishes the same artist offer
+    ok 3 - verified agent submits and independent reviewer publishes the same artist offer
+      ---
+      duration_ms: 48.6161
+      type: 'test'
+      ...
+    # Subtest: valid agent can reopen and replay the original operation once
+    ok 4 - valid agent can reopen and replay the original operation once
+      ---
+      duration_ms: 20.2812
+      type: 'test'
+      ...
+    # Subtest: EXPIRED agent cannot use new offer
+    not ok 5 - EXPIRED agent cannot use new offer
+      ---
+      duration_ms: 16.2208
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"1a84256b-a46b-412c-b916-891bbc4c1819","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"11f92673-9c40-444c-8d70-b7e3ae738635","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"3243f3534a35c266a07306af7e2e89c87acac71b1bb34cd6d79000836312c373","data":{"offer":{"avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","city":"synthetic-city","mode":"ONLINE_MATERIALS","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b","public_price":true,"rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","service_area":"synthetic district","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","unit_minor":10000},"rules":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"rule_snapshot":{"content":{"content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1","id":"6856ae10-62fe-458d-865d-86e18b9ac07e","rule_key":"audition.synthetic","terms":{"audition":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"marketplace_finance":{"fee_base":"NET_PAID","model":"V5_TWO_LAYER","platform_bps":2200,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76","product_type":"AUDITION","referral_bps":660,"rounding":"HALF_UP_PLATFORM_REMAINDER"}},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED agent cannot use successful offer replay
+    not ok 6 - EXPIRED agent cannot use successful offer replay
+      ---
+      duration_ms: 14.2358
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"8da340e7-efff-40ce-bb07-666fbf798526","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"68446030-cc44-40c7-b451-0e6789e26910","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"3243f3534a35c266a07306af7e2e89c87acac71b1bb34cd6d79000836312c373","data":{"offer":{"avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","city":"synthetic-city","mode":"ONLINE_MATERIALS","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b","public_price":true,"rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","service_area":"synthetic district","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","unit_minor":10000},"rules":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"rule_snapshot":{"content":{"content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1","id":"6856ae10-62fe-458d-865d-86e18b9ac07e","rule_key":"audition.synthetic","terms":{"audition":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"marketplace_finance":{"fee_base":"NET_PAID","model":"V5_TWO_LAYER","platform_bps":2200,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76","product_type":"AUDITION","referral_bps":660,"rounding":"HALF_UP_PLATFORM_REMAINDER"}},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED agent cannot use new reopening
+    not ok 7 - EXPIRED agent cannot use new reopening
+      ---
+      duration_ms: 15.3326
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"61ed3b16-458b-434c-abba-f6a15b13e926","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"68446030-cc44-40c7-b451-0e6789e26910","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"PUBLISHED","object_version":5,"content_sha256":"977105b80994e3446493a8b870048847447e65fed8aecd015d0ca7b70398d28c","data":{"offer":{"city":"synthetic-city","mode":"ONLINE_MATERIALS","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","unit_minor":10000,"public_price":true,"service_area":"synthetic district","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b"},"rules":{"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","photo_count":6,"video_count":1,"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30},"review":{"reason":"Independent synthetic publication","decision":"APPROVE","account_id":"1fce5be3-2a61-45b9-9d4f-9f00dd30bb62"},"rule_snapshot":{"content":{"id":"6856ae10-62fe-458d-865d-86e18b9ac07e","terms":{"audition":{"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","photo_count":6,"video_count":1,"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30},"marketplace_finance":{"model":"V5_TWO_LAYER","fee_base":"NET_PAID","rounding":"HALF_UP_PLATFORM_REMAINDER","platform_bps":2200,"product_type":"AUDITION","referral_bps":660,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76"}},"version":"1","rule_key":"audition.synthetic","content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED agent cannot use successful reopening replay
+    not ok 8 - EXPIRED agent cannot use successful reopening replay
+      ---
+      duration_ms: 11.1897
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"1d5053cf-c3b1-42fd-b585-2670660e89c5","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"68446030-cc44-40c7-b451-0e6789e26910","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"PUBLISHED","object_version":4,"content_sha256":"977105b80994e3446493a8b870048847447e65fed8aecd015d0ca7b70398d28c","data":{"offer":{"city":"synthetic-city","mode":"ONLINE_MATERIALS","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","unit_minor":10000,"public_price":true,"service_area":"synthetic district","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b"},"rules":{"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","photo_count":6,"video_count":1,"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30},"review":{"reason":"Independent synthetic publication","decision":"APPROVE","account_id":"1fce5be3-2a61-45b9-9d4f-9f00dd30bb62"},"rule_snapshot":{"content":{"id":"6856ae10-62fe-458d-865d-86e18b9ac07e","terms":{"audition":{"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","photo_count":6,"video_count":1,"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30},"marketplace_finance":{"model":"V5_TWO_LAYER","fee_base":"NET_PAID","rounding":"HALF_UP_PLATFORM_REMAINDER","platform_bps":2200,"product_type":"AUDITION","referral_bps":660,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76"}},"version":"1","rule_key":"audition.synthetic","content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED agent retains authorized old offer reads
+    ok 9 - EXPIRED agent retains authorized old offer reads
+      ---
+      duration_ms: 8.212
+      type: 'test'
+      ...
+    # Subtest: REJECTED agent cannot use new offer
+    not ok 10 - REJECTED agent cannot use new offer
+      ---
+      duration_ms: 13.2469
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"f2895ab1-5050-4fa4-9a46-d88325441c5f","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"4cd61e1a-2e72-4a8c-be32-3ca733b0908c","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"3243f3534a35c266a07306af7e2e89c87acac71b1bb34cd6d79000836312c373","data":{"offer":{"avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","city":"synthetic-city","mode":"ONLINE_MATERIALS","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b","public_price":true,"rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","service_area":"synthetic district","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","unit_minor":10000},"rules":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"rule_snapshot":{"content":{"content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1","id":"6856ae10-62fe-458d-865d-86e18b9ac07e","rule_key":"audition.synthetic","terms":{"audition":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"marketplace_finance":{"fee_base":"NET_PAID","model":"V5_TWO_LAYER","platform_bps":2200,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76","product_type":"AUDITION","referral_bps":660,"rounding":"HALF_UP_PLATFORM_REMAINDER"}},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED agent cannot use successful offer replay
+    not ok 11 - REJECTED agent cannot use successful offer replay
+      ---
+      duration_ms: 11.8296
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"c0e5f039-51fb-42a3-8cc2-b7fa2411e92e","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"68446030-cc44-40c7-b451-0e6789e26910","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"3243f3534a35c266a07306af7e2e89c87acac71b1bb34cd6d79000836312c373","data":{"offer":{"avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","city":"synthetic-city","mode":"ONLINE_MATERIALS","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b","public_price":true,"rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","service_area":"synthetic district","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","unit_minor":10000},"rules":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"rule_snapshot":{"content":{"content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1","id":"6856ae10-62fe-458d-865d-86e18b9ac07e","rule_key":"audition.synthetic","terms":{"audition":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"marketplace_finance":{"fee_base":"NET_PAID","model":"V5_TWO_LAYER","platform_bps":2200,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76","product_type":"AUDITION","referral_bps":660,"rounding":"HALF_UP_PLATFORM_REMAINDER"}},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED agent cannot use new reopening
+    not ok 12 - REJECTED agent cannot use new reopening
+      ---
+      duration_ms: 12.856
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":412,"meta":{"request_id":"d6497464-6fa4-4c90-a0ce-8351ce857c08","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"error":{"code":"VERSION_CONFLICT","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        412 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 412
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED agent cannot use successful reopening replay
+    not ok 13 - REJECTED agent cannot use successful reopening replay
+      ---
+      duration_ms: 10.8099
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"5970355f-66f6-415a-aad5-b9f7c809ca39","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"68446030-cc44-40c7-b451-0e6789e26910","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"PUBLISHED","object_version":4,"content_sha256":"977105b80994e3446493a8b870048847447e65fed8aecd015d0ca7b70398d28c","data":{"offer":{"city":"synthetic-city","mode":"ONLINE_MATERIALS","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","unit_minor":10000,"public_price":true,"service_area":"synthetic district","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b"},"rules":{"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","photo_count":6,"video_count":1,"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30},"review":{"reason":"Independent synthetic publication","decision":"APPROVE","account_id":"1fce5be3-2a61-45b9-9d4f-9f00dd30bb62"},"rule_snapshot":{"content":{"id":"6856ae10-62fe-458d-865d-86e18b9ac07e","terms":{"audition":{"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","photo_count":6,"video_count":1,"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30},"marketplace_finance":{"model":"V5_TWO_LAYER","fee_base":"NET_PAID","rounding":"HALF_UP_PLATFORM_REMAINDER","platform_bps":2200,"product_type":"AUDITION","referral_bps":660,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76"}},"version":"1","rule_key":"audition.synthetic","content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED agent retains authorized old offer reads
+    ok 14 - REJECTED agent retains authorized old offer reads
+      ---
+      duration_ms: 7.6626
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED agent cannot use new offer
+    not ok 15 - UNVERIFIED agent cannot use new offer
+      ---
+      duration_ms: 13.6108
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"c5b093ae-cbf4-4db9-880b-1abc9e012f91","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"fc59c242-1678-4adc-a045-b94d4a40b704","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"3243f3534a35c266a07306af7e2e89c87acac71b1bb34cd6d79000836312c373","data":{"offer":{"avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","city":"synthetic-city","mode":"ONLINE_MATERIALS","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b","public_price":true,"rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","service_area":"synthetic district","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","unit_minor":10000},"rules":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"rule_snapshot":{"content":{"content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1","id":"6856ae10-62fe-458d-865d-86e18b9ac07e","rule_key":"audition.synthetic","terms":{"audition":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"marketplace_finance":{"fee_base":"NET_PAID","model":"V5_TWO_LAYER","platform_bps":2200,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76","product_type":"AUDITION","referral_bps":660,"rounding":"HALF_UP_PLATFORM_REMAINDER"}},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED agent cannot use successful offer replay
+    not ok 16 - UNVERIFIED agent cannot use successful offer replay
+      ---
+      duration_ms: 11.9489
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"1f22a84b-de27-4345-bfa4-1a073a7a427e","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"68446030-cc44-40c7-b451-0e6789e26910","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"IN_REVIEW","object_version":1,"content_sha256":"3243f3534a35c266a07306af7e2e89c87acac71b1bb34cd6d79000836312c373","data":{"offer":{"avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","city":"synthetic-city","mode":"ONLINE_MATERIALS","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b","public_price":true,"rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","service_area":"synthetic district","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","unit_minor":10000},"rules":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"rule_snapshot":{"content":{"content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1","id":"6856ae10-62fe-458d-865d-86e18b9ac07e","rule_key":"audition.synthetic","terms":{"audition":{"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30,"photo_count":6,"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","video_count":1},"marketplace_finance":{"fee_base":"NET_PAID","model":"V5_TWO_LAYER","platform_bps":2200,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76","product_type":"AUDITION","referral_bps":660,"rounding":"HALF_UP_PLATFORM_REMAINDER"}},"version":"1"},"current_status":"EFFECTIVE","effective_at":"2020-01-01T00:00:00.000Z"},"review":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED agent cannot use new reopening
+    not ok 17 - UNVERIFIED agent cannot use new reopening
+      ---
+      duration_ms: 12.1103
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":412,"meta":{"request_id":"e5808029-c34e-4165-9581-995579b8c437","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"error":{"code":"VERSION_CONFLICT","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        412 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 412
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED agent cannot use successful reopening replay
+    not ok 18 - UNVERIFIED agent cannot use successful reopening replay
+      ---
+      duration_ms: 14
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"d48b2dba-01ff-473d-a2c4-8d3c8211d6a6","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"data":{"id":"68446030-cc44-40c7-b451-0e6789e26910","kind":"OFFER","owner_party_id":"8bb01772-2dca-428f-8715-ec7da44ad75d","counterparty_id":null,"parent_id":null,"created_by":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4","current_status":"PUBLISHED","object_version":4,"content_sha256":"977105b80994e3446493a8b870048847447e65fed8aecd015d0ca7b70398d28c","data":{"offer":{"city":"synthetic-city","mode":"ONLINE_MATERIALS","slots":[{"ends_at":"2026-11-24T14:47:02.124Z","starts_at":"2026-11-13T14:47:02.124Z"}],"terms":"synthetic test only","title":"Synthetic audition","rule_id":"6856ae10-62fe-458d-865d-86e18b9ac07e","avatar_id":"75e993eb-0dc0-498c-8ff0-05a5b239fb7e","person_id":"d7ce7bef-83a7-46a3-ba86-7f6def5205ef","unit_minor":10000,"public_price":true,"service_area":"synthetic district","public_booking":true,"public_consent_id":"1dace4fd-97d8-4089-819b-14049412e00b"},"rules":{"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","photo_count":6,"video_count":1,"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30},"review":{"reason":"Independent synthetic publication","decision":"APPROVE","account_id":"1fce5be3-2a61-45b9-9d4f-9f00dd30bb62"},"rule_snapshot":{"content":{"id":"6856ae10-62fe-458d-865d-86e18b9ac07e","terms":{"audition":{"terms":"synthetic test only; transport included; no performance rights","version":"synthetic-v1","photo_count":6,"video_count":1,"accept_hours":24,"acceptance_hours":48,"payment_window_minutes":30},"marketplace_finance":{"model":"V5_TWO_LAYER","fee_base":"NET_PAID","rounding":"HALF_UP_PLATFORM_REMAINDER","platform_bps":2200,"product_type":"AUDITION","referral_bps":660,"platform_party_id":"d0ab6434-3153-4ba6-a3be-af0706ff8f76"}},"version":"1","rule_key":"audition.synthetic","content_sha256":"2f9d3db301b396f9223dc20af2385a2de90d379b9ed0b59901e420afb591d68e","format_version":"rule-content-v1"},"effective_at":"2020-01-01T00:00:00.000Z","current_status":"EFFECTIVE"}}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        denied (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:95)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED agent retains authorized old offer reads
+    ok 19 - UNVERIFIED agent retains authorized old offer reads
+      ---
+      duration_ms: 7.5481
+      type: 'test'
+      ...
+    # Subtest: unverified agent can close booking without losing the old offer
+    not ok 20 - unverified agent can close booking without losing the old offer
+      ---
+      duration_ms: 10.2534
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:49:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":412,"meta":{"request_id":"9a2e84f1-fbfe-4f48-add5-8613814df99e","actor":{"account_id":"96338fad-7f59-4a71-b7ad-aaef1e69c2f4"},"acting_party":"99fb3b65-3de8-4cbd-a7a1-a017ff4cca8e"},"error":{"code":"VERSION_CONFLICT","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        412 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 412
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:23:23)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:49:98)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:49:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: identity recovery allows original create replay and a fresh reopening
+    not ok 21 - identity recovery allows original create replay and a fresh reopening
+      ---
+      duration_ms: 6.5247
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:50:11'
+      failureType: 'testCodeFailure'
+      error: 'IDENTITY_PERSON_CANNOT_CHANGE'
+      code: 'IDENTITY_PERSON_CANNOT_CHANGE'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\modules\artists\repository.js:76:70
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async verify (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:32:190)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:50:98)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\audition-publisher-identity.integration.test.cjs:50:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: valid identity does not replace revoked artist delegation
+    ok 22 - valid identity does not replace revoked artist delegation
+      ---
+      duration_ms: 14.0505
+      type: 'test'
+      ...
+    1..22
+not ok 1 - audition publication requires current agent identity while withdrawal and old reads survive
+  ---
+  duration_ms: 7208.1904
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\audition-publisher-identity.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '16 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 23
+# suites 0
+# pass 6
+# fail 17
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7402.2394

@@ -1,0 +1,784 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "c7132a6f251301f5a0f0da042c4f54b61eaa7c2d",
+  "run_id": "pm01-release-recovery-2026-11-14T02-56-46-864Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "RELEASE-RECOVERY-BOUNDARIES",
+      "acceptance_id": "ACC-DEL-29.04",
+      "name": "发布配置与隔离恢复边界",
+      "result": "LOCAL_PASS",
+      "scope": "发布配置拒绝通配/空网页来源及DEBUG/NODE_DEBUG，报告不批准上线；当前隔离库加密备份/空库恢复/错误密钥与校验失败/恢复后API和worker隔离、删除登记重放及私有对象只读核对现版复验。",
+      "remaining": "无生产/main/真实收费操作；APK正式签名与端侧未验。恢复仅合成库及本地文件，真实旧库/私有对象/供应商产品/实际回退与独立运维验收仍缺。",
+      "actual_checks": [
+        {
+          "name": "auth requires explicit secret and encrypted replay binds to its request",
+          "file": "test/auth-security.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 3.1258,
+          "error_code": null
+        },
+        {
+          "name": "auth security configuration rejects invalid bounds",
+          "file": "test/auth-security.test.cjs",
+          "line": 12,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.5759,
+          "error_code": null
+        },
+        {
+          "name": "configured SMS refuses SDK debug logging before any network call",
+          "file": "test/auth-security.test.cjs",
+          "line": 16,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 7.4536,
+          "error_code": null
+        },
+        {
+          "name": "copy only returns own explicitly requested profile and cannot enumerate another account",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 22,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 20.7099,
+          "error_code": null
+        },
+        {
+          "name": "personal copy includes own stories and buyer order index without exposing another person or contract body",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 23,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 226.5441,
+          "error_code": null
+        },
+        {
+          "name": "paid history allows only proven completed buyer work and rejects incomplete work or pending refund",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 184.7439,
+          "error_code": null
+        },
+        {
+          "name": "correction requires independent approval and actually updates profile",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 44,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 34.3267,
+          "error_code": null
+        },
+        {
+          "name": "deletion lists readable own materials and reviewed policies; referenced files require review",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 45,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 199.0849,
+          "error_code": null
+        },
+        {
+          "name": "missing effective policy cannot authorize deletion",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 60,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 8.4566,
+          "error_code": null
+        },
+        {
+          "name": "file removal is bound to owner and exact storage configuration",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 62,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 591.3217,
+          "error_code": null
+        },
+        {
+          "name": "unknown deletion result remains pending; retry checks same object and records current-object-only result",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 27.8576,
+          "error_code": null
+        },
+        {
+          "name": "queued erasure rechecks changed target before any storage call, then recovers the same approved object",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 64,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 218.5843,
+          "error_code": null
+        },
+        {
+          "name": "lost provider reply after deletion recovers once without claiming backups or request completion",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 82,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 67.9479,
+          "error_code": null
+        },
+        {
+          "name": "complaint restricts actual download and approved release restores only that restriction",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 94,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 52.8866,
+          "error_code": null
+        },
+        {
+          "name": "closing sole organization owner is blocked and leaves login intact",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 95,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 22.792,
+          "error_code": null
+        },
+        {
+          "name": "zero remaining wallet balance cannot hide an unresolved original recharge refund case during closure",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 96,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 37.3993,
+          "error_code": null
+        },
+        {
+          "name": "account closure revokes old sessions and personal identity while retaining request evidence",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 105,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 40.4996,
+          "error_code": null
+        },
+        {
+          "name": "lost closure response keeps sessions closed and operators can reconcile the single executed request",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 106,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 556.0588,
+          "error_code": null
+        },
+        {
+          "name": "new closure clock requires verified identity and actual execution before completion",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 123,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 182.8653,
+          "error_code": null
+        },
+        {
+          "name": "stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 143,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 354.671,
+          "error_code": null
+        },
+        {
+          "name": "HTTP exposes the same scoped proposal, review, execution and export flow",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 151,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 176.6387,
+          "error_code": null
+        },
+        {
+          "name": "restoring an actual older backup requires replaying latest erasure register before access",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 166,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 8409.4532,
+          "error_code": null
+        },
+        {
+          "name": "reviewed privacy execution changes actual records and preserves unresolved boundaries",
+          "file": "test/privacy-execution.integration.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 19979.7612,
+          "error_code": null
+        },
+        {
+          "name": "authenticated snapshot exports private inventory without database or provider access",
+          "file": "test/private-object-cli.integration.test.cjs",
+          "line": 24,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 136.2896,
+          "error_code": null
+        },
+        {
+          "name": "existing inventory, wrong snapshot digest and wrong decryption key are refused",
+          "file": "test/private-object-cli.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 341.9623,
+          "error_code": null
+        },
+        {
+          "name": "actual bytes are compared with the same encrypted backup rather than a caller-edited inventory",
+          "file": "test/private-object-cli.integration.test.cjs",
+          "line": 35,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 398.4126,
+          "error_code": null
+        },
+        {
+          "name": "wrong bytes, wrong size and missing originals are distinguished without changing source",
+          "file": "test/private-object-cli.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 390.8799,
+          "error_code": null
+        },
+        {
+          "name": "a newer privacy register blocks an otherwise matching object and retains absent-later suppressions",
+          "file": "test/private-object-cli.integration.test.cjs",
+          "line": 49,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 383.5492,
+          "error_code": null
+        },
+        {
+          "name": "directory junctions and symlinks cannot redirect the local object check",
+          "file": "test/private-object-cli.integration.test.cjs",
+          "line": 58,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 289.9931,
+          "error_code": null
+        },
+        {
+          "name": "private object evidence is tied to real encrypted snapshot and CLI remains offline",
+          "file": "test/private-object-cli.integration.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 11868.1455,
+          "error_code": null
+        },
+        {
+          "name": "snapshot-bound inventory covers both native object tables and deduplicates consistent references",
+          "file": "test/private-object-inventory.test.cjs",
+          "line": 12,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 2.6594,
+          "error_code": null
+        },
+        {
+          "name": "changed snapshot, missing coverage and conflicting references cannot produce a misleading list",
+          "file": "test/private-object-inventory.test.cjs",
+          "line": 17,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.4801,
+          "error_code": null
+        },
+        {
+          "name": "erasure, revocation, unfinished uploads and tombstones are never restoration candidates",
+          "file": "test/private-object-inventory.test.cjs",
+          "line": 23,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.4831,
+          "error_code": null
+        },
+        {
+          "name": "newer suppression and suppressed keys absent from the backup remain in the review list",
+          "file": "test/private-object-inventory.test.cjs",
+          "line": 29,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.6944,
+          "error_code": null
+        },
+        {
+          "name": "unsafe object keys and unknown register hashes are rejected",
+          "file": "test/private-object-inventory.test.cjs",
+          "line": 36,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.5866,
+          "error_code": null
+        },
+        {
+          "name": "local bytes distinguish matched, missing, wrong size, wrong digest and non-regular files",
+          "file": "test/private-object-inventory.test.cjs",
+          "line": 40,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 16.2005,
+          "error_code": null
+        },
+        {
+          "name": "suppressed local objects are reported without reading, deleting or permitting recovery",
+          "file": "test/private-object-inventory.test.cjs",
+          "line": 52,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 2.7604,
+          "error_code": null
+        },
+        {
+          "name": "all declared provider interfaces fail closed without implementations",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 11,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 3.8604,
+          "error_code": null
+        },
+        {
+          "name": "configuration alone, wrong environment, stale proof and disabled status never call a provider",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 19,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.2102,
+          "error_code": null
+        },
+        {
+          "name": "timeout reports unknown outcome, aborts and never automatically repeats payment",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 37,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 22.9196,
+          "error_code": null
+        },
+        {
+          "name": "provider error bodies and logger metadata do not leak credentials or private URLs",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 44,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.8595,
+          "error_code": null
+        },
+        {
+          "name": "private files require permission and verified configuration, never local fallback",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 61,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.7645,
+          "error_code": null
+        },
+        {
+          "name": "private OSS writes enforce private ACL and no overwrite; scoped URLs expire and calls are checked every time",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 70,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.6243,
+          "error_code": null
+        },
+        {
+          "name": "changing OSS credentials invalidates proof and real SDK signs V4 offline over HTTPS",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 84,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 313.2082,
+          "error_code": null
+        },
+        {
+          "name": "health stays up, readiness reflects actual dependencies, and concurrent request IDs stay separate",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 93,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 71.6404,
+          "error_code": null
+        },
+        {
+          "name": "OSS failures never produce a successful or public result; revocation is checked before each read",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 107,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.1085,
+          "error_code": null
+        },
+        {
+          "name": "legacy photo upload returns a clear failure and never creates a record when private storage is unavailable",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 119,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 62.6908,
+          "error_code": null
+        },
+        {
+          "name": "verified erasure confirms only the exact current object; access errors and changed bytes never pass",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 137,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.0829,
+          "error_code": null
+        },
+        {
+          "name": "private missing-object probe distinguishes exact absence from denied or uncertain reads",
+          "file": "test/provider-foundation.test.cjs",
+          "line": 149,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.0564,
+          "error_code": null
+        },
+        {
+          "name": "database readiness requires applied migrations, not just a connection",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 18,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 6856.1399,
+          "error_code": null
+        },
+        {
+          "name": "recording is denied by default and requires genuine server-side evidence checking",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 21,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 3.9081,
+          "error_code": null
+        },
+        {
+          "name": "configuration is saved but does not authorize real calls",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 9.1425,
+          "error_code": null
+        },
+        {
+          "name": "verified evidence survives closing and reopening the database connection",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 33,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 13.2418,
+          "error_code": null
+        },
+        {
+          "name": "disabling and awaiting approval keep history but block new calls",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 10.5067,
+          "error_code": null
+        },
+        {
+          "name": "two concurrent updates cannot overwrite each other silently",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 9.9773,
+          "error_code": null
+        },
+        {
+          "name": "history write failure rolls back both status and version",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 52,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 4.3072,
+          "error_code": null
+        },
+        {
+          "name": "re-enabling requires fresh evidence and preserves earlier verification",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 58,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 4.9817,
+          "error_code": null
+        },
+        {
+          "name": "capabilities have separate status even for the same provider",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 63,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2.8137,
+          "error_code": null
+        },
+        {
+          "name": "real isolated MySQL persists provider status, evidence and concurrent edits",
+          "file": "test/provider-readiness.integration.test.cjs",
+          "line": 9,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 8678.4146,
+          "error_code": null
+        },
+        {
+          "name": "release evidence is commit-bound, time-bound and never self-approves launch",
+          "file": "test/release-policy.test.cjs",
+          "line": 3,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.2597,
+          "error_code": null
+        },
+        {
+          "name": "backup cells preserve exact integers and distinguish binary from plain text",
+          "file": "test/release-policy.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.0338,
+          "error_code": null
+        },
+        {
+          "name": "maintenance CLI rejects unspecified operation, shell-shaped identifiers and live database names",
+          "file": "test/release-policy.test.cjs",
+          "line": 5,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.4227,
+          "error_code": null
+        },
+        {
+          "name": "release config distinguishes unavailable and unsafe configuration without leaking values",
+          "file": "test/release-policy.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.3365,
+          "error_code": null
+        },
+        {
+          "name": "release configuration rejects wildcard and empty browser origins while retaining exact HTTPS origins",
+          "file": "test/release-policy.test.cjs",
+          "line": 8,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.326,
+          "error_code": null
+        },
+        {
+          "name": "release logging check sees both debug switches without emitting their values",
+          "file": "test/release-policy.test.cjs",
+          "line": 13,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.2413,
+          "error_code": null
+        },
+        {
+          "name": "legacy inspection is read-only and retains unsafe-size integers, raw money and binary",
+          "file": "test/release.integration.test.cjs",
+          "line": 39,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 5.2865,
+          "error_code": null
+        },
+        {
+          "name": "source declaration and active WAL reject before unsafe copy",
+          "file": "test/release.integration.test.cjs",
+          "line": 40,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 2.2876,
+          "error_code": null
+        },
+        {
+          "name": "archiving twice preserves old facts without creating active identities, payment receipts or licenses",
+          "file": "test/release.integration.test.cjs",
+          "line": 41,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 11.1269,
+          "error_code": null
+        },
+        {
+          "name": "concurrent archives converge and manifest tampering is detected",
+          "file": "test/release.integration.test.cjs",
+          "line": 42,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 10.2134,
+          "error_code": null
+        },
+        {
+          "name": "modified archive payload fails without partial writes",
+          "file": "test/release.integration.test.cjs",
+          "line": 43,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 0.3784,
+          "error_code": null
+        },
+        {
+          "name": "backup includes immutable payment and pending-job facts",
+          "file": "test/release.integration.test.cjs",
+          "line": 44,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 519.5012,
+          "error_code": null
+        },
+        {
+          "name": "encrypted file has no visible business body, rejects wrong key/tamper/truncation and overwrite",
+          "file": "test/release.integration.test.cjs",
+          "line": 45,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 42.6874,
+          "error_code": null
+        },
+        {
+          "name": "restore to a fresh database matches every row while leaving runtime quarantined",
+          "file": "test/release.integration.test.cjs",
+          "line": 46,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 6493.8611,
+          "error_code": null
+        },
+        {
+          "name": "restore never overwrites an existing database or accepts the wrong source checksum",
+          "file": "test/release.integration.test.cjs",
+          "line": 47,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 34.2241,
+          "error_code": null
+        },
+        {
+          "name": "invalid foreign key rolls back all imported rows and preserves quarantine",
+          "file": "test/release.integration.test.cjs",
+          "line": 48,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 5217.5324,
+          "error_code": null
+        },
+        {
+          "name": "schema injection or renamed column is rejected without executing backup SQL",
+          "file": "test/release.integration.test.cjs",
+          "line": 49,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 4908.2594,
+          "error_code": null
+        },
+        {
+          "name": "release checks do not confuse filled forms, sandbox providers or running process with launch approval",
+          "file": "test/release.integration.test.cjs",
+          "line": 50,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 124.8233,
+          "error_code": null
+        },
+        {
+          "name": "registered provider evidence remains version-bound and never substitutes for a live check",
+          "file": "test/release.integration.test.cjs",
+          "line": 51,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 265.4593,
+          "error_code": null
+        },
+        {
+          "name": "sustained bounded HTTP reads isolate identities and measure latency without claiming production capacity",
+          "file": "test/release.integration.test.cjs",
+          "line": 52,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 603.3288,
+          "error_code": null
+        },
+        {
+          "name": "concurrent duplicate writes preserve one business object and one set of receipts",
+          "file": "test/release.integration.test.cjs",
+          "line": 53,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 35.6072,
+          "error_code": null
+        },
+        {
+          "name": "HTTP security failures never expose SQL, credentials or accept forged payment flags",
+          "file": "test/release.integration.test.cjs",
+          "line": 54,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 7.318,
+          "error_code": null
+        },
+        {
+          "name": "release rehearsal with isolated MySQL, encrypted restore and bounded real HTTP load",
+          "file": "test/release.integration.test.cjs",
+          "line": 8,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 30603.7485,
+          "error_code": null
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-release-recovery-20261114/FINAL_BACKEND.json",
+          "sha256": "083bfe597b1e0e6cff7677668ced8e89e38312b881264f8934d1b4441065e1f7"
+        },
+        {
+          "path": "docs/reviews/pm01-release-recovery-20261114/FINAL_CONTRACT.json",
+          "sha256": "99b87a2f11356f6ded81997cdde414bc4bdd97e519c7080b4169af8ddb2e3975"
+        },
+        {
+          "path": "docs/reviews/pm01-release-recovery-20261114/SOURCE_MANIFEST.json",
+          "sha256": "fc85d7b4c2cc071020b5d42fe42bd99d41479de9eff60c1002de433b8dd8d5c3"
+        },
+        {
+          "path": "docs/reviews/pm01-release-recovery-20261114/CONFIG_AUDIT_TESTS.json",
+          "sha256": "f4df7ef3f66d23a6a793a3f2fbc4c54ee67554f2a2e601a2f10ead7d8ce0d4ac"
+        },
+        {
+          "path": "docs/reviews/pm01-release-recovery-20261114/RELEASE_REHEARSAL.json",
+          "sha256": "1a68df1b8e90ecc83b09d22785edde1db171b4ec5985164beb78072cef55874a"
+        },
+        {
+          "path": "docs/reviews/pm01-release-recovery-20261114/PRIVATE_OBJECT_JOURNEY.json",
+          "sha256": "5bdbe0a35c19485fd0c93888e93500b8ec76f48fbbf65bbf07f38ca9a3e4d65a"
+        }
+      ]
+    }
+  ]
+}

@@ -23,7 +23,11 @@ class AuditionActionPage extends StatefulWidget {
 }
 
 class _AuditionActionPageState extends State<AuditionActionPage> {
-  late final api = AuditionsApi(widget.session);
+  late AuditionsApi api;
+  final deliveryFormKey = GlobalKey<V5FormState>();
+  final photos = <Map<String, dynamic>>[], videos = <Map<String, dynamic>>[];
+  int readTicket = 0;
+  late (int, String?) identity;
   AuditionRecord? record;
   String? error;
   bool busy = false;
@@ -34,6 +38,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
     'travel': '记录真实出发与到场',
     'delivery': '提交本次试镜取样',
     'cancel': '取消、争议或安全离场',
+    'dispute-evidence': '为本次争议补交私有依据',
     'reschedule': '按原订单申请改期',
     'reschedule-response': '回复本次改期',
     'contact': '本次联系卡另行同意',
@@ -44,10 +49,79 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
   @override
   void initState() {
     super.initState();
+    api = AuditionsApi(widget.session);
+    identity = (widget.session.epoch, widget.session.partyId);
+    widget.session.addListener(_sessionChanged);
     load();
   }
 
+  void _sessionChanged() {
+    final next = (widget.session.epoch, widget.session.partyId);
+    if (identity == next) return;
+    identity = next;
+    readTicket++;
+    photos.clear();
+    videos.clear();
+    consents.clear();
+    if (!mounted) return;
+    setState(() {
+      record = null;
+      error = null;
+      busy = false;
+    });
+    if (widget.session.isLoggedIn && !api.denied) load();
+  }
+
+  @override
+  void didUpdateWidget(covariant AuditionActionPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.session != widget.session) {
+      oldWidget.session.removeListener(_sessionChanged);
+      api = AuditionsApi(widget.session);
+      identity = (widget.session.epoch, widget.session.partyId);
+      widget.session.addListener(_sessionChanged);
+    }
+    if (oldWidget.session != widget.session ||
+        oldWidget.id != widget.id ||
+        oldWidget.action != widget.action) {
+      readTicket++;
+      record = null;
+      photos.clear();
+      videos.clear();
+      consents.clear();
+      load();
+    }
+  }
+
+  @override
+  void dispose() {
+    readTicket++;
+    widget.session.removeListener(_sessionChanged);
+    super.dispose();
+  }
+
+  void _clearDeliverySelection() {
+    final form = deliveryFormKey.currentState;
+    if (form != null) {
+      form.change('photos', '');
+      form.change('videos', '');
+      form.change('consent_id', '');
+    }
+  }
+
+  Future<List<List<Map<String, dynamic>>>> _deliveryChoices(AuditionRecord r) =>
+      Future.wait(['PHOTO', 'VIDEO', 'CONSENT']
+          .map((kind) => api.deliveryOptions(r, kind)));
+
   Future<int?> load({bool propagateError = false}) async {
+    final ticket = ++readTicket,
+        epoch = widget.session.epoch,
+        party = widget.session.partyId;
+    bool current() =>
+        mounted &&
+        ticket == readTicket &&
+        epoch == widget.session.epoch &&
+        party == widget.session.partyId;
     setState(() {
       busy = true;
       error = null;
@@ -57,15 +131,46 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
         throw const AccountError(400, 'INVALID_ACTION');
       }
       final r = await api.record(widget.id);
+      if (!current()) return null;
       if (r.kind != 'BOOKING') throw const AccountError(400, 'INVALID_ACTION');
       if (widget.action == 'baseplate' &&
           widget.session.party?['kind'] != 'PERSON') {
         throw const AccountError(403, 'ARTIST_PERSONAL_CONFIRMATION_REQUIRED');
       }
-      if (['delivery', 'baseplate'].contains(widget.action) &&
-          widget.session.party?['kind'] == 'PERSON') {
+      if (widget.action == 'delivery') {
+        setState(() {
+          record = r;
+          photos.clear();
+          videos.clear();
+          consents.clear();
+        });
+        final choices = await _deliveryChoices(r);
+        if (!current()) return null;
+        setState(() {
+          photos.addAll(choices[0]);
+          videos.addAll(choices[1]);
+          for (final c in choices[2]) {
+            consents[c['id']] =
+                '本次取样授权 · 截止 ${tradeDate(c['valid_until'])} · ${c['id'].toString().substring(28)}';
+          }
+        });
+        final form = deliveryFormKey.currentState;
+        if (form != null) {
+          final selectedPhotos = v5InputIds(form.values['photos'] ?? '');
+          final selectedVideos = v5InputIds(form.values['videos'] ?? '');
+          if (selectedPhotos
+                  .any((id) => !photos.any((item) => item['id'] == id)) ||
+              selectedVideos
+                  .any((id) => !videos.any((item) => item['id'] == id)) ||
+              (form.values['consent_id'] != null &&
+                  !consents.containsKey(form.values['consent_id']))) {
+            _clearDeliverySelection();
+          }
+        }
+      } else if (widget.action == 'baseplate') {
         final artists = ArtistsApi(widget.session),
             person = await artists.person(r.data['offer']['person_id']);
+        if (!current()) return null;
         consents.clear();
         if (person.person.owner == widget.session.partyId) {
           for (final c in (await artists.allRecords(
@@ -73,56 +178,74 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
               .where((c) =>
                   c.status == 'APPROVED' &&
                   c.avatarId == r.data['offer']['avatar_id'] &&
-                  (c.data['purposes'] as List).contains(
-                      widget.action == 'baseplate'
-                          ? 'PRIVATE_ARCHIVE'
-                          : 'AUDITION_SAMPLES') &&
-                  c.data['grantee_party_id'] ==
-                      (widget.action == 'baseplate'
-                          ? person.person.owner
-                          : r.raw['owner_party_id']) &&
+                  (c.data['purposes'] as List).contains('PRIVATE_ARCHIVE') &&
+                  c.data['grantee_party_id'] == person.person.owner &&
                   DateTime.parse(c.data['valid_from'])
                       .isBefore(DateTime.now()) &&
                   DateTime.parse(c.data['valid_until'])
                       .isAfter(DateTime.now()))) {
             consents[c.id] = c.data['terms'];
           }
-          if (widget.action == 'baseplate') {
-            for (final v in (await artists.allRecords(person.person.id, 'LOOK'))
-                .where((v) => v.avatarId == r.data['offer']['avatar_id'])) {
-              versions[v.id] = v.data['display_name'];
-            }
+          for (final v in (await artists.allRecords(person.person.id, 'LOOK'))
+              .where((v) => v.avatarId == r.data['offer']['avatar_id'])) {
+            versions[v.id] = v.data['display_name'];
           }
         }
-      } else if (widget.action == 'delivery') {
-        consents.clear();
-        if (r.data['delivery'] != null) {
-          consents[r.data['delivery']['consent_id']] = '本单本人已提供的取样同意（提交时重新核对）';
-        }
-        String? cursor;
-        final seen = <String>{};
-        do {
-          final page = await api.records('BOOKING', cursor: cursor);
-          for (final old in page.items.where((b) =>
-              b.raw['owner_party_id'] == r.raw['owner_party_id'] &&
-              b.data['offer']['person_id'] == r.data['offer']['person_id'] &&
-              b.data['offer']['avatar_id'] == r.data['offer']['avatar_id'] &&
-              b.data['delivery'] != null)) {
-            consents[old.data['delivery']['consent_id']] =
-                '本人原已提供的同一接收方取样授权（提交时重核）';
-          }
-          cursor = page.cursor;
-          if (cursor != null) v5Require(seen.add(cursor));
-        } while (cursor != null);
       }
-      if (mounted) setState(() => record = r);
+      if (current()) setState(() => record = r);
       return r.version;
     } on AccountError catch (e) {
-      if (mounted) setState(() => error = v5Error(e));
+      if (current()) {
+        if (widget.action == 'delivery') {
+          photos.clear();
+          videos.clear();
+          consents.clear();
+          _clearDeliverySelection();
+        }
+        setState(() => error = v5Error(e));
+      }
       if (propagateError) rethrow;
       return null;
     } finally {
-      if (mounted) setState(() => busy = false);
+      if (current()) setState(() => busy = false);
+    }
+  }
+
+  Future<void> _refreshDelivery() async {
+    final form = deliveryFormKey.currentState;
+    if (form != null && !await form.confirmDiscardChanges()) return;
+    if (mounted) await load();
+  }
+
+  Future<void> _recheckDelivery(
+      Map<String, dynamic> body, AuditionRecord r) async {
+    final epoch = widget.session.epoch, party = widget.session.partyId;
+    try {
+      final choices = await _deliveryChoices(r);
+      api.check(epoch, party);
+      final d = v5Map(body['delivery']);
+      final photoIds = v5Ids(d['photos'], max: 30),
+          videoIds = v5Ids(d['videos'], max: 5);
+      if (photoIds.any((id) => !choices[0].any((v) => v['id'] == id)) ||
+          videoIds.any((id) => !choices[1].any((v) => v['id'] == id)) ||
+          !choices[2].any((v) => v['id'] == d['consent_id'])) {
+        throw const AccountError(409, 'AUDITION_DELIVERY_OPTIONS_CHANGED');
+      }
+    } on AccountError catch (e) {
+      if (mounted &&
+          epoch == widget.session.epoch &&
+          party == widget.session.partyId) {
+        setState(() {
+          photos.clear();
+          videos.clear();
+          consents.clear();
+        });
+        _clearDeliverySelection();
+      }
+      if (e.status == 0 || e.status >= 500) {
+        throw const AccountError(409, 'AUDITION_DELIVERY_READ_FAILED');
+      }
+      rethrow;
     }
   }
 
@@ -135,9 +258,13 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
       if (v['actual'] != true) {
         throw const AccountError(400, 'INVALID_TRAVEL_ACTION');
       }
+      final evidence = v5InputIds(v['evidence_asset_ids'] ?? '');
+      if (evidence.isEmpty) {
+        throw const AccountError(400, 'AUDITION_TRAVEL_EVIDENCE_REQUIRED');
+      }
       return {
         'action': v['action'],
-        'evidence_asset_ids': v5InputIds(v['evidence_asset_ids'] ?? '')
+        'evidence_asset_ids': evidence
       };
     }
     if (a == 'delivery') {
@@ -149,8 +276,10 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
               photos.length + videos.length) {
         throw const AccountError(400, 'AUDITION_DELIVERY_COUNT_MISMATCH');
       }
-      if (!consents.containsKey(v['consent_id'])) {
-        throw const AccountError(400, 'AUDITION_SAMPLE_CONSENT_REQUIRED');
+      if (!consents.containsKey(v['consent_id']) ||
+          photos.any((id) => !this.photos.any((item) => item['id'] == id)) ||
+          videos.any((id) => !this.videos.any((item) => item['id'] == id))) {
+        throw const AccountError(400, 'AUDITION_DELIVERY_OPTIONS_CHANGED');
       }
       return {
         'delivery': {
@@ -166,6 +295,11 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
         'safety': v['safety'] == true,
         'evidence_asset_ids': v5InputIds(v['evidence_asset_ids'] ?? '')
       };
+    }
+    if (a == 'dispute-evidence') {
+      final ids = v5InputIds(v['evidence_asset_ids'] ?? '');
+      if (ids.isEmpty) throw const AccountError(400, 'AUDITION_EVIDENCE_REQUIRED');
+      return {'evidence_asset_ids': ids};
     }
     if (a == 'reschedule') {
       return {
@@ -236,6 +370,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
             V5Field('reason', '具体问题与双方情况', type: 'multiline'),
             V5Field('safety', '本次涉及安全离场或安全问题', type: 'bool', required: false)
           ],
+        'dispute-evidence' => const [],
         'reschedule' => const [
             V5Field('city', '新城市'),
             V5Field('venue', '新正规场地'),
@@ -281,6 +416,8 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
           d['reschedule'] == null,
       'delivery' => !buyer &&
           consents.isNotEmpty &&
+          photos.length >= d['rules']['photo_count'] &&
+          videos.length >= d['rules']['video_count'] &&
           d['fulfilled_at'] == null &&
           d['dispute'] == null &&
           d['reschedule'] == null &&
@@ -305,7 +442,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
           consents.isNotEmpty &&
           d['delivery'] != null &&
           d['baseplate_id'] == null,
-      'cancel' => ![
+      'cancel' => d['dispute'] == null && ![
             'CANCELLED',
             'REJECTED',
             'REFUND_REQUIRED',
@@ -313,6 +450,9 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
             'PARTIAL_REFUND_SETTLED'
           ].contains(r.status) &&
           (d['order_id'] == null || d['paid_at'] != null),
+      'dispute-evidence' => r.status == 'DISPUTED' &&
+          [r.raw['owner_party_id'], r.raw['counterparty_id'], d['dispute']?['owner_party_id']]
+              .contains(widget.session.partyId),
       'support' => true,
       _ => false
     };
@@ -331,6 +471,9 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
               context, '/auditions/booking?bookingId=${widget.id}')),
       if (busy) const LinearProgressIndicator(),
       if (error != null) appNotice(error!),
+      if (a == 'delivery' && r == null && error != null)
+        tradeButton('重新读取本预约材料与授权', busy ? null : _refreshDelivery,
+            outline: true),
       if (r != null) ...[
         tradeSection(r.title, [
           tradeFact('当前真实状态', auditionStates[r.status]),
@@ -339,31 +482,43 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
               '${tradeDate(r.data['appointment']['starts_at'])} 至 ${tradeDate(r.data['appointment']['ends_at'])}')
         ]),
         if (a == 'delivery') ...[
+          tradeButton('重新读取本预约材料与授权', busy ? null : _refreshDelivery,
+              outline: true),
+          appNotice('材料须先由本人上传并关联到艺人；本次选择不授予后续出演或商用权。'),
+          tradeButton('前往艺人素材管理', () => Navigator.pushNamed(context, '/artists'), outline: true),
           tradeBanner('按本单真实规则取样',
-              '${r.data['rules']['photo_count']} 张照片、${r.data['rules']['video_count']} 段视频；明确收讫后 ${r.data['rules']['acceptance_hours']} 小时。'),
-          if (consents.isEmpty)
-            appNotice('尚无本人可选择的本次取样授权。受托机构不能读取本人私有同意；首次受托交付需要平台补齐安全授权选择。')
+              '${r.data['rules']['photo_count']} 张照片、${r.data['rules']['video_count']} 段视频；${r.data['rules']['acceptance_policy'] == 'CONTRACT_20261029' ? '交付审核通过起' : '明确收讫后'} ${r.data['rules']['acceptance_hours']} 小时。'),
+          if (consents.isEmpty) appNotice('当前没有本预约可用的取样授权，请核对本人、买方与授权状态后重新读取。')
         ],
         if (!widget.session.isOwner &&
             ['travel', 'cancel', 'delivery'].contains(a))
-          appNotice('当前为获授权机构成员。私人材料仍由负责人上传；本页不扩大原文件接口权限。'),
+          appNotice('机构成员需同时具有本艺人试镜及材料管理权限；选择不授予原文件下载权。'),
         if (a == 'cancel')
           appNotice(
               '出发前按原单申请退款；出发、到场或已交取样后进入争议，暂停计时，由独立客服核定。申请不等于退款到账，安全离场不自动处罚。'),
+        if (a == 'dispute-evidence')
+          appNotice('补交材料会关联当前争议并保留原记录；文件仅供获准独立客服核对。'),
         if (a == 'reschedule') appNotice('须由另一方明确确认，再由独立人员安全复核。完成两步前不改写原行程。'),
         if (a == 'baseplate')
           appNotice('仅艺人本人另给私人归档同意后保存。此次试镜不授予买方出演、发行或重新生成权。'),
         if (!allowed(r))
           appNotice('当前记录不满足本项办理条件。保留本页输入，按最新原记录核对；不通过更改技术编号绕过。'),
         V5Form(
-            key: ValueKey('${r.id}:$a'),
+            key: a == 'delivery' ? deliveryFormKey : ValueKey('${r.id}:$a'),
             api: api,
             title: titles[a]!,
             action: titles[a]!,
             suffix: '/bookings/${r.id}/$a',
             version: r.version,
-            canSubmit:
-                allowed(r) && (a != 'delivery' || widget.session.isOwner),
+            canSubmit: allowed(r) && !busy,
+            beforeSubmit:
+                a == 'delivery' ? (body) => _recheckDelivery(body, r) : null,
+            factsBuilder: a == 'dispute-evidence' ? (v) => [
+              tradeFact('本次补交依据', v5InputIds(v['evidence_asset_ids'] ?? '').map((id) => id.substring(28)).join('、'))
+            ] : a == 'delivery' ? (v) => [
+              tradeFact('本次照片', v5InputIds(v['photos'] ?? '').map((id) => id.substring(28)).join('、')),
+              tradeFact('本次视频', v5InputIds(v['videos'] ?? '').map((id) => id.substring(28)).join('、'))
+            ] : null,
             initial: a == 'reschedule' ? v5Map(r.data['appointment']) : {},
             fields: fields(r),
             restore: (b) => a == 'delivery'
@@ -402,11 +557,16 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
                   id: a == 'supplements' ? null : r.id,
                   parentId: a == 'supplements' ? r.id : null);
             },
-            reload: () => load(propagateError: true),
+            reload: () async {
+              if (a == 'delivery' && api.pending('/bookings/${r.id}/delivery') != null) {
+                return (await api.record(r.id)).version;
+              }
+              return load(propagateError: true);
+            },
             onSuccess: (_) => Navigator.pushReplacementNamed(
                 context, '/auditions/booking?bookingId=${r.id}'),
             extra: (v, set, enabled) => [
-                  if (['travel', 'cancel'].contains(a))
+                  if (['travel', 'cancel', 'dispute-evidence'].contains(a))
                     tradeSection('本次私有证据', [
                       SupplyFiles(
                           api: SupplyApi(widget.session),
@@ -417,24 +577,40 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
                               set('evidence_asset_ids', ids.join(', ')))
                     ]),
                   if (a == 'delivery') ...[
-                    tradeSection(
-                        '本次照片 · 按约 ${r.data['rules']['photo_count']} 张', [
-                      SupplyFiles(
-                          api: SupplyApi(widget.session),
-                          purpose: 'AVATAR_MATERIAL',
-                          ids: v5InputIds(v['photos'] ?? ''),
-                          enabled: enabled && widget.session.isOwner,
-                          onChanged: (ids) => set('photos', ids.join(', ')))
-                    ]),
-                    tradeSection(
-                        '本次视频 · 按约 ${r.data['rules']['video_count']} 段', [
-                      SupplyFiles(
-                          api: SupplyApi(widget.session),
-                          purpose: 'WORK_CONTENT',
-                          ids: v5InputIds(v['videos'] ?? ''),
-                          enabled: enabled && widget.session.isOwner,
-                          onChanged: (ids) => set('videos', ids.join(', ')))
-                    ]),
+                    for (final choice in [
+                      (
+                        'photos',
+                        '本次照片',
+                        photos,
+                        r.data['rules']['photo_count']
+                      ),
+                      ('videos', '本次视频', videos, r.data['rules']['video_count'])
+                    ])
+                      tradeSection('${choice.$2} · 按约 ${choice.$4} 项', [
+                        if (choice.$3.isEmpty)
+                          appNotice('当前没有获准使用的材料，请核对艺人素材及授权。'),
+                        for (final item in choice.$3)
+                          CheckboxListTile(
+                              key: ValueKey(
+                                  'audition-${choice.$1}-${item['id']}'),
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                  '${item['media_type']} · ${item['byte_size']} 字节 · ${item['id'].toString().substring(28)}'),
+                              value: v5InputIds(v[choice.$1] ?? '')
+                                  .contains(item['id']),
+                              onChanged: enabled && !busy
+                                  ? (checked) {
+                                      final selected =
+                                          v5InputIds(v[choice.$1] ?? '');
+                                      if (checked == true) {
+                                        selected.add(item['id']);
+                                      } else {
+                                        selected.remove(item['id']);
+                                      }
+                                      set(choice.$1, selected.join(', '));
+                                    }
+                                  : null)
+                      ])
                   ],
                 ]),
       ]

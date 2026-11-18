@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
+import '../discovery/public_discovery.dart';
+import '../engagement/community_support.dart' show communityMap, communityError;
 import '../artists/artists_pages.dart'
     show openArtistPublicDetails, openArtistFilters;
 import '../artists/artists_public_media.dart';
@@ -91,6 +93,7 @@ class _PlazaPageState extends State<PlazaPage> {
         context,
         MaterialPageRoute(
             builder: (_) => PlazaCityPage(
+                session: widget.session,
                 currentCity: data.city,
                 availableCities: data.availableCities)));
     if (!mounted || selected == null) return;
@@ -216,7 +219,7 @@ class _PlazaPageState extends State<PlazaPage> {
           (
             '找机构',
             EditorialIcons.officeBuilding,
-            () => widget.onOpen('/engagement?view=buyers')
+            () => widget.onOpen(_cityRoute('/directory', data.city))
           ),
           ('全部', EditorialIcons.grid, _openAll),
         ])
@@ -304,15 +307,51 @@ class _PlazaPageState extends State<PlazaPage> {
       ];
 
   Widget _stars() => Column(children: [
-        _heading('明星推荐', top: channel == 0 ? 16 : 20),
-        ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: 92),
-            child: _panel('暂无本城明星推荐', '可以继续查看本地艺人，或切换城市。')),
-        Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            child: Text('当前城市 · ${plazaCityLabel(data.city)}',
-                style:
-                    const TextStyle(fontSize: 12, color: AccountTheme.muted))),
+        _heading('精选艺人',
+            top: channel == 0 ? 16 : 20,
+            link: '全部精选 ↗',
+            onTap: () =>
+                widget.onOpen(_cityRoute('/directory/featured', data.city))),
+        if (data.featured.busy) const LinearProgressIndicator(),
+        if (data.featured.error != null)
+          _panel('精选暂时无法读取', data.featured.error!),
+        if (!data.featured.busy &&
+            data.featured.error == null &&
+            data.featured.items.isEmpty)
+          _panel(
+              '当前暂无获准展示的精选',
+              data.featured.cursor == null
+                  ? '可继续查看本地艺人，或切换城市。'
+                  : '本页暂无资料，可继续读取。'),
+        _grid(
+            data.featured.items,
+            3,
+            10,
+            (row) =>
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  _artistCard(communityMap(row['artist'])),
+                  Text(row['recommendation'],
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 11,
+                          height: 1.5,
+                          color: AccountTheme.muted)),
+                ])),
+        if (data.featured.cursor != null)
+          TextButton(
+              onPressed: data.featured.busy
+                  ? null
+                  : () => data.loadFeatured(more: true),
+              child: const Text('继续读取精选')),
+        if (data.featured.error != null)
+          TextButton(
+              onPressed: data.featured.busy ? null : () => data.loadFeatured(),
+              child: const Text('重读精选')),
+        const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Text('运营推荐，不代表明星认证或成绩排名。',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted))),
         const Divider(height: 1),
       ]);
 
@@ -466,7 +505,9 @@ class _PlazaPageState extends State<PlazaPage> {
               2,
               8,
               (offer) => StockPublicCard(
+                  session: widget.session,
                   offer: offer,
+                  onRefreshOffer: data.loadWorks,
                   onTap: () async {
                     await widget.onOpen('/stock/video?listingId=${offer.id}');
                     if (mounted && widget.active) await data.loadWorks();
@@ -678,16 +719,41 @@ class _PlazaPageState extends State<PlazaPage> {
 
 class PlazaCityPage extends StatefulWidget {
   const PlazaCityPage(
-      {super.key, required this.currentCity, required this.availableCities});
+      {super.key,
+      required this.currentCity,
+      required this.availableCities,
+      this.session});
   final String currentCity;
   final Set<String> availableCities;
+  final AccountSession? session;
   @override
   State<PlazaCityPage> createState() => _PlazaCityPageState();
 }
 
 class _PlazaCityPageState extends State<PlazaCityPage> {
   final field = TextEditingController();
-  String? error;
+  String? error, cityError;
+  List<Map<String, dynamic>> cities = [];
+  @override
+  void initState() {
+    super.initState();
+    loadCities();
+  }
+
+  Future<void> loadCities() async {
+    if (widget.session == null) return;
+    try {
+      final rows = await readQuickCities(widget.session!);
+      if (mounted) {
+        setState(() {
+          cities = rows;
+          cityError = null;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => cityError = communityError(e));
+    }
+  }
 
   String _queryValue(String label) => widget.availableCities.firstWhere(
       (value) => plazaCityLabel(value) == label,
@@ -752,12 +818,16 @@ class _PlazaCityPageState extends State<PlazaCityPage> {
                 const SizedBox(height: 14),
                 const OutlinedButton(
                     onPressed: null, child: Text('获取当前位置 · 暂未开放')),
-                _title('热门城市'),
+                _title('快捷城市'),
+                if (cityError != null) ...[
+                  Text('快捷城市暂时无法读取，可继续手动输入。'),
+                  TextButton(onPressed: loadCities, child: const Text('重读快捷城市'))
+                ],
                 LayoutBuilder(builder: (context, box) {
                   final columns =
                       MediaQuery.textScalerOf(context).scale(14) > 19 ? 2 : 3;
                   return Wrap(spacing: 8, runSpacing: 8, children: [
-                    for (final city in ['北京', '上海', '杭州', '广州', '深圳', '郑州'])
+                    for (final entry in cities)
                       SizedBox(
                           width: (box.maxWidth - (columns - 1) * 8) / columns,
                           child: OutlinedButton(
@@ -765,12 +835,12 @@ class _PlazaCityPageState extends State<PlazaCityPage> {
                                   side: BorderSide(
                                       color:
                                           plazaCityLabel(widget.currentCity) ==
-                                                  city
+                                                  entry['name']
                                               ? AccountTheme.vermilion
                                               : AccountTheme.border)),
-                              onPressed: () =>
-                                  Navigator.pop(context, _queryValue(city)),
-                              child: Text(city))),
+                              onPressed: () => Navigator.pop(
+                                  context, _queryValue(entry['name'])),
+                              child: Text(entry['name']))),
                   ]);
                 }),
                 const SizedBox(height: 20),
@@ -816,7 +886,13 @@ class PlazaDirectoryPage extends StatelessWidget {
                   ),
                   ('现成作品', '详情、获准预览与个人许可', '/stock/catalog'),
                   ('艺人榜单与月度评选', '已公开资料与当前榜单', '/engagement?view=rankings'),
-                  ('找出品人与机构', '查看公开资料与合作信息', '/engagement?view=buyers'),
+                  ('公开机构', '已审核机构介绍与全部通告', _cityRoute('/directory', city)),
+                  (
+                    '精选艺人',
+                    '运营推荐与当前公开档案',
+                    _cityRoute('/directory/featured', city)
+                  ),
+                  ('找出品人', '按公开业务事实查看', '/engagement?view=buyers'),
                   ('搜索与匹配', '按城市和类型查找公开目录', _cityRoute('/search', city)),
                 ]
               ),
@@ -869,48 +945,9 @@ class PlazaDirectoryPage extends StatelessWidget {
 class PlazaSearchPage extends StatelessWidget {
   const PlazaSearchPage({super.key, this.initialCity = ''});
   final String initialCity;
-
   @override
-  Widget build(BuildContext context) => AccountTheme(
-      plaza: true,
-      child: Scaffold(
-          appBar: AppBar(title: const Text('查找公开内容')),
-          body: SafeArea(
-              child: ListView(
-                  padding: const EdgeInsets.fromLTRB(18, 24, 18, 24),
-                  children: [
-                const Text('按内容类型进入目录，使用已有筛选。',
-                    style: TextStyle(
-                        fontSize: 12, height: 1.6, color: AccountTheme.muted)),
-                const SizedBox(height: 28),
-                for (final entry in [
-                  (
-                    '找艺人',
-                    '城市、标签、试镜展示',
-                    _cityRoute('/artists/catalog', initialCity)
-                  ),
-                  ('找作品', '公开作品与个人许可', '/stock/catalog'),
-                  (
-                    '找通告',
-                    '城市、类别与有效状态',
-                    _cityRoute('/notices/catalog', initialCity)
-                  ),
-                ])
-                  Padding(
-                      padding: const EdgeInsets.only(bottom: 18),
-                      child: _PlazaDirectoryEntry(
-                          title: entry.$1,
-                          subtitle: entry.$2,
-                          onTap: () => Navigator.pushNamed(context, entry.$3))),
-                const SizedBox(height: 30),
-                const Text('先选择内容类型，再按城市或标签筛选。',
-                    style: TextStyle(
-                        fontSize: 12, height: 1.6, color: AccountTheme.muted)),
-                const SizedBox(height: 12),
-                const Text('进入目录后，可继续筛选并查看详情。',
-                    style: TextStyle(
-                        fontSize: 12, height: 1.6, color: AccountTheme.muted)),
-              ]))));
+  Widget build(BuildContext context) =>
+      PublicSearchPage(initialCity: initialCity);
 }
 
 class _PlazaDirectoryEntry extends StatelessWidget {

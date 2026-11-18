@@ -1,0 +1,249 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "09dd5755718b42f72961e16f1a09e116fc12aa9b",
+  "run_id": "pm01-certification-intent-2026-11-13T10-54-04-196Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "runtime_business_code_changed": false,
+  "checks": [
+    {
+      "id": "CERTIFICATION-PAID-NOT-APPROVED",
+      "acceptance_id": "ACC-DEL-02.02",
+      "result": "LOCAL_PASS",
+      "scope": "按新分类规则核付费/材料/审核分离，失败不虚构提交，并发同键仅一申请",
+      "remaining": "真实审核资料、供应商实名与款项、独立签收仍未验",
+      "actual_checks": [
+        {
+          "name": "paid review fee is recorded separately from an application and certification approval",
+          "file": "test/artists-contract.integration.test.cjs",
+          "line": 112,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 16.0664,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "name": "unpaid application rejected without phantom submission",
+          "result": "PASS",
+          "service_id": "98045951-2f90-4878-88eb-c7aaf8489962",
+          "order_id": "6f03618f-93b1-474c-a93e-3d91460635c2"
+        },
+        {
+          "name": "fee paid but not certified",
+          "result": "PASS",
+          "service_id": "9649c85f-78f5-43eb-ac5c-0008210be142",
+          "order_id": "d67dc6d6-85b7-4cad-aae2-d031578572ef",
+          "payment_id": "c23ffd0e-f5df-4134-8485-15a455273a23",
+          "fee_minor": 1000,
+          "halo_level": 1
+        },
+        {
+          "name": "invalid materials fixed and concurrent retry uses one paid application",
+          "result": "PASS",
+          "application_id": "583d3e5a-e53b-4a86-a0a1-35a7a6ea2896",
+          "service_id": "9649c85f-78f5-43eb-ac5c-0008210be142",
+          "approved": false
+        }
+      ]
+    },
+    {
+      "id": "CERTIFICATION-SUPPLEMENT-EXPIRY",
+      "acceptance_id": "ACC-DEL-02.03",
+      "result": "LOCAL_PASS",
+      "scope": "同案补件并发不重复收费，审批历史与有效状态分离，到期不自动扣费",
+      "remaining": "到期采用合成时钟且实名同时过期，不能冒充单独认证到期的所有组合；正式新申请重审规则另核",
+      "actual_checks": [
+        {
+          "name": "supplement replaces classified snapshot, preserves original evidence and consumes one fee",
+          "file": "test/artists-contract.integration.test.cjs",
+          "line": 128,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 81.5604,
+          "error_code": null
+        },
+        {
+          "name": "expiry removes effective certification without rewriting approval history or automatically charging again",
+          "file": "test/artists-contract.integration.test.cjs",
+          "line": 146,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 28.0162,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "name": "same application supplements once without charging and independent approval consumes original fee",
+          "result": "PASS",
+          "application_id": "583d3e5a-e53b-4a86-a0a1-35a7a6ea2896",
+          "service_id": "9649c85f-78f5-43eb-ac5c-0008210be142",
+          "payment_id": "c23ffd0e-f5df-4134-8485-15a455273a23",
+          "supplements": 1,
+          "original_materials_retained": true
+        },
+        {
+          "name": "synthetic future clock expires effective identity/certification but preserves approved history and fee",
+          "result": "PASS",
+          "application_id": "583d3e5a-e53b-4a86-a0a1-35a7a6ea2896",
+          "original_valid_until": "2027-11-13T10:54:14.967Z",
+          "original_sha256": "7d6e3b6b7774d5b8a783b48bc2cce450f2d773bfff3b93897b5c3a33787ae4fd"
+        }
+      ]
+    },
+    {
+      "id": "MANUAL-CITY-BOUNDARY",
+      "acceptance_id": "ACC-DEL-04.02",
+      "result": "LOCAL_PASS",
+      "scope": "不传位置也可手动城市搜索；不支持的坐标/距离字段拒绝，不伪报距离",
+      "remaining": "经授权GPS距离查询尚未实现；设备拒绝定位和完整购买未由本次代替",
+      "actual_checks": [
+        {
+          "name": "manual city browsing uses no coordinates and refuses unsupported location parameters without losing public results",
+          "file": "test/discovery.integration.test.cjs",
+          "line": 36,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 47.2224,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "name": "manual city without coordinates; unsupported distance not silently calculated",
+          "result": "PASS",
+          "listing_id": "ec053e74-5e92-40d4-8a48-93a2d6baae5d",
+          "city": "synthetic-city",
+          "distance_supported": false
+        }
+      ]
+    },
+    {
+      "id": "ARTIST-DETAIL-INVITATION",
+      "acceptance_id": "ACC-DEL-04.04",
+      "result": "LOCAL_PASS",
+      "scope": "关闭公开试镜仍保留同艺人详情与受当前资格约束的邀约引用",
+      "remaining": "当前是后端链，设备界面与真实资格仍待独立验收",
+      "actual_checks": [
+        {
+          "name": "closed public audition retains the same public artist detail and a scoped invitation context",
+          "file": "test/discovery.integration.test.cjs",
+          "line": 42,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 47.3285,
+          "error_code": null
+        },
+        {
+          "name": "artist matching uses current invitation context then independent review and one support case",
+          "file": "test/prelaunch-matching-catalogs.integration.test.cjs",
+          "line": 59,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 12697.0857,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "name": "public audition disabled does not remove public detail or scoped invitation",
+          "result": "PASS",
+          "listing_id": "ec053e74-5e92-40d4-8a48-93a2d6baae5d",
+          "person_id": "9e2a5789-7840-4158-95ee-a9f44ed24fc5",
+          "invitation_context": {
+            "rule_id": "a6ec43b8-2148-43d0-82ea-697d92668303",
+            "listing_id": "ec053e74-5e92-40d4-8a48-93a2d6baae5d",
+            "person_id": "9e2a5789-7840-4158-95ee-a9f44ed24fc5",
+            "avatar_id": "f0b8f5b0-e9c3-4d91-94af-dc8771e3fbf4",
+            "consent_id": "73029656-59c6-43de-9729-fa682b8019bb",
+            "target_party_id": "19b79071-16b0-463d-8d0c-2f5bd8d5de60",
+            "display_name": "synthetic public artist"
+          }
+        }
+      ]
+    },
+    {
+      "id": "INTENT-SUPPORT-QUOTE",
+      "acceptance_id": "ACC-DEL-11.03",
+      "result": "LOCAL_PASS",
+      "scope": "并发同意仅一案件/事件，独立客服同案关联原报价并生成一订单，原意向不改",
+      "remaining": "尚无明确指派/交接给具体客服的接口；真实办理与独立签收未验",
+      "actual_checks": [
+        {
+          "name": "duplicate interest creates one case; no order or chat created",
+          "file": "test/notices.integration.test.cjs",
+          "line": 117,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 67.892,
+          "error_code": null
+        },
+        {
+          "name": "case association verifies actual quote, parties, avatar and immutable version",
+          "file": "test/notices.integration.test.cjs",
+          "line": 154,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 254.9209,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "name": "concurrent acceptance creates one case and one event for both parties, not an order",
+          "result": "PASS",
+          "submission_id": "38d3c6a2-8f81-48b9-a5e4-c1105e397bf4",
+          "case_id": "dd9c2c17-4d24-441b-a975-1fb9e21f0ac5",
+          "event_id": "29"
+        },
+        {
+          "name": "same support case independently links one original quote and one order without rewriting intent authorization",
+          "result": "PASS",
+          "submission_id": "38d3c6a2-8f81-48b9-a5e4-c1105e397bf4",
+          "case_id": "dd9c2c17-4d24-441b-a975-1fb9e21f0ac5",
+          "quote_id": "bfbda089-3ba6-4019-aaa1-5a6c2b75d920",
+          "order_id": "2050a031-7ac6-4533-8112-3024dfa9f4a5",
+          "original_submission_sha256": "5837afaabface4f678e520646a002f2466b62b0260375b3ad12c8ea82fce3481"
+        }
+      ]
+    },
+    {
+      "id": "INTENT-CLOSE-NOTIFY",
+      "acceptance_id": "ACC-DEL-11.04",
+      "result": "LOCAL_PASS",
+      "scope": "撤回同意后的未转单案件只关闭一次，禁止继续转报价，通知双方保留原授权",
+      "remaining": "事件与收件人入库不等于真实推送送达；规则期限以各自快照为准，未一律改成72小时",
+      "actual_checks": [
+        {
+          "name": "withdrawal closes unlinked case and blocks later conversion",
+          "file": "test/notices.integration.test.cjs",
+          "line": 131,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 87.1574,
+          "error_code": null
+        },
+        {
+          "name": "deadline failure never creates a customer service case",
+          "file": "test/notices.integration.test.cjs",
+          "line": 128,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 55.4424,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "name": "same interested submission withdrawal closes case once, preserves authorization and queues both notifications",
+          "result": "PASS",
+          "submission_id": "47184781-d2b1-4613-8787-f918e158df49",
+          "case_id": "fc109836-ce51-4b41-9bb9-2a009521cef2"
+        }
+      ]
+    }
+  ]
+}

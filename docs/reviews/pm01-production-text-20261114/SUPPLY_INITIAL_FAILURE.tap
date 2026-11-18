@@ -1,0 +1,143 @@
+TAP version 13
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:37.649Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-1","time":"2026-11-14T10:55:37.673Z","level":"info","event":"provider_call_returned"}
+# Subtest: complete long-text moderation uses original private file, durable segment receipts and independent review
+    # Subtest: 600 Unicode characters retain existing single-request behavior
+    ok 1 - 600 Unicode characters retain existing single-request behavior
+      ---
+      duration_ms: 121.4639
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:37.790Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-2","time":"2026-11-14T10:55:37.791Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:37.804Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-3","time":"2026-11-14T10:55:37.804Z","level":"info","event":"provider_call_returned"}
+    # Subtest: 601 characters include the actual tail and require full-file independent review
+    ok 2 - 601 characters include the actual tail and require full-file independent review
+      ---
+      duration_ms: 154.9793
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:37.921Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-4","time":"2026-11-14T10:55:37.921Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:37.934Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-5","time":"2026-11-14T10:55:37.935Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:37.946Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-6","time":"2026-11-14T10:55:37.946Z","level":"info","event":"provider_call_returned"}
+    # Subtest: tail high risk rejects the original whole document and cannot be manually approved
+    ok 3 - tail high risk rejects the original whole document and cannot be manually approved
+      ---
+      duration_ms: 94.137
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.009Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-7","time":"2026-11-14T10:55:38.009Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.021Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T10:55:38.021Z","level":"error","event":"provider_call_failed"}
+    # Subtest: unknown second response preserves first receipt and never resends either segment on manual retry
+    ok 4 - unknown second response preserves first receipt and never resends either segment on manual retry
+      ---
+      duration_ms: 74.7178
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.089Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-9","time":"2026-11-14T10:55:38.092Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.125Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-10","time":"2026-11-14T10:55:38.126Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.141Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-11","time":"2026-11-14T10:55:38.142Z","level":"info","event":"provider_call_returned"}
+    # Subtest: withdrawn account stops later segments; restored authority resumes only known unsubmitted tail
+    ok 5 - withdrawn account stops later segments; restored authority resumes only known unsubmitted tail
+      ---
+      duration_ms: 112.2165
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.194Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-12","time":"2026-11-14T10:55:38.194Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.206Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-13","time":"2026-11-14T10:55:38.206Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.218Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-14","time":"2026-11-14T10:55:38.218Z","level":"info","event":"provider_call_returned"}
+    # Subtest: interrupted final database write recovers all known receipts without new provider requests
+    ok 6 - interrupted final database write recovers all known receipts without new provider requests
+      ---
+      duration_ms: 104.1694
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.303Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T10:55:38.303Z","level":"error","event":"provider_call_failed"}
+    # Subtest: different response identity and malformed UTF8 never yield a publishable result
+    ok 7 - different response identity and malformed UTF8 never yield a publishable result
+      ---
+      duration_ms: 80.5812
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.380Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-16","time":"2026-11-14T10:55:38.380Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.390Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-17","time":"2026-11-14T10:55:38.390Z","level":"info","event":"provider_call_returned"}
+    # Subtest: manual approval rechecks actual original bytes and current owner, not only stored file metadata
+    ok 8 - manual approval rechecks actual original bytes and current owner, not only stored file metadata
+      ---
+      duration_ms: 72.5554
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.449Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-18","time":"2026-11-14T10:55:38.452Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_NOT_VERIFIED","time":"2026-11-14T10:55:38.462Z","level":"warn","event":"provider_call_blocked"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.490Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-19","time":"2026-11-14T10:55:38.490Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.503Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-20","time":"2026-11-14T10:55:38.503Z","level":"info","event":"provider_call_returned"}
+    # Subtest: known provider preflight disable keeps an unsubmitted segment recoverable after independent revalidation
+    ok 9 - known provider preflight disable keeps an unsubmitted segment recoverable after independent revalidation
+      ---
+      duration_ms: 101.7132
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.547Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-21","time":"2026-11-14T10:55:38.547Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.556Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-22","time":"2026-11-14T10:55:38.556Z","level":"info","event":"provider_call_returned"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:55:38.574Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-23","time":"2026-11-14T10:55:38.575Z","level":"info","event":"provider_call_returned"}
+    # Subtest: supply review cannot approve an organization task after the original owner membership is suspended
+    not ok 10 - supply review cannot approve an organization task after the original owner membership is suspended
+      ---
+      duration_ms: 71.3847
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:43:11'
+      failureType: 'testCodeFailure'
+      error: 'Missing expected rejection.'
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        code: 'SUPPLY_PARTY_FORBIDDEN'
+      operator: 'rejects'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:43:802)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:43:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..10
+not ok 1 - complete long-text moderation uses original private file, durable segment receipts and independent review
+  ---
+  duration_ms: 8287.1258
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 11
+# suites 0
+# pass 9
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8484.0656

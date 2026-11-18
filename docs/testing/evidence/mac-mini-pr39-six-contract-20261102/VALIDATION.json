@@ -1,0 +1,145 @@
+{
+  "base_sha": "cde0518fac17c5e72b17f77d4744c693bc3c6444",
+  "working_tree": true,
+  "checked_at": "2026-11-02T17:26:59.632172+00:00",
+  "checks": [
+    {
+      "name": "App selected CI suite",
+      "command": "flutter test test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy test/plaza test/discovery test/support test/plaza_subpages_layout_test.dart test/plaza_subpages_recovery_test.dart test/interaction_flows_test.dart test/widget_test.dart test/catalog_editorial_restore_test.dart --no-pub --reporter expanded",
+      "result": "PASS",
+      "passed": 805,
+      "failed": 0,
+      "log": "app-full.log"
+    },
+    {
+      "name": "Vue all tests",
+      "command": "npm test",
+      "result": "PASS",
+      "passed": 561,
+      "log": "web-all.log",
+      "count_method": "511 printed check totals + rights-commercial 34 + session recovery 16"
+    },
+    {
+      "name": "Vue typecheck/build",
+      "command": "npm run type-check; npm run build-only",
+      "result": "PASS",
+      "logs": [
+        "web-typecheck.log",
+        "web-build.log"
+      ],
+      "limits": "Existing >500kB bundle warning"
+    },
+    {
+      "name": "App main web build",
+      "command": "flutter build web --no-pub",
+      "result": "PASS",
+      "log": "app-web-build.log"
+    },
+    {
+      "name": "Dart selected CI analysis",
+      "command": "dart analyze (exact workflow-selected paths)",
+      "result": "PASS",
+      "errors": 0,
+      "warnings": 0,
+      "existing_infos": 9,
+      "log": "dart-analyze.log"
+    },
+    {
+      "name": "Dart new page/target tests analysis after final label",
+      "command": "dart analyze lib/contract_six test/engagement/contract_six_test.dart test/trade/rounding_contract_test.dart",
+      "result": "PASS",
+      "issues": 0,
+      "log": "app-six-analyze.log"
+    },
+    {
+      "name": "Contract/gigs actual isolated MySQL",
+      "command": "JX_MYSQL_TEST_ENV_FILE=<private file> node --test --require ./scripts/test-network-guard.cjs test/contract-six.integration.test.cjs test/contract-six-policy.test.cjs test/gigs.integration.test.cjs",
+      "result": "PASS",
+      "passed": 65,
+      "failed": 0,
+      "skipped": 0,
+      "log": "backend-mysql.log"
+    },
+    {
+      "name": "Real browser synthetic login/navigation",
+      "command": "node scripts/run-ui-browser-check.cjs 11 --sms",
+      "result": "PASS",
+      "passed": 10,
+      "navigation_entries": 77,
+      "actual_sms_sent": 0,
+      "log": "login-navigation.log"
+    },
+    {
+      "name": "Actual Vue contract workflows",
+      "result": "PASS",
+      "groups": 10,
+      "artifacts": [
+        "web-main.json",
+        "web-finish.json",
+        "handover-web.json"
+      ]
+    },
+    {
+      "name": "Native full infringement",
+      "result": "PASS",
+      "test_runs": 1,
+      "roles": 4,
+      "artifact": "native-infringement.json"
+    },
+    {
+      "name": "Native same handover",
+      "result": "PASS",
+      "test_runs": 1,
+      "artifact": "handover-native.json"
+    },
+    {
+      "name": "Native same audition and closure",
+      "result": "PASS",
+      "test_runs": 1,
+      "artifact": "native-finish.json"
+    },
+    {
+      "name": "Native guardian and extension steps",
+      "result": "PARTIAL_PASS_THEN_TEST_DRIVER_FAILURE",
+      "passed_checkpoints": 7,
+      "artifact": "native-guardian-partial.json",
+      "limits": "Following infringement tap did not hit; entire original run failed. Only infringement rerun after fixing driver."
+    },
+    {
+      "name": "OpenAPI examples/schema",
+      "result": "PASS",
+      "checks": 18189,
+      "runtime_tests": "NOT_RUN_BY_THIS_CHECK",
+      "log": "schema.log"
+    },
+    {
+      "name": "Collaboration/task links",
+      "command": "python3.12 scripts/collaboration_check.py --render",
+      "result": "PASS",
+      "log": "collaboration.log"
+    },
+    {
+      "name": "Formal acceptance registration and validator tests",
+      "command": "python3.12 scripts/full_business_check.py; python3.12 scripts/full_business_check_test.py",
+      "result": "PASS",
+      "validator_tests": 19,
+      "registered": 151,
+      "formal_passed": 0,
+      "client_test_version_ready": false,
+      "logs": [
+        "full-business-register.log",
+        "register-tests.log"
+      ]
+    },
+    {
+      "name": "CI navigation regression, maintained scripts updated for three new entries",
+      "command": "node scripts/run-ui-browser-check.cjs 20 --built; node scripts/run-ui-browser-check.cjs 18 --built",
+      "result": "PASS",
+      "stage20_passed": 21,
+      "stage18_passed": 14,
+      "all_navigation_entries_traversed": 77,
+      "artifact": "CI_NAVIGATION_RECHECK.json",
+      "limits": "9432eb04 remote browser jobs failed on stale74 assertion. This is local follow-up, final pushed SHA CI recorded separately. App/Web business sources unchanged; existing 805/561 checks remain tied to source manifest."
+    }
+  ]
+}

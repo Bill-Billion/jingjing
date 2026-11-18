@@ -1,0 +1,61 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "af1cdff08c8367e9da0b47e091a7f2be3bd95318",
+  "run_id": "pm01-minor-actor-2026-11-14T12-06-57-084Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "frontend_run": false,
+  "real_services": false,
+  "checks": [
+    {
+      "id": "KNOWN-MINOR-ORGANIZATION-ACTOR",
+      "acceptance_ids": [
+        "ACC-DEL-02.01"
+      ],
+      "name": "无监护绑定的已知未成年办事人限制",
+      "result": "LOCAL_PASS",
+      "scope": "同一成年艺人/机构上架，实际办事人从成年变已知未成年后新提交及成功请求重放均拒绝；身份到期/未知/失败不清除限制，原记录读取和本人资料申请保留，可信成年纠正恢复同一原操作。充值/试镜/抽奖/投票仅核直接请求在分发前拒绝，不冒充各完整购买链。",
+      "remaining": "真实身份提供方及全部原年龄条款、所需端/缓存和维护者独审未完成；请求入口检查不构成在途业务与年龄变更全局串行化保证；原有已绑定监护流程不改。",
+      "actual_checks": {
+        "records": [
+          {
+            "name": "adult organization owner can create the valid adult artist listing through HTTP",
+            "result": "PASS"
+          },
+          {
+            "name": "known minor without a guardian link cannot create or replay organization business",
+            "result": "PASS"
+          },
+          {
+            "name": "known minor still reads own account and existing authorized record",
+            "result": "PASS"
+          },
+          {
+            "name": "direct recharge audition draw and vote requests are age-blocked before business dispatch",
+            "result": "PASS"
+          },
+          {
+            "name": "known minor may request a personal copy without opening business authority",
+            "result": "PASS"
+          },
+          {
+            "name": "expired identity and unknown reverification retain the last known age",
+            "result": "PASS"
+          },
+          {
+            "name": "failed reverification cannot erase the known minor restriction",
+            "result": "PASS"
+          },
+          {
+            "name": "trusted adult correction restores valid business without rewriting prior listing",
+            "result": "PASS"
+          },
+          {
+            "name": "known minor business actor cannot bypass age restriction by acting for an adult artist organization",
+            "result": "PASS"
+          }
+        ]
+      }
+    }
+  ]
+}

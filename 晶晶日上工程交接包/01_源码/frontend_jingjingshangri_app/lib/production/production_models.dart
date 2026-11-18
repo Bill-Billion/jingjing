@@ -1,6 +1,7 @@
 import '../account/account_api.dart';
 import '../contracts/contract_api.dart';
-import '../trade/trade_models.dart' show validateTradeSpecification;
+import '../trade/trade_models.dart'
+    show validateTradeSpecification, customizationDay;
 
 const productionStages = {
   'SCRIPT': '剧本',
@@ -184,7 +185,83 @@ class ProductionRecord {
           _hash(d['content_sha256']));
     } else if (r['kind'] == 'FEEDBACK') {
       _keys(d, ['version_id', 'stage', 'decision', 'note', 'checklist'],
-          ['change_kind', 'acceptance_method']);
+          ['change_kind', 'acceptance_method', 'acceptance_receipt']);
+      if (d.containsKey('acceptance_receipt')) {
+        final receipt = productionMap(d['acceptance_receipt']);
+        _keys(receipt, [
+          'delivery_id',
+          'version_id',
+          'notification_event_id',
+          'view_observed_at',
+          'notified_at',
+          'started_at',
+          'deadline_at',
+          'buyer_account_id',
+          'job_id'
+        ], [
+          'deadline_basis'
+        ]);
+        productionRequire(_id(receipt['delivery_id']) &&
+            receipt['version_id'] == d['version_id'] &&
+            _number(receipt['notification_event_id'], min: 1));
+        for (final key in [
+          'view_observed_at',
+          'notified_at',
+          'started_at',
+          'deadline_at'
+        ]) {
+          productionRequire(receipt[key] == null ||
+              receipt[key] is String &&
+                  DateTime.tryParse(receipt[key]) != null);
+        }
+        for (final key in ['buyer_account_id', 'job_id']) {
+          productionRequire(receipt[key] == null || _id(receipt[key]));
+        }
+        productionRequire(receipt['view_observed_at'] != null &&
+            _id(receipt['buyer_account_id']));
+        if (d['acceptance_method'] == 'BUYER_EXPLICIT') {
+          productionRequire(receipt['buyer_account_id'] == r['created_by']);
+        } else {
+          productionRequire(d['acceptance_method'] == 'AGREED_TIMEOUT' &&
+              receipt['started_at'] != null &&
+              receipt['job_id'] != null);
+        }
+        if (receipt['started_at'] != null) {
+          productionRequire(
+              receipt['notified_at'] != null && receipt['deadline_at'] != null);
+        }
+        if (receipt.containsKey('deadline_basis')) {
+          final basis = productionMap(receipt['deadline_basis']);
+          if (basis['mode'] == 'EXPLICIT_CONFIRMATION') {
+            _keys(basis, ['mode']);
+            productionRequire(d['stage'] != 'FINAL' &&
+                receipt['notified_at'] != null &&
+                receipt['started_at'] == null &&
+                receipt['deadline_at'] == null &&
+                receipt['job_id'] == null);
+          } else {
+            _keys(basis, [
+              'mode',
+              'days',
+              'timezone',
+              'calendar_version',
+              'calendar_sha256',
+              'received_date',
+              'deadline_date'
+            ]);
+            productionRequire(d['stage'] == 'FINAL' &&
+                basis['mode'] == 'WORKING_DAYS' &&
+                basis['days'] == 5 &&
+                basis['timezone'] == 'Asia/Shanghai' &&
+                _text(basis['calendar_version'], 128) &&
+                _hash(basis['calendar_sha256']) &&
+                customizationDay(basis['received_date']) &&
+                customizationDay(basis['deadline_date']) &&
+                receipt['started_at'] != null &&
+                receipt['job_id'] != null);
+          }
+        }
+      }
       if (d.containsKey('change_kind')) {
         productionRequire(d['change_kind'] == null ||
             ['PLATFORM_CORRECTION', 'CREATIVE_CHANGE']
@@ -246,6 +323,10 @@ String productionError(AccountError e, {bool writing = false}) {
     'CUSTOMIZATION_CHANGE_QUOTE_REQUIRED':
         '原订单创意修改次数已用完。新增要求请从原项目开问题单，另行报价、确认和付款。',
     'CUSTOMIZATION_CASE_ALREADY_OPEN': '原项目已有一份未解决的问题，请先查看原处理记录。',
+    'CUSTOMIZATION_CONTRACT_VERSION_REQUIRED': '该规格已不用于新报价，请选择新版；旧订单保留原约定。',
+    'CUSTOMIZATION_CALENDAR_COVERAGE_REQUIRED':
+        '该日期的验收安排尚未确认，请联系平台处理；仍可主动确认成果或提出异议。',
+    'CUSTOMIZATION_ACCEPTANCE_CLOCK_MISMATCH': '验收计时记录需核对，暂不自动确认。',
     'CUSTOMIZATION_INTERIM_PAYMENT_REQUIRED': '请先核对原订单的中间补款节点。预览或成片确认不表示钱已到账。',
     'CUSTOMIZATION_REFUND_RECONCILIATION_REQUIRED':
         '收退款记录与取消决定需要进一步核对，不能记为已退款。',

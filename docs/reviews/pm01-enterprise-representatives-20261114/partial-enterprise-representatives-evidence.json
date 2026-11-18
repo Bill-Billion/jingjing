@@ -1,0 +1,74 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "37722e77927f24905c11b09b3d4c6a609e6ca4ba",
+  "business_commit": "c3dd267b938da2f4c3d318d623b5898e979cc61a",
+  "run_id": "pm01-enterprise-representatives-2026-11-14T03-57-23-141Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "ENTERPRISE-EXPLICIT-REPRESENTATIVE",
+      "acceptance_ids": [
+        "ACC-DEL-01.04"
+      ],
+      "name": "企业明确代办授权与同单票据",
+      "result": "LOCAL_PASS",
+      "scope": "企业所有者提出明确TRADE/INVOICES范围和期限，成员接受后可办理交易、现货买方及票据；公司隔离、授权撤销、到期、双方失权、成员重新加入不复活旧授权、独审隔离、原请求恢复已验。",
+      "remaining": "仅当前接入入口；新授权记录本人资料副本、定制/试镜/通告等包装入口和附件上传需继续核对；真实主体核验、法定代表变更、端侧接入/设备/独立签收未完成。",
+      "actual_checks": [
+        {
+          "name": "explicit representative offer requires reviewed organization, existing member and owner; no authority before acceptance",
+          "result": "PASS"
+        },
+        {
+          "name": "accepted trade representative buys and pays company stock without scout membership; invoice scope stays separate",
+          "result": "PASS"
+        },
+        {
+          "name": "accepted invoice grant creates and recovers the same request; delegates cannot manage membership or self-review",
+          "result": "PASS"
+        },
+        {
+          "name": "another company and header mismatch cannot inherit order, invoice, grant or pagination authority",
+          "result": "PASS"
+        },
+        {
+          "name": "scope revocation blocks reads, downloads and old checkout replay while retaining invoice authority and original contract",
+          "result": "PASS"
+        },
+        {
+          "name": "expired, suspended and removed memberships stop grants; rejoining does not restore old authority",
+          "result": "PASS"
+        },
+        {
+          "name": "declined, revoked pending and stale authority changes cannot activate; replay cannot issue a duplicate grant",
+          "result": "PASS"
+        },
+        {
+          "name": "independent handlers issue the delegated request; invoice withdrawal blocks the file, old write and recovery",
+          "result": "PASS"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-enterprise-representatives-20261114/REPRESENTATIVE_JOURNEY.json",
+          "sha256": "faca566d0e0b6fd21e1d15c81c03a554c60e0c1b1135a4a1c5345aec9bd5476f"
+        },
+        {
+          "path": "docs/reviews/pm01-enterprise-representatives-20261114/FINAL_BACKEND.json",
+          "sha256": "57428fdf156e5273a0a0011caf668e7db759d6297dd0ccd357f04e30ecf520c8"
+        },
+        {
+          "path": "docs/reviews/pm01-enterprise-representatives-20261114/FINAL_CONTRACT.json",
+          "sha256": "a9bfd746f035eb3eef5ae13a76f878b33153926c86731d1dda45640172c6a1f1"
+        },
+        {
+          "path": "docs/reviews/pm01-enterprise-representatives-20261114/SOURCE_MANIFEST.json",
+          "sha256": "5879677faeec686217be720cffda06b83af2d30db009b3e2c0d693a37e0e7cdb"
+        }
+      ]
+    }
+  ]
+}

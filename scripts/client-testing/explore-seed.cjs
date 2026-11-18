@@ -31,10 +31,17 @@ async function main(){
   const accounts=Object.fromEntries(Object.entries(f.people).map(([role,u])=>[role,{account_id:u.account_id,party_id:u.acting_party_id,bearer_token:u.token}]));
   const access={synthetic_only:true,payment_simulation:true,accounts,scenarios:f.scenarios};
   // Production credentials and callbacks are never routed. Existing business ACLs still apply.
-  const rules=['GET','POST','PATCH'].map(m=>[m,/^\/api\/v1\/(?:me|parties|organizations|customization-categories|contract-snapshots|rule-versions|finance|categories|governance|supply|artists|licensing|trade|customization-requests|operations|production|projects|gigs|notices|auditions|stock|wallet|engagement|cocreation|redemption|privacy|media)(?:\/.*)?$/]);
+  const rules=['GET','POST','PATCH'].map(m=>[m,/^\/api\/v1\/(?:me|parties|organizations|customization-categories|contract-snapshots|rule-versions|finance|categories|governance|supply|artists|licensing|trade|customization-requests|operations|production|projects|gigs|notices|auditions|stock|wallet|engagement|cocreation|redemption|privacy|media|directory|discovery|support|invoices)(?:\/.*)?$/]);
+  rules.push(['DELETE',/^\/api\/v1\/me\/collections\/history(?:\/[^/]+\/[^/]+)?$/]);
   const dir=await require('./persistent-story.cjs').retain({env,database:name,secret:f.secret,access,tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.merchantId},supplyEnv:{ARTIST_PLATFORM_MERCHANT_PARTY_ID:f.merchantId},rules,db,files:f.allFiles()});
   const enrichment=await require('./explore-enrich.cjs').enrich(db,JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'))),dir);fs.writeFileSync(path.join(dir,'enrichment.json'),JSON.stringify(enrichment,null,2));
   const plaza=await require('./plaza-enrich.cjs').enrich(db,JSON.parse(fs.readFileSync(path.join(dir,'manifest.json'))),dir);fs.writeFileSync(path.join(dir,'plaza-enrichment.json'),JSON.stringify(plaza,null,2));
+  const manifestFile=path.join(dir,'manifest.json'),manifest=JSON.parse(fs.readFileSync(manifestFile));
+  const complete=await require('./complete-enrich.cjs').enrich(db,manifest,dir);
+  manifest.access.scenarios.complete=complete;
+  manifest.supplyEnv={...manifest.supplyEnv,NODE_ENV:'test',INVOICE_SANDBOX_ENABLED:'true'};
+  fs.writeFileSync(manifestFile,JSON.stringify(manifest,null,2),{mode:0o600});
+  fs.writeFileSync(path.join(dir,'complete-enrichment.json'),JSON.stringify(complete,null,2));
   console.log(JSON.stringify({database:name,retained:true,manifest:path.relative(root,path.join(dir,'manifest.json')),scenarios:Object.keys(f.scenarios)}));
  }finally{if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();await control.end();}
 }

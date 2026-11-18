@@ -1,0 +1,2 @@
+import {type Domain,id,long,operation as op} from './model'
+export const handover:Domain={key:'handover',title:'机构解除后的旧单交接',journal:'ORDER HANDOVER',intro:'从原机构关系读取被捕获的旧订单，分别确认交接。',note:'解除后立即停止新业务。交接只保留7×24小时内且原授权仍有效的旧单沟通；双方确认、到期或撤权后停止权限。逾期补记不恢复权限，旧合同与收入不变。',sections:[{key:'orders',label:'旧单与双方确认',path:'/gigs/relations/:record_id/handover',party:'required'}],operations:[op('ack','以当前一方确认这笔旧单交接','/gigs/relations/:record_id/handover',[id('order_id','本交接清单中的旧订单'),long('note','实际交接说明',2000)],'required',true,['orders'])]}

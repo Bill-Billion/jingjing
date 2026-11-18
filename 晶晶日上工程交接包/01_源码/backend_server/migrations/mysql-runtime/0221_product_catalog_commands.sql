@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS product_catalog_commands (
+ id CHAR(64) CHARACTER SET ascii COLLATE ascii_bin PRIMARY KEY,
+ fingerprint CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NOT NULL,
+ result_json LONGTEXT NULL,
+ result_sha256 CHAR(64) CHARACTER SET ascii COLLATE ascii_bin NULL,
+ created_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+) ENGINE=InnoDB

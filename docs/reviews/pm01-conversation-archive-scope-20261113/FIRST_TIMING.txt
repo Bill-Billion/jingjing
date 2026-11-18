@@ -1,0 +1,71 @@
+TAP version 13
+# Subtest: same commercial production accepts after finance confirmation and closes through independent manual archive
+    # Subtest: confirmed full current finance does not prematurely archive before accepted production
+    ok 1 - confirmed full current finance does not prematurely archive before accepted production
+      ---
+      duration_ms: 126.0107
+      type: 'test'
+      ...
+    # Subtest: same order completes all independently reviewed and buyer accepted production stages
+    not ok 2 - same order completes all independently reviewed and buyer accepted production stages
+      ---
+      duration_ms: 347.5253
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\commercial-archive-timing.integration.test.cjs:32:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":409,"meta":{"request_id":"13c0c349-82f5-4267-9e76-7eb5a3103493","actor":{"account_id":"2fe7950b-2ca7-4512-8e2f-fdb04ef5e474"},"acting_party":"e05347fe-1d0c-497c-84ff-e3d75073e499"},"error":{"code":"DISTINCT_PREVIEW_REQUIRED","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\commercial-archive-timing.integration.test.cjs:20:23)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\commercial-archive-timing.integration.test.cjs:37:95)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\commercial-archive-timing.integration.test.cjs:32:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: independent manual archive finishes the later-acceptance path without changing rights or money
+    not ok 3 - independent manual archive finishes the later-acceptance path without changing rights or money
+      ---
+      duration_ms: 44.7524
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\commercial-archive-timing.integration.test.cjs:45:11'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\commercial-archive-timing.integration.test.cjs:53:76)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\commercial-archive-timing.integration.test.cjs:45:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..3
+not ok 1 - same commercial production accepts after finance confirmation and closes through independent manual archive
+  ---
+  duration_ms: 7543.4935
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\commercial-archive-timing.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 4
+# suites 0
+# pass 1
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7774.7842

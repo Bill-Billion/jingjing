@@ -1,3 +1,5 @@
+import '../rights/rights_models.dart';
+import '../account/account_api.dart';
 import 'v5_support.dart';
 
 const stockExcluded = [
@@ -17,7 +19,7 @@ const stockStatuses = {
   'UNLISTED': '已停止新销售',
   'RIGHTS_HOLD': '权利暂停',
   'AWAITING_PAYMENT': '等待实际付款',
-  'ACTIVE': '个人许可有效',
+  'ACTIVE': '订单许可有效',
   'PAYMENT_REVIEW_REQUIRED': '付款待核实',
   'REFUND_REQUIRED': '已核定退款，等待实际渠道',
   'REVOKED': '许可已撤回'
@@ -32,18 +34,7 @@ const stockCases = {
 
 class StockLicense {
   StockLicense(dynamic raw) : data = v5Map(raw) {
-    v5Require(data['scope'] == 'PERSONAL_NONCOMMERCIAL' &&
-        data['exclusive'] == false &&
-        data['territory'] == 'WORLDWIDE' &&
-        data['duration'] == 'PERPETUAL' &&
-        data['personal_social_sharing'] == true &&
-        data['limited_to_buyer'] == true &&
-        v5Int(data['acceptance_hours'], min: 1, max: 720) &&
-        data['aftercare_terms'] is String &&
-        (data['aftercare_terms'] as String).isNotEmpty);
-    final excluded = v5Rows(data['excluded']);
-    v5Require(excluded.length == stockExcluded.length &&
-        excluded.toSet().containsAll(stockExcluded));
+    v5Require(isStockTerms(data, snapshot: true));
   }
   final Map<String, dynamic> data;
   int get hours => data['acceptance_hours'];
@@ -70,6 +61,105 @@ class StockOffer {
   String get hash => data['offer_sha256'];
   String get title => data['title'];
   int get price => data['unit_minor'];
+  int get version => data['object_version'];
+}
+
+class StockCoverMetadata {
+  StockCoverMetadata(dynamic raw) : data = v5Map(raw) {
+    v5Require(data.keys.toSet().difference({
+          'media_type',
+          'byte_size',
+          'content_sha256',
+          'width',
+          'height',
+          'frame_ms',
+          'source'
+        }).isEmpty &&
+        data['media_type'] == 'image/jpeg' &&
+        v5Int(data['byte_size'], min: 1, max: 2097151) &&
+        v5Hash(data['content_sha256']) &&
+        v5Int(data['width'], min: 1, max: 640) &&
+        v5Int(data['height'], min: 1, max: 640) &&
+        data['frame_ms'] == 0 &&
+        data['source'] == 'REVIEWED_PREVIEW');
+  }
+  final Map<String, dynamic> data;
+  int get size => data['byte_size'];
+  String get hash => data['content_sha256'];
+  int get width => data['width'];
+  int get height => data['height'];
+}
+
+class StockPublicMedia {
+  StockPublicMedia(dynamic raw, StockOffer offer) : data = v5Map(raw) {
+    v5Require(data.keys.toSet().difference({
+          'listing_id',
+          'listing_version',
+          'source_sha256',
+          'preview_sha256',
+          'duration_ms',
+          'preview_duration_ms',
+          'preview_width',
+          'preview_height',
+          'cover'
+        }).isEmpty &&
+        data['listing_id'] == offer.id &&
+        v5Int(data['listing_version'], min: 1, max: 2147483647) &&
+        v5Hash(data['source_sha256']) &&
+        v5Hash(data['preview_sha256']) &&
+        v5Int(data['duration_ms'], min: 1, max: 1800000) &&
+        v5Int(data['preview_duration_ms'], min: 1, max: 1800000) &&
+        v5Int(data['preview_width'], min: 1, max: 4096) &&
+        v5Int(data['preview_height'], min: 1, max: 4096));
+    if (data['listing_version'] != offer.version) {
+      throw const AccountError(409, 'STOCK_MEDIA_SOURCE_CHANGED');
+    }
+    cover = StockCoverMetadata(data['cover']);
+  }
+  final Map<String, dynamic> data;
+  late final StockCoverMetadata cover;
+  int get durationMs => data['duration_ms'];
+  int get previewDurationMs => data['preview_duration_ms'];
+}
+
+String stockDuration(int milliseconds) {
+  final seconds = milliseconds ~/ 1000, fraction = milliseconds % 1000;
+  final tail = fraction == 0
+      ? ''
+      : '.${fraction.toString().padLeft(3, '0').replaceFirst(RegExp(r'0+$'), '')}';
+  return '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}$tail';
+}
+
+class StockEligibility {
+  StockEligibility(dynamic raw, String person, String party)
+      : data = v5Map(raw) {
+    final fields = [
+      'identity_verified',
+      'l1_verified',
+      'manual_review_approved'
+    ];
+    final reasons = [
+      'ARTIST_IDENTITY_REQUIRED',
+      'STOCK_L1_REQUIRED',
+      'STOCK_HALO_REVIEW_REQUIRED'
+    ];
+    final missing = [
+      for (var i = 0; i < fields.length; i++)
+        if (data[fields[i]] == false) reasons[i]
+    ];
+    v5Require(data['person_id'] == person &&
+        data['seller_party_id'] == party &&
+        data['policy_version'] == 'CONTRACT_20261029' &&
+        fields.every((f) => data[f] is bool) &&
+        data['eligible'] == missing.isEmpty &&
+        data['blocking_reasons'] is List &&
+        (data['blocking_reasons'] as List).length == missing.length &&
+        missing.every((r) => (data['blocking_reasons'] as List).contains(r)));
+  }
+  final Map<String, dynamic> data;
+  bool get eligible => data['eligible'] == true;
+  String get summary =>
+      '实名认证：${data['identity_verified'] ? '已满足' : '未满足'}；L1记录：${data['l1_verified'] ? '已满足' : '未满足'}；主角光环人工审核：${data['manual_review_approved'] ? '已满足' : '未满足'}';
 }
 
 class StockListing {
@@ -138,12 +228,22 @@ class StockPurchase {
     ]) {
       v5Require(data.containsKey(k) && (data[k] == null || v5Date(data[k])));
     }
+    v5Require(data['acceptance_started_at'] == null ||
+        v5Date(data['acceptance_started_at']));
     v5Require(data['notification_event_id'] == null ||
         v5Int(data['notification_event_id'], min: 1));
     v5Require(data['current_case_id'] == null || v5Id(data['current_case_id']));
     v5Require(data['acceptance_method'] == null ||
         ['BUYER_EXPLICIT', 'AGREED_TIMEOUT']
             .contains(data['acceptance_method']));
+    if (data['refund_plan'] != null) {
+      final plan = v5Map(data['refund_plan']);
+      v5Require(v5Id(plan['case_id']) &&
+          v5Int(plan['amount_minor'], min: 1) &&
+          v5Int(plan['target_refunded_minor'], min: 1) &&
+          plan['target_refunded_minor'] >= plan['amount_minor'] &&
+          ['KEEP', 'REVOKE'].contains(plan['license_action']));
+    }
     cases = v5Rows(data['cases'], max: 10000).map(v5Map).toList();
     for (final c in cases) {
       v5Require(v5Id(c['id']) &&
@@ -153,6 +253,9 @@ class StockPurchase {
       final r = c['resolution'];
       if (r != null) {
         final d = v5Map(r);
+        if (d['refund_minor'] != null || d['license_action'] != null) {
+          v5Require(d['decision'] == 'REFUND' && v5Int(d['refund_minor'], min: 1) && ['KEEP', 'REVOKE'].contains(d['license_action']));
+        }
         v5Require(['RESUME', 'REFUND'].contains(d['decision']) &&
             d['reason'] is String &&
             v5Date(d['at']));
@@ -169,6 +272,15 @@ class StockPurchase {
   int get version => raw['object_version'];
   bool get usable =>
       status == 'ACTIVE' &&
-      raw['order_status'] == 'PAID' &&
-      data['current_case_id'] == null;
+      (raw['order_status'] == 'PAID' ||
+          (['PARTIALLY_REFUNDED', 'REFUNDED'].contains(raw['order_status']) &&
+              data['refund_plan']?['license_action'] == 'KEEP')) &&
+      data['current_case_id'] == null &&
+      (license.data['scope'] != 'COMMERCIAL_LIMITED' ||
+          !DateTime.now()
+                  .toUtc()
+                  .isBefore(DateTime.parse(license.data['valid_from'])) &&
+              DateTime.now()
+                  .toUtc()
+                  .isBefore(DateTime.parse(license.data['valid_until'])));
 }

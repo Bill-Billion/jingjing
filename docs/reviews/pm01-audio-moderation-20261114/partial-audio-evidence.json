@@ -1,0 +1,155 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "7b0f75f0c6e2c6c72967e4b81a7bf96e812f260a",
+  "run_id": "pm01-audio-moderation-2026-11-14T01-18-49-257Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "STANDALONE-AUDIO-MODERATION",
+      "acceptance_id": "ACC-DEL-24.02",
+      "name": "独立音频异步审核与人工复核",
+      "result": "LOCAL_PASS",
+      "scope": "实际WAV/MP3检查、原任务轮询、空与未知复核、高风险拒绝、独审保留原依据、本人HTTP与越权、未知提交不重复、分项配置可检查",
+      "remaining": "仅单音轨WAV/MP3、50MB/30分钟；额外封面流及其他格式不支持。SDK回复与准入合成，不代表真实审核质量；切片结构不证明连续/全时段覆盖。真实供应商、所需端与维护者独立验收未完成。",
+      "actual_checks": [
+        {
+          "name": "actual WAV and MP3 submit once, poll original task, preserve safe coverage and owner-only HTTP",
+          "file": "test/audio-moderation.integration.test.cjs",
+          "line": 27,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 478.0587,
+          "error_code": null
+        },
+        {
+          "name": "empty result stays blocked for publication until independent manual review preserving the original result",
+          "file": "test/audio-moderation.integration.test.cjs",
+          "line": 28,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 228.8266,
+          "error_code": null
+        },
+        {
+          "name": "high-risk slice cannot be downgraded by clean summary or manual pending-review endpoint",
+          "file": "test/audio-moderation.integration.test.cjs",
+          "line": 29,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 174.0839,
+          "error_code": null
+        },
+        {
+          "name": "pending resumes original task and mismatched data or optional task never produce a receipt",
+          "file": "test/audio-moderation.integration.test.cjs",
+          "line": 30,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 432.1254,
+          "error_code": null
+        },
+        {
+          "name": "unknown submission is never automatically submitted twice",
+          "file": "test/audio-moderation.integration.test.cjs",
+          "line": 31,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 99.0982,
+          "error_code": null
+        },
+        {
+          "name": "invalid bytes, mismatched MIME, changed configuration and disabled provider never reach SDK",
+          "file": "test/audio-moderation.integration.test.cjs",
+          "line": 32,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 89.7158,
+          "error_code": null
+        },
+        {
+          "name": "standalone audio uses private bytes, bound asynchronous SDK tasks and independent review",
+          "file": "test/audio-moderation.integration.test.cjs",
+          "line": 4,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 11356.2636,
+          "error_code": null
+        },
+        {
+          "name": "voice results bind supplied dataId and original query task without inventing a mandatory returned taskId",
+          "file": "test/audio-moderation.test.cjs",
+          "line": 6,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 1.3891,
+          "error_code": null
+        },
+        {
+          "name": "empty malformed unknown low and medium audio results require review",
+          "file": "test/audio-moderation.test.cjs",
+          "line": 12,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.288,
+          "error_code": null
+        },
+        {
+          "name": "high risk anywhere remains rejected even with malformed or clean surrounding results",
+          "file": "test/audio-moderation.test.cjs",
+          "line": 16,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.1148,
+          "error_code": null
+        },
+        {
+          "name": "nested SDK slice results are conservative and do not leak transcripts or temporary URLs",
+          "file": "test/audio-moderation.test.cjs",
+          "line": 19,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.1725,
+          "error_code": null
+        },
+        {
+          "name": "audio inspection accepts only bounded single-stream matching WAV or MP3",
+          "file": "test/audio-moderation.test.cjs",
+          "line": 23,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 0.6064,
+          "error_code": null
+        },
+        {
+          "name": "unconfigured or audio-only settings have stable inspectable revisions without silently enabling other modes",
+          "file": "test/audio-moderation.test.cjs",
+          "line": 27,
+          "nesting": 0,
+          "status": "PASS",
+          "duration_ms": 8.8068,
+          "error_code": null
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "docs/reviews/pm01-audio-moderation-20261114/FINAL_BACKEND.json",
+          "sha256": "c1cccead0dc9430f5ea4d678d335378565834842a8ac5a3ef5d1aea66376ed92"
+        },
+        {
+          "path": "docs/reviews/pm01-audio-moderation-20261114/FINAL_CONTRACT.json",
+          "sha256": "7dcbeb62e65b94cbaab4c6e3e0cc88f1cb9665ee575ffd9782ece3644eba191c"
+        },
+        {
+          "path": "docs/reviews/pm01-audio-moderation-20261114/BUSINESS_RECORDS.json",
+          "sha256": "eae4170c6776f5358aa95eae0f9e0bf61363767a4960ac4f8c9680f24824d530"
+        },
+        {
+          "path": "docs/reviews/pm01-audio-moderation-20261114/SOURCE_MANIFEST.json",
+          "sha256": "9499af592a4df3b6f0f8d6d6b75b813e85b7d68725a91499e1ef4bbf8ea4fe82"
+        }
+      ]
+    }
+  ]
+}

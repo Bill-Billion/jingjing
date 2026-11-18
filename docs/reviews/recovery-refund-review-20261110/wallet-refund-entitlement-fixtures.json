@@ -1,0 +1,4271 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/rules",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "2e6ac55a-0339-4001-9eb0-d17f4c2bfb11",
+          "actor": {
+            "account_id": "28263221-5490-4bd2-bc16-066a22d7f5d7"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "28263221-5490-4bd2-bc16-066a22d7f5d7",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "49b00ad149fd336d2d376b36c4610dfdeef7d54836d424e708bb4347a050ff49",
+          "data": {
+            "rule": {
+              "version": "synthetic-v1",
+              "terms": "isolated test rule",
+              "topup_threshold_minor": 30000,
+              "membership_days": 365,
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "points_days": 365,
+              "hold_minutes": 10,
+              "aftercare_days": {
+                "STOCK": 7,
+                "CUSTOMIZATION": null,
+                "AUDITION": null,
+                "COMMERCIAL": null
+              },
+              "topup_limits": {
+                "single_minor": 50000,
+                "daily_minor": 100000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "free_awards": {
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3,
+                "REVIEW": null,
+                "SHARE": null
+              }
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/rules/21e1930d-82e7-4a8a-a4b0-37397c4259c1/review",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "e6a4dbe0-7ab1-45fc-8d2a-89e0b2e6a072",
+          "actor": {
+            "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "28263221-5490-4bd2-bc16-066a22d7f5d7",
+          "current_status": "EFFECTIVE",
+          "object_version": 2,
+          "content_sha256": "b56c30b55d6690c1cd310023f0fb5283f665c1165c353c6108a26f678d7387fe",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "review": {
+              "by": "3ec302b5-9fad-468f-81f0-8b74261c8458",
+              "reason": "synthetic reviewed only",
+              "at": "2026-11-10T04:32:45.016Z"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "082ace12-315b-426e-a0ff-7b8e0a12193b",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "kind": "ACCOUNT",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "content_sha256": "fbca2aae4662960c8bc2e42565c62ae14dde1eb941345f67cb7efd3ed59222ff",
+          "data": {
+            "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+            "rule_sha256": "b56c30b55d6690c1cd310023f0fb5283f665c1165c353c6108a26f678d7387fe",
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "opened_at": "2026-11-10T04:32:45.032Z"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "f3876d9b-33ee-4895-bfd9-41f5394afe42",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "account_id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 0,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 0,
+            "withdrawn": 0,
+            "net_issued": 0
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stock/checkout",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "5a8bb9ab-8c14-45bf-8389-8707e2df0265",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "kind": "ORDER",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "merchant_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": null,
+          "order_id": null,
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "OPEN",
+          "object_version": 1,
+          "content_sha256": "922e34cd89a2e5967e292b547e9fc4a373e8d0690a277cbd0af64009bfe559b1",
+          "data": {
+            "quote": {
+              "lines": [
+                {
+                  "title": "Synthetic new contract stock",
+                  "review": {
+                    "reason": "synthetic",
+                    "decision": "APPROVED",
+                    "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+                  },
+                  "currency": "CNY",
+                  "line_kind": "OTHER",
+                  "unit_minor": 100,
+                  "specification": {
+                    "terms": "Synthetic only; no commercial rights, no new generated works.",
+                    "version": "synthetic-v1",
+                    "stock_license": {
+                      "scope": "PERSONAL_NONCOMMERCIAL",
+                      "duration": "PERPETUAL",
+                      "exclusive": false,
+                      "territory": "WORLDWIDE",
+                      "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                      "acceptance_hours": 48,
+                      "acceptance_policy": "CONTRACT_20261029",
+                      "personal_social_sharing": true
+                    }
+                  },
+                  "product_profile": {
+                    "type": "STOCK_VIDEO",
+                    "version": "V5"
+                  },
+                  "provider_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+                  "line_id": "stock",
+                  "spec_id": "12bbe608-d507-461a-bc47-4f413a9a89dc",
+                  "spec_version": 2,
+                  "quantity": 1,
+                  "total_minor": 100
+                }
+              ],
+              "installments": [
+                {
+                  "key": "stock",
+                  "trigger": "ORDER_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "stock",
+                      "amount_minor": 100
+                    }
+                  ],
+                  "apple_product_id": null
+                }
+              ],
+              "total_minor": 100,
+              "currency": "CNY",
+              "channel": "ALIPAY",
+              "transaction_model": "DIRECT_SUPPLIER",
+              "rule_id": "c393c792-7412-4271-9724-e6bda05b50ba",
+              "expires_at": "2026-11-10T05:02:45.176Z",
+              "payment_window_minutes": 30,
+              "license_reservation_id": null,
+              "review": null,
+              "stock_video": {
+                "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+                "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e",
+                "license": {
+                  "scope": "PERSONAL_NONCOMMERCIAL",
+                  "duration": "PERPETUAL",
+                  "exclusive": false,
+                  "territory": "WORLDWIDE",
+                  "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                  "acceptance_hours": 48,
+                  "acceptance_policy": "CONTRACT_20261029",
+                  "personal_social_sharing": true,
+                  "excluded": [
+                    "COMMERCIAL_ADVERTISING",
+                    "ADAPTATION",
+                    "DISTRIBUTION",
+                    "VOICE_SEPARATELY",
+                    "AI_REGENERATION",
+                    "SOURCE_OR_MODEL_FILES",
+                    "NEW_AVATAR_CONTENT",
+                    "EXCLUSIVE_BUYOUT"
+                  ],
+                  "limited_to_buyer": true
+                }
+              }
+            },
+            "contract": {
+              "commitments": {
+                "quote": {
+                  "channel": "ALIPAY",
+                  "currency": "CNY",
+                  "expires_at": "2026-11-10T05:02:45.176Z",
+                  "installments": [
+                    {
+                      "allocations": [
+                        {
+                          "amount_minor": 100,
+                          "line_id": "stock"
+                        }
+                      ],
+                      "apple_product_id": null,
+                      "key": "stock",
+                      "trigger": "ORDER_ACCEPTED"
+                    }
+                  ],
+                  "license_reservation_id": null,
+                  "lines": [
+                    {
+                      "currency": "CNY",
+                      "line_id": "stock",
+                      "line_kind": "OTHER",
+                      "product_profile": {
+                        "type": "STOCK_VIDEO",
+                        "version": "V5"
+                      },
+                      "provider_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+                      "quantity": 1,
+                      "review": {
+                        "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458",
+                        "decision": "APPROVED",
+                        "reason": "synthetic"
+                      },
+                      "spec_id": "12bbe608-d507-461a-bc47-4f413a9a89dc",
+                      "spec_version": 2,
+                      "specification": {
+                        "stock_license": {
+                          "acceptance_hours": 48,
+                          "acceptance_policy": "CONTRACT_20261029",
+                          "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                          "duration": "PERPETUAL",
+                          "exclusive": false,
+                          "personal_social_sharing": true,
+                          "scope": "PERSONAL_NONCOMMERCIAL",
+                          "territory": "WORLDWIDE"
+                        },
+                        "terms": "Synthetic only; no commercial rights, no new generated works.",
+                        "version": "synthetic-v1"
+                      },
+                      "title": "Synthetic new contract stock",
+                      "total_minor": 100,
+                      "unit_minor": 100
+                    }
+                  ],
+                  "payment_window_minutes": 30,
+                  "review": null,
+                  "rule_id": "c393c792-7412-4271-9724-e6bda05b50ba",
+                  "stock_video": {
+                    "license": {
+                      "acceptance_hours": 48,
+                      "acceptance_policy": "CONTRACT_20261029",
+                      "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                      "duration": "PERPETUAL",
+                      "excluded": [
+                        "COMMERCIAL_ADVERTISING",
+                        "ADAPTATION",
+                        "DISTRIBUTION",
+                        "VOICE_SEPARATELY",
+                        "AI_REGENERATION",
+                        "SOURCE_OR_MODEL_FILES",
+                        "NEW_AVATAR_CONTENT",
+                        "EXCLUSIVE_BUYOUT"
+                      ],
+                      "exclusive": false,
+                      "limited_to_buyer": true,
+                      "personal_social_sharing": true,
+                      "scope": "PERSONAL_NONCOMMERCIAL",
+                      "territory": "WORLDWIDE"
+                    },
+                    "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+                    "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e"
+                  },
+                  "total_minor": 100,
+                  "transaction_model": "DIRECT_SUPPLIER"
+                },
+                "stock_offer_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+                "stock_offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e"
+              },
+              "content_sha256": "a1ec73877fb3ecf08c6eea59aa680ff9e5c60ea024ee55776a9b841d41daad60",
+              "contract_version_id": "613efe63-13b6-42a5-9fe9-36271314e8d9",
+              "created_at": "2026-11-10T04:32:45.177Z",
+              "current_status": "SEALED",
+              "format_version": "contract-content-v1",
+              "id": "3c06911a-35e2-4298-ad4b-cca6e37de3b7",
+              "object_version": 1,
+              "party_ids": [
+                "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+                "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+              ],
+              "rule_contents": [
+                {
+                  "content_sha256": "1708a6d7d49c22b69eca558dd3c80f08bfa4e69ce72d23c0ab766f1726338d8f",
+                  "format_version": "rule-content-v1",
+                  "id": "c393c792-7412-4271-9724-e6bda05b50ba",
+                  "rule_key": "stock.synthetic",
+                  "terms": {
+                    "explicit": "synthetic stock terms"
+                  },
+                  "version": "1"
+                }
+              ],
+              "signing_method": "NOT_SIGNED"
+            },
+            "buyer_acknowledged_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+            "financial": {
+              "received_minor": 0,
+              "refunded_minor": 0,
+              "net_minor": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "fa1cec2b-00fc-41fe-aaf2-812c99d88280",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "6de64082-df42-4681-aded-c044df1f7530",
+          "kind": "EARNING",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "PENDING",
+          "object_version": 1,
+          "content_sha256": "aa8bf2df4b2d6896e3631bd4d1a0883eb5de0ef35a5373a45de3cbb6e3b690fe",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "spent": 0,
+            "points": 0,
+            "expired": 0,
+            "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+            "category": "STOCK",
+            "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+            "reversed": 0,
+            "issued_at": null,
+            "expires_at": null,
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": null,
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          },
+          "pending_reason": "FULFILLMENT_PENDING",
+          "available_at": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+      "schema": "StockResponse",
+      "value": {
+        "meta": {
+          "request_id": "3cac63be-81e3-4107-b40a-4a29f07bc75f",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "object_version": 3,
+          "order_status": "PAID",
+          "data": {
+            "cases": [],
+            "job_id": "3ecd7c90-ec1b-4bbb-a6ad-545a1970a40e",
+            "status": "ACTIVE",
+            "license": {
+              "scope": "PERSONAL_NONCOMMERCIAL",
+              "duration": "PERPETUAL",
+              "excluded": [
+                "COMMERCIAL_ADVERTISING",
+                "ADAPTATION",
+                "DISTRIBUTION",
+                "VOICE_SEPARATELY",
+                "AI_REGENERATION",
+                "SOURCE_OR_MODEL_FILES",
+                "NEW_AVATAR_CONTENT",
+                "EXCLUSIVE_BUYOUT"
+              ],
+              "exclusive": false,
+              "territory": "WORLDWIDE",
+              "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+              "acceptance_hours": 48,
+              "limited_to_buyer": true,
+              "acceptance_policy": "CONTRACT_20261029",
+              "personal_social_sharing": true
+            },
+            "viewed_at": "2026-11-10T04:32:45.326Z",
+            "granted_at": "2026-11-10T04:32:45.258Z",
+            "receipt_at": null,
+            "accepted_at": null,
+            "deadline_at": "2026-11-12T04:32:45.177Z",
+            "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e",
+            "current_case_id": null,
+            "listing_snapshot": {
+              "title": "Synthetic new contract stock",
+              "seller_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+            },
+            "acceptance_method": null,
+            "acceptance_started_at": "2026-11-10T04:32:45.177Z",
+            "notification_event_id": 10,
+            "observed_rights_epoch": 0,
+            "seller_admission_policy": "CONTRACT_20261029",
+            "acceptance_order_created_at": "2026-11-10T04:32:45.177Z"
+          },
+          "contract_sha256": "a1ec73877fb3ecf08c6eea59aa680ff9e5c60ea024ee55776a9b841d41daad60"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/b511329a-fbe4-43f7-b13c-a1d9e56648d4/acceptance",
+      "schema": "StockResponse",
+      "value": {
+        "meta": {
+          "request_id": "8625a811-67ea-49cc-8169-b3d478ec4ff1",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "object_version": 4,
+          "order_status": "PAID",
+          "data": {
+            "cases": [],
+            "job_id": null,
+            "status": "ACTIVE",
+            "license": {
+              "scope": "PERSONAL_NONCOMMERCIAL",
+              "duration": "PERPETUAL",
+              "excluded": [
+                "COMMERCIAL_ADVERTISING",
+                "ADAPTATION",
+                "DISTRIBUTION",
+                "VOICE_SEPARATELY",
+                "AI_REGENERATION",
+                "SOURCE_OR_MODEL_FILES",
+                "NEW_AVATAR_CONTENT",
+                "EXCLUSIVE_BUYOUT"
+              ],
+              "exclusive": false,
+              "territory": "WORLDWIDE",
+              "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+              "acceptance_hours": 48,
+              "limited_to_buyer": true,
+              "acceptance_policy": "CONTRACT_20261029",
+              "personal_social_sharing": true
+            },
+            "viewed_at": "2026-11-10T04:32:45.326Z",
+            "granted_at": "2026-11-10T04:32:45.258Z",
+            "receipt_at": null,
+            "accepted_at": "2026-11-10T04:32:45.358Z",
+            "deadline_at": null,
+            "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e",
+            "current_case_id": null,
+            "listing_snapshot": {
+              "title": "Synthetic new contract stock",
+              "seller_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+            },
+            "acceptance_method": "BUYER_EXPLICIT",
+            "acceptance_started_at": "2026-11-10T04:32:45.177Z",
+            "notification_event_id": 10,
+            "observed_rights_epoch": 0,
+            "seller_admission_policy": "CONTRACT_20261029",
+            "acceptance_order_created_at": "2026-11-10T04:32:45.177Z"
+          },
+          "contract_sha256": "a1ec73877fb3ecf08c6eea59aa680ff9e5c60ea024ee55776a9b841d41daad60"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "2ca65485-ba9d-461f-ad3d-8578a68af601",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "6de64082-df42-4681-aded-c044df1f7530",
+          "kind": "EARNING",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "PENDING",
+          "object_version": 1,
+          "content_sha256": "aa8bf2df4b2d6896e3631bd4d1a0883eb5de0ef35a5373a45de3cbb6e3b690fe",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "spent": 0,
+            "points": 0,
+            "expired": 0,
+            "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+            "category": "STOCK",
+            "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+            "reversed": 0,
+            "issued_at": null,
+            "expires_at": null,
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": null,
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          },
+          "pending_reason": "AFTERCARE_WINDOW",
+          "available_at": "2026-11-17T04:32:45.358Z"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stock/checkout",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "b9baaa9c-0e0b-4822-a8c2-85640336ad6e",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "kind": "ORDER",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "merchant_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": null,
+          "order_id": null,
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "OPEN",
+          "object_version": 1,
+          "content_sha256": "5a83f8b792f76b5ef985f3ca02982a84ca6f4fa28d46840250293d569db24abd",
+          "data": {
+            "quote": {
+              "lines": [
+                {
+                  "title": "Synthetic new contract stock",
+                  "review": {
+                    "reason": "synthetic",
+                    "decision": "APPROVED",
+                    "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+                  },
+                  "currency": "CNY",
+                  "line_kind": "OTHER",
+                  "unit_minor": 100,
+                  "specification": {
+                    "terms": "Synthetic only; no commercial rights, no new generated works.",
+                    "version": "synthetic-v1",
+                    "stock_license": {
+                      "scope": "PERSONAL_NONCOMMERCIAL",
+                      "duration": "PERPETUAL",
+                      "exclusive": false,
+                      "territory": "WORLDWIDE",
+                      "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                      "acceptance_hours": 48,
+                      "acceptance_policy": "CONTRACT_20261029",
+                      "personal_social_sharing": true
+                    }
+                  },
+                  "product_profile": {
+                    "type": "STOCK_VIDEO",
+                    "version": "V5"
+                  },
+                  "provider_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+                  "line_id": "stock",
+                  "spec_id": "12bbe608-d507-461a-bc47-4f413a9a89dc",
+                  "spec_version": 2,
+                  "quantity": 1,
+                  "total_minor": 100
+                }
+              ],
+              "installments": [
+                {
+                  "key": "stock",
+                  "trigger": "ORDER_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "stock",
+                      "amount_minor": 100
+                    }
+                  ],
+                  "apple_product_id": null
+                }
+              ],
+              "total_minor": 100,
+              "currency": "CNY",
+              "channel": "ALIPAY",
+              "transaction_model": "DIRECT_SUPPLIER",
+              "rule_id": "c393c792-7412-4271-9724-e6bda05b50ba",
+              "expires_at": "2026-11-10T05:02:45.450Z",
+              "payment_window_minutes": 30,
+              "license_reservation_id": null,
+              "review": null,
+              "stock_video": {
+                "listing_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+                "offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff",
+                "license": {
+                  "scope": "PERSONAL_NONCOMMERCIAL",
+                  "duration": "PERPETUAL",
+                  "exclusive": false,
+                  "territory": "WORLDWIDE",
+                  "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                  "acceptance_hours": 48,
+                  "acceptance_policy": "CONTRACT_20261029",
+                  "personal_social_sharing": true,
+                  "excluded": [
+                    "COMMERCIAL_ADVERTISING",
+                    "ADAPTATION",
+                    "DISTRIBUTION",
+                    "VOICE_SEPARATELY",
+                    "AI_REGENERATION",
+                    "SOURCE_OR_MODEL_FILES",
+                    "NEW_AVATAR_CONTENT",
+                    "EXCLUSIVE_BUYOUT"
+                  ],
+                  "limited_to_buyer": true
+                }
+              }
+            },
+            "contract": {
+              "commitments": {
+                "quote": {
+                  "channel": "ALIPAY",
+                  "currency": "CNY",
+                  "expires_at": "2026-11-10T05:02:45.450Z",
+                  "installments": [
+                    {
+                      "allocations": [
+                        {
+                          "amount_minor": 100,
+                          "line_id": "stock"
+                        }
+                      ],
+                      "apple_product_id": null,
+                      "key": "stock",
+                      "trigger": "ORDER_ACCEPTED"
+                    }
+                  ],
+                  "license_reservation_id": null,
+                  "lines": [
+                    {
+                      "currency": "CNY",
+                      "line_id": "stock",
+                      "line_kind": "OTHER",
+                      "product_profile": {
+                        "type": "STOCK_VIDEO",
+                        "version": "V5"
+                      },
+                      "provider_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+                      "quantity": 1,
+                      "review": {
+                        "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458",
+                        "decision": "APPROVED",
+                        "reason": "synthetic"
+                      },
+                      "spec_id": "12bbe608-d507-461a-bc47-4f413a9a89dc",
+                      "spec_version": 2,
+                      "specification": {
+                        "stock_license": {
+                          "acceptance_hours": 48,
+                          "acceptance_policy": "CONTRACT_20261029",
+                          "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                          "duration": "PERPETUAL",
+                          "exclusive": false,
+                          "personal_social_sharing": true,
+                          "scope": "PERSONAL_NONCOMMERCIAL",
+                          "territory": "WORLDWIDE"
+                        },
+                        "terms": "Synthetic only; no commercial rights, no new generated works.",
+                        "version": "synthetic-v1"
+                      },
+                      "title": "Synthetic new contract stock",
+                      "total_minor": 100,
+                      "unit_minor": 100
+                    }
+                  ],
+                  "payment_window_minutes": 30,
+                  "review": null,
+                  "rule_id": "c393c792-7412-4271-9724-e6bda05b50ba",
+                  "stock_video": {
+                    "license": {
+                      "acceptance_hours": 48,
+                      "acceptance_policy": "CONTRACT_20261029",
+                      "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                      "duration": "PERPETUAL",
+                      "excluded": [
+                        "COMMERCIAL_ADVERTISING",
+                        "ADAPTATION",
+                        "DISTRIBUTION",
+                        "VOICE_SEPARATELY",
+                        "AI_REGENERATION",
+                        "SOURCE_OR_MODEL_FILES",
+                        "NEW_AVATAR_CONTENT",
+                        "EXCLUSIVE_BUYOUT"
+                      ],
+                      "exclusive": false,
+                      "limited_to_buyer": true,
+                      "personal_social_sharing": true,
+                      "scope": "PERSONAL_NONCOMMERCIAL",
+                      "territory": "WORLDWIDE"
+                    },
+                    "listing_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+                    "offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff"
+                  },
+                  "total_minor": 100,
+                  "transaction_model": "DIRECT_SUPPLIER"
+                },
+                "stock_offer_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+                "stock_offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff"
+              },
+              "content_sha256": "f1fd7d8b278404a5702276e2f94f2b4cff891b90ab255498d69035fed3dcb8e7",
+              "contract_version_id": "1d22f2a1-63aa-40dc-a3df-c6b0037c26b2",
+              "created_at": "2026-11-10T04:32:45.451Z",
+              "current_status": "SEALED",
+              "format_version": "contract-content-v1",
+              "id": "0aed935b-bc30-4c97-a491-1f27b167ddfc",
+              "object_version": 1,
+              "party_ids": [
+                "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+                "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+              ],
+              "rule_contents": [
+                {
+                  "content_sha256": "1708a6d7d49c22b69eca558dd3c80f08bfa4e69ce72d23c0ab766f1726338d8f",
+                  "format_version": "rule-content-v1",
+                  "id": "c393c792-7412-4271-9724-e6bda05b50ba",
+                  "rule_key": "stock.synthetic",
+                  "terms": {
+                    "explicit": "synthetic stock terms"
+                  },
+                  "version": "1"
+                }
+              ],
+              "signing_method": "NOT_SIGNED"
+            },
+            "buyer_acknowledged_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+            "financial": {
+              "received_minor": 0,
+              "refunded_minor": 0,
+              "net_minor": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "d45b005f-5d32-4c4a-8dfe-742a7dca57be",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "fcfe6610-a494-4e5b-9632-6b9885faf557",
+          "kind": "EARNING",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "PENDING",
+          "object_version": 1,
+          "content_sha256": "8908349f444be4f590d8a88790c1b3c667a3a67a4c580b180d527429a994a71d",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "spent": 0,
+            "points": 0,
+            "expired": 0,
+            "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+            "category": "STOCK",
+            "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+            "reversed": 0,
+            "issued_at": null,
+            "expires_at": null,
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": null,
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          },
+          "pending_reason": "FULFILLMENT_PENDING",
+          "available_at": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/75d13472-b166-4916-9f14-266d12ada39f",
+      "schema": "StockResponse",
+      "value": {
+        "meta": {
+          "request_id": "46332ebe-ed70-44f5-bd3d-96b82804d525",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "listing_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "object_version": 3,
+          "order_status": "PAID",
+          "data": {
+            "cases": [],
+            "job_id": "a27a254a-e7d9-4de4-b5ae-7527458d9476",
+            "status": "ACTIVE",
+            "license": {
+              "scope": "PERSONAL_NONCOMMERCIAL",
+              "duration": "PERPETUAL",
+              "excluded": [
+                "COMMERCIAL_ADVERTISING",
+                "ADAPTATION",
+                "DISTRIBUTION",
+                "VOICE_SEPARATELY",
+                "AI_REGENERATION",
+                "SOURCE_OR_MODEL_FILES",
+                "NEW_AVATAR_CONTENT",
+                "EXCLUSIVE_BUYOUT"
+              ],
+              "exclusive": false,
+              "territory": "WORLDWIDE",
+              "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+              "acceptance_hours": 48,
+              "limited_to_buyer": true,
+              "acceptance_policy": "CONTRACT_20261029",
+              "personal_social_sharing": true
+            },
+            "viewed_at": "2026-11-10T04:32:45.552Z",
+            "granted_at": "2026-11-10T04:32:45.503Z",
+            "receipt_at": null,
+            "accepted_at": null,
+            "deadline_at": "2026-11-12T04:32:45.451Z",
+            "offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff",
+            "current_case_id": null,
+            "listing_snapshot": {
+              "title": "Synthetic new contract stock",
+              "seller_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+            },
+            "acceptance_method": null,
+            "acceptance_started_at": "2026-11-10T04:32:45.451Z",
+            "notification_event_id": 18,
+            "observed_rights_epoch": 0,
+            "seller_admission_policy": "CONTRACT_20261029",
+            "acceptance_order_created_at": "2026-11-10T04:32:45.451Z"
+          },
+          "contract_sha256": "f1fd7d8b278404a5702276e2f94f2b4cff891b90ab255498d69035fed3dcb8e7"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/75d13472-b166-4916-9f14-266d12ada39f/acceptance",
+      "schema": "StockResponse",
+      "value": {
+        "meta": {
+          "request_id": "e5fef08f-250d-4541-952a-179f2a639a9a",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "listing_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "object_version": 4,
+          "order_status": "PAID",
+          "data": {
+            "cases": [],
+            "job_id": null,
+            "status": "ACTIVE",
+            "license": {
+              "scope": "PERSONAL_NONCOMMERCIAL",
+              "duration": "PERPETUAL",
+              "excluded": [
+                "COMMERCIAL_ADVERTISING",
+                "ADAPTATION",
+                "DISTRIBUTION",
+                "VOICE_SEPARATELY",
+                "AI_REGENERATION",
+                "SOURCE_OR_MODEL_FILES",
+                "NEW_AVATAR_CONTENT",
+                "EXCLUSIVE_BUYOUT"
+              ],
+              "exclusive": false,
+              "territory": "WORLDWIDE",
+              "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+              "acceptance_hours": 48,
+              "limited_to_buyer": true,
+              "acceptance_policy": "CONTRACT_20261029",
+              "personal_social_sharing": true
+            },
+            "viewed_at": "2026-11-10T04:32:45.552Z",
+            "granted_at": "2026-11-10T04:32:45.503Z",
+            "receipt_at": null,
+            "accepted_at": "2026-11-10T04:32:45.577Z",
+            "deadline_at": null,
+            "offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff",
+            "current_case_id": null,
+            "listing_snapshot": {
+              "title": "Synthetic new contract stock",
+              "seller_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+            },
+            "acceptance_method": "BUYER_EXPLICIT",
+            "acceptance_started_at": "2026-11-10T04:32:45.451Z",
+            "notification_event_id": 18,
+            "observed_rights_epoch": 0,
+            "seller_admission_policy": "CONTRACT_20261029",
+            "acceptance_order_created_at": "2026-11-10T04:32:45.451Z"
+          },
+          "contract_sha256": "f1fd7d8b278404a5702276e2f94f2b4cff891b90ab255498d69035fed3dcb8e7"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "50ddd26d-cb15-4444-b683-6b5dbf096bf5",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "fcfe6610-a494-4e5b-9632-6b9885faf557",
+          "kind": "EARNING",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "PENDING",
+          "object_version": 1,
+          "content_sha256": "8908349f444be4f590d8a88790c1b3c667a3a67a4c580b180d527429a994a71d",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "spent": 0,
+            "points": 0,
+            "expired": 0,
+            "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+            "category": "STOCK",
+            "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+            "reversed": 0,
+            "issued_at": null,
+            "expires_at": null,
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": null,
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          },
+          "pending_reason": "AFTERCARE_WINDOW",
+          "available_at": "2026-11-17T04:32:45.577Z"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "c68df6b2-daf9-451f-a2ea-c9020e684788",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "account_id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 0,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 0,
+            "withdrawn": 0,
+            "net_issued": 0
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "103b7786-36d3-4379-831f-d53adb17f2e7",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "6de64082-df42-4681-aded-c044df1f7530",
+          "kind": "EARNING",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "ISSUED",
+          "object_version": 2,
+          "content_sha256": "f7685f68d12c9ac36abf6993f04b8a029e753a77a1bbea7c64463f758bf98547",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "spent": 0,
+            "points": 10,
+            "expired": 0,
+            "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+            "category": "STOCK",
+            "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+            "reversed": 0,
+            "issued_at": "2026-11-18T04:32:45.609Z",
+            "expires_at": "2027-11-18T04:32:45.609Z",
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": "2026-11-17T04:32:45.358Z",
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "9a34a92a-f841-4166-b883-41ea47edf1f2",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "6de64082-df42-4681-aded-c044df1f7530",
+          "kind": "EARNING",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "ISSUED",
+          "object_version": 2,
+          "content_sha256": "f7685f68d12c9ac36abf6993f04b8a029e753a77a1bbea7c64463f758bf98547",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "spent": 0,
+            "points": 10,
+            "expired": 0,
+            "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+            "category": "STOCK",
+            "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+            "reversed": 0,
+            "issued_at": "2026-11-18T04:32:45.609Z",
+            "expires_at": "2027-11-18T04:32:45.609Z",
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": "2026-11-17T04:32:45.358Z",
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "d3fade97-6237-4db5-9428-a02a6c5725a3",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "account_id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 10,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 10,
+            "withdrawn": 0,
+            "net_issued": 10
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 10,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "183c7a17-814c-494f-9a06-25cd6705ff36",
+          "actor": {
+            "account_id": "b57db90d-b8ac-4992-bd2a-70394d5f3120"
+          },
+          "acting_party": "79b55410-dcbb-4d30-8a3f-5ef5398ef41e"
+        },
+        "error": {
+          "code": "WALLET_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "e1585fb4-9333-429e-bb82-4c1654c6dab3",
+          "actor": {
+            "account_id": "9a1bd952-2280-450d-9911-46808b594259"
+          },
+          "acting_party": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+        },
+        "data": {
+          "id": "630c9924-bd5e-46f0-94ab-b302f02455e3",
+          "kind": "STOCK",
+          "owner_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": null,
+          "created_by": "9a1bd952-2280-450d-9911-46808b594259",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "b569913eb83d74f5d61eadbd397a7d04164c0ad3bba61c9bec2ef2d61c558eba",
+          "data": {
+            "template": {
+              "version": "synthetic-test-only",
+              "source_ref": "synthetic:no-formal-pricing",
+              "title": "Synthetic scheduled exposure",
+              "kind": "EXPOSURE",
+              "valid_days": 30,
+              "exchange_points": 4,
+              "capacity": 5,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "terms": "Synthetic four-point price; independently reviewed service failure returns original points",
+              "production": null,
+              "interview": null,
+              "exposure": {
+                "placement": "synthetic-slot",
+                "duration_days": 7
+              }
+            },
+            "evidence_asset_ids": [
+              "4f33bf71-3c65-4225-9dae-bbf8e2404e84"
+            ],
+            "issued": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/630c9924-bd5e-46f0-94ab-b302f02455e3/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "9c456507-3f53-46c1-bff0-e25177ce0010",
+          "actor": {
+            "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "630c9924-bd5e-46f0-94ab-b302f02455e3",
+          "kind": "STOCK",
+          "owner_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": null,
+          "created_by": "9a1bd952-2280-450d-9911-46808b594259",
+          "current_status": "AVAILABLE",
+          "object_version": 2,
+          "content_sha256": "258cbcd95d154390cc583311d70060b578c7adb05c99351556231f6e52cddc0b",
+          "data": {
+            "issued": 0,
+            "template": {
+              "kind": "EXPOSURE",
+              "terms": "Synthetic four-point price; independently reviewed service failure returns original points",
+              "title": "Synthetic scheduled exposure",
+              "version": "synthetic-test-only",
+              "capacity": 5,
+              "exposure": {
+                "placement": "synthetic-slot",
+                "duration_days": 7
+              },
+              "interview": null,
+              "production": null,
+              "source_ref": "synthetic:no-formal-pricing",
+              "valid_days": 30,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "exchange_points": 4
+            },
+            "evidence_asset_ids": [
+              "4f33bf71-3c65-4225-9dae-bbf8e2404e84"
+            ],
+            "review": {
+              "by": "3ec302b5-9fad-468f-81f0-8b74261c8458",
+              "reason": "synthetic"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "9e260a57-72aa-4911-88fd-370548fbc6fe",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "7fe48f16-5029-43f9-9b55-fa5eb969fd72",
+          "kind": "GRANT",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "630c9924-bd5e-46f0-94ab-b302f02455e3",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "AVAILABLE",
+          "object_version": 2,
+          "content_sha256": "3faa126aa58124688028153086f6e3a5da01587a4f361f7e844d44b7a1607bd7",
+          "data": {
+            "template": {
+              "kind": "EXPOSURE",
+              "terms": "Synthetic four-point price; independently reviewed service failure returns original points",
+              "title": "Synthetic scheduled exposure",
+              "version": "synthetic-test-only",
+              "capacity": 5,
+              "exposure": {
+                "placement": "synthetic-slot",
+                "duration_days": 7
+              },
+              "interview": null,
+              "production": null,
+              "source_ref": "synthetic:no-formal-pricing",
+              "valid_days": 30,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "exchange_points": 4
+            },
+            "template_sha256": "04bc6a49b1e084613562d1bb7ca13d3993637169e10801c2069c56a441498c73",
+            "source": [
+              "EXCHANGE",
+              "757ec974-9f3c-407d-883a-bdb5d56a5067",
+              "0df6f646-8c82-43ce-8b2f-c523ad02a6c5"
+            ],
+            "issued_at": "2026-11-18T04:32:45.609Z",
+            "expires_at": "2026-12-18T04:32:45.609Z",
+            "hold_id": "d29d345e-9099-405c-9961-910608552c89",
+            "binding": null,
+            "delivery": null,
+            "extension_used": false,
+            "performance_rights_granted": false,
+            "cashable": false,
+            "transferable": false
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "d3201f39-64c9-446a-8dee-f3eb70c8af23",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "7fe48f16-5029-43f9-9b55-fa5eb969fd72",
+          "kind": "GRANT",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "630c9924-bd5e-46f0-94ab-b302f02455e3",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "AVAILABLE",
+          "object_version": 2,
+          "content_sha256": "3faa126aa58124688028153086f6e3a5da01587a4f361f7e844d44b7a1607bd7",
+          "data": {
+            "template": {
+              "kind": "EXPOSURE",
+              "terms": "Synthetic four-point price; independently reviewed service failure returns original points",
+              "title": "Synthetic scheduled exposure",
+              "version": "synthetic-test-only",
+              "capacity": 5,
+              "exposure": {
+                "placement": "synthetic-slot",
+                "duration_days": 7
+              },
+              "interview": null,
+              "production": null,
+              "source_ref": "synthetic:no-formal-pricing",
+              "valid_days": 30,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "exchange_points": 4
+            },
+            "template_sha256": "04bc6a49b1e084613562d1bb7ca13d3993637169e10801c2069c56a441498c73",
+            "source": [
+              "EXCHANGE",
+              "757ec974-9f3c-407d-883a-bdb5d56a5067",
+              "0df6f646-8c82-43ce-8b2f-c523ad02a6c5"
+            ],
+            "issued_at": "2026-11-18T04:32:45.609Z",
+            "expires_at": "2026-12-18T04:32:45.609Z",
+            "hold_id": "d29d345e-9099-405c-9961-910608552c89",
+            "binding": null,
+            "delivery": null,
+            "extension_used": false,
+            "performance_rights_granted": false,
+            "cashable": false,
+            "transferable": false
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "de389a83-ec45-49ca-8a3c-67c55cec4a3c",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "account_id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 6,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 10,
+            "withdrawn": 0,
+            "net_issued": 10
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 10,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "f279fba7-88ac-4406-9d8a-81f550414e3e",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "account_id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 6,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 10,
+            "withdrawn": 0,
+            "net_issued": 10
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 10,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+      "schema": "StockResponse",
+      "value": {
+        "meta": {
+          "request_id": "696beb15-1e3e-486a-bf61-bd3ab250873b",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "object_version": 4,
+          "order_status": "PAID",
+          "data": {
+            "cases": [],
+            "job_id": null,
+            "status": "ACTIVE",
+            "license": {
+              "scope": "PERSONAL_NONCOMMERCIAL",
+              "duration": "PERPETUAL",
+              "excluded": [
+                "COMMERCIAL_ADVERTISING",
+                "ADAPTATION",
+                "DISTRIBUTION",
+                "VOICE_SEPARATELY",
+                "AI_REGENERATION",
+                "SOURCE_OR_MODEL_FILES",
+                "NEW_AVATAR_CONTENT",
+                "EXCLUSIVE_BUYOUT"
+              ],
+              "exclusive": false,
+              "territory": "WORLDWIDE",
+              "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+              "acceptance_hours": 48,
+              "limited_to_buyer": true,
+              "acceptance_policy": "CONTRACT_20261029",
+              "personal_social_sharing": true
+            },
+            "viewed_at": "2026-11-10T04:32:45.326Z",
+            "granted_at": "2026-11-10T04:32:45.258Z",
+            "receipt_at": null,
+            "accepted_at": "2026-11-10T04:32:45.358Z",
+            "deadline_at": null,
+            "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e",
+            "current_case_id": null,
+            "listing_snapshot": {
+              "title": "Synthetic new contract stock",
+              "seller_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+            },
+            "acceptance_method": "BUYER_EXPLICIT",
+            "acceptance_started_at": "2026-11-10T04:32:45.177Z",
+            "notification_event_id": 10,
+            "observed_rights_epoch": 0,
+            "seller_admission_policy": "CONTRACT_20261029",
+            "acceptance_order_created_at": "2026-11-10T04:32:45.177Z"
+          },
+          "contract_sha256": "a1ec73877fb3ecf08c6eea59aa680ff9e5c60ea024ee55776a9b841d41daad60"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/b511329a-fbe4-43f7-b13c-a1d9e56648d4/cases",
+      "schema": "StockResponse",
+      "value": {
+        "meta": {
+          "request_id": "00b3adc2-8cd1-44cb-890f-c1b6b72c8e03",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "object_version": 5,
+          "order_status": "PAID",
+          "data": {
+            "cases": [
+              {
+                "id": "f62f3556-8ac9-41ae-80c6-5ac649b97c93",
+                "kind": "RIGHTS_DISPUTE",
+                "reason": "synthetic full refund review",
+                "opened_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+                "opened_at": "2026-11-18T04:32:45.609Z",
+                "resolution": null
+              }
+            ],
+            "job_id": null,
+            "status": "ACTIVE",
+            "license": {
+              "scope": "PERSONAL_NONCOMMERCIAL",
+              "duration": "PERPETUAL",
+              "excluded": [
+                "COMMERCIAL_ADVERTISING",
+                "ADAPTATION",
+                "DISTRIBUTION",
+                "VOICE_SEPARATELY",
+                "AI_REGENERATION",
+                "SOURCE_OR_MODEL_FILES",
+                "NEW_AVATAR_CONTENT",
+                "EXCLUSIVE_BUYOUT"
+              ],
+              "exclusive": false,
+              "territory": "WORLDWIDE",
+              "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+              "acceptance_hours": 48,
+              "limited_to_buyer": true,
+              "acceptance_policy": "CONTRACT_20261029",
+              "personal_social_sharing": true
+            },
+            "viewed_at": null,
+            "granted_at": "2026-11-10T04:32:45.258Z",
+            "receipt_at": null,
+            "accepted_at": "2026-11-10T04:32:45.358Z",
+            "deadline_at": null,
+            "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e",
+            "current_case_id": "f62f3556-8ac9-41ae-80c6-5ac649b97c93",
+            "listing_snapshot": {
+              "title": "Synthetic new contract stock",
+              "seller_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+            },
+            "acceptance_method": "BUYER_EXPLICIT",
+            "acceptance_started_at": "2026-11-10T04:32:45.177Z",
+            "notification_event_id": 10,
+            "observed_rights_epoch": 0,
+            "seller_admission_policy": "CONTRACT_20261029",
+            "acceptance_order_created_at": "2026-11-10T04:32:45.177Z"
+          },
+          "contract_sha256": "a1ec73877fb3ecf08c6eea59aa680ff9e5c60ea024ee55776a9b841d41daad60"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/b511329a-fbe4-43f7-b13c-a1d9e56648d4/case-resolution",
+      "schema": "StockResponse",
+      "value": {
+        "meta": {
+          "request_id": "f274ea9d-6e96-48fe-9afb-e2d9aa214afd",
+          "actor": {
+            "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "object_version": 6,
+          "order_status": "PAID",
+          "data": {
+            "cases": [
+              {
+                "id": "f62f3556-8ac9-41ae-80c6-5ac649b97c93",
+                "kind": "RIGHTS_DISPUTE",
+                "reason": "synthetic full refund review",
+                "opened_at": "2026-11-18T04:32:45.609Z",
+                "opened_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+                "resolution": {
+                  "decision": "REFUND",
+                  "reason": "independent synthetic",
+                  "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458",
+                  "at": "2026-11-18T04:32:45.609Z"
+                }
+              }
+            ],
+            "job_id": null,
+            "status": "REFUND_REQUIRED",
+            "license": {
+              "scope": "PERSONAL_NONCOMMERCIAL",
+              "duration": "PERPETUAL",
+              "excluded": [
+                "COMMERCIAL_ADVERTISING",
+                "ADAPTATION",
+                "DISTRIBUTION",
+                "VOICE_SEPARATELY",
+                "AI_REGENERATION",
+                "SOURCE_OR_MODEL_FILES",
+                "NEW_AVATAR_CONTENT",
+                "EXCLUSIVE_BUYOUT"
+              ],
+              "exclusive": false,
+              "territory": "WORLDWIDE",
+              "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+              "acceptance_hours": 48,
+              "limited_to_buyer": true,
+              "acceptance_policy": "CONTRACT_20261029",
+              "personal_social_sharing": true
+            },
+            "viewed_at": null,
+            "granted_at": "2026-11-10T04:32:45.258Z",
+            "receipt_at": null,
+            "accepted_at": "2026-11-10T04:32:45.358Z",
+            "deadline_at": null,
+            "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e",
+            "current_case_id": null,
+            "listing_snapshot": {
+              "title": "Synthetic new contract stock",
+              "seller_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+            },
+            "acceptance_method": "BUYER_EXPLICIT",
+            "acceptance_started_at": "2026-11-10T04:32:45.177Z",
+            "notification_event_id": 10,
+            "observed_rights_epoch": 0,
+            "seller_admission_policy": "CONTRACT_20261029",
+            "acceptance_order_created_at": "2026-11-10T04:32:45.177Z"
+          },
+          "contract_sha256": "a1ec73877fb3ecf08c6eea59aa680ff9e5c60ea024ee55776a9b841d41daad60"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/trade/refunds",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "f7b66404-8e45-40d2-8831-bea27274983f",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "56b00c1c-29f7-470a-8f61-d7e2d9da5da0",
+          "kind": "REFUND",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "merchant_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": "05ed94b1-735d-40c2-8774-6199c2eca3d6",
+          "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "REQUESTED",
+          "object_version": 1,
+          "content_sha256": "dfecf7d3892f905628c960ed568efdc05354f816bcf068cbfa8a3e810acf5c84",
+          "data": {
+            "payment_id": "05ed94b1-735d-40c2-8774-6199c2eca3d6",
+            "provider": "ALIPAY",
+            "environment": "SANDBOX",
+            "app_id": "synthetic.app",
+            "merchant_id": "synthetic.merchant",
+            "currency": "CNY",
+            "amount_minor": 100,
+            "allocations": [
+              {
+                "amount_minor": 100,
+                "line_id": "stock"
+              }
+            ],
+            "transaction_id": "synthetic.05ed94b1-735d-40c2-8774-6199c2eca3d6",
+            "apple_product_id": null,
+            "reason": "reviewed original payment refund",
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/trade/records/56b00c1c-29f7-470a-8f61-d7e2d9da5da0/reviews",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "857f3620-edc1-4ad9-9a5a-5eb936b68262",
+          "actor": {
+            "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "56b00c1c-29f7-470a-8f61-d7e2d9da5da0",
+          "kind": "REFUND",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "merchant_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": "05ed94b1-735d-40c2-8774-6199c2eca3d6",
+          "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "APPROVED",
+          "object_version": 2,
+          "content_sha256": "24c93665d897f7bb984ec1824826b07e1fcd87a0233af9f28d39e3e05f97e276",
+          "data": {
+            "app_id": "synthetic.app",
+            "reason": "reviewed original payment refund",
+            "review": {
+              "decision": "APPROVED",
+              "reason": "independent synthetic",
+              "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+            },
+            "currency": "CNY",
+            "provider": "ALIPAY",
+            "payment_id": "05ed94b1-735d-40c2-8774-6199c2eca3d6",
+            "allocations": [
+              {
+                "line_id": "stock",
+                "amount_minor": 100
+              }
+            ],
+            "environment": "SANDBOX",
+            "merchant_id": "synthetic.merchant",
+            "amount_minor": 100,
+            "transaction_id": "synthetic.05ed94b1-735d-40c2-8774-6199c2eca3d6",
+            "apple_product_id": null
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "606ec8ac-cfb0-4c47-b9e5-878c25580dd0",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "account_id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 0,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 10,
+            "withdrawn": 10,
+            "net_issued": 0
+          },
+          "points_pending_reversal": 4,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_REVERSAL_PENDING",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "213b6d6e-26ef-46b5-b5b6-5bfc22ad43e7",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "error": {
+          "code": "POINTS_REVERSAL_PENDING",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/redemption/catalog",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "27a98ad6-e268-425c-bc3e-0b9c38fafee5",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "id": "630c9924-bd5e-46f0-94ab-b302f02455e3",
+              "object_version": 3,
+              "template": {
+                "kind": "EXPOSURE",
+                "terms": "Synthetic four-point price; independently reviewed service failure returns original points",
+                "title": "Synthetic scheduled exposure",
+                "version": "synthetic-test-only",
+                "capacity": 5,
+                "exposure": {
+                  "placement": "synthetic-slot",
+                  "duration_days": 7
+                },
+                "interview": null,
+                "production": null,
+                "source_ref": "synthetic:no-formal-pricing",
+                "valid_days": 30,
+                "available_until": "2099-01-01T00:00:00.000Z",
+                "exchange_points": 4
+              },
+              "template_sha256": "04bc6a49b1e084613562d1bb7ca13d3993637169e10801c2069c56a441498c73",
+              "remaining": 4
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/trade/records/b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "ab607f12-a350-44e4-8529-f0edc82497fd",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "kind": "ORDER",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "merchant_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": null,
+          "order_id": null,
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "REFUNDED",
+          "object_version": 3,
+          "content_sha256": "b699feabd7d09dedea465ef9dcfef1af4b5ab965276c9f33d4eaeeedc8a6f456",
+          "data": {
+            "quote": {
+              "lines": [
+                {
+                  "title": "Synthetic new contract stock",
+                  "review": {
+                    "reason": "synthetic",
+                    "decision": "APPROVED",
+                    "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+                  },
+                  "line_id": "stock",
+                  "spec_id": "12bbe608-d507-461a-bc47-4f413a9a89dc",
+                  "currency": "CNY",
+                  "quantity": 1,
+                  "line_kind": "OTHER",
+                  "unit_minor": 100,
+                  "total_minor": 100,
+                  "spec_version": 2,
+                  "specification": {
+                    "terms": "Synthetic only; no commercial rights, no new generated works.",
+                    "version": "synthetic-v1",
+                    "stock_license": {
+                      "scope": "PERSONAL_NONCOMMERCIAL",
+                      "duration": "PERPETUAL",
+                      "exclusive": false,
+                      "territory": "WORLDWIDE",
+                      "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                      "acceptance_hours": 48,
+                      "acceptance_policy": "CONTRACT_20261029",
+                      "personal_social_sharing": true
+                    }
+                  },
+                  "product_profile": {
+                    "type": "STOCK_VIDEO",
+                    "version": "V5"
+                  },
+                  "provider_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+                }
+              ],
+              "review": null,
+              "channel": "ALIPAY",
+              "rule_id": "c393c792-7412-4271-9724-e6bda05b50ba",
+              "currency": "CNY",
+              "expires_at": "2026-11-10T05:02:45.176Z",
+              "stock_video": {
+                "license": {
+                  "scope": "PERSONAL_NONCOMMERCIAL",
+                  "duration": "PERPETUAL",
+                  "excluded": [
+                    "COMMERCIAL_ADVERTISING",
+                    "ADAPTATION",
+                    "DISTRIBUTION",
+                    "VOICE_SEPARATELY",
+                    "AI_REGENERATION",
+                    "SOURCE_OR_MODEL_FILES",
+                    "NEW_AVATAR_CONTENT",
+                    "EXCLUSIVE_BUYOUT"
+                  ],
+                  "exclusive": false,
+                  "territory": "WORLDWIDE",
+                  "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                  "acceptance_hours": 48,
+                  "limited_to_buyer": true,
+                  "acceptance_policy": "CONTRACT_20261029",
+                  "personal_social_sharing": true
+                },
+                "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+                "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e"
+              },
+              "total_minor": 100,
+              "installments": [
+                {
+                  "key": "stock",
+                  "trigger": "ORDER_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "stock",
+                      "amount_minor": 100
+                    }
+                  ],
+                  "apple_product_id": null
+                }
+              ],
+              "transaction_model": "DIRECT_SUPPLIER",
+              "license_reservation_id": null,
+              "payment_window_minutes": 30
+            },
+            "contract": {
+              "id": "3c06911a-35e2-4298-ad4b-cca6e37de3b7",
+              "party_ids": [
+                "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+                "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+              ],
+              "created_at": "2026-11-10T04:32:45.177Z",
+              "commitments": {
+                "quote": {
+                  "lines": [
+                    {
+                      "title": "Synthetic new contract stock",
+                      "review": {
+                        "reason": "synthetic",
+                        "decision": "APPROVED",
+                        "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+                      },
+                      "line_id": "stock",
+                      "spec_id": "12bbe608-d507-461a-bc47-4f413a9a89dc",
+                      "currency": "CNY",
+                      "quantity": 1,
+                      "line_kind": "OTHER",
+                      "unit_minor": 100,
+                      "total_minor": 100,
+                      "spec_version": 2,
+                      "specification": {
+                        "terms": "Synthetic only; no commercial rights, no new generated works.",
+                        "version": "synthetic-v1",
+                        "stock_license": {
+                          "scope": "PERSONAL_NONCOMMERCIAL",
+                          "duration": "PERPETUAL",
+                          "exclusive": false,
+                          "territory": "WORLDWIDE",
+                          "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                          "acceptance_hours": 48,
+                          "acceptance_policy": "CONTRACT_20261029",
+                          "personal_social_sharing": true
+                        }
+                      },
+                      "product_profile": {
+                        "type": "STOCK_VIDEO",
+                        "version": "V5"
+                      },
+                      "provider_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+                    }
+                  ],
+                  "review": null,
+                  "channel": "ALIPAY",
+                  "rule_id": "c393c792-7412-4271-9724-e6bda05b50ba",
+                  "currency": "CNY",
+                  "expires_at": "2026-11-10T05:02:45.176Z",
+                  "stock_video": {
+                    "license": {
+                      "scope": "PERSONAL_NONCOMMERCIAL",
+                      "duration": "PERPETUAL",
+                      "excluded": [
+                        "COMMERCIAL_ADVERTISING",
+                        "ADAPTATION",
+                        "DISTRIBUTION",
+                        "VOICE_SEPARATELY",
+                        "AI_REGENERATION",
+                        "SOURCE_OR_MODEL_FILES",
+                        "NEW_AVATAR_CONTENT",
+                        "EXCLUSIVE_BUYOUT"
+                      ],
+                      "exclusive": false,
+                      "territory": "WORLDWIDE",
+                      "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                      "acceptance_hours": 48,
+                      "limited_to_buyer": true,
+                      "acceptance_policy": "CONTRACT_20261029",
+                      "personal_social_sharing": true
+                    },
+                    "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+                    "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e"
+                  },
+                  "total_minor": 100,
+                  "installments": [
+                    {
+                      "key": "stock",
+                      "trigger": "ORDER_ACCEPTED",
+                      "allocations": [
+                        {
+                          "line_id": "stock",
+                          "amount_minor": 100
+                        }
+                      ],
+                      "apple_product_id": null
+                    }
+                  ],
+                  "transaction_model": "DIRECT_SUPPLIER",
+                  "license_reservation_id": null,
+                  "payment_window_minutes": 30
+                },
+                "stock_offer_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+                "stock_offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e"
+              },
+              "rule_contents": [
+                {
+                  "id": "c393c792-7412-4271-9724-e6bda05b50ba",
+                  "terms": {
+                    "explicit": "synthetic stock terms"
+                  },
+                  "version": "1",
+                  "rule_key": "stock.synthetic",
+                  "content_sha256": "1708a6d7d49c22b69eca558dd3c80f08bfa4e69ce72d23c0ab766f1726338d8f",
+                  "format_version": "rule-content-v1"
+                }
+              ],
+              "content_sha256": "a1ec73877fb3ecf08c6eea59aa680ff9e5c60ea024ee55776a9b841d41daad60",
+              "current_status": "SEALED",
+              "format_version": "contract-content-v1",
+              "object_version": 1,
+              "signing_method": "NOT_SIGNED",
+              "contract_version_id": "613efe63-13b6-42a5-9fe9-36271314e8d9"
+            },
+            "financial": {
+              "net_minor": 0,
+              "received_minor": 100,
+              "refunded_minor": 100
+            },
+            "buyer_acknowledged_by": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "d3e03949-591d-43a4-9371-0189d6c64d78",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "fcfe6610-a494-4e5b-9632-6b9885faf557",
+          "kind": "EARNING",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "ISSUED",
+          "object_version": 3,
+          "content_sha256": "e89a63b26ed0140bef7d1121aa3c0947bd0ea22ce96bea38b145d25b1f0d6550",
+          "data": {
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "spent": 0,
+            "points": 10,
+            "expired": 0,
+            "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+            "category": "STOCK",
+            "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+            "reversed": 0,
+            "issued_at": "2026-11-18T04:32:45.609Z",
+            "expires_at": "2027-11-18T04:32:45.609Z",
+            "paid_minor": 100,
+            "debt_offset": 4,
+            "source_kind": "CONSUMPTION",
+            "available_at": "2026-11-17T04:32:45.577Z",
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "7e6fb34e-e01a-4ecd-87cc-d6dd0b74faf9",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "account_id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 6,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 20,
+            "withdrawn": 10,
+            "net_issued": 10
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 10,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/75d13472-b166-4916-9f14-266d12ada39f",
+      "schema": "StockResponse",
+      "value": {
+        "meta": {
+          "request_id": "b86f0081-8600-4868-9dd3-4199f4fe2190",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "listing_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "object_version": 4,
+          "order_status": "PAID",
+          "data": {
+            "cases": [],
+            "job_id": null,
+            "status": "ACTIVE",
+            "license": {
+              "scope": "PERSONAL_NONCOMMERCIAL",
+              "duration": "PERPETUAL",
+              "excluded": [
+                "COMMERCIAL_ADVERTISING",
+                "ADAPTATION",
+                "DISTRIBUTION",
+                "VOICE_SEPARATELY",
+                "AI_REGENERATION",
+                "SOURCE_OR_MODEL_FILES",
+                "NEW_AVATAR_CONTENT",
+                "EXCLUSIVE_BUYOUT"
+              ],
+              "exclusive": false,
+              "territory": "WORLDWIDE",
+              "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+              "acceptance_hours": 48,
+              "limited_to_buyer": true,
+              "acceptance_policy": "CONTRACT_20261029",
+              "personal_social_sharing": true
+            },
+            "viewed_at": "2026-11-10T04:32:45.552Z",
+            "granted_at": "2026-11-10T04:32:45.503Z",
+            "receipt_at": null,
+            "accepted_at": "2026-11-10T04:32:45.577Z",
+            "deadline_at": null,
+            "offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff",
+            "current_case_id": null,
+            "listing_snapshot": {
+              "title": "Synthetic new contract stock",
+              "seller_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+            },
+            "acceptance_method": "BUYER_EXPLICIT",
+            "acceptance_started_at": "2026-11-10T04:32:45.451Z",
+            "notification_event_id": 18,
+            "observed_rights_epoch": 0,
+            "seller_admission_policy": "CONTRACT_20261029",
+            "acceptance_order_created_at": "2026-11-10T04:32:45.451Z"
+          },
+          "contract_sha256": "f1fd7d8b278404a5702276e2f94f2b4cff891b90ab255498d69035fed3dcb8e7"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/75d13472-b166-4916-9f14-266d12ada39f/cases",
+      "schema": "StockResponse",
+      "value": {
+        "meta": {
+          "request_id": "161e9ca6-756b-4da6-8ebd-c5038bde279c",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "listing_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "object_version": 5,
+          "order_status": "PAID",
+          "data": {
+            "cases": [
+              {
+                "id": "f6d088ab-cacd-4364-a401-beb3228d9bee",
+                "kind": "RIGHTS_DISPUTE",
+                "reason": "synthetic full refund review",
+                "opened_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+                "opened_at": "2026-11-18T04:32:45.609Z",
+                "resolution": null
+              }
+            ],
+            "job_id": null,
+            "status": "ACTIVE",
+            "license": {
+              "scope": "PERSONAL_NONCOMMERCIAL",
+              "duration": "PERPETUAL",
+              "excluded": [
+                "COMMERCIAL_ADVERTISING",
+                "ADAPTATION",
+                "DISTRIBUTION",
+                "VOICE_SEPARATELY",
+                "AI_REGENERATION",
+                "SOURCE_OR_MODEL_FILES",
+                "NEW_AVATAR_CONTENT",
+                "EXCLUSIVE_BUYOUT"
+              ],
+              "exclusive": false,
+              "territory": "WORLDWIDE",
+              "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+              "acceptance_hours": 48,
+              "limited_to_buyer": true,
+              "acceptance_policy": "CONTRACT_20261029",
+              "personal_social_sharing": true
+            },
+            "viewed_at": null,
+            "granted_at": "2026-11-10T04:32:45.503Z",
+            "receipt_at": null,
+            "accepted_at": "2026-11-10T04:32:45.577Z",
+            "deadline_at": null,
+            "offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff",
+            "current_case_id": "f6d088ab-cacd-4364-a401-beb3228d9bee",
+            "listing_snapshot": {
+              "title": "Synthetic new contract stock",
+              "seller_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+            },
+            "acceptance_method": "BUYER_EXPLICIT",
+            "acceptance_started_at": "2026-11-10T04:32:45.451Z",
+            "notification_event_id": 18,
+            "observed_rights_epoch": 0,
+            "seller_admission_policy": "CONTRACT_20261029",
+            "acceptance_order_created_at": "2026-11-10T04:32:45.451Z"
+          },
+          "contract_sha256": "f1fd7d8b278404a5702276e2f94f2b4cff891b90ab255498d69035fed3dcb8e7"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/75d13472-b166-4916-9f14-266d12ada39f/case-resolution",
+      "schema": "StockResponse",
+      "value": {
+        "meta": {
+          "request_id": "db244947-777d-45bc-b181-7eaeddc41712",
+          "actor": {
+            "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "listing_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "object_version": 6,
+          "order_status": "PAID",
+          "data": {
+            "cases": [
+              {
+                "id": "f6d088ab-cacd-4364-a401-beb3228d9bee",
+                "kind": "RIGHTS_DISPUTE",
+                "reason": "synthetic full refund review",
+                "opened_at": "2026-11-18T04:32:45.609Z",
+                "opened_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+                "resolution": {
+                  "decision": "REFUND",
+                  "reason": "independent synthetic",
+                  "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458",
+                  "at": "2026-11-18T04:32:45.609Z"
+                }
+              }
+            ],
+            "job_id": null,
+            "status": "REFUND_REQUIRED",
+            "license": {
+              "scope": "PERSONAL_NONCOMMERCIAL",
+              "duration": "PERPETUAL",
+              "excluded": [
+                "COMMERCIAL_ADVERTISING",
+                "ADAPTATION",
+                "DISTRIBUTION",
+                "VOICE_SEPARATELY",
+                "AI_REGENERATION",
+                "SOURCE_OR_MODEL_FILES",
+                "NEW_AVATAR_CONTENT",
+                "EXCLUSIVE_BUYOUT"
+              ],
+              "exclusive": false,
+              "territory": "WORLDWIDE",
+              "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+              "acceptance_hours": 48,
+              "limited_to_buyer": true,
+              "acceptance_policy": "CONTRACT_20261029",
+              "personal_social_sharing": true
+            },
+            "viewed_at": null,
+            "granted_at": "2026-11-10T04:32:45.503Z",
+            "receipt_at": null,
+            "accepted_at": "2026-11-10T04:32:45.577Z",
+            "deadline_at": null,
+            "offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff",
+            "current_case_id": null,
+            "listing_snapshot": {
+              "title": "Synthetic new contract stock",
+              "seller_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+            },
+            "acceptance_method": "BUYER_EXPLICIT",
+            "acceptance_started_at": "2026-11-10T04:32:45.451Z",
+            "notification_event_id": 18,
+            "observed_rights_epoch": 0,
+            "seller_admission_policy": "CONTRACT_20261029",
+            "acceptance_order_created_at": "2026-11-10T04:32:45.451Z"
+          },
+          "contract_sha256": "f1fd7d8b278404a5702276e2f94f2b4cff891b90ab255498d69035fed3dcb8e7"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/trade/refunds",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "23fd3296-1fb6-4840-bf7a-5190e00d885a",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "76c5c6e0-c29e-438c-843e-7003bce0d375",
+          "kind": "REFUND",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "merchant_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": "f6679118-ab66-45b8-871e-53cde8ec9699",
+          "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "REQUESTED",
+          "object_version": 1,
+          "content_sha256": "32a54904c3beff2db5f6b3370175de6544b2b9880f5a40829938f9f8276b98db",
+          "data": {
+            "payment_id": "f6679118-ab66-45b8-871e-53cde8ec9699",
+            "provider": "ALIPAY",
+            "environment": "SANDBOX",
+            "app_id": "synthetic.app",
+            "merchant_id": "synthetic.merchant",
+            "currency": "CNY",
+            "amount_minor": 100,
+            "allocations": [
+              {
+                "amount_minor": 100,
+                "line_id": "stock"
+              }
+            ],
+            "transaction_id": "synthetic.f6679118-ab66-45b8-871e-53cde8ec9699",
+            "apple_product_id": null,
+            "reason": "reviewed original payment refund",
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/trade/records/76c5c6e0-c29e-438c-843e-7003bce0d375/reviews",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "8a0b2a64-32ea-492d-97ec-6cc1c40a3d01",
+          "actor": {
+            "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "76c5c6e0-c29e-438c-843e-7003bce0d375",
+          "kind": "REFUND",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "merchant_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": "f6679118-ab66-45b8-871e-53cde8ec9699",
+          "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "APPROVED",
+          "object_version": 2,
+          "content_sha256": "2aefec5ef4a3544d8ce9b173e27da26104763c4a3bb9f50aa14716a1ef1fd7e7",
+          "data": {
+            "app_id": "synthetic.app",
+            "reason": "reviewed original payment refund",
+            "review": {
+              "decision": "APPROVED",
+              "reason": "independent synthetic",
+              "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+            },
+            "currency": "CNY",
+            "provider": "ALIPAY",
+            "payment_id": "f6679118-ab66-45b8-871e-53cde8ec9699",
+            "allocations": [
+              {
+                "line_id": "stock",
+                "amount_minor": 100
+              }
+            ],
+            "environment": "SANDBOX",
+            "merchant_id": "synthetic.merchant",
+            "amount_minor": 100,
+            "transaction_id": "synthetic.f6679118-ab66-45b8-871e-53cde8ec9699",
+            "apple_product_id": null
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "d89c5de4-2558-4440-880c-433ad6baa0b0",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "account_id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 0,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 20,
+            "withdrawn": 20,
+            "net_issued": 0
+          },
+          "points_pending_reversal": 4,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_REVERSAL_PENDING",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/check-in",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "b0500ec2-f217-4fb8-91b4-09335e0ee2e9",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "628c3e2d-6ce5-421c-b628-f2c87cb5ce8a",
+          "kind": "EARNING",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": null,
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "ISSUED",
+          "object_version": 2,
+          "content_sha256": "0763c232c9b80bd4417d3934ed64468c64c73e40e10c221ba10993b7e107426f",
+          "data": {
+            "source_kind": "FREE",
+            "event_kind": "DAILY_CHECKIN",
+            "source_ref": "2026-11-18",
+            "occurred_at": "2026-11-18T04:32:45.609Z",
+            "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "points": 3,
+            "reversed": 0,
+            "growth_reversed": 0,
+            "spent": 0,
+            "expired": 0,
+            "pending_shortfall": 0,
+            "debt_offset": 3,
+            "debt_settled": 0,
+            "paid_minor": 0,
+            "refunded_minor": 0,
+            "issued_at": "2026-11-18T04:32:45.609Z",
+            "expires_at": "2027-11-18T04:32:45.609Z"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/check-in",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "ecfeb371-6c04-4cf3-bf25-0416c671f968",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "628c3e2d-6ce5-421c-b628-f2c87cb5ce8a",
+          "kind": "EARNING",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": null,
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "ISSUED",
+          "object_version": 2,
+          "content_sha256": "0763c232c9b80bd4417d3934ed64468c64c73e40e10c221ba10993b7e107426f",
+          "data": {
+            "source_kind": "FREE",
+            "event_kind": "DAILY_CHECKIN",
+            "source_ref": "2026-11-18",
+            "occurred_at": "2026-11-18T04:32:45.609Z",
+            "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+            "rule": {
+              "terms": "isolated test rule",
+              "version": "synthetic-v1",
+              "free_awards": {
+                "SHARE": null,
+                "REVIEW": null,
+                "REGISTER": null,
+                "DAILY_CHECKIN": 3
+              },
+              "points_days": 365,
+              "hold_minutes": 10,
+              "topup_limits": {
+                "daily_minor": 100000,
+                "single_minor": 50000,
+                "monthly_minor": 300000,
+                "cooling_minutes": 1
+              },
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": null,
+                "COMMERCIAL": null,
+                "CUSTOMIZATION": null
+              },
+              "membership_days": 365,
+              "points_per_yuan": 10,
+              "points_rounding": "FLOOR_NET_PAID",
+              "growth_thresholds": [
+                10000,
+                50000,
+                200000,
+                500000,
+                1000000
+              ],
+              "topup_threshold_minor": 30000
+            },
+            "points": 3,
+            "reversed": 0,
+            "growth_reversed": 0,
+            "spent": 0,
+            "expired": 0,
+            "pending_shortfall": 0,
+            "debt_offset": 3,
+            "debt_settled": 0,
+            "paid_minor": 0,
+            "refunded_minor": 0,
+            "issued_at": "2026-11-18T04:32:45.609Z",
+            "expires_at": "2027-11-18T04:32:45.609Z"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "58a46974-44e9-4a11-ba9f-75ca3aa2128f",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "account_id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 0,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 23,
+            "withdrawn": 20,
+            "net_issued": 3
+          },
+          "points_pending_reversal": 1,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_REVERSAL_PENDING",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/7fe48f16-5029-43f9-9b55-fa5eb969fd72",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "87c25524-be50-4edb-a85d-183dbebd7824",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "7fe48f16-5029-43f9-9b55-fa5eb969fd72",
+          "kind": "GRANT",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "630c9924-bd5e-46f0-94ab-b302f02455e3",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "AVAILABLE",
+          "object_version": 2,
+          "content_sha256": "3faa126aa58124688028153086f6e3a5da01587a4f361f7e844d44b7a1607bd7",
+          "data": {
+            "source": [
+              "EXCHANGE",
+              "757ec974-9f3c-407d-883a-bdb5d56a5067",
+              "0df6f646-8c82-43ce-8b2f-c523ad02a6c5"
+            ],
+            "binding": null,
+            "hold_id": "d29d345e-9099-405c-9961-910608552c89",
+            "cashable": false,
+            "delivery": null,
+            "template": {
+              "kind": "EXPOSURE",
+              "terms": "Synthetic four-point price; independently reviewed service failure returns original points",
+              "title": "Synthetic scheduled exposure",
+              "version": "synthetic-test-only",
+              "capacity": 5,
+              "exposure": {
+                "placement": "synthetic-slot",
+                "duration_days": 7
+              },
+              "interview": null,
+              "production": null,
+              "source_ref": "synthetic:no-formal-pricing",
+              "valid_days": 30,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "exchange_points": 4
+            },
+            "issued_at": "2026-11-18T04:32:45.609Z",
+            "expires_at": "2026-12-18T04:32:45.609Z",
+            "transferable": false,
+            "extension_used": false,
+            "template_sha256": "04bc6a49b1e084613562d1bb7ca13d3993637169e10801c2069c56a441498c73",
+            "performance_rights_granted": false
+          },
+          "effective_status": "AVAILABLE"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/7fe48f16-5029-43f9-9b55-fa5eb969fd72/remedies",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "7e511044-3d45-4165-82ad-9f2ebd376e16",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "241231b6-12e8-4a80-82a9-5a0da2b285c8",
+          "kind": "REMEDY",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "7fe48f16-5029-43f9-9b55-fa5eb969fd72",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "2187e970d4dd4938b484ba732ec832a7bf5ecebed06b9d6c02454d29276e1de5",
+          "data": {
+            "reason": "synthetic service unavailable",
+            "previous_status": "AVAILABLE"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/241231b6-12e8-4a80-82a9-5a0da2b285c8/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "9da15480-ab05-4fe1-a2dd-08681ca98556",
+          "actor": {
+            "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "241231b6-12e8-4a80-82a9-5a0da2b285c8",
+          "kind": "REMEDY",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "7fe48f16-5029-43f9-9b55-fa5eb969fd72",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "RESOLVED",
+          "object_version": 2,
+          "content_sha256": "47d68945f3ab915d9ad3596542bb92d922b6db8cec2f4ac0536abac5ed317178",
+          "data": {
+            "reason": "synthetic service unavailable",
+            "previous_status": "AVAILABLE",
+            "resolution": {
+              "decision": "RETURN_POINTS",
+              "reason": "independent unavailable service evidence",
+              "evidence_asset_id": "4f33bf71-3c65-4225-9dae-bbf8e2404e84",
+              "by": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/241231b6-12e8-4a80-82a9-5a0da2b285c8/review",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "fbdcc5c6-0024-474c-b0db-e30a947da924",
+          "actor": {
+            "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "241231b6-12e8-4a80-82a9-5a0da2b285c8",
+          "kind": "REMEDY",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "7fe48f16-5029-43f9-9b55-fa5eb969fd72",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "RESOLVED",
+          "object_version": 2,
+          "content_sha256": "47d68945f3ab915d9ad3596542bb92d922b6db8cec2f4ac0536abac5ed317178",
+          "data": {
+            "reason": "synthetic service unavailable",
+            "previous_status": "AVAILABLE",
+            "resolution": {
+              "decision": "RETURN_POINTS",
+              "reason": "independent unavailable service evidence",
+              "evidence_asset_id": "4f33bf71-3c65-4225-9dae-bbf8e2404e84",
+              "by": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "be75bed2-f9d6-4537-8bb5-b59d88aa6cce",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "account_id": "96011ac0-7637-47ac-ae09-6ac6c3a415cb",
+          "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+          "currency": "CNY",
+          "recorded_balance_minor": 0,
+          "available_balance_minor": 0,
+          "reserved_balance_minor": 0,
+          "available_points": 3,
+          "cumulative_points": {
+            "version": "NET_ISSUED_V1",
+            "issued": 23,
+            "withdrawn": 20,
+            "net_issued": 3
+          },
+          "points_pending_reversal": 0,
+          "points_actions_enabled": false,
+          "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+          "point_uses": {
+            "vote_enabled": false,
+            "redemption_enabled": false,
+            "lottery_enabled": false
+          },
+          "qualifying_growth": 0,
+          "membership": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "renewal_credit_minor": 0,
+            "level_six_review_required": false,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          },
+          "custody": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "spending": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          },
+          "withdrawal_enabled": false,
+          "transfer_enabled": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/7fe48f16-5029-43f9-9b55-fa5eb969fd72",
+      "schema": "RedemptionResponse",
+      "value": {
+        "meta": {
+          "request_id": "150bc870-e010-41f4-86fd-903d602efd61",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "7fe48f16-5029-43f9-9b55-fa5eb969fd72",
+          "kind": "GRANT",
+          "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "parent_id": "630c9924-bd5e-46f0-94ab-b302f02455e3",
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "POINTS_RETURNED",
+          "object_version": 4,
+          "content_sha256": "3faa126aa58124688028153086f6e3a5da01587a4f361f7e844d44b7a1607bd7",
+          "data": {
+            "source": [
+              "EXCHANGE",
+              "757ec974-9f3c-407d-883a-bdb5d56a5067",
+              "0df6f646-8c82-43ce-8b2f-c523ad02a6c5"
+            ],
+            "binding": null,
+            "hold_id": "d29d345e-9099-405c-9961-910608552c89",
+            "cashable": false,
+            "delivery": null,
+            "template": {
+              "kind": "EXPOSURE",
+              "terms": "Synthetic four-point price; independently reviewed service failure returns original points",
+              "title": "Synthetic scheduled exposure",
+              "version": "synthetic-test-only",
+              "capacity": 5,
+              "exposure": {
+                "placement": "synthetic-slot",
+                "duration_days": 7
+              },
+              "interview": null,
+              "production": null,
+              "source_ref": "synthetic:no-formal-pricing",
+              "valid_days": 30,
+              "available_until": "2099-01-01T00:00:00.000Z",
+              "exchange_points": 4
+            },
+            "issued_at": "2026-11-18T04:32:45.609Z",
+            "expires_at": "2026-12-18T04:32:45.609Z",
+            "transferable": false,
+            "extension_used": false,
+            "template_sha256": "04bc6a49b1e084613562d1bb7ca13d3993637169e10801c2069c56a441498c73",
+            "performance_rights_granted": false
+          },
+          "effective_status": "POINTS_RETURNED"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "ea584eac-e4a8-457b-8553-97196ba7258c",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "628c3e2d-6ce5-421c-b628-f2c87cb5ce8a",
+              "kind": "EARNING",
+              "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+              "parent_id": null,
+              "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+              "current_status": "ISSUED",
+              "object_version": 2,
+              "content_sha256": "0763c232c9b80bd4417d3934ed64468c64c73e40e10c221ba10993b7e107426f",
+              "data": {
+                "rule": {
+                  "terms": "isolated test rule",
+                  "version": "synthetic-v1",
+                  "free_awards": {
+                    "SHARE": null,
+                    "REVIEW": null,
+                    "REGISTER": null,
+                    "DAILY_CHECKIN": 3
+                  },
+                  "points_days": 365,
+                  "hold_minutes": 10,
+                  "topup_limits": {
+                    "daily_minor": 100000,
+                    "single_minor": 50000,
+                    "monthly_minor": 300000,
+                    "cooling_minutes": 1
+                  },
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": null,
+                    "COMMERCIAL": null,
+                    "CUSTOMIZATION": null
+                  },
+                  "membership_days": 365,
+                  "points_per_yuan": 10,
+                  "points_rounding": "FLOOR_NET_PAID",
+                  "growth_thresholds": [
+                    10000,
+                    50000,
+                    200000,
+                    500000,
+                    1000000
+                  ],
+                  "topup_threshold_minor": 30000
+                },
+                "spent": 0,
+                "points": 3,
+                "expired": 0,
+                "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+                "reversed": 0,
+                "issued_at": "2026-11-18T04:32:45.609Z",
+                "event_kind": "DAILY_CHECKIN",
+                "expires_at": "2027-11-18T04:32:45.609Z",
+                "paid_minor": 0,
+                "source_ref": "2026-11-18",
+                "debt_offset": 3,
+                "occurred_at": "2026-11-18T04:32:45.609Z",
+                "source_kind": "FREE",
+                "debt_settled": 0,
+                "refunded_minor": 0,
+                "growth_reversed": 0,
+                "pending_shortfall": 0
+              }
+            },
+            {
+              "id": "6de64082-df42-4681-aded-c044df1f7530",
+              "kind": "EARNING",
+              "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+              "parent_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+              "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+              "current_status": "ISSUED",
+              "object_version": 7,
+              "content_sha256": "fbeb0f77924adc13bc516e3c0579766e007fa922df95c79cae013bcd89c74ee8",
+              "data": {
+                "rule": {
+                  "terms": "isolated test rule",
+                  "version": "synthetic-v1",
+                  "free_awards": {
+                    "SHARE": null,
+                    "REVIEW": null,
+                    "REGISTER": null,
+                    "DAILY_CHECKIN": 3
+                  },
+                  "points_days": 365,
+                  "hold_minutes": 10,
+                  "topup_limits": {
+                    "daily_minor": 100000,
+                    "single_minor": 50000,
+                    "monthly_minor": 300000,
+                    "cooling_minutes": 1
+                  },
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": null,
+                    "COMMERCIAL": null,
+                    "CUSTOMIZATION": null
+                  },
+                  "membership_days": 365,
+                  "points_per_yuan": 10,
+                  "points_rounding": "FLOOR_NET_PAID",
+                  "growth_thresholds": [
+                    10000,
+                    50000,
+                    200000,
+                    500000,
+                    1000000
+                  ],
+                  "topup_threshold_minor": 30000
+                },
+                "spent": 0,
+                "points": 10,
+                "expired": 0,
+                "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+                "category": "STOCK",
+                "order_id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+                "reversed": 6,
+                "issued_at": "2026-11-18T04:32:45.609Z",
+                "expires_at": "2027-11-18T04:32:45.609Z",
+                "paid_minor": 100,
+                "debt_offset": 1,
+                "source_kind": "CONSUMPTION",
+                "available_at": "2026-11-17T04:32:45.358Z",
+                "debt_settled": 4,
+                "refunded_minor": 100,
+                "growth_reversed": 10,
+                "pending_shortfall": 0
+              }
+            },
+            {
+              "id": "fcfe6610-a494-4e5b-9632-6b9885faf557",
+              "kind": "EARNING",
+              "owner_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+              "parent_id": "75d13472-b166-4916-9f14-266d12ada39f",
+              "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+              "current_status": "ISSUED",
+              "object_version": 6,
+              "content_sha256": "785c08a4e297bb9af5378adabdfddd5fbcb618185794b459bca7b6729c7f9ac2",
+              "data": {
+                "rule": {
+                  "terms": "isolated test rule",
+                  "version": "synthetic-v1",
+                  "free_awards": {
+                    "SHARE": null,
+                    "REVIEW": null,
+                    "REGISTER": null,
+                    "DAILY_CHECKIN": 3
+                  },
+                  "points_days": 365,
+                  "hold_minutes": 10,
+                  "topup_limits": {
+                    "daily_minor": 100000,
+                    "single_minor": 50000,
+                    "monthly_minor": 300000,
+                    "cooling_minutes": 1
+                  },
+                  "aftercare_days": {
+                    "STOCK": 7,
+                    "AUDITION": null,
+                    "COMMERCIAL": null,
+                    "CUSTOMIZATION": null
+                  },
+                  "membership_days": 365,
+                  "points_per_yuan": 10,
+                  "points_rounding": "FLOOR_NET_PAID",
+                  "growth_thresholds": [
+                    10000,
+                    50000,
+                    200000,
+                    500000,
+                    1000000
+                  ],
+                  "topup_threshold_minor": 30000
+                },
+                "spent": 0,
+                "points": 10,
+                "expired": 0,
+                "rule_id": "21e1930d-82e7-4a8a-a4b0-37397c4259c1",
+                "category": "STOCK",
+                "order_id": "75d13472-b166-4916-9f14-266d12ada39f",
+                "reversed": 6,
+                "issued_at": "2026-11-18T04:32:45.609Z",
+                "expires_at": "2027-11-18T04:32:45.609Z",
+                "paid_minor": 100,
+                "debt_offset": 4,
+                "source_kind": "CONSUMPTION",
+                "available_at": "2026-11-17T04:32:45.577Z",
+                "debt_settled": 4,
+                "refunded_minor": 100,
+                "growth_reversed": 10,
+                "pending_shortfall": 0
+              }
+            }
+          ],
+          "next_cursor": null
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/trade/records/b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "fce73ada-80dd-412f-803a-a87364f11b9f",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "b511329a-fbe4-43f7-b13c-a1d9e56648d4",
+          "kind": "ORDER",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "merchant_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": null,
+          "order_id": null,
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "REFUNDED",
+          "object_version": 3,
+          "content_sha256": "b699feabd7d09dedea465ef9dcfef1af4b5ab965276c9f33d4eaeeedc8a6f456",
+          "data": {
+            "quote": {
+              "lines": [
+                {
+                  "title": "Synthetic new contract stock",
+                  "review": {
+                    "reason": "synthetic",
+                    "decision": "APPROVED",
+                    "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+                  },
+                  "line_id": "stock",
+                  "spec_id": "12bbe608-d507-461a-bc47-4f413a9a89dc",
+                  "currency": "CNY",
+                  "quantity": 1,
+                  "line_kind": "OTHER",
+                  "unit_minor": 100,
+                  "total_minor": 100,
+                  "spec_version": 2,
+                  "specification": {
+                    "terms": "Synthetic only; no commercial rights, no new generated works.",
+                    "version": "synthetic-v1",
+                    "stock_license": {
+                      "scope": "PERSONAL_NONCOMMERCIAL",
+                      "duration": "PERPETUAL",
+                      "exclusive": false,
+                      "territory": "WORLDWIDE",
+                      "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                      "acceptance_hours": 48,
+                      "acceptance_policy": "CONTRACT_20261029",
+                      "personal_social_sharing": true
+                    }
+                  },
+                  "product_profile": {
+                    "type": "STOCK_VIDEO",
+                    "version": "V5"
+                  },
+                  "provider_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+                }
+              ],
+              "review": null,
+              "channel": "ALIPAY",
+              "rule_id": "c393c792-7412-4271-9724-e6bda05b50ba",
+              "currency": "CNY",
+              "expires_at": "2026-11-10T05:02:45.176Z",
+              "stock_video": {
+                "license": {
+                  "scope": "PERSONAL_NONCOMMERCIAL",
+                  "duration": "PERPETUAL",
+                  "excluded": [
+                    "COMMERCIAL_ADVERTISING",
+                    "ADAPTATION",
+                    "DISTRIBUTION",
+                    "VOICE_SEPARATELY",
+                    "AI_REGENERATION",
+                    "SOURCE_OR_MODEL_FILES",
+                    "NEW_AVATAR_CONTENT",
+                    "EXCLUSIVE_BUYOUT"
+                  ],
+                  "exclusive": false,
+                  "territory": "WORLDWIDE",
+                  "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                  "acceptance_hours": 48,
+                  "limited_to_buyer": true,
+                  "acceptance_policy": "CONTRACT_20261029",
+                  "personal_social_sharing": true
+                },
+                "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+                "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e"
+              },
+              "total_minor": 100,
+              "installments": [
+                {
+                  "key": "stock",
+                  "trigger": "ORDER_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "stock",
+                      "amount_minor": 100
+                    }
+                  ],
+                  "apple_product_id": null
+                }
+              ],
+              "transaction_model": "DIRECT_SUPPLIER",
+              "license_reservation_id": null,
+              "payment_window_minutes": 30
+            },
+            "contract": {
+              "id": "3c06911a-35e2-4298-ad4b-cca6e37de3b7",
+              "party_ids": [
+                "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+                "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+              ],
+              "created_at": "2026-11-10T04:32:45.177Z",
+              "commitments": {
+                "quote": {
+                  "lines": [
+                    {
+                      "title": "Synthetic new contract stock",
+                      "review": {
+                        "reason": "synthetic",
+                        "decision": "APPROVED",
+                        "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+                      },
+                      "line_id": "stock",
+                      "spec_id": "12bbe608-d507-461a-bc47-4f413a9a89dc",
+                      "currency": "CNY",
+                      "quantity": 1,
+                      "line_kind": "OTHER",
+                      "unit_minor": 100,
+                      "total_minor": 100,
+                      "spec_version": 2,
+                      "specification": {
+                        "terms": "Synthetic only; no commercial rights, no new generated works.",
+                        "version": "synthetic-v1",
+                        "stock_license": {
+                          "scope": "PERSONAL_NONCOMMERCIAL",
+                          "duration": "PERPETUAL",
+                          "exclusive": false,
+                          "territory": "WORLDWIDE",
+                          "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                          "acceptance_hours": 48,
+                          "acceptance_policy": "CONTRACT_20261029",
+                          "personal_social_sharing": true
+                        }
+                      },
+                      "product_profile": {
+                        "type": "STOCK_VIDEO",
+                        "version": "V5"
+                      },
+                      "provider_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+                    }
+                  ],
+                  "review": null,
+                  "channel": "ALIPAY",
+                  "rule_id": "c393c792-7412-4271-9724-e6bda05b50ba",
+                  "currency": "CNY",
+                  "expires_at": "2026-11-10T05:02:45.176Z",
+                  "stock_video": {
+                    "license": {
+                      "scope": "PERSONAL_NONCOMMERCIAL",
+                      "duration": "PERPETUAL",
+                      "excluded": [
+                        "COMMERCIAL_ADVERTISING",
+                        "ADAPTATION",
+                        "DISTRIBUTION",
+                        "VOICE_SEPARATELY",
+                        "AI_REGENERATION",
+                        "SOURCE_OR_MODEL_FILES",
+                        "NEW_AVATAR_CONTENT",
+                        "EXCLUSIVE_BUYOUT"
+                      ],
+                      "exclusive": false,
+                      "territory": "WORLDWIDE",
+                      "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                      "acceptance_hours": 48,
+                      "limited_to_buyer": true,
+                      "acceptance_policy": "CONTRACT_20261029",
+                      "personal_social_sharing": true
+                    },
+                    "listing_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+                    "offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e"
+                  },
+                  "total_minor": 100,
+                  "installments": [
+                    {
+                      "key": "stock",
+                      "trigger": "ORDER_ACCEPTED",
+                      "allocations": [
+                        {
+                          "line_id": "stock",
+                          "amount_minor": 100
+                        }
+                      ],
+                      "apple_product_id": null
+                    }
+                  ],
+                  "transaction_model": "DIRECT_SUPPLIER",
+                  "license_reservation_id": null,
+                  "payment_window_minutes": 30
+                },
+                "stock_offer_id": "57712748-f81d-40e7-b5d0-7be232cd50af",
+                "stock_offer_sha256": "1a4c5555ffde4f9e0135787d8c7cc25db6b667bac054ccd809478727bcc6a44e"
+              },
+              "rule_contents": [
+                {
+                  "id": "c393c792-7412-4271-9724-e6bda05b50ba",
+                  "terms": {
+                    "explicit": "synthetic stock terms"
+                  },
+                  "version": "1",
+                  "rule_key": "stock.synthetic",
+                  "content_sha256": "1708a6d7d49c22b69eca558dd3c80f08bfa4e69ce72d23c0ab766f1726338d8f",
+                  "format_version": "rule-content-v1"
+                }
+              ],
+              "content_sha256": "a1ec73877fb3ecf08c6eea59aa680ff9e5c60ea024ee55776a9b841d41daad60",
+              "current_status": "SEALED",
+              "format_version": "contract-content-v1",
+              "object_version": 1,
+              "signing_method": "NOT_SIGNED",
+              "contract_version_id": "613efe63-13b6-42a5-9fe9-36271314e8d9"
+            },
+            "financial": {
+              "net_minor": 0,
+              "received_minor": 100,
+              "refunded_minor": 100
+            },
+            "buyer_acknowledged_by": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/trade/records/75d13472-b166-4916-9f14-266d12ada39f",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "8cb530fd-f3de-40f8-b10a-4c1f185483ad",
+          "actor": {
+            "account_id": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          },
+          "acting_party": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4"
+        },
+        "data": {
+          "id": "75d13472-b166-4916-9f14-266d12ada39f",
+          "kind": "ORDER",
+          "buyer_party_id": "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+          "merchant_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58",
+          "parent_id": null,
+          "order_id": null,
+          "created_by": "757ec974-9f3c-407d-883a-bdb5d56a5067",
+          "current_status": "REFUNDED",
+          "object_version": 3,
+          "content_sha256": "fcd56a54ed2990b82f64493ec9f1dd40a4f173d8a0aec11224105b47b2c183b8",
+          "data": {
+            "quote": {
+              "lines": [
+                {
+                  "title": "Synthetic new contract stock",
+                  "review": {
+                    "reason": "synthetic",
+                    "decision": "APPROVED",
+                    "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+                  },
+                  "line_id": "stock",
+                  "spec_id": "12bbe608-d507-461a-bc47-4f413a9a89dc",
+                  "currency": "CNY",
+                  "quantity": 1,
+                  "line_kind": "OTHER",
+                  "unit_minor": 100,
+                  "total_minor": 100,
+                  "spec_version": 2,
+                  "specification": {
+                    "terms": "Synthetic only; no commercial rights, no new generated works.",
+                    "version": "synthetic-v1",
+                    "stock_license": {
+                      "scope": "PERSONAL_NONCOMMERCIAL",
+                      "duration": "PERPETUAL",
+                      "exclusive": false,
+                      "territory": "WORLDWIDE",
+                      "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                      "acceptance_hours": 48,
+                      "acceptance_policy": "CONTRACT_20261029",
+                      "personal_social_sharing": true
+                    }
+                  },
+                  "product_profile": {
+                    "type": "STOCK_VIDEO",
+                    "version": "V5"
+                  },
+                  "provider_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+                }
+              ],
+              "review": null,
+              "channel": "ALIPAY",
+              "rule_id": "c393c792-7412-4271-9724-e6bda05b50ba",
+              "currency": "CNY",
+              "expires_at": "2026-11-10T05:02:45.450Z",
+              "stock_video": {
+                "license": {
+                  "scope": "PERSONAL_NONCOMMERCIAL",
+                  "duration": "PERPETUAL",
+                  "excluded": [
+                    "COMMERCIAL_ADVERTISING",
+                    "ADAPTATION",
+                    "DISTRIBUTION",
+                    "VOICE_SEPARATELY",
+                    "AI_REGENERATION",
+                    "SOURCE_OR_MODEL_FILES",
+                    "NEW_AVATAR_CONTENT",
+                    "EXCLUSIVE_BUYOUT"
+                  ],
+                  "exclusive": false,
+                  "territory": "WORLDWIDE",
+                  "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                  "acceptance_hours": 48,
+                  "limited_to_buyer": true,
+                  "acceptance_policy": "CONTRACT_20261029",
+                  "personal_social_sharing": true
+                },
+                "listing_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+                "offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff"
+              },
+              "total_minor": 100,
+              "installments": [
+                {
+                  "key": "stock",
+                  "trigger": "ORDER_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "stock",
+                      "amount_minor": 100
+                    }
+                  ],
+                  "apple_product_id": null
+                }
+              ],
+              "transaction_model": "DIRECT_SUPPLIER",
+              "license_reservation_id": null,
+              "payment_window_minutes": 30
+            },
+            "contract": {
+              "id": "0aed935b-bc30-4c97-a491-1f27b167ddfc",
+              "party_ids": [
+                "16f9f5cf-7aaf-4771-87d8-cbf4861f87a4",
+                "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+              ],
+              "created_at": "2026-11-10T04:32:45.451Z",
+              "commitments": {
+                "quote": {
+                  "lines": [
+                    {
+                      "title": "Synthetic new contract stock",
+                      "review": {
+                        "reason": "synthetic",
+                        "decision": "APPROVED",
+                        "account_id": "3ec302b5-9fad-468f-81f0-8b74261c8458"
+                      },
+                      "line_id": "stock",
+                      "spec_id": "12bbe608-d507-461a-bc47-4f413a9a89dc",
+                      "currency": "CNY",
+                      "quantity": 1,
+                      "line_kind": "OTHER",
+                      "unit_minor": 100,
+                      "total_minor": 100,
+                      "spec_version": 2,
+                      "specification": {
+                        "terms": "Synthetic only; no commercial rights, no new generated works.",
+                        "version": "synthetic-v1",
+                        "stock_license": {
+                          "scope": "PERSONAL_NONCOMMERCIAL",
+                          "duration": "PERPETUAL",
+                          "exclusive": false,
+                          "territory": "WORLDWIDE",
+                          "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                          "acceptance_hours": 48,
+                          "acceptance_policy": "CONTRACT_20261029",
+                          "personal_social_sharing": true
+                        }
+                      },
+                      "product_profile": {
+                        "type": "STOCK_VIDEO",
+                        "version": "V5"
+                      },
+                      "provider_party_id": "8148dcf4-b194-4317-9e2a-5f6e665c5f58"
+                    }
+                  ],
+                  "review": null,
+                  "channel": "ALIPAY",
+                  "rule_id": "c393c792-7412-4271-9724-e6bda05b50ba",
+                  "currency": "CNY",
+                  "expires_at": "2026-11-10T05:02:45.450Z",
+                  "stock_video": {
+                    "license": {
+                      "scope": "PERSONAL_NONCOMMERCIAL",
+                      "duration": "PERPETUAL",
+                      "excluded": [
+                        "COMMERCIAL_ADVERTISING",
+                        "ADAPTATION",
+                        "DISTRIBUTION",
+                        "VOICE_SEPARATELY",
+                        "AI_REGENERATION",
+                        "SOURCE_OR_MODEL_FILES",
+                        "NEW_AVATAR_CONTENT",
+                        "EXCLUSIVE_BUYOUT"
+                      ],
+                      "exclusive": false,
+                      "territory": "WORLDWIDE",
+                      "aftercare_terms": "Synthetic: rights or delivery failure requires independent full-refund review.",
+                      "acceptance_hours": 48,
+                      "limited_to_buyer": true,
+                      "acceptance_policy": "CONTRACT_20261029",
+                      "personal_social_sharing": true
+                    },
+                    "listing_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+                    "offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff"
+                  },
+                  "total_minor": 100,
+                  "installments": [
+                    {
+                      "key": "stock",
+                      "trigger": "ORDER_ACCEPTED",
+                      "allocations": [
+                        {
+                          "line_id": "stock",
+                          "amount_minor": 100
+                        }
+                      ],
+                      "apple_product_id": null
+                    }
+                  ],
+                  "transaction_model": "DIRECT_SUPPLIER",
+                  "license_reservation_id": null,
+                  "payment_window_minutes": 30
+                },
+                "stock_offer_id": "839709b1-84f9-4d6c-847d-a3519a3a5c34",
+                "stock_offer_sha256": "d50a0ed4edac32e321945094d9fc93250f4d5da2b51759c07dfa75f379cfdaff"
+              },
+              "rule_contents": [
+                {
+                  "id": "c393c792-7412-4271-9724-e6bda05b50ba",
+                  "terms": {
+                    "explicit": "synthetic stock terms"
+                  },
+                  "version": "1",
+                  "rule_key": "stock.synthetic",
+                  "content_sha256": "1708a6d7d49c22b69eca558dd3c80f08bfa4e69ce72d23c0ab766f1726338d8f",
+                  "format_version": "rule-content-v1"
+                }
+              ],
+              "content_sha256": "f1fd7d8b278404a5702276e2f94f2b4cff891b90ab255498d69035fed3dcb8e7",
+              "current_status": "SEALED",
+              "format_version": "contract-content-v1",
+              "object_version": 1,
+              "signing_method": "NOT_SIGNED",
+              "contract_version_id": "1d22f2a1-63aa-40dc-a3df-c6b0037c26b2"
+            },
+            "financial": {
+              "net_minor": 0,
+              "received_minor": 100,
+              "refunded_minor": 100
+            },
+            "buyer_acknowledged_by": "757ec974-9f3c-407d-883a-bdb5d56a5067"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,125 @@
+TAP version 13
+# Subtest: unknown recharge refund survives encrypted restore without enabling dispatch
+    # Subtest: unknown original send is frozen with reserved funds and the same durable task
+    ok 1 - unknown original send is frozen with reserved funds and the same durable task
+      ---
+      duration_ms: 647.98
+      type: 'test'
+      ...
+    # Subtest: restored case, task, operation keys and wallet facts match while external bytes are explicitly absent
+    ok 2 - restored case, task, operation keys and wallet facts match while external bytes are explicitly absent
+      ---
+      duration_ms: 5679.5892
+      type: 'test'
+      ...
+    # Subtest: restored quarantine blocks HTTP bootstrap and worker without changing money or sending again
+    ok 3 - restored quarantine blocks HTTP bootstrap and worker without changing money or sending again
+      ---
+      duration_ms: 689.7916
+      type: 'test'
+      ...
+    # Subtest: restoring a still-running refund invalidates its old lease while preserving original request and attempts
+    ok 4 - restoring a still-running refund invalidates its old lease while preserving original request and attempts
+      ---
+      duration_ms: 6397.5266
+      type: 'test'
+      ...
+    # Subtest: the pre-restore lease cannot heartbeat, attach a provider id, or finish in the restored database
+    ok 5 - the pre-restore lease cannot heartbeat, attach a provider id, or finish in the restored database
+      ---
+      duration_ms: 4.5913
+      type: 'test'
+      ...
+    # Subtest: the original process cannot settle the restored refund using its copied lease
+    ok 6 - the original process cannot settle the restored refund using its copied lease
+      ---
+      duration_ms: 14.8821
+      type: 'test'
+      ...
+    # Subtest: latest synthetic erasure replay is atomic, suppresses the original proof and account, and still cannot release recovery
+    ok 7 - latest synthetic erasure replay is atomic, suppresses the original proof and account, and still cannot release recovery
+      ---
+      duration_ms: 152.5334
+      type: 'test'
+      ...
+    # Subtest: isolated internal recovery queries only the original request and a lost completion write cannot settle twice
+    ok 8 - isolated internal recovery queries only the original request and a lost completion write cannot settle twice
+      ---
+      duration_ms: 196.7797
+      type: 'test'
+      ...
+    # Subtest: restoration does not reset an exhausted task attempt budget
+    ok 9 - restoration does not reset an exhausted task attempt budget
+      ---
+      duration_ms: 4.6253
+      type: 'test'
+      ...
+    # Subtest: rebacking up the restored database cannot carry old privacy approval or a live lease into another recovery
+    not ok 10 - rebacking up the restored database cannot carry old privacy approval or a live lease into another recovery
+      ---
+      duration_ms: 8319.3006
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\refund-restore.integration.test.cjs:161:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+
+        '0' !== 0
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 0
+      actual: '0'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\refund-restore.integration.test.cjs:167:12)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\refund-restore.integration.test.cjs:161:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: failure while invalidating restored leases rolls back all business rows and leaves quarantine
+    not ok 11 - failure while invalidating restored leases rolls back all business rows and leaves quarantine
+      ---
+      duration_ms: 7374.5492
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\refund-restore.integration.test.cjs:174:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+
+        '0' !== 0
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 0
+      actual: '0'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\refund-restore.integration.test.cjs:180:12)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\refund-restore.integration.test.cjs:174:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..11
+not ok 1 - unknown recharge refund survives encrypted restore without enabling dispatch
+  ---
+  duration_ms: 39815.2987
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\refund-restore.integration.test.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 12
+# suites 0
+# pass 9
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 40017.7022

@@ -1,0 +1,211 @@
+﻿TAP version 13
+# Subtest: buyer ranking: current identity, frozen facts and own-account evidence
+    # Subtest: expired and closed personal identity disappear immediately from current public ranking
+    ok 1 - expired and closed personal identity disappear immediately from current public ranking
+      ---
+      duration_ms: 60.1799
+      type: 'test'
+      ...
+    # Subtest: registration alone is not independently verified organization identity
+    ok 2 - registration alone is not independently verified organization identity
+      ---
+      duration_ms: 10.3531
+      type: 'test'
+      ...
+    # Subtest: only an operator and an effective configured rule can create a traceable snapshot
+    ok 3 - only an operator and an effective configured rule can create a traceable snapshot
+      ---
+      duration_ms: 33.7246
+      type: 'test'
+      ...
+    # Subtest: independently reviewed organization identity is required and current validity is rechecked
+    ok 4 - independently reviewed organization identity is required and current validity is rechecked
+      ---
+      duration_ms: 47.0154
+      type: 'test'
+      ...
+    # Subtest: one immutable snapshot freezes weighted facts, excludes gifts and exposes no private sources
+    not ok 5 - one immutable snapshot freezes weighted facts, excludes gifts and exposes no private sources
+      ---
+      duration_ms: 38.2457
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\buyer-rank.integration.test.cjs:44:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":503,"meta":{"request_id":"c2532132-638c-48ed-a90e-1ca859f0ece8","actor":{"account_id":"27f6cdc4-fa62-45da-9951-35618fae8cca"},"acting_party":null},"error":{"code":"SERVICE_UNAVAILABLE","message":"服务暂不可用，请稍后核对状态","retryable":false,"details":[]}}
+        
+        503 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 503
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:12:22)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:45:101)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:44:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: current withdrawal, changed city, identity expiry and organization loss hide old public entries without rewriting scores
+    not ok 6 - current withdrawal, changed city, identity expiry and organization loss hide old public entries without rewriting scores
+      ---
+      duration_ms: 9.8848
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\buyer-rank.integration.test.cjs:50:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        frozen (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:33:61)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:51:124)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:50:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: audit failure rolls back both snapshot and personal entries; original request can retry
+    not ok 7 - audit failure rolls back both snapshot and personal entries; original request can retry
+      ---
+      duration_ms: 41.7038
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\buyer-rank.integration.test.cjs:56:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":503,"meta":{"request_id":"3d818fef-da2f-419a-93f6-2d17fc632deb","actor":{"account_id":"27f6cdc4-fa62-45da-9951-35618fae8cca"},"acting_party":null},"error":{"code":"SERVICE_UNAVAILABLE","message":"服务暂不可用，请稍后核对状态","retryable":false,"details":[]}}
+        
+        503 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 503
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:12:22)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:58:442)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:56:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: same-order refund changes a new snapshot while original amounts and rule remain available
+    not ok 8 - same-order refund changes a new snapshot while original amounts and rule remain available
+      ---
+      duration_ms: 69.3755
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\buyer-rank.integration.test.cjs:60:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":503,"meta":{"request_id":"8f90d2fc-c604-46a2-8e22-fead718ab1a8","actor":{"account_id":"27f6cdc4-fa62-45da-9951-35618fae8cca"},"acting_party":null},"error":{"code":"SERVICE_UNAVAILABLE","message":"服务暂不可用，请稍后核对状态","retryable":false,"details":[]}}
+        
+        503 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 503
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:12:22)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:63:17)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:60:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: risk exclusion and changed reviewed weights affect only subsequent snapshots
+    not ok 9 - risk exclusion and changed reviewed weights affect only subsequent snapshots
+      ---
+      duration_ms: 18.565
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\buyer-rank.integration.test.cjs:65:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":503,"meta":{"request_id":"8e4657a7-2d9e-41bd-a2e7-17a4ef3e185b","actor":{"account_id":"27f6cdc4-fa62-45da-9951-35618fae8cca"},"acting_party":null},"error":{"code":"SERVICE_UNAVAILABLE","message":"服务暂不可用，请稍后核对状态","retryable":false,"details":[]}}
+        
+        503 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 503
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:12:22)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:66:139)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:65:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: snapshot index paginates exact city and refuses foreign cursor; tampered snapshots fail closed
+    not ok 10 - snapshot index paginates exact city and refuses foreign cursor; tampered snapshots fail closed
+      ---
+      duration_ms: 17.2506
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\buyer-rank.integration.test.cjs:69:10'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:70:416)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:69:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: same privacy request contains only own frozen rank sources, including after public withdrawal
+    not ok 11 - same privacy request contains only own frozen rank sources, including after public withdrawal
+      ---
+      duration_ms: 40.7436
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\buyer-rank.integration.test.cjs:73:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        The expression evaluated to a falsy value:
+        
+          assert(entries.length>=4)
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: true
+      actual: false
+      operator: '=='
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:74:520)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\buyer-rank.integration.test.cjs:73:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..11
+not ok 1 - buyer ranking: current identity, frozen facts and own-account evidence
+  ---
+  duration_ms: 7406.1296
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\buyer-rank.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '7 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 12
+# suites 0
+# pass 4
+# fail 8
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7603.6727

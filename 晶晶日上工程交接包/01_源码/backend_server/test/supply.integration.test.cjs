@@ -32,7 +32,7 @@ test('supply HTTP, immutable works, private materials and personal consents with
    return capture(await request('POST','/assets?purpose='+purpose+'&media_type=text%2Fplain',person,Buffer.from(text),person.personal_party_id,{'Idempotency-Key':op}),'SupplyAssetResponse');
   }
   const proof=await upload('RIGHTS_EVIDENCE'),script=await upload('WORK_CONTENT'),image=await upload('AVATAR_MATERIAL'),consentFile=await upload('CONSENT_EVIDENCE',subject);
-  let profile,first,approved,avatar,consent;
+  let profile,first,approved,avatar,consent,avatarOrg,orgImage;
   const workInput=()=>({work_id:null,previous_version_id:null,title:'合成测试原作',kind:'ORIGINAL',source_version_id:null,project_id:null,content_asset_id:script.id,evidence_ids:[proof.id],credits:[{party_id:author.personal_party_id,role:'AUTHOR',evidence_asset_ids:[proof.id]},{party_id:subject.personal_party_id,role:'RIGHTS_HOLDER',evidence_asset_ids:[proof.id]}]});
   const review=async(path,row,person,data)=>request('POST',path+'/'+row.id+'/reviews',person,data,null,{'Idempotency-Key':key(),'If-Match':'"'+row.object_version+'"'});
   await t.test('raw private upload hashes actual bytes and repeated request does not upload twice',async()=>{
@@ -85,7 +85,15 @@ test('supply HTTP, immutable works, private materials and personal consents with
    assert.equal((await request('GET','/records?kind=toString')).status,400);
   });
   await t.test('avatar materials are separate from personal face/voice consent and cannot be given by an institution',async()=>{
-   avatar=capture(await request('POST','/avatars',author,{display_name:'合成数字人资料',material_asset_ids:[image.id]},author.personal_party_id,{'Idempotency-Key':key()}),'SupplyRecordResponse');assert.equal(avatar.data.provider_asset_ref,null);
+   // New legacy-compatible organization creation still requires the natural actor's free identity.
+   avatarOrg=await parties.createOrganization(author.ctx,{display_name:'Synthetic verified avatar owner',operation_key:key()});
+   const artists=require('../src/modules/artists/repository').createArtistRepository(db,{resolvePrincipal});
+   const person=await artists.createPerson(author.ctx,{party_id:author.personal_party_id,display_name:'Synthetic author identity',operation_key:key()});
+   const identity=await artists.prepareIdentity(author.ctx,{person_id:person.id,party_id:author.personal_party_id,session_ref:'synthetic:'+key(),operation_key:key()});
+   await artists.applyIdentity(identity.id,{request_key:identity.data.request_key,person_id:person.id,status:'VERIFIED',issuer:'synthetic-fixture',subject_fingerprint:randomBytes(32).toString('hex'),age_band:'ADULT',valid_until:'2099-01-01T00:00:00.000Z',evidence_ref:'synthetic:identity',liveness_verified:true,phone_verified:true});
+   orgImage=await upload('AVATAR_MATERIAL',{...author,personal_party_id:avatarOrg.party_id});
+
+   avatar=capture(await request('POST','/avatars',author,{display_name:'合成数字人资料',material_asset_ids:[orgImage.id]},avatarOrg.party_id,{'Idempotency-Key':key()}),'SupplyRecordResponse');assert.equal(avatar.data.provider_asset_ref,null);
    const c={avatar_id:avatar.id,subject_party_id:subject.personal_party_id,features:['FACE'],purposes:['PRIVATE_CUSTOMIZATION'],territories:['CN'],valid_from:'2026-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',terms:'仅为明确用途记录本人形象同意，不包含声音和发行。',evidence_asset_ids:[consentFile.id]};
    assert.equal((await request('POST','/consents',author,{consent:c},author.personal_party_id,{'Idempotency-Key':key()})).status,403);
    consent=capture(await request('POST','/consents',subject,{consent:c},subject.personal_party_id,{'Idempotency-Key':key()}),'SupplyRecordResponse');assert.equal(consent.current_status,'PENDING_REVIEW');assert.equal(consent.data.identity_verification,'NOT_VERIFIED');
@@ -115,7 +123,7 @@ test('supply HTTP, immutable works, private materials and personal consents with
   });
   await t.test('audit failure rolls back new records and idempotency results',async()=>{
    const broken={...db,withTransaction:work=>db.withTransaction(tx=>work({execute:async(sql,args)=>{if(sql.startsWith('INSERT INTO supply_audit'))throw Error('synthetic audit failure');return tx.execute(sql,args);}}))},bad=createSupplyRepository(broken,{resolvePrincipal});
-   const input={party_id:author.personal_party_id,display_name:'rollback-avatar',material_asset_ids:[image.id],operation_key:key()};await assert.rejects(bad.createAvatar(author.ctx,input),/synthetic audit failure/);const result=await repo.createAvatar(author.ctx,input);assert.equal(result.object_version,1);
+   const input={party_id:avatarOrg.party_id,display_name:'rollback-avatar',material_asset_ids:[orgImage.id],operation_key:key()};await assert.rejects(bad.createAvatar(author.ctx,input),/synthetic audit failure/);const result=await repo.createAvatar(author.ctx,input);assert.equal(result.object_version,1);
   });
   await t.test('institution owners can apply but a reviewer belonging to the same institution cannot approve it',async()=>{
    const org=await parties.createOrganization(author.ctx,{display_name:'合成机构',operation_key:key()}),invite=await parties.inviteMember(author.ctx,{party_id:org.party_id,invitee_account_id:rights.account_id,expires_at:new Date(Date.now()+3600000).toISOString(),operation_key:key()});

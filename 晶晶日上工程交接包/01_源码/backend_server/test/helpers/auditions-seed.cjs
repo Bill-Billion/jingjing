@@ -1,7 +1,7 @@
 "use strict";
 const {randomUUID:key,randomBytes,createHash}=require('node:crypto');
 const {digest,createRuleContent}=require('../../src/modules/governance/content');
-async function seedAuditions(db){
+async function seedAuditions(db,{ruleVersion='1'}={}){
  const principals=new Map(),resolvePrincipal=async ctx=>principals.get(ctx),secret=randomBytes(32).toString('base64');
  const parties=require('../../src/modules/party/repository').createPartyRepository(db,{resolvePrincipal}),auth=require('../../src/modules/auth/repository').createAuthRepository(db,{secret});
  const artists=require('../../src/modules/artists/repository').createArtistRepository(db,{resolvePrincipal});
@@ -19,11 +19,11 @@ async function seedAuditions(db){
  async function consent(purposes){let c=await artists.declareConsent(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,avatar_id:avatar.id,consent:{features:['FACE'],purposes,grantee_party_id:buyer.personal_party_id,territories:['CN'],valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',terms:'synthetic only',evidence_asset_ids:[evidence.id]},operation_key:key()});return artists.review(reviewer.ctx,{person_id:seller.person.id,record_id:c.id,expected_version:c.object_version,decision:'APPROVE',reason:'synthetic independent',operation_key:key()});}
  const publicConsent=await consent(['PUBLIC_DISPLAY']),sampleConsent=await consent(['AUDITION_SAMPLES']);
  // Fixture of a previously reviewed certification; never a production certification shortcut.
- const haloId=key(),haloData={level:2,valid_until:'2099-01-01T00:00:00.000Z',synthetic_only:true};
+ const haloId=key(),haloData={level:2,valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',synthetic_only:true};
  await db.execute("INSERT INTO artist_records(id,person_id,kind,created_by,current_status,data_json,data_sha256) VALUES (?,?,'HALO',?,'APPROVED',?,?)",[haloId,seller.person.id,reviewer.account_id,JSON.stringify(haloData),digest(haloData)]);
  const ruleId=key(),rules={version:'synthetic-v1',accept_hours:24,acceptance_hours:48,photo_count:6,video_count:1,payment_window_minutes:30,terms:'synthetic test only; transport included; no performance rights'};
- const content=createRuleContent({id:ruleId,rule_key:'audition.synthetic',version:'1',terms:{audition:rules,marketplace_finance:{model:'V5_TWO_LAYER',product_type:'AUDITION',fee_base:'NET_PAID',platform_party_id:outsider.personal_party_id,platform_bps:2200,referral_bps:660,rounding:'HALF_UP_PLATFORM_REMAINDER'}}});
- await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'audition.synthetic','1',JSON.stringify(content),'2020-01-01 00:00:00',outsider.account_id,'EFFECTIVE']);
+ const content=createRuleContent({id:ruleId,rule_key:'audition.synthetic',version:ruleVersion,terms:{audition:rules,marketplace_finance:{model:'V5_TWO_LAYER',product_type:'AUDITION',fee_base:'NET_PAID',platform_party_id:outsider.personal_party_id,platform_bps:2200,referral_bps:660,rounding:'HALF_UP_PLATFORM_REMAINDER'}}});
+ await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'audition.synthetic',ruleVersion,JSON.stringify(content),'2020-01-01 00:00:00',outsider.account_id,'EFFECTIVE']);
  const auditions=require('../../src/modules/auditions/repository').createAuditionsRepository(db,{resolvePrincipal}),trade=require('../../src/modules/trade/repository').createTradeRepository(db,{resolvePrincipal});
  const future=n=>new Date(Date.now()+n*3600000).toISOString();const offer={person_id:seller.person.id,avatar_id:avatar.id,public_consent_id:publicConsent.id,rule_id:ruleId,title:'Synthetic audition',city:'synthetic-city',service_area:'synthetic district',mode:'OFFLINE',public_booking:true,public_price:true,unit_minor:10000,slots:[{starts_at:future(-24),ends_at:future(240)}],terms:'synthetic test only'};
  const appointment={mode:'OFFLINE',city:'synthetic-city',venue:'Public studio',address:'Synthetic studio 1',starts_at:future(48),ends_at:future(49),purpose:'Synthetic film casting sample'};

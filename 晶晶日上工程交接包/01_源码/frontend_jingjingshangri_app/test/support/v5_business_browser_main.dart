@@ -24,8 +24,9 @@ Future<void> main() async {
     if (f['synthetic_only'] != true ||
         origin.scheme != 'http' ||
         origin.host != '127.0.0.1' ||
-        origin.path != '/api/v1')
+        origin.path != '/api/v1') {
       throw StateError('Not a local synthetic fixture');
+    }
     final role = Uri.base.queryParameters['fixtureRole'] ?? 'buyer';
     final a = Map<String, dynamic>.from(f['accounts'][role] as Map);
     final token = a['bearer_token'] as String;
@@ -63,8 +64,9 @@ Future<void> main() async {
     await session.loadParties();
     session.select(
         session.parties.singleWhere((r) => r['party']['id'] == a['party_id']));
-    if (!session.isLoggedIn || session.partyId == null)
+    if (!session.isLoggedIn || session.partyId == null) {
       throw StateError('No synthetic identity');
+    }
     runApp(MultiProvider(providers: [
       ChangeNotifierProvider<UserProvider>.value(value: legacy),
       ChangeNotifierProvider<AccountSession>.value(value: session)

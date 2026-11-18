@@ -1,0 +1,643 @@
+TAP version 13
+# Subtest: self-service monthly limits constrain actual orders and custody attempts without changing financial facts
+    # Subtest: settings work before wallet opening; private and versioned, duplicate retry changes once
+    ok 1 - settings work before wallet opening; private and versioned, duplicate retry changes once
+      ---
+      duration_ms: 194.7409
+      type: 'test'
+      ...
+    # Subtest: concurrent purchases cannot exceed cap; failure rolls back payment and request key
+    ok 2 - concurrent purchases cannot exceed cap; failure rolls back payment and request key
+      ---
+      duration_ms: 185.9932
+      type: 'test'
+      ...
+    # Subtest: lowering takes effect before unsent dispatch; unknown provider result stays reserved
+    ok 3 - lowering takes effect before unsent dispatch; unknown provider result stays reserved
+      ---
+      duration_ms: 853.4462
+      type: 'test'
+      ...
+    # Subtest: raise/removal need cooling, cancellation preserves active limit and history is immutable
+    ok 4 - raise/removal need cooling, cancellation preserves active limit and history is immutable
+      ---
+      duration_ms: 110.4339
+      type: 'test'
+      ...
+    # Subtest: refund returns money by existing rules, but does not reset gross spending budget
+    ok 5 - refund returns money by existing rules, but does not reset gross spending budget
+      ---
+      duration_ms: 83.256
+      type: 'test'
+      ...
+    # Subtest: closed unpaid attempt releases budget; cancelled order and idempotent retries never mint money
+    ok 6 - closed unpaid attempt releases budget; cancelled order and idempotent retries never mint money
+      ---
+      duration_ms: 136.6591
+      type: 'test'
+      ...
+    # Subtest: custody topups obey separate personal cap and existing platform rule; actual service stays disabled
+    ok 7 - custody topups obey separate personal cap and existing platform rule; actual service stays disabled
+      ---
+      duration_ms: 74.2771
+      type: 'test'
+      ...
+    # Subtest: cancelling an unsent custody payment releases reserved cash atomically; cap denial leaves no cash hold
+    ok 8 - cancelling an unsent custody payment releases reserved cash atomically; cap denial leaves no cash hold
+      ---
+      duration_ms: 223.4042
+      type: 'test'
+      ...
+    # Subtest: month boundary retains older unknown attempts and late receipts without double counting
+    ok 9 - month boundary retains older unknown attempts and late receipts without double counting
+      ---
+      duration_ms: 156.5777
+      type: 'test'
+      ...
+    # Subtest: old orders count when user first sets a limit; suspension and tampering cannot bypass privacy
+    ok 10 - old orders count when user first sets a limit; suspension and tampering cannot bypass privacy
+      ---
+      duration_ms: 40.1622
+      type: 'test'
+      ...
+    1..10
+ok 1 - self-service monthly limits constrain actual orders and custody attempts without changing financial facts
+  ---
+  duration_ms: 11911.3354
+  type: 'test'
+  ...
+# Subtest: failed migration is diagnosed and recovered through isolated maintenance commands
+    # Subtest: CLI safety rejects live targets and emits no credentials
+    ok 1 - CLI safety rejects live targets and emits no credentials
+      ---
+      duration_ms: 231.8535
+      type: 'test'
+      ...
+    # Subtest: read-only diagnostics see waiting work without requiring a release manifest
+    ok 2 - read-only diagnostics see waiting work without requiring a release manifest
+      ---
+      duration_ms: 302.4301
+      type: 'test'
+      ...
+    # Subtest: backup commands create an authenticated pre-change artifact and refuse overwrite
+    ok 3 - backup commands create an authenticated pre-change artifact and refuse overwrite
+      ---
+      duration_ms: 1851.8274
+      type: 'test'
+      ...
+    # Subtest: actual failed migration retains prior committed DDL and is observable without rewriting history
+    ok 4 - actual failed migration retains prior committed DDL and is observable without rewriting history
+      ---
+      duration_ms: 706.23
+      type: 'test'
+      ...
+    # Subtest: restore refuses wrong hash and a populated target without destroying the failed scene
+    ok 5 - restore refuses wrong hash and a populated target without destroying the failed scene
+      ---
+      duration_ms: 596.3476
+      type: 'test'
+      ...
+    # Subtest: actual restore command reestablishes pre-change money, authority and original task in a new quarantined database
+    ok 6 - actual restore command reestablishes pre-change money, authority and original task in a new quarantined database
+      ---
+      duration_ms: 8139.2137
+      type: 'test'
+      ...
+    # Subtest: post-recovery observation blocks runtime and never claims migration recovery is service cutover
+    ok 7 - post-recovery observation blocks runtime and never claims migration recovery is service cutover
+      ---
+      duration_ms: 690.8631
+      type: 'test'
+      ...
+    # Subtest: diagnostics report blocked, failed and expired jobs without executing or exposing private references
+    ok 8 - diagnostics report blocked, failed and expired jobs without executing or exposing private references
+      ---
+      duration_ms: 343.0288
+      type: 'test'
+      ...
+    # Subtest: empty database is diagnosed as unavailable without creating schema
+    ok 9 - empty database is diagnosed as unavailable without creating schema
+      ---
+      duration_ms: 303.5364
+      type: 'test'
+      ...
+    1..9
+ok 2 - failed migration is diagnosed and recovered through isolated maintenance commands
+  ---
+  duration_ms: 25252.2035
+  type: 'test'
+  ...
+# Subtest: reviewed notice revisions retain history and fence old offers in isolated MySQL
+    # Subtest: new applications capture exact original notice; old order and outstanding quote share the same notice
+    ok 1 - new applications capture exact original notice; old order and outstanding quote share the same notice
+      ---
+      duration_ms: 1415.1061
+      type: 'test'
+      ...
+    # Subtest: pending revision is private, idempotent and does not replace published content
+    ok 2 - pending revision is private, idempotent and does not replace published content
+      ---
+      duration_ms: 98.8399
+      type: 'test'
+      ...
+    # Subtest: independent rejection and withdrawal preserve live version; revoked author cannot publish
+    ok 3 - independent rejection and withdrawal preserve live version; revoked author cannot publish
+      ---
+      duration_ms: 75.7637
+      type: 'test'
+      ...
+    # Subtest: publication and notifications roll back together; approved history cannot be withdrawn; competing base becomes stale
+    ok 4 - publication and notifications roll back together; approved history cannot be withdrawn; competing base becomes stale
+      ---
+      duration_ms: 117.0946
+      type: 'test'
+      ...
+    # Subtest: new applications reject unseen revisions while retries retain their original accepted version
+    ok 5 - new applications reject unseen revisions while retries retain their original accepted version
+      ---
+      duration_ms: 70.5974
+      type: 'test'
+      ...
+    # Subtest: applicant must confirm exact current version without rewriting original snapshot; recipient cannot confirm for them
+    ok 6 - applicant must confirm exact current version without rewriting original snapshot; recipient cannot confirm for them
+      ---
+      duration_ms: 117.3919
+      type: 'test'
+      ...
+    # Subtest: confirmation cannot revive old quote; formed order is unchanged; new quote can be accepted
+    ok 7 - confirmation cannot revive old quote; formed order is unchanged; new quote can be accepted
+      ---
+      duration_ms: 216.9055
+      type: 'test'
+      ...
+    # Subtest: new application binds revised notice and expired identity still blocks acknowledgment
+    ok 8 - new application binds revised notice and expired identity still blocks acknowledgment
+      ---
+      duration_ms: 106.7514
+      type: 'test'
+      ...
+    # Subtest: legacy missing snapshot is never fabricated; confirmation preserves that absence
+    ok 9 - legacy missing snapshot is never fabricated; confirmation preserves that absence
+      ---
+      duration_ms: 67.8715
+      type: 'test'
+      ...
+    # Subtest: simultaneous approvals cannot overwrite each other; exactly one revision takes effect
+    ok 10 - simultaneous approvals cannot overwrite each other; exactly one revision takes effect
+      ---
+      duration_ms: 80.6538
+      type: 'test'
+      ...
+    # Subtest: official revisions require current official author and independent reviewer
+    ok 11 - official revisions require current official author and independent reviewer
+      ---
+      duration_ms: 93.4689
+      type: 'test'
+      ...
+    1..11
+ok 3 - reviewed notice revisions retain history and fence old offers in isolated MySQL
+  ---
+  duration_ms: 12248.0844
+  type: 'test'
+  ...
+# Subtest: recharge refund role-separated HTTP and personal guardian copies
+    # Subtest: authenticated personal request is idempotent and cannot forge source, party, receipt or guardian
+    ok 1 - authenticated personal request is idempotent and cannot forge source, party, receipt or guardian
+      ---
+      duration_ms: 156.3089
+      type: 'test'
+      ...
+    # Subtest: own lists, cursor and cancellation respect identity, current version and command replay
+    ok 2 - own lists, cursor and cancellation respect identity, current version and command replay
+      ---
+      duration_ms: 95.6978
+      type: 'test'
+      ...
+    # Subtest: independent queue and actual evidence bytes never expose own case or unrelated files
+    ok 3 - independent queue and actual evidence bytes never expose own case or unrelated files
+      ---
+      duration_ms: 120.0006
+      type: 'test'
+      ...
+    # Subtest: HTTP independent approval, scheduling and retry join the real worker without public dispatch or receipt input
+    ok 4 - HTTP independent approval, scheduling and retry join the real worker without public dispatch or receipt input
+      ---
+      duration_ms: 234.951
+      type: 'test'
+      ...
+    # Subtest: guardian HTTP uses own identity and evidence, separate child source, no self-review
+    ok 5 - guardian HTTP uses own identity and evidence, separate child source, no self-review
+      ---
+      duration_ms: 137.5471
+      type: 'test'
+      ...
+    # Subtest: own wallet and guardian copies redact task, channel, identity and review evidence
+    ok 6 - own wallet and guardian copies redact task, channel, identity and review evidence
+      ---
+      duration_ms: 62.9
+      type: 'test'
+      ...
+    # Subtest: revoked guardian loses live case details and new requests but own child retains financial copy
+    ok 7 - revoked guardian loses live case details and new requests but own child retains financial copy
+      ---
+      duration_ms: 83.7729
+      type: 'test'
+      ...
+    1..7
+ok 4 - recharge refund role-separated HTTP and personal guardian copies
+  ---
+  duration_ms: 11183.7169
+  type: 'test'
+  ...
+# Subtest: durable recharge refund recovery and guardian delegation in isolated MySQL
+    # Subtest: task insert and case link are atomic; same case scheduling keeps one durable task
+    ok 1 - task insert and case link are atomic; same case scheduling keeps one durable task
+      ---
+      duration_ms: 122.8984
+      type: 'test'
+      ...
+    # Subtest: lost provider response persists UNKNOWN and worker restart only queries the original refund
+    ok 2 - lost provider response persists UNKNOWN and worker restart only queries the original refund
+      ---
+      duration_ms: 92.6568
+      type: 'test'
+      ...
+    # Subtest: expired lease cannot settle money or finish a job; a new lease queries and settles once
+    ok 3 - expired lease cannot settle money or finish a job; a new lease queries and settles once
+      ---
+      duration_ms: 85.8929
+      type: 'test'
+      ...
+    # Subtest: bad receipt blocks, never releases funds; current independent permission is required to resume
+    ok 4 - bad receipt blocks, never releases funds; current independent permission is required to resume
+      ---
+      duration_ms: 109.4873
+      type: 'test'
+      ...
+    # Subtest: missing adapter and changed merchant fail closed; cancelled queued cases never send
+    ok 5 - missing adapter and changed merchant fail closed; cancelled queued cases never send
+      ---
+      duration_ms: 122.1532
+      type: 'test'
+      ...
+    # Subtest: a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+    ok 6 - a manually sent old case is scheduled for query only; completed money survives a lost job-completion write
+      ---
+      duration_ms: 66.3958
+      type: 'test'
+      ...
+    # Subtest: consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+    ok 7 - consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes
+      ---
+      duration_ms: 389.4675
+      type: 'test'
+      ...
+    # Subtest: guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+    ok 8 - guardian must be active and owns evidence; no child impersonation, foreign source or self-review
+      ---
+      duration_ms: 105.8911
+      type: 'test'
+      ...
+    # Subtest: revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+    ok 9 - revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle
+      ---
+      duration_ms: 124.0679
+      type: 'test'
+      ...
+    1..9
+ok 5 - durable recharge refund recovery and guardian delegation in isolated MySQL
+  ---
+  duration_ms: 10837.8598
+  type: 'test'
+  ...
+# Subtest: original recharge refund cases, reservations, trusted recovery and private copies in isolated MySQL
+    # Subtest: same request key returns one case; foreign account and changed request are denied
+    ok 1 - same request key returns one case; foreign account and changed request are denied
+      ---
+      duration_ms: 41.8989
+      type: 'test'
+      ...
+    # Subtest: only a separately granted independent reviewer can approve; approval atomically reserves the original lot
+    ok 2 - only a separately granted independent reviewer can approve; approval atomically reserves the original lot
+      ---
+      duration_ms: 56.9998
+      type: 'test'
+      ...
+    # Subtest: reserved refund blocks actual payment; insufficient available funds leave a new case open rather than rejecting its basis
+    ok 3 - reserved refund blocks actual payment; insufficient available funds leave a new case open rather than rejecting its basis
+      ---
+      duration_ms: 186.7963
+      type: 'test'
+      ...
+    # Subtest: one dispatch claim and unknown recovery keep funds reserved; wrong proofs cannot change the original recharge
+    ok 4 - one dispatch claim and unknown recovery keep funds reserved; wrong proofs cannot change the original recharge
+      ---
+      duration_ms: 95.2002
+      type: 'test'
+      ...
+    # Subtest: trusted partial receipt and duplicate queries reduce recharge net once; membership recalculates without adding consumption growth
+    ok 5 - trusted partial receipt and duplicate queries reduce recharge net once; membership recalculates without adding consumption growth
+      ---
+      duration_ms: 34.6015
+      type: 'test'
+      ...
+    # Subtest: partial independent decision can reserve remaining funds and unsent cancellation releases exactly that reservation
+    ok 6 - partial independent decision can reserve remaining funds and unsent cancellation releases exactly that reservation
+      ---
+      duration_ms: 40.4125
+      type: 'test'
+      ...
+    # Subtest: two refund approvals and actual payment versus refund cannot reserve the same remaining money twice
+    ok 7 - two refund approvals and actual payment versus refund cannot reserve the same remaining money twice
+      ---
+      duration_ms: 218.2791
+      type: 'test'
+      ...
+    # Subtest: verified close releases an unknown refund, terminal contradictions require review and revoked operators cannot dispatch
+    ok 8 - verified close releases an unknown refund, terminal contradictions require review and revoked operators cannot dispatch
+      ---
+      duration_ms: 49.1114
+      type: 'test'
+      ...
+    # Subtest: receipt replay across cases and failed audit cannot mutate money; final remainder receipt closes the original recharge net
+    ok 9 - receipt replay across cases and failed audit cannot mutate money; final remainder receipt closes the original recharge net
+      ---
+      duration_ms: 76.7795
+      type: 'test'
+      ...
+    # Subtest: owner wallet and requested personal copy expose refund facts without channel credentials or independent review notes
+    ok 10 - owner wallet and requested personal copy expose refund facts without channel credentials or independent review notes
+      ---
+      duration_ms: 108.6639
+      type: 'test'
+      ...
+    1..10
+ok 6 - original recharge refund cases, reservations, trusted recovery and private copies in isolated MySQL
+  ---
+  duration_ms: 10687.8135
+  type: 'test'
+  ...
+# Subtest: restored refund rechecks current authority, provider binding and receipt facts
+    # Subtest: revoked independent authority blocks restored work and cannot authorize its retry; self-review still fails
+    ok 1 - revoked independent authority blocks restored work and cannot authorize its retry; self-review still fails
+      ---
+      duration_ms: 152.7722
+      type: 'test'
+      ...
+    # Subtest: authority revoked during provider readiness is rechecked before any original-request query
+    ok 2 - authority revoked during provider readiness is rechecked before any original-request query
+      ---
+      duration_ms: 125.4498
+      type: 'test'
+      ...
+    # Subtest: missing adapter and changed merchant, revision or environment cannot reroute a restored refund
+    ok 3 - missing adapter and changed merchant, revision or environment cannot reroute a restored refund
+      ---
+      duration_ms: 647.9095
+      type: 'test'
+      ...
+    # Subtest: unready provider and configuration changed during readiness cannot proceed
+    ok 4 - unready provider and configuration changed during readiness cannot proceed
+      ---
+      duration_ms: 217.3154
+      type: 'test'
+      ...
+    # Subtest: query transport loss and pending or unknown observations preserve reserved money and query only
+    ok 5 - query transport loss and pending or unknown observations preserve reserved money and query only
+      ---
+      duration_ms: 341.6351
+      type: 'test'
+      ...
+    # Subtest: wrong amount, merchant, source transaction and missing success reference never settle the restored case
+    ok 6 - wrong amount, merchant, source transaction and missing success reference never settle the restored case
+      ---
+      duration_ms: 562.2427
+      type: 'test'
+      ...
+    # Subtest: a lease lost while querying cannot settle; its replacement queries the same request and settles once
+    ok 7 - a lease lost while querying cannot settle; its replacement queries the same request and settles once
+      ---
+      duration_ms: 216.8643
+      type: 'test'
+      ...
+    # Subtest: definitive CLOSED releases only the original hold and cannot later be overwritten by success
+    ok 8 - definitive CLOSED releases only the original hold and cannot later be overwritten by success
+      ---
+      duration_ms: 23326.5034
+      type: 'test'
+      ...
+    1..8
+ok 7 - restored refund rechecks current authority, provider binding and receipt facts
+  ---
+  duration_ms: 57243.5937
+  type: 'test'
+  ...
+# Subtest: unknown recharge refund survives encrypted restore without enabling dispatch
+    # Subtest: unknown original send is frozen with reserved funds and the same durable task
+    ok 1 - unknown original send is frozen with reserved funds and the same durable task
+      ---
+      duration_ms: 662.7428
+      type: 'test'
+      ...
+    # Subtest: restored case, task, operation keys and wallet facts match while external bytes are explicitly absent
+    ok 2 - restored case, task, operation keys and wallet facts match while external bytes are explicitly absent
+      ---
+      duration_ms: 13281.828
+      type: 'test'
+      ...
+    # Subtest: restored quarantine blocks HTTP bootstrap and worker without changing money or sending again
+    ok 3 - restored quarantine blocks HTTP bootstrap and worker without changing money or sending again
+      ---
+      duration_ms: 395.2246
+      type: 'test'
+      ...
+    # Subtest: restoring a still-running refund invalidates its old lease while preserving original request and attempts
+    ok 4 - restoring a still-running refund invalidates its old lease while preserving original request and attempts
+      ---
+      duration_ms: 18223.3725
+      type: 'test'
+      ...
+    # Subtest: the pre-restore lease cannot heartbeat, attach a provider id, or finish in the restored database
+    ok 5 - the pre-restore lease cannot heartbeat, attach a provider id, or finish in the restored database
+      ---
+      duration_ms: 3.9238
+      type: 'test'
+      ...
+    # Subtest: the original process cannot settle the restored refund using its copied lease
+    ok 6 - the original process cannot settle the restored refund using its copied lease
+      ---
+      duration_ms: 10.6448
+      type: 'test'
+      ...
+    # Subtest: read-only release inspection includes waiting and restored retry jobs without approving or executing them
+    ok 7 - read-only release inspection includes waiting and restored retry jobs without approving or executing them
+      ---
+      duration_ms: 73.0226
+      type: 'test'
+      ...
+    # Subtest: latest synthetic erasure replay is atomic, suppresses the original proof and account, and still cannot release recovery
+    ok 8 - latest synthetic erasure replay is atomic, suppresses the original proof and account, and still cannot release recovery
+      ---
+      duration_ms: 86.6737
+      type: 'test'
+      ...
+    # Subtest: isolated internal recovery queries only the original request and a lost completion write cannot settle twice
+    ok 9 - isolated internal recovery queries only the original request and a lost completion write cannot settle twice
+      ---
+      duration_ms: 122.1753
+      type: 'test'
+      ...
+    # Subtest: restoration does not reset an exhausted task attempt budget
+    ok 10 - restoration does not reset an exhausted task attempt budget
+      ---
+      duration_ms: 12.0659
+      type: 'test'
+      ...
+    # Subtest: rebacking up the restored database cannot carry old privacy approval or a live lease into another recovery
+    ok 11 - rebacking up the restored database cannot carry old privacy approval or a live lease into another recovery
+      ---
+      duration_ms: 20874.814
+      type: 'test'
+      ...
+    # Subtest: failure while invalidating restored leases rolls back all business rows and leaves quarantine
+    ok 12 - failure while invalidating restored leases rolls back all business rows and leaves quarantine
+      ---
+      duration_ms: 10551.5494
+      type: 'test'
+      ...
+    1..12
+ok 8 - unknown recharge refund survives encrypted restore without enabling dispatch
+  ---
+  duration_ms: 76091.1863
+  type: 'test'
+  ...
+# Subtest: wallet ledger, custody boundary and order points in isolated MySQL
+    # Subtest: independent rule review, stale rule hash and client balance forgery rejected
+    ok 1 - independent rule review, stale rule hash and client balance forgery rejected
+      ---
+      duration_ms: 166.6463
+      type: 'test'
+      ...
+    # Subtest: other accounts, organizations, revoked identity and unopened custody are blocked
+    ok 2 - other accounts, organizations, revoked identity and unopened custody are blocked
+      ---
+      duration_ms: 47.5179
+      type: 'test'
+      ...
+    # Subtest: only matching verified custody receipt credits balance once; topup yields zero growth
+    ok 3 - only matching verified custody receipt credits balance once; topup yields zero growth
+      ---
+      duration_ms: 35.5973
+      type: 'test'
+      ...
+    # Subtest: original recharge refund assessment is read-only, personal and bound to the credited channel
+    ok 4 - original recharge refund assessment is read-only, personal and bound to the credited channel
+      ---
+      duration_ms: 37.7937
+      type: 'test'
+      ...
+    # Subtest: new order captures original rule and payment without fulfillment earns nothing
+    ok 5 - new order captures original rule and payment without fulfillment earns nothing
+      ---
+      duration_ms: 363.807
+      type: 'test'
+      ...
+    # Subtest: aftercare deadline and unresolved case block points; mature order credits exactly once
+    ok 6 - aftercare deadline and unresolved case block points; mature order credits exactly once
+      ---
+      duration_ms: 113.4116
+      type: 'test'
+      ...
+    # Subtest: concurrent point reservations cannot overspend; exact replay and release are safe
+    ok 7 - concurrent point reservations cannot overspend; exact replay and release are safe
+      ---
+      duration_ms: 68.853
+      type: 'test'
+      ...
+    # Subtest: verified refund continues even when points spent; growth reversed and shortage explicit
+    ok 8 - verified refund continues even when points spent; growth reversed and shortage explicit
+      ---
+      duration_ms: 132.6954
+      type: 'test'
+      ...
+    # Subtest: future points first recover refund shortfall; recovered debt does not erase new consumption growth
+    ok 9 - future points first recover refund shortfall; recovered debt does not erase new consumption growth
+      ---
+      duration_ms: 216.6338
+      type: 'test'
+      ...
+    # Subtest: expired batches cannot be used; materialized expiry preserves earned growth
+    ok 10 - expired batches cannot be used; materialized expiry preserves earned growth
+      ---
+      duration_ms: 52.2562
+      type: 'test'
+      ...
+    # Subtest: expired adult verification preserves balance history but disables displayed membership
+    ok 11 - expired adult verification preserves balance history but disables displayed membership
+      ---
+      duration_ms: 35.8659
+      type: 'test'
+      ...
+    # Subtest: sixth level requires private evidence and separate current operator review
+    ok 12 - sixth level requires private evidence and separate current operator review
+      ---
+      duration_ms: 78.3107
+      type: 'test'
+      ...
+    # Subtest: custody order reservation is atomic, unknown payments retain funds, refund restores original lots
+    ok 13 - custody order reservation is atomic, unknown payments retain funds, refund restores original lots
+      ---
+      duration_ms: 800.7568
+      type: 'test'
+      ...
+    # Subtest: refund assessment never treats imported refunds, unknown allocations or another lot as spendable money
+    ok 14 - refund assessment never treats imported refunds, unknown allocations or another lot as spendable money
+      ---
+      duration_ms: 79.5151
+      type: 'test'
+      ...
+    # Subtest: wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain
+    ok 15 - wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain
+      ---
+      duration_ms: 11.0973
+      type: 'test'
+      ...
+    # Subtest: automatic maintenance grants mature earnings; a lost lease cannot mutate points
+    ok 16 - automatic maintenance grants mature earnings; a lost lease cannot mutate points
+      ---
+      duration_ms: 274.3502
+      type: 'test'
+      ...
+    # Subtest: each fulfillment adapter requires its own actual completion source, not a paid flag
+    ok 17 - each fulfillment adapter requires its own actual completion source, not a paid flag
+      ---
+      duration_ms: 258.5235
+      type: 'test'
+      ...
+    # Subtest: free awards require published amounts and real events; concurrent check-in awards once without growth
+    ok 18 - free awards require published amounts and real events; concurrent check-in awards once without growth
+      ---
+      duration_ms: 74.2532
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back rule creation; stored digest corruption fails closed
+    ok 19 - audit failure rolls back rule creation; stored digest corruption fails closed
+      ---
+      duration_ms: 36.3329
+      type: 'test'
+      ...
+    1..19
+ok 9 - wallet ledger, custody boundary and order points in isolated MySQL
+  ---
+  duration_ms: 25023.1644
+  type: 'test'
+  ...
+1..9
+# tests 104
+# suites 0
+# pass 104
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 101766.9263

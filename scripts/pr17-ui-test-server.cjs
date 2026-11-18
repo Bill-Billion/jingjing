@@ -275,7 +275,8 @@ async function main() {
   }
   await upload('sellerEvidence', seller, 'RIGHTS_EVIDENCE'); await upload('buyerEvidence', buyer, 'RIGHTS_EVIDENCE'); await upload('mcnEvidence', mcn, 'RIGHTS_EVIDENCE');
   await upload('avatarMaterial', seller, 'AVATAR_MATERIAL'); await upload('consentEvidence', seller, 'CONSENT_EVIDENCE');
-  records.avatar = await call('POST', '/supply/avatars', { person: seller, party: seller.personalPartyId, body: { display_name: '合成商用形象（未调用头像供应商）', material_asset_ids: [assets.avatarMaterial.id] } });
+  const publicArtist=await require('./support/public-invite-artist.cjs')({db,ownerAccountId:seller.accountId,ownerPartyId:seller.personalPartyId,reviewerAccountId:reviewer.accountId,materialAssetId:assets.avatarMaterial.id,evidenceAssetId:assets.consentEvidence.id,grant:action=>grant('reviewer',action,true)});
+  records.avatar=publicArtist.avatar;
   async function consent(purposes) {
     let r = await call('POST', '/supply/consents', { person: seller, party: seller.personalPartyId, body: { consent: {
       avatar_id: records.avatar.id, subject_party_id: seller.personalPartyId, features: ['FACE', 'VOICE'], purposes, territories: ['CN'],
@@ -285,6 +286,11 @@ async function main() {
   for (const name of ['webConsent', 'appConsent', 'ledgerConsent', 'withdrawnConsent']) records[name] = await consent(['COMMERCIAL']);
   records.privateConsent = await consent(['PRIVATE']);
   checks.push('Private actual bytes with byte size/hash; recorded avatar; separate Web/App/ledger PERSON FACE+VOICE COMMERCIAL consents and PRIVATE-only consent through normal API and independent review');
+
+  records.invitationListing=publicArtist.listing;
+  const inviteOptions=await call('GET','/gigs/relation-options',{person:mcn,party:mcnOrganizationId});
+  assert(inviteOptions.items.some(row=>row.listing_id===publicArtist.listing.id&&row.artist_party_id===seller.personalPartyId));
+  checks.push('Invitation artist independently approved for public listing, synthetic adult identity, L1 and explicit free hosting; visible through actual scoped options API');
 
   const { createRuleContent } = fromBackend('./src/modules/governance/content');
   governanceRuleId = key(); const governance = createRuleContent({ id: governanceRuleId, rule_key: 'gigs.pr17.synthetic', version: '1', terms: { synthetic: '仅隔离测试规则；不是商业默认条件' } });

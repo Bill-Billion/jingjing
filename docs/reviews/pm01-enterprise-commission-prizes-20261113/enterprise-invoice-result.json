@@ -1,0 +1,52 @@
+{
+  "result": "PASS",
+  "checks": [
+    {
+      "name": "same organization order permits its owner without scout membership; ordinary employee cannot apply or read",
+      "result": "PASS",
+      "records": {
+        "order_id": "09f6ab42-1169-485e-9fc2-24744a2c7538",
+        "party_id": "26e498b3-eafa-4295-8f2f-7b4a81a006bf",
+        "invoice_id": "1d7745f6-4c7f-4982-a1d9-1c1ef01295cb",
+        "employee_account_id": "788adb25-9e22-4165-8f21-e252f97df9a8",
+        "scout_membership_required": false
+      }
+    },
+    {
+      "name": "switching to another owned company cannot inherit the original company order, invoice or command result",
+      "result": "PASS",
+      "records": {
+        "original_party_id": "26e498b3-eafa-4295-8f2f-7b4a81a006bf",
+        "second_party_id": "cf6f3439-a1e7-4156-a108-94290a1e23ac",
+        "order_id": "09f6ab42-1169-485e-9fc2-24744a2c7538",
+        "invoice_id": "1d7745f6-4c7f-4982-a1d9-1c1ef01295cb"
+      }
+    },
+    {
+      "name": "organization applicant cannot self-approve with operator grants or a second company; independent handlers issue the same simulated document",
+      "result": "PASS",
+      "records": {
+        "order_id": "09f6ab42-1169-485e-9fc2-24744a2c7538",
+        "invoice_id": "1d7745f6-4c7f-4982-a1d9-1c1ef01295cb",
+        "document_id": "427e09f8-fa9b-4aae-9f19-ac75594d4038",
+        "simulated": true,
+        "independent_handler": "e0b07629-7921-4186-82a3-9b6b0e2e1833",
+        "independent_verifier": "223deedf-a9f7-40be-bffc-c29716cb98d3"
+      }
+    },
+    {
+      "name": "original owner authority withdrawal blocks old reads, document and idempotent recovery without changing company facts",
+      "result": "PASS",
+      "records": {
+        "order_id": "09f6ab42-1169-485e-9fc2-24744a2c7538",
+        "invoice_id": "1d7745f6-4c7f-4982-a1d9-1c1ef01295cb",
+        "document_id": "427e09f8-fa9b-4aae-9f19-ac75594d4038",
+        "contract_unchanged": true,
+        "authority_change": "SYNTHETIC_ADMIN_PREREQUISITE"
+      }
+    }
+  ],
+  "limits": [
+    "Synthetic reviewed organization capability and operator grants; no real invoice or owner-transfer workflow."
+  ]
+}

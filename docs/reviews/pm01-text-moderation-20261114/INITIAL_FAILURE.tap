@@ -1,0 +1,58 @@
+TAP version 13
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:32:40.297Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","provider_request_id":"synthetic-text-1","time":"2026-11-14T10:32:40.347Z","level":"info","event":"provider_call_returned"}
+# Subtest: complete long-text moderation uses original private file, durable segment receipts and independent review
+    # Subtest: 600 Unicode characters retain existing single-request behavior
+    ok 1 - 600 Unicode characters retain existing single-request behavior
+      ---
+      duration_ms: 140.0424
+      type: 'test'
+      ...
+# {"provider_code":"aliyun-green","capability_code":"file_review","time":"2026-11-14T10:32:40.425Z","level":"info","event":"provider_call_started"}
+# {"provider_code":"aliyun-green","capability_code":"file_review","error_code":"PROVIDER_CALL_FAILED","time":"2026-11-14T10:32:40.426Z","level":"error","event":"provider_call_failed"}
+    # Subtest: 601 characters include the actual tail and require full-file independent review
+    not ok 2 - 601 characters include the actual tail and require full-file independent review
+      ---
+      duration_ms: 32.5126
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:25:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":"BLOCKED","error_code":"PROVIDER_CALL_FAILED"}
+        + actual - expected
+        
+        + 'BLOCKED'
+        - 'SUCCEEDED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'SUCCEEDED'
+      actual: 'BLOCKED'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:25:288)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\text-moderation.integration.test.cjs:25:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..2
+not ok 1 - complete long-text moderation uses original private file, durable segment receipts and independent review
+  ---
+  duration_ms: 8548.2619
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\text-moderation.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 3
+# suites 0
+# pass 1
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8846.6049

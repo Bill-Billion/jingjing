@@ -1,0 +1,21 @@
+{
+  "source_commit": "c6ed9b836de5ae6095bf86ab40f2ebd398153218",
+  "status": "STATIC_LIMIT_IDENTIFIED_RUNTIME_JOURNEY_NOT_YET_REPRODUCED",
+  "source_requirement": "ACC-DEL-24.02 / PM01 W09现有审核服务接入缺项",
+  "finding": "text/plain解码后按Unicode码点计数，超过600直接MODERATION_TEXT_SCOPE_UNSUPPORTED；媒介任务异常BLOCKED；原人工审核依赖已有待审结果。尚未实测长文本任务，不认定修复方案或整体不可用。",
+  "next": "先隔离复现600/601/Unicode/全文人工接续，再核现有产品支持；不截断冒充全文，不擅自开放真实调用。",
+  "refs": [
+    {
+      "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/media/moderation-provider.js",
+      "sha256": "5ff121466fabf427df9d566f962ad6ddab5e06c6e1544f035637e30d5a21e124"
+    },
+    {
+      "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/media/service.js",
+      "sha256": "98c45b12dc78ea58e7313266ed241dd4ad81fbe7e2a74b7ce368b9cf649dfec5"
+    },
+    {
+      "path": "docs/operations/EXTERNAL_READINESS.md",
+      "sha256": "95956315cedd9d4477e983a24eb9e1636a7a680640e093ca1d953978ee0e7d08"
+    }
+  ]
+}

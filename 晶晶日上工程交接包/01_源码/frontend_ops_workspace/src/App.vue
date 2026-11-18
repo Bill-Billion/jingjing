@@ -4,15 +4,30 @@
  * 目前不需要顶栏/侧边栏——登录页自己排版，工作台自己排版。
  * 等运营区 /admin 和合作方区 /partner 的版式做出来，这里再挂 layouts。
  */
+import ConsumerRisk from '@/components/ConsumerRisk.vue'
+import RestUsage from '@/components/RestUsage.vue'
 import { RouterView, useRouter } from 'vue-router'
 import { watch } from 'vue'
 import '@/styles/editorial.css'
 import { useSessionStore } from '@/stores/session'
+import { loginRedirect } from '@/router/loginRedirect'
 const session = useSessionStore()
 const router = useRouter()
-watch(() => session.token, token => { if (!token && !router.currentRoute.value.meta.public) void router.replace('/login') })
+watch(() => session.token, token => {
+  if (!token && !router.currentRoute.value.meta.public) {
+    const recovery = session.loginRecovery
+    const expired = session.loginExpired
+    session.loginRecovery = null
+    session.loginExpired = false
+    void router.replace(recovery === 'PHONE_CHANGE_CONFIRMATION'
+      ? { path: '/login', query: { redirect: '/me/phone-change', phoneChange: 'uncertain' } }
+      : expired ? { path: '/login', query: { redirect: loginRedirect(router.currentRoute.value.fullPath) } } : '/login')
+  }
+})
 </script>
 
 <template>
   <RouterView />
+  <RestUsage />
+  <ConsumerRisk />
 </template>

@@ -13,10 +13,14 @@ import 'notices_models.dart';
 
 class NoticesSubmission extends StatefulWidget {
   const NoticesSubmission(
-      {super.key, required this.session, required this.kind, this.noticeId});
+      {super.key,
+      required this.session,
+      required this.kind,
+      this.noticeId,
+      this.listingId});
   final AccountSession session;
   final String kind;
-  final String? noticeId;
+  final String? noticeId, listingId;
   @override
   State<NoticesSubmission> createState() => _NoticesSubmissionState();
 }
@@ -31,6 +35,8 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
   ArtistDetail? detail;
   NoticePublic? notice;
   NoticeRecord? source;
+  Map<String, dynamic>? invitation;
+  String? invitationRule;
   String? personId, error;
   bool busy = false, delegated = false, permitted = false;
   @override
@@ -49,6 +55,16 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
         throw const AccountError(400, 'NOTICE_SUBMISSION_INVALID');
       }
       if (widget.kind == 'INVITATION') {
+        if (widget.listingId != null) {
+          String? cursor;
+          final seen = <String>{};
+          do {
+            final page = await api.rules(cursor: cursor);
+            rules.addAll(page.items);
+            cursor = page.cursor;
+            if (cursor != null) v5Require(seen.add(cursor));
+          } while (cursor != null);
+        }
         if (widget.noticeId != null) {
           final r = await api.record(widget.noticeId!);
           if (r.kind != 'SUBMISSION' ||
@@ -110,29 +126,37 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
             (notice == null ||
                 c.data['grantee_party_id'] == notice!.raw['owner_party_id'])));
       } else if (notice != null) {
-        String? cursor;
-        final seen = <String>{};
-        do {
-          final page = await api.records('SUBMISSION', cursor: cursor);
-          for (final r in page.items.where((r) =>
-              r.raw['owner_party_id'] == api.owner() &&
-              !['WITHDRAWN', 'REJECTED'].contains(r.status))) {
-            final s = v5Map(r.data['submission']);
-            if (s['person_id'] == id &&
-                s['target_party_id'] == notice!.raw['owner_party_id'] &&
-                s['kind'] != 'INVITATION') {
-              delegatedRefs[s['consent_id']] = s;
-            }
-          }
-          cursor = page.cursor;
-          if (cursor != null) v5Require(seen.add(cursor));
-        } while (cursor != null);
+        for (final option in await api.submissionOptions(id, notice!.id)) {
+          delegatedRefs[option['consent_id']] = option;
+        }
       }
       if (mounted) {
         setState(() {
           detail = d;
           permitted = actions.contains('SUBMIT_COOPERATION');
         });
+      }
+    } on AccountError catch (e) {
+      if (mounted) setState(() => error = v5Error(e));
+    } finally {
+      if (mounted) setState(() => busy = false);
+    }
+  }
+
+  Future<void> chooseInvitationRule(String rule) async {
+    setState(() {
+      busy = true;
+      error = null;
+      invitation = null;
+      invitationRule = rule;
+    });
+    try {
+      final c = await api.invitationContext(widget.listingId!, rule);
+      if (mounted) {
+        setState(() => invitation = {
+              'rule_id': rule,
+              'submission': {...c, 'source_listing_id': c['listing_id']}
+            });
       }
     } on AccountError catch (e) {
       if (mounted) setState(() => error = v5Error(e));
@@ -161,9 +185,11 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
           if (busy) const LinearProgressIndicator(),
           if (error != null) appNotice(error!, icon: Icons.error_outline),
           appNotice('投稿或邀约经过独立审核后单向送达。感兴趣只进入客服处理，不自动成交、付款、授角或开放自由聊天。'),
-          if (invitation && source == null && !busy) ...[
-            appNotice(
-                '暂不能从公开艺人主页发起新的邀约。你可以继续查看已有邀约的客服处理记录，或浏览公开通告。'),
+          if (invitation &&
+              source == null &&
+              widget.listingId == null &&
+              !busy) ...[
+            appNotice('暂不能从公开艺人主页发起新的邀约。你可以继续查看已有邀约的客服处理记录，或浏览公开通告。'),
             tradeButton(
                 '查看已有客服处理记录',
                 () =>
@@ -173,7 +199,23 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
                 () => Navigator.pushNamed(context, '/notices/catalog'),
                 outline: true),
           ],
-          if (invitation && source != null) _invitationForm(source!),
+          if (invitation && widget.listingId != null) ...[
+            if (rules.isEmpty && !busy) appNotice('当前没有已生效的邀约规则，请稍后再试。'),
+            if (rules.isNotEmpty)
+              DropdownButtonFormField<String>(
+                  initialValue: invitationRule,
+                  isExpanded: true,
+                  decoration: const InputDecoration(labelText: '本次邀约适用规则'),
+                  items: rules
+                      .map((r) => DropdownMenuItem(
+                          value: r.id, child: Text(r.rule['version'])))
+                      .toList(),
+                  onChanged: busy || api.pending('/submissions') != null
+                      ? null
+                      : (v) => chooseInvitationRule(v!)),
+            if (this.invitation != null) _invitationForm(this.invitation!),
+          ],
+          if (invitation && source != null) _invitationForm(source!.data),
           if (!invitation) ...[
             if (notice != null)
               tradeSection('明确接收的通告', [
@@ -202,7 +244,7 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
                   notice != null &&
                   delegatedRefs.isEmpty)
                 appNotice(
-                    '机构首次代这位艺人向该接收方投稿暂未开放。请由艺人本人确认本次接收方、用途和期限后投稿；机构不能代替本人同意。'),
+                    '还没有覆盖该艺人、数字人和本次接收方的有效授权。请由艺人本人确认用途与期限并通过审核后，再回到这里投稿。'),
               if (permitted && !delegated && consents.isEmpty) ...[
                 appNotice('还没有覆盖本次接收方的已审合作投稿同意。请先在我的艺人中明确接收方、用途和有效期限。'),
                 tradeButton(
@@ -220,14 +262,14 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
         ]);
   }
 
-  Widget _invitationForm(NoticeRecord original) {
-    final s = v5Map(original.data['submission']);
+  Widget _invitationForm(Map<String, dynamic> original) {
+    final s = v5Map(original['submission']);
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      tradeSection('沿原合法上下文填写新意向', [
-        tradeFact('具体真人', s['person_id']),
+      tradeSection('确认本次邀约对象', [
+        tradeFact('具体真人', s['display_name'] ?? s['person_id']),
         tradeFact('具体数字人', s['avatar_id']),
         tradeFact('接收方原引用', s['target_party_id']),
-        appNotice('仅使用本人原可读邀约里的公开展示引用。服务器提交时重新核对，原引用失效仍会拒绝。')
+        appNotice('仅向当前获准公开的艺人发送本次合作意向；提交、审核与回应时重新核对有效范围，不直接取得出演权。')
       ]),
       V5Form(
           api: api,
@@ -240,9 +282,11 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
           ],
           restore: (b) => v5Map(b['submission']),
           buildBody: (v) => {
-                'rule_id': original.data['rule_id'],
+                'rule_id': original['rule_id'],
                 'submission': {
                   'kind': 'INVITATION',
+                  if (s['source_listing_id'] != null)
+                    'source_listing_id': s['source_listing_id'],
                   'target_party_id': s['target_party_id'],
                   'notice_id': null,
                   'person_id': s['person_id'],
@@ -281,7 +325,7 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
           V5Field('consent_id', '选择本人已提供的本次接收方授权', wrapChoices: true, choices: {
             for (final c in delegatedRefs.entries)
               c.key:
-                  '${d.avatars.where((a) => a.id == c.value['avatar_id']).map((a) => a.name).firstOrNull ?? '原数字人'} · 原投稿授权（提交时重核）'
+                  '${d.avatars.where((a) => a.id == c.value['avatar_id']).map((a) => a.name).firstOrNull ?? '原数字人'} · 本人已审合作授权（提交时重核）'
           })
         else
           V5Field('consent_id', '选择本人对明确接收方的已审授权', wrapChoices: true, choices: {

@@ -1,0 +1,75 @@
+﻿TAP version 13
+# Subtest: cast rights: current archive permission and explicit face/voice use
+    # Subtest: withdrawn archive consent blocks starting previously approved and paid customization
+    not ok 1 - withdrawn archive consent blocks starting previously approved and paid customization
+      ---
+      duration_ms: 248.2397
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\cast-rights.integration.test.cjs:28:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"meta":{"request_id":"798b38bb-3eae-4c66-91ce-9530a3f0aa55","actor":{"account_id":"736f867b-fafd-4934-9f17-228325162ebc"},"acting_party":"16b84244-df41-4428-b70f-ad4d36b8d448"},"data":{"project_id":"21b027b6-d736-46b3-9136-ede13f3e4ba6","order_id":"0fe787ef-266b-4a21-adb8-f537669fcc2e","object_version":3,"cast":[{"usage":"EXISTING_MATERIAL","avatar_id":"a97df2f9-f307-4b7c-8c8d-e20f7640f5c1","person_id":"08b1cb26-49af-4f47-a669-d689e0494c72","look_version_id":"bd0a91a2-f83c-403a-b479-a8f50a0c0f7c","voice_version_id":null,"supply_consent_id":"ff46ceb3-1eda-49fc-84b7-cee903a82458","artist_consent_ids":["42a4da79-51f2-4092-a802-cc95f28a4fb8"]}],"state":"STARTED","terms":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":168,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","preview_payment_order":"PREVIEW_BEFORE_INTERIM"},"format":"v5-customization-fulfillment-v1","source":{"request_id":"34faf44b-b9e5-4b28-8ffc-de769605e54d","submission_id":"a218c395-ff76-4e01-a9f6-daf087ae7903","content_sha256":"85a79ac9a14d261cd3849527bc7b83b9333f01e9643e48fbb8addd3cf917fe7f"},"receipt":null,"completion":null,"started_at":"2026-11-13T16:20:20.730Z","cancellation":null,"cast_snapshot":[{"versions":[{"id":"bd0a91a2-f83c-403a-b479-a8f50a0c0f7c","content_sha256":"4f0e04177ca10cfa4112e3d4b935944eef6307bd98331287fbbabd2773f48ce8"}],"avatar_id":"a97df2f9-f307-4b7c-8c8d-e20f7640f5c1","person_id":"08b1cb26-49af-4f47-a669-d689e0494c72","artist_consents":[{"id":"42a4da79-51f2-4092-a802-cc95f28a4fb8","content_sha256":"0459ccd2e4c469dd1eac3bbdbf2669acb28ffeffed16ec105550276f0f6b62f9"}],"supply_consent_sha256":"81d9852a5dbdddb45c63bdb8442764abaa400517f259e14dc5f8ffea1cc67e16"}],"creative_changes":0,"uses_identifiable_people":true,"additional_creative_changes":0,"cases":[]}}
+        + actual - expected
+        
+        + undefined
+        - 'CUSTOMIZATION_VARIANT_CONSENT_REQUIRED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'CUSTOMIZATION_VARIANT_CONSENT_REQUIRED'
+      operator: 'strictEqual'
+      stack: |-
+        bad (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\cast-rights.integration.test.cjs:14:102)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\cast-rights.integration.test.cjs:31:7)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\cast-rights.integration.test.cjs:28:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: voice archive alone cannot add voice to a face-only production permission
+    not ok 2 - voice archive alone cannot add voice to a face-only production permission
+      ---
+      duration_ms: 89.8912
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\cast-rights.integration.test.cjs:35:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"meta":{"request_id":"a9cf1aee-d415-4eea-b565-3bfd1c296d7e","actor":{"account_id":"736f867b-fafd-4934-9f17-228325162ebc"},"acting_party":"16b84244-df41-4428-b70f-ad4d36b8d448"},"data":{"id":"9c24a8ec-24f7-4449-992a-dcb75e7d856f","kind":"PROJECT","project_id":null,"order_id":"028bf291-f363-4436-8942-d43b3fdf9329","created_by":"736f867b-fafd-4934-9f17-228325162ebc","current_status":"IN_REVIEW","object_version":1,"content_sha256":"1573c26f465c7c05a407b28c452fcb9eb1793ad7c1195623c096f097257fbb4b","data":{"line_id":"film","buyer_party_id":"ea289d9a-5c01-4426-9c64-574d0fe8fed1","merchant_party_id":"16b84244-df41-4428-b70f-ad4d36b8d448","producer_party_id":"16b84244-df41-4428-b70f-ad4d36b8d448","script_version_id":"9fc05c3b-f895-4d34-9e50-80f2bd7591c4","license_project_id":null,"assignee_account_id":"736f867b-fafd-4934-9f17-228325162ebc","purpose":"PRIVATE","territory":"CN","consent_ids":["ff46ceb3-1eda-49fc-84b7-cee903a82458"],"evidence_asset_id":"20da514e-cae7-420a-8fda-390abf8b50dd","specification":{"terms":"synthetic non-commercial","version":"synthetic1","deliverables":["synthetic manual film"],"service_tier":"test","final_seconds":90,"revision_limit":1,"sample_seconds":20,"customization_delivery":{"version":"V5-Q05-Q06","source_ref":"synthetic:test-only","acceptance_hours":168,"cancellation_terms":"before start full refund; confirmed completed work only; failure refund","preview_payment_order":"PREVIEW_BEFORE_INTERIM"}},"quantity":1,"contract_sha256":"6aa9c656bfabaddc8852f0d3245e95210df6c2cd3649f358466d59263763a202","current":{},"accepted":{},"revisions":{},"change_requests":0,"review":null}}}
+        + actual - expected
+        
+        + undefined
+        - 'CUSTOMIZATION_FEATURE_CONSENT_REQUIRED'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'CUSTOMIZATION_FEATURE_CONSENT_REQUIRED'
+      operator: 'strictEqual'
+      stack: |-
+        bad (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\cast-rights.integration.test.cjs:14:102)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\cast-rights.integration.test.cjs:41:3)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\cast-rights.integration.test.cjs:35:2)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..2
+not ok 1 - cast rights: current archive permission and explicit face/voice use
+  ---
+  duration_ms: 6671.1613
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\cast-rights.integration.test.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 3
+# suites 0
+# pass 0
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7010.4856

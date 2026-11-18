@@ -1,0 +1,92 @@
+{
+  "run_id": "backend-acceptance-2026-11-12T01-15-47-778Z-389d42",
+  "base_commit": "3d14b423",
+  "scope": "W20 same-order agency history; membership service and HTTP business checks, within completed round 8 full backend run",
+  "checks": [
+    {
+      "name": "approved notice to artist submission and interested recipient creates one support case",
+      "result": "PASS"
+    },
+    {
+      "name": "scoped agency options hide private people and reject wrong identities or stale public sources",
+      "result": "PASS"
+    },
+    {
+      "name": "agency invitation requires artist consent; staff cannot silently accept",
+      "result": "PASS"
+    },
+    {
+      "name": "first commercial quote is accepted and genuinely enters paid state through simulated receipt",
+      "result": "PASS"
+    },
+    {
+      "name": "member alone has no artist messages or income; explicit scoped staff grant is necessary",
+      "result": "PASS"
+    },
+    {
+      "name": "same paid commercial conversation provides independently reviewed personal message copy",
+      "result": "PASS"
+    },
+    {
+      "name": "reassignment changes income visibility; revocation immediately removes messages and dashboard",
+      "result": "PASS"
+    },
+    {
+      "name": "removing and reinviting an employee does not resurrect the old scoped artist grant",
+      "result": "PASS"
+    },
+    {
+      "name": "artist withdrawal removes old agency live access without erasing contract or old income",
+      "result": "PASS"
+    },
+    {
+      "name": "changing agency cannot transfer historic order, commission or messages to new agency",
+      "result": "PASS"
+    },
+    {
+      "name": "partial refund after agency switch reverses original amounts once and does not rewrite original contract",
+      "result": "PASS"
+    },
+    {
+      "name": "remaining full refund archives same conversation and clears original accrual without transferring it",
+      "result": "PASS"
+    },
+    {
+      "name": "ended relationships, restricted proofs and withdrawn public sources cannot be reused; original invitation recovers",
+      "result": "PASS"
+    }
+  ],
+  "records": {
+    "notice_id": "a3a00cd2-0b65-41b7-a025-471a21d31928",
+    "submission_id": "fb3ae12f-f42a-4a2a-9bfb-ace4ab11abef",
+    "case_id": "136fb399-8bfd-430d-82fc-5f91f0e8084c",
+    "person_id": "98ac4f99-1be5-4866-b78e-3a79694d0716",
+    "avatar_id": "5133e85e-1d94-4c2e-9bd0-152dccb30465",
+    "old_agency": "c97b8030-c9f7-43ed-9dda-77225b679d0c",
+    "new_agency": "7e3e2779-fce3-42fa-baf0-b2b2c0b36151",
+    "relation_id": "7246fa35-9f69-4f0b-b0e9-00d30e403a39",
+    "order_id": "28b2c529-d471-4743-9d64-446d604c0c2f",
+    "payment_id": "27d70a4e-04a7-4f75-b505-c3df459e17d1",
+    "contract_sha256": "350f387f68c45b4f135773989d5b38fb4bd395dd2642dc91cec86370a86c1a3a",
+    "message_id": "bb853691-c0eb-4c9f-a1dd-227bba43bd81",
+    "controlled_media_message_id": "bc244a1f-b5b3-47be-82d3-2db3e13c94a5",
+    "controlled_media_asset_id": "af911836-2ed2-43c9-868a-54fb6532a067",
+    "refund_id": "3ce72cf8-ee2f-4b21-b260-b85e048284e0",
+    "commission_id": "1b670b4d-6af1-4910-b312-37389bfc713c",
+    "final_refund_id": "81474391-a583-48b9-a3f1-ef2d550b5f91"
+  },
+  "http_request_count": 114,
+  "frontend_run": false,
+  "real_services": false,
+  "cleanup": {
+    "browser_and_web_closed": true,
+    "server_stopped": true,
+    "database_dropped": true
+  },
+  "source_evidence_sha256": "0ce48d6c0126b7b381f43c42a87595aee47815a48dbae2e67c3cfce977c313dd",
+  "limits": [
+    "Identity and payment receipts are synthetic",
+    "Membership removal and reinvitation use backend repository methods, message/income access uses HTTP",
+    "Seven-day handover expiry is separately tested with synthetic checkpoints and isolated time"
+  ]
+}

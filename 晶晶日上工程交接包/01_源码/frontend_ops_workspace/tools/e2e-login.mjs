@@ -144,7 +144,7 @@ try {
  check('375宽无横向溢出', await owner.evaluate(() => document.documentElement.scrollWidth <= innerWidth))
  // Authentication failure on any account route must remove private data and redirect.
  await replyOnce(owner, '**/api/v1/me/invitations?*', 401, 'AUTHENTICATION_REQUIRED')
- await owner.getByRole('button', { name: '收到的邀请', exact: true }).click(); await owner.getByRole('button', { name: '刷新邀请', exact: true }).click(); await owner.waitForURL('**/login')
+ await owner.getByRole('button', { name: '收到的邀请', exact: true }).click(); await owner.getByRole('button', { name: '刷新邀请', exact: true }).click(); await owner.waitForURL(url => url.pathname === '/login' && url.searchParams.get('redirect') === '/workspace')
  check('401清理令牌、邀请回执及私有页面', await owner.evaluate(() => !sessionStorage.getItem('ops.session.token') && !sessionStorage.getItem('ops.session.receipts')))
  await recipient.getByRole('button', { name: '退出登录', exact: true }).click(); await recipient.locator('.el-message-box').getByRole('button', { name: '退出', exact: true }).click(); await recipient.waitForURL('**/login')
  check('退出返回登录页并清理私有状态', await recipient.evaluate(() => !sessionStorage.getItem('ops.session.token')))

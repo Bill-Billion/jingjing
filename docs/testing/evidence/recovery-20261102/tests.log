@@ -1,0 +1,381 @@
+TAP version 13
+# {"provider_code":"volcengine","capability_code":"login_sms","error_code":"PROVIDER_NOT_CONFIGURED","time":"2026-11-02T04:13:55.965Z","level":"warn","event":"provider_call_blocked"}
+# Subtest: real MySQL and HTTP account lifecycle
+    # Subtest: probes work; missing provider evidence and legacy tokens do not grant login
+    ok 1 - probes work; missing provider evidence and legacy tokens do not grant login
+      ---
+      duration_ms: 247.8963
+      type: 'test'
+      ...
+    # Subtest: duplicate SMS requests dispatch once and keep phone/code out of storage and response
+    ok 2 - duplicate SMS requests dispatch once and keep phone/code out of storage and response
+      ---
+      duration_ms: 47.524
+      type: 'test'
+      ...
+    # Subtest: login consumes once and replays the same protected session even with reordered JSON
+    ok 3 - login consumes once and replays the same protected session even with reordered JSON
+      ---
+      duration_ms: 85.1275
+      type: 'test'
+      ...
+    # Subtest: saved identity outside page one resolves current membership without selecting another identity
+    ok 4 - saved identity outside page one resolves current membership without selecting another identity
+      ---
+      duration_ms: 202.0017
+      type: 'test'
+      ...
+    # Subtest: identity recovery returns fresh roles after an authorized member relationship changes
+    ok 5 - identity recovery returns fresh roles after an authorized member relationship changes
+      ---
+      duration_ms: 123.9408
+      type: 'test'
+      ...
+    # Subtest: attempt counters commit on failure; expired and superseded codes are rejected
+    ok 6 - attempt counters commit on failure; expired and superseded codes are rejected
+      ---
+      duration_ms: 179.7087
+      type: 'test'
+      ...
+    # Subtest: different concurrent login keys cannot mint two sessions from one code
+    ok 7 - different concurrent login keys cannot mint two sessions from one code
+      ---
+      duration_ms: 34.4578
+      type: 'test'
+      ...
+    # Subtest: untrusted identities, malformed bodies and oversized input fail without exposing secrets
+    ok 8 - untrusted identities, malformed bodies and oversized input fail without exposing secrets
+      ---
+      duration_ms: 42.3405
+      type: 'test'
+      ...
+    # Subtest: provider uncertainty neither reports SENT nor resends an identical request
+    ok 9 - provider uncertainty neither reports SENT nor resends an identical request
+      ---
+      duration_ms: 38.3429
+      type: 'test'
+      ...
+# {"request_id":"ac81deeb-47b6-4a62-9f1f-95177c3e00c0","provider_code":"volcengine","capability_code":"login_sms","error_code":"PROVIDER_NOT_VERIFIED","time":"2026-11-02T04:13:56.758Z","level":"warn","event":"provider_call_blocked"}
+# {"request_id":"40337c25-8918-4db5-b04f-cae40d20a52e","provider_code":"volcengine","capability_code":"login_sms","time":"2026-11-02T04:13:56.781Z","level":"info","event":"provider_call_started"}
+# {"request_id":"40337c25-8918-4db5-b04f-cae40d20a52e","provider_code":"volcengine","capability_code":"login_sms","provider_request_id":"fake-http-request","time":"2026-11-02T04:13:56.828Z","level":"info","event":"provider_call_returned"}
+# {"request_id":"6f674ba6-0bb2-4dca-ade7-6386471641bc","provider_code":"volcengine","capability_code":"login_sms","time":"2026-11-02T04:13:56.874Z","level":"info","event":"provider_call_started"}
+# {"request_id":"6f674ba6-0bb2-4dca-ade7-6386471641bc","provider_code":"volcengine","capability_code":"login_sms","error_code":"PROVIDER_OUTCOME_UNKNOWN","time":"2026-11-02T04:13:56.877Z","level":"error","event":"provider_call_failed"}
+# {"provider_code":"volcengine","capability_code":"login_sms","error_code":"PROVIDER_CONFIGURATION_CHANGED","time":"2026-11-02T04:13:56.903Z","level":"warn","event":"provider_call_blocked"}
+    # Subtest: actual SMS provider composition logs in via HTTP and unknown dispatch cannot login or resend
+    ok 10 - actual SMS provider composition logs in via HTTP and unknown dispatch cannot login or resend
+      ---
+      duration_ms: 173.106
+      type: 'test'
+      ...
+    # Subtest: HTTP invitations require the intended recipient; removal preserves personal identity
+    ok 11 - HTTP invitations require the intended recipient; removal preserves personal identity
+      ---
+      duration_ms: 227.3057
+      type: 'test'
+      ...
+    # Subtest: rename replays original result, rejects stale versions and cursors from another account/resource
+    ok 12 - rename replays original result, rejects stale versions and cursors from another account/resource
+      ---
+      duration_ms: 129.0558
+      type: 'test'
+      ...
+    # Subtest: an uncertain committed organization and rename replay the original result without duplicate writes
+    ok 13 - an uncertain committed organization and rename replay the original result without duplicate writes
+      ---
+      duration_ms: 93.4329
+      type: 'test'
+      ...
+    # Subtest: an uncertain committed login replays one session and does not send another SMS
+    ok 14 - an uncertain committed login replays one session and does not send another SMS
+      ---
+      duration_ms: 53.7922
+      type: 'test'
+      ...
+    # Subtest: pending command can be retried, while changed content with the same key cannot
+    ok 15 - pending command can be retried, while changed content with the same key cannot
+      ---
+      duration_ms: 65.3353
+      type: 'test'
+      ...
+    # Subtest: unknown service failures do not advertise automatic retry or expose internal errors
+    ok 16 - unknown service failures do not advertise automatic retry or expose internal errors
+      ---
+      duration_ms: 10.9672
+      type: 'test'
+      ...
+    # Subtest: declining and owner revocation create no membership; unknown caller fields are rejected
+    ok 17 - declining and owner revocation create no membership; unknown caller fields are rejected
+      ---
+      duration_ms: 121.3565
+      type: 'test'
+      ...
+    # Subtest: logout, expiry and account suspension are enforced on subsequent HTTP calls
+    ok 18 - logout, expiry and account suspension are enforced on subsequent HTTP calls
+      ---
+      duration_ms: 81.9421
+      type: 'test'
+      ...
+    # Subtest: rate limits survive a fresh repository and browser origins are explicit
+    ok 19 - rate limits survive a fresh repository and browser origins are explicit
+      ---
+      duration_ms: 32.968
+      type: 'test'
+      ...
+    # Subtest: rate limits report real remaining seconds through HTTP, including limits after SMS reservation
+    ok 20 - rate limits report real remaining seconds through HTTP, including limits after SMS reservation
+      ---
+      duration_ms: 94.9992
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back account, session and consumption; retry works after repair
+    ok 21 - audit failure rolls back account, session and consumption; retry works after repair
+      ---
+      duration_ms: 38.0739
+      type: 'test'
+      ...
+    # Subtest: sessions survive fresh composition and expired secrets can be removed
+    ok 22 - sessions survive fresh composition and expired secrets can be removed
+      ---
+      duration_ms: 49.6341
+      type: 'test'
+      ...
+# {"request_id":"0b3ce40f-976b-4553-a26c-836638480bf8","provider_code":"volcengine","capability_code":"login_sms","error_code":"PROVIDER_NOT_CONFIGURED","time":"2026-11-02T04:13:58.224Z","level":"warn","event":"provider_call_blocked"}
+    # Subtest: actual server entry starts only with explicit MySQL configuration and leaves SMS disabled
+    ok 23 - actual server entry starts only with explicit MySQL configuration and leaves SMS disabled
+      ---
+      duration_ms: 324.0815
+      type: 'test'
+      ...
+    1..23
+ok 1 - real MySQL and HTTP account lifecycle
+  ---
+  duration_ms: 11347.1557
+  type: 'test'
+  ...
+# Subtest: invoice header and amounts do not invent tax rules or allow invalid money
+ok 2 - invoice header and amounts do not invent tax rules or allow invalid money
+  ---
+  duration_ms: 1.4197
+  type: 'test'
+  ...
+# Subtest: production invoice issuance requires explicit valid issuer configuration; simulation cannot masquerade as real
+ok 3 - production invoice issuance requires explicit valid issuer configuration; simulation cannot masquerade as real
+  ---
+  duration_ms: 0.8766
+  type: 'test'
+  ...
+# Subtest: operator controls never infer authority from status and recorder cannot self-review
+ok 4 - operator controls never infer authority from status and recorder cannot self-review
+  ---
+  duration_ms: 0.4267
+  type: 'test'
+  ...
+# Subtest: invoice original-order HTTP lifecycle and controlled documents
+    # Subtest: unpaid, zero cash, foreign party, missing headers and forged fields fail
+    ok 1 - unpaid, zero cash, foreign party, missing headers and forged fields fail
+      ---
+      duration_ms: 223.0214
+      type: 'test'
+      ...
+    # Subtest: concurrent duplicate requests occupy once, competing requests cannot overbook
+    ok 2 - concurrent duplicate requests occupy once, competing requests cannot overbook
+      ---
+      duration_ms: 365.0872
+      type: 'test'
+      ...
+    # Subtest: identity separation and independent staff permissions
+    ok 3 - identity separation and independent staff permissions
+      ---
+      duration_ms: 55.5966
+      type: 'test'
+      ...
+    # Subtest: request additional materials, preserve history, reject stale changes
+    ok 4 - request additional materials, preserve history, reject stale changes
+      ---
+      duration_ms: 101.2571
+      type: 'test'
+      ...
+    # Subtest: allowed controls follow current grants, state and independent review across reads, lists and replay
+    ok 5 - allowed controls follow current grants, state and independent review across reads, lists and replay
+      ---
+      duration_ms: 303.5015
+      type: 'test'
+      ...
+    # Subtest: test document is labeled, pending file hidden, recorder cannot verify, independent reviewer can issue
+    ok 6 - test document is labeled, pending file hidden, recorder cannot verify, independent reviewer can issue
+      ---
+      duration_ms: 105.05
+      type: 'test'
+      ...
+    # Subtest: late pending and completed refunds flag correction; zero correction preserves old document
+    ok 7 - late pending and completed refunds flag correction; zero correction preserves old document
+      ---
+      duration_ms: 164.6384
+      type: 'test'
+      ...
+    # Subtest: withdrawal and rejected documents free only appropriate reservation; retry cannot resurrect
+    ok 8 - withdrawal and rejected documents free only appropriate reservation; retry cannot resurrect
+      ---
+      duration_ms: 202.5489
+      type: 'test'
+      ...
+    # Subtest: sandbox disabled blocks issuance and corrupted financial source never becomes invoice basis
+    ok 9 - sandbox disabled blocks issuance and corrupted financial source never becomes invoice basis
+      ---
+      duration_ms: 135.4844
+      type: 'test'
+      ...
+    # Subtest: manual production-file branch stays disabled until configured and rechecks file access after transport
+    ok 10 - manual production-file branch stays disabled until configured and rechecks file access after transport
+      ---
+      duration_ms: 252.1156
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back reservation and idempotency record; grant revocation blocks retries
+    ok 11 - audit failure rolls back reservation and idempotency record; grant revocation blocks retries
+      ---
+      duration_ms: 170.4915
+      type: 'test'
+      ...
+    # Subtest: operator history, document list and private download preserve historical scope
+    ok 12 - operator history, document list and private download preserve historical scope
+      ---
+      duration_ms: 40.7553
+      type: 'test'
+      ...
+    # Subtest: read-only recovery finds committed create after a lost response and never reserves or replays
+    ok 13 - read-only recovery finds committed create after a lost response and never reserves or replays
+      ---
+      duration_ms: 264.6334
+      type: 'test'
+      ...
+    # Subtest: operator recovery is actor scoped, rechecks current grants and does not rerun a later changed invoice
+    ok 14 - operator recovery is actor scoped, rechecks current grants and does not rerun a later changed invoice
+      ---
+      duration_ms: 176.0799
+      type: 'test'
+      ...
+    1..14
+ok 5 - invoice original-order HTTP lifecycle and controlled documents
+  ---
+  duration_ms: 12044.3336
+  type: 'test'
+  ...
+# Subtest: MySQL party identity, consent, authority and transactional audit
+    # Subtest: upgrading from the seven prior migrations preserves data and applies only new tables
+    ok 1 - upgrading from the seven prior migrations preserves data and applies only new tables
+      ---
+      duration_ms: 7053.8393
+      type: 'test'
+      ...
+    # Subtest: default authentication is denied and caller actor/roles cannot be injected
+    ok 2 - default authentication is denied and caller actor/roles cannot be injected
+      ---
+      duration_ms: 32.0964
+      type: 'test'
+      ...
+    # Subtest: same verified subject registers one account and one personal party under concurrency
+    ok 3 - same verified subject registers one account and one personal party under concurrency
+      ---
+      duration_ms: 23.69
+      type: 'test'
+      ...
+    # Subtest: organization creation is idempotent without overwriting the personal party
+    ok 4 - organization creation is idempotent without overwriting the personal party
+      ---
+      duration_ms: 39.1273
+      type: 'test'
+      ...
+    # Subtest: individual authors and organizations can request multiple capabilities without activating business
+    ok 5 - individual authors and organizations can request multiple capabilities without activating business
+      ---
+      duration_ms: 77.6696
+      type: 'test'
+      ...
+    # Subtest: pending invitation grants no membership and only its intended account can respond
+    ok 6 - pending invitation grants no membership and only its intended account can respond
+      ---
+      duration_ms: 58.4048
+      type: 'test'
+      ...
+    # Subtest: cross-party identifiers and outsider mutation are rejected
+    ok 7 - cross-party identifiers and outsider mutation are rejected
+      ---
+      duration_ms: 38.4607
+      type: 'test'
+      ...
+    # Subtest: concurrent same-key acceptance produces one membership and one audit event
+    ok 8 - concurrent same-key acceptance produces one membership and one audit event
+      ---
+      duration_ms: 43.9143
+      type: 'test'
+      ...
+    # Subtest: concurrent invitations to the same person produce only one pending invitation
+    ok 9 - concurrent invitations to the same person produce only one pending invitation
+      ---
+      duration_ms: 30.1295
+      type: 'test'
+      ...
+    # Subtest: accept and revoke races yield one transition and never create membership after revocation
+    ok 10 - accept and revoke races yield one transition and never create membership after revocation
+      ---
+      duration_ms: 36.0262
+      type: 'test'
+      ...
+    # Subtest: declined, revoked, stale and expired invitations cannot activate membership
+    ok 11 - declined, revoked, stale and expired invitations cannot activate membership
+      ---
+      duration_ms: 138.4401
+      type: 'test'
+      ...
+    # Subtest: suspended accounts and parties cannot mutate or replay successful operations
+    ok 12 - suspended accounts and parties cannot mutate or replay successful operations
+      ---
+      duration_ms: 48.5122
+      type: 'test'
+      ...
+    # Subtest: pending acceptance rechecks the inviter and idempotent replay rechecks the owner
+    ok 13 - pending acceptance rechecks the inviter and idempotent replay rechecks the owner
+      ---
+      duration_ms: 52.762
+      type: 'test'
+      ...
+    # Subtest: removal preserves identity/history, affects only one organization, and forbids replay after revocation
+    ok 14 - removal preserves identity/history, affects only one organization, and forbids replay after revocation
+      ---
+      duration_ms: 97.7493
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back invitation, membership and replay result together
+    ok 15 - audit failure rolls back invitation, membership and replay result together
+      ---
+      duration_ms: 41.0711
+      type: 'test'
+      ...
+    # Subtest: input rejects missing versions, unknown fields and invalid or past expiry
+    ok 16 - input rejects missing versions, unknown fields and invalid or past expiry
+      ---
+      duration_ms: 33.5148
+      type: 'test'
+      ...
+    # Subtest: accepted identity and audit survive reconnect without provider calls or a process cache
+    ok 17 - accepted identity and audit survive reconnect without provider calls or a process cache
+      ---
+      duration_ms: 48.5151
+      type: 'test'
+      ...
+    1..17
+ok 6 - MySQL party identity, consent, authority and transactional audit
+  ---
+  duration_ms: 9632.1081
+  type: 'test'
+  ...
+1..6
+# tests 60
+# suites 0
+# pass 60
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12299.8858

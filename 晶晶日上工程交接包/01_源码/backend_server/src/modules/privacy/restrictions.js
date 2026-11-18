@@ -15,7 +15,7 @@ async function target(tx,kind,key){
 async function assertUnrestricted(tx,kind,key){
  if(!targets[kind])throw error('PRIVACY_TARGET_KIND_INVALID',400);
  const [[r]]=await tx.execute("SELECT id FROM content_restrictions WHERE target_kind=? AND target_id=? AND current_status='ACTIVE' LIMIT 1 FOR SHARE",[kind,id(key)]);
- if(r)throw error('CONTENT_RESTRICTED',409);
+ if(r||await (async()=>{const [[x]]=await tx.execute('SELECT id FROM infringement_cases WHERE target_kind=? AND target_id=? AND restriction_active=TRUE LIMIT 1 FOR SHARE',[kind,id(key)]);return x;})())throw error('CONTENT_RESTRICTED',409);
 }
 async function reviewConflict(tx,kind,r,account){
  if(r.created_by===account)return true;

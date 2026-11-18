@@ -120,6 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     _MenuItem(Icons.video_library_rounded, '我的视频', () => _go('/video-lib')),
                     _MenuItem(Icons.forum, '我的消息', () => loggedIn ? _goTab(3) : _tapLogin()),
                     _MenuItem(Icons.account_balance_wallet_rounded, '我的钱包', () => _go('/wallet')),
+                    _MenuItem(Icons.tune, '个人月度限额', () => _go('/wallet/limits')),
                     _MenuItem(Icons.campaign, '品牌代言', () => _go('/endorsement')),
                     _MenuItem(Icons.theater_comedy_rounded, '晶晶日上', () => _go('/theater', requireAuth: false)),
                   ]),

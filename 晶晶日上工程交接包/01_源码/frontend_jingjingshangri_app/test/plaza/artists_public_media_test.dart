@@ -11,22 +11,38 @@ import '../trade/trade_api_test.dart' show buyerSession;
 import 'plaza_data_test.dart' show plazaArtist;
 
 final portraitPng = base64Decode(
-    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=');
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGOo6pr1HwAFvgKesG1tBwAAAABJRU5ErkJggg==');
 
 void main() {
-  for (final mode in ['image', 'audio', 'revoked']) {
+  for (final mode in [
+    'image',
+    'unselected',
+    'audio',
+    'mismatch',
+    'invalid-image',
+    'revoked'
+  ]) {
     testWidgets('公开肖像仅解码获准图片且处理$mode', (tester) async {
       late FakeAccountAdapter adapter;
       adapter = FakeAccountAdapter(handler: (request) {
+        if (request.path.endsWith('/media')) {
+          return envelope(publicMediaData(
+              primary: ['audio', 'unselected'].contains(mode) ? null : assetKey,
+              items: [
+                publicMediaItemData(
+                    type: mode == 'audio' ? 'audio/wav' : 'image/png',
+                    bytes: mode == 'mismatch' ? artistBytes : portraitPng)
+              ]));
+        }
         if (request.path.endsWith('/assets/$assetKey/content')) {
           if (mode == 'revoked') {
             return envelope({'code': 'ARTIST_CONSENT_REQUIRED'},
                 status: 409, error: true);
           }
           return ResponseBody.fromBytes(
-              mode == 'image'
-                  ? portraitPng
-                  : [82, 73, 70, 70, 65, 85, 68, 73, 79],
+              mode == 'invalid-image'
+                  ? List.filled(portraitPng.length, 0)
+                  : portraitPng,
               200,
               headers: {
                 'content-type': ['application/octet-stream']
@@ -47,19 +63,33 @@ void main() {
       await tester.runAsync(
           () => Future<void>.delayed(const Duration(milliseconds: 50)));
       await frames(tester);
+      for (var i = 0;
+          i < 20 &&
+              find.byType(CircularProgressIndicator).evaluate().isNotEmpty;
+          i++) {
+        await tester.runAsync(
+            () => Future<void>.delayed(const Duration(milliseconds: 10)));
+        await frames(tester);
+      }
       expect(
           find.byType(Image), mode == 'image' ? findsOneWidget : findsNothing);
       expect(unavailable, mode == 'revoked');
+      final contents =
+          adapter.requests.where((r) => r.path.endsWith('/content'));
+      if (['audio', 'unselected'].contains(mode)) {
+        expect(contents, isEmpty);
+        expect(find.text('未选择公开主肖像'), findsOneWidget);
+      } else {
+        expect(contents.single.path,
+            '/api/v1/artists/catalog/$listingKey/assets/$assetKey/content');
+        if (mode != 'image') expect(find.text('图片暂不可用'), findsOneWidget);
+      }
       expect(
           adapter.requests
-              .where((r) => r.path.endsWith('/content'))
-              .single
-              .path,
-          '/api/v1/artists/catalog/$listingKey/assets/$assetKey/content');
-      if (mode != 'image') {
-        expect(
-            find.text(mode == 'audio' ? '暂无公开照片' : '图片暂不可用'), findsOneWidget);
-      }
+              .where((r) =>
+                  r.path.endsWith('/media') || r.path.endsWith('/content'))
+              .every((r) => !r.headers.containsKey('X-Acting-Party')),
+          isTrue);
       expect(tester.takeException(), isNull);
       await tester.pumpWidget(const SizedBox.shrink());
     });
@@ -69,6 +99,10 @@ void main() {
     final pending = Completer<ResponseBody>();
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(handler: (request) {
+      if (request.path.endsWith('/media')) {
+        return envelope(
+            publicMediaData(items: [publicMediaItemData(bytes: portraitPng)]));
+      }
       if (request.path.endsWith('/assets/$assetKey/content')) {
         return pending.future;
       }

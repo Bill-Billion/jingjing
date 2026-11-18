@@ -1,0 +1,154 @@
+TAP version 13
+# Subtest: company delivery handoff preserves first receipt, current authority and original final payment
+    # Subtest: a new representative must personally read the current preview and notification before taking over
+    not ok 1 - a new representative must personally read the current preview and notification before taking over
+      ---
+      duration_ms: 145.377
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\customization-handoff.integration.test.cjs:18:156'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":409,"meta":{"request_id":"dad20de5-5856-4c9f-a5b1-14aef8018fbf","actor":{"account_id":"cb300888-fd2f-42d7-a5c3-a05959671161"},"acting_party":"76271aa0-f69d-41d1-b757-97d82bd18678"},"error":{"code":"CUSTOMIZATION_PREVIEW_NOT_VIEWED","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:18:23)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:40:66
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:18:173)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:37:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: another viewer never overwrites a completed receipt and each actor feedback uses their own read
+    not ok 2 - another viewer never overwrites a completed receipt and each actor feedback uses their own read
+      ---
+      duration_ms: 73.2152
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\customization-handoff.integration.test.cjs:18:156'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":409,"meta":{"request_id":"5f2f58cf-d3c7-4b86-bf09-5c756eff2d60","actor":{"account_id":"59dd28e6-0687-42fa-9726-36b654bee9e7"},"acting_party":"c9efaf73-c1ea-49ee-aa51-48e9e2df1667"},"error":{"code":"CUSTOMIZATION_INTERIM_PAYMENT_REQUIRED","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:18:23)
+        deliver (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:30:343)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:46:11
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:18:173)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:45:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version
+    not ok 3 - failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version
+      ---
+      duration_ms: 59.9234
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\customization-handoff.integration.test.cjs:18:156'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":409,"meta":{"request_id":"c328f0fc-a0d3-4366-b970-707dc828d308","actor":{"account_id":"59dd28e6-0687-42fa-9726-36b654bee9e7"},"acting_party":"c9efaf73-c1ea-49ee-aa51-48e9e2df1667"},"error":{"code":"CUSTOMIZATION_INTERIM_PAYMENT_REQUIRED","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:18:23)
+        deliver (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:30:343)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:51:38
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:18:173)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:50:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: concurrent current company viewers create one observation each and one immutable final deadline
+    not ok 4 - concurrent current company viewers create one observation each and one immutable final deadline
+      ---
+      duration_ms: 49.1699
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\customization-handoff.integration.test.cjs:18:156'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":409,"meta":{"request_id":"a9eb7dd1-dab8-4985-a2f7-20c1908feca0","actor":{"account_id":"59dd28e6-0687-42fa-9726-36b654bee9e7"},"acting_party":"c9efaf73-c1ea-49ee-aa51-48e9e2df1667"},"error":{"code":"CUSTOMIZATION_INTERIM_PAYMENT_REQUIRED","message":"请求未通过校验或权限检查","retryable":false,"details":[]}}
+        
+        409 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 409
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:18:23)
+        deliver (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:30:343)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:59:10
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:18:173)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:58:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: same company completes final acceptance and last payment; duplicate final downloads keep one completion fact
+    not ok 5 - same company completes final acceptance and last payment; duplicate final downloads keep one completion fact
+      ---
+      duration_ms: 0.4088
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\customization-handoff.integration.test.cjs:18:156'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        content (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:31:87)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:67:14
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:18:179)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Test.start (node:internal/test_runner/test:944:17)
+        TestContext.test (node:internal/test_runner/test:373:20)
+        sub (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:18:156)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\customization-handoff.integration.test.cjs:66:9)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+      ...
+    1..5
+not ok 1 - company delivery handoff preserves first receipt, current authority and original final payment
+  ---
+  duration_ms: 8189.9535
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\customization-handoff.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '5 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 6
+# suites 0
+# pass 0
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8538.1029

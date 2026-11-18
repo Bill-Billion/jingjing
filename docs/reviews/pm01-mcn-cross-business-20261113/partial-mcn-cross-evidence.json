@@ -1,0 +1,103 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "65c3df3878daa6214542acf7fb731da73adca28a",
+  "run_id": "pm01-mcn-cross-business-2026-11-13T14-40-49-267Z",
+  "formal_pass": false,
+  "real_services": false,
+  "frontend_run": false,
+  "checks": [
+    {
+      "id": "MCN-CROSS-BUSINESS-HISTORY",
+      "acceptance_id": "ACC-DEL-25.04",
+      "name": "机构试镜接拒与现货多参与人收入",
+      "result": "LOCAL_PASS",
+      "scope": "试镜原订单归属、实际接受/拒绝/超时与同单退款后结果保留；现货多参与人购买快照按任一艺人筛选、同单收入去重、全参与人授权与撤权、来源变动历史保留和快照篡改拒绝。仅后端，现货多人为历史合成资料",
+      "remaining": "真实多参与人上架购买与员工现货指派仍待；商单旧记录仅数字人关联并标明来源；500单上限和创建期间口径保留；前端暂停、真实渠道及独立签收未完成",
+      "actual_checks": [
+        {
+          "name": "MCN same-order income follows actual pending, accepted, declined, expired and refunded audition outcomes",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 69,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 736.6146,
+          "error_code": null
+        },
+        {
+          "name": "MCN requires this persons explicit audition delegation and loses access immediately on withdrawal",
+          "file": "test/auditions.integration.test.cjs",
+          "line": 220,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 49.2796,
+          "error_code": null
+        },
+        {
+          "name": "MCN can assign an actual booking only to a currently delegated employee",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 162,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 340.749,
+          "error_code": null
+        },
+        {
+          "name": "income filters use order creation UTC boundaries, keep actual receipts separate, and count each order once",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 216,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 81.8891,
+          "error_code": null
+        },
+        {
+          "name": "income retains gross receipts and refunds, excludes sandbox totals, and does not invent artist attribution",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 237,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 56.0187,
+          "error_code": null
+        },
+        {
+          "name": "frozen multi-artist stock history filters either artist without doubling receipts or trusting assignments",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 250,
+          "nesting": 2,
+          "status": "PASS",
+          "duration_ms": 158.9986,
+          "error_code": null
+        },
+        {
+          "name": "MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation",
+          "file": "test/engagement.integration.test.cjs",
+          "line": 182,
+          "nesting": 1,
+          "status": "PASS",
+          "duration_ms": 573.8507,
+          "error_code": null
+        }
+      ],
+      "business_records": [
+        {
+          "order_id": "c7f75089-34eb-498c-8c88-d9c292fcddd6",
+          "booking_id": "5af43649-cb03-48cf-809c-f4ac645dda1a",
+          "acceptance_result": "ACCEPTED",
+          "refunded": true
+        },
+        {
+          "order_id": "2036fae2-7ddf-47ec-b94b-e359b15f2fba",
+          "booking_id": "bdd54d82-f8b0-4a05-aeb9-f986427cdeee",
+          "acceptance_result": "DECLINED",
+          "refunded": true
+        },
+        {
+          "order_id": "e188a799-eaca-4686-ab4c-6f50c32fe75a",
+          "booking_id": "26ff2a40-5c9e-4d67-8fcc-cd513014b872",
+          "acceptance_result": "EXPIRED",
+          "refunded": true
+        }
+      ]
+    }
+  ]
+}

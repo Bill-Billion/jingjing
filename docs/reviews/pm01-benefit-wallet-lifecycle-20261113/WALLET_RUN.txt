@@ -1,0 +1,84 @@
+TAP version 13
+# Subtest: one wallet keeps original recharge lots through renewal, expiry, spending and original-route refunds
+    # Subtest: two actual recharge receipts reach the first threshold without creating consumption growth
+    ok 1 - two actual recharge receipts reach the first threshold without creating consumption growth
+      ---
+      duration_ms: 197.5696
+      type: 'test'
+      ...
+    # Subtest: renewal extends the same account once and expiry preserves every original balance lot
+    ok 2 - renewal extends the same account once and expiry preserves every original balance lot
+      ---
+      duration_ms: 95.3301
+      type: 'test'
+      ...
+    # Subtest: expired membership still spends existing funds and actual stock acceptance establishes the original earning
+    ok 3 - expired membership still spends existing funds and actual stock acceptance establishes the original earning
+      ---
+      duration_ms: 456.6251
+      type: 'test'
+      ...
+    # Subtest: actual accepted consumption matures and a later recharge restores membership without buying growth
+    ok 4 - actual accepted consumption matures and a later recharge restores membership without buying growth
+      ---
+      duration_ms: 230.1146
+      type: 'test'
+      ...
+    # Subtest: unsent refund cancellation releases its hold; unknown result keeps it until original-route receipt settles once
+    ok 5 - unsent refund cancellation releases its hold; unknown result keeps it until original-route receipt settles once
+      ---
+      duration_ms: 139.8146
+      type: 'test'
+      ...
+    # Subtest: refund of the same accepted purchase restores its original recharge lot and reverses only its consumption growth
+    not ok 6 - refund of the same accepted purchase restores its original recharge lot and reverses only its consumption growth
+      ---
+      duration_ms: 98.6777
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-cross-period.integration.test.cjs:9:33'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + undefined
+        - 'ecd62a47-9b54-471e-9272-db457c976d21'
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'ecd62a47-9b54-471e-9272-db457c976d21'
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-cross-period.integration.test.cjs:69:114
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-cross-period.integration.test.cjs:9:104)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\wallet-cross-period.integration.test.cjs:65:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: a later recharge restores one year from its own receipt while original rules and settled refunds stay unchanged
+    ok 7 - a later recharge restores one year from its own receipt while original rules and settled refunds stay unchanged
+      ---
+      duration_ms: 38.1784
+      type: 'test'
+      ...
+    1..7
+not ok 1 - one wallet keeps original recharge lots through renewal, expiry, spending and original-route refunds
+  ---
+  duration_ms: 8775.7038
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-cross-period.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 8
+# suites 0
+# pass 6
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8992.9806

@@ -1,0 +1,171 @@
+{
+  "base_commit": "abb5cf63fe82bd1afb3d44cdf1230c3f475ff0e2",
+  "source": "PM01 W01：分域审阅PR39，单列迁移、权限、钱账、授权、删除及发布配置",
+  "status": "BACKEND_SELF_REVIEW_AND_ISOLATED_REGRESSION_ONLY",
+  "domains": [
+    {
+      "domain": "迁移与恢复",
+      "files": [
+        "src/operations/backup.js",
+        "src/operations/recovery-check.js",
+        "src/operations/private-object-inventory.js",
+        "src/infrastructure/database/migrator.js",
+        "src/infrastructure/database/recovery-guard.js",
+        "test/migrations.test.cjs",
+        "test/migration-rollback.integration.test.cjs",
+        "test/release.integration.test.cjs",
+        "test/customization-handoff.integration.test.cjs"
+      ],
+      "test_files": [
+        "test/migrations.test.cjs",
+        "test/migration-rollback.integration.test.cjs",
+        "test/release.integration.test.cjs",
+        "test/customization-handoff.integration.test.cjs"
+      ],
+      "counts": {
+        "PASS": 39,
+        "FAIL": 0,
+        "SKIP": 1,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false
+    },
+    {
+      "domain": "权限与办理人交接",
+      "files": [
+        "src/modules/party/representatives.js",
+        "src/modules/governance/operator-access.js",
+        "src/modules/privacy/representative-copy.js",
+        "test/party.integration.test.cjs",
+        "test/notice-representative.integration.test.cjs",
+        "test/audition-representative.integration.test.cjs",
+        "test/invitation-representative.integration.test.cjs",
+        "test/customization-representative.integration.test.cjs",
+        "test/customization-handoff.integration.test.cjs",
+        "test/privacy-representative-copy.integration.test.cjs"
+      ],
+      "test_files": [
+        "test/party.integration.test.cjs",
+        "test/notice-representative.integration.test.cjs",
+        "test/audition-representative.integration.test.cjs",
+        "test/invitation-representative.integration.test.cjs",
+        "test/customization-representative.integration.test.cjs",
+        "test/customization-handoff.integration.test.cjs",
+        "test/privacy-representative-copy.integration.test.cjs"
+      ],
+      "counts": {
+        "PASS": 64,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false
+    },
+    {
+      "domain": "钱账与逆向处理",
+      "files": [
+        "src/modules/settlement/review.js",
+        "src/modules/settlement/recovery.js",
+        "src/modules/trade/providers.js",
+        "test/settlement.integration.test.cjs",
+        "test/settlement-evidence-restriction.integration.test.cjs",
+        "test/refund-restore-authority.integration.test.cjs",
+        "test/refund-restore.integration.test.cjs"
+      ],
+      "test_files": [
+        "test/settlement.integration.test.cjs",
+        "test/settlement-evidence-restriction.integration.test.cjs",
+        "test/refund-restore-authority.integration.test.cjs",
+        "test/refund-restore.integration.test.cjs"
+      ],
+      "counts": {
+        "PASS": 60,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false
+    },
+    {
+      "domain": "人格、合同与使用授权",
+      "files": [
+        "src/modules/artists/context.js",
+        "src/modules/governance/business-gate.js",
+        "src/modules/production/provider.js",
+        "test/cast-rights.integration.test.cjs",
+        "test/projects.integration.test.cjs",
+        "test/licensing.integration.test.cjs"
+      ],
+      "test_files": [
+        "test/cast-rights.integration.test.cjs",
+        "test/projects.integration.test.cjs",
+        "test/licensing.integration.test.cjs"
+      ],
+      "counts": {
+        "PASS": 54,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false
+    },
+    {
+      "domain": "资料删除与恢复后限制",
+      "files": [
+        "src/modules/privacy/execution.js",
+        "src/modules/privacy/erasure.js",
+        "src/modules/privacy/closure.js",
+        "src/operations/privacy-recovery.js",
+        "test/privacy-execution.integration.test.cjs",
+        "test/privacy-cross-module.integration.test.cjs",
+        "test/privacy-response-delivery.integration.test.cjs"
+      ],
+      "test_files": [
+        "test/privacy-execution.integration.test.cjs",
+        "test/privacy-cross-module.integration.test.cjs",
+        "test/privacy-response-delivery.integration.test.cjs"
+      ],
+      "counts": {
+        "PASS": 52,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false
+    },
+    {
+      "domain": "发布配置与外部服务",
+      "files": [
+        "src/operations/release-check.js",
+        "src/modules/governance/business-gate.js",
+        "test/release.integration.test.cjs",
+        "test/provider-readiness.integration.test.cjs",
+        "test/provider-foundation.test.cjs"
+      ],
+      "test_files": [
+        "test/release.integration.test.cjs",
+        "test/provider-readiness.integration.test.cjs",
+        "test/provider-foundation.test.cjs"
+      ],
+      "counts": {
+        "PASS": 39,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      },
+      "test_counts_may_overlap_between_domains": true,
+      "maintainer_review": false,
+      "formal_acceptance_promoted": false
+    }
+  ]
+}

@@ -18,7 +18,9 @@ class ArtistFiles extends StatefulWidget {
       required this.ids,
       this.onChanged,
       this.onBusy,
-      this.enabled = true});
+      this.enabled = true,
+      this.allowedMediaTypes,
+      this.maxFiles = 30});
   final ArtistsApi api;
   final ArtistPerson person;
   final String purpose;
@@ -26,6 +28,8 @@ class ArtistFiles extends StatefulWidget {
   final ValueChanged<List<String>>? onChanged;
   final ValueChanged<bool>? onBusy;
   final bool enabled;
+  final List<String>? allowedMediaTypes;
+  final int maxFiles;
   @override
   State<ArtistFiles> createState() => _ArtistFilesState();
 }
@@ -106,6 +110,10 @@ class _ArtistFilesState extends State<ArtistFiles> {
         }
         bytes = await supplyPickedBytes(file);
         widget.api.check(epoch, party);
+      }
+      if (widget.allowedMediaTypes != null &&
+          !widget.allowedMediaTypes!.contains(media)) {
+        throw const AccountError(400, 'HALO_MATERIAL_MEDIA_TYPE_INVALID');
       }
       if (!mounted) return;
       final asset =
@@ -222,6 +230,8 @@ class _ArtistFilesState extends State<ArtistFiles> {
                   key: ValueKey('artist-upload-${widget.purpose}'),
                   onPressed: busy ||
                           !widget.enabled ||
+                          pending == null &&
+                              widget.ids.length >= widget.maxFiles ||
                           blocked ||
                           pending != null &&
                               pending['query']['purpose'] != widget.purpose
@@ -234,9 +244,11 @@ class _ArtistFilesState extends State<ArtistFiles> {
                           ? '恢复原文件并核对'
                           : '选择并上传私有材料')),
               const SizedBox(height: 8),
-              const Text(
-                  'JPG、PNG、MP4、MP3、WAV、PDF、TXT · 每份不超过8 MiB。上传不等于允许公开或重新生成。',
-                  style: TextStyle(
+              Text(
+                  widget.allowedMediaTypes == null
+                      ? 'JPG、PNG、MP4、MP3、WAV、PDF、TXT · 每份不超过8 MiB。上传不等于允许公开或重新生成。'
+                      : '仅本分类指定图片或模卡格式，每份不超过8 MiB。本人私有，不公开。',
+                  style: const TextStyle(
                       fontSize: 12, height: 1.6, color: AccountTheme.muted)),
             ])),
       ],

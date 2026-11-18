@@ -1,0 +1,193 @@
+[
+  {
+    "type": "privacy",
+    "database": "jx_test_privacy_19040_e8c9663cea13",
+    "synthetic_only": true,
+    "steps": [
+      {
+        "name": "fixture-personal-account-operator-grants-reviewed-policy",
+        "policy": "c10dd603-bfbf-45b2-a49b-ef8081136f8b",
+        "retention": "e6797f72-4dcc-4d32-ba13-a65740f709e8",
+        "proof": "157e6038-ed5e-485c-90ea-448ce5ec7ee5"
+      },
+      {
+        "name": "page-create-closure-request",
+        "request_id": "d00549d9-0a8b-4180-8d35-a85d8c27ce14"
+      },
+      {
+        "name": "page-operator-start"
+      },
+      {
+        "name": "page-propose-identity-verification"
+      },
+      {
+        "name": "page-independent-verification",
+        "status": "TRACKING",
+        "due_on": "2026-11-24"
+      },
+      {
+        "name": "observed-closure-selectors",
+        "targetOptions": [
+          "请选择当前获准记录",
+          "synthetic buyer · 本人账号"
+        ],
+        "policyOptions": [
+          "请选择当前获准记录"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/requests",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/privacy/requests",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/operations/requests/d00549d9-0a8b-4180-8d35-a85d8c27ce14",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/privacy/operations/requests/d00549d9-0a8b-4180-8d35-a85d8c27ce14/start",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/operations/requests/d00549d9-0a8b-4180-8d35-a85d8c27ce14/closure-clock",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/privacy/operations/requests/d00549d9-0a8b-4180-8d35-a85d8c27ce14/closure-clock/proposals",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/operations/requests/d00549d9-0a8b-4180-8d35-a85d8c27ce14/closure-clock",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/privacy/operations/requests/d00549d9-0a8b-4180-8d35-a85d8c27ce14/closure-clock/reviews",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/me/parties",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/usage",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/privacy/requests/d00549d9-0a8b-4180-8d35-a85d8c27ce14",
+        "status": 200
+      }
+    ],
+    "records": {
+      "request": "d00549d9-0a8b-4180-8d35-a85d8c27ce14"
+    },
+    "failures": [
+      {
+        "step": "account-closure-choice",
+        "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n2 !== 1\n\n    at flow (file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/client-testing/.local/demo-privacy-independent-20261103/run.mjs:41:857)\n    at async file:///D:/ccc/%E5%8D%9A%E5%A3%AB%E8%B5%84%E6%96%99/7.%E9%A1%B9%E7%9B%AE/2026-%E6%99%B6%E6%99%B6%E6%97%A5%E4%B8%8A/worktrees/client-testing/.local/demo-privacy-independent-20261103/run.mjs:47:1"
+      }
+    ],
+    "cleanup": {
+      "database_removed": true,
+      "services_stopped": true
+    },
+    "blockers": [
+      {
+        "id": "PRIVACY-CLOSURE-CHOICE",
+        "target_options": [
+          "请选择当前获准记录",
+          "synthetic buyer · 本人账号"
+        ],
+        "policy_options": [
+          "请选择当前获准记录"
+        ],
+        "actual_notice": [
+          "当前接口未提供此项可公开选择的引用，请从本人的原记录办理，或由运营核对原交接资料。",
+          "可先填写办理内容；当前记录未提供完整可办清单，提交时核验当前资格与授权。",
+          "读取可选本人账号或原始素材",
+          "读取可选已审分类处理规则"
+        ]
+      }
+    ]
+  }
+]

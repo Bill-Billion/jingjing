@@ -17,6 +17,10 @@
 
 现有restore工具仍只允许隔离测试库。恢复结果始终保持QUARANTINED，复制来的旧放行记录不能替代本次核对。
 
+2026-11-12后端恢复补强：先逐表核对备份数据，再在同一事务内将复制来的RUNNING任务改为RETRY，清除原执行者、执行凭据和有效期，记录RESTORE_LEASE_INVALIDATED。原任务编号、业务关联、渠道任务号、尝试次数和次数上限不重设；未运行任务与已完成/受阻任务保持原状态。恢复结果新增内部字段invalidated_job_leases，表示此次作废的执行资格数，不表示已重试或已完成任务。MATCHED表示快照逐表核对通过，随后这些明确的恢复保护会改变任务运行字段。
+
+这一步不会启动服务或解除隔离。后续获准运行时，原渠道请求应沿原任务查询恢复；次数已耗尽仍走原独立重试规则。没有实际旧库、外部私有字节或授权不能记作正式恢复完成。本轮合成同案验证见[恢复旧任务证据](../reviews/pm01-restore-fencing-20261112/REPORT.md)。
+
 - 使用scripts/release-tools.cjs privacy-register，从恢复前最新库生成清理登记。该文件含私有对象引用，放入受限本地目录，不能提交Git。
 - 恢复旧库后运行privacy-replay，显式提供登记文件摘要、reviewer-ref及latest-register-confirmed=true。
 - 重放停止被删除文件的访问、关闭此前已注销的账号并撤销会话；新库仍不自动开放。未重放的恢复库不能通过恢复保护。
@@ -24,13 +28,17 @@
 
 ## 文件处理与机审
 
+制作文件先经原上传接口保存READY，再用 `/api/v1/media/tasks` 的 `source_kind=PRODUCTION_FILE`、`source_id=文件编号` 处理；只允许当前被指派制作方，不能绕过项目、付款和授权。标识任务输出新文件编号，须审核这个实际输出文件，再分别把final/preview文件提交版本。PRODUCTION_VERSION旧入口仍限制作方处理，买方下载不能使用处理入口。需迁移0222；旧凭据不会自动补齐。交付审核、确认和下载均重核当前规则，凭据撤回或规则改变后先补有效处理证据；历史验收记录保留。
+
 后台开关MEDIA_WORKER_ENABLED。本地转码配置MEDIA_FFMPEG、MEDIA_FFPROBE、MEDIA_FONT_FILE都为绝对路径，MEDIA_PROCESSOR_REVISION用于登记此次工具配置。必须先准备可用字体及经维护的FFmpeg版本；进程只读本地协议，限制输入大小、时长、输出大小与运行时间，临时目录在退出后清理。
 
 已审核media.processing规则中，media_processing包含ai_label、preview_label、require_marking、require_moderation、provider_code。不得对不适用AI标识的视频误标，正式范围先审核。规则启用后，现货与制作提交必须拿到对应文件、规则及预览/正式类型的处理凭据；人工勾选不能替代缺少的文件凭据。
 
-候选机审采用已安装的阿里云SDK。仅在MEDIA_MODERATION_ENABLED=true、MODERATION_ENVIRONMENT、MODERATION_REGION、MODERATION_ACCESS_KEY_ID、MODERATION_ACCESS_KEY_SECRET以及所需MODERATION_TEXT_SERVICE/IMAGE_SERVICE/VIDEO_SERVICE齐备，且ModerationProvider / aliyun-green / file_review有同配置的服务验证记录时允许调用。密钥放受限配置，不写文档或Git。图片/视频另需OSS授权与匹配地域，不能为机审把私有文件改成公开。
+候选机审采用已安装的阿里云SDK。仅在MEDIA_MODERATION_ENABLED=true、MODERATION_ENVIRONMENT、MODERATION_REGION、MODERATION_ACCESS_KEY_ID、MODERATION_ACCESS_KEY_SECRET以及所需MODERATION_TEXT_SERVICE/IMAGE_SERVICE/VIDEO_SERVICE/AUDIO_SERVICE齐备，且ModerationProvider / aliyun-green / file_review有同配置的服务验证记录时允许调用。密钥放受限配置，不写文档或Git。图片/视频/独立音频另需OSS授权与匹配地域，不能为机审把私有文件改成公开。
 
 参考：[文本请求范围](https://help.aliyun.com/en/document_detail/434034.html)、[图片私有OSS接法](https://help.aliyun.com/en/document_detail/467829.html)、[视频提交与结果查询](https://help.aliyun.com/en/document_detail/2505810.html)。本轮未对真实产品调用收费接口，不能据SDK存在宣布开通。视频提交成功只说明已受理，原任务查询得到完整判定后才记录；未知提交不自动重发。
+
+独立音频候选使用MODERATION_AUDIO_SERVICE=audio_media_detection或audio_media_detection_pro，须核实际地域和授权，不自动选择或开通。仅处理单音轨WAV/MP3，输入不超过50MB、30分钟；嵌入封面等额外流目前拒绝。实际FFprobe与内容摘要重核，异步查询原taskId，严格返回dataId，可选taskId若有须相同。空切片、未知或低中风险交独立复核，高风险拒绝；精简覆盖记录不含转写文本/临时URL，也不保证连续时段覆盖。配置修订变化后必须重新验证；SDK合成测试不代表真实审核能力。参考[官方语音接口](https://help.aliyun.com/zh/document_detail/604973.html)。
 
 后台任务失败会保留BLOCKED和原因。恢复删除任务可由授权运维用原任务编号核对后重试；视频若已取得供应商任务号，只查询原号。转码在上传后中断须先核对具体产物，当前没有面向普通用户的“忽略错误继续”入口。
 

@@ -29,6 +29,31 @@ class _SavingPicker extends FilePickerPlatform {
 }
 
 void main() {
+  testWidgets('新脚本已收讫仍待明确验收，不显示重复收到按钮或null小时', (t) async {
+    final a = fulfillmentAdapter(override: (r) {
+      if (r.path.endsWith('/fulfillment')) {
+        final data = fulfillmentData(viewed: true, received: true)
+          ..['terms'] = workingFulfillmentTerms();
+        data['receipt'].addAll({
+          'started_at': null,
+          'deadline_at': null,
+          'job_id': null,
+          'deadline_basis': {'mode': 'EXPLICIT_CONFIRMATION'}
+        });
+        return envelope(data);
+      }
+      return null;
+    });
+    final s = (await t.runAsync(() => buyerSession(a)))!;
+    await nav.openApp(t, s,
+        route: '/production/version?versionId=$productionVersionId');
+    await reveal(t, find.text('本阶段须明确确认成果，不自动倒计时'));
+    expect(find.text('明确确认本次交付已收到'), findsNothing);
+    expect(find.textContaining('null 小时'), findsNothing);
+    expect(
+        a.requests.where((r) => r.path.endsWith('/delivery-receipt')), isEmpty);
+    expect(t.takeException(), isNull);
+  });
   for (final state in ['STARTED', 'PAUSED', 'REFUND_REQUIRED']) {
     testWidgets('项目组合待办区分验收、已付清、正式收讫与暂停取消：$state', (t) async {
       final a = productionAdapter(
@@ -56,7 +81,7 @@ void main() {
           findsOneWidget);
       expect(find.text('已确认 0/4 个阶段'), findsOneWidget);
       await reveal(t, find.text('该正式版本已明确收讫；版本验收仍另行核对。'));
-      await reveal(t, find.textContaining('约定款项已收齐；已核实收款'));
+      await reveal(t, find.textContaining('约定款项已收齐；订单记账收款'));
       if (state != 'STARTED') {
         expect(find.text('当前待办：审阅并确认当前最终成片'), findsNothing);
       }
@@ -142,6 +167,8 @@ void main() {
     expect(find.byType(EditorialFeature), findsOneWidget);
     expect(t.widget<EditorialFeature>(find.byType(EditorialFeature)).title,
         '私人短片制作');
+    await reveal(t, find.text('订单记账收款'));
+    await reveal(t, find.text('测试渠道的记账不代表真实资金到账；请核对原付款和退款记录的渠道、环境及回执。'));
     await reveal(t, find.text('这笔制作不使用可识别人物，普通买家无需先建立或购买自己的数字人。'));
     await reveal(t, find.text('查看订单固定的原故事'));
     await t.tap(find.text('查看订单固定的原故事'));

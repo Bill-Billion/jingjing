@@ -1,0 +1,127 @@
+{
+  "kind": "PARTIAL_BUSINESS_EVIDENCE",
+  "source_commit": "247b5dd59b7375701bb9159d97c45f2f6e8da867",
+  "run_id": "pm01-notice-publisher-2026-11-14T15-03-16-622Z",
+  "formal_pass": false,
+  "runtime_business_code_changed": true,
+  "frontend_run": false,
+  "real_services": false,
+  "checks": [
+    {
+      "id": "NOTICE-PUBLISHER-REVISION-IDENTITY",
+      "acceptance_ids": [
+        "ACC-DEL-02.01",
+        "ACC-DEL-10.03",
+        "ACC-DEL-10.04"
+      ],
+      "name": "通告修改及独审发布的提交人实名",
+      "result": "LOCAL_PASS",
+      "scope": "机构通告修改在成功重放前核当前办事人实名；普通通告首次/修改独审实际发布核原提交人当前实名，原有权读取/撤回及官方运营权限分开。",
+      "remaining": "仅本次11文件关联验证；当前218完整执行中，真实身份/所需端/同记录整链/独审仍待。新负例覆盖机构办事人，个人和官方原规则另有正常关联，不冒称每种身份与端组合均验。",
+      "actual_checks": {
+        "records": [
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "verified agency actor submits an idempotent private revision without replacing live content",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "EXPIRED actor cannot submit new revision",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "EXPIRED actor cannot submit successful revision replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "EXPIRED actor retains authorized original notice and pending revision reads",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "EXPIRED submitting actor prevents independent publication of NOTICE",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "EXPIRED submitting actor prevents independent publication of NOTICE_REVISION",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "REJECTED actor cannot submit new revision",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "REJECTED actor cannot submit successful revision replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "REJECTED actor retains authorized original notice and pending revision reads",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "REJECTED submitting actor prevents independent publication of NOTICE",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "REJECTED submitting actor prevents independent publication of NOTICE_REVISION",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "UNVERIFIED actor cannot submit new revision",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "UNVERIFIED actor cannot submit successful revision replay",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "UNVERIFIED actor retains authorized original notice and pending revision reads",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "UNVERIFIED submitting actor prevents independent publication of NOTICE",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "UNVERIFIED submitting actor prevents independent publication of NOTICE_REVISION",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "expired actor may withdraw a pending revision and the published original",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "restored identity permits a fresh revised publication and preserves the notice identity",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "official notices keep separate operator authority without demanding an artist profile",
+            "result": "PASS"
+          },
+          {
+            "file": "test/notice-publisher-identity.integration.test.cjs",
+            "name": "notice revision and independent publication require current submitting actor identity",
+            "result": "PASS"
+          }
+        ]
+      }
+    }
+  ]
+}

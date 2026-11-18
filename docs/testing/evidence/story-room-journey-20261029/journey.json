@@ -1,0 +1,134 @@
+{
+  "synthetic_only": true,
+  "contract_version": "0.31.4-rc.1",
+  "implementation_commit": "7882a98648bf339d999f61c40c8d47084d725433",
+  "migration": "0167",
+  "records": {
+    "story_id": "b57c5686-f815-4e1d-92a6-659ddd7589c5",
+    "original_asset_id": "9747a46d-8d79-4466-90d7-a2e071ddd564",
+    "original_submission_id": "125448b2-8e89-4f00-8d5b-b3777d0abb8b",
+    "replacement_asset_id": "5498bd07-eb91-4f9e-a978-98706817a118",
+    "submission_ids": [
+      "125448b2-8e89-4f00-8d5b-b3777d0abb8b",
+      "d8fd9067-8dd5-45b4-9ffc-fb9a67bccfb9"
+    ],
+    "room_id": "bf0dd310-75d3-4e61-8a75-64aed72b9dbe",
+    "invitation_id": "c83ec56c-6d63-4895-a30d-948fd1c3b5b5"
+  },
+  "steps": [
+    {
+      "name": "新建私人故事",
+      "expected": "创建草稿，运营列表和详情均不可见",
+      "actual": {
+        "story_id": "b57c5686-f815-4e1d-92a6-659ddd7589c5",
+        "status": "DRAFT",
+        "operator_visible": false
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "预留成功但文件未写入，恢复原请求",
+      "expected": "暂时读不到存储时不盲写；恢复后同一记录变为可用，额度不重复占用",
+      "actual": {
+        "asset_id": "9747a46d-8d79-4466-90d7-a2e071ddd564",
+        "status": "READY",
+        "record_count": 1,
+        "successful_writes": 1
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "保存、返回列表、重新打开",
+      "expected": "同一草稿和附件可恢复，运营仍不可读",
+      "actual": {
+        "story_id": "b57c5686-f815-4e1d-92a6-659ddd7589c5",
+        "restored_asset_id": "9747a46d-8d79-4466-90d7-a2e071ddd564",
+        "operator_download": 404
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "正式提交及运营下载",
+      "expected": "运营只能在正式提交后读取，下载内容逐字节一致",
+      "actual": {
+        "status": "SUBMITTED",
+        "asset_id": "9747a46d-8d79-4466-90d7-a2e071ddd564",
+        "sha256": "95cc1e6347cccbb74ec015b8aac4457142d31b389e1a10747099e886e647aa18",
+        "bytes_equal": true
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "运营要求补件，上传时断开请求后恢复",
+      "expected": "原请求恢复同一新附件，不重复写入",
+      "actual": {
+        "asset_id": "5498bd07-eb91-4f9e-a978-98706817a118",
+        "status": "READY",
+        "repeated_write": false,
+        "http_request_aborted_after_storage_write": true
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "换文件但仅保存私稿",
+      "expected": "本人重开可见新文件；运营仍只有旧文件，无法下载新文件",
+      "actual": {
+        "private_draft_asset": "5498bd07-eb91-4f9e-a978-98706817a118",
+        "operator_visible_assets": [
+          "9747a46d-8d79-4466-90d7-a2e071ddd564"
+        ],
+        "new_download": 404
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "正式重提及历史附件保留",
+      "expected": "当前版本引用新文件，旧版本仍引用旧文件，两者显示正式版本保留原因，旧文件不可撤回",
+      "actual": {
+        "current_asset_id": "5498bd07-eb91-4f9e-a978-98706817a118",
+        "historical_asset_id": "9747a46d-8d79-4466-90d7-a2e071ddd564",
+        "retention_reason": "FORMAL_SUBMISSION",
+        "revoke": {
+          "status": 409,
+          "code": "CUSTOMIZATION_ATTACHMENT_RETENTION_REQUIRED"
+        }
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "首次建房、邀请和人数进度",
+      "expected": "同一故事无报价、无待补件，选择实际可用承制方和已审核规则建房，邀请合成人物；重复建房被拒绝",
+      "actual": {
+        "room_id": "bf0dd310-75d3-4e61-8a75-64aed72b9dbe",
+        "invitation_id": "c83ec56c-6d63-4895-a30d-948fd1c3b5b5",
+        "counts": {
+          "joined_count": 0,
+          "eligible_count": 0,
+          "minimum_people": 10,
+          "benefit_people": 20,
+          "people_remaining": 10,
+          "benefit_remaining": 20,
+          "payment_confirmed": false
+        },
+        "duplicate": "COCREATION_ROOM_EXISTS"
+      },
+      "status": "PASS"
+    },
+    {
+      "name": "切换机构身份及其他账号隔离",
+      "expected": "同一账号切到自己的机构不能读取个人故事；其他账号也不能读取故事、附件、历史或房间",
+      "actual": {
+        "denied_requests": 10,
+        "switched_back_story_id": "b57c5686-f815-4e1d-92a6-659ddd7589c5"
+      },
+      "status": "PASS"
+    }
+  ],
+  "limits": [
+    "HTTP integration, not a new App or Vue click-through",
+    "Synthetic storage faults; no real OSS or paid provider called",
+    "Invitation progress only; participation, payment and delivery are outside this journey"
+  ],
+  "disposable_database_removed": true,
+  "test_file_sha256": "8e45c28bc38ee257b98d2202f4f4cbccc49d127f06ae5070c7b92a99b3ad3f53"
+}

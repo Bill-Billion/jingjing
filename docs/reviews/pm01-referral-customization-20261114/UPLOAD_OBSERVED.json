@@ -1,0 +1,57 @@
+{
+  "observed_at": "2026-11-14T05:20:32.866382+00:00",
+  "candidate": "cded98fa078327fb49428a4859bc7f7360a3cd7c",
+  "pr": {
+    "baseRefName": "integration",
+    "baseRefOid": "468df28a4159dfb09895827d86bfc817de259cc4",
+    "body": "PM01 阶段继续收尾：已付款项原先只支持整笔退回，部分追偿款无法登记；已履约定制订单在售后期满后，佣金预算预核又错误查询不存在的协议调整账，导致同步和结算返回503。现在支持原已付单分次回款、独审后入账，并修复定制原推荐结佣；正式结算仍包含已审调整，原合同/推荐人与已付事实保持。\n\n- 第61轮9c2e9b26：待追偿200分，独审回款80/120分逐笔归零；累计上限、重复凭据/幂等保护、旧整笔退回兼容、日报与本人收入已验。PAYOUT.data新增可选returned_minor，部分仍PAID、全部退回才RETURNED。\n- 第62轮c1da750d：同一定制订单四阶段HTTP交付、30/40/30付款；售后期内不结佣，合成期满后10000分形成1000分推荐/9000分平台；原参与方确认结算，独审银行凭据才记已付，后续推荐点击不改旧单。\n- 前批企业明确TRADE授权、主动邀请与直接商单入口、撤权和本人副本均保留。本批未开发修补或执行本机前端。\n\n当前接口0.31.74-rc.7，迁移0223。第61轮固定源码12文件132通过/0失败/0跳过、6份HTTP文件611响应；第62轮14文件186通过/0失败/0跳过、8份HTTP文件1296响应，925个源码文件校验未变。不是全后端测试；已保留修前业务失败、计数断言和实名测试前置失败。前候选282af0c8全部四远端作业成功，新候选另核。\n\n所有身份、媒体、付款/银行回执均为隔离合成资料，PRODUCTION仅为测试回执标签，售后八天由已完成交付记录的测试时间推进；没有真实付款或追偿、媒体质量或独立签收结论。自动及双层分配出款保持未启用；独立追偿处置单、正常试镜/商单推荐组合、其他入口和完整资料交付仍待。151条保持19通过/124部分/8证据不足，18组0/18、12整链部分，未开发总数尚未核清。\n\n详情及复验入口：[定制原推荐结佣报告](docs/reviews/pm01-referral-customization-20261114/REPORT.md)、[分次回款报告](docs/reviews/pm01-partial-recovery-20261114/REPORT.md)、[下一步](docs/reviews/pm01-referral-customization-20261114/NEXT_BACKEND.md)。维护者阶段末审阅；本PR保持草稿，不合入，不启用真实/收费/生产/公网，不动人工3490和离线APK。\n",
+    "headRefOid": "cded98fa078327fb49428a4859bc7f7360a3cd7c",
+    "isDraft": true,
+    "reviewDecision": "",
+    "state": "OPEN",
+    "title": "PM01 后端阶段收尾：企业代办、定制结佣与分次回款",
+    "url": "https://github.com/Bill-Billion/jingjing/pull/39"
+  },
+  "runs": [
+    {
+      "conclusion": "",
+      "databaseId": 43560977731,
+      "event": "pull_request",
+      "headSha": "cded98fa078327fb49428a4859bc7f7360a3cd7c",
+      "name": "服务器自动检查",
+      "status": "in_progress",
+      "url": "https://github.com/Bill-Billion/jingjing/actions/runs/43560977731"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 43560977746,
+      "event": "pull_request",
+      "headSha": "cded98fa078327fb49428a4859bc7f7360a3cd7c",
+      "name": "App 与管理网页业务页面检查",
+      "status": "in_progress",
+      "url": "https://github.com/Bill-Billion/jingjing/actions/runs/43560977746"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 43560977734,
+      "event": "pull_request",
+      "headSha": "cded98fa078327fb49428a4859bc7f7360a3cd7c",
+      "name": "甲方测试工具检查",
+      "status": "completed",
+      "url": "https://github.com/Bill-Billion/jingjing/actions/runs/43560977734"
+    },
+    {
+      "conclusion": "",
+      "databaseId": 43560972681,
+      "event": "push",
+      "headSha": "cded98fa078327fb49428a4859bc7f7360a3cd7c",
+      "name": "服务器自动检查",
+      "status": "in_progress",
+      "url": "https://github.com/Bill-Billion/jingjing/actions/runs/43560972681"
+    }
+  ],
+  "all_events_queried": true,
+  "merged": false,
+  "reviewed": false,
+  "real_services_enabled": false
+}

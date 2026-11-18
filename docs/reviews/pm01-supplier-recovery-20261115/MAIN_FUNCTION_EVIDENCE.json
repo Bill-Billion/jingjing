@@ -1,0 +1,5074 @@
+{
+  "candidate": "c1d750b4d87d20c0bd1a17a7d53b9c614bad9ed4",
+  "tested_source": "63446d6505612bf26dd8afbfe13ed32838475338",
+  "run_id": "pm01-current-backend-2026-11-14T17-10-35-829Z",
+  "checks_path": "docs/reviews/pm01-supplier-recovery-20261115/current-full/checks.jsonl",
+  "checks_sha256": "b87f588478755dce598652be60351c6e5e06ee69dbb46de496b7fea07d9b7390",
+  "new_tests_run": false,
+  "changes_to_acceptance_status": false,
+  "groups": [
+    {
+      "task": "W03 普通用户发布通告",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/notices-ordinary.integration.test.cjs",
+          "source_sha256": "229436b2c33848cb80394573d13ed3ea475a47b57f6298a995c134399686d635",
+          "observed_checks": [
+            {
+              "name": "new publishing rule requires independent approval; old rule and notices retain snapshots",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 31
+            },
+            {
+              "name": "never-funded adult can publish all five ordinary types without changing membership",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 43
+            },
+            {
+              "name": "membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 56
+            },
+            {
+              "name": "unverified, child, expired, inactive, foreign identity and official impersonation remain rejected",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 70
+            },
+            {
+              "name": "identity or ownership lost after submission is checked at review and public read",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 84
+            },
+            {
+              "name": "qualified organization rejects new publication with actor UNVERIFIED",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "qualified organization rejects successful replay with actor UNVERIFIED",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "qualified organization rejects new publication with actor REJECTED",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "qualified organization rejects successful replay with actor REJECTED",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "qualified organization rejects new publication with actor 2020-01-01 00:00:00.000",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "qualified organization rejects successful replay with actor 2020-01-01 00:00:00.000",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "organization scope and other project ownership cannot be bypassed with an ordinary rule",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 95
+            },
+            {
+              "name": "same notice receives reviewed artist submission then one support case after lost response recovery",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 115
+            },
+            {
+              "name": "suspended account or party hides publication and blocks further cooperation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 131
+            },
+            {
+              "name": "independent support links actual quote and creates the same unpaid order without membership",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 142
+            },
+            {
+              "name": "same notice order receives payment, scoped conversation and independently reviewed full refund",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 154
+            },
+            {
+              "name": "closing ordinary notice blocks new submissions while historical quote remains unchanged",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 242
+            },
+            {
+              "name": "notice withdrawal notifies each historical application once without changing submission or contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 250
+            },
+            {
+              "name": "failure to record notice withdrawal notification rolls back closure and all prior events",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 271
+            },
+            {
+              "name": "ordinary publishing and same-notice cooperation in isolated MySQL",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/notice-publisher-identity.integration.test.cjs",
+          "source_sha256": "83dc4d7c317d6c4b5037125b3b5d6886c36d9d069fdfe572ba56b4efe6b8d97b",
+          "observed_checks": [
+            {
+              "name": "verified agency actor submits an idempotent private revision without replacing live content",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 32
+            },
+            {
+              "name": "EXPIRED actor cannot submit new revision",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "EXPIRED actor cannot submit successful revision replay",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "EXPIRED actor retains authorized original notice and pending revision reads",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "EXPIRED submitting actor prevents independent publication of NOTICE",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "EXPIRED submitting actor prevents independent publication of NOTICE_REVISION",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "REJECTED actor cannot submit new revision",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "REJECTED actor cannot submit successful revision replay",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "REJECTED actor retains authorized original notice and pending revision reads",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "REJECTED submitting actor prevents independent publication of NOTICE",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "REJECTED submitting actor prevents independent publication of NOTICE_REVISION",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "UNVERIFIED actor cannot submit new revision",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "UNVERIFIED actor cannot submit successful revision replay",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "UNVERIFIED actor retains authorized original notice and pending revision reads",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "UNVERIFIED submitting actor prevents independent publication of NOTICE",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "UNVERIFIED submitting actor prevents independent publication of NOTICE_REVISION",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "expired actor may withdraw a pending revision and the published original",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 45
+            },
+            {
+              "name": "restored identity permits a fresh revised publication and preserves the notice identity",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 46
+            },
+            {
+              "name": "official notices keep separate operator authority without demanding an artist profile",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "notice revision and independent publication require current submitting actor identity",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W04 本人资料提供范围与实际文件",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/privacy-account-copy.integration.test.cjs",
+          "source_sha256": "cb8fe4a67af40be1f817b58276430506fadceef30872a400cdaacaba246f4f9d",
+          "observed_checks": [
+            {
+              "name": "account and owned artists; preferences default off; no auth secret",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 22
+            },
+            {
+              "name": "wallet and signed finance values are copied without credentials or review notes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 23
+            },
+            {
+              "name": "account/scope/cursor/identity protections and corruption",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 24
+            },
+            {
+              "name": "only settled purchases influence opted-in recommendations; opt-out does not inspect transaction history",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 26
+            },
+            {
+              "name": "privacy-account-copy isolated MySQL and HTTP",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/privacy-transaction-copy.integration.test.cjs",
+          "source_sha256": "5e41b523b000dec014d20695d59d1bcc629569703e936705d38e729a7946c962",
+          "observed_checks": [
+            {
+              "name": "own buyer and seller paginate; organization membership gives no personal copy",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 32
+            },
+            {
+              "name": "gross and refund facts remain separate; no provider secrets or false completion",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 38
+            },
+            {
+              "name": "redacted contract has its own checksum; source stays unchanged and unsigned",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "scope, account and cursor isolation apply to every request",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 54
+            },
+            {
+              "name": "corrupt records and inconsistent journal fail closed",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 62
+            },
+            {
+              "name": "unknown payment and requested refund never become received or refunded money",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 68
+            },
+            {
+              "name": "creation, cancellation and payment deadline are actual recorded facts, not settlement timestamps",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 74
+            },
+            {
+              "name": "source quotation uses frozen terms and rejects cross-order parent substitution",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 83
+            },
+            {
+              "name": "disabled account is rechecked, reads do not complete the privacy request",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 113
+            },
+            {
+              "name": "personal trade copies preserve receipts, refunds and historical contracts",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 6
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/privacy-response-delivery.integration.test.cjs",
+          "source_sha256": "064de95e2429c9fd72503b6a610061087dab87318320ce1c00bec7f90b327256",
+          "observed_checks": [
+            {
+              "name": "a READY metadata row without stored bytes cannot be offered as a delivered copy",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 23
+            },
+            {
+              "name": "missing bytes at independent review do not publish; same request recovers after restoration",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 28
+            },
+            {
+              "name": "operator actual-file preview is scoped to current proposal and does not publish the draft",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "tampered bytes cannot pass even when metadata still looks ready",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 50
+            },
+            {
+              "name": "replacing both metadata and bytes cannot reuse the previously submitted digest",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 55
+            },
+            {
+              "name": "restricted evidence is blocked both before submission and before approval",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 62
+            },
+            {
+              "name": "legacy pending drafts require rejection and resubmission, not silent approval",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 70
+            },
+            {
+              "name": "partial delivery remains follow-up; subsequent replies preserve both downloadable versions",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 76
+            },
+            {
+              "name": "no failed approval creates a response notification, history or successful command",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 84
+            },
+            {
+              "name": "clients cannot forge the server attachment snapshot or submit another operator evidence",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 90
+            },
+            {
+              "name": "same application exports actual scoped records, delivers reviewed bytes and reopens without losing history",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 97
+            },
+            {
+              "name": "real selected rows form the same request file, without other people or provider internals",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 156
+            },
+            {
+              "name": "lost submission result uses original key; an unapproved file stays private",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 168
+            },
+            {
+              "name": "revoked operator or reviewer cannot recover an old operation or approve",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 178
+            },
+            {
+              "name": "missing file blocks review; restoration and lost approval recover one answer only",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 186
+            },
+            {
+              "name": "downloaded bytes match the reviewed snapshot and same business identifiers",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 193
+            },
+            {
+              "name": "account disabled during file transport cannot receive bytes; restored account can retry",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 198
+            },
+            {
+              "name": "reopened follow-up preserves reviewed file without claiming all personal data finished",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 205
+            },
+            {
+              "name": "one material and trade copy stays recoverable and scoped through actual delivery",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 141
+            },
+            {
+              "name": "privacy responses require the actual reviewed files before publication",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W06 机构批量五动作后端",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/organization-batch.integration.test.cjs",
+          "source_sha256": "b001d1e44c3232dfba5232a5b2023d10247f6857e4e51ad299891ea898b65267",
+          "observed_checks": [
+            {
+              "name": "mixed results commit independently and rejected result survives reopen",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 19
+            },
+            {
+              "name": "lost first response can find original batch without mutation, scoped to current creator and institution",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 20
+            },
+            {
+              "name": "same request and lost receipt replay do not repeat assignment; changed payload rejected",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "parallel retries return one batch and one business mutation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 22
+            },
+            {
+              "name": "one batch contains valid, unauthorized and stale-version items; duplicate request preserves the successful mutation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 23
+            },
+            {
+              "name": "foreign accounts, personal identities, invalid batches and revoked membership",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 30
+            },
+            {
+              "name": "organization-batch isolated MySQL and HTTP",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/organization-merchandise-batch.integration.test.cjs",
+          "source_sha256": "9732262c4c0f67eaee8d0c03305f116e42c83ec921e38d682dcfc84a9ac6502b",
+          "observed_checks": [
+            {
+              "name": "artist and stock submission retain original independent-review state",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 34
+            },
+            {
+              "name": "price change creates a reviewable new specification without changing listing or old price",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "MCN assignment reuses booking and current artist delegation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "revoked artist authorization hides receipts and prevents replay",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 39
+            },
+            {
+              "name": "organization merchandise batch isolated MySQL and HTTP",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W07 条件匹配与榜单说明后端",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/prelaunch-matching-catalogs.integration.test.cjs",
+          "source_sha256": "ce697e2b4c17115b9d519bb69a577780c7b7e09230473595dc095a2fcdcb3603",
+          "observed_checks": [
+            {
+              "name": "actual stock catalogue matches budget but cannot grant commercial rights to a personal license",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 18
+            },
+            {
+              "name": "actual audition catalogue removes private prices from budget matches and closed booking from results",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 36
+            },
+            {
+              "name": "artist matching uses current invitation context then independent review and one support case",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 59
+            },
+            {
+              "name": "notice matching supplies actual authorized submission choices; closed notice blocks stale selection",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 76
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/recommended-matches.integration.test.cjs",
+          "source_sha256": "8e12bf094a596282f47d0afcdd1bd66f14a5e7cbb8bd4af2b5d56a659150f3eb",
+          "observed_checks": [
+            {
+              "name": "default matching and original filter order remain equal; strict inputs and no-store",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 20
+            },
+            {
+              "name": "browsing consent alone does not activate personalization; explicit opt-in ranks the browsed city",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "unpaid order does not rank; actual synthetic payment outranks browsing without changing rights or price",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 31
+            },
+            {
+              "name": "cursor cannot move across accounts, conditions, legacy endpoint or changed preferences",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "approved refund is not repayment; completed refund removes purchase influence and invalidates prior cursor",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 42
+            },
+            {
+              "name": "history off clears browsing influence; source withdrawn after selection is not returned or purchasable",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 50
+            },
+            {
+              "name": "recommended matching combines actual stock rights and budget with consented purchases and browsing",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/ranking-contract.integration.test.cjs",
+          "source_sha256": "222436048efe6b55b11ae4102e27048f40d30a78e826b59f07de811cbb32f872",
+          "observed_checks": [
+            {
+              "name": "new-contract mode rejects old or mismatched submitted rules",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 26
+            },
+            {
+              "name": "independent review rejects old pending rule and self approval",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "new snapshots require contract rules; original-key retries and historical reads survive",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 28
+            },
+            {
+              "name": "ranking-contract isolated MySQL and HTTP",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W08 新旧合同付款下载条件",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/customization-contract-cutover.integration.test.cjs",
+          "source_sha256": "b30d4834bd83858ad64a7a38630ae214ce89791042fc8963a2a7770c2b881b25",
+          "observed_checks": [
+            {
+              "name": "new old-spec quote is rejected through HTTP and creates no quote record",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "pending legacy quote cannot gain approval after cutover",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 24
+            },
+            {
+              "name": "already approved quote can still be accepted without rewriting original hours or 30/60/10",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 25
+            },
+            {
+              "name": "historical specification remains publishable for old-order amendments but cannot create a new ordinary quote",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 28
+            },
+            {
+              "name": "new calendar specification quotes, independent review and contract snapshot use actual HTTP",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 31
+            },
+            {
+              "name": "omitting product identity and story cannot bypass cutover through the legacy production quote path",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "expired reviewed calendar cannot form or approve a new quote",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 42
+            },
+            {
+              "name": "outsider cannot use the release setting to issue platform quotes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "contract release mode blocks new old-rule quotes but preserves approved historical promises",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/customization-delivery.integration.test.cjs",
+          "source_sha256": "327cb6ebbe483fd86dcd770b3b2aa387ddef7af583fbb3fafed298ad5e5d2170",
+          "observed_checks": [
+            {
+              "name": "explicit delivery terms required; legacy accepted quote is not silently rewritten",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "one manual project binds immutable story and no-avatar scenic work is allowed",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 28
+            },
+            {
+              "name": "review and deposit are both required; start and old upload cannot bypass payment",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 29
+            },
+            {
+              "name": "manual dispatch requires current team membership; outsider cannot assign or upload",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 30
+            },
+            {
+              "name": "approved formal delivery alone does not start clock; bytes and notification required",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 31
+            },
+            {
+              "name": "first formal preview can be viewed before interim payment; acceptance unlocks exactly 60 percent",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 32
+            },
+            {
+              "name": "platform correction is free; creative changes use purchased quota and then require new quote",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 33
+            },
+            {
+              "name": "rights dispute suspends clock and payments; independent resolution requires fresh formal receipt",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 34
+            },
+            {
+              "name": "final acceptance is separate from paid final download; repeated access publishes one fulfillment fact",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "before-start cancellation refunds all, approval is not actual refund, retries do not duplicate facts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "refund cannot bypass customer-service review; paid legacy order remains unmodified",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 37
+            },
+            {
+              "name": "alternate explicit prepayment policy does not deadlock preview and interim collection",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 38
+            },
+            {
+              "name": "new contract: current accepted script unlocks 40%, production and final 30% remain gated",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 39
+            },
+            {
+              "name": "new contract cancellation has reviewed cap, not automatic forfeiture of all received money",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 61
+            },
+            {
+              "name": "agreed timeout runs as durable job and records automatic, not fabricated manual, acceptance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 73
+            },
+            {
+              "name": "changed moderation requirements stop an already scheduled acceptance from confirming unavailable evidence",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 74
+            },
+            {
+              "name": "file failure at timeout pauses instead of auto accepting unavailable content",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 75
+            },
+            {
+              "name": "new version invalidates old acceptance job and resets notice and viewing evidence",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 76
+            },
+            {
+              "name": "audit failures roll back case, state and command together",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 77
+            },
+            {
+              "name": "person/avatar/version/consents bind actual performer, and manual material use does not require model hosting",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 79
+            },
+            {
+              "name": "partial work cancellation cannot retain unconfirmed value; failures override digital non-refund claims",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 80
+            },
+            {
+              "name": "payment already in flight when cancellation occurs becomes refund obligation after trusted late receipt",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 82
+            },
+            {
+              "name": "case evidence is available only to its submitting side and independent reviewer",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 83
+            },
+            {
+              "name": "working-day final receipt freezes deadline; repeated acknowledgement cannot extend it",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 98
+            },
+            {
+              "name": "working-day dispute and reissue invalidate old job; new receipt needs fresh notice and bytes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 109
+            },
+            {
+              "name": "working-day deadline does not auto accept an unavailable file",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 116
+            },
+            {
+              "name": "parallel starts and stale acceptance lease cannot duplicate business facts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 119
+            },
+            {
+              "name": "creative amendment is independently quoted, accepted, paid once and attached to the original production",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 121
+            },
+            {
+              "name": "same-story amendment HTTP create review acceptance keeps original binding and rejects stale or duplicate cases",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 123
+            },
+            {
+              "name": "prepared manual payment is rechecked at dispatch after pause, then recovers without duplicate dispatch",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 157
+            },
+            {
+              "name": "prepared amendment cannot dispatch after original case cancellation; trusted late receipts remain accountable",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 170
+            },
+            {
+              "name": "one new story completes manual quotation and 30/40/30 delivery through the same HTTP order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 190
+            },
+            {
+              "name": "V5 customization actual HTTP: paid manual production, receipts, changes and refunds",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 6
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/stock.integration.test.cjs",
+          "source_sha256": "3c6856f8b7b57d5f0cffd87ee9482510a2baf3204dcdb086c7f0d288132b4381",
+          "observed_checks": [
+            {
+              "name": "empty seller obtains reviewed choices before first listing",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 17
+            },
+            {
+              "name": "current L1 plus manual approval may list; legacy request flag cannot weaken server policy",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 18
+            },
+            {
+              "name": "seller can inspect missing manual approval; unrelated accounts cannot inspect qualification",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 19
+            },
+            {
+              "name": "future, expired, rejected or withdrawn manual certification never grants listing",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 30
+            },
+            {
+              "name": "each depicted person needs their own manual approval, not only the seller",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 38
+            },
+            {
+              "name": "listing requires current L1 fact, not seller checkbox",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 46
+            },
+            {
+              "name": "independent rights and content reviews required before public sale",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "catalog reveals no source, private evidence or contact data",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 48
+            },
+            {
+              "name": "verified personal buyer needs neither own avatar nor company; unverified account blocked",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 49
+            },
+            {
+              "name": "losing manual approval hides existing offers and blocks new checkout and new-order payment",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 50
+            },
+            {
+              "name": "unpaid and another buyer cannot download source",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 58
+            },
+            {
+              "name": "trusted payment grants once and leaves clock stopped until actual receipt",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 59
+            },
+            {
+              "name": "paid purchase keeps contract and access after new-sale qualification is withdrawn",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 60
+            },
+            {
+              "name": "ordinary unlisting leaves purchased license and contract unchanged",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 65
+            },
+            {
+              "name": "rights hold remains during re-review; two approvals restore purchased access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 66
+            },
+            {
+              "name": "notification read plus actual content access permits explicit receipt clock",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 67
+            },
+            {
+              "name": "issue stops clock and prevents download until independent resolution",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 68
+            },
+            {
+              "name": "refund approval is not refund success; actual full refund revokes license",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 69
+            },
+            {
+              "name": "one stock order survives lost response and refund review without duplicate money or licenses",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 71
+            },
+            {
+              "name": "expired download session recovers the same purchased bytes but fresh login never bypasses revoked membership",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 144
+            },
+            {
+              "name": "concurrent clicks with different keys cannot create duplicate purchase",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 169
+            },
+            {
+              "name": "changed reviewed offer requires buyer to confirm again; Apple needs reviewed product mapping",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 170
+            },
+            {
+              "name": "unlisting after preparing payment blocks dispatch; late cancelled receipt grants no access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 171
+            },
+            {
+              "name": "stored full-file hash change cannot silently replace sold file",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 172
+            },
+            {
+              "name": "automatic acceptance checks actual private bytes and a current worker lease",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 176
+            },
+            {
+              "name": "missing private file stops the clock rather than falsely completing order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 177
+            },
+            {
+              "name": "rights suspension invalidates old receipt even when review finishes before timer runs",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 178
+            },
+            {
+              "name": "explicit acceptance needs actual source access and cannot be done for another buyer",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 179
+            },
+            {
+              "name": "failed purchase audit rolls back order and purchase together",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 180
+            },
+            {
+              "name": "seller and reviewer browse private files; buyer lists remain personal",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 181
+            },
+            {
+              "name": "stock upload supports bounded video size independently of old 8MB materials",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 182
+            },
+            {
+              "name": "MCN listing binds the actual L1 artist and stops new sales when delegation is withdrawn",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 183
+            },
+            {
+              "name": "first seller reads published rules and scoped consents without past listings",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 197
+            },
+            {
+              "name": "publication independent review, stale versions and withdrawals gate new sale",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 202
+            },
+            {
+              "name": "rejected listing resubmits a separate version with replay and review protection",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 208
+            },
+            {
+              "name": "replacement publication leaves bought file and licence intact and prevents old reactivation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 217
+            },
+            {
+              "name": "publication routes require operator rights, independent review and exact version",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 226
+            },
+            {
+              "name": "two rejected revisions and later replacements keep one active sale and original purchases",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 242
+            },
+            {
+              "name": "stopped sales publication blocks new listings and checkout but preserves old purchase",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 254
+            },
+            {
+              "name": "reviewed stock refund 40 independently KEEP licence, old contract and cash journal unchanged by retries",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 264
+            },
+            {
+              "name": "reviewed stock refund 40 independently REVOKE licence, old contract and cash journal unchanged by retries",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 264
+            },
+            {
+              "name": "reviewed stock refund 100 independently KEEP licence, old contract and cash journal unchanged by retries",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 264
+            },
+            {
+              "name": "reviewed stock refund 100 independently REVOKE licence, old contract and cash journal unchanged by retries",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 264
+            },
+            {
+              "name": "payment review after 40 refund preserves independent KEEP licence decision while blocking access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 313
+            },
+            {
+              "name": "payment review after 40 refund preserves independent REVOKE licence decision while blocking access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 313
+            },
+            {
+              "name": "payment review after 100 refund preserves independent KEEP licence decision while blocking access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 313
+            },
+            {
+              "name": "payment review after 100 refund preserves independent REVOKE licence decision while blocking access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 313
+            },
+            {
+              "name": "new consent withdrawal hides catalog and stops another download without rewriting sold history",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 332
+            },
+            {
+              "name": "historical unpaid order retains original admission policy without admitting new purchases",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 333
+            },
+            {
+              "name": "stock video commerce in isolated MySQL",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W11 现货购买下载退款",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/stock.integration.test.cjs",
+          "source_sha256": "3c6856f8b7b57d5f0cffd87ee9482510a2baf3204dcdb086c7f0d288132b4381",
+          "observed_checks": [
+            {
+              "name": "empty seller obtains reviewed choices before first listing",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 17
+            },
+            {
+              "name": "current L1 plus manual approval may list; legacy request flag cannot weaken server policy",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 18
+            },
+            {
+              "name": "seller can inspect missing manual approval; unrelated accounts cannot inspect qualification",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 19
+            },
+            {
+              "name": "future, expired, rejected or withdrawn manual certification never grants listing",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 30
+            },
+            {
+              "name": "each depicted person needs their own manual approval, not only the seller",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 38
+            },
+            {
+              "name": "listing requires current L1 fact, not seller checkbox",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 46
+            },
+            {
+              "name": "independent rights and content reviews required before public sale",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "catalog reveals no source, private evidence or contact data",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 48
+            },
+            {
+              "name": "verified personal buyer needs neither own avatar nor company; unverified account blocked",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 49
+            },
+            {
+              "name": "losing manual approval hides existing offers and blocks new checkout and new-order payment",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 50
+            },
+            {
+              "name": "unpaid and another buyer cannot download source",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 58
+            },
+            {
+              "name": "trusted payment grants once and leaves clock stopped until actual receipt",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 59
+            },
+            {
+              "name": "paid purchase keeps contract and access after new-sale qualification is withdrawn",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 60
+            },
+            {
+              "name": "ordinary unlisting leaves purchased license and contract unchanged",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 65
+            },
+            {
+              "name": "rights hold remains during re-review; two approvals restore purchased access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 66
+            },
+            {
+              "name": "notification read plus actual content access permits explicit receipt clock",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 67
+            },
+            {
+              "name": "issue stops clock and prevents download until independent resolution",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 68
+            },
+            {
+              "name": "refund approval is not refund success; actual full refund revokes license",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 69
+            },
+            {
+              "name": "one stock order survives lost response and refund review without duplicate money or licenses",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 71
+            },
+            {
+              "name": "expired download session recovers the same purchased bytes but fresh login never bypasses revoked membership",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 144
+            },
+            {
+              "name": "concurrent clicks with different keys cannot create duplicate purchase",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 169
+            },
+            {
+              "name": "changed reviewed offer requires buyer to confirm again; Apple needs reviewed product mapping",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 170
+            },
+            {
+              "name": "unlisting after preparing payment blocks dispatch; late cancelled receipt grants no access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 171
+            },
+            {
+              "name": "stored full-file hash change cannot silently replace sold file",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 172
+            },
+            {
+              "name": "automatic acceptance checks actual private bytes and a current worker lease",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 176
+            },
+            {
+              "name": "missing private file stops the clock rather than falsely completing order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 177
+            },
+            {
+              "name": "rights suspension invalidates old receipt even when review finishes before timer runs",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 178
+            },
+            {
+              "name": "explicit acceptance needs actual source access and cannot be done for another buyer",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 179
+            },
+            {
+              "name": "failed purchase audit rolls back order and purchase together",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 180
+            },
+            {
+              "name": "seller and reviewer browse private files; buyer lists remain personal",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 181
+            },
+            {
+              "name": "stock upload supports bounded video size independently of old 8MB materials",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 182
+            },
+            {
+              "name": "MCN listing binds the actual L1 artist and stops new sales when delegation is withdrawn",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 183
+            },
+            {
+              "name": "first seller reads published rules and scoped consents without past listings",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 197
+            },
+            {
+              "name": "publication independent review, stale versions and withdrawals gate new sale",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 202
+            },
+            {
+              "name": "rejected listing resubmits a separate version with replay and review protection",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 208
+            },
+            {
+              "name": "replacement publication leaves bought file and licence intact and prevents old reactivation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 217
+            },
+            {
+              "name": "publication routes require operator rights, independent review and exact version",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 226
+            },
+            {
+              "name": "two rejected revisions and later replacements keep one active sale and original purchases",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 242
+            },
+            {
+              "name": "stopped sales publication blocks new listings and checkout but preserves old purchase",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 254
+            },
+            {
+              "name": "reviewed stock refund 40 independently KEEP licence, old contract and cash journal unchanged by retries",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 264
+            },
+            {
+              "name": "reviewed stock refund 40 independently REVOKE licence, old contract and cash journal unchanged by retries",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 264
+            },
+            {
+              "name": "reviewed stock refund 100 independently KEEP licence, old contract and cash journal unchanged by retries",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 264
+            },
+            {
+              "name": "reviewed stock refund 100 independently REVOKE licence, old contract and cash journal unchanged by retries",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 264
+            },
+            {
+              "name": "payment review after 40 refund preserves independent KEEP licence decision while blocking access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 313
+            },
+            {
+              "name": "payment review after 40 refund preserves independent REVOKE licence decision while blocking access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 313
+            },
+            {
+              "name": "payment review after 100 refund preserves independent KEEP licence decision while blocking access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 313
+            },
+            {
+              "name": "payment review after 100 refund preserves independent REVOKE licence decision while blocking access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 313
+            },
+            {
+              "name": "new consent withdrawal hides catalog and stops another download without rewriting sold history",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 332
+            },
+            {
+              "name": "historical unpaid order retains original admission policy without admitting new purchases",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 333
+            },
+            {
+              "name": "stock video commerce in isolated MySQL",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/transaction-identity.integration.test.cjs",
+          "source_sha256": "62896f4dc1f1ca6d43eeb8c8e2dcc0ebe6040afa97069ce280c62c4d88e4fa09",
+          "observed_checks": [
+            {
+              "name": "verified buyer accepts a current-contract script-first quote",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 37
+            },
+            {
+              "name": "verified buyer prepares the current-contract first payment",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 40
+            },
+            {
+              "name": "unverified buyer cannot accept a new current-contract quote",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 45
+            },
+            {
+              "name": "unverified buyer cannot replay quote acceptance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 46
+            },
+            {
+              "name": "unverified buyer cannot prepare a new payment on an earlier order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "unverified buyer cannot replay payment preparation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 48
+            },
+            {
+              "name": "unverified buyer retains original order read and contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 49
+            },
+            {
+              "name": "expired buyer cannot accept a new current-contract quote",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 45
+            },
+            {
+              "name": "expired buyer cannot replay quote acceptance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 46
+            },
+            {
+              "name": "expired buyer cannot prepare a new payment on an earlier order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "expired buyer cannot replay payment preparation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 48
+            },
+            {
+              "name": "expired buyer retains original order read and contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 49
+            },
+            {
+              "name": "rejected buyer cannot accept a new current-contract quote",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 45
+            },
+            {
+              "name": "rejected buyer cannot replay quote acceptance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 46
+            },
+            {
+              "name": "rejected buyer cannot prepare a new payment on an earlier order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "rejected buyer cannot replay payment preparation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 48
+            },
+            {
+              "name": "rejected buyer retains original order read and contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 49
+            },
+            {
+              "name": "restored identity returns the original successful acceptance and payment",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 52
+            },
+            {
+              "name": "identity expiry after payment preparation but before dispatch stops the provider call",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 54
+            },
+            {
+              "name": "restored identity dispatches the original prepared payment exactly once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 59
+            },
+            {
+              "name": "unknown payment outcome is retained rather than creating a second charge",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 63
+            },
+            {
+              "name": "identity expiry still permits trusted reconciliation and reading original payment facts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 66
+            },
+            {
+              "name": "current-contract customization buyer identity on acceptance and payment",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/stock-commercial.integration.test.cjs",
+          "source_sha256": "19495ee15b7059e39cec48322c334a1de26684c61b6c68e36a4b378394b8ab7e",
+          "observed_checks": [
+            {
+              "name": "old personal authorization rejected for commercial listing",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 14
+            },
+            {
+              "name": "new scoped personal consent selected, dual review requires explicit commercial check",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 15
+            },
+            {
+              "name": "new commercial offers are off until an explicit rollout, personal offers unchanged",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 24
+            },
+            {
+              "name": "organization needs reviewed buyer capability and an authorized real adult operator",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 31
+            },
+            {
+              "name": "payment activates the original business license; actual controlled bytes match and strangers cannot read",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "consent withdrawal stops downloads, restoration does not silently expand the license",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 55
+            },
+            {
+              "name": "time-limited purchased license expires even while the original listing remains active",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 60
+            },
+            {
+              "name": "independent aftercare and verified refund revoke purchased commercial permission, not rewrite history",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 65
+            },
+            {
+              "name": "commercial stock independent product, scoped personal rights, business buyer and original order in isolated MySQL",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/referral-window.integration.test.cjs",
+          "source_sha256": "451c11eea533f008e047d7192da23c5a5625c7f3e8dd23ea9029ee9484b749b6",
+          "observed_checks": [
+            {
+              "name": "HTTP checkout retains the valid original referral beyond 100 other-merchant clicks",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 52
+            },
+            {
+              "name": "other categories and excluded supplier referrals cannot conceal the eligible earlier click",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 59
+            },
+            {
+              "name": "202 tied microsecond timestamps preserve id ordering through multiple pages",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 65
+            },
+            {
+              "name": "latest eligible click applies only to new orders; replay creates no second commission",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 71
+            },
+            {
+              "name": "the seven-day cutoff is inclusive and one millisecond older is ineligible",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 79
+            },
+            {
+              "name": "exhausting several pages without an eligible link returns an unattributed order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 88
+            },
+            {
+              "name": "corrupted retained click content still fails instead of silently skipping evidence",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 91
+            },
+            {
+              "name": "seven-day referral survives unrelated clicks and exact timestamp page boundaries",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 8
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W12 人工定制全程办理",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/customization-delivery.integration.test.cjs",
+          "source_sha256": "327cb6ebbe483fd86dcd770b3b2aa387ddef7af583fbb3fafed298ad5e5d2170",
+          "observed_checks": [
+            {
+              "name": "explicit delivery terms required; legacy accepted quote is not silently rewritten",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "one manual project binds immutable story and no-avatar scenic work is allowed",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 28
+            },
+            {
+              "name": "review and deposit are both required; start and old upload cannot bypass payment",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 29
+            },
+            {
+              "name": "manual dispatch requires current team membership; outsider cannot assign or upload",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 30
+            },
+            {
+              "name": "approved formal delivery alone does not start clock; bytes and notification required",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 31
+            },
+            {
+              "name": "first formal preview can be viewed before interim payment; acceptance unlocks exactly 60 percent",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 32
+            },
+            {
+              "name": "platform correction is free; creative changes use purchased quota and then require new quote",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 33
+            },
+            {
+              "name": "rights dispute suspends clock and payments; independent resolution requires fresh formal receipt",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 34
+            },
+            {
+              "name": "final acceptance is separate from paid final download; repeated access publishes one fulfillment fact",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "before-start cancellation refunds all, approval is not actual refund, retries do not duplicate facts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "refund cannot bypass customer-service review; paid legacy order remains unmodified",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 37
+            },
+            {
+              "name": "alternate explicit prepayment policy does not deadlock preview and interim collection",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 38
+            },
+            {
+              "name": "new contract: current accepted script unlocks 40%, production and final 30% remain gated",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 39
+            },
+            {
+              "name": "new contract cancellation has reviewed cap, not automatic forfeiture of all received money",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 61
+            },
+            {
+              "name": "agreed timeout runs as durable job and records automatic, not fabricated manual, acceptance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 73
+            },
+            {
+              "name": "changed moderation requirements stop an already scheduled acceptance from confirming unavailable evidence",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 74
+            },
+            {
+              "name": "file failure at timeout pauses instead of auto accepting unavailable content",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 75
+            },
+            {
+              "name": "new version invalidates old acceptance job and resets notice and viewing evidence",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 76
+            },
+            {
+              "name": "audit failures roll back case, state and command together",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 77
+            },
+            {
+              "name": "person/avatar/version/consents bind actual performer, and manual material use does not require model hosting",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 79
+            },
+            {
+              "name": "partial work cancellation cannot retain unconfirmed value; failures override digital non-refund claims",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 80
+            },
+            {
+              "name": "payment already in flight when cancellation occurs becomes refund obligation after trusted late receipt",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 82
+            },
+            {
+              "name": "case evidence is available only to its submitting side and independent reviewer",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 83
+            },
+            {
+              "name": "working-day final receipt freezes deadline; repeated acknowledgement cannot extend it",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 98
+            },
+            {
+              "name": "working-day dispute and reissue invalidate old job; new receipt needs fresh notice and bytes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 109
+            },
+            {
+              "name": "working-day deadline does not auto accept an unavailable file",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 116
+            },
+            {
+              "name": "parallel starts and stale acceptance lease cannot duplicate business facts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 119
+            },
+            {
+              "name": "creative amendment is independently quoted, accepted, paid once and attached to the original production",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 121
+            },
+            {
+              "name": "same-story amendment HTTP create review acceptance keeps original binding and rejects stale or duplicate cases",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 123
+            },
+            {
+              "name": "prepared manual payment is rechecked at dispatch after pause, then recovers without duplicate dispatch",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 157
+            },
+            {
+              "name": "prepared amendment cannot dispatch after original case cancellation; trusted late receipts remain accountable",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 170
+            },
+            {
+              "name": "one new story completes manual quotation and 30/40/30 delivery through the same HTTP order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 190
+            },
+            {
+              "name": "V5 customization actual HTTP: paid manual production, receipts, changes and refunds",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 6
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/customization-representative.integration.test.cjs",
+          "source_sha256": "d11250857c50ba5dcd3a36b8cfa950e66998ba977f5baa8e188877510f02ce95",
+          "observed_checks": [
+            {
+              "name": "ordinary member may author a private request without financial order authority",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "author uploads and submits private bytes; a second trade delegate and owner cannot read raw request drafts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "invoice-only and offered trade grants cannot accept a quote; accepted current trade grant confirms the same company order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "original company order proceeds to independently reviewed manual project without granting producer powers",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "accepted representatives list and read fulfillment; only original author can read private story via buyer delegation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "representative views independent delivery and accepts the same script to unlock contractual interim payment",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "company project pagination includes delegated orders without opening the other author story",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "revocation during original attachment download blocks bytes; reads, lists and successful write replays recheck current authority",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "removing current membership blocks author request and original bytes while preserving the submitted version",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "expired grants and changed owner membership block delegates without deleting original records",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "enterprise customization: current trade authority, fulfillment and private author boundaries",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 6
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/customization-handoff.integration.test.cjs",
+          "source_sha256": "0a58654c60ea12e3cbc1cbf17652b0afe1b151d564c9d8795cc39dcbae48c43f",
+          "observed_checks": [
+            {
+              "name": "0224 upgrades with a legacy first-reader receipt unchanged and repeated 0225 application is idempotent",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 22
+            },
+            {
+              "name": "a new representative must personally read the current preview and notification before taking over",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 22
+            },
+            {
+              "name": "another viewer never overwrites a completed receipt and each actor feedback uses their own read",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 22
+            },
+            {
+              "name": "failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 22
+            },
+            {
+              "name": "concurrent current company viewers create one observation each and one immutable final deadline",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 22
+            },
+            {
+              "name": "same company completes final acceptance and last payment; duplicate final downloads keep one completion fact",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 22
+            },
+            {
+              "name": "personal retained delivery and feedback copy uses the same actual company journey",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 95
+            },
+            {
+              "name": "company delivery handoff preserves first receipt, current authority and original final payment",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/referral-customization-fulfillment.integration.test.cjs",
+          "source_sha256": "1543602687ff23a80e506eaf2cb649bb73f31337c213abd47d2ede71b9fda1a5",
+          "observed_checks": [
+            {
+              "name": "original referral is frozen in accepted customization order; unpaid commission is pending",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 31
+            },
+            {
+              "name": "actual four-stage manual delivery and full receipt still wait for aftercare",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 37
+            },
+            {
+              "name": "matured original delivery accrues commission once from platform budget before settlement exists",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 43
+            },
+            {
+              "name": "original parties approve exact settlement and only verified evidence records paid referral",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 48
+            },
+            {
+              "name": "later referral clicks do not rewrite old payout or original contract; own income uses ledger",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 53
+            },
+            {
+              "name": "customization referral: actual delivery, aftercare, independent settlement and original payout",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W13 试镜履约售后",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/auditions.integration.test.cjs",
+          "source_sha256": "6538962d883bf47c6de906068fa304cc86bb35e147796e140b0355d27a529f90",
+          "observed_checks": [
+            {
+              "name": "future or expired manual review cannot supply audition options or a new offer",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 18
+            },
+            {
+              "name": "first offer reads qualified rules and minimal authorizations with no prior offer",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "only reviewed L2 offers appear; unknown artist and ordinary buyer cannot manage",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 39
+            },
+            {
+              "name": "visibility changes independent of public artist archive; price not leaked by catalog",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 40
+            },
+            {
+              "name": "accepted private invitation exposes matching offers only; revoked invitation cannot book",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "unsafe place refused and stale price cannot book",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 53
+            },
+            {
+              "name": "unpaid order cannot accept or open conversation; independent venue review required",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 54
+            },
+            {
+              "name": "verified payment is idempotent and still needs artist acceptance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 55
+            },
+            {
+              "name": "accept opens conversation; duplicate decision returns same booking",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 56
+            },
+            {
+              "name": "contact requires separate consent and is never embedded in booking/order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 57
+            },
+            {
+              "name": "conversation deduplicates, rejects bait, and unauthorized support cannot read",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 58
+            },
+            {
+              "name": "departed safety case freezes contact and settlement without credit penalty",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 59
+            },
+            {
+              "name": "delivery requires correct count, authorization and arrival",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 60
+            },
+            {
+              "name": "paid audition conversation provides a scoped working draft and reviewed personal copy",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 61
+            },
+            {
+              "name": "actual private bytes required before receipt and acceptance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 68
+            },
+            {
+              "name": "MCN same-order income follows actual pending, accepted, declined, expired and refunded audition outcomes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 69
+            },
+            {
+              "name": "decline creates one refund request; verified provider refund required for refunded status",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 108
+            },
+            {
+              "name": "unaccepted expiry cannot be accepted, goes through refund request",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 109
+            },
+            {
+              "name": "minor cannot create offer or buy even if client says otherwise",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 110
+            },
+            {
+              "name": "legacy order comments cannot bypass dedicated conversation gate",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 112
+            },
+            {
+              "name": "automated expiry is lease fenced and creates only one refund request",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 113
+            },
+            {
+              "name": "one accepted booking cancels before departure, freezes conversation and verifies refund once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 114
+            },
+            {
+              "name": "partial and full refunds followed by payment review freeze booking and T+1 settlement",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 138
+            },
+            {
+              "name": "before departure cancellation is full refund even for safety reason",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 165
+            },
+            {
+              "name": "custody channel is captured at checkout without changing old contracts or claiming real payment",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 167
+            },
+            {
+              "name": "unpaid cancellation uses trade and preserves cancelled appointment",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 172
+            },
+            {
+              "name": "concurrent accept or decline produces one winner",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 173
+            },
+            {
+              "name": "reschedule needs other party plus independent venue review; support join/leave controls access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 174
+            },
+            {
+              "name": "new private archive consent is needed for artist-owned baseplate; buyer gets no generation rights",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 175
+            },
+            {
+              "name": "automatic acceptance validates every file and lease, pauses on missing bytes, restarts only after new viewing",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 177
+            },
+            {
+              "name": "same artist cannot accept two overlapping appointments and one can be rescheduled later",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 182
+            },
+            {
+              "name": "independent support reads only live linked dispute evidence, and access ends on resolution",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 183
+            },
+            {
+              "name": "MCN requires this persons explicit audition delegation and loses access immediately on withdrawal",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 220
+            },
+            {
+              "name": "withdrawn sample consent closes buyer file access without deleting artist archive",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 221
+            },
+            {
+              "name": "retired offer rule blocks new publication and booking, preserving original paid record",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 223
+            },
+            {
+              "name": "audition booking, delivery, privacy and refunds in isolated MySQL",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/audition-representative.integration.test.cjs",
+          "source_sha256": "d6112457747d1abae9d58f1d84b3c7477e71666647e37e0fa35c1f563b1d7fc8",
+          "observed_checks": [
+            {
+              "name": "ordinary or invoice-only member cannot book; explicit trade grant preserves identity and company gates",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "safety review remains independent and current representative checks out the original company order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "company switching and buyer delegation cannot impersonate the artist or read their offer administration",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "revocation blocks same booking reads, messages, creation and checkout replay without changing the contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "company-specific sample consent and independent delivery review still precede buyer downloads",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "losing representative rights during sample transport returns no bytes or viewed receipt; new grant allows actual receipt",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "a second company booking can be cancelled and independently refunded by the authorized buyer with original ownership",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "explicit enterprise buyer representative completes and reverses original audition bookings",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/referral-audition-fulfilled.integration.test.cjs",
+          "source_sha256": "8b7e2628ae8caf29752a589c437fbc8987240fde09b9c04898668ae94f0276fc",
+          "observed_checks": [
+            {
+              "name": "original referral and agency are captured by an independently reviewed paid booking",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 29
+            },
+            {
+              "name": "agency replacement and later referral click cannot claim the original booking",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "artist acceptance, arrival, reviewed six photos and one video precede actual buyer receipt",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 51
+            },
+            {
+              "name": "T plus one permits audition gate but does not bypass original seven-day referral aftercare",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 63
+            },
+            {
+              "name": "matured normal delivery accrues original referral and agency shares, independent settlement does not pay",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 69
+            },
+            {
+              "name": "repeated reconciliation preserves original attribution, exact settlement and own-only balances",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 76
+            },
+            {
+              "name": "same fulfilled audition original agency dashboard and independent partial refund",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 82
+            },
+            {
+              "name": "fulfilled audition keeps original referral and MCN across aftercare and independent settlement",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/referral-audition-refund.integration.test.cjs",
+          "source_sha256": "4f95628666bd2c71edc89ec1e6a4fcd14fdad77a0112e3bcd58ee645b0b6325f",
+          "observed_checks": [
+            {
+              "name": "original referral and agency are captured by an independently reviewed paid booking",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 29
+            },
+            {
+              "name": "agency replacement and later referral click cannot claim the original booking",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "decline and reviewed refund request keep commission pending until money is verified returned",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "verified full refund closes zero referral without inventing fulfillment or changing attribution",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 46
+            },
+            {
+              "name": "a payment-review hold does not become a completed refund merely because the journal net is zero",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 52
+            },
+            {
+              "name": "original parties can reconcile zero old-order balance after verified refund",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 59
+            },
+            {
+              "name": "declined audition after MCN replacement closes original referral only after verified full refund",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W14 通告商单双向合作",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/notices-ordinary.integration.test.cjs",
+          "source_sha256": "229436b2c33848cb80394573d13ed3ea475a47b57f6298a995c134399686d635",
+          "observed_checks": [
+            {
+              "name": "new publishing rule requires independent approval; old rule and notices retain snapshots",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 31
+            },
+            {
+              "name": "never-funded adult can publish all five ordinary types without changing membership",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 43
+            },
+            {
+              "name": "membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 56
+            },
+            {
+              "name": "unverified, child, expired, inactive, foreign identity and official impersonation remain rejected",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 70
+            },
+            {
+              "name": "identity or ownership lost after submission is checked at review and public read",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 84
+            },
+            {
+              "name": "qualified organization rejects new publication with actor UNVERIFIED",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "qualified organization rejects successful replay with actor UNVERIFIED",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "qualified organization rejects new publication with actor REJECTED",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "qualified organization rejects successful replay with actor REJECTED",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "qualified organization rejects new publication with actor 2020-01-01 00:00:00.000",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "qualified organization rejects successful replay with actor 2020-01-01 00:00:00.000",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 106
+            },
+            {
+              "name": "organization scope and other project ownership cannot be bypassed with an ordinary rule",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 95
+            },
+            {
+              "name": "same notice receives reviewed artist submission then one support case after lost response recovery",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 115
+            },
+            {
+              "name": "suspended account or party hides publication and blocks further cooperation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 131
+            },
+            {
+              "name": "independent support links actual quote and creates the same unpaid order without membership",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 142
+            },
+            {
+              "name": "same notice order receives payment, scoped conversation and independently reviewed full refund",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 154
+            },
+            {
+              "name": "closing ordinary notice blocks new submissions while historical quote remains unchanged",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 242
+            },
+            {
+              "name": "notice withdrawal notifies each historical application once without changing submission or contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 250
+            },
+            {
+              "name": "failure to record notice withdrawal notification rolls back closure and all prior events",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 271
+            },
+            {
+              "name": "ordinary publishing and same-notice cooperation in isolated MySQL",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/notice-representative.integration.test.cjs",
+          "source_sha256": "59126aaeb820f1a69a419b3e2e20861131cb68524be1cb8fed24a1becb35d147",
+          "observed_checks": [
+            {
+              "name": "ordinary and invoice-only members cannot publish; active trade authority does not grant qualification or operator powers",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "review rechecks a pending representative author, while a published company notice survives later revocation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "only reviewed company-specific submissions are visible; buyer cannot impersonate artist and transport revocation returns no material",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "notice revisions require current representative authority at approval and retain the original artist acknowledgement boundary",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "independent support links the exact company quote; representative accepts the original order and payment opens its conversation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "company representative can withdraw its notice without erasing the accepted paid contract or granting seller authority",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "enterprise representative handles the original notice submission and linked commercial order",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/invitation-representative.integration.test.cjs",
+          "source_sha256": "c9873ef61d34c5ac7e63ed6191e81f39b71ffc431576e5a7e107cea45846a684",
+          "observed_checks": [
+            {
+              "name": "ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "independent support links that invitation to the exact quote, and the representative pays the original company order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 16
+            },
+            {
+              "name": "explicit company buyer follows public artist invitation through a directly accepted commercial order",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/gigs.integration.test.cjs",
+          "source_sha256": "dae761dec041ac7b5e0041e53528fe45ebfab45e4f7cb68f8347400faa85acdd",
+          "observed_checks": [
+            {
+              "name": "no login, no operator and no self-review",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "MCN cannot silently add artist; artist acceptance is required",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 43
+            },
+            {
+              "name": "overlapping exclusive relation rejected and outsiders cannot read",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 44
+            },
+            {
+              "name": "relation display names require participant ownership and never alter saved terms",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 45
+            },
+            {
+              "name": "missing proofs, forbidden category and unreviewed publication blocked",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 66
+            },
+            {
+              "name": "private-only consent does not authorize commercial offer",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 68
+            },
+            {
+              "name": "buyer accepts exact reviewed version and concurrent acceptance cannot overwrite",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 69
+            },
+            {
+              "name": "new-rule switch blocks old pending quotes while old orders retain their contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 73
+            },
+            {
+              "name": "commercial commitments are included before quote and sealed in order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 94
+            },
+            {
+              "name": "no verified receipt means zero commission; verified receipt creates conserved accrual",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 96
+            },
+            {
+              "name": "restricted commercial attachments stay blocked across concurrent restrictions and storage-read races",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 97
+            },
+            {
+              "name": "commercial conversation needs payment, participant access and explicit contacts; support joins and freezes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 114
+            },
+            {
+              "name": "repeated reconciliation and command replay do not create duplicate entries",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 133
+            },
+            {
+              "name": "daily ranking snapshot is deterministic and exposes no order IDs or receipt amounts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 134
+            },
+            {
+              "name": "revoked MCN capability blocks new quotes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 135
+            },
+            {
+              "name": "real consent withdrawal blocks further commercial quotes without rewriting financial facts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 136
+            },
+            {
+              "name": "ending relation blocks new offers but preserves existing order commission",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 137
+            },
+            {
+              "name": "verified partial refund reverses commission once with exact rounding",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 138
+            },
+            {
+              "name": "verified agency has only captured-order communication during handover, never after revoked consent or expiry",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 139
+            },
+            {
+              "name": "seven-day handover captures only prior orders, has bilateral acknowledgement and keeps expiry explicit",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 167
+            },
+            {
+              "name": "suspension removes discovery and notifies buyer and suppliers",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 179
+            },
+            {
+              "name": "evidence downloads are private and linked to exact record",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 180
+            },
+            {
+              "name": "audit failure rolls back records and command reservations",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 181
+            },
+            {
+              "name": "membership revocation immediately removes historic commission access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 183
+            },
+            {
+              "name": "retired rule cannot publish new gigs but historical accrual remains readable",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 184
+            },
+            {
+              "name": "personal summaries retain ended MCN terms and historical commercial commissions without duplicating income",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 186
+            },
+            {
+              "name": "gigs historical platform-share isolated MySQL and real HTTP cooperation, commissions and rankings",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 9
+            },
+            {
+              "name": "no login, no operator and no self-review",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "MCN cannot silently add artist; artist acceptance is required",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 43
+            },
+            {
+              "name": "overlapping exclusive relation rejected and outsiders cannot read",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 44
+            },
+            {
+              "name": "relation display names require participant ownership and never alter saved terms",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 45
+            },
+            {
+              "name": "missing proofs, forbidden category and unreviewed publication blocked",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 66
+            },
+            {
+              "name": "private-only consent does not authorize commercial offer",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 68
+            },
+            {
+              "name": "buyer accepts exact reviewed version and concurrent acceptance cannot overwrite",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 69
+            },
+            {
+              "name": "new-rule switch blocks old pending quotes while old orders retain their contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 73
+            },
+            {
+              "name": "wrong product or rate cannot create a quote or silently fall back to old commissions",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 79
+            },
+            {
+              "name": "new offer rejects old rates and legacy MCN share wording before buyer commits",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 89
+            },
+            {
+              "name": "commercial commitments are included before quote and sealed in order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 94
+            },
+            {
+              "name": "no verified receipt means zero commission; verified receipt creates conserved accrual",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 96
+            },
+            {
+              "name": "restricted commercial attachments stay blocked across concurrent restrictions and storage-read races",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 97
+            },
+            {
+              "name": "commercial conversation needs payment, participant access and explicit contacts; support joins and freezes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 114
+            },
+            {
+              "name": "repeated reconciliation and command replay do not create duplicate entries",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 133
+            },
+            {
+              "name": "daily ranking snapshot is deterministic and exposes no order IDs or receipt amounts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 134
+            },
+            {
+              "name": "revoked MCN capability blocks new quotes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 135
+            },
+            {
+              "name": "real consent withdrawal blocks further commercial quotes without rewriting financial facts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 136
+            },
+            {
+              "name": "ending relation blocks new offers but preserves existing order commission",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 137
+            },
+            {
+              "name": "verified partial refund reverses commission once with exact rounding",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 138
+            },
+            {
+              "name": "verified agency has only captured-order communication during handover, never after revoked consent or expiry",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 139
+            },
+            {
+              "name": "seven-day handover captures only prior orders, has bilateral acknowledgement and keeps expiry explicit",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 167
+            },
+            {
+              "name": "suspension removes discovery and notifies buyer and suppliers",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 179
+            },
+            {
+              "name": "evidence downloads are private and linked to exact record",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 180
+            },
+            {
+              "name": "audit failure rolls back records and command reservations",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 181
+            },
+            {
+              "name": "membership revocation immediately removes historic commission access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 183
+            },
+            {
+              "name": "retired rule cannot publish new gigs but historical accrual remains readable",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 184
+            },
+            {
+              "name": "personal summaries retain ended MCN terms and historical commercial commissions without duplicating income",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 186
+            },
+            {
+              "name": "gigs 20261029 supply-share isolated MySQL and real HTTP cooperation, commissions and rankings",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 9
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/referral-commercial-fulfillment.integration.test.cjs",
+          "source_sha256": "b2a8286ff8c30528d5c6e104b4892f56a0b91575f6863aa5e3133b32a88327c2",
+          "observed_checks": [
+            {
+              "name": "original referral and agency are frozen at accepted production quote and remain pending before delivery",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "agency replacement and new click do not change old commercial contract or referral",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 34
+            },
+            {
+              "name": "same order completes actual independently reviewed four-stage production and still waits for aftercare",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 38
+            },
+            {
+              "name": "matured final acceptance accrues exact original referral and agency with conserved rounding",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 46
+            },
+            {
+              "name": "fully confirmed settlement archives accepted cooperation without payout or rewritten history",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 52
+            },
+            {
+              "name": "same fulfilled commercial original agency dashboard and independent partial refund",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 58
+            },
+            {
+              "name": "fulfilled commercial referral retains original agency, independent settlement and archive",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/commercial-archive-timing.integration.test.cjs",
+          "source_sha256": "1f02bd7711c0b10bd6348f553b22577e299ca6c180bcf31fa9e9de6fd7130c21",
+          "observed_checks": [
+            {
+              "name": "confirmed full current finance does not prematurely archive before accepted production",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 25
+            },
+            {
+              "name": "same order completes all independently reviewed and buyer accepted production stages",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 32
+            },
+            {
+              "name": "independent manual archive finishes the later-acceptance path without changing rights or money",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 46
+            },
+            {
+              "name": "same commercial production accepts after finance confirmation and closes through independent manual archive",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W15 共创开拍交付退出",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/cocreation-modern-journey.integration.test.cjs",
+          "source_sha256": "47f889dcd112cec30685427ca33f62740fbaac65d640564853411f1d37fa3527",
+          "observed_checks": [
+            {
+              "name": "one shared order freezes new 30/40/30, reviewed calendar, copyright and room promise",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "twenty private adults claim invitations; claiming alone adds no participants or personal orders",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "each person confirms materials separately; unpaid participants do not qualify and retry does not double count",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "first payment qualifies twenty people; cutoff creates one noncash benefit and one original order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "actual twenty-person benefit links once to reviewed credit with original owner and expiry",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "unpaid credit order cancellation releases the original grant without new cash or expiry",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "independently reviewed project keeps twenty separate authorizations; host cannot read other peoples private materials",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "new contract collects 40 percent after script acceptance, then samples and final require separate reviews",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "personal clip remains unavailable until final acceptance and remaining 30 percent; other people cannot download",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "withdrawal pauses old production and downloads; independent recovery keeps old cutoff but requires new versions",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "resumed original room consumes its original credit once on discounted payment",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "same paid room cancels through production review; three actual refunds revoke benefit and cannot revive old files",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "refunded source blocks credit production but preserves recorded cash and consumed history",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "nine-person unformed room extends only after independent review; old personal agreement cannot silently carry forward",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "same extended room requires nine renewed agreements and a tenth separate participant; ten qualifies without twenty-person reward",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "separate nine-person room cancels before production; review is not a refund and duplicate receipt credits only once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "unformed room cannot mark refund complete while original payment requires review",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "separate actual twenty-person credit keeps its deadline through delayed claim and release then expires",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 13
+            },
+            {
+              "name": "private invitations reach twenty-person production under new contract without changing old commitments",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 7
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W16 积分换券用券退款",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/redemption-checkout.integration.test.cjs",
+          "source_sha256": "3da113e8b40d62ed759fc223045b42eda8c5a54db4df96497c248336d52bc4c5",
+          "observed_checks": [
+            {
+              "name": "one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "new 30/40/30 coupon quote and contract preserve net amounts and script milestone",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "unaccepted hold can be released, stale preview and unauthorized access rejected",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "actual drawn credit keeps its original grant through unknown payment and refund without restoring the prize",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 42
+            },
+            {
+              "name": "full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 69
+            },
+            {
+              "name": "co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 103
+            },
+            {
+              "name": "same 30/40/30 coupon order completes, earns net-consumption points and refunds without restoring a used coupon",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 119
+            },
+            {
+              "name": "coupon checkout preserves original promises and real payment facts",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W17 抽奖及奖品兑现",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/redemption-lottery.integration.test.cjs",
+          "source_sha256": "5524e1a7fbdad6abe0a31f2047b36688f1b387eb53f414f7430396c11967af11",
+          "observed_checks": [
+            {
+              "name": "creator cannot approve; rules and finance require separate reviewers; unpublished draw denied",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "newly reviewed pools publish seven-day notice before drawing; no points or stock deducted",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 32
+            },
+            {
+              "name": "reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 40
+            },
+            {
+              "name": "retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 46
+            },
+            {
+              "name": "insufficient points rolls back draw, stock and command; retired version preserves old results",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 54
+            },
+            {
+              "name": "ten guarantee survives mostly no-win pool and records actual conditional draws",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 63
+            },
+            {
+              "name": "new-contract pool cannot draw before a consumer policy is independently reviewed",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 66
+            },
+            {
+              "name": "rational confirmation and participation limits precede point deduction; recovery returns original winners",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 73
+            },
+            {
+              "name": "same actual winning interview cancels pending schedule on extension and fallback without redrawing",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 85
+            },
+            {
+              "name": "same drawn interview expires then receives one reviewed fallback; retired-pool replay preserves original winners and stake",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 112
+            },
+            {
+              "name": "lottery actual HTTP: immutable odds, independent review, stock and atomic points",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/redemption.integration.test.cjs",
+          "source_sha256": "3c245819c38aad8bdce67adda6ef163aaf39d70c1ec38759c967e9164abb414e",
+          "observed_checks": [
+            {
+              "name": "independent stock approval, private evidence and unauthorized queue rejected",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 32
+            },
+            {
+              "name": "repeated exchange spends once; changed key payload rejected; another user cannot read",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 38
+            },
+            {
+              "name": "last inventory races: exactly one grant, one debit, no overselling",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 43
+            },
+            {
+              "name": "insufficient balance and underage gate roll back grant and stock together",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "retired inventory prevents new exchange but preserves prior entitlement",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 53
+            },
+            {
+              "name": "service failure refund returns original points exactly once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 56
+            },
+            {
+              "name": "exposure binds real public artist, independently schedules and requires holder confirmation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 61
+            },
+            {
+              "name": "fulfilled exposure records proof and cannot be redeemed twice",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 78
+            },
+            {
+              "name": "verified production credit gets correct price; unrelated existing stock video cannot authorize template",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 84
+            },
+            {
+              "name": "interview belongs to self, requires authorized materials, extension once and actual interview result never grants role",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 91
+            },
+            {
+              "name": "points pending reversal blocks new exchange; remedy clears original debt before any available balance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 112
+            },
+            {
+              "name": "returning expired original points does not mint a fresh year of validity",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 120
+            },
+            {
+              "name": "fixed redemption through actual HTTP and isolated MySQL transactions",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/redemption-delivery-evidence.integration.test.cjs",
+          "source_sha256": "08c6576d5924d8b78b9a0d9511b650ce3be1df0562b036e8dadadd781a0cf1ca",
+          "observed_checks": [
+            {
+              "name": "cannot schedule a grant using evidence explicitly submitted only to another grant",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 33
+            },
+            {
+              "name": "completion requires this grant completion evidence; original schedule and finish replay remain stable",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 38
+            },
+            {
+              "name": "supplier evidence is explicitly linked to one grant and only an independent operator can read it",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/reward-remedy-lifecycle.integration.test.cjs",
+          "source_sha256": "37c441afc3284ebe0a38554a524feefe024c05fe6d6a37d8ea85f5e62fa4104f",
+          "observed_checks": [
+            {
+              "name": "return original points cancels the still-pending schedule atomically; rejection and replay cannot resurrect it",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 63
+            },
+            {
+              "name": "one-time interview extension cancels old pending slot and permits a fresh schedule",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 73
+            },
+            {
+              "name": "rejected remedy preserves pending slot; stale and changed commands cannot change the outcome",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 82
+            },
+            {
+              "name": "withdrawn public participation blocks acceptance but permits declining the original future slot",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 90
+            },
+            {
+              "name": "confirmed but no longer public award cannot finish; remedy cancels its approved slot once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 104
+            },
+            {
+              "name": "withdrawn interview production consent still permits refusal and remedy with a private own-record copy",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 116
+            },
+            {
+              "name": "reward remedy preserves one grant and all pending schedules across invalid binding",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/redemption-checkout.integration.test.cjs",
+          "source_sha256": "3da113e8b40d62ed759fc223045b42eda8c5a54db4df96497c248336d52bc4c5",
+          "observed_checks": [
+            {
+              "name": "one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "new 30/40/30 coupon quote and contract preserve net amounts and script milestone",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 27
+            },
+            {
+              "name": "unaccepted hold can be released, stale preview and unauthorized access rejected",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 36
+            },
+            {
+              "name": "actual drawn credit keeps its original grant through unknown payment and refund without restoring the prize",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 42
+            },
+            {
+              "name": "full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 69
+            },
+            {
+              "name": "co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 103
+            },
+            {
+              "name": "same 30/40/30 coupon order completes, earns net-consumption points and refunds without restoring a used coupon",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 119
+            },
+            {
+              "name": "coupon checkout preserves original promises and real payment facts",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W18 钱包会员成长逆向",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/wallet-cross-period.integration.test.cjs",
+          "source_sha256": "4e9c14cb22fe7b3284e8f4bc8175b7a7266ba7460d20eb1a4b0d2c040360614a",
+          "observed_checks": [
+            {
+              "name": "two actual recharge receipts reach the first threshold without creating consumption growth",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 9
+            },
+            {
+              "name": "renewal extends the same account once and expiry preserves every original balance lot",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 9
+            },
+            {
+              "name": "expired membership still spends existing funds and actual stock acceptance establishes the original earning",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 9
+            },
+            {
+              "name": "actual accepted consumption matures and a later recharge restores membership without buying growth",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 9
+            },
+            {
+              "name": "unsent refund cancellation releases its hold; unknown result keeps it until original-route receipt settles once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 9
+            },
+            {
+              "name": "refund of the same accepted purchase restores its original recharge lot and reverses only its consumption growth",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 9
+            },
+            {
+              "name": "a later recharge restores one year from its own receipt while original rules and settled refunds stay unchanged",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 9
+            },
+            {
+              "name": "one wallet keeps original recharge lots through renewal, expiry, spending and original-route refunds",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/recharge-refund-recovery.integration.test.cjs",
+          "source_sha256": "2b7b958603491c94e067817443de86fa3b36c17f9b75c0bb7873acbce609140f",
+          "observed_checks": [
+            {
+              "name": "task insert and case link are atomic; same case scheduling keeps one durable task",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 60
+            },
+            {
+              "name": "lost provider response persists UNKNOWN and worker restart only queries the original refund",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 73
+            },
+            {
+              "name": "expired lease cannot settle money or finish a job; a new lease queries and settles once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 82
+            },
+            {
+              "name": "bad receipt blocks, never releases funds; current independent permission is required to resume",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 92
+            },
+            {
+              "name": "missing adapter and changed merchant fail closed; cancelled queued cases never send",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 103
+            },
+            {
+              "name": "a manually sent old case is scheduled for query only; completed money survives a lost job-completion write",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 112
+            },
+            {
+              "name": "consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 124
+            },
+            {
+              "name": "guardian must be active and owns evidence; no child impersonation, foreign source or self-review",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 152
+            },
+            {
+              "name": "revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 168
+            },
+            {
+              "name": "durable recharge refund recovery and guardian delegation in isolated MySQL",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 6
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W19 曝光月冠军及排名",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/championship-contract.integration.test.cjs",
+          "source_sha256": "1166507b86b7daf28c59286c250e3da0ce7cf1eaa646dd12847af8774b784419",
+          "observed_checks": [
+            {
+              "name": "six city boards and composite retain insufficient-data emptiness and exclude other cities",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 42
+            },
+            {
+              "name": "modern snapshots reject changed price, cap and every scoring component even in compatible mode",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 48
+            },
+            {
+              "name": "new-contract mode rejects legacy new/pending activity but preserves completed creation and approval receipts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 51
+            },
+            {
+              "name": "pending modern wrong rules fail independent approval without reserving inventory",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 59
+            },
+            {
+              "name": "two independently approved events share the same account daily allowance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 66
+            },
+            {
+              "name": "minor, expired identity, unrelated payer and insufficient points cannot create or debit votes",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 77
+            },
+            {
+              "name": "same-vote appeal returns exactly 100 points once without reopening the daily quota",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 86
+            },
+            {
+              "name": "final scores use frozen 60/20/20; award issuance is distinct from actual exposure redemption",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 93
+            },
+            {
+              "name": "contract championship: actual HTTP votes, same-event appeal and earned reward",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 6
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/redemption.integration.test.cjs",
+          "source_sha256": "3c245819c38aad8bdce67adda6ef163aaf39d70c1ec38759c967e9164abb414e",
+          "observed_checks": [
+            {
+              "name": "independent stock approval, private evidence and unauthorized queue rejected",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 32
+            },
+            {
+              "name": "repeated exchange spends once; changed key payload rejected; another user cannot read",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 38
+            },
+            {
+              "name": "last inventory races: exactly one grant, one debit, no overselling",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 43
+            },
+            {
+              "name": "insufficient balance and underage gate roll back grant and stock together",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "retired inventory prevents new exchange but preserves prior entitlement",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 53
+            },
+            {
+              "name": "service failure refund returns original points exactly once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 56
+            },
+            {
+              "name": "exposure binds real public artist, independently schedules and requires holder confirmation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 61
+            },
+            {
+              "name": "fulfilled exposure records proof and cannot be redeemed twice",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 78
+            },
+            {
+              "name": "verified production credit gets correct price; unrelated existing stock video cannot authorize template",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 84
+            },
+            {
+              "name": "interview belongs to self, requires authorized materials, extension once and actual interview result never grants role",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 91
+            },
+            {
+              "name": "points pending reversal blocks new exchange; remedy clears original debt before any available balance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 112
+            },
+            {
+              "name": "returning expired original points does not mint a fresh year of validity",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 120
+            },
+            {
+              "name": "fixed redemption through actual HTTP and isolated MySQL transactions",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/reward-remedy-lifecycle.integration.test.cjs",
+          "source_sha256": "37c441afc3284ebe0a38554a524feefe024c05fe6d6a37d8ea85f5e62fa4104f",
+          "observed_checks": [
+            {
+              "name": "return original points cancels the still-pending schedule atomically; rejection and replay cannot resurrect it",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 63
+            },
+            {
+              "name": "one-time interview extension cancels old pending slot and permits a fresh schedule",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 73
+            },
+            {
+              "name": "rejected remedy preserves pending slot; stale and changed commands cannot change the outcome",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 82
+            },
+            {
+              "name": "withdrawn public participation blocks acceptance but permits declining the original future slot",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 90
+            },
+            {
+              "name": "confirmed but no longer public award cannot finish; remedy cancels its approved slot once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 104
+            },
+            {
+              "name": "withdrawn interview production consent still permits refusal and remedy with a private own-record copy",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 116
+            },
+            {
+              "name": "reward remedy preserves one grant and all pending schedules across invalid binding",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W20 机构员工与本人交接",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/mcn-stock-orders.integration.test.cjs",
+          "source_sha256": "54e72f7929f1801f41b3cc7ece2879895d8152a3630f6096eb41c0d3eaae01b4",
+          "observed_checks": [
+            {
+              "name": "both artists authorize an actual two-person listing which is independently reviewed and purchased",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 47
+            },
+            {
+              "name": "single-person and read-only employees cannot receive a multi-artist order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 57
+            },
+            {
+              "name": "batch dispatch returns per-item results and repeated successful dispatch never doubles money",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 63
+            },
+            {
+              "name": "reassignment changes the current employee, while replaying an old key cannot reclaim the order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 69
+            },
+            {
+              "name": "failed assignment audit rolls back both the reassignment and command; original key can retry",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 74
+            },
+            {
+              "name": "another MCN cannot dispatch an order whose frozen agreement names this institution",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 80
+            },
+            {
+              "name": "revoking one participant scope hides the whole order and refuses command replay",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 84
+            },
+            {
+              "name": "closed artists and suspended personal parties reject dispatch and replay but do not erase owner history",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 89
+            },
+            {
+              "name": "same actual order partially refunds with retained licence and recalculated agency income",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 105
+            },
+            {
+              "name": "ending cooperation revokes staff reads and replays while retaining owner history and original refund terms",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 110
+            },
+            {
+              "name": "MCN actual multi-artist stock sale, assignment, batch and same-order refund",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/referral-mcn-history.integration.test.cjs",
+          "source_sha256": "31bad34bb83d1f1b684dbd188565300ad30103a204b925f3d8ef5e60bcdc5e44",
+          "observed_checks": [
+            {
+              "name": "accepted old agency and original referral are frozen in a purchased order",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 39
+            },
+            {
+              "name": "ending original agency and accepting replacement affects a new order, not the old referrer",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 49
+            },
+            {
+              "name": "original participants still confirm and settle old order after agency replacement",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 57
+            },
+            {
+              "name": "partial KEEP refund reverses original agency and referral shares, without paying replacement",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 70
+            },
+            {
+              "name": "remaining REVOKE refund reverses old commission and allocation exactly once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 74
+            },
+            {
+              "name": "same order keeps original referrer and agency through replacement, partial refund and final reversal",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 7
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/gigs-agency-history.integration.test.cjs",
+          "source_sha256": "8eedd57ad9ca0a0f3206c19ef37d2a4bac371277fa7cfabce50e6e434c84a3fb",
+          "observed_checks": [
+            {
+              "name": "approved notice to artist submission and interested recipient creates one support case",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "scoped agency options hide private people and reject wrong identities or stale public sources",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "agency invitation requires artist consent; staff cannot silently accept",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "first commercial quote is accepted and genuinely enters paid state through simulated receipt",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "member alone has no artist messages or income; explicit scoped staff grant is necessary",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "same paid commercial conversation provides independently reviewed personal message copy",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "reassignment changes income visibility; revocation immediately removes messages and dashboard",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "removing and reinviting an employee does not resurrect the old scoped artist grant",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "same paid order enters seven-day handover with expiry, original-key recovery and bilateral acknowledgement",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "artist withdrawal removes old agency live access without erasing contract or old income",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "changing agency cannot transfer historic order, commission or messages to new agency",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "partial refund after agency switch reverses original amounts once and does not rewrite original contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "remaining full refund archives same conversation and clears original accrual without transferring it",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "ended relationships, restricted proofs and withdrawn public sources cannot be reused; original invitation recovers",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "same commercial order: agency switch, scoped employee, withdrawal and historic refund",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 8
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/organization-batch.integration.test.cjs",
+          "source_sha256": "b001d1e44c3232dfba5232a5b2023d10247f6857e4e51ad299891ea898b65267",
+          "observed_checks": [
+            {
+              "name": "mixed results commit independently and rejected result survives reopen",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 19
+            },
+            {
+              "name": "lost first response can find original batch without mutation, scoped to current creator and institution",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 20
+            },
+            {
+              "name": "same request and lost receipt replay do not repeat assignment; changed payload rejected",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 21
+            },
+            {
+              "name": "parallel retries return one batch and one business mutation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 22
+            },
+            {
+              "name": "one batch contains valid, unauthorized and stale-version items; duplicate request preserves the successful mutation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 23
+            },
+            {
+              "name": "foreign accounts, personal identities, invalid batches and revoked membership",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 30
+            },
+            {
+              "name": "organization-batch isolated MySQL and HTTP",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/settlement.integration.test.cjs",
+          "source_sha256": "a3abb2649336b09638c61ff318a3edbfa85ca6b83c1080a3a972cbcf2593f75d",
+          "observed_checks": [
+            {
+              "name": "existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 14
+            },
+            {
+              "name": "authentication, explicit rules and independent review are required",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 94
+            },
+            {
+              "name": "rejected draft can be replaced while history stays; active agreement cannot change",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 99
+            },
+            {
+              "name": "restricted finance evidence respects overlapping restrictions and restrictions activated during storage read",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 106
+            },
+            {
+              "name": "settlement review and every party confirmation precede available balance",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 122
+            },
+            {
+              "name": "settlement detail and list isolate participant balances while payer and reviewer retain original snapshot",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 138
+            },
+            {
+              "name": "concurrent withdrawals reserve available amount once and exact retries reuse request",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 146
+            },
+            {
+              "name": "request approval is not paid; only independent bank evidence books actual payout",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 152
+            },
+            {
+              "name": "dispute after payout requests blocks new approval but preserves verified failure and cancellation facts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 159
+            },
+            {
+              "name": "return and failed payouts keep facts and release reservation for a new request",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 182
+            },
+            {
+              "name": "disputes notify parties, freeze new payouts, retain replies and all decisions",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 190
+            },
+            {
+              "name": "refund reduces future entitlement, preserves old settlement and actual payout",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 198
+            },
+            {
+              "name": "adjustment is balanced, separately reviewed and forces new settlement confirmation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 210
+            },
+            {
+              "name": "reconciliation compares verified facts without turning imported rows into money",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 213
+            },
+            {
+              "name": "daily books include verified refunds, actual split payments and returned split money, not reservations",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 218
+            },
+            {
+              "name": "external release statement is accrued revenue, not cash received or automatic payout",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 234
+            },
+            {
+              "name": "same release pending cash never funds payouts; receipt review invalidates an old settlement confirmation",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 240
+            },
+            {
+              "name": "partial receipts, duplicate bank references and statement corrections never rewrite history",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 256
+            },
+            {
+              "name": "record permissions, private proof integrity, stale membership and disabled automatic payout",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 273
+            },
+            {
+              "name": "late customer payment review and unaccepted delivery block payouts even with prior agreement",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 280
+            },
+            {
+              "name": "notification cursor can retrieve newly recorded events, and different parties keep their own feed",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 285
+            },
+            {
+              "name": "audit failure rolls back adjustment and idempotency reservation; stale review fails",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 291
+            },
+            {
+              "name": "refund after verified payout creates recovery due without inventing received money",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 298
+            },
+            {
+              "name": "recovery case keeps original debtor and independently reviewed claim separate from received money",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 304
+            },
+            {
+              "name": "independent administrative closure does not forgive debt or invent a receipt; reapplication retains old case",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 318
+            },
+            {
+              "name": "partial recovery remains unreceived until independent review, then posts only the received amount once",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 335
+            },
+            {
+              "name": "linking split amounts from a verified return is bounded and never posts the bank return again",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 347
+            },
+            {
+              "name": "competing partial receipts recheck cumulative amount at approval and preserve the rejected candidate",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 358
+            },
+            {
+              "name": "claim closes only after verified receipts are linked, while prior claims and original settlement remain immutable",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 366
+            },
+            {
+              "name": "remaining return closes original payout without changing original paid evidence or old settlement",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 377
+            },
+            {
+              "name": "personal income uses posted own shares including payout returns; no other party amounts or estimated revenue",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 388
+            },
+            {
+              "name": "actual recovery cases reach the same personal copy request through independent delivery",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 396
+            },
+            {
+              "name": "finance actual HTTP: separately verified receipts, accrual, payouts and corrections",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 10
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/settlement-evidence-restriction.integration.test.cjs",
+          "source_sha256": "9b07500be5fec5f61150c3e8ce20025c02bb8201236e569e4579ae69d42f6d86",
+          "observed_checks": [
+            {
+              "name": "existing stage 7 and stage 8 schemas upgrade in order without rewriting applied migrations",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 14
+            },
+            {
+              "name": "legally read payout evidence restricted before approval cannot mark money paid; releasing restores same request",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 99
+            },
+            {
+              "name": "new adjustment cannot reference restricted evidence and does not create a draft or ledger entry",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 112
+            },
+            {
+              "name": "approved agreement evidence later restricted blocks fresh payouts even when destination evidence remains valid",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 118
+            },
+            {
+              "name": "restricted finance evidence cannot approve money or create new drafts",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 10
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W21 隐私注销实际处理",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/privacy-response-delivery.integration.test.cjs",
+          "source_sha256": "064de95e2429c9fd72503b6a610061087dab87318320ce1c00bec7f90b327256",
+          "observed_checks": [
+            {
+              "name": "a READY metadata row without stored bytes cannot be offered as a delivered copy",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 23
+            },
+            {
+              "name": "missing bytes at independent review do not publish; same request recovers after restoration",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 28
+            },
+            {
+              "name": "operator actual-file preview is scoped to current proposal and does not publish the draft",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "tampered bytes cannot pass even when metadata still looks ready",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 50
+            },
+            {
+              "name": "replacing both metadata and bytes cannot reuse the previously submitted digest",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 55
+            },
+            {
+              "name": "restricted evidence is blocked both before submission and before approval",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 62
+            },
+            {
+              "name": "legacy pending drafts require rejection and resubmission, not silent approval",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 70
+            },
+            {
+              "name": "partial delivery remains follow-up; subsequent replies preserve both downloadable versions",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 76
+            },
+            {
+              "name": "no failed approval creates a response notification, history or successful command",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 84
+            },
+            {
+              "name": "clients cannot forge the server attachment snapshot or submit another operator evidence",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 90
+            },
+            {
+              "name": "same application exports actual scoped records, delivers reviewed bytes and reopens without losing history",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 97
+            },
+            {
+              "name": "real selected rows form the same request file, without other people or provider internals",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 156
+            },
+            {
+              "name": "lost submission result uses original key; an unapproved file stays private",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 168
+            },
+            {
+              "name": "revoked operator or reviewer cannot recover an old operation or approve",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 178
+            },
+            {
+              "name": "missing file blocks review; restoration and lost approval recover one answer only",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 186
+            },
+            {
+              "name": "downloaded bytes match the reviewed snapshot and same business identifiers",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 193
+            },
+            {
+              "name": "account disabled during file transport cannot receive bytes; restored account can retry",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 198
+            },
+            {
+              "name": "reopened follow-up preserves reviewed file without claiming all personal data finished",
+              "status": "PASS",
+              "nesting": 2,
+              "line": 205
+            },
+            {
+              "name": "one material and trade copy stays recoverable and scoped through actual delivery",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 141
+            },
+            {
+              "name": "privacy responses require the actual reviewed files before publication",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 4
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/privacy-execution.integration.test.cjs",
+          "source_sha256": "68bfa77c7f7a0083abd143098ff3bba6be4d0817cf912a7fe84dc309b12c4b27",
+          "observed_checks": [
+            {
+              "name": "copy only returns own explicitly requested profile and cannot enumerate another account",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 22
+            },
+            {
+              "name": "personal copy includes own stories and buyer order index without exposing another person or contract body",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 23
+            },
+            {
+              "name": "paid history allows only proven completed buyer work and rejects incomplete work or pending refund",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 30
+            },
+            {
+              "name": "correction requires independent approval and actually updates profile",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 44
+            },
+            {
+              "name": "deletion lists readable own materials and reviewed policies; referenced files require review",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 45
+            },
+            {
+              "name": "missing effective policy cannot authorize deletion",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 60
+            },
+            {
+              "name": "file removal is bound to owner and exact storage configuration",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 62
+            },
+            {
+              "name": "unknown deletion result remains pending; retry checks same object and records current-object-only result",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 63
+            },
+            {
+              "name": "queued erasure rechecks changed target before any storage call, then recovers the same approved object",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 64
+            },
+            {
+              "name": "lost provider reply after deletion recovers once without claiming backups or request completion",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 82
+            },
+            {
+              "name": "complaint restricts actual download and approved release restores only that restriction",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 94
+            },
+            {
+              "name": "closing sole organization owner is blocked and leaves login intact",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 95
+            },
+            {
+              "name": "zero remaining wallet balance cannot hide an unresolved original recharge refund case during closure",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 96
+            },
+            {
+              "name": "account closure revokes old sessions and personal identity while retaining request evidence",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 105
+            },
+            {
+              "name": "lost closure response keeps sessions closed and operators can reconcile the single executed request",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 106
+            },
+            {
+              "name": "new closure clock requires verified identity and actual execution before completion",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 123
+            },
+            {
+              "name": "stock buyer must accept delivery and resolve aftercare; merchant obligations are never inferred complete",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 143
+            },
+            {
+              "name": "HTTP exposes the same scoped proposal, review, execution and export flow",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 151
+            },
+            {
+              "name": "restoring an actual older backup requires replaying latest erasure register before access",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 166
+            },
+            {
+              "name": "reviewed privacy execution changes actual records and preserves unresolved boundaries",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 5
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/privacy-actions.integration.test.cjs",
+          "source_sha256": "52635d6bf4f58a5bb342db56eddc6f7322311370ff608312199ee4a8973983ad",
+          "observed_checks": [
+            {
+              "name": "only the subject sees model targets; organization and operator cannot act as the subject",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 66
+            },
+            {
+              "name": "scope, version, consent ownership and explicit withdrawal are required",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 76
+            },
+            {
+              "name": "action-record failure rolls back consent, audit, request and outbox together",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 83
+            },
+            {
+              "name": "withdrawal retries are idempotent and authorization is actually unusable",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 90
+            },
+            {
+              "name": "deletion and privacy action are atomic; failed recording creates no external job",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 100
+            },
+            {
+              "name": "same deletion is queued once; order need not be paid to exercise withdrawal",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 107
+            },
+            {
+              "name": "missing provider configuration leaves a visible failure and never calls upstream",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 128
+            },
+            {
+              "name": "changed provider account cannot receive a deletion for the former account",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 133
+            },
+            {
+              "name": "accepted task and an unconfirmed deletion receipt do not mean deleted",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 137
+            },
+            {
+              "name": "verified receipt completes only that model and retry recovers without resubmitting",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 144
+            },
+            {
+              "name": "tampered result cannot be exposed as successful deletion",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 154
+            },
+            {
+              "name": "personal creation list shows only own training tasks and paginates without exposing provider details",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 177
+            },
+            {
+              "name": "waiting and blocked creation remain distinct from a registered or deleted model",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 188
+            },
+            {
+              "name": "a subject can discover consent before any model exists and withdraw through the existing action",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 193
+            },
+            {
+              "name": "registered late result keeps the model deletion state and never closes the personal request",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 199
+            },
+            {
+              "name": "wrong task binding or foreign model cannot be exposed as a personal result",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 207
+            },
+            {
+              "name": "personal withdrawal and model deletion use real transactions and durable provider results",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 9
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    },
+    {
+      "task": "W22 参演变更发行清算",
+      "files": [
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/participation-amendment.integration.test.cjs",
+          "source_sha256": "099164506cd1e8e36e3bdd39e3c7b3ae30359659577a50f0389c43be3b05ac38",
+          "observed_checks": [
+            {
+              "name": "unrelated caller and inconsistent installments fail before recording a contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 30
+            },
+            {
+              "name": "self review and incomplete evidence verification cannot approve",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 32
+            },
+            {
+              "name": "all named parties confirm same version before a cash order; trial audition grants no rights",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 34
+            },
+            {
+              "name": "later payment requires buyer milestone evidence and creates a separate fee journal",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 43
+            },
+            {
+              "name": "proposed price change keeps old agreement effective until all parties approve",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 51
+            },
+            {
+              "name": "difference payment cannot rely on original credit while its payment needs review",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 52
+            },
+            {
+              "name": "increase creates only difference order, never charges full fee twice",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 61
+            },
+            {
+              "name": "decrease requires real refund result and never erases original paid records",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 69
+            },
+            {
+              "name": "audit failure rolls back activation and old contract remains effective",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 70
+            },
+            {
+              "name": "recast pays new artist independently and retains separately agreed old fee",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 71
+            },
+            {
+              "name": "paid participation amendments: reviewed differences, refunds and separate replacement artist",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 6
+            }
+          ]
+        },
+        {
+          "path": "晶晶日上工程交接包/01_源码/backend_server/test/fixed-income-release.integration.test.cjs",
+          "source_sha256": "637b0c34b4f9b1426be1d03b10744d269f1c94bd2423050cb38c000a11fff5b1",
+          "observed_checks": [
+            {
+              "name": "unrelated caller and inconsistent installments fail before recording a contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 31
+            },
+            {
+              "name": "self review and incomplete evidence verification cannot approve",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 33
+            },
+            {
+              "name": "all named parties confirm same version before a cash order; trial audition grants no rights",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 35
+            },
+            {
+              "name": "project income is independently agreed and never added to fixed-fee actor contract",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 40
+            },
+            {
+              "name": "later payment requires buyer milestone evidence and creates a separate fee journal",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 41
+            },
+            {
+              "name": "withdrawn rights block reuse; historical money stays unchanged",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 42
+            },
+            {
+              "name": "stale version, private contract evidence, removed membership and audit rollback are enforced",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 44
+            },
+            {
+              "name": "one same-version chain: production, all-party edition, real external evidence and future receipts",
+              "status": "PASS",
+              "nesting": 1,
+              "line": 50
+            },
+            {
+              "name": "fixed-fee cast and separate project income: actual publication evidence, receipts and settlement",
+              "status": "PASS",
+              "nesting": 0,
+              "line": 6
+            }
+          ]
+        }
+      ],
+      "scope": "Existing main-function backend evidence only; no overall PM01 task closure or required client/real-provider acceptance implied."
+    }
+  ],
+  "limits": [
+    "Index of existing same-run checks, not new functional development or exhaustive proof of all requirements.",
+    "Shared files can appear in multiple tasks; no aggregate functionality completion percentage is derived.",
+    "Frontends, actual suppliers, production sample, human review and formal signoff remain separate."
+  ]
+}

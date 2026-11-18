@@ -1,0 +1,387 @@
+TAP version 13
+# Subtest: explicit company buyer follows public artist invitation through a directly accepted commercial order
+    # Subtest: ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing
+    ok 1 - ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing
+      ---
+      duration_ms: 186.9617
+      type: 'test'
+      ...
+    # Subtest: pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch
+    ok 2 - pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch
+      ---
+      duration_ms: 218.5127
+      type: 'test'
+      ...
+    # Subtest: representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP
+    ok 3 - representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP
+      ---
+      duration_ms: 469.2098
+      type: 'test'
+      ...
+    # Subtest: buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages
+    ok 4 - buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages
+      ---
+      duration_ms: 114.2586
+      type: 'test'
+      ...
+    # Subtest: independent support links that invitation to the exact quote, and the representative pays the original company order
+    ok 5 - independent support links that invitation to the exact quote, and the representative pays the original company order
+      ---
+      duration_ms: 176.1
+      type: 'test'
+      ...
+    # Subtest: revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged
+    ok 6 - revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged
+      ---
+      duration_ms: 118.4956
+      type: 'test'
+      ...
+    # Subtest: EXPIRED actual company actor cannot use new commercial request
+    not ok 7 - EXPIRED actual company actor cannot use new commercial request
+      ---
+      duration_ms: 61.5758
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"6c6adbe7-1260-4f95-9a8b-f40cd6f56282","actor":{"account_id":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1"},"acting_party":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333"},"data":{"id":"35dc3007-7bf9-42d3-8368-d524198b7a29","kind":"GIG","owner_party_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","counterparty_id":null,"parent_id":null,"created_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","current_status":"IN_REVIEW","object_version":1,"content_sha256":"cf0fed81f5e093a07d9a3970d4cb3e66b324517a1d05bb660d5f1cc37cedf971","data":{"title":"Synthetic cooperation","brief":"synthetic","category":"TEST","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"rule_id":"0ce7250a-f16e-475a-becd-8ecab0a984ee","rule_sha256":"6a96b0679cd639268113ad9256c2a77df5eefebb4edd3b277260dd5d29e28558","proofs":[],"review":null,"suspension":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:104
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:6)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED actual company actor cannot use successful request replay
+    not ok 8 - EXPIRED actual company actor cannot use successful request replay
+      ---
+      duration_ms: 7.8702
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"524740ef-1799-445d-880b-0f539de30899","actor":{"account_id":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1"},"acting_party":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333"},"data":{"id":"406d7b15-2536-4ff5-8e27-8c26cc046d5d","kind":"GIG","owner_party_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","counterparty_id":null,"parent_id":null,"created_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","current_status":"PUBLISHED","object_version":2,"content_sha256":"bcfe8ce74cd3f5ce4a6294ce17c0055f818571098ac74d805c9ec839eb2fbcb8","data":{"brief":"synthetic","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"title":"Synthetic cooperation","proofs":[],"review":{"checks":{"content_reviewed":true,"marking_reviewed":true,"identity_verified":true,"authority_verified":true,"materials_reviewed":true},"method":"EXTERNAL_MANUAL_REVIEW","reason":"synthetic","decision":"APPROVED","account_id":"f7b39428-0e80-465a-a747-12f1309a6afb"},"rule_id":"0ce7250a-f16e-475a-becd-8ecab0a984ee","category":"TEST","suspension":null,"rule_sha256":"6a96b0679cd639268113ad9256c2a77df5eefebb4edd3b277260dd5d29e28558"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:104
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:6)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED actual company actor cannot use successful commercial acceptance replay
+    not ok 9 - EXPIRED actual company actor cannot use successful commercial acceptance replay
+      ---
+      duration_ms: 9.3246
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"8419abbb-c6d8-4046-bd6d-45410d82d78a","actor":{"account_id":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1"},"acting_party":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333"},"data":{"id":"015061e8-71ed-42bc-a9b8-0cbaad90e172","kind":"OFFER","owner_party_id":"10d44189-9aa0-4fbf-b3b1-2176e543fa5f","counterparty_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","parent_id":"406d7b15-2536-4ff5-8e27-8c26cc046d5d","created_by":"137435cc-c38e-4e66-b22c-2369c9ce1c84","current_status":"ACCEPTED","object_version":3,"content_sha256":"8c8e8e10106fbfdbefef2bb2e44f5ce7a40ea5c93a395133c351eb1ed4285ee0","data":{"terms":"synthetic historical commercial test","review":{"checks":{"content_reviewed":true,"marking_reviewed":true,"identity_verified":true,"authority_verified":true,"materials_reviewed":true},"method":"EXTERNAL_MANUAL_REVIEW","reason":"synthetic","decision":"APPROVED","account_id":"f7b39428-0e80-465a-a747-12f1309a6afb"},"spec_id":"d6dbe67f-0362-42ee-9e3d-4e6b48fb7aa3","relation":null,"avatar_id":"2fa70990-26a9-464c-9941-a6bff4c74bc8","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"c82827ba-398c-4e11-8ac3-a9375363a8e5","ranking_opt_in":false,"buyer_accepted_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","evidence_asset_ids":["6bfa5698-46ef-487c-aaac-565c30a6d258"]}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:104
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:6)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED actual company actor may read the old commercial request
+    ok 10 - EXPIRED actual company actor may read the old commercial request
+      ---
+      duration_ms: 7.8903
+      type: 'test'
+      ...
+    # Subtest: EXPIRED author prevents independent commercial publication
+    not ok 11 - EXPIRED author prevents independent commercial publication
+      ---
+      duration_ms: 19.2353
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"6db22c1e-41a8-4d0d-a910-43a68a73bc89","actor":{"account_id":"f7b39428-0e80-465a-a747-12f1309a6afb"},"acting_party":null},"data":{"id":"f84952bf-337b-46bb-9493-e1e8c69a8c78","kind":"GIG","owner_party_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","counterparty_id":null,"parent_id":null,"created_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","current_status":"PUBLISHED","object_version":2,"content_sha256":"8d4363db546f258307d6b4c5bdff83f5e6462e3a4bfb556b3d06a61d0de69417","data":{"brief":"synthetic","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"title":"Synthetic cooperation","proofs":[],"review":{"decision":"APPROVED","reason":"Synthetic current author review","checks":{"identity_verified":true,"authority_verified":true,"materials_reviewed":true,"content_reviewed":true,"marking_reviewed":true},"account_id":"f7b39428-0e80-465a-a747-12f1309a6afb","method":"EXTERNAL_MANUAL_REVIEW"},"rule_id":"0ce7250a-f16e-475a-becd-8ecab0a984ee","category":"TEST","suspension":null,"rule_sha256":"6a96b0679cd639268113ad9256c2a77df5eefebb4edd3b277260dd5d29e28558"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:68:410
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:68:7)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED actual company actor cannot use new commercial request
+    not ok 12 - REJECTED actual company actor cannot use new commercial request
+      ---
+      duration_ms: 15.4467
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"90f4ab59-6896-4e36-8272-8bd6bc2720bc","actor":{"account_id":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1"},"acting_party":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333"},"data":{"id":"633a0443-5ae2-42a0-aed9-aaafd1a64251","kind":"GIG","owner_party_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","counterparty_id":null,"parent_id":null,"created_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","current_status":"IN_REVIEW","object_version":1,"content_sha256":"cf0fed81f5e093a07d9a3970d4cb3e66b324517a1d05bb660d5f1cc37cedf971","data":{"title":"Synthetic cooperation","brief":"synthetic","category":"TEST","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"rule_id":"0ce7250a-f16e-475a-becd-8ecab0a984ee","rule_sha256":"6a96b0679cd639268113ad9256c2a77df5eefebb4edd3b277260dd5d29e28558","proofs":[],"review":null,"suspension":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:104
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:6)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED actual company actor cannot use successful request replay
+    not ok 13 - REJECTED actual company actor cannot use successful request replay
+      ---
+      duration_ms: 7.5816
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"b3658998-add5-47de-9e15-e3d951bd331c","actor":{"account_id":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1"},"acting_party":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333"},"data":{"id":"406d7b15-2536-4ff5-8e27-8c26cc046d5d","kind":"GIG","owner_party_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","counterparty_id":null,"parent_id":null,"created_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","current_status":"PUBLISHED","object_version":2,"content_sha256":"bcfe8ce74cd3f5ce4a6294ce17c0055f818571098ac74d805c9ec839eb2fbcb8","data":{"brief":"synthetic","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"title":"Synthetic cooperation","proofs":[],"review":{"checks":{"content_reviewed":true,"marking_reviewed":true,"identity_verified":true,"authority_verified":true,"materials_reviewed":true},"method":"EXTERNAL_MANUAL_REVIEW","reason":"synthetic","decision":"APPROVED","account_id":"f7b39428-0e80-465a-a747-12f1309a6afb"},"rule_id":"0ce7250a-f16e-475a-becd-8ecab0a984ee","category":"TEST","suspension":null,"rule_sha256":"6a96b0679cd639268113ad9256c2a77df5eefebb4edd3b277260dd5d29e28558"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:104
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:6)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED actual company actor cannot use successful commercial acceptance replay
+    not ok 14 - REJECTED actual company actor cannot use successful commercial acceptance replay
+      ---
+      duration_ms: 9.383
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"856997b2-9f21-426b-902d-2dbb0a3f114f","actor":{"account_id":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1"},"acting_party":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333"},"data":{"id":"015061e8-71ed-42bc-a9b8-0cbaad90e172","kind":"OFFER","owner_party_id":"10d44189-9aa0-4fbf-b3b1-2176e543fa5f","counterparty_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","parent_id":"406d7b15-2536-4ff5-8e27-8c26cc046d5d","created_by":"137435cc-c38e-4e66-b22c-2369c9ce1c84","current_status":"ACCEPTED","object_version":3,"content_sha256":"8c8e8e10106fbfdbefef2bb2e44f5ce7a40ea5c93a395133c351eb1ed4285ee0","data":{"terms":"synthetic historical commercial test","review":{"checks":{"content_reviewed":true,"marking_reviewed":true,"identity_verified":true,"authority_verified":true,"materials_reviewed":true},"method":"EXTERNAL_MANUAL_REVIEW","reason":"synthetic","decision":"APPROVED","account_id":"f7b39428-0e80-465a-a747-12f1309a6afb"},"spec_id":"d6dbe67f-0362-42ee-9e3d-4e6b48fb7aa3","relation":null,"avatar_id":"2fa70990-26a9-464c-9941-a6bff4c74bc8","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"c82827ba-398c-4e11-8ac3-a9375363a8e5","ranking_opt_in":false,"buyer_accepted_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","evidence_asset_ids":["6bfa5698-46ef-487c-aaac-565c30a6d258"]}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:104
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:6)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED actual company actor may read the old commercial request
+    ok 15 - REJECTED actual company actor may read the old commercial request
+      ---
+      duration_ms: 6.6577
+      type: 'test'
+      ...
+    # Subtest: REJECTED author prevents independent commercial publication
+    not ok 16 - REJECTED author prevents independent commercial publication
+      ---
+      duration_ms: 19.0546
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"e11e091c-82ed-4f1f-bff2-f29a68734cf7","actor":{"account_id":"f7b39428-0e80-465a-a747-12f1309a6afb"},"acting_party":null},"data":{"id":"36303266-3ae8-4018-9da8-4754b07f8123","kind":"GIG","owner_party_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","counterparty_id":null,"parent_id":null,"created_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","current_status":"PUBLISHED","object_version":2,"content_sha256":"8d4363db546f258307d6b4c5bdff83f5e6462e3a4bfb556b3d06a61d0de69417","data":{"brief":"synthetic","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"title":"Synthetic cooperation","proofs":[],"review":{"decision":"APPROVED","reason":"Synthetic current author review","checks":{"identity_verified":true,"authority_verified":true,"materials_reviewed":true,"content_reviewed":true,"marking_reviewed":true},"account_id":"f7b39428-0e80-465a-a747-12f1309a6afb","method":"EXTERNAL_MANUAL_REVIEW"},"rule_id":"0ce7250a-f16e-475a-becd-8ecab0a984ee","category":"TEST","suspension":null,"rule_sha256":"6a96b0679cd639268113ad9256c2a77df5eefebb4edd3b277260dd5d29e28558"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:68:410
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:68:7)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED actual company actor cannot use new commercial request
+    not ok 17 - UNVERIFIED actual company actor cannot use new commercial request
+      ---
+      duration_ms: 13.1151
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"bc64007e-3072-46fd-97da-156baa226e37","actor":{"account_id":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1"},"acting_party":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333"},"data":{"id":"a86a71b6-58cd-4c33-b46c-1fb4fb941310","kind":"GIG","owner_party_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","counterparty_id":null,"parent_id":null,"created_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","current_status":"IN_REVIEW","object_version":1,"content_sha256":"cf0fed81f5e093a07d9a3970d4cb3e66b324517a1d05bb660d5f1cc37cedf971","data":{"title":"Synthetic cooperation","brief":"synthetic","category":"TEST","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"rule_id":"0ce7250a-f16e-475a-becd-8ecab0a984ee","rule_sha256":"6a96b0679cd639268113ad9256c2a77df5eefebb4edd3b277260dd5d29e28558","proofs":[],"review":null,"suspension":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:104
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:6)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED actual company actor cannot use successful request replay
+    not ok 18 - UNVERIFIED actual company actor cannot use successful request replay
+      ---
+      duration_ms: 8.7048
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"9be8fceb-fa5d-4163-9513-356bd2287413","actor":{"account_id":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1"},"acting_party":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333"},"data":{"id":"406d7b15-2536-4ff5-8e27-8c26cc046d5d","kind":"GIG","owner_party_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","counterparty_id":null,"parent_id":null,"created_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","current_status":"PUBLISHED","object_version":2,"content_sha256":"bcfe8ce74cd3f5ce4a6294ce17c0055f818571098ac74d805c9ec839eb2fbcb8","data":{"brief":"synthetic","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"title":"Synthetic cooperation","proofs":[],"review":{"checks":{"content_reviewed":true,"marking_reviewed":true,"identity_verified":true,"authority_verified":true,"materials_reviewed":true},"method":"EXTERNAL_MANUAL_REVIEW","reason":"synthetic","decision":"APPROVED","account_id":"f7b39428-0e80-465a-a747-12f1309a6afb"},"rule_id":"0ce7250a-f16e-475a-becd-8ecab0a984ee","category":"TEST","suspension":null,"rule_sha256":"6a96b0679cd639268113ad9256c2a77df5eefebb4edd3b277260dd5d29e28558"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:104
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:6)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED actual company actor cannot use successful commercial acceptance replay
+    not ok 19 - UNVERIFIED actual company actor cannot use successful commercial acceptance replay
+      ---
+      duration_ms: 14.6883
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"824e8ad1-2d09-40c9-bd71-e844e84aab4f","actor":{"account_id":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1"},"acting_party":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333"},"data":{"id":"015061e8-71ed-42bc-a9b8-0cbaad90e172","kind":"OFFER","owner_party_id":"10d44189-9aa0-4fbf-b3b1-2176e543fa5f","counterparty_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","parent_id":"406d7b15-2536-4ff5-8e27-8c26cc046d5d","created_by":"137435cc-c38e-4e66-b22c-2369c9ce1c84","current_status":"ACCEPTED","object_version":3,"content_sha256":"8c8e8e10106fbfdbefef2bb2e44f5ce7a40ea5c93a395133c351eb1ed4285ee0","data":{"terms":"synthetic historical commercial test","review":{"checks":{"content_reviewed":true,"marking_reviewed":true,"identity_verified":true,"authority_verified":true,"materials_reviewed":true},"method":"EXTERNAL_MANUAL_REVIEW","reason":"synthetic","decision":"APPROVED","account_id":"f7b39428-0e80-465a-a747-12f1309a6afb"},"spec_id":"d6dbe67f-0362-42ee-9e3d-4e6b48fb7aa3","relation":null,"avatar_id":"2fa70990-26a9-464c-9941-a6bff4c74bc8","commission":{"mcn_bps":0,"platform_bps":2000},"consent_id":"c82827ba-398c-4e11-8ac3-a9375363a8e5","ranking_opt_in":false,"buyer_accepted_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","evidence_asset_ids":["6bfa5698-46ef-487c-aaac-565c30a6d258"]}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:104
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:64:6)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED actual company actor may read the old commercial request
+    ok 20 - UNVERIFIED actual company actor may read the old commercial request
+      ---
+      duration_ms: 9.4166
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED author prevents independent commercial publication
+    not ok 21 - UNVERIFIED author prevents independent commercial publication
+      ---
+      duration_ms: 21.5266
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"83315718-885a-492c-a4c0-e8d0e3c81c12","actor":{"account_id":"f7b39428-0e80-465a-a747-12f1309a6afb"},"acting_party":null},"data":{"id":"8041a57c-2a48-4d94-a426-a96a03c48718","kind":"GIG","owner_party_id":"bb73aa53-7b33-40c5-9b1b-4e1b9d0e1333","counterparty_id":null,"parent_id":null,"created_by":"8085eea7-babb-47ac-92f1-aa3db5ebf9e1","current_status":"PUBLISHED","object_version":2,"content_sha256":"8d4363db546f258307d6b4c5bdff83f5e6462e3a4bfb556b3d06a61d0de69417","data":{"brief":"synthetic","scope":{"purpose":"COMMERCIAL","territory":"CN","valid_until":"2098-01-01T00:00:00.000Z"},"title":"Synthetic cooperation","proofs":[],"review":{"decision":"APPROVED","reason":"Synthetic current author review","checks":{"identity_verified":true,"authority_verified":true,"materials_reviewed":true,"content_reviewed":true,"marking_reviewed":true},"account_id":"f7b39428-0e80-465a-a747-12f1309a6afb","method":"EXTERNAL_MANUAL_REVIEW"},"rule_id":"0ce7250a-f16e-475a-becd-8ecab0a984ee","category":"TEST","suspension":null,"rule_sha256":"6a96b0679cd639268113ad9256c2a77df5eefebb4edd3b277260dd5d29e28558"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:68:410
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\commercial-identity-probe.cjs:68:7)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..21
+not ok 1 - explicit company buyer follows public artist invitation through a directly accepted commercial order
+  ---
+  duration_ms: 38482.998
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\commercial-identity-probe.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '12 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 22
+# suites 0
+# pass 9
+# fail 13
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 38701.6314

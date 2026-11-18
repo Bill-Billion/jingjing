@@ -1,0 +1,40 @@
+{
+  "run_id": "backend-acceptance-2026-11-12T05-14-51-198Z-8973a4",
+  "base_commit": "bb419e8394487b1fbd3329e532852b9f89a4a4fb",
+  "synthetic_only": true,
+  "passed_checks": [
+    {
+      "name": "original recharge refund assessment is read-only, personal and bound to the credited channel",
+      "file": "test/wallet.integration.test.cjs",
+      "line": 48,
+      "nesting": 1,
+      "status": "PASS",
+      "duration_ms": 37.9031,
+      "error_code": null
+    },
+    {
+      "name": "custody order reservation is atomic, unknown payments retain funds, refund restores original lots",
+      "file": "test/wallet.integration.test.cjs",
+      "line": 121,
+      "nesting": 1,
+      "status": "PASS",
+      "duration_ms": 734.0576,
+      "error_code": null
+    },
+    {
+      "name": "refund assessment never treats imported refunds, unknown allocations or another lot as spendable money",
+      "file": "test/wallet.integration.test.cjs",
+      "line": 160,
+      "nesting": 1,
+      "status": "PASS",
+      "duration_ms": 64.623,
+      "error_code": null
+    }
+  ],
+  "refund_executed": false,
+  "limits": [
+    "Read-only internal assessment, no new public endpoint or money instruction",
+    "Existing order refunds restore wallet lots; this is not original-channel topup refund",
+    "Imported refunded_minor is an isolated fixture, not a trusted new refund receipt"
+  ]
+}

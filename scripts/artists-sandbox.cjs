@@ -23,6 +23,8 @@ async function main() {
   for (const [k, v] of Object.entries({ NODE_ENV:'test', DB_CLIENT:'mysql', MYSQL_HOST:'127.0.0.1', MYSQL_PORT:'33316', MYSQL_USER:'jx_local', MYSQL_DATABASE:'jx_dev' })) {
     if (env[k] !== v) throw new Error('Refusing non-isolated test configuration');
   }
+  const contractPolicy=require(path.join(backend,'src/modules/artists/contract-policy')).mode(process.env.JX_ARTIST_CONTRACT_POLICY);
+  const modern=contractPolicy==='CONTRACT_20261029';
   const name = 'jx_test_artists_' + process.pid + '_' + randomBytes(6).toString('hex');
   const out = path.join(root, '.local/artists-sandbox', name);
   let control, created=false, retainedForClient=false, db, server, cleanupPromise, stopRequested=false, starting=true, timer, stopWatcher;
@@ -73,8 +75,8 @@ async function main() {
     const merchant=await party.createOrganization(people.merchant.ctx,{display_name:'合成平台签约主体',operation_key:randomUUID()}),agency=await party.createOrganization(people.agency.ctx,{display_name:'合成MCN机构',operation_key:randomUUID()});
     for(const action of ['ARTIST_REVIEW_IDENTITY','ARTIST_REVIEW_RIGHTS','ARTIST_REVIEW_HALO','ARTIST_REVIEW_CONTENT','ARTIST_SERVICE_REVIEW','TRADE_REVIEW','TRADE_REFUND'])await maintainOperatorGrant(db,{account_id:people.reviewer.account_id,action,enabled:true,expected_version:0,expires_at:null,authority_ref:'synthetic:artists-handoff',reason:'仅本机合成联调，非正式运营授权'});
     const {digest,createRuleContent}=require(path.join(backend,'src/modules/governance/content'));
-    const repo=require(path.join(backend,'src/modules/artists/repository')).createArtistRepository(db,{resolvePrincipal});
-    const services=require(path.join(backend,'src/modules/artists/services')).createArtistServices(db,{resolvePrincipal,merchantPartyId:merchant.party_id});
+    const repo=require(path.join(backend,'src/modules/artists/repository')).createArtistRepository(db,{resolvePrincipal,contractPolicy});
+    const services=require(path.join(backend,'src/modules/artists/services')).createArtistServices(db,{resolvePrincipal,merchantPartyId:merchant.party_id,contractPolicy});
     const trade=require(path.join(backend,'src/modules/trade/repository')).createTradeRepository(db,{resolvePrincipal,requireV5Products:true});
     const files=new Map(),storageFactory=()=>({async put({key,body}){files.set(key,body);return {key,size:body.length,sha256:require('node:crypto').createHash('sha256').update(body).digest('hex')};},async getBuffer(key){return files.get(key);}});
     const assets=require(path.join(backend,'src/modules/works/assets')).createSupplyAssets({db,repository:require(path.join(backend,'src/modules/artists/assets')).createArtistAssetsRepository(db,{resolvePrincipal}),storageFactory});
@@ -93,17 +95,27 @@ async function main() {
     const halo=await review(await repo.requestHalo(artist.ctx,{...base,level:1,ownership_promise:true,evidence_asset_ids:[evidence.id],operation_key:randomUUID()}));
     const ruleId=randomUUID(),rule=createRuleContent({id:ruleId,rule_key:'synthetic.artist.services',version:'1',terms:{notice:'仅本机合成服务订单，不开真实收费'}});
     await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'synthetic.artist.services','1',JSON.stringify(rule),'2020-01-01 00:00:00',people.merchant.account_id,'EFFECTIVE']);
-    const specs={};let hosting;
-    for(const kind of ['AVATAR_CREATION','AVATAR_HOSTING','HALO_REVIEW']){
-      let spec=await trade.createSpec(people.merchant.ctx,{party_id:merchant.party_id,previous_spec_id:null,title:'仅合成测试 '+kind,provider_party_id:merchant.party_id,line_kind:'OTHER',unit_minor:kind==='AVATAR_CREATION'?6000:kind==='AVATAR_HOSTING'?2900:1000,currency:'CNY',product_profile:{version:'V5',type:kind},specification:{version:'synthetic-v1',service_tier:'本机合成测试',service:{kind,unit:kind==='AVATAR_CREATION'?'PERSON_FIRST':kind==='AVATAR_HOSTING'?'AVATAR_MONTH':'HALO_APPLICATION',rule_version:'V5-20261013',source_ref:'synthetic:only',retry_limit:kind==='AVATAR_CREATION'?1:0,hosting_months:kind==='AVATAR_HOSTING'?1:null,halo_level:kind==='HALO_REVIEW'?2:null,failure_policy:'REFUND_UNDELIVERED'},deliverables:['仅合成档案或服务结果'],terms:'测试费用不会向外部渠道发送'},operation_key:randomUUID()});
+    const specs={};let hosting,reviewService=null,freeCreation=null,certificationMaterials=null;
+    for(const kind of (modern?['HALO_REVIEW']:['AVATAR_CREATION','AVATAR_HOSTING','HALO_REVIEW'])){
+      let spec=await trade.createSpec(people.merchant.ctx,{party_id:merchant.party_id,previous_spec_id:null,title:'仅合成测试 '+kind,provider_party_id:merchant.party_id,line_kind:'OTHER',unit_minor:kind==='AVATAR_CREATION'?6000:kind==='AVATAR_HOSTING'?2900:1000,currency:'CNY',product_profile:{version:'V5',type:kind},specification:{version:'synthetic-v1',service_tier:'本机合成测试',service:{kind,unit:kind==='AVATAR_CREATION'?'PERSON_FIRST':kind==='AVATAR_HOSTING'?'AVATAR_MONTH':'HALO_APPLICATION',rule_version:modern?contractPolicy:'V5-20261013',source_ref:'synthetic:only',retry_limit:kind==='AVATAR_CREATION'?1:0,hosting_months:kind==='AVATAR_HOSTING'?1:null,halo_level:kind==='HALO_REVIEW'?2:null,failure_policy:modern?'REVIEW_FEE_NON_REFUNDABLE':'REFUND_UNDELIVERED'},deliverables:['仅合成档案或服务结果'],terms:'测试费用不会向外部渠道发送'},operation_key:randomUUID()});
       spec=await trade.review(people.reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'合成商品',operation_key:randomUUID()});specs[kind]=spec.id;
-      if(kind==='AVATAR_HOSTING'){
-        const service=await services.request(artist.ctx,{...base,avatar_id:avatar.id,spec_id:spec.id,renewal_reminder:false,operation_key:randomUUID()});
-        let quote=await trade.quote(people.merchant.ctx,{party_id:merchant.party_id,buyer_party_id:artist.personal_party_id,lines:[{line_id:'service',spec_id:spec.id,quantity:1}],installments:[{key:'all',trigger:'ORDER_ACCEPTED',allocations:[{line_id:'service',amount_minor:2900}],apple_product_id:null}],channel:'ALIPAY',transaction_model:'PLATFORM_PRINCIPAL',rule_id:ruleId,expires_at:until,payment_window_minutes:30,license_reservation_id:null,artist_service_source:{service_id:service.id},operation_key:randomUUID()});
+      if(kind==='AVATAR_HOSTING'||modern&&kind==='HALO_REVIEW'){
+        const price=kind==='HALO_REVIEW'?1000:2900;
+        const service=await services.request(artist.ctx,{...base,avatar_id:kind==='HALO_REVIEW'?null:avatar.id,spec_id:spec.id,renewal_reminder:false,operation_key:randomUUID()});
+        let quote=await trade.quote(people.merchant.ctx,{party_id:merchant.party_id,buyer_party_id:artist.personal_party_id,lines:[{line_id:'service',spec_id:spec.id,quantity:1}],installments:[{key:'all',trigger:'ORDER_ACCEPTED',allocations:[{line_id:'service',amount_minor:price}],apple_product_id:null}],channel:'ALIPAY',transaction_model:'PLATFORM_PRINCIPAL',rule_id:ruleId,expires_at:until,payment_window_minutes:30,license_reservation_id:null,artist_service_source:{service_id:service.id},operation_key:randomUUID()});
         quote=await trade.review(people.reviewer.ctx,{record_id:quote.id,expected_version:quote.object_version,decision:'APPROVED',reason:'合成报价',operation_key:randomUUID()});const order=await trade.accept(artist.ctx,{record_id:quote.id,party_id:artist.personal_party_id,expected_version:quote.object_version,quote_sha256:quote.content_sha256,operation_key:randomUUID()});
         const config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:merchant.party_id,config_revision:'synthetic'};const payment=await trade.preparePayment(artist.ctx,{party_id:artist.personal_party_id,order_id:order.id,installment_key:'all',operation_key:randomUUID()},config);
-        await trade.applyPayment({...config,payment_id:payment.id,currency:'CNY',amount_minor:2900,transaction_id:'synthetic.'+payment.id,status:'SUCCEEDED',product_id:null,app_account_token:null});hosting=await services.sync(artist.ctx,{...base,record_id:service.id,operation_key:randomUUID()});
+        await trade.applyPayment({...config,payment_id:payment.id,currency:'CNY',amount_minor:price,transaction_id:'synthetic.'+payment.id,status:'SUCCEEDED',product_id:null,app_account_token:null});const result=await services.sync(artist.ctx,{...base,record_id:service.id,operation_key:randomUUID()});if(kind==='HALO_REVIEW')reviewService=result;else hosting=result;
       }
+    }
+    if(modern){
+      hosting=await services.requestFree(artist.ctx,{...base,avatar_id:avatar.id,kind:'AVATAR_HOSTING',rule_version:contractPolicy,operation_key:randomUUID()});
+      freeCreation=await services.requestFree(artist.ctx,{...base,avatar_id:avatar.id,kind:'AVATAR_CREATION',rule_version:contractPolicy,operation_key:randomUUID()});
+      const wave=Buffer.alloc(204);wave.write('RIFF');wave.writeUInt32LE(196,4);wave.write('WAVEfmt ',8);wave.writeUInt32LE(16,16);wave.writeUInt16LE(1,20);wave.writeUInt16LE(1,22);wave.writeUInt32LE(8000,24);wave.writeUInt32LE(16000,28);wave.writeUInt16LE(2,32);wave.writeUInt16LE(16,34);wave.write('data',36);wave.writeUInt32LE(160,40);
+      const audio=await assets.upload(artist.ctx,{...base,purpose:'AVATAR_MATERIAL',media_type:'audio/wav',body:wave,operation_key:randomUUID()});
+      await repo.createVariant(artist.ctx,{...base,avatar_id:avatar.id,kind:'VOICE',variant:{previous_version_id:null,display_name:'合成静音声音档案（非模型）',material_asset_ids:[audio.id],consent_id:consent.id},operation_key:randomUUID()});
+      const photo=await assets.upload(artist.ctx,{...base,purpose:'REVIEW_EVIDENCE',media_type:'image/png',body:Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jq1sAAAAASUVORK5CYII=','base64'),operation_key:randomUUID()});
+      certificationMaterials={model_card_asset_id:photo.id,lifestyle_asset_ids:[photo.id],full_body_asset_ids:[photo.id],personal_introduction:'合成资料，只验证分类和权限，不是真人认证',resume:'合成简历，不构成资质或履历'};
     }
     const listing=await review(await repo.submitListing(artist.ctx,{...base,avatar_id:avatar.id,listing:{display_name:'合成公开艺人',city:'郑州',introduction:'纯合成联调资料，预览是1像素占位图，不是真人或生成形象。',tags:['合成测试'],consent_id:consent.id,look_version_id:look.id,voice_version_id:null,audition_public:false,preview_asset_ids:[material.id]},operation_key:randomUUID()}));
     await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[agency.party_id]);
@@ -114,13 +126,13 @@ async function main() {
     relation=await gigs.relationDecision(artist.ctx,{record_id:relation.id,party_id:artist.personal_party_id,expected_version:relation.object_version,decision:'ACCEPT',reason:'仅本机合成接受',operation_key:randomUUID()});
     const relationId=relation.id;
     const delegation=await repo.createDelegation(artist.ctx,{...base,delegation:{organization_party_id:agency.party_id,relation_id:relationId,actions:['READ_PROFILE','MANAGE_AVATARS','MANAGE_MATERIALS','SUBMIT_LISTING'],valid_from:from,valid_until:until,evidence_asset_ids:[evidence.id],terms:'只限本机合成委托，不可代授权或代签'},operation_key:randomUUID()});
-    const app=createAccountApi({db,secret,supplyEnv:{ARTIST_PLATFORM_MERCHANT_PARTY_ID:merchant.party_id},supplyStorageFactory:storageFactory,tradeEnv:{TRADE_REQUIRE_V5_PRODUCTS:'true'},allowedOrigins:['http://127.0.0.1:5173','http://localhost:5173','http://127.0.0.1:5000','http://localhost:5000','http://127.0.0.1:5500','http://localhost:5500']});
+    const app=createAccountApi({db,secret,supplyEnv:{ARTIST_PLATFORM_MERCHANT_PARTY_ID:merchant.party_id,ARTIST_CONTRACT_POLICY:contractPolicy},supplyStorageFactory:storageFactory,tradeEnv:{TRADE_REQUIRE_V5_PRODUCTS:'true'},allowedOrigins:['http://127.0.0.1:5173','http://localhost:5173','http://127.0.0.1:5000','http://localhost:5000','http://127.0.0.1:5500','http://localhost:5500']});
     const rules=[/^\/api\/v1\/artists(?:\/|$)/,/^\/api\/v1\/me(?:\/parties)?$/,/^\/api\/v1\/trade\/(records|specifications|quotes)(?:\/|$)/,/^\/(health|ready)$/];
     server=http.createServer((req,res)=>{const url=new URL(req.url,'http://127.0.0.1');const readRelation=['GET','OPTIONS'].includes(req.method)&&url.pathname==='/api/v1/gigs/records'&&url.searchParams.get('kind')==='RELATION';if((req.method==='GET'&&url.pathname==='/api/v1/privacy/preferences')||readRelation||rules.some(r=>r.test(url.pathname)))return app(req,res);res.writeHead(403,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error:{code:'LOCAL_FIXTURE_ROUTE_DISABLED'}}));});
     server.listen(0,'127.0.0.1');await new Promise((resolve,reject)=>{server.once('listening',resolve);server.once('error',reject);});checkRunning();
     const base_url='http://127.0.0.1:'+server.address().port+'/api/v1';await fs.mkdir(out,{recursive:true});
     const accounts=Object.fromEntries(Object.entries(people).map(([role,p])=>[role,{account_id:p.account_id,party_id:p.personal_party_id,bearer_token:p.token,...(p.person_id?{person_id:p.person_id}:{})}]));
-    await fs.writeFile(path.join(out,'access.json'),JSON.stringify({synthetic_only:true,base_url,accounts,merchant_party_id:merchant.party_id,agency_party_id:agency.party_id,person_id:person.id,avatar_id:avatar.id,consent_id:consent.id,look_id:look.id,halo_id:halo.id,listing_id:listing.id,delegation_id:delegation.id,hosting_id:hosting.id,material_id:material.id,evidence_id:evidence.id,specs,rule_id:ruleId},null,2),{mode:0o600});
+    await fs.writeFile(path.join(out,'access.json'),JSON.stringify({synthetic_only:true,base_url,accounts,merchant_party_id:merchant.party_id,agency_party_id:agency.party_id,person_id:person.id,avatar_id:avatar.id,consent_id:consent.id,look_id:look.id,halo_id:halo.id,listing_id:listing.id,delegation_id:delegation.id,hosting_id:hosting.id,material_id:material.id,evidence_id:evidence.id,specs,rule_id:ruleId,contract_policy:contractPolicy,review_service_id:reviewService?.id||null,free_creation_id:freeCreation?.id||null,certification_materials:certificationMaterials},null,2),{mode:0o600});
     await fs.writeFile(path.join(out,'status.json'),JSON.stringify({status:'RUNNING',synthetic_only:true,host:'127.0.0.1',port:server.address().port,expires_in_minutes:60,database:name},null,2));
     checkRunning();
     if(process.env.JX_RETAIN_CLIENT_ARTISTS==='true'){
@@ -128,12 +140,12 @@ async function main() {
       access.accounts.agency.party_id=agency.party_id;
       access.accounts.merchant.party_id=merchant.party_id;
       const retainedRules=[['GET',/^\/api\/v1\/me(?:\/parties)?$/],['GET',/^\/api\/v1\/privacy\/preferences$/],['GET',/^\/api\/v1\/gigs\/records$/],...['GET','POST'].map(method=>[method,/^\/api\/v1\/artists(?:\/.*)?$/]),...['GET','POST'].map(method=>[method,/^\/api\/v1\/trade\/(?:records|specifications|quotes)(?:\/.*)?$/])];
-      const retainedDir=await require('./client-testing/persistent-story.cjs').retain({env,database:name,secret,access,tradeEnv:{TRADE_REQUIRE_V5_PRODUCTS:'true'},supplyEnv:{ARTIST_PLATFORM_MERCHANT_PARTY_ID:merchant.party_id},files,rules:retainedRules,db});
+      const retainedDir=await require('./client-testing/persistent-story.cjs').retain({env,database:name,secret,access,tradeEnv:{TRADE_REQUIRE_V5_PRODUCTS:'true'},supplyEnv:{ARTIST_PLATFORM_MERCHANT_PARTY_ID:merchant.party_id,ARTIST_CONTRACT_POLICY:contractPolicy},files,rules:retainedRules,db});
       retainedForClient=true;starting=false;await cleanup();
       console.log(JSON.stringify({status:'INITIALIZED',synthetic_only:true,database_retained:true,manifest_file:path.relative(root,path.join(retainedDir,'manifest.json'))}));return;
     }
     starting=false;timer=setTimeout(stop,60*60*1000);
-    console.log(JSON.stringify({status:'READY',base_url,access_file:path.relative(root,path.join(out,'access.json')),stop_file:path.relative(root,path.join(out,'stop')),synthetic_only:true,scenarios:['艺人本人','机构受托列表','已批准公开预览','私人材料越权','免费认证','托管有效期','服务订购待报价','未成年人受限','无外部服务不假成功']}));
+    console.log(JSON.stringify({status:'READY',base_url,access_file:path.relative(root,path.join(out,'access.json')),stop_file:path.relative(root,path.join(out,'stop')),synthetic_only:true,contract_policy:contractPolicy,scenarios:[...(modern?['免费创建与永久免费托管','10元审核合成已付款待提交','分类模卡生活照全身照与文字简历']:[]),'艺人本人','机构受托列表','已批准公开预览','私人材料越权','免费认证','托管有效期','服务订购待报价','未成年人受限','无外部服务不假成功']}));
   } catch(e) {
     starting=false;
     const result=await cleanup();

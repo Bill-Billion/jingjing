@@ -1,3 +1,4 @@
+import {manualCopyrightFields} from './copyright'
 import {type Domain,type Field,text,long,id,hash,money,date,select,bool,group,rows,lines,fixed,reason,operation as op,integer,checks} from './model'
 import {castFields} from './cocreation'
 export const revenueFields=()=>[fixed('basis','独立收入依据','VERIFIED_CHANNEL_NET_RECEIPTS'),rows('shares','独立收入受益方',[id('party_id','实际受益主体'),integer('bps','本方比例（万分比）',0,10000),select('role','本方责任',['SUPPLIER','PLATFORM','MCN','RIGHTSHOLDER','PRODUCER','PARTICIPANT'])],30),long('terms','未来实际渠道净收入的独立约定')]
@@ -11,8 +12,8 @@ export const participation:Domain={key:'participation',title:'出演、会签与
 {key:'agreements',label:'参演与已付变更',path:'/projects/projects/:project_id/records',detail:'/projects/records/:record_id',party:'required',fixedQuery:{kind:'PARTICIPATION'},files:[{label:'读取本约定实际依据',path:'/projects/records/:record_id/evidence/:asset_id',party:'required'}]},
 {key:'income',label:'项目独立未来收入',path:'/projects/projects/:project_id/records',detail:'/projects/records/:record_id',party:'required',fixedQuery:{kind:'INCOME_AGREEMENT'}},
 {key:'progress',label:'原参演款项与里程碑',path:'/projects/participations/:record_id/progress',party:'required'},
-{key:'manual-sample',label:'本人委托人工样片',path:'/customization-requests/:request_id',party:'required',note:'艺人本人或有明确授权的MCN提出，艺人本人确认；所有权仍归艺人。原商品采用50%/50%两期，服务未交付与实际退款分别核对。'},
-{key:'manual-confirmation',label:'本人确认与样片取得',path:'/customization-requests/:request_id/manual-sample',party:'required',files:[{label:'本人明确取得正式人工样片',path:'/production/projects/:project_id/manual-sample-content',party:'required'}]},
+{key:'manual-sample',label:'本人委托人工样片',path:'/customization-requests/:request_id',party:'required',note:'艺人本人或有明确授权的MCN提出，艺人本人确认；成片版权与肖像声音等人格权分别核对。原商品采用50%/50%两期，服务未交付与实际退款分别核对。'},
+{key:'manual-confirmation',label:'本人确认与样片取得',path:'/customization-requests/:request_id/manual-sample',party:'required',files:[{label:'本人明确取得正式人工样片',path:'/production/projects/:project_id/manual-sample-content',party:'required',type:'video/mp4'}]},
 {key:'reviews',label:'参演与收入独立核验',path:'/projects/projects/:project_id/records',detail:'/projects/records/:record_id',party:'none',query:[select('kind','待核验记录',['PARTICIPATION','INCOME_AGREEMENT'])],files:[{label:'核对真实权利与合同依据',path:'/projects/records/:record_id/evidence/:asset_id',party:'none'}]}],operations:[
 op('participation','为已确认候选人填写参演约定','/projects/candidates/:record_id/participations',[cast(),terms(),id('rule_id','已审商业财务规则（纯收入分成留空）',true),id('evidence_asset_id','实际参演权利与约定依据')],'required',true,['candidates']),
 op('confirm','本方明确确认原参演约定','/projects/participations/:record_id/confirmation',confirm(),'required',true,['agreements']),
@@ -26,5 +27,5 @@ op('income','填写独立项目未来收入约定','/projects/projects/:record_i
 op('income-confirm','各受益方逐方确认本版收入约定','/projects/income-agreements/:record_id/confirmation',confirm(),'required',true,['income']),
 op('review','独立核验本版参演约定','/projects/participations/:record_id/review',[select('decision','独立结论',[['APPROVED','通过'],['REJECTED','退回']]),reason(),verifier([['identity_verified','已核验实际人物身份'],['rights_verified','已核验本次实际权利'],['exclusivity_reviewed','已核对排他和冲突'],['terms_verified','已核对本版报酬及使用条款'],['evidence_verified','已实际查看依据']])],'none',true,['reviews']),
 op('income-review','独立核验项目收入约定','/projects/income-agreements/:record_id/review',[select('decision','独立结论',[['APPROVED','通过'],['REJECTED','退回']]),reason(),verifier([['rights_verified','已核对本次权利范围'],['terms_verified','已核对独立比例及净收入依据'],['evidence_verified','已实际核对依据']])],'none',true,['reviews']),
-op('manual-sample','本人或受托方明确委托人工样片','/customization-requests/:request_id/manual-sample',[group('cast','本次明确出演人物',[fixed('uses_identifiable_people','明确使用可识别人物',true),rows('cast','具体人物与授权',castFields(),1)]),id('merchant_party_id','实际平台人工承制主体'),text('territory','本次使用地区',100),long('terms','本人所有权、样片范围与人工交付约定')],'required',true,['manual-sample']),
+op('manual-sample','本人或受托方明确委托人工样片','/customization-requests/:request_id/manual-sample',[group('cast','本次明确出演人物',[fixed('uses_identifiable_people','明确使用可识别人物',true),rows('cast','具体人物与授权',castFields(),1)]),id('merchant_party_id','实际平台人工承制主体'),text('territory','本次使用地区',100),long('terms','样片范围与人工交付约定'),manualCopyrightFields()],'required',true,['manual-sample']),
 op('manual-confirm','艺人本人确认原样片委托','/customization-requests/:request_id/manual-sample/confirmation',[hash()],'required',true,['manual-confirmation'])]}

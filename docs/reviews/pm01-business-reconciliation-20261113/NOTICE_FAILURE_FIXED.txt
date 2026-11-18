@@ -1,0 +1,303 @@
+TAP version 13
+# Subtest: ordinary publishing and same-notice cooperation in isolated MySQL
+    # Subtest: new publishing rule requires independent approval; old rule and notices retain snapshots
+    ok 1 - new publishing rule requires independent approval; old rule and notices retain snapshots
+      ---
+      duration_ms: 135.3787
+      type: 'test'
+      ...
+    # Subtest: never-funded adult can publish all five ordinary types without changing membership
+    ok 2 - never-funded adult can publish all five ordinary types without changing membership
+      ---
+      duration_ms: 225.4083
+      type: 'test'
+      ...
+    # Subtest: membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged
+    ok 3 - membership revocation leaves new ordinary publishing usable and legacy eligibility unchanged
+      ---
+      duration_ms: 97.7841
+      type: 'test'
+      ...
+    # Subtest: unverified, child, expired, inactive, foreign identity and official impersonation remain rejected
+    ok 4 - unverified, child, expired, inactive, foreign identity and official impersonation remain rejected
+      ---
+      duration_ms: 101.4469
+      type: 'test'
+      ...
+    # Subtest: identity or ownership lost after submission is checked at review and public read
+    ok 5 - identity or ownership lost after submission is checked at review and public read
+      ---
+      duration_ms: 59.6574
+      type: 'test'
+      ...
+    # Subtest: organization scope and other project ownership cannot be bypassed with an ordinary rule
+    ok 6 - organization scope and other project ownership cannot be bypassed with an ordinary rule
+      ---
+      duration_ms: 63.1317
+      type: 'test'
+      ...
+    # Subtest: same notice receives reviewed artist submission then one support case after lost response recovery
+    ok 7 - same notice receives reviewed artist submission then one support case after lost response recovery
+      ---
+      duration_ms: 116.7913
+      type: 'test'
+      ...
+    # Subtest: suspended account or party hides publication and blocks further cooperation
+    ok 8 - suspended account or party hides publication and blocks further cooperation
+      ---
+      duration_ms: 62.6558
+      type: 'test'
+      ...
+    # Subtest: independent support links actual quote and creates the same unpaid order without membership
+    ok 9 - independent support links actual quote and creates the same unpaid order without membership
+      ---
+      duration_ms: 264.3507
+      type: 'test'
+      ...
+    # Subtest: same notice order receives payment, scoped conversation and independently reviewed full refund
+    ok 10 - same notice order receives payment, scoped conversation and independently reviewed full refund
+      ---
+      duration_ms: 795.5503
+      type: 'test'
+      ...
+    # Subtest: closing ordinary notice blocks new submissions while historical quote remains unchanged
+    ok 11 - closing ordinary notice blocks new submissions while historical quote remains unchanged
+      ---
+      duration_ms: 24.2943
+      type: 'test'
+      ...
+    # Subtest: notice withdrawal notifies each historical application once without changing submission or contract
+    not ok 12 - notice withdrawal notifies each historical application once without changing submission or contract
+      ---
+      duration_ms: 112.4742
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notices-ordinary.integration.test.cjs:216:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        ... Skipped lines
+
+          {
+        +   chat_enabled: false,
+            content_sha256: 'db552eb3e99a251ea5f8c5a2b9501d7f1164b2b95d9aa94bbea0898f8b37b2aa',
+            counterparty_id: '11c74649-4494-491e-ab79-a41a924d7ca5',
+            created_by: '09c0a90b-a710-4db2-9adf-83b9fc8561d1',
+            current_status: 'IN_REVIEW',
+            data: {
+        ...
+            },
+        +   expired: false,
+            id: 'e1d72de2-44e0-4c67-ba84-373a19e4783b',
+            kind: 'SUBMISSION',
+        +   next_action: 'WAIT_REVIEW',
+            object_version: 1,
+        +   order_id: null,
+        +   order_status: null,
+            owner_party_id: '8f6cc5d0-0935-43bc-ab17-eb1fc382a2d1',
+            parent_id: '072ea654-6d8b-4b5e-93e0-56905f9fb67d'
+          }
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        id: 'e1d72de2-44e0-4c67-ba84-373a19e4783b'
+        kind: 'SUBMISSION'
+        owner_party_id: '8f6cc5d0-0935-43bc-ab17-eb1fc382a2d1'
+        counterparty_id: '11c74649-4494-491e-ab79-a41a924d7ca5'
+        parent_id: '072ea654-6d8b-4b5e-93e0-56905f9fb67d'
+        created_by: '09c0a90b-a710-4db2-9adf-83b9fc8561d1'
+        current_status: 'IN_REVIEW'
+        object_version: 1
+        content_sha256: 'db552eb3e99a251ea5f8c5a2b9501d7f1164b2b95d9aa94bbea0898f8b37b2aa'
+        data:
+          submission:
+            avatar_id: '54eaef89-50ae-4c4d-b463-dc03acd5a2f0'
+            consent_id: 'e62f55c8-1123-4731-b49b-778b5cd5576b'
+            content: 'synthetic profile'
+            kind: 'PROFILE'
+            material_asset_ids:
+            notice_id: '072ea654-6d8b-4b5e-93e0-56905f9fb67d'
+            person_id: 'ace5f330-51f1-4f33-9394-11967171fc45'
+            purpose: 'cooperation'
+            role: ~
+            target_party_id: '11c74649-4494-491e-ab79-a41a924d7ca5'
+          rule_id: 'dd6a6dd8-fa27-429b-913c-847fdfa8d75a'
+          rule_sha256: 'f8b915984597798853093478b60ed54bdcad71d713861eb2fd759993f6a22041'
+          expires_at: '2026-12-13T03:46:06.140Z'
+          review: ~
+          decision: ~
+          case_id: ~
+      actual:
+        id: 'e1d72de2-44e0-4c67-ba84-373a19e4783b'
+        kind: 'SUBMISSION'
+        owner_party_id: '8f6cc5d0-0935-43bc-ab17-eb1fc382a2d1'
+        counterparty_id: '11c74649-4494-491e-ab79-a41a924d7ca5'
+        parent_id: '072ea654-6d8b-4b5e-93e0-56905f9fb67d'
+        created_by: '09c0a90b-a710-4db2-9adf-83b9fc8561d1'
+        current_status: 'IN_REVIEW'
+        object_version: 1
+        content_sha256: 'db552eb3e99a251ea5f8c5a2b9501d7f1164b2b95d9aa94bbea0898f8b37b2aa'
+        data:
+          review: ~
+          case_id: ~
+          rule_id: 'dd6a6dd8-fa27-429b-913c-847fdfa8d75a'
+          decision: ~
+          expires_at: '2026-12-13T03:46:06.140Z'
+          submission:
+            kind: 'PROFILE'
+            role: ~
+            content: 'synthetic profile'
+            purpose: 'cooperation'
+            avatar_id: '54eaef89-50ae-4c4d-b463-dc03acd5a2f0'
+            notice_id: '072ea654-6d8b-4b5e-93e0-56905f9fb67d'
+            person_id: 'ace5f330-51f1-4f33-9394-11967171fc45'
+            consent_id: 'e62f55c8-1123-4731-b49b-778b5cd5576b'
+            target_party_id: '11c74649-4494-491e-ab79-a41a924d7ca5'
+            material_asset_ids:
+          rule_sha256: 'f8b915984597798853093478b60ed54bdcad71d713861eb2fd759993f6a22041'
+        next_action: 'WAIT_REVIEW'
+        chat_enabled: false
+        order_id: ~
+        order_status: ~
+        expired: false
+      operator: 'deepStrictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notices-ordinary.integration.test.cjs:225:11)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notices-ordinary.integration.test.cjs:216:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: failure to record notice withdrawal notification rolls back closure and all prior events
+    not ok 13 - failure to record notice withdrawal notification rolls back closure and all prior events
+      ---
+      duration_ms: 54.8755
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notices-ordinary.integration.test.cjs:236:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        ... Skipped lines
+
+          {
+        +   chat_enabled: false,
+            content_sha256: '5f3a53947597634ed5d6c29bb21243a56a6cb0a5039616ca82ec3c0549a9f5a1',
+            counterparty_id: null,
+            created_by: '7a11d347-b75f-4348-86a8-6453a4569237',
+            current_status: 'PUBLISHED',
+            data: {
+        ...
+            kind: 'NOTICE',
+        +   next_action: 'VIEW',
+            object_version: 2,
+        +   order_id: null,
+        +   order_status: null,
+            owner_party_id: '11c74649-4494-491e-ab79-a41a924d7ca5',
+            parent_id: null
+          }
+
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        id: '57a0cb80-25d9-490f-8d1e-8f66984b9de4'
+        kind: 'NOTICE'
+        owner_party_id: '11c74649-4494-491e-ab79-a41a924d7ca5'
+        counterparty_id: ~
+        parent_id: ~
+        created_by: '7a11d347-b75f-4348-86a8-6453a4569237'
+        current_status: 'PUBLISHED'
+        object_version: 2
+        content_sha256: '5f3a53947597634ed5d6c29bb21243a56a6cb0a5039616ca82ec3c0549a9f5a1'
+        data:
+          notice:
+            city: 'synthetic-city'
+            type: 'RECRUITMENT'
+            title: 'Synthetic film recruitment'
+            details:
+              roles: 'lead'
+              requirements: 'adult'
+            project_id: ~
+            valid_from: '2020-01-01T00:00:00.000Z'
+            description: 'synthetic only'
+            valid_until: '2099-01-01T00:00:00.000Z'
+            accept_submissions: true
+          review:
+            account_id: 'd795471f-dc67-44c0-882d-ac41b1065f4f'
+            decision: 'APPROVE'
+            checks:
+              content_reviewed: true
+              materials_reviewed: true
+              no_private_contact: true
+            reason: 'synthetic independent review'
+            method: 'EXTERNAL_MANUAL_REVIEW'
+          rule_id: 'dd6a6dd8-fa27-429b-913c-847fdfa8d75a'
+          rule_sha256: 'f8b915984597798853093478b60ed54bdcad71d713861eb2fd759993f6a22041'
+      actual:
+        id: '57a0cb80-25d9-490f-8d1e-8f66984b9de4'
+        kind: 'NOTICE'
+        owner_party_id: '11c74649-4494-491e-ab79-a41a924d7ca5'
+        counterparty_id: ~
+        parent_id: ~
+        created_by: '7a11d347-b75f-4348-86a8-6453a4569237'
+        current_status: 'PUBLISHED'
+        object_version: 2
+        content_sha256: '5f3a53947597634ed5d6c29bb21243a56a6cb0a5039616ca82ec3c0549a9f5a1'
+        data:
+          notice:
+            city: 'synthetic-city'
+            type: 'RECRUITMENT'
+            title: 'Synthetic film recruitment'
+            details:
+              roles: 'lead'
+              requirements: 'adult'
+            project_id: ~
+            valid_from: '2020-01-01T00:00:00.000Z'
+            description: 'synthetic only'
+            valid_until: '2099-01-01T00:00:00.000Z'
+            accept_submissions: true
+          review:
+            checks:
+              content_reviewed: true
+              materials_reviewed: true
+              no_private_contact: true
+            method: 'EXTERNAL_MANUAL_REVIEW'
+            reason: 'synthetic independent review'
+            decision: 'APPROVE'
+            account_id: 'd795471f-dc67-44c0-882d-ac41b1065f4f'
+          rule_id: 'dd6a6dd8-fa27-429b-913c-847fdfa8d75a'
+          rule_sha256: 'f8b915984597798853093478b60ed54bdcad71d713861eb2fd759993f6a22041'
+        next_action: 'VIEW'
+        chat_enabled: false
+        order_id: ~
+        order_status: ~
+      operator: 'deepStrictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notices-ordinary.integration.test.cjs:243:12)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\notices-ordinary.integration.test.cjs:236:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..13
+not ok 1 - ordinary publishing and same-notice cooperation in isolated MySQL
+  ---
+  duration_ms: 9133.9903
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\notices-ordinary.integration.test.cjs:5:1'
+  failureType: 'subtestsFailed'
+  error: '2 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 14
+# suites 0
+# pass 11
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9331.1062

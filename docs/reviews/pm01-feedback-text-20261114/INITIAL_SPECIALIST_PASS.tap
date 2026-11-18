@@ -1,0 +1,114 @@
+TAP version 13
+# Subtest: company delivery handoff preserves first receipt, current authority and original final payment
+    # Subtest: 0224 upgrades with a legacy first-reader receipt unchanged and repeated 0225 application is idempotent
+    ok 1 - 0224 upgrades with a legacy first-reader receipt unchanged and repeated 0225 application is idempotent
+      ---
+      duration_ms: 130.4998
+      type: 'test'
+      ...
+    # Subtest: a new representative must personally read the current preview and notification before taking over
+    ok 2 - a new representative must personally read the current preview and notification before taking over
+      ---
+      duration_ms: 257.7917
+      type: 'test'
+      ...
+    # Subtest: another viewer never overwrites a completed receipt and each actor feedback uses their own read
+    ok 3 - another viewer never overwrites a completed receipt and each actor feedback uses their own read
+      ---
+      duration_ms: 221.2771
+      type: 'test'
+      ...
+    # Subtest: failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version
+    ok 4 - failed or revoked reads do not create evidence; a reissue needs fresh bytes even for the same version
+      ---
+      duration_ms: 302.3219
+      type: 'test'
+      ...
+    # Subtest: concurrent current company viewers create one observation each and one immutable final deadline
+    ok 5 - concurrent current company viewers create one observation each and one immutable final deadline
+      ---
+      duration_ms: 232.3523
+      type: 'test'
+      ...
+    # Subtest: same company completes final acceptance and last payment; duplicate final downloads keep one completion fact
+    ok 6 - same company completes final acceptance and last payment; duplicate final downloads keep one completion fact
+      ---
+      duration_ms: 150.3664
+      type: 'test'
+      ...
+    # Subtest: personal retained delivery and feedback copy uses the same actual company journey
+        # Subtest: own delivery reads, own signoff and authored feedback are copyable after business revocation without company documents
+        ok 1 - own delivery reads, own signoff and authored feedback are copyable after business revocation without company documents
+          ---
+          duration_ms: 70.2454
+          type: 'test'
+          ...
+        # Subtest: request scope, requester identity, section cursors and operator work state apply to every page
+        ok 2 - request scope, requester identity, section cursors and operator work state apply to every page
+          ---
+          duration_ms: 80.6702
+          type: 'test'
+          ...
+        # Subtest: retained legacy receipt fills a missing new-table row without duplicate observations or trusting corrupt source content
+        ok 3 - retained legacy receipt fills a missing new-table row without duplicate observations or trusting corrupt source content
+          ---
+          duration_ms: 27.4243
+          type: 'test'
+          ...
+        # Subtest: leaving the company retains personal action history and a same-request file remains subject to independent release
+        ok 4 - leaving the company retains personal action history and a same-request file remains subject to independent release
+          ---
+          duration_ms: 99.1318
+          type: 'test'
+          ...
+        # Subtest: same reopened request locates only authored feedback and privacy permission does not confer original source access
+        ok 5 - same reopened request locates only authored feedback and privacy permission does not confer original source access
+          ---
+          duration_ms: 36.4105
+          type: 'test'
+          ...
+        # Subtest: corrupt original is not trusted and revoked source access is checked again
+        ok 6 - corrupt original is not trusted and revoked source access is checked again
+          ---
+          duration_ms: 18.7739
+          type: 'test'
+          ...
+        # Subtest: unreviewed text cannot be downloaded and rejected draft never enters released history
+        ok 7 - unreviewed text cannot be downloaded and rejected draft never enters released history
+          ---
+          duration_ms: 35.7158
+          type: 'test'
+          ...
+        # Subtest: revised selected text is independently released once and never includes other signers or company receipt
+        ok 8 - revised selected text is independently released once and never includes other signers or company receipt
+          ---
+          duration_ms: 52.5393
+          type: 'test'
+          ...
+        # Subtest: later source revocation and reopening preserve only the independently released historical files
+        ok 9 - later source revocation and reopening preserve only the independently released historical files
+          ---
+          duration_ms: 30.4719
+          type: 'test'
+          ...
+        1..9
+    ok 7 - personal retained delivery and feedback copy uses the same actual company journey
+      ---
+      duration_ms: 472.0111
+      type: 'test'
+      ...
+    1..7
+ok 1 - company delivery handoff preserves first receipt, current authority and original final payment
+  ---
+  duration_ms: 8793.0726
+  type: 'test'
+  ...
+1..1
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9136.7219

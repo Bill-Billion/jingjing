@@ -1,0 +1,114 @@
+{
+  "synthetic_only": true,
+  "formal_acceptance": false,
+  "checks": [
+    {
+      "id": "BENEFIT-API-01",
+      "result": "PASS",
+      "name": "independently reviewed wallet and new 48-hour stock terms, zero initial points",
+      "artifact": "api-result.json",
+      "records": {
+        "rule_id": "0bb08ed2-f802-40b5-8346-319d402313c5",
+        "spec_id": "446a00a1-b7e5-405e-a5a3-5c9bd6b65572"
+      }
+    },
+    {
+      "id": "BENEFIT-API-02",
+      "result": "PASS",
+      "name": "two fresh paid orders earn nothing before real content read and buyer acceptance",
+      "artifact": "api-result.json",
+      "records": {
+        "order_ids": [
+          "a70ec84c-3a72-43bf-9595-1387582242f3",
+          "6d38981c-b61a-47f4-85b0-06ecacc66d5f"
+        ],
+        "payment_ids": [
+          "7d1f9700-8048-436b-8e63-6f97a5f3dc58",
+          "40cdfe01-0707-48d9-9e79-9b9f5ec0e10c"
+        ]
+      }
+    },
+    {
+      "id": "BENEFIT-API-03",
+      "result": "PASS",
+      "name": "mature original order issues once under its captured rule; concurrent sync does not duplicate",
+      "artifact": "api-result.json",
+      "records": {
+        "earning_id": "dbd0da95-5c2f-4972-80dd-5e933bb72dce",
+        "points": 10,
+        "expires_at": "2027-11-11T08:18:19.926Z"
+      }
+    },
+    {
+      "id": "BENEFIT-API-04",
+      "result": "PASS",
+      "name": "a real reward exchange consumes four points once and retains original expiry",
+      "artifact": "api-result.json",
+      "records": {
+        "grant_id": "45458539-2d9d-4f60-9073-2c8a68db1b9f",
+        "spent": 4
+      }
+    },
+    {
+      "id": "BENEFIT-API-05",
+      "result": "PASS",
+      "name": "full cash refund succeeds despite spent points; debt prevents new exchange without using stock",
+      "artifact": "api-result.json",
+      "records": {
+        "refund_id": "9b0438a1-8a61-4454-aec7-fd80f539140b",
+        "pending_reversal": 4,
+        "inventory_remaining": 4
+      }
+    },
+    {
+      "id": "BENEFIT-API-06",
+      "result": "PASS",
+      "name": "later order earnings clear earlier debt without erasing the new consumption growth",
+      "artifact": "api-result.json",
+      "records": {
+        "earning_id": "f9b4a8ae-b69f-4090-bd63-927cc5b695bd",
+        "offset": 4,
+        "available": 6,
+        "growth": 10
+      }
+    },
+    {
+      "id": "BENEFIT-API-07",
+      "result": "PASS",
+      "name": "refunding the replacement earning creates its own shortage; free check-in pays debt without adding growth",
+      "artifact": "api-result.json",
+      "records": {
+        "refund_id": "311e0b12-eb43-4e2b-97f4-2fea599f2e7a",
+        "pending_reversal": 1
+      }
+    },
+    {
+      "id": "BENEFIT-API-08",
+      "result": "PASS",
+      "name": "independent reward remedy returns original spent points once, clears remaining debt and cannot resurrect growth",
+      "artifact": "api-result.json",
+      "records": {
+        "grant_id": "45458539-2d9d-4f60-9073-2c8a68db1b9f",
+        "remedy_id": "be6f3bf1-cbdc-4c3f-950f-cc449f231342",
+        "available": 3,
+        "consumption_growth": 0,
+        "expiry_unchanged": true
+      }
+    },
+    {
+      "id": "BENEFIT-WEB-01",
+      "result": "PASS",
+      "name": "实际网页兑换、抵扣、首款退款及未付款取消两条订单分支",
+      "artifact": "docs/testing/evidence/demo-benefits-independent-20261103/final-run/benefits-result.json",
+      "sha256": "98c237fb490941e8d465079a7be1c17425e3aad267c078dd5b1458af9a44c3c2",
+      "limits": "8组业务，付款模拟，合成规则/报价前置；未覆盖所有奖品、App原生和首次入口发现"
+    },
+    {
+      "id": "BENEFIT-SCHEMA-01",
+      "result": "PASS",
+      "name": "个人/商用新48小时和旧72小时兼容、错误政策拒绝、54份真实响应格式",
+      "artifact": "contract-after.json",
+      "sha256": "b64716fcfa816a202c2c5e4b76e7e347322f0d9e1ccf04af1c03a5e89725cb6a"
+    }
+  ]
+}

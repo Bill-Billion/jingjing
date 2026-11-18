@@ -1,0 +1,20 @@
+import type {RouteRecordRaw} from 'vue-router'
+export const clientServiceRoutes:RouteRecordRaw[]=[
+ {path:'/me/phone-change',name:'phone-change',component:()=>import('@/views/PhoneChangeView.vue'),meta:{title:'更换登录手机号'}},
+ {path:'/invoices/orders/:orderId/new',name:'invoice-new',component:()=>import('@/views/InvoicesView.vue'),meta:{title:'申请开票'}},
+ {path:'/invoices/requests/:invoiceId?',name:'invoices',component:()=>import('@/views/InvoicesView.vue'),meta:{title:'我的开票'}},
+ {path:'/invoices/operations/handle/:invoiceId?',name:'invoice-handle',component:()=>import('@/views/InvoicesView.vue'),meta:{title:'开票受理与录入',invoiceRole:'handle'}},
+ {path:'/invoices/operations/verify/:invoiceId?',name:'invoice-verify',component:()=>import('@/views/InvoicesView.vue'),meta:{title:'票据独立核准',invoiceRole:'verify'}},
+ {path:'/me/business/:category(contracts|works|income)',name:'personal-center',component:()=>import('@/views/PersonalCenterView.vue'),meta:{title:'我的业务汇总'}},
+ {path:'/discovery',name:'discovery',component:()=>import('@/views/DiscoveryView.vue'),meta:{title:'查找公开内容'}},
+ {path:'/directory/organizations/:partyId?',name:'directory-organizations',component:()=>import('@/views/DirectoryView.vue'),meta:{title:'公开机构',directoryView:'organizations'}},
+ {path:'/directory/featured',name:'directory-featured',component:()=>import('@/views/DirectoryView.vue'),meta:{title:'精选艺人',directoryView:'featured'}},
+ {path:'/directory/featured/new',name:'directory-feature-new',component:()=>import('@/views/DirectoryManageView.vue'),meta:{title:'提出精选艺人',directoryView:'feature-new',directoryOperator:true}},
+ {path:'/directory/manage/new',name:'directory-profile-new',component:()=>import('@/views/DirectoryManageView.vue'),meta:{title:'提交机构公开资料',directoryView:'profile-new'}},
+ {path:'/directory/manage/:recordId?',name:'directory-manage',component:()=>import('@/views/DirectoryManageView.vue'),meta:{title:'本机构公开资料'}},
+ {path:'/directory/reviews/:kind(ORGANIZATION|FEATURED_ARTIST)/:recordId?',name:'directory-review',component:()=>import('@/views/DirectoryManageView.vue'),meta:{title:'目录独立审核',directoryOperator:true}},
+ {path:'/me/collections/:section(favorites|history)',name:'collections',component:()=>import('@/views/CollectionsView.vue'),meta:{title:'我的收藏与浏览记录'}},
+ {path:'/support/new',name:'support-new',component:()=>import('@/views/SupportView.vue'),meta:{title:'提交反馈或举报',supportView:'new'}},
+ {path:'/support/operations/:ticketId?',name:'support-operations',component:()=>import('@/views/SupportView.vue'),meta:{title:'客服处理',supportOperator:true}},
+ {path:'/support/tickets/:ticketId?',name:'support-tickets',component:()=>import('@/views/SupportView.vue'),meta:{title:'我的反馈与举报'}},
+]

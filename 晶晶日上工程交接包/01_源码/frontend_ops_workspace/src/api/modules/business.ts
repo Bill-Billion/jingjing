@@ -11,6 +11,6 @@ export async function readBusiness(path:string,options:BusinessOptions){const r=
 export async function writeBusiness(path:string,options:BusinessOptions){const r=await request<unknown>(path,options);return checked(r,options)}
 export const businessBytes=(path:string,options:RequestOptions,type='application/octet-stream')=>requestBytes(path,options,type)
 export const rowData=(r:BusinessData):BusinessData=>r.data&&typeof r.data==='object'&&!Array.isArray(r.data)?r.data as BusinessData:r
-export const recordId=(r:BusinessData):string=>String(r.id||r.order_id||r.request_id||r.project_id||r.record_id||r.booking_id||r.agreement_id||r.grant_id||'')
+export const recordId=(r:BusinessData):string=>String(r.id||r.order_id||r.request_id||r.project_id||r.record_id||r.booking_id||r.agreement_id||r.grant_id||r.relation_id||r.link_id||r.listing_id||'')
 export function versionOf(r:BusinessData|null):number|null {const n=r?.object_version;return typeof n==='number'&&Number.isSafeInteger(n)&&n>=0?n:null}
 export function rowsOf(r:BusinessData|null):BusinessData[]{if(!r)return[];for(const k of ['items','records','grants','rooms','bookings','rewards','orders','candidates'])if(Array.isArray(r[k]))return(r[k] as unknown[]).filter((x):x is BusinessData=>!!x&&typeof x==='object'&&!Array.isArray(x));return[]}

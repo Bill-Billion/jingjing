@@ -1,0 +1,556 @@
+{
+  "result": "PASS",
+  "contract_version": "0.31.48-rc.1",
+  "contract_sha256": "cdfb7699715d6ce9f50236ad63219d996a3847399f4e4692f9e52b6c77f6d2d5",
+  "openapi_version": "3.1.1",
+  "operations": 630,
+  "schemas": 794,
+  "runtime_response_cases": 4799,
+  "valid_fixtures": 281,
+  "negative_cases": 211,
+  "checks": 27911,
+  "failures": [],
+  "python": "3.10.11",
+  "tools": {
+    "openapi-spec-validator": "0.9.0",
+    "jsonschema": "4.26.0",
+    "PyYAML": "6.0.3"
+  },
+  "network_during_validation": "DISABLED",
+  "runtime_tests": "NOT_RUN",
+  "limits": "Schema and declared protocol only. Runtime permissions, SMS/payment, DB transactions, idempotency races and client SDK generation remain unverified.",
+  "runtime_files": [
+    {
+      "fixtures": ".local/account-api-http-fixtures.json",
+      "sha256": "4f13a96fef969e79298d96cf5d50d113ff3dd8d49713d783fa7f8222940d2183",
+      "runtime_response_cases": 46,
+      "checks": 46,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/runtime-contract.json"
+    },
+    {
+      "fixtures": ".local/contract-six-http-fixtures.json",
+      "sha256": "59c7951e7158a8f3e03bb9904eadd221f2bf9a7e2eaba48f28bb386872fbcbb9",
+      "runtime_response_cases": 72,
+      "checks": 144,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/contract-six-runtime.json"
+    },
+    {
+      "fixtures": ".local/daily-reconciliation-http-fixtures.json",
+      "sha256": "8314f02ad70f3cac0ec3c4298b8b858775e0fefb3b906c517b782254cfcb1b8b",
+      "runtime_response_cases": 20,
+      "checks": 40,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/daily-reconciliation-runtime.json"
+    },
+    {
+      "fixtures": ".local/consumer-controls-http-fixtures.json",
+      "sha256": "552074a12601d3cc4ec8c8bea3df974b4c8004d6d4a4c056a57db1fdb1e7e3a4",
+      "runtime_response_cases": 17,
+      "checks": 34,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/consumer-controls-runtime.json"
+    },
+    {
+      "fixtures": ".local/stock-http-fixtures.json",
+      "sha256": "578fba11bda030d6c725c7a38c13b5c9645314a8d5e9e8bf68a95871477be9c4",
+      "runtime_response_cases": 86,
+      "checks": 172,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/stock-contract.json"
+    },
+    {
+      "fixtures": ".local/notices-http-fixtures.json",
+      "sha256": "cf479ee99c99325d9fd8fb479d4d57a17b8c73acba050e9ba732680adb0fee74",
+      "runtime_response_cases": 111,
+      "checks": 222,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/notices-contract.json"
+    },
+    {
+      "fixtures": ".local/auditions-http-fixtures.json",
+      "sha256": "a593066317bada0a70d3f95b89f293943ca5ac5bcb81c071a581b9e6f71ab91e",
+      "runtime_response_cases": 198,
+      "checks": 396,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/auditions-contract.json"
+    },
+    {
+      "fixtures": ".local/wallet-http-fixtures.json",
+      "sha256": "f71f11c913df4ca22a32846fc978d28c8c3536ffa255f4f8037ba897ed4bb17b",
+      "runtime_response_cases": 29,
+      "checks": 58,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/wallet-contract.json"
+    },
+    {
+      "fixtures": ".local/engagement-http-fixtures.json",
+      "sha256": "ee4b392663989f7e0698b074851fc88712d0d626ab89ae08a729e538304e507a",
+      "runtime_response_cases": 147,
+      "checks": 294,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/engagement-contract.json"
+    },
+    {
+      "fixtures": ".local/artists-http-fixtures.json",
+      "sha256": "92f1660f4c41876231542a37880733c4a5ef7bf65d94779058461267c8ce3186",
+      "runtime_response_cases": 167,
+      "checks": 334,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/artists-runtime-contract.json"
+    },
+    {
+      "fixtures": ".local/artist-contract-http-fixtures.json",
+      "sha256": "d3ad737137b5ee2bf42075018a57a4e52486ee580b083081d546b335566a5572",
+      "runtime_response_cases": 93,
+      "checks": 186,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/artist-contract-runtime.json"
+    },
+    {
+      "fixtures": ".local/customization-delivery-http-fixtures.json",
+      "sha256": "fb2998b5895e72981f3519c36d2c15e5c1f3167920f011c63f147dcf66ede9df",
+      "runtime_response_cases": 523,
+      "checks": 1046,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/customization-delivery-contract.json"
+    },
+    {
+      "fixtures": ".local/customization-http-fixtures.json",
+      "sha256": "c0f3902b199f42d5cfb7ad6df3ed4d42707b1a779382e7b0ba74fa19d8b7f8c8",
+      "runtime_response_cases": 218,
+      "checks": 218,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/customization-runtime-contract.json"
+    },
+    {
+      "fixtures": ".local/customization-quote-http-fixtures.json",
+      "sha256": "17659e6b84f40490e7a06689cd5026a05b15f297928699229e5e729bb7f76a67",
+      "runtime_response_cases": 97,
+      "checks": 97,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/customization-quote-contract.json"
+    },
+    {
+      "fixtures": ".local/marketplace-http-fixtures.json",
+      "sha256": "09b28562515be710fd388016a6a451193c96b023e3bedc687f0791bcc3a9f25d",
+      "runtime_response_cases": 52,
+      "checks": 52,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/marketplace-contract.json"
+    },
+    {
+      "fixtures": ".local/governance-http-fixtures.json",
+      "sha256": "135d0a1f2768d9ed32245ba0de64a62df2e08438e22b43074ccb38de85c3fa34",
+      "runtime_response_cases": 3,
+      "checks": 3,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/governance-runtime-contract.json"
+    },
+    {
+      "fixtures": ".local/governance-service-http-fixtures.json",
+      "sha256": "7761644c59de8b3fa16fb83abf9951f718181c520a1e2affb2777594d6f5bf95",
+      "runtime_response_cases": 1,
+      "checks": 1,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/governance-service-contract.json"
+    },
+    {
+      "fixtures": ".local/supply-http-fixtures.json",
+      "sha256": "9b6a9f6fc2153fbd7e3a9efeabbfb43506f94dff396295de48c54625576acb96",
+      "runtime_response_cases": 26,
+      "checks": 26,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/supply-contract.json"
+    },
+    {
+      "fixtures": ".local/licensing-http-fixtures.json",
+      "sha256": "a10a5dca3b629a7a6a3b46e75615bce3355b3b5c0523e41ea8ae210c1f1cbe19",
+      "runtime_response_cases": 40,
+      "checks": 40,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/licensing-contract.json"
+    },
+    {
+      "fixtures": ".local/manual-sample-copyright-http-fixtures.json",
+      "sha256": "077c2410da3c7eb37f7bfe51aa16fad0fd2b3e70796ac7a68a49af508d95ef6d",
+      "runtime_response_cases": 115,
+      "checks": 230,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/manual-sample-copyright-contract.json"
+    },
+    {
+      "fixtures": ".local/copyright-http-fixtures.json",
+      "sha256": "52b0cf4d0d0550213a5bafb5b063a66972aae21c877d9bbc1722734f52564f0f",
+      "runtime_response_cases": 12,
+      "checks": 24,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/copyright-contract.json"
+    },
+    {
+      "fixtures": ".local/ip-procurement-http-fixtures.json",
+      "sha256": "d6350aa38834e292dde38faec7eb04981063476242f700293849a2ec74cd06e3",
+      "runtime_response_cases": 33,
+      "checks": 33,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/ip-procurement-contract.json"
+    },
+    {
+      "fixtures": ".local/trade-http-fixtures.json",
+      "sha256": "97c760b0c33dc9ea3e7175a9895ad991c1a0359e2f2f5bcba9df125fbf169c90",
+      "runtime_response_cases": 48,
+      "checks": 48,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/trade-contract.json"
+    },
+    {
+      "fixtures": ".local/production-http-fixtures.json",
+      "sha256": "9d2d2e8748a005ae2af4c8ffa4593992812d0f5990f4b5b97c808798348ea7c9",
+      "runtime_response_cases": 81,
+      "checks": 81,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/production-contract.json"
+    },
+    {
+      "fixtures": ".local/projects-http-fixtures.json",
+      "sha256": "2a7308103d7143574b6a95b45c6c934ba07c45a0306fff50e41b61b35f50b2ee",
+      "runtime_response_cases": 103,
+      "checks": 103,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/projects-contract.json"
+    },
+    {
+      "fixtures": ".local/gigs-http-fixtures.json",
+      "sha256": "ec9d2691f7d4196ca63be7ac6e303e12ed0dc54f245a75ecdb353bbf1fadfdbd",
+      "runtime_response_cases": 92,
+      "checks": 127,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/gigs-contract.json"
+    },
+    {
+      "fixtures": ".local/gigs-contract-http-fixtures.json",
+      "sha256": "ba03837741b2a9e54c4becbe456db2d880c29f575f0f89ff5ec5448a7cc0c8d8",
+      "runtime_response_cases": 91,
+      "checks": 126,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/gigs-new-contract.json"
+    },
+    {
+      "fixtures": ".local/marketplace-contract-http-fixtures.json",
+      "sha256": "c89718d4c503a81e87aa296a05b981844b79e2ae79e5ce684184869eff9262e0",
+      "runtime_response_cases": 10,
+      "checks": 10,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/stock-new-commission-contract.json"
+    },
+    {
+      "fixtures": ".local/finance-http-fixtures.json",
+      "sha256": "bedfde43d3f96a54ce50152aa49b41a2ae54f1d31c2c4e60e96f613686905be9",
+      "runtime_response_cases": 142,
+      "checks": 142,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/finance-contract.json"
+    },
+    {
+      "fixtures": ".local/operations-http-fixtures.json",
+      "sha256": "2a6dc08dacc03c3752172f83f766797d6bb1b70e340a5799580d3c898b1a5df3",
+      "runtime_response_cases": 91,
+      "checks": 91,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/operations-contract.json"
+    },
+    {
+      "fixtures": ".local/cocreation-http-fixtures.json",
+      "sha256": "8955a8f65ea7b081170d88cf5779e99d123180fd0c0a6598c6e82535a3d6783e",
+      "runtime_response_cases": 540,
+      "checks": 1080,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/cocreation-contract.json"
+    },
+    {
+      "fixtures": ".local/participation-http-fixtures.json",
+      "sha256": "9d840cc52ec7dc9eae6e9f5471f76aec4cc8f00d1de3762276fd03d379f4ea09",
+      "runtime_response_cases": 115,
+      "checks": 230,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/participation-contract.json"
+    },
+    {
+      "fixtures": ".local/redemption-http-fixtures.json",
+      "sha256": "5788e673c07d1ad29c79a3aecee06f5fb9ebfe062171aa8b1e9d515b32dd3766",
+      "runtime_response_cases": 86,
+      "checks": 172,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/redemption-contract.json"
+    },
+    {
+      "fixtures": ".local/redemption-delivery-evidence-http.json",
+      "sha256": "9b73d328e436c6a75218a12586cbb844903a5b4e987f28756d145814ccd2d229",
+      "runtime_response_cases": 38,
+      "checks": 76,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/redemption-delivery-evidence-contract.json"
+    },
+    {
+      "fixtures": ".local/redemption-checkout-http-fixtures.json",
+      "sha256": "aeca6b38abae40cd9ef6d55ee14045d452c48ddc79ca4a8a357a0fb049f5be84",
+      "runtime_response_cases": 88,
+      "checks": 176,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/redemption-checkout-contract.json"
+    },
+    {
+      "fixtures": ".local/redemption-lottery-http-fixtures.json",
+      "sha256": "2a5b6c19f2556509e5969b1b686ab4ce65f648bb959e48baeeaefbdc8820eeed",
+      "runtime_response_cases": 55,
+      "checks": 110,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/redemption-lottery-contract.json"
+    },
+    {
+      "fixtures": ".local/manual-sample-legacy-http-fixtures.json",
+      "sha256": "ff31579fb043f015ddb321bd2081454a98cd03fb888eeba693aab556396a1d73",
+      "runtime_response_cases": 115,
+      "checks": 230,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/manual-sample-contract.json"
+    },
+    {
+      "fixtures": ".local/script-intake-http-fixtures.json",
+      "sha256": "f908151ef3b5ebd903ebde4c593a065f6c7db2e50fc7afb95e6af5f0abab6efa",
+      "runtime_response_cases": 10,
+      "checks": 20,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/script-intake-contract.json"
+    },
+    {
+      "fixtures": ".local/project-income-http-fixtures.json",
+      "sha256": "fa83b62507edfbf536e51998ad040d9b9997e827dbf173ad334a1af90ea3b57e",
+      "runtime_response_cases": 9,
+      "checks": 18,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/project-income-contract.json"
+    },
+    {
+      "fixtures": ".local/participation-amendment-http-fixtures.json",
+      "sha256": "a27cf45802350b4aad625cae70787c1567a541b5f95ecbec120b5c7b122a7d79",
+      "runtime_response_cases": 61,
+      "checks": 122,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/participation-amendment-contract.json"
+    },
+    {
+      "fixtures": ".local/fixed-income-release-http-fixtures.json",
+      "sha256": "6afb9d86d5fa64bb41b8332d3e0cc87bf88b8b0237ed62e76a056de481ce2cde",
+      "runtime_response_cases": 109,
+      "checks": 218,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/fixed-income-release-contract.json"
+    },
+    {
+      "fixtures": ".local/consumer-risk-http-fixtures.json",
+      "sha256": "7d1d8514620d5c69f4ce1c44496538d493e0a6d996dc999c95ff2f9b38209e66",
+      "runtime_response_cases": 14,
+      "checks": 28,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/consumer-risk-contract.json"
+    },
+    {
+      "fixtures": ".local/usage-http-fixtures.json",
+      "sha256": "675a2a1679aa664516c63be92433519ee0a650ca0af3b161add249f151a7f99f",
+      "runtime_response_cases": 28,
+      "checks": 56,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/usage-contract.json"
+    },
+    {
+      "fixtures": ".local/privacy-http-fixtures.json",
+      "sha256": "8d94c4831c91700bf59d542aa21cf5bfddf242ddbb61f1320eda0e1cb8b2ae90",
+      "runtime_response_cases": 57,
+      "checks": 114,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-20261106/privacy-copy-http.json",
+      "sha256": "018a64ca909fdc6c1bb5ed461330ca89c99ff531f812183e50a3c56cb79f77dd",
+      "runtime_response_cases": 13,
+      "checks": 26,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-copy-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-story-copy-20261106/http.json",
+      "sha256": "772ed04fd819a72bd29afe8e29d9f501dc4f23694071f836753d7f2b1b9fc4ab",
+      "runtime_response_cases": 22,
+      "checks": 44,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-story-copy-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-transaction-copy-20261106/http.json",
+      "sha256": "fda0db93273d02a75798a1d1e2271d504a580e13634031eba244600bea1c6398",
+      "runtime_response_cases": 41,
+      "checks": 82,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-transaction-copy-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-independent-20261106/recommendations.json",
+      "sha256": "df43bea11327110fc18fee154dca546e4de165ce8231710d01387ae6bb2abb5f",
+      "runtime_response_cases": 18,
+      "checks": 36,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/prelaunch-recommendations-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-independent-20261106/organization-merchandise-batch.json",
+      "sha256": "5b742df05cc478f0ddff42b6488246ab811a6428813b6be4403b5b57b5c3dbbb",
+      "runtime_response_cases": 4,
+      "checks": 8,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/prelaunch-organization-merchandise-batch-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-independent-20261106/organization-batch.json",
+      "sha256": "b2e28f0a21dd7084a8da065b0dc80e193aaa051560dd8ebc23e2ab6a4485f711",
+      "runtime_response_cases": 15,
+      "checks": 30,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/prelaunch-organization-batch-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-independent-20261106/privacy-account-copy.json",
+      "sha256": "dcf3a70da064ac60caf7bcc03f02ae5f9b41e6db75177eb056e0e53184a47f06",
+      "runtime_response_cases": 17,
+      "checks": 34,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/prelaunch-privacy-account-copy-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-agreement-copy-20261106/http.json",
+      "sha256": "c65fe2b3aa3a5023ff26e86010b767c6f9a073eb4e7ae4323ec307618ae7ef1b",
+      "runtime_response_cases": 27,
+      "checks": 54,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-agreement-copy-contract.json"
+    },
+    {
+      "fixtures": ".local/privacy-participation-copy-20261109/http.json",
+      "sha256": "86519046159e907214ec494ffbb81c4072952253bcd8a99d2b2824da57e1b63e",
+      "runtime_response_cases": 75,
+      "checks": 150,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-participation-copy-contract.json"
+    },
+    {
+      "fixtures": ".local/privacy-benefit-copy-20261109/http.json",
+      "sha256": "bd8f94195c596ca63befae2d9e0763efafb126c263df80719bac3a8501758657",
+      "runtime_response_cases": 65,
+      "checks": 130,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-benefit-copy-contract.json"
+    },
+    {
+      "fixtures": ".local/privacy-guardian-copy-20261109/http.json",
+      "sha256": "fcee5c1e2f034577e5eefcbfdac983f65c0eb07ed2f9b4421e0876771ff9ea7b",
+      "runtime_response_cases": 78,
+      "checks": 156,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-guardian-copy-contract.json"
+    },
+    {
+      "fixtures": ".local/privacy-response-delivery-20261109/http.json",
+      "sha256": "062ce1f4d2c9427423df4de851ff68e4ea6d0c47bd4416b108eeb3eca381721d",
+      "runtime_response_cases": 61,
+      "checks": 122,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-response-delivery-contract.json"
+    },
+    {
+      "fixtures": ".local/privacy-activity-copy-20261109/http.json",
+      "sha256": "15f95a7073a49b2e49999c01dfdcee9eab5561d8cc36811ff5a08bb0af79fe14",
+      "runtime_response_cases": 75,
+      "checks": 150,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-activity-copy-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-independent-20261109/http.json",
+      "sha256": "c410f9d19f673e40c91218b9d8cdd411720ad24dff9d71cc23d7caa85fd33103",
+      "runtime_response_cases": 35,
+      "checks": 70,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/prelaunch-independent-20261109-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-independent-20261109/matches-STOCK.json",
+      "sha256": "7620acb7e430fd9eaab9a247141211b741162b49019c77f31379e46bd53e0d06",
+      "runtime_response_cases": 4,
+      "checks": 8,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/prelaunch-matches-STOCK.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-independent-20261109/matches-AUDITION.json",
+      "sha256": "217276f3d8d9750408058ae447a3b60bf62ea444d647181681e28f1f6b4fab26",
+      "runtime_response_cases": 5,
+      "checks": 10,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/prelaunch-matches-AUDITION.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-security-copy-20261106/http.json",
+      "sha256": "029fb0124b08fa87e41d3cf71d201f9c7696af46e0cf13628bfea70345c55d1a",
+      "runtime_response_cases": 36,
+      "checks": 72,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-security-copy-contract.json"
+    },
+    {
+      "fixtures": ".local/prelaunch-security-copy-20261106/ranking-http.json",
+      "sha256": "a7d1ef31ff59faed331a5b5f97552bba75cf731431f30204762fe2a7fa8aec30",
+      "runtime_response_cases": 10,
+      "checks": 20,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/ranking-contract.json"
+    },
+    {
+      "fixtures": ".local/privacy-actions-http-fixtures.json",
+      "sha256": "5a48c6223031e768bed570ff60a6624b12760d034a18a6faa3e669e80c4b276c",
+      "runtime_response_cases": 58,
+      "checks": 116,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-actions-contract.json"
+    },
+    {
+      "fixtures": ".local/seven-privacy-http.json",
+      "sha256": "6bf7c00720479d0a9064b52460e5488e8ccf723d0331f3b5c0c02f18adc9dea0",
+      "runtime_response_cases": 13,
+      "checks": 26,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/privacy-execution-contract.json"
+    },
+    {
+      "fixtures": ".local/seven-media-http.json",
+      "sha256": "89f4ff17045d5faf45236f47bd95b850593a2d4732511cc7a823483d23787e24",
+      "runtime_response_cases": 5,
+      "checks": 10,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/media-contract.json"
+    },
+    {
+      "fixtures": ".local/discovery-http-fixtures.json",
+      "sha256": "bc45e644e071b444b172d0c5b7e84da3a8509f3b8321a8eba8e760dd651960cf",
+      "runtime_response_cases": 33,
+      "checks": 66,
+      "failures": [],
+      "report": ".local/ci-evidence/prelaunch-closure/discovery-contract.json"
+    }
+  ],
+  "common_checks": 19417,
+  "common_failures": [],
+  "runtime_file_count": 66,
+  "elapsed_seconds": 23.061
+}

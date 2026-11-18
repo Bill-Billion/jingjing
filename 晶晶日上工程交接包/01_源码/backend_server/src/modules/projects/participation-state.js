@@ -14,6 +14,7 @@ async function usable(tx,p,r,{confirmed=false}={}){
  const variants=[];
  for(const [key,kind] of [['look_version_id','LOOK'],['voice_version_id','VOICE']]){
   if(d.cast[key]===null){if(consent.data.consent.features.includes('VOICE'))throw error('PARTICIPATION_VOICE_REQUIRED',409);continue;}
+  if(!consent.data.consent.features.includes(kind==='LOOK'?'FACE':'VOICE'))throw error('PARTICIPATION_FEATURE_CONSENT_REQUIRED',409);
   const v=await A.load(tx,d.cast[key],kind);if(v.person_id!==person.id||v.avatar_id!==c.data.avatar_id||v.current_status!=='RECORDED')throw error('PARTICIPATION_VARIANT_MISMATCH',409);
   const archive=await A.load(tx,v.data.consent_id,'CONSENT');if(archive.current_status!=='APPROVED'||archive.person_id!==person.id||archive.avatar_id!==c.data.avatar_id||archive.data.grantee_party_id!==holder||!archive.data.purposes.includes('PRIVATE_ARCHIVE')||!archive.data.features.includes(kind==='LOOK'?'FACE':'VOICE')||!require('../artists/policy').active(archive.data,at))throw error('PARTICIPATION_VARIANT_CONSENT_REQUIRED',409);await A.assets(tx,v.data.material_asset_ids,holder,['AVATAR_MATERIAL']);variants.push({id:v.id,content_sha256:v.content_sha256});
  }
@@ -49,6 +50,6 @@ async function plan(tx,p,cast){
 }
 async function checkPlan(tx,p,pl,cast){const snap=await plan(tx,p,cast);if(digest(snap)!==digest(pl.data.participation||null))throw error('PARTICIPATION_PLAN_CHANGED',409);return snap;}
 async function delivery(tx,pl){for(const item of pl.data.participation?.agreements||[]){if(!item.order_id)continue;const o=C.checked(await C.one(tx,"SELECT * FROM trade_records WHERE id=? AND kind='ORDER' FOR SHARE",[item.order_id]));await orderGate(tx,o);if(o.current_status!=='PAID'||o.data.financial.refunded_minor)throw error('PARTICIPATION_DELIVERY_PAYMENT_REQUIRED',409);}}
-async function payment(tx,o,key){const r=await orderGate(tx,o);if(!r)return;if(!require('./participation-amendment').steps(r).start_payment_keys.includes(key)&&!await C.one(tx,'SELECT account_id FROM project_participation_milestones WHERE agreement_id=? AND installment_key=?',[r.id,key]))throw error('PARTICIPATION_MILESTONE_REQUIRED',409);}
+async function payment(tx,o,key){const r=await orderGate(tx,o);if(!r)return;if(r.data.amendment?.credit_funding?.length)await require('./participation-amendment').settled(tx,r);if(!require('./participation-amendment').steps(r).start_payment_keys.includes(key)&&!await C.one(tx,'SELECT account_id FROM project_participation_milestones WHERE agreement_id=? AND installment_key=?',[r.id,key]))throw error('PARTICIPATION_MILESTONE_REQUIRED',409);}
 function revenueMatch(info,rules){const expected=info.participation_revenue;if(info.participation_required&&!expected)throw error('PARTICIPATION_REVENUE_CONTRACT_REQUIRED',409);if(expected&& (rules.lines.length!==1||rules.lines[0].deductions.length||digest(rules.lines[0].shares)!==digest(expected.shares)))throw error('PARTICIPATION_REVENUE_CONTRACT_MISMATCH',409);}
 module.exports={conflicts,delivery,payment,usable,current,orderGate,plan,checkPlan,revenueMatch};

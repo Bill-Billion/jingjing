@@ -194,6 +194,12 @@ String communityError(Object error) {
   if (error.status == 412) return '这份记录已有新进展，已保留填写内容；请读取新版本后再次明确确认。';
   if ([401, 403, 404].contains(error.status)) return '记录不存在或当前身份已无权办理，私有内容已清空。';
   return const {
+        'CONSUMER_MONTHLY_LIMIT_EXCEEDED':
+            '本次操作超过你设置的月度额度，请到个人月度限额核对占用和待确认金额；不要重复付款。',
+        'CONSUMER_LIMIT_COOLING_PERIOD': '提高额度还需要等待，请刷新并核对最早可确认时间。',
+        'CONSUMER_LIMIT_CHANGE_NOT_PENDING': '该提额申请已处理或不存在，请读取当前记录。',
+        'CONSUMER_LIMIT_UNCHANGED': '额度与当前设置相同，请读取当前记录。',
+        'CONSUMER_USAGE_REVIEW_REQUIRED': '本月记录需要核对，暂不显示可用额度，请联系平台。',
         'CUSTODY_PROVIDER_NOT_CONNECTED': '资金托管服务尚未接通，不能充值或以托管余额付款。',
         'CUSTOMIZATION_ORDER_EXISTS': '这份故事已有原订单，请从原订单继续；追加制作需关联有效创意工单。',
         'COCREATION_NOT_READY': '有效人数、资料、授权或首款尚未齐备。',
@@ -201,6 +207,8 @@ String communityError(Object error) {
         'COCREATION_PARTICIPATION_REQUIRED': '参与条款已变化，请核对本次授权后重新确认。',
         'COCREATION_SNIPPET_NOT_READY': '该片段尚不满足领取条件。',
         'REDEMPTION_STOCK_UNAVAILABLE': '该权益库存不足或已停止兑换，请刷新目录。',
+        'LOTTERY_NOTICE_PERIOD': '奖池规则正在公示，尚未开放抽奖，请刷新查看开放时间。',
+        'LOTTERY_NOTICE_EXCEEDS_PERIOD': '公示期超过活动结束时间，请工作人员调整活动窗口。',
         'LOTTERY_STOCK_INSUFFICIENT': '奖品库存不足，本次未扣分，请刷新后再核对。',
         'REVIEW_FULFILLED_ORDER_REQUIRED':
             '这笔订单尚未同时满足正式付款、实际履约、无争议和双方独立要求，请先核对原订单。',
@@ -221,22 +229,45 @@ String communityError(Object error) {
 
 class CommunityApi {
   CommunityApi(this.session, this.domain) {
-    if (!['engagement', 'cocreation', 'redemption', 'privacy', 'projects']
-        .contains(domain)) {
+    if (![
+      'guardians',
+      'infringement',
+      'gigs',
+      'engagement',
+      'cocreation',
+      'redemption',
+      'wallet',
+      'privacy',
+      'projects',
+      'directory',
+      'discovery',
+      'support',
+      'invoices',
+      'me/collections',
+      'me/business'
+    ].contains(domain)) {
       throw ArgumentError.value(domain);
     }
   }
   final AccountSession session;
   final String domain;
   String get prefix => '/api/v1/$domain/';
-  bool get personal => domain == 'privacy';
+  bool get personal => [
+        'guardians',
+        'privacy',
+        'me/collections',
+        'directory',
+        'discovery'
+      ].contains(domain);
   String? party(bool account) {
     if (!session.isLoggedIn) {
       throw const AccountError(401, 'AUTHENTICATION_REQUIRED');
     }
     if ((domain == 'projects'
         ? session.projectsAccessDenied
-        : session.isDomainDenied(prefix))) {
+        : domain == 'gigs'
+            ? session.gigsAccessDenied
+            : session.isDomainDenied(prefix))) {
       throw const AccountError(403, 'ACCESS_DENIED');
     }
     if (account || personal) return null;
@@ -253,7 +284,9 @@ class CommunityApi {
         !session.isLoggedIn ||
         (domain == 'projects'
             ? session.projectsAccessDenied
-            : session.isDomainDenied(prefix)) ||
+            : domain == 'gigs'
+                ? session.gigsAccessDenied
+                : session.isDomainDenied(prefix)) ||
         p != null && p != session.partyId) {
       throw const AccountError(0, 'CONTEXT_CHANGED');
     }
@@ -280,11 +313,15 @@ class CommunityApi {
   Future<Map<String, dynamic>> write(String suffix, Map<String, dynamic> body,
       {bool account = false,
       int? version,
+      String? operationKey,
       String method = 'POST',
       FutureOr<void> Function(Map<String, dynamic>)? validate}) async {
     final p = party(account), e = session.epoch;
     final r = await session.write(method, path(suffix),
-        actingParty: p, body: body, version: version, validate: (r) async {
+        actingParty: p,
+        body: body,
+        version: version,
+        operationKey: operationKey, validate: (r) async {
       check(e, p);
       await validate?.call(r);
       check(e, p);
@@ -297,9 +334,12 @@ class CommunityApi {
           {bool account = false, String method = 'POST'}) =>
       session.pending(method, path(suffix), actingParty: party(account));
   Future<Uint8List> bytes(String suffix,
-      {bool account = false, String? sha256Value}) async {
+      {bool account = false,
+      String? sha256Value,
+      Map<String, dynamic>? query}) async {
     final p = party(account), e = session.epoch;
-    final b = await session.readBytes(path(suffix), actingParty: p);
+    final b =
+        await session.readBytes(path(suffix), actingParty: p, query: query);
     check(e, p);
     if (sha256Value != null) {
       communityRequire(sha256.convert(b).toString() == sha256Value);
@@ -326,7 +366,9 @@ class CommunityGate extends StatelessWidget {
     final permitted = s.isLoggedIn &&
         !(domain == 'projects'
             ? s.projectsAccessDenied
-            : s.isDomainDenied(prefix)) &&
+            : (domain == 'gigs'
+                ? s.gigsAccessDenied
+                : s.isDomainDenied(prefix))) &&
         (!partyRequired ||
             s.partyId != null &&
                 s.selected?['membership']?['current_status'] == 'ACTIVE' &&
@@ -342,7 +384,9 @@ class CommunityGate extends StatelessWidget {
           ? '请先登录，再查看属于你的业务。'
           : (domain == 'projects'
                   ? s.projectsAccessDenied
-                  : s.isDomainDenied(prefix))
+                  : (domain == 'gigs'
+                      ? s.gigsAccessDenied
+                      : s.isDomainDenied(prefix)))
               ? '当前访问权限已失效，私有资料已清空。请重新核对身份。'
               : '请先选择有效的办事身份。'),
       tradeButton(
@@ -355,11 +399,13 @@ class CommunityGate extends StatelessWidget {
                       builder: (_) => LoginPage(returnRoute: route)))),
       if ((domain == 'projects'
           ? s.projectsAccessDenied
-          : s.isDomainDenied(prefix)))
+          : (domain == 'gigs' ? s.gigsAccessDenied : s.isDomainDenied(prefix))))
         tradeButton('重新核对访问权限', () async {
           try {
             if (domain == 'projects') {
               await s.retryProjectsAccess();
+            } else if (domain == 'gigs') {
+              await s.retryGigsAccess();
             } else {
               await s.retryDomainAccess(prefix, personal: !partyRequired);
             }
@@ -373,6 +419,7 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
   AccountSession get session;
   String get domain;
   CommunityApi get api => CommunityApi(session, domain);
+  String get recoveryPrefix => api.prefix;
   bool busy = false, checking = false;
   String? error, notice;
   int ticket = 0;
@@ -394,8 +441,12 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
   @override
   void initState() {
     super.initState();
-    final pending =
-        session.pendingForPrefix(api.prefix, personal: api.personal);
+    final pending = session
+        .pendingForPrefix(recoveryPrefix, personal: api.personal)
+        .where((op) => !RegExp(
+                r'^/api/v1/cocreation/(?:rooms/[0-9a-f-]{36}/invite-links|invite-links/)')
+            .hasMatch(op['path']?.toString() ?? ''))
+        .toList();
     if (pending.isNotEmpty) {
       final op = pending.first, path = op['path'];
       if (path is String && path.startsWith(api.prefix)) {
@@ -439,7 +490,9 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
       if (e.status != 401 && e.code != 'CONTEXT_CHANGED') {
         domain == 'projects'
             ? session.denyProjects()
-            : session.denyDomain(api.prefix);
+            : domain == 'gigs'
+                ? session.denyGigs()
+                : session.denyDomain(api.prefix);
       }
     }
     error = communityError(e);

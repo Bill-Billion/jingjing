@@ -84,4 +84,7 @@ async function main() {
     else throw e;
   }
 }
-main().catch(e=>{console.error(e.code||'STOCK_SANDBOX_START_FAILED');process.exitCode=1;});
+const run = process.argv[2]?.startsWith('--pm03')
+  ? require('./test-fixtures/pm03-stock.cjs').run
+  : main;
+run().catch(e=>{console.error(e.code||'STOCK_SANDBOX_START_FAILED');process.exitCode=1;});

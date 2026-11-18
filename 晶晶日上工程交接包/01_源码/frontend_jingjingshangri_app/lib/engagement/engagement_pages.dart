@@ -1,3 +1,4 @@
+import '../contract_six/contract_six_pages.dart';
 import 'package:flutter/material.dart';
 import '../account/account_session.dart';
 import '../account/account_api.dart';
@@ -10,6 +11,7 @@ import '../artists/artists_models.dart';
 import '../supply/supply_api.dart';
 import '../supply/supply_files.dart';
 import 'community_support.dart';
+import 'ranking_explanation.dart';
 
 Map<String, dynamic> mcnDashboardForAccount(
     Map<String, dynamic> raw, String accountId,
@@ -484,6 +486,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
     final boards = communityMap(d['boards']);
     return [
       communityHeading('艺人榜单', '按发布时的业务事实形成快照，排名不代表付费推广。'),
+      RankingExplanation(session: session, id: widget.id!),
       communityFact('统计时间', communityDate(d['at'])),
       for (final b in [
         ('sales', '成交榜'),
@@ -745,6 +748,8 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                             -(communityMaybeMap(r['data'])['delta_minor']
                                 as int))
                         : '当前未记录冲回差额'),
+                ...sixFacts(
+                    communityMaybeMap(r['data'])['attribution'], '本单冻结的一级推荐归因'),
                 appNotice('此处是平台返佣义务记录，不代表已经转账到账。'),
                 communityRecordId(r)
               ]),
@@ -763,6 +768,8 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                   )
               ],
               enabled ? (v) => setState(() => order.text = v ?? '') : null),
+          for (final original in orders.where((r) => r.id == order.text))
+            ...sixFacts(original.quote['referral'], '原订单的直接推荐约定'),
           tradeButton(
               '核对该订单推荐结果',
               enabled && order.text.isNotEmpty
@@ -815,6 +822,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                         'READ_PROFILE': '读取资料',
                         'COMMISSION_PRODUCTION': '代办制作',
                         'MANAGE_AUDITIONS': '管理试镜',
+                        'MANAGE_MATERIALS': '管理艺人材料',
                         'COMMERCIAL_MESSAGES': '商单消息',
                         'READ_INCOME': '读取收入',
                         'MANAGE_LISTINGS': '管理上架'
@@ -875,6 +883,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             ('READ_PROFILE', '读取资料'),
             ('COMMISSION_PRODUCTION', '代办制作'),
             ('MANAGE_AUDITIONS', '管理试镜'),
+            ('MANAGE_MATERIALS', '管理艺人材料'),
             ('COMMERCIAL_MESSAGES', '商单消息'),
             ('READ_INCOME', '读取收入'),
             ('MANAGE_LISTINGS', '管理上架')

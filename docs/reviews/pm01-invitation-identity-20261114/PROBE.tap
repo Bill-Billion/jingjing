@@ -1,0 +1,309 @@
+TAP version 13
+# Subtest: explicit company buyer follows public artist invitation through a directly accepted commercial order
+    # Subtest: ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing
+    ok 1 - ordinary and invoice-only company members cannot use the public invitation entry; trade grant binds the real public listing
+      ---
+      duration_ms: 196.454
+      type: 'test'
+      ...
+    # Subtest: EXPIRED actual representative cannot submit new invitation
+    not ok 2 - EXPIRED actual representative cannot submit new invitation
+      ---
+      duration_ms: 29.2923
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\invitation-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"cfd902a2-3794-40c6-948c-a325574f13cf","actor":{"account_id":"f6e6a308-a915-4ab7-89a6-809070cdd6b0"},"acting_party":"56a8af68-66ed-4678-8781-4bacb99b0a85"},"data":{"id":"9fe8e476-5e55-4793-b369-3e6b0a7026dc","kind":"SUBMISSION","owner_party_id":"56a8af68-66ed-4678-8781-4bacb99b0a85","counterparty_id":"f239cf96-b55a-424e-9807-6472a76c98bb","parent_id":null,"created_by":"f6e6a308-a915-4ab7-89a6-809070cdd6b0","current_status":"IN_REVIEW","object_version":1,"content_sha256":"0f5015e306c14755e86871916ac8fea8db4c8dd9233d58e5e04de725e071b671","data":{"submission":{"avatar_id":"070ee590-5992-43de-80a2-007e2357336d","consent_id":"f8da840e-04ca-46cf-b43d-64cb29b3a6d2","content":"synthetic profile","kind":"INVITATION","material_asset_ids":[],"notice_id":null,"person_id":"8eabd140-f7ea-4dff-ae7b-d0a8a53b85da","purpose":"cooperation","role":null,"source_listing_id":"4170f085-a0a4-4b5f-9b14-ec52c1b3ad37","target_party_id":"f239cf96-b55a-424e-9807-6472a76c98bb"},"rule_id":"5f84e745-3282-4b4b-a6c4-032999630cfa","rule_sha256":"29e5bc2e1a9f317d925cc9f9d6a2fafd59cb394172af48a54503549c0c75adb5","expires_at":"2026-12-14T15:11:27.081Z","review":null,"decision":null,"case_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:33:98
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:32:117)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED actual representative cannot submit successful invitation replay
+    not ok 3 - EXPIRED actual representative cannot submit successful invitation replay
+      ---
+      duration_ms: 21.3935
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\invitation-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"cdf38750-ff4d-4743-814b-88ff000f20cd","actor":{"account_id":"f6e6a308-a915-4ab7-89a6-809070cdd6b0"},"acting_party":"56a8af68-66ed-4678-8781-4bacb99b0a85"},"data":{"id":"f2fb4596-1248-4e41-ac82-35532b8e57ba","kind":"SUBMISSION","owner_party_id":"56a8af68-66ed-4678-8781-4bacb99b0a85","counterparty_id":"f239cf96-b55a-424e-9807-6472a76c98bb","parent_id":null,"created_by":"f6e6a308-a915-4ab7-89a6-809070cdd6b0","current_status":"IN_REVIEW","object_version":1,"content_sha256":"c1971874735c2ae12db9f8cc39ede716de11ed3a3390a93042ff841cd01e3407","data":{"submission":{"avatar_id":"070ee590-5992-43de-80a2-007e2357336d","consent_id":"f8da840e-04ca-46cf-b43d-64cb29b3a6d2","content":"synthetic profile","kind":"INVITATION","material_asset_ids":[],"notice_id":null,"person_id":"8eabd140-f7ea-4dff-ae7b-d0a8a53b85da","purpose":"cooperation","role":null,"source_listing_id":"4170f085-a0a4-4b5f-9b14-ec52c1b3ad37","target_party_id":"f239cf96-b55a-424e-9807-6472a76c98bb"},"rule_id":"5f84e745-3282-4b4b-a6c4-032999630cfa","rule_sha256":"29e5bc2e1a9f317d925cc9f9d6a2fafd59cb394172af48a54503549c0c75adb5","expires_at":"2026-12-14T15:11:27.021Z","review":null,"decision":null,"case_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:33:98
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:32:117)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: EXPIRED representative retains authorized own pending invitation read
+    ok 4 - EXPIRED representative retains authorized own pending invitation read
+      ---
+      duration_ms: 7.8834
+      type: 'test'
+      ...
+    # Subtest: EXPIRED actual representative prevents pending invitation review from sending
+    not ok 5 - EXPIRED actual representative prevents pending invitation review from sending
+      ---
+      duration_ms: 24.4897
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\invitation-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"4a2007b4-c98b-4bee-b169-d29350995700","actor":{"account_id":"a2d16b17-f564-4363-be57-a763ed0f87e7"},"acting_party":null},"data":{"id":"89eabb3e-50a3-49c7-8920-31bfe95e916f","kind":"SUBMISSION","owner_party_id":"56a8af68-66ed-4678-8781-4bacb99b0a85","counterparty_id":"f239cf96-b55a-424e-9807-6472a76c98bb","parent_id":null,"created_by":"f6e6a308-a915-4ab7-89a6-809070cdd6b0","current_status":"SENT","object_version":2,"content_sha256":"48c1f2aef7ebb3d9bdc11cb7e9c00c3a8d4e1591dee4ed02add4cd9046c2de7f","data":{"review":{"account_id":"a2d16b17-f564-4363-be57-a763ed0f87e7","decision":"APPROVE","checks":{"content_reviewed":true,"materials_reviewed":true,"no_private_contact":true},"reason":"Independent synthetic invitation review","method":"EXTERNAL_MANUAL_REVIEW"},"case_id":null,"rule_id":"5f84e745-3282-4b4b-a6c4-032999630cfa","decision":null,"expires_at":"2026-12-14T15:11:27.145Z","submission":{"kind":"INVITATION","role":null,"content":"synthetic profile","purpose":"cooperation","avatar_id":"070ee590-5992-43de-80a2-007e2357336d","notice_id":null,"person_id":"8eabd140-f7ea-4dff-ae7b-d0a8a53b85da","consent_id":"f8da840e-04ca-46cf-b43d-64cb29b3a6d2","target_party_id":"f239cf96-b55a-424e-9807-6472a76c98bb","source_listing_id":"4170f085-a0a4-4b5f-9b14-ec52c1b3ad37","material_asset_ids":[]},"rule_sha256":"29e5bc2e1a9f317d925cc9f9d6a2fafd59cb394172af48a54503549c0c75adb5"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:40:172
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:40:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED actual representative cannot submit new invitation
+    not ok 6 - REJECTED actual representative cannot submit new invitation
+      ---
+      duration_ms: 29.0034
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\invitation-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"f04aefce-52ea-4c45-a3f1-b718d55d5dee","actor":{"account_id":"f6e6a308-a915-4ab7-89a6-809070cdd6b0"},"acting_party":"56a8af68-66ed-4678-8781-4bacb99b0a85"},"data":{"id":"5997b2bf-1544-43f5-9b95-6c9de8de3f20","kind":"SUBMISSION","owner_party_id":"56a8af68-66ed-4678-8781-4bacb99b0a85","counterparty_id":"f239cf96-b55a-424e-9807-6472a76c98bb","parent_id":null,"created_by":"f6e6a308-a915-4ab7-89a6-809070cdd6b0","current_status":"IN_REVIEW","object_version":1,"content_sha256":"dfe26b2a3e8bd088afddec8c972e48693c5d82cc3f7ca8c7a72b76f86315d4a5","data":{"submission":{"avatar_id":"070ee590-5992-43de-80a2-007e2357336d","consent_id":"f8da840e-04ca-46cf-b43d-64cb29b3a6d2","content":"synthetic profile","kind":"INVITATION","material_asset_ids":[],"notice_id":null,"person_id":"8eabd140-f7ea-4dff-ae7b-d0a8a53b85da","purpose":"cooperation","role":null,"source_listing_id":"4170f085-a0a4-4b5f-9b14-ec52c1b3ad37","target_party_id":"f239cf96-b55a-424e-9807-6472a76c98bb"},"rule_id":"5f84e745-3282-4b4b-a6c4-032999630cfa","rule_sha256":"29e5bc2e1a9f317d925cc9f9d6a2fafd59cb394172af48a54503549c0c75adb5","expires_at":"2026-12-14T15:11:27.214Z","review":null,"decision":null,"case_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:33:98
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:32:117)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED actual representative cannot submit successful invitation replay
+    not ok 7 - REJECTED actual representative cannot submit successful invitation replay
+      ---
+      duration_ms: 20.9689
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\invitation-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"4ebb4768-a85d-48d2-bc7a-7b0fe54278fb","actor":{"account_id":"f6e6a308-a915-4ab7-89a6-809070cdd6b0"},"acting_party":"56a8af68-66ed-4678-8781-4bacb99b0a85"},"data":{"id":"f2fb4596-1248-4e41-ac82-35532b8e57ba","kind":"SUBMISSION","owner_party_id":"56a8af68-66ed-4678-8781-4bacb99b0a85","counterparty_id":"f239cf96-b55a-424e-9807-6472a76c98bb","parent_id":null,"created_by":"f6e6a308-a915-4ab7-89a6-809070cdd6b0","current_status":"IN_REVIEW","object_version":1,"content_sha256":"c1971874735c2ae12db9f8cc39ede716de11ed3a3390a93042ff841cd01e3407","data":{"submission":{"avatar_id":"070ee590-5992-43de-80a2-007e2357336d","consent_id":"f8da840e-04ca-46cf-b43d-64cb29b3a6d2","content":"synthetic profile","kind":"INVITATION","material_asset_ids":[],"notice_id":null,"person_id":"8eabd140-f7ea-4dff-ae7b-d0a8a53b85da","purpose":"cooperation","role":null,"source_listing_id":"4170f085-a0a4-4b5f-9b14-ec52c1b3ad37","target_party_id":"f239cf96-b55a-424e-9807-6472a76c98bb"},"rule_id":"5f84e745-3282-4b4b-a6c4-032999630cfa","rule_sha256":"29e5bc2e1a9f317d925cc9f9d6a2fafd59cb394172af48a54503549c0c75adb5","expires_at":"2026-12-14T15:11:27.021Z","review":null,"decision":null,"case_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:33:98
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:32:117)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: REJECTED representative retains authorized own pending invitation read
+    ok 8 - REJECTED representative retains authorized own pending invitation read
+      ---
+      duration_ms: 8.2668
+      type: 'test'
+      ...
+    # Subtest: REJECTED actual representative prevents pending invitation review from sending
+    not ok 9 - REJECTED actual representative prevents pending invitation review from sending
+      ---
+      duration_ms: 25.3491
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\invitation-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"531f6973-1721-4e93-be27-b0b9281b3a04","actor":{"account_id":"a2d16b17-f564-4363-be57-a763ed0f87e7"},"acting_party":null},"data":{"id":"c3f5909c-368b-445d-bae6-a06d7bc26f6c","kind":"SUBMISSION","owner_party_id":"56a8af68-66ed-4678-8781-4bacb99b0a85","counterparty_id":"f239cf96-b55a-424e-9807-6472a76c98bb","parent_id":null,"created_by":"f6e6a308-a915-4ab7-89a6-809070cdd6b0","current_status":"SENT","object_version":2,"content_sha256":"097ff4e7cb0c99854348f8b0e89bba475d6c7c8814b38614bbad788f15187b3d","data":{"review":{"account_id":"a2d16b17-f564-4363-be57-a763ed0f87e7","decision":"APPROVE","checks":{"content_reviewed":true,"materials_reviewed":true,"no_private_contact":true},"reason":"Independent synthetic invitation review","method":"EXTERNAL_MANUAL_REVIEW"},"case_id":null,"rule_id":"5f84e745-3282-4b4b-a6c4-032999630cfa","decision":null,"expires_at":"2026-12-14T15:11:27.279Z","submission":{"kind":"INVITATION","role":null,"content":"synthetic profile","purpose":"cooperation","avatar_id":"070ee590-5992-43de-80a2-007e2357336d","notice_id":null,"person_id":"8eabd140-f7ea-4dff-ae7b-d0a8a53b85da","consent_id":"f8da840e-04ca-46cf-b43d-64cb29b3a6d2","target_party_id":"f239cf96-b55a-424e-9807-6472a76c98bb","source_listing_id":"4170f085-a0a4-4b5f-9b14-ec52c1b3ad37","material_asset_ids":[]},"rule_sha256":"29e5bc2e1a9f317d925cc9f9d6a2fafd59cb394172af48a54503549c0c75adb5"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:40:172
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:40:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED actual representative cannot submit new invitation
+    not ok 10 - UNVERIFIED actual representative cannot submit new invitation
+      ---
+      duration_ms: 22.4107
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\invitation-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"ce410be5-7c35-4a66-b864-9adbfa61b2e8","actor":{"account_id":"f6e6a308-a915-4ab7-89a6-809070cdd6b0"},"acting_party":"56a8af68-66ed-4678-8781-4bacb99b0a85"},"data":{"id":"a8d6cc13-014b-4cbd-9d10-936b63c997b7","kind":"SUBMISSION","owner_party_id":"56a8af68-66ed-4678-8781-4bacb99b0a85","counterparty_id":"f239cf96-b55a-424e-9807-6472a76c98bb","parent_id":null,"created_by":"f6e6a308-a915-4ab7-89a6-809070cdd6b0","current_status":"IN_REVIEW","object_version":1,"content_sha256":"befbecc6644d4e6b3dc8031e85738784598b8e7ab6e60c09e3da363eb624fdd6","data":{"submission":{"avatar_id":"070ee590-5992-43de-80a2-007e2357336d","consent_id":"f8da840e-04ca-46cf-b43d-64cb29b3a6d2","content":"synthetic profile","kind":"INVITATION","material_asset_ids":[],"notice_id":null,"person_id":"8eabd140-f7ea-4dff-ae7b-d0a8a53b85da","purpose":"cooperation","role":null,"source_listing_id":"4170f085-a0a4-4b5f-9b14-ec52c1b3ad37","target_party_id":"f239cf96-b55a-424e-9807-6472a76c98bb"},"rule_id":"5f84e745-3282-4b4b-a6c4-032999630cfa","rule_sha256":"29e5bc2e1a9f317d925cc9f9d6a2fafd59cb394172af48a54503549c0c75adb5","expires_at":"2026-12-14T15:11:27.338Z","review":null,"decision":null,"case_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:33:98
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:32:117)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED actual representative cannot submit successful invitation replay
+    not ok 11 - UNVERIFIED actual representative cannot submit successful invitation replay
+      ---
+      duration_ms: 19.3581
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\invitation-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"90dedd14-4e58-49b3-9f44-512d1e91aa39","actor":{"account_id":"f6e6a308-a915-4ab7-89a6-809070cdd6b0"},"acting_party":"56a8af68-66ed-4678-8781-4bacb99b0a85"},"data":{"id":"f2fb4596-1248-4e41-ac82-35532b8e57ba","kind":"SUBMISSION","owner_party_id":"56a8af68-66ed-4678-8781-4bacb99b0a85","counterparty_id":"f239cf96-b55a-424e-9807-6472a76c98bb","parent_id":null,"created_by":"f6e6a308-a915-4ab7-89a6-809070cdd6b0","current_status":"IN_REVIEW","object_version":1,"content_sha256":"c1971874735c2ae12db9f8cc39ede716de11ed3a3390a93042ff841cd01e3407","data":{"submission":{"avatar_id":"070ee590-5992-43de-80a2-007e2357336d","consent_id":"f8da840e-04ca-46cf-b43d-64cb29b3a6d2","content":"synthetic profile","kind":"INVITATION","material_asset_ids":[],"notice_id":null,"person_id":"8eabd140-f7ea-4dff-ae7b-d0a8a53b85da","purpose":"cooperation","role":null,"source_listing_id":"4170f085-a0a4-4b5f-9b14-ec52c1b3ad37","target_party_id":"f239cf96-b55a-424e-9807-6472a76c98bb"},"rule_id":"5f84e745-3282-4b4b-a6c4-032999630cfa","rule_sha256":"29e5bc2e1a9f317d925cc9f9d6a2fafd59cb394172af48a54503549c0c75adb5","expires_at":"2026-12-14T15:11:27.021Z","review":null,"decision":null,"case_id":null}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:33:98
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:32:117)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: UNVERIFIED representative retains authorized own pending invitation read
+    ok 12 - UNVERIFIED representative retains authorized own pending invitation read
+      ---
+      duration_ms: 11.6944
+      type: 'test'
+      ...
+    # Subtest: UNVERIFIED actual representative prevents pending invitation review from sending
+    not ok 13 - UNVERIFIED actual representative prevents pending invitation review from sending
+      ---
+      duration_ms: 21.7426
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\invitation-identity-probe.cjs:18:89'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"status":200,"meta":{"request_id":"a794c2c8-2d9a-453e-ba21-9cde1efec31f","actor":{"account_id":"a2d16b17-f564-4363-be57-a763ed0f87e7"},"acting_party":null},"data":{"id":"c927a2af-aaec-4685-b556-0f7c1588cf75","kind":"SUBMISSION","owner_party_id":"56a8af68-66ed-4678-8781-4bacb99b0a85","counterparty_id":"f239cf96-b55a-424e-9807-6472a76c98bb","parent_id":null,"created_by":"f6e6a308-a915-4ab7-89a6-809070cdd6b0","current_status":"SENT","object_version":2,"content_sha256":"418b4ef6f3565eab364bfb739cd3a8fd7585e0785bf25a230b9d9158c4c23c79","data":{"review":{"account_id":"a2d16b17-f564-4363-be57-a763ed0f87e7","decision":"APPROVE","checks":{"content_reviewed":true,"materials_reviewed":true,"no_private_contact":true},"reason":"Independent synthetic invitation review","method":"EXTERNAL_MANUAL_REVIEW"},"case_id":null,"rule_id":"5f84e745-3282-4b4b-a6c4-032999630cfa","decision":null,"expires_at":"2026-12-14T15:11:27.395Z","submission":{"kind":"INVITATION","role":null,"content":"synthetic profile","purpose":"cooperation","avatar_id":"070ee590-5992-43de-80a2-007e2357336d","notice_id":null,"person_id":"8eabd140-f7ea-4dff-ae7b-d0a8a53b85da","consent_id":"f8da840e-04ca-46cf-b43d-64cb29b3a6d2","target_party_id":"f239cf96-b55a-424e-9807-6472a76c98bb","source_listing_id":"4170f085-a0a4-4b5f-9b14-ec52c1b3ad37","material_asset_ids":[]},"rule_sha256":"29e5bc2e1a9f317d925cc9f9d6a2fafd59cb394172af48a54503549c0c75adb5"}}}
+        
+        200 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 200
+      operator: 'strictEqual'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:40:172
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:18:106)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\.local\invitation-identity-probe.cjs:40:4)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch
+    ok 14 - pending invitation review rechecks its representative; artist alone decides interest and company rights do not follow a company switch
+      ---
+      duration_ms: 113.319
+      type: 'test'
+      ...
+    # Subtest: representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP
+    ok 15 - representative directly creates the company commercial request and accepts its independently reviewed offer over HTTP
+      ---
+      duration_ms: 523.819
+      type: 'test'
+      ...
+    # Subtest: buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages
+    ok 16 - buyer-only listing and notifications filter supplier offers and agency records even on empty cursor pages
+      ---
+      duration_ms: 112.1793
+      type: 'test'
+      ...
+    # Subtest: independent support links that invitation to the exact quote, and the representative pays the original company order
+    ok 17 - independent support links that invitation to the exact quote, and the representative pays the original company order
+      ---
+      duration_ms: 157.1241
+      type: 'test'
+      ...
+    # Subtest: revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged
+    ok 18 - revocation hides all buyer entry points and old commands, while original company order and public artist stay unchanged
+      ---
+      duration_ms: 104.4609
+      type: 'test'
+      ...
+    1..18
+not ok 1 - explicit company buyer follows public artist invitation through a directly accepted commercial order
+  ---
+  duration_ms: 41495.1805
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\.local\\invitation-identity-probe.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '9 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 19
+# suites 0
+# pass 9
+# fail 10
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 41697.7733

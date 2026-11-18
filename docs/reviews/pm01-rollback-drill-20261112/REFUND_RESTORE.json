@@ -1,0 +1,107 @@
+{
+  "synthetic_only": true,
+  "evidence": [
+    {
+      "check": "frozen_unknown_refund",
+      "case_id": "8567a54b-4eab-4323-a021-2a789a76654e",
+      "recharge_id": "41cbc89a-b13b-41d5-89ef-9f425511b04d",
+      "job_id": "0d1a47ae-adc4-4061-be96-f6077ee665ce",
+      "reserved_minor": 1000,
+      "send_count": 1
+    },
+    {
+      "check": "same_case_job_wallet_restored",
+      "case_id": "8567a54b-4eab-4323-a021-2a789a76654e",
+      "job_id": "0d1a47ae-adc4-4061-be96-f6077ee665ce",
+      "source_sha256": "e7046f0d4268ea41f6d3301d160b4c0c6e7794499394163dfcf6af431234c159",
+      "tables": 179,
+      "external_objects_restored": false
+    },
+    {
+      "check": "quarantine_blocks_dispatch",
+      "http_bootstrap_refused": true,
+      "worker_refused": true,
+      "send_count": 1,
+      "query_count": 0,
+      "source_unchanged": true
+    },
+    {
+      "check": "running_lease_invalidated",
+      "case_id": "8567a54b-4eab-4323-a021-2a789a76654e",
+      "job_id": "0d1a47ae-adc4-4061-be96-f6077ee665ce",
+      "invalidated_job_leases": 2,
+      "attempts_preserved": true,
+      "source_lease_unchanged": true
+    },
+    {
+      "check": "old_lease_writes_refused",
+      "heartbeat": true,
+      "provider_task": true,
+      "finish": true
+    },
+    {
+      "check": "old_lease_money_refused",
+      "case_id": "8567a54b-4eab-4323-a021-2a789a76654e",
+      "reserved_minor": 1000
+    },
+    {
+      "check": "read_only_pending_work_visible",
+      "retry_count": 2,
+      "pending_count": 1,
+      "production_release": "NOT_APPROVED",
+      "quarantine_preserved": true,
+      "task_rows_unchanged": true
+    },
+    {
+      "check": "latest_privacy_register_replayed",
+      "synthetic_register": true,
+      "file_download_refused": true,
+      "account_closed": true,
+      "session_revoked": true,
+      "quarantine_preserved": true
+    },
+    {
+      "check": "restored_original_query_and_completion_recovery",
+      "case_id": "8567a54b-4eab-4323-a021-2a789a76654e",
+      "job_id": "0d1a47ae-adc4-4061-be96-f6077ee665ce",
+      "total_send_count": 1,
+      "restored_query_count": 1,
+      "receipt_count": 1,
+      "reserved_minor": 0,
+      "source_unchanged": true,
+      "quarantine_preserved": true,
+      "internal_engine_only": true
+    },
+    {
+      "check": "attempt_budget_preserved",
+      "job_id": "37061900-2b98-4ca1-b548-1ccef86a9418",
+      "attempts": 1,
+      "max_attempts": 1,
+      "status": "FAILED"
+    },
+    {
+      "check": "second_restore_keeps_facts_not_old_approval",
+      "case_id": "8567a54b-4eab-4323-a021-2a789a76654e",
+      "settlement_preserved": true,
+      "erasure_register_preserved": true,
+      "old_approval_cleared": true,
+      "quarantine_preserved": true
+    },
+    {
+      "check": "fencing_failure_atomic_rollback",
+      "wallet_rows": 0,
+      "job_rows": 0,
+      "quarantine_preserved": true,
+      "source_unchanged": true
+    }
+  ],
+  "limits": [
+    "synthetic normalized custody provider only",
+    "internal recovery invocation only; no recovery approval or HTTP/worker bootstrap",
+    "no restored refund send; original request query only",
+    "synthetic latest erasure register; no actual customer erasure or external byte deletion",
+    "external private file bytes are not in this database backup",
+    "not a real legacy database migration or production recovery",
+    "no frontend"
+  ]
+}

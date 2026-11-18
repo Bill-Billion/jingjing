@@ -1,0 +1,114 @@
+{
+  "result": "PASS",
+  "phase": "coupon-cancel",
+  "synthetic_only": true,
+  "base_url": "http://127.0.0.1:61601/api/v1",
+  "checks": [
+    {
+      "name": "App真实取消未开工全额权益订单",
+      "result": "PASS"
+    },
+    {
+      "name": "取消后原权益真实释放且没有现金退款",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "action-full-coupon-cancelled.png",
+      "route": "/trade/record?recordId=675aeab6-de64-4255-b64d-8ad8eab5dea3",
+      "source": "35-orders-aftercare.png",
+      "note": "",
+      "width": 390,
+      "height": 844,
+      "sha256": "f4be735ccd79e2adb376fd7fbba1d6802932115de1c1c67622b322161a7fa2d5"
+    }
+  ],
+  "network": [
+    {
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records/675aeab6-de64-4255-b64d-8ad8eab5dea3",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/privacy/preferences",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/production/projects",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/orders/675aeab6-de64-4255-b64d-8ad8eab5dea3/cancellation",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records/675aeab6-de64-4255-b64d-8ad8eab5dea3",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "role": "buyer",
+      "path": "/api/v1/production/projects",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "writes": [
+    {
+      "path": "/api/v1/trade/orders/675aeab6-de64-4255-b64d-8ad8eab5dea3/cancellation",
+      "method": "POST",
+      "body_sha256": "b82b75c6311e8ff41bbe17800311a9330d23eebda67920372c9e00f766ef000d",
+      "key_sha256": "39278f9ab2201ea1831773c26d3ec8a0c801edc7a8402525ab4daa335682a275",
+      "version": "\"1\""
+    }
+  ],
+  "created": {
+    "cancelled_order_id": "675aeab6-de64-4255-b64d-8ad8eab5dea3"
+  },
+  "errors": []
+}

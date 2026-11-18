@@ -1,0 +1,33 @@
+{
+  "observed_on": "2026-11-17",
+  "scope": "Plan and source-evidence alignment; no frontend/runtime testing",
+  "checks": [
+    {
+      "command": "python -X utf8 scripts/collaboration_check.py --render",
+      "exit_code": 0,
+      "result": "PASS",
+      "tasks": 157,
+      "current_doc_links": 2304,
+      "application_tests": "NOT_RUN"
+    },
+    {
+      "command": "python -X utf8 scripts/acceptance_progress.py --check",
+      "exit_code": 0,
+      "output": "Acceptance progress matches all 151 entries."
+    },
+    {
+      "command": "python -X utf8 scripts/acceptance_work_queue.py --check",
+      "exit_code": 0,
+      "output": "{\"registered\": 151, \"statuses\": {\"NOT_RUN\": 8, \"PARTIAL\": 124, \"PASS\": 19}, \"partial_links\": 133, \"status_changed\": false, \"output\": \"docs\\\\testing\\\\ACCEPTANCE_WORK_QUEUE_20261102.md\"}"
+    },
+    {
+      "command": "git -c core.safecrlf=false diff --check",
+      "exit_code": 0,
+      "output": ""
+    }
+  ],
+  "backend": "8a7ac3115cb103ad7778d77276f7464ca03c3e15",
+  "frontend": "25083e63976075d32d257926224a885c80977d0b",
+  "global_status_changed": false,
+  "material_audit": "Exact commit inspected after commit; upload receipt retained locally."
+}

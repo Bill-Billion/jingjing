@@ -1,0 +1,136 @@
+TAP version 13
+# Subtest: lottery actual HTTP: immutable odds, independent review, stock and atomic points
+    # Subtest: creator cannot approve; rules and finance require separate reviewers; unpublished draw denied
+    ok 1 - creator cannot approve; rules and finance require separate reviewers; unpublished draw denied
+      ---
+      duration_ms: 209.4527
+      type: 'test'
+      ...
+    # Subtest: newly reviewed pools publish seven-day notice before drawing; no points or stock deducted
+    ok 2 - newly reviewed pools publish seven-day notice before drawing; no points or stock deducted
+      ---
+      duration_ms: 42.3509
+      type: 'test'
+      ...
+    # Subtest: reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected
+    ok 3 - reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected
+      ---
+      duration_ms: 53.751
+      type: 'test'
+      ...
+    # Subtest: retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge
+    ok 4 - retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge
+      ---
+      duration_ms: 109.2357
+      type: 'test'
+      ...
+    # Subtest: insufficient points rolls back draw, stock and command; retired version preserves old results
+    ok 5 - insufficient points rolls back draw, stock and command; retired version preserves old results
+      ---
+      duration_ms: 212.4647
+      type: 'test'
+      ...
+    # Subtest: ten guarantee survives mostly no-win pool and records actual conditional draws
+    ok 6 - ten guarantee survives mostly no-win pool and records actual conditional draws
+      ---
+      duration_ms: 113.5245
+      type: 'test'
+      ...
+    # Subtest: new-contract pool cannot draw before a consumer policy is independently reviewed
+    ok 7 - new-contract pool cannot draw before a consumer policy is independently reviewed
+      ---
+      duration_ms: 85.4106
+      type: 'test'
+      ...
+    # Subtest: rational confirmation and participation limits precede point deduction; recovery returns original winners
+    ok 8 - rational confirmation and participation limits precede point deduction; recovery returns original winners
+      ---
+      duration_ms: 172.729
+      type: 'test'
+      ...
+    # Subtest: same actual winning interview cancels pending schedule on extension and fallback without redrawing
+    ok 9 - same actual winning interview cancels pending schedule on extension and fallback without redrawing
+      ---
+      duration_ms: 265.4153
+      type: 'test'
+      ...
+    # Subtest: same drawn interview expires then receives one reviewed fallback; retired-pool replay preserves original winners and stake
+    ok 10 - same drawn interview expires then receives one reviewed fallback; retired-pool replay preserves original winners and stake
+      ---
+      duration_ms: 217.8061
+      type: 'test'
+      ...
+    # Subtest: actual winning interview not selected can receive one reviewed fallback without redrawing or cancelling the completed appointment
+    not ok 11 - actual winning interview not selected can receive one reviewed fallback without redrawing or cancelling the completed appointment
+      ---
+      duration_ms: 278.9583
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\support\\lottery-interview-nonselection.cjs:38:10'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        
+          Comparison {
+        +   code: 'VERIFIED_ADULT_REQUIRED'
+        -   code: 'REDEMPTION_NOT_FOUND'
+          }
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        code: 'REDEMPTION_NOT_FOUND'
+      actual:
+      error: 'VERIFIED_ADULT_REQUIRED'
+      stack: |-
+        request (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\redemption-lottery.integration.test.cjs:13:758)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async waitForActual (node:assert:644:5)
+        async Function.rejects (node:assert:767:25)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\lottery-interview-nonselection.cjs:42:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async module.exports (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\lottery-interview-nonselection.cjs:38:2)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\redemption-lottery.integration.test.cjs:139:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      operator: 'rejects'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\lottery-interview-nonselection.cjs:42:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async module.exports (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\support\lottery-interview-nonselection.cjs:38:2)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\client-testing\晶晶日上工程交接包\01_源码\backend_server\test\redemption-lottery.integration.test.cjs:139:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: not-selected interview can extend once, preserve the first attempt, and resolve a second unsuccessful attempt on the same grant
+    ok 12 - not-selected interview can extend once, preserve the first attempt, and resolve a second unsuccessful attempt on the same grant
+      ---
+      duration_ms: 371.2536
+      type: 'test'
+      ...
+    # Subtest: completed interview without an explicit not-selected result stays ineligible for this remedy
+    ok 13 - completed interview without an explicit not-selected result stays ineligible for this remedy
+      ---
+      duration_ms: 230.7287
+      type: 'test'
+      ...
+    1..13
+not ok 1 - lottery actual HTTP: immutable odds, independent review, stock and atomic points
+  ---
+  duration_ms: 9238.4212
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\client-testing\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\redemption-lottery.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 14
+# suites 0
+# pass 12
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9439.0474

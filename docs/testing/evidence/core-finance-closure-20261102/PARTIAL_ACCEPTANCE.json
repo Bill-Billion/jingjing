@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "kind": "partial_contract_extension_evidence",
+  "result": "LOCAL_VALIDATED_NOT_FORMAL_ACCEPTANCE",
+  "base_sha": "86a0ab9267a08f9ac125b8751ad7067c4aa59b46",
+  "working_tree": true,
+  "interface_version": "0.31.23-rc.1",
+  "migration": "0204",
+  "formal_151_pass_count": 0,
+  "items": [
+    {
+      "id": "FIN-01",
+      "work": "五类每日核对、独立复核和历史",
+      "groups": [
+        11,
+        12,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-08.04",
+        "TASK-11"
+      ],
+      "actual": "隔离MySQL/HTTP正常及差异、权限、原键恢复、迟到账和凭据失效通过；手续费/银行人工依据明确",
+      "evidence": [
+        "daily-reconciliation.log",
+        "settlement.log"
+      ],
+      "limits": "运营新页面未接；无真实银行/支付直连；新合同扩展不代表原标准全部通过"
+    },
+    {
+      "id": "FIN-02",
+      "work": "新版小额分钱与旧约定保留",
+      "groups": [
+        11,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-08.04"
+      ],
+      "actual": "多金额、多方及退款余额计算总额守恒、非负、平台尾差≤1分；原算法异常识别并阻止新增付款",
+      "evidence": [
+        "daily-reconciliation.log",
+        "backend-full.log"
+      ],
+      "limits": "算法属于实施补全，须新规则审批和配置启用；历史异常不自动改账"
+    },
+    {
+      "id": "COMBINED-01",
+      "work": "同版商用现货办理",
+      "groups": [
+        1,
+        2,
+        11,
+        16,
+        17
+      ],
+      "standards": [
+        "E2E-01",
+        "TASK-01"
+      ],
+      "actual": "Vue规格/授权/审核、机构下单恢复、同单私有下载及退款失权通过",
+      "evidence": [
+        "stock-browser.json"
+      ],
+      "limits": "合成付款/退款及素材，未重跑原生全链；不是全部E2E-01通过"
+    },
+    {
+      "id": "COMBINED-02",
+      "work": "同版定制两种版权及分期交付",
+      "groups": [
+        11,
+        15,
+        16,
+        17
+      ],
+      "standards": [
+        "E2E-02",
+        "TASK-15"
+      ],
+      "actual": "两种版权各一单Vue从私稿至30/40/30制作、异议重发、实际下载；旧合同保留",
+      "evidence": [
+        "copyright-buyer-browser.json",
+        "copyright-producer-browser.json"
+      ],
+      "limits": "制作文件及支付审核合成；未在原生完成同两单"
+    },
+    {
+      "id": "COMBINED-03",
+      "work": "同版IP买断与分红",
+      "groups": [
+        11,
+        16,
+        17
+      ],
+      "standards": [
+        "TASK-11"
+      ],
+      "actual": "Vue两种采购、证据、独审、生效、绑定、开发/上线及分红应计；断网刷新原键恢复",
+      "evidence": [
+        "ip-browser.json"
+      ],
+      "limits": "无真实签署或付款；分红应计不等于到账，原生沿用队友证据未本机重跑"
+    }
+  ]
+}

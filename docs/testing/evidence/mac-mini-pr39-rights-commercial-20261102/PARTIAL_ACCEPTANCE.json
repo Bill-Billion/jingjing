@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "kind": "partial_contract_extension_evidence",
+  "result": "LOCAL_VALIDATED_NOT_FORMAL_ACCEPTANCE",
+  "base_sha": "a509d64462aeefbd7a13d058a3aeeb270c564c15",
+  "working_tree": true,
+  "checked_at": "2026-11-02T14:39:53.583554+00:00",
+  "source_manifest": "docs/testing/evidence/mac-mini-pr39-rights-commercial-20261102/SOURCE_MANIFEST.json",
+  "interface_version": "0.31.22-rc.1",
+  "migration": "0201",
+  "formal_151_pass_count": 0,
+  "items": [
+    {
+      "id": "RC-01",
+      "work": "定制版权主动选择与原合同",
+      "groups": [
+        11,
+        15,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-15.03",
+        "TASK-15",
+        "E2E-02"
+      ],
+      "expected": "新报价明确选两种版权之一，客户付款前看到归属和许可；30/40/30、脚本确认、交付及原单不变。",
+      "actual": "两种模式各一单真实Vue办理至成片下载；无选择、陌生账号及旧单保护由MySQL专项验证。App字段、展示及校验已接并经单元/构建验证，本批未重走完整原生定制付款链。",
+      "evidence": [
+        "copyright-buyer.json",
+        "copyright-producer.json",
+        "copyright-ip-stock-mysql.log",
+        "app-tests.log"
+      ],
+      "limits": "原ACC-DEL-15.03保留旧90%/10%原文；新30/40/30依据20261029合同单列。未覆盖完整E2E-02所有跨端案例。"
+    },
+    {
+      "id": "RC-02",
+      "work": "样片版权和人格权、本人确认",
+      "groups": [
+        1,
+        2,
+        5,
+        11
+      ],
+      "standards": [
+        "ACC-DEL-05.01",
+        "ACC-DEL-05.02",
+        "TASK-02"
+      ],
+      "expected": "新记录分开成片版权人及人格权人，机构只能代办，不能代本人确认；旧ARTIST_RETAINS_OWNERSHIP原文保留。",
+      "actual": "Vue三个绑定含真实本人提交；Android机构与艺人同一新/旧绑定读取、勾选及确认，API持久化后Vue复核；机构API拒绝404、页面禁用。新旧50/50完整交付/取消/撤权另有20项MySQL专项。",
+      "evidence": [
+        "sample-web.json",
+        "sample-native.json",
+        "sample-mysql.log"
+      ],
+      "limits": "原生本场覆盖绑定与本人确认，不冒称原生50/50付款交付全链；TASK-02其他机构权限场景尚需统一验收。"
+    },
+    {
+      "id": "RC-03",
+      "work": "IP买断/分红采购与依据收益",
+      "groups": [
+        11,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-13.03",
+        "ACC-DEL-13.04",
+        "TASK-11"
+      ],
+      "expected": "按合同选择买断或分红；权属与签署材料独审、项目绑定、开发上线事实及分红独审；8%应计不显示转账。",
+      "actual": "Vue两种采购各一组实际材料上传、预留、证据、生效和绑定；分红开发/上线及40000分应计、断网刷新同键恢复。Android读取同两份许可/应计，系统选文件上传、提交买断项目开发依据并经独立API审核。重复/重叠、撤回资格及到期旧项目边界有MySQL专项。",
+      "evidence": [
+        "ip-web.json",
+        "ip-native.json",
+        "copyright-ip-stock-mysql.log"
+      ],
+      "limits": "独立审核部分由本地认证API执行；作者撤回与到期分支未逐一原生办理。原13.03/13.04仅相关子项，不等于整个参演发行验收。"
+    },
+    {
+      "id": "RC-04",
+      "work": "商用逐人授权和上架双审",
+      "groups": [
+        1,
+        2,
+        5
+      ],
+      "standards": [
+        "ACC-DEL-05.02",
+        "TASK-01",
+        "TASK-02"
+      ],
+      "expected": "每个人明确商用用途和地域期间；仅个人授权不足；独立权利审核必须核商用依据。",
+      "actual": "真实Vue填写商用规格、本人用途授权及权利/内容双审；未选具体用途禁提交。机构及授权覆盖拒绝由隔离MySQL专项验证；App对应表单与选项已接。",
+      "evidence": [
+        "stock-web.json",
+        "copyright-ip-stock-mysql.log",
+        "app-tests.log",
+        "web-tests.log"
+      ],
+      "limits": "商品准备与认证使用合成夹具，上架创建走真实仓库；此场未在Android重新填完全部卖家/运营表单。"
+    },
+    {
+      "id": "RC-05",
+      "work": "商用商品、机构付款前许可",
+      "groups": [
+        1,
+        11
+      ],
+      "standards": [
+        "ACC-DEL-05.03",
+        "TASK-01",
+        "E2E-01"
+      ],
+      "expected": "按原商品明示价格、用途、地域、期间，不默认同意；合格机构负责人可购买商用，旧个人许可不升级；默认新售关闭。",
+      "actual": "Vue合格机构确认品牌宣传范围，下单已落库后断网、刷新并同键恢复到同一订单；模拟付款后私有字节哈希相同；Android同机构读取同一有效订单。默认商用关闭与旧个人单兼容有专项。",
+      "evidence": [
+        "stock-web.json",
+        "stock-native-active.json",
+        "copyright-ip-stock-mysql.log"
+      ],
+      "limits": "ACC-DEL-05.03原文针对个人非商用，新商用作为合同扩展；原生本场读取订单，不冒称原生下单或系统保存。"
+    },
+    {
+      "id": "RC-06",
+      "work": "原单下载、撤权到期退款及恢复",
+      "groups": [
+        1,
+        11,
+        16,
+        17
+      ],
+      "standards": [
+        "ACC-DEL-06.03",
+        "E2E-01"
+      ],
+      "expected": "每次受控下载核当前权限；撤权、到期及独立退款阻止下载，订单原许可和合同哈希不改；未知结果不重复下单。",
+      "actual": "同一Vue订单撤权返回409，到期返回STOCK_COMMERCIAL_LICENSE_NOT_ACTIVE；恢复夹具后售后独立处理与模拟退款，REVOKED且原合同哈希及许可相同。Android再读同订单显示撤销；两端退出清旧信息。",
+      "evidence": [
+        "stock-web.json",
+        "stock-native-revoked.json",
+        "copyright-ip-stock-mysql.log"
+      ],
+      "limits": "日期/撤权切换在隔离夹具进行，退款网关为模拟回执；未作真实收费、退款、媒体质量或151条完整验收。"
+    }
+  ]
+}
