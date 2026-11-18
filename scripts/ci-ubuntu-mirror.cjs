@@ -10,7 +10,10 @@ function selectMirror(suite,probe){
 }
 function rewriteSources(text,mirror){
  if(!mirrors.includes(mirror))throw Error('UNRECOGNIZED_UBUNTU_MIRROR');
- return text.replace(/https?:\/\/(?:(?:azure\.archive|archive|security)\.ubuntu\.com|mirrors\.us\.kernel\.org)\/ubuntu\/?/g,mirror+'/');
+ // AWS-hosted GitHub runners use regional ec2.archive.ubuntu.com entries in
+ // mirror+file lists. A successful probe is useless unless those entries move
+ // too. Match complete apt URI tokens, never lookalike hosts or other paths.
+ return text.replace(/(?<!\S)https?:\/\/(?:(?:azure\.archive|archive|security|[a-z0-9-]+\.ec2\.archive)\.ubuntu\.com|mirrors\.us\.kernel\.org)\/ubuntu\/?(?=\s|$)/g,mirror+'/');
 }
 function main(){
  if(process.platform!=='linux')throw Error('UBUNTU_RUNNER_REQUIRED');
@@ -22,12 +25,17 @@ function main(){
  });
  // Probe data is never installed or trusted. apt still validates Ubuntu's
  // signed indexes and package hashes using the runner's existing keyring.
+ let rewritten=0;
  for(const file of ['/etc/apt/sources.list','/etc/apt/sources.list.d/ubuntu.sources','/etc/apt/apt-mirrors.txt','/etc/apt/apt-mirrors-security.txt']){
   if(!fs.existsSync(file))continue;
   const old=fs.readFileSync(file,'utf8'),next=rewriteSources(old,mirror);
-  if(next!==old)execFileSync('sudo',['tee',file],{input:next,stdio:['pipe','ignore','inherit']});
+  if(next!==old){
+   execFileSync('sudo',['tee',file],{input:next,stdio:['pipe','ignore','inherit']});
+   rewritten++;
+  }
  }
  console.log('Ubuntu signed package source: '+mirror);
+ console.log('Ubuntu source files rewritten: '+rewritten);
 }
 if(require.main===module){try{main()}catch(e){console.error(e.message);process.exitCode=1}}
 module.exports={selectMirror,rewriteSources};
