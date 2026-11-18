@@ -76,7 +76,7 @@
       "title": "远端CI限时失败归因与统一可复现运行入口",
       "owner_suggested": "chengcongcong222",
       "claim_status": "CLAIMED",
-      "execution_status": "IN_PROGRESS",
+      "execution_status": "DEPENDENCY_FIX_VERIFIED_FULL_CI_PENDING",
       "phase": "G0",
       "priority": "P0",
       "depends_on": [
@@ -89,7 +89,11 @@
       ],
       "claimed_on": "2026-11-19",
       "branch": "core/pm04-ci-20261118",
-      "claim_scope": "CI dependency diagnosis and backend-owned fixes; no frontend source changes"
+      "claim_scope": "CI dependency diagnosis and backend-owned fixes; no frontend source changes",
+      "evidence": [
+        "docs/reviews/pm04/CI_ROOT_CAUSES.md"
+      ],
+      "code_commit": "914aa43063d3f13367ff830d10cf20d12d466ee2"
     },
     {
       "id": "PM04-FE-02",
@@ -110,7 +114,7 @@
       "title": "同记录关键业务闭环验证，不把17范围重新开发",
       "owner_suggested": "chengcongcong222 + Bill-Billion（分别认领）",
       "claim_status": "PARTIALLY_CLAIMED",
-      "execution_status": "BACKEND_PREPARATION_ONLY",
+      "execution_status": "BACKEND_PREPARATION_VERIFIED_JOINED_PENDING",
       "phase": "G1",
       "priority": "P0",
       "depends_on": [
@@ -123,8 +127,13 @@
         "chengcongcong222"
       ],
       "claimed_on": "2026-11-19",
-      "branch": "core/pm04-ci-20261118",
-      "claim_scope": "Backend roles, record and file manifest, local reproducibility only; frontend unclaimed; joined testing not started"
+      "branch": "handoff/pm04-environment-20261119",
+      "claim_scope": "Backend roles, record and file manifest, local reproducibility only; frontend unclaimed; joined testing not started",
+      "evidence": [
+        "docs/reviews/pm04/JOINED_17_SCOPE_EVIDENCE.md",
+        "docs/reviews/pm04/ENVIRONMENT_PREPARATION.json"
+      ],
+      "code_commit": "66272c93a8d1bda094a82bee4762f959fc297b15"
     },
     {
       "id": "PM04-PM-04",
@@ -220,5 +229,9 @@
     "未成年人 REQUIRED_DEFERRED 不等于删除；最终全151项覆盖通过前发布 NO-GO"
   ],
   "policy": "原需求不变；未成年人 REQ/ACC 后置 G2 专项、最终必须全部覆盖，无新增产品策略变更。",
-  "execution_updated_on": "2026-11-19"
+  "execution_updated_on": "2026-11-19",
+  "plan_commit": "aa106e9f601e9be3c7715181b402c59e4ade69a3",
+  "plan_pr": "https://github.com/Bill-Billion/jingjing/pull/41",
+  "backend_pr": "https://github.com/Bill-Billion/jingjing/pull/42",
+  "environment_branch": "handoff/pm04-environment-20261119"
 }

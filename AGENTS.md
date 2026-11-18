@@ -1,5 +1,9 @@
 ## 2026-11-19 当前：PM04 双方独立开发、集中交付后再联合测试
 
+为保留914aa430正在运行的服务器完整检查，66272c93环境修复及证据独立交付到handoff/pm04-environment-20261119，包含PR42；当前worktrees/pm04-ci实际在该交接分支。后续准确终态以CI_ROOT_CAUSES及本机观察回执为准，不为写回执反复推送/中断原运行。
+
+本轮交付入口：规划已发布草稿PR41（pm/pm04-acceptance-20261118，aa106e9f），后端独立草稿PR42（core/pm04-ci-20261118，工作树worktrees/pm04-ci）。继续先读该树CORE_CURRENT及docs/reviews/pm04/CI_ROOT_CAUSES.md、JOINED_17_SCOPE_EVIDENCE.md。914aa430修复区域镜像，远端依赖已通过；网页导航80/79与App分析88项仍交前端FE-02核对，服务器完整结果以实际作业为准。66272c93修新机器合成媒体冷启动，15HTTP及同记录停止恢复通过，环境最终STOPPED；不把旧临时环境当常驻服务。代码、文档提交头与实际受测SHA分列，不重复开启已终态本机进程。
+
 用户指定 PM04_晶晶日上_阶段审查与驾驶舱为本阶段依据，要求先独立开发、同步规划给前端，然后再考虑合并联调，最后审核。先读工作树 worktrees/pm04-plan 的 docs/pm04/README.md、PM04_PLAN.md、PM04_REQUIREMENTS_FREEZE_20261118.md 和本侧 PM04_CORE_CODEX.md。本轮不合并，阶段末实际审阅后才另议合入。PM04覆盖旧“本侧接管前端74失败/持续整批联测”的当前分工，保留既有修复和证据，不撤销历史授权成果。
 
 规划分支 pm/pm04-acceptance-20261118 基于 PR40/0786030e，原包20项摘要全匹配，21个原文件归档 docs/sources/pm04-20261118/original。chengcongcong222已本人认领BE-01（CI依赖）及JT-03后端环境/同记录准备；开发分支 core/pm04-ci-20261118。Bill-Billion的FE-02/FE-06及CURRENT由其本人登记，本侧不改前端源码或覆盖EXPERIENCE_CURRENT。八任务实时领取以board.json的pm04_cycle_20261118为准，运行scripts/pm04_check.py --render同步驾驶舱；不要代人领取。
