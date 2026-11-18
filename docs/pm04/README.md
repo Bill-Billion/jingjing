@@ -18,6 +18,10 @@
 
 共同规划分支为 `pm/pm04-acceptance-20261118`，基于 PR40 的上述完整候选。先 fetch 并核对当前入口、任务及差异；从该共同基线另建自己的开发工作树。若前端原分支还有未交增量，先逐项登记并保留，不能用新分支覆盖或丢弃。日常提交可继续，集中交付时再提供准确 SHA、失败归因表和构建回执。
 
+规划已发布为 [草稿PR41](https://github.com/Bill-Billion/jingjing/pull/41)，固定提交 `aa106e9f601e9be3c7715181b402c59e4ade69a3`。本侧镜像修复见 [草稿PR42](https://github.com/Bill-Billion/jingjing/pull/42)，环境补丁和本批证据在独立分支 `handoff/pm04-environment-20261119`，基于PR42；这样保留正在运行的原CI，不用再次推送中断它。[CI根因](../reviews/pm04/CI_ROOT_CAUSES.md) 和 [17范围后端准备](../reviews/pm04/JOINED_17_SCOPE_EVIDENCE.md) 区分各自受测SHA。前端先接共同规划；联合候选阶段再纳入本侧实际增量，不提前覆盖前端源码或CURRENT。
+
+集中接收的具体事项见 [前端交接单](FRONTEND_HANDOFF_20261119.md)，其中新增CI失败按实际来源列明，未代前端领取。
+
 本侧 CI 修复另在 `core/pm04-ci-20261118`，不把未验证的后端增量暗中变成前端起步前提。只在出现有证据的接口确缺时提出契约差异；已接 W18、W14/W19、W16、W22 不再重派。API 仍为 `0.31.79-rc.1`、迁移 `0225`（225项）。
 
 本次发布不代表前端已读或接受认领；由用户提醒前端接收。8 份 Issue 文本是仓库内任务草稿，尚未创建 GitHub Issue，不自动指派他人。

@@ -1,0 +1,157 @@
+TAP version 13
+# Subtest: unreachable main mirror falls back only after probing an official mirror
+ok 1 - unreachable main mirror falls back only after probing an official mirror
+  ---
+  duration_ms: 1.7707
+  type: 'test'
+  ...
+# Subtest: changing mirror preserves suites, keyring and unrelated package sources
+ok 2 - changing mirror preserves suites, keyring and unrelated package sources
+  ---
+  duration_ms: 0.3314
+  type: 'test'
+  ...
+# Subtest: Canonical host outage may use the recognized independent Kernel.org mirror without changing apt trust
+ok 3 - Canonical host outage may use the recognized independent Kernel.org mirror without changing apt trust
+  ---
+  duration_ms: 0.1146
+  type: 'test'
+  ...
+# Subtest: PR40 AWS runner regional mirror list follows the successfully probed mirror
+not ok 4 - PR40 AWS runner regional mirror list follows the successfully probed mirror
+  ---
+  duration_ms: 1.0453
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-ci\\scripts\\ci-ubuntu-mirror.test.cjs:25:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+    + 'http://us-east-2.ec2.archive.ubuntu.com/ubuntu priority:1\n' +
+    - 'https://archive.ubuntu.com/ubuntu/ priority:1\n' +
+        'https://archive.ubuntu.com/ubuntu/ priority:2\n'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: |-
+    https://archive.ubuntu.com/ubuntu/ priority:1
+    https://archive.ubuntu.com/ubuntu/ priority:2
+
+  actual: |-
+    http://us-east-2.ec2.archive.ubuntu.com/ubuntu priority:1
+    https://archive.ubuntu.com/ubuntu/ priority:2
+
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-ci\scripts\ci-ubuntu-mirror.test.cjs:28:9)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: regional deb822 sources retain signed suites and components
+not ok 5 - regional deb822 sources retain signed suites and components
+  ---
+  duration_ms: 0.9353
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-ci\\scripts\\ci-ubuntu-mirror.test.cjs:31:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+      'Types: deb\n' +
+    +   'URIs: http://us-west-2.ec2.archive.ubuntu.com/ubuntu/\n' +
+    -   'URIs: https://mirrors.us.kernel.org/ubuntu/\n' +
+        'Suites: noble noble-updates noble-backports\n' +
+        'Components: main universe\n' +
+        'Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg\n'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: |-
+    Types: deb
+    URIs: https://mirrors.us.kernel.org/ubuntu/
+    Suites: noble noble-updates noble-backports
+    Components: main universe
+    Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+  actual: |-
+    Types: deb
+    URIs: http://us-west-2.ec2.archive.ubuntu.com/ubuntu/
+    Suites: noble noble-updates noble-backports
+    Components: main universe
+    Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-ci\scripts\ci-ubuntu-mirror.test.cjs:33:9)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: nearby domains, userinfo, query strings and other archive paths stay unchanged
+not ok 6 - nearby domains, userinfo, query strings and other archive paths stay unchanged
+  ---
+  duration_ms: 0.252
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-ci\\scripts\\ci-ubuntu-mirror.test.cjs:36:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+
+      'https://archive.ubuntu.com.evil.invalid/ubuntu\n' +
+        'https://us-east-2.ec2.archive.ubuntu.com.evil.invalid/ubuntu\n' +
+    +   'https://azure.archive.ubuntu.com/ubuntu/-ports\n' +
+    +   'https://azure.archive.ubuntu.com/ubuntu/?source=test\n' +
+    +   'https://unknown.invalid/path?url=https://azure.archive.ubuntu.com/ubuntu/\n' +
+    -   'https://archive.ubuntu.com/ubuntu-ports\n' +
+    -   'https://archive.ubuntu.com/ubuntu?source=test\n' +
+    -   'https://unknown.invalid/path?url=https://archive.ubuntu.com/ubuntu\n' +
+        'https://name:password@archive.ubuntu.com/ubuntu\n' +
+        'https://packages.microsoft.com/ubuntu/24.04/prod'
+
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: |-
+    https://archive.ubuntu.com.evil.invalid/ubuntu
+    https://us-east-2.ec2.archive.ubuntu.com.evil.invalid/ubuntu
+    https://archive.ubuntu.com/ubuntu-ports
+    https://archive.ubuntu.com/ubuntu?source=test
+    https://unknown.invalid/path?url=https://archive.ubuntu.com/ubuntu
+    https://name:password@archive.ubuntu.com/ubuntu
+    https://packages.microsoft.com/ubuntu/24.04/prod
+  actual: |-
+    https://archive.ubuntu.com.evil.invalid/ubuntu
+    https://us-east-2.ec2.archive.ubuntu.com.evil.invalid/ubuntu
+    https://azure.archive.ubuntu.com/ubuntu/-ports
+    https://azure.archive.ubuntu.com/ubuntu/?source=test
+    https://unknown.invalid/path?url=https://azure.archive.ubuntu.com/ubuntu/
+    https://name:password@archive.ubuntu.com/ubuntu
+    https://packages.microsoft.com/ubuntu/24.04/prod
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-ci\scripts\ci-ubuntu-mirror.test.cjs:46:9)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 3
+# fail 3
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 68.8494
