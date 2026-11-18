@@ -16,6 +16,26 @@ typedef ConsumptionGuard = Future<Map<String, dynamic>> Function(
     Future<Map<String, dynamic>> Function() send,
     ConsumerTransport transport);
 
+// Only these commands have account/party-scoped historical receipt endpoints.
+const originalOperationKinds = <String, List<String>>{
+  '/api/v1/notices/submissions': ['notices', 'SUBMIT', 'SUBMISSION'],
+  '/api/v1/engagement/candidates': ['engagement', 'NOMINATE', 'CANDIDATE'],
+  '/api/v1/engagement/votes': ['engagement', 'VOTE', 'VOTE'],
+  '/api/v1/engagement/appeals': ['engagement', 'APPEAL', 'APPEAL'],
+};
+String originalOperationDigest(Map<String, dynamic> input) {
+  Object? sorted(Object? value) {
+    if (value is Map) {
+      final keys = value.keys.cast<String>().toList()..sort();
+      return {for (final key in keys) key: sorted(value[key])};
+    }
+    if (value is List) return value.map(sorted).toList();
+    return value;
+  }
+
+  return sha256.convert(utf8.encode(jsonEncode(sorted(input)))).toString();
+}
+
 const additionalBusinessPrefixes = [
   '/api/v1/guardians/',
   '/api/v1/infringement/',
@@ -331,7 +351,10 @@ class AccountApi {
     }, onError: (Object error, StackTrace stack) {
       if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (writing && error is AccountError) {
-        if (error.uncertain) {
+        if (error.uncertain ||
+            unresolved != null &&
+                method == 'POST' &&
+                originalOperationKinds.containsKey(path)) {
           _pending[scope] = {
             'fingerprint': fingerprint,
             'key': key,

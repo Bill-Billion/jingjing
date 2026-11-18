@@ -210,21 +210,36 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
 
   String draftSignature() => jsonEncode([
         for (final controller in controllers) controller.text,
-        selectedCandidate, mode, usage, exclusive, milestoneKey,
+        selectedCandidate,
+        selectedRule,
+        mode,
+        usage,
+        exclusive,
+        milestoneKey,
         evidence,
-        [for (final share in shares) [share.party, share.role, share.percent.text]],
-        [for (final stage in stages)
-          [stage.key, stage.amount.text, stage.milestone.text, stage.start]],
+        [
+          for (final share in shares)
+            [share.party, share.role, share.percent.text]
+        ],
+        [
+          for (final stage in stages)
+            [stage.key, stage.amount.text, stage.milestone.text, stage.start]
+        ],
       ]);
 
   void draftChanged(VoidCallback change) {
     final before = draftSignature();
     setState(() {
       changingDraft = true;
-      try { change(); } finally { changingDraft = false; }
+      try {
+        change();
+      } finally {
+        changingDraft = false;
+      }
       if (draftSignature() != before) agreed = false;
     });
   }
+
   late final why = field(),
       territory = field(),
       language = field(),
@@ -241,6 +256,10 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
   String mode = 'FIXED_FEE', usage = 'EXISTING_MATERIAL';
   bool exclusive = false, agreed = false, initialized = false;
   String? selectedCandidate, milestoneKey, cursor, nextCursor, projectNotice;
+  String? selectedRule, rulesCandidate, ruleCursor;
+  List<Map<String, dynamic>> availableRules = [];
+  bool rulesBusy = false;
+  final ruleCursors = <String>{};
   List<Map<String, dynamic>> rows = [],
       candidates = [],
       confirmations = [],
@@ -270,6 +289,10 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
     project = null;
     projectNotice = null;
     progress = null;
+    availableRules = [];
+    selectedRule = null;
+    rulesCandidate = null;
+    ruleCursor = null;
     agreed = false;
     shares.clear();
     stages.clear();
@@ -514,30 +537,48 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
       true;
   Future<void> confirmAgreementAction(Map<String, dynamic> source,
       {required bool activation}) async {
-    bool permitted() => !widget.income && record?['kind'] == 'PARTICIPATION' &&
+    bool permitted() =>
+        !widget.income &&
+        record?['kind'] == 'PARTICIPATION' &&
         (activation
-            ? project?['owner_party_id'] == session.partyId &&
+            ? (project?['owner_party_id'] == session.partyId &&
                 record?['current_status'] == 'APPROVED' &&
-                communityMaybeMap(communityMaybeMap(record?['data'])['amendment']).isNotEmpty
+                communityMaybeMap(
+                        communityMaybeMap(record?['data'])['amendment'])
+                    .isNotEmpty)
             : [record?['owner_party_id'], project?['owner_party_id']]
                     .contains(session.partyId) &&
                 ['APPROVED', 'IN_REVIEW'].contains(record?['current_status']));
     if (!mounted || !enabled || checking || !permitted()) return;
     final epoch = session.epoch, party = session.partyId, generation = ticket;
-    final id = source['id'], version = source['object_version'],
+    final id = source['id'],
+        version = source['object_version'],
         hash = source['content_sha256'];
-    final projectId = project?['id'], projectVersion = project?['object_version'],
+    final projectId = project?['id'],
+        projectVersion = project?['object_version'],
         projectHash = project?['content_sha256'];
-    final withdrawalReason = activation ? null : communityRequired(why.text, '退出原因');
-    bool current() => mounted && epoch == session.epoch && party == session.partyId &&
-        generation == ticket && enabled && !checking && permitted() &&
-        record?['id'] == id && record?['object_version'] == version &&
-        record?['content_sha256'] == hash && project?['id'] == projectId &&
-        project?['object_version'] == projectVersion && project?['content_sha256'] == projectHash;
+    final withdrawalReason =
+        activation ? null : communityRequired(why.text, '退出原因');
+    bool current() =>
+        mounted &&
+        epoch == session.epoch &&
+        party == session.partyId &&
+        generation == ticket &&
+        enabled &&
+        !checking &&
+        permitted() &&
+        record?['id'] == id &&
+        record?['object_version'] == version &&
+        record?['content_sha256'] == hash &&
+        project?['id'] == projectId &&
+        project?['object_version'] == projectVersion &&
+        project?['content_sha256'] == projectHash;
     if (!current()) return;
-    final yes = await confirm(activation ? '核对启用新约' : '核对退出边界', activation
-        ? '服务器将重新核对各方会签、旧约资金和当前角色；旧约保留历史，新约正式替代后才继续履约。'
-        : '已有付款或现行方案时须先处理原订单或新约；退出不会自动退款，也不会自动覆盖历史条款。');
+    final yes = await confirm(
+        activation ? '核对启用新约' : '核对退出边界',
+        activation
+            ? '服务器将重新核对各方会签、旧约资金和当前角色；旧约保留历史，新约正式替代后才继续履约。'
+            : '已有付款或现行方案时须先处理原订单或新约；退出不会自动退款，也不会自动覆盖历史条款。');
     if (!yes || !current()) return;
     if (activation) {
       await act('participations/$id/activation', {'content_sha256': hash},
@@ -752,8 +793,9 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                 keyboard: TextInputType.number),
             if (shares.length > 1)
               TextButton(
-                  onPressed:
-                      enabled ? () => draftChanged(() => shares.removeAt(i)) : null,
+                  onPressed: enabled
+                      ? () => draftChanged(() => shares.removeAt(i))
+                      : null,
                   child: const Text('移除这一方分成'))
           ]),
         if (shares.length < 30)
@@ -831,20 +873,31 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
       ];
   Future<void> saveAgreementEvidence(Map<String, dynamic> source) async {
     if (!enabled || checking) return;
-    final id = source['id'], version = source['object_version'],
+    final id = source['id'],
+        version = source['object_version'],
         hash = source['content_sha256'];
     final epoch = session.epoch, party = session.partyId, t = ticket;
-    bool current() => mounted && ticket == t && session.epoch == epoch &&
-        session.partyId == party && record?['id'] == id &&
-        record?['object_version'] == version && record?['content_sha256'] == hash;
-    setState(() { busy = true; error = null; notice = null; });
+    bool current() =>
+        mounted &&
+        ticket == t &&
+        session.epoch == epoch &&
+        session.partyId == party &&
+        record?['id'] == id &&
+        record?['object_version'] == version &&
+        record?['content_sha256'] == hash;
+    setState(() {
+      busy = true;
+      error = null;
+      notice = null;
+    });
     try {
       final bytes = await ProjectsApi(session)
           .agreementEvidence(ProjectRecord.parse(source));
       if (!current()) return;
       final saved = await FilePicker.saveFile(
           dialogTitle: '保存本版约定依据',
-          fileName: 'agreement-evidence-$id.bin', bytes: bytes);
+          fileName: 'agreement-evidence-$id.bin',
+          bytes: bytes);
       if (!current()) return;
       setState(() => notice = kIsWeb
           ? '文件已交给浏览器，请在下载记录核对；读取不代表同意约定。'
@@ -889,15 +942,18 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
       ]),
       tradeSection('本版会签', [
         Text(communityState(r['current_status']),
-            style: const TextStyle(color: AccountTheme.accent,
-                fontSize: 20, fontWeight: FontWeight.w700)),
+            style: const TextStyle(
+                color: AccountTheme.accent,
+                fontSize: 20,
+                fontWeight: FontWeight.w700)),
         const SizedBox(height: 12),
         communityFact('版本', r['object_version']),
-        Text(!ownSigner
-            ? '当前身份不是本版会签人，可按权限查看记录，不能代替他人确认。'
-            : ownDecision == null
-                ? '请先阅读本版完整条款，再作出本人的决定；其他会签人与付款分别办理。'
-                : '本版已有当前身份的会签记录，请核对下方决定与后续办理进度。',
+        Text(
+            !ownSigner
+                ? '当前身份不是本版会签人，可按权限查看记录，不能代替他人确认。'
+                : ownDecision == null
+                    ? '请先阅读本版完整条款，再作出本人的决定；其他会签人与付款分别办理。'
+                    : '本版已有当前身份的会签记录，请核对下方决定与后续办理进度。',
             style: const TextStyle(fontSize: 14, height: 1.6)),
       ]),
       if (income)
@@ -935,8 +991,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         if (terms['revenue'] != null)
           ...revenueFacts(communityMap(terms['revenue'])),
         if (amendment.isNotEmpty)
-          tradeSection(
-              amendment['kind'] == 'RECAST' ? '换角后的独立金额' : '改价与条款变更', [
+          tradeSection(amendment['kind'] == 'RECAST' ? '换角后的独立金额' : '改价与条款变更', [
             communityFact('变更原因', amendment['reason']),
             communityFact(
                 '新约需补现金', communityMoney(amendment['cash_required_minor'])),
@@ -1037,7 +1092,8 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
             tradeButton(
                 '会签齐备后启用这份新约',
                 enabled
-                    ? () => submit(() => confirmAgreementAction(r, activation: true))
+                    ? () => submit(
+                        () => confirmAgreementAction(r, activation: true))
                     : null,
                 outline: true),
           if (progress?['order_id'] == null &&
@@ -1110,7 +1166,8 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
           tradeButton(
               '申请退出本次约定',
               enabled
-                  ? () => submit(() => confirmAgreementAction(r, activation: false))
+                  ? () =>
+                      submit(() => confirmAgreementAction(r, activation: false))
                   : null,
               outline: true)
         ]),
@@ -1141,9 +1198,62 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
               ids: evidence,
               single: true,
               enabled: enabled,
-              onChanged: enabled ? (v) => draftChanged(() => evidence = v) : null)
+              onChanged:
+                  enabled ? (v) => draftChanged(() => evidence = v) : null)
         ])
       ];
+  Future<void> readRules({bool more = false}) async {
+    final c = candidate;
+    if (c == null || !enabled || rulesBusy) return;
+    final epoch = session.epoch,
+        t = ticket,
+        cid = c['id'],
+        before = more ? ruleCursor : null;
+    setState(() {
+      rulesBusy = true;
+      agreed = false;
+      error = null;
+      if (!more) {
+        selectedRule = null;
+        availableRules = [];
+        ruleCursor = null;
+        ruleCursors.clear();
+        rulesCandidate = cid;
+      }
+    });
+    try {
+      final page = await api.read('candidates/$cid/participation-rules',
+          query: {'limit': 20, if (before != null) 'cursor': before});
+      if (!mounted ||
+          epoch != session.epoch ||
+          t != ticket ||
+          candidate?['id'] != cid) return;
+      communityRequire(page['candidate_id'] == cid);
+      final items = communityItems(page), next = page['next_cursor'];
+      for (final r in items) {
+        final f = communityMap(r['marketplace_finance']);
+        communityRequire(communityId(r['rule_id']) &&
+            r['version'] is String &&
+            r['content_sha256'] is String &&
+            RegExp(r'^[a-f0-9]{64}$').hasMatch(r['content_sha256']) &&
+            r['current_status'] == 'EFFECTIVE' &&
+            f['product_type'] == 'COMMERCIAL' &&
+            f['platform_bps'] == 2200);
+      }
+      communityRequire(next == null ||
+          communityId(next) && next != before && ruleCursors.add(next));
+      setState(() {
+        availableRules = [...availableRules, ...items];
+        ruleCursor = next;
+      });
+    } catch (e) {
+      if (mounted && epoch == session.epoch && t == ticket)
+        setState(() => fail(e));
+    } finally {
+      if (mounted) setState(() => rulesBusy = false);
+    }
+  }
+
   List<Widget> formView() {
     if (project == null) return [];
     final old = record?['kind'] == 'PARTICIPATION'
@@ -1151,7 +1261,10 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
             : null,
         amending = widget.view == 'amend';
     final amount = communityMinorOrNull(fee.text),
-        canRule = widget.income || amount == 0;
+        canRule = widget.income ||
+            amount == 0 ||
+            rulesCandidate == candidate?['id'] &&
+                availableRules.any((r) => r['rule_id'] == selectedRule);
     return [
       communityHeading(
           widget.income
@@ -1177,7 +1290,9 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                     '${roleTitle(c)} · 原议价${communityMoney(communityMap(c['data'])['amount_minor'])} · 版本${c['object_version']}'
                   )
               ],
-              enabled ? (v) => draftChanged(() => selectedCandidate = v) : null),
+              enabled
+                  ? (v) => draftChanged(() => selectedCandidate = v)
+                  : null),
         communityFact(
             '原候选片酬',
             candidate == null
@@ -1269,9 +1384,33 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
           communityField(why, '改价或换角的具体原因', lines: 3),
           appNotice('同一参演方按原净付款抵扣新片酬；换角则单列旧方保留和新方全额。最终差额由服务器核实，不能按填写内容显示退款成功。')
         ],
-        if (!canRule)
-          appNotice(
-              '付费参演需要当前已生效的商业分佣规则。当前接口未提供普通人可选择的规则目录，暂请平台协助提交；这里保留已填写条款，不接受手输规则编号。')
+        if (amount != null && amount > 0)
+          tradeSection('本次商业分佣规则', [
+            tradeButton('读取当前角色可用规则', enabled && !rulesBusy ? readRules : null,
+                outline: true),
+            if (rulesCandidate == candidate?['id']) ...[
+              communitySelect(
+                  '选择本次适用规则',
+                  selectedRule,
+                  [
+                    for (final r in availableRules)
+                      (
+                        r['rule_id'] as String,
+                        '${r['rule_key']} · ${r['version']} · 平台22% · 生效${communityDate(r['effective_at'])}'
+                      )
+                  ],
+                  enabled && !rulesBusy
+                      ? (v) => draftChanged(() => selectedRule = v)
+                      : null),
+              if (ruleCursor != null)
+                tradeButton('继续读取规则',
+                    enabled && !rulesBusy ? () => readRules(more: true) : null,
+                    outline: true),
+              if (availableRules.isEmpty && !rulesBusy)
+                appNotice('本次未读到可选规则；如有下一页可继续读取。'),
+            ],
+            appNotice('规则选择与本人条款一并确认；保存时服务器重新核验有效性，目录不代表已经签署或审核。'),
+          ])
       ] else
         ...revenueFields(),
       ...evidenceFields(),
@@ -1279,7 +1418,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
           enabled ? (v) => setState(() => agreed = v == true) : null),
       tradeButton(
           '保存本次约定并提交独立审核',
-          enabled && agreed && canRule && evidence.length == 1
+          enabled && !rulesBusy && agreed && canRule && evidence.length == 1
               ? () => submit(() async {
                     String suffix;
                     Map<String, dynamic> body;
@@ -1319,7 +1458,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                       body = {
                         'cast': cast,
                         'terms': terms,
-                        'rule_id': null,
+                        'rule_id': n == 0 ? null : selectedRule,
                         'evidence_asset_id': evidence.single,
                         if (amending) ...{
                           'candidate_id': c['id'],

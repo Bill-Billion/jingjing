@@ -231,7 +231,7 @@ async function prepare(db,checkRunning,options={}){
    scenarios.cocreation_ready={room_id:readyRoom.id,member_id:readyMember.id,order_id:ready.order.id,project_id:projectReady.id,snippet_id:snippet.id,benefit_id:benefit?.id};
    }
    await seedMcn({db,people,scenarios,call,storageFactory});
-   await seedCommercial({db,people,scenarios,call});
+   await seedCommercial({db,people,scenarios,call,current:options.currentCommercial,platform:common.org.party_id});
    return {call,common,stock,notices,auditions,cast};
   }
  };
@@ -252,7 +252,7 @@ async function seedMcn({db,people,scenarios,call,storageFactory}){
  const [[account]]=await db.execute('SELECT subject_ref FROM identity_accounts WHERE id=?',[owner.account_id]);
  const resolvePrincipal=async ctx=>ctx,repository=load('src/modules/works/repository').createSupplyRepository(db,{resolvePrincipal}),assets=load('src/modules/works/assets').createSupplyAssets({db,repository,storageFactory});
  const proof=await assets.upload({subject_ref:account.subject_ref},{party_id:orgId,purpose:'CONSENT_EVIDENCE',media_type:'text/plain',body:Buffer.from('Synthetic agency agreement, no real rights.'),operation_key:key()});
- let agreement=await call('/gigs/relations',mcnOwner,{body:{artist_party_id:artist.acting_party_id,scope:'COMMERCIAL',valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',exclusive:false,terms:'模拟机构与艺人直接合作，艺人本人确认；不代表真实签约。',commission:{platform_bps:2000,mcn_bps:0},v5_terms:{version:'V5',supply_share_bps:2000},evidence_asset_ids:[proof.id]}});
+ let agreement=await call('/gigs/relations',mcnOwner,{body:{artist_party_id:artist.acting_party_id,scope:'COMMERCIAL',valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',exclusive:false,terms:'模拟机构与艺人直接合作，艺人本人确认；不代表真实签约。',commission:{platform_bps:current?2200:2000,mcn_bps:0},v5_terms:{version:'V5',supply_share_bps:2000},evidence_asset_ids:[proof.id]}});
  agreement=await call('/gigs/relations/'+agreement.id+'/decision',artist,{version:agreement.object_version,body:{decision:'ACCEPT',reason:'模拟艺人本人确认测试合作'}});
  const relation=agreement.id,data=agreement.data;
  const offer=await call('/auditions/records/'+scenarios.audition_offer.offer_id,artist),personId=offer.data.offer.person_id;
@@ -265,7 +265,7 @@ async function seedMcn({db,people,scenarios,call,storageFactory}){
 }
 module.exports.seedMcn=seedMcn;
 
-async function seedCommercial({db,people,scenarios,call}){
+async function seedCommercial({db,people,scenarios,call,current=false,platform}){
  const seller=people.notices_seller,buyer=people.notices_buyer,reviewer=people.notices_reviewer,author=people.notices_outsider;
  for(const u of [author,reviewer])for(const action of ['GIG_REVIEW','SUPPLY_REVIEW_CONSENT']){
   const raw=(await db.execute('SELECT object_version,enabled FROM governance_operator_grants WHERE account_id=? AND action_code=?',[u.account_id,action]))[0][0];
@@ -281,11 +281,11 @@ async function seedCommercial({db,people,scenarios,call}){
  const resolvePrincipal=async ctx=>principals.get(ctx),works=load('src/modules/works/repository').createSupplyRepository(db,{resolvePrincipal});
  let consent=await works.createConsent(seller.fixtureContext,{consent:{avatar_id:avatar,subject_party_id:seller.acting_party_id,features:['FACE'],purposes:['COMMERCIAL'],territories:['CN'],valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',terms:'synthetic separately approved commercial rights',evidence_asset_ids:[proof]},operation_key:key()});
  consent=await works.reviewConsent(reviewer.fixtureContext,{record_id:consent.id,expected_version:consent.object_version,decision:'APPROVED',reason:'synthetic independent',operation_key:key()});
- const ruleId=key(),content=load('src/modules/governance/content').createRuleContent({id:ruleId,rule_key:'conversation.r05r12.synthetic',version:'1',terms:{synthetic:'isolated legacy-compatible commercial record, not production approval'}});
+ const ruleId=key(),content=load('src/modules/governance/content').createRuleContent({id:ruleId,rule_key:'conversation.r05r12.synthetic',version:'1',terms:current?{marketplace_finance:{model:'V5_TWO_LAYER',product_type:'COMMERCIAL',fee_base:'NET_PAID',platform_party_id:platform,platform_bps:2200,referral_bps:0,rounding:'HALF_UP_PLATFORM_REMAINDER'}}:{synthetic:'isolated legacy-compatible commercial record, not production approval'}});
  await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'conversation.r05r12.synthetic','1',JSON.stringify(content),'2020-01-01 00:00:00',author.account_id,'EFFECTIVE']);
- const trade=load('src/modules/trade/repository').createTradeRepository(db,{resolvePrincipal});
+ const trade=load('src/modules/trade/repository').createTradeRepository(db,{resolvePrincipal,marketplaceContractPolicy:current?'CONTRACT_20261029':undefined});
  const reviewTrade=r=>trade.review(reviewer.fixtureContext,{record_id:r.id,expected_version:r.object_version,decision:'APPROVED',reason:'synthetic independent',operation_key:key()});
- const spec=await reviewTrade(await trade.createSpec(seller.fixtureContext,{party_id:seller.acting_party_id,previous_spec_id:null,title:'隔离商单交付服务',provider_party_id:seller.acting_party_id,line_kind:'OTHER',unit_minor:10001,currency:'CNY',specification:{version:'synthetic1',service_tier:'原服务约定',sample_seconds:0,final_seconds:0,revision_limit:1,deliverables:['隔离商业素材'],terms:'仅本单约定用途'},operation_key:key()}));
+ const spec=await reviewTrade(await trade.createSpec(seller.fixtureContext,{party_id:seller.acting_party_id,previous_spec_id:null,title:'隔离商单交付服务',provider_party_id:seller.acting_party_id,line_kind:current?'PRODUCTION':'OTHER',...(current?{product_profile:{version:'V5',type:'COMMERCIAL'}}:{}),unit_minor:10001,currency:'CNY',specification:{version:'synthetic1',service_tier:'原服务约定',sample_seconds:current?1:0,final_seconds:current?2:0,revision_limit:1,deliverables:['隔离商业素材'],terms:'仅本单约定用途'},operation_key:key()}));
  let rule=await call('/gigs/rules',author,{party:false,body:{rule:{version:'synthetic1',categories:[{code:'TEST',allowed:true,required_proofs:[]}],ranking:{window_days:7,newcomer_days:30,minimum_orders:1,order_weight:10,net_minor_weight:0,newcomer_bonus:2},terms:'synthetic only'}}});
  const reviewGig=r=>call('/gigs/records/'+r.id+'/reviews',reviewer,{party:false,version:r.object_version,body:{decision:'APPROVED',reason:'synthetic independent',checks:r.kind==='RULE'?null:{identity_verified:true,authority_verified:true,materials_reviewed:true,content_reviewed:true,marking_reviewed:true}}});
  rule=await reviewGig(rule);
@@ -297,6 +297,6 @@ async function seedCommercial({db,people,scenarios,call}){
  const config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:seller.acting_party_id,config_revision:'synthetic'};
  const payment=await trade.preparePayment(buyer.fixtureContext,{party_id:buyer.acting_party_id,order_id:order.id,installment_key:'full',operation_key:key()},config);
  await trade.applyPayment({...config,payment_id:payment.id,currency:'CNY',amount_minor:10001,transaction_id:'synthetic:'+key(),status:'SUCCEEDED',product_id:null,app_account_token:null});
- scenarios.commercial={order_id:order.id,offer_id:offer.id,legacy_compatible:true};
+ scenarios.commercial={order_id:order.id,offer_id:offer.id,rule_id:ruleId,legacy_compatible:!current,contract_profile:current?'CONTRACT_20261029':'LEGACY'};
 }
 module.exports.seedCommercial=seedCommercial;

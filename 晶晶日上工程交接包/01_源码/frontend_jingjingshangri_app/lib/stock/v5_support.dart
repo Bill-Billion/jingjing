@@ -376,7 +376,12 @@ class V5Api extends ChangeNotifier {
     if (op == null || op['bytes'] != null) {
       throw const AccountError(409, 'NO_PENDING_OPERATION');
     }
-    await reread?.call();
+    final recovered = await session.recoverCommitted('POST', path(suffix),
+        actingParty: session.partyId, validate: (d) {
+      parse(d);
+    });
+    if (recovered != null) return parse(recovered);
+    if (!originalOperationKinds.containsKey(path(suffix))) await reread?.call();
     return post(suffix, v5Map(op['body']), parse, version: op['version']);
   }
 
@@ -468,26 +473,27 @@ class _V5FrameState extends State<V5Frame> {
             .toList();
         // Ambiguous ownership falls back to each form's original inline action.
         final footerForm = widget.footer == null && candidates.length == 1
-            ? candidates.single : null;
+            ? candidates.single
+            : null;
         final footer = widget.footer ?? footerForm?._action();
         return _V5ActionScope(
-          form: footerForm,
-          child: PopScope(
-            canPop: !locked && !dirty,
-            onPopInvokedWithResult: (didPop, result) {
-              if (!didPop) leave();
-            },
-            child: widget.embedded
-                ? AccountTheme(
-                    plaza: widget.plaza,
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ...widget.children,
-                          if (footer != null) footer
-                        ]))
-                : tradeScaffold(context, widget.title, widget.children,
-                    onBack: leave, footer: footer, plaza: widget.plaza)));
+            form: footerForm,
+            child: PopScope(
+                canPop: !locked && !dirty,
+                onPopInvokedWithResult: (didPop, result) {
+                  if (!didPop) leave();
+                },
+                child: widget.embedded
+                    ? AccountTheme(
+                        plaza: widget.plaza,
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              ...widget.children,
+                              if (footer != null) footer
+                            ]))
+                    : tradeScaffold(context, widget.title, widget.children,
+                        onBack: leave, footer: footer, plaza: widget.plaza)));
       });
 }
 
@@ -768,8 +774,9 @@ class V5Form extends StatefulWidget {
   final List<Widget> facts;
   final List<Widget> Function(Map<String, dynamic>)? factsBuilder;
   // Optional UI-only insertion; omitted callers retain their flat field order.
-  final List<Widget> Function(V5Field, Map<String, dynamic>,
-      void Function(String, dynamic), bool)? beforeField;
+  final List<Widget> Function(
+          V5Field, Map<String, dynamic>, void Function(String, dynamic), bool)?
+      beforeField;
   final List<Widget> Function(
       Map<String, dynamic>, void Function(String, dynamic), bool)? extra;
   @override
@@ -1040,14 +1047,26 @@ class V5FormState extends State<V5Form>
     });
     _frame?.formChanged();
     try {
-      if (op != null) await widget.reload?.call();
+      final recovered = op == null
+          ? null
+          : await widget.api.session.recoverCommitted(
+              'POST', widget.api.path(widget.suffix), actingParty: party,
+              validate: (d) {
+              widget.parse(d);
+            });
+      if (op != null &&
+          recovered == null &&
+          !originalOperationKinds.containsKey(widget.api.path(widget.suffix))) {
+        await widget.reload?.call();
+      }
       if (op == null) await widget.beforeSubmit?.call(body);
       widget.api.check(epoch, party);
       if (!mounted || t != ticket) return;
-      final result = await widget.api.post(widget.suffix, body, (d) {
-        widget.parse(d);
-        return d;
-      }, version: op?['version'] ?? version);
+      final result = recovered ??
+          await widget.api.post<Map<String, dynamic>>(widget.suffix, body, (d) {
+            widget.parse(d);
+            return d;
+          }, version: op?['version'] ?? version);
       widget.api.check(epoch, party);
       if (!mounted || t != ticket) return;
       setState(() {

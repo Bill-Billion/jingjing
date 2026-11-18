@@ -558,11 +558,16 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
       error = null;
     });
     try {
-      final result = await api.write(suffix, communityMap(op['body']),
-          version: op['version'] as int?,
-          account: account,
-          method: method,
-          validate: validateResult);
+      final committed = await session.recoverCommitted(method, api.path(suffix),
+          actingParty: account ? null : session.partyId, validate: (d) {
+        communityRecord(d);
+      });
+      final result = committed ??
+          await api.write(suffix, communityMap(op['body']),
+              version: op['version'] as int?,
+              account: account,
+              method: method,
+              validate: validateResult);
       if (!mounted) return;
       setState(() {
         recovery = null;
@@ -618,7 +623,15 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
                           reconciled = false;
                         });
                         try {
-                          await reconcilePending();
+                          // Receipt lookup must precede deadline/eligibility reads.
+                          if (recoveryMethod == 'POST' &&
+                              originalOperationKinds
+                                  .containsKey(api.path(recoverySuffix!))) {
+                            reconciled = true;
+                            await recover();
+                          } else {
+                            await reconcilePending();
+                          }
                           if (mounted && error == null) {
                             setState(() => reconciled = true);
                           }
@@ -640,13 +653,16 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
     final requestApi = api;
     final requestSession = requestApi.session;
     final epoch = requestSession.epoch;
-    final party = account || requestApi.personal ? null : requestSession.partyId;
+    final party =
+        account || requestApi.personal ? null : requestSession.partyId;
     final startedTicket = ticket;
     final owner = Object();
     _privateSaveOwner = owner;
     bool current() {
-      if (!mounted || !identical(_privateSaveOwner, owner) ||
-          ticket != startedTicket || !identical(session, requestSession)) {
+      if (!mounted ||
+          !identical(_privateSaveOwner, owner) ||
+          ticket != startedTicket ||
+          !identical(session, requestSession)) {
         return false;
       }
       try {
@@ -656,6 +672,7 @@ abstract class CommunityPageState<T extends StatefulWidget> extends State<T> {
         return false;
       }
     }
+
     setState(() {
       busy = true;
       error = null;
