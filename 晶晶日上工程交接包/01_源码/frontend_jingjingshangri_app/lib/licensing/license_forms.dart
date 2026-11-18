@@ -154,7 +154,9 @@ class _EvidenceFormState extends State<_EvidenceForm> {
       if (_busy && _reservation == null)
         const Center(child: CircularProgressIndicator()),
       if (_reservation != null) ...[
-        appNotice('提交后由独立人员核验，不代表已签署或已到账。'),
+        tradeBanner('核对材料 → 提交 → 独立核验',
+            '提交不代表已签署、已到账或许可已生效。原请求未确认时先恢复，不能重复提交。',
+            icon: Icons.fact_check_outlined),
         supplyCard('对应的许可合同', [
           supplyFact('许可', _reservation!.title),
           supplyFact('预留截止', licenseDate(_reservation!.data['expires_at'])),
@@ -359,6 +361,7 @@ class _ProjectFormState extends State<_ProjectForm> {
       appNotice('填写项目实际用途与范围，保存后再选择许可绑定。集数必须与许可相符。'),
       if (pending != null) supplyNote('上次保存结果未确认，请恢复原内容。', error: true),
       if (_error != null) supplyNote(_error!, error: true),
+      tradeSection('1 · 项目与用途', [
       appField(
           '项目名称（必填）',
           TextField(
@@ -379,7 +382,8 @@ class _ProjectFormState extends State<_ProjectForm> {
                       DropdownMenuItem(value: e.key, child: Text(e.value)))
                   .toList(),
               onChanged: enabled ? (v) => setState(() => _purpose = v) : null)),
-      const SizedBox(height: 24),
+      ]),
+      tradeSection('2 · 使用范围', [
       _ScopeChoice(
           controller: _territory,
           choices: Map.fromEntries(
@@ -404,6 +408,8 @@ class _ProjectFormState extends State<_ProjectForm> {
               keyboardType: TextInputType.number,
               decoration:
                   const InputDecoration(helperText: '填写正整数，是否满足原许可由当前绑定范围核对。'))),
+      ]),
+      tradeBanner('保存用途，不是获准制作', '保存后仍须绑定有效许可，范围与额度由原许可核对。', icon: Icons.assignment_outlined),
       const SizedBox(height: 24),
       FilledButton(
           onPressed: _busy || (!_valid && pending == null) ? null : _submit,
@@ -591,6 +597,9 @@ class _BindingFormState extends State<_BindingForm> {
       if (_busy && grant == null)
         const Center(child: CircularProgressIndicator()),
       if (grant != null) ...[
+        tradeBanner(usable ? '所选用途符合当前许可范围' : '先核对许可与用途',
+            usable ? '仍须提交绑定并以服务器结果为准；绑定不代表制作开工。' : '选择本人用途项目，再核对许可有效期、地区、语言、集数与用途。',
+            icon: Icons.link_outlined),
         supplyFact('许可编号', grant.id),
         Text(grant.statusText),
         const SizedBox(height: 16),

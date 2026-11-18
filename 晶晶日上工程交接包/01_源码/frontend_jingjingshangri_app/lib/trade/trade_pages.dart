@@ -19,7 +19,39 @@ import '../production/production_models.dart';
 import '../production/fulfillment_api.dart';
 import '../production/fulfillment_models.dart';
 
-// Film editorial, pages 54–56. Details return to the shared five-tab shell.
+Widget _tradeReadPanel(String title, List<Widget> children) => Container(
+    width: double.infinity,
+    margin: const EdgeInsets.only(bottom: 20),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AccountTheme.border)),
+    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+      Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+      const SizedBox(height: 12),
+      ...children,
+    ]));
+
+Widget _tradeSubjectCard(String title, String subtitle) => Container(
+    margin: const EdgeInsets.only(bottom: 20),
+    padding: const EdgeInsets.symmetric(vertical: 16),
+    decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: AccountTheme.border))),
+    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Container(width: 60, height: 80,
+          decoration: BoxDecoration(color: AccountTheme.surface,
+              borderRadius: BorderRadius.circular(10)),
+          child: const Icon(Icons.description_outlined, color: AccountTheme.muted)),
+      const SizedBox(width: 12),
+      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        Text(subtitle, style: const TextStyle(fontSize: 12, height: 1.6,
+            color: AccountTheme.muted)),
+      ])),
+    ]));
+
+// V5 order and cashier pages. Details return to the shared five-tab shell.
 class TradeRecordsPage extends StatelessWidget {
   const TradeRecordsPage({super.key, this.kind = 'ORDER'});
   final String kind;
@@ -112,7 +144,7 @@ class _TradeListState extends State<_TradeList> {
       context,
       '订单与报价',
       [
-        tradeHeading('订单目录', eyebrow: '每一笔约定，都有进度'),
+        tradeHeading('订单目录', eyebrow: '每一笔约定，都有进度', fontSize: 28),
         Text(
             '当前身份：${widget.session.party?['display_name'] ?? shortSupplyId(api.owner())}',
             style: const TextStyle(fontSize: 16, color: AccountTheme.muted)),
@@ -149,25 +181,59 @@ class _TradeListState extends State<_TradeList> {
           tradeSection('暂无${tradeKinds[kind]}',
               [supplyNote('当前身份还没有这类记录。报价由服务提供方在网页建立并经独立审核。')]),
         for (final r in items)
-          tradeSection(r.title, [
-            Row(children: [
-              const Icon(Icons.description_outlined,
-                  size: 20, color: AccountTheme.text),
-              const SizedBox(width: 16),
-              Expanded(
-                  child: Text('${tradeKinds[r.kind]} ${shortSupplyId(r.id)}',
-                      style: const TextStyle(fontSize: 16)))
-            ]),
-            const Divider(),
-            tradeFact('金额', tradeMoney(r.amount), accent: true),
-            const Divider(),
-            tradeFact('当前状态', tradeStatuses[r.status]),
-            if (r.kind == 'ORDER')
-              tradeFact(
-                  '订单记账收款', tradeMoney(r.data['financial']['received_minor'])),
-            if (r.kind == 'LEGACY') appNotice('仅保留历史依据，不代表渠道已确认到账。'),
-            tradeButton('查看${tradeKinds[r.kind]}', busy ? null : () => open(r))
-          ]),
+          Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: const BoxDecoration(border: Border(
+                  bottom: BorderSide(color: AccountTheme.border))),
+              child: LayoutBuilder(builder: (context, constraints) {
+                final stacked = constraints.maxWidth < 340 ||
+                    MediaQuery.textScalerOf(context).scale(14) > 16.8;
+                final amount = Text(tradeMoney(r.amount),
+                    softWrap: true,
+                    textAlign: TextAlign.right,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600));
+                return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Container(width: 60, height: 80,
+                    decoration: BoxDecoration(color: AccountTheme.surface,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.description_outlined,
+                        color: AccountTheme.muted)),
+                const SizedBox(width: 12),
+                Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(r.title, style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 4),
+                  Text('${tradeKinds[r.kind]} · ${shortSupplyId(r.id)}',
+                      style: const TextStyle(fontSize: 11, color: AccountTheme.muted)),
+                  const SizedBox(height: 6),
+                  Text(tradeStatuses[r.status] ?? r.status,
+                      style: const TextStyle(fontSize: 12, color: AccountTheme.accent)),
+                  if (r.kind == 'ORDER')
+                    Text('原单记账收款 ${tradeMoney(r.data['financial']['received_minor'])}',
+                        style: const TextStyle(fontSize: 11, color: AccountTheme.muted)),
+                  if (r.kind == 'LEGACY')
+                    const Text('历史依据，不代表渠道已确认到账',
+                        style: TextStyle(fontSize: 11, color: AccountTheme.muted)),
+                  TextButton(onPressed: busy ? null : () => open(r),
+                      child: Text('查看${tradeKinds[r.kind]}')),
+                ])),
+                if (!stacked) ...[
+                  const SizedBox(width: 8),
+                  SizedBox(width: constraints.maxWidth * .28, child: amount),
+                ],
+              ]),
+                if (stacked) ...[
+                  const SizedBox(height: 8),
+                  Align(alignment: Alignment.centerRight, child: amount),
+                ],
+              ]);
+              })),
+        const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Text('按当前已授权身份查看，可切换订单、报价或旧记录。暂不支持跨类别、按角色或状态汇总筛选。',
+                style: TextStyle(fontSize: 11, color: AccountTheme.muted))),
         tradeButton('重新读取', busy ? null : () => load(), outline: true),
         if (cursor != null)
           tradeButton('加载更多', busy ? null : () => load(more: true),
@@ -519,7 +585,9 @@ class _TradeDetailState extends State<_TradeDetail> {
     final d = effectiveQuote(r);
     return [
       if (!order)
-        tradeSection('本次合同总价', [
+        _tradeSubjectCard(r.title, '本次报价 · ${tradeStatuses[r.status] ?? r.status}'),
+      if (!order)
+        _tradeReadPanel('本次合同总价', [
           Text(tradeMoney(d['total_minor']),
               style: const TextStyle(
                   fontSize: 28, fontWeight: FontWeight.w700, height: 1.3)),
@@ -647,7 +715,43 @@ class _TradeDetailState extends State<_TradeDetail> {
       tradeSection('付款节点', [
         if (tradeInstallments(d).isEmpty)
           appNotice('制作权益已覆盖全额，无现金付款节点；开工时核销，不产生现金收款或可提现余额。'),
-        for (final i in tradeInstallments(d)) ...[
+        for (final i in tradeInstallments(d))
+          if (!order)
+            Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                    color: AccountTheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AccountTheme.border)),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  Text(tradeTriggers[i['trigger']]!,
+                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 8),
+                  SelectableText(tradeMoney(tradeRows(i['allocations'])
+                      .fold(0, (a, v) => a + (v['amount_minor'] as int))),
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700,
+                          color: AccountTheme.accent)),
+                  const SizedBox(height: 8),
+                  ExpansionTile(
+                      tilePadding: EdgeInsets.zero,
+                      title: const Text('核对本节点分项金额'),
+                      children: [
+                        for (final a in tradeRows(i['allocations']))
+                          Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                                Text('分配 · ${a['line_id']}',
+                                    style: const TextStyle(color: AccountTheme.muted)),
+                                const SizedBox(height: 4),
+                                SelectableText(tradeMoney(a['amount_minor'])),
+                              ])),
+                      ]),
+                  if (i['trigger'] != 'ORDER_ACCEPTED')
+                    appNotice('这笔款项须满足原订单对应的具体版本确认条件；订单页会重新核对制作进度。'),
+                ]))
+          else ...[
           tradeFact(
               tradeTriggers[i['trigger']]!,
               tradeMoney(tradeRows(i['allocations'])
@@ -688,7 +792,14 @@ class _TradeDetailState extends State<_TradeDetail> {
           ]),
           appNotice('这里是报价时保存的约定。未收款不产生到账；账面应付、可打款和已到账分别核对。'),
         ]),
-      if (!order) appNotice('按当前报价内容确认。后续改价不会覆盖本次原约定。'),
+      if (!order)
+        _tradeReadPanel('确认前请核对', [
+          const Text('按本版对象、用途、期限、付款节点与完整约定确认。后续改价不会覆盖本次原约定；确认报价不等于完成付款或签署。',
+              style: TextStyle(fontSize: 14, height: 1.6)),
+          const SizedBox(height: 8),
+          const Text('提交前仍会打开原确认说明；结果未知时恢复原请求，不重复确认。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        ]),
     ];
   }
 
@@ -697,6 +808,42 @@ class _TradeDetailState extends State<_TradeDetail> {
     final fullyCovered = r.quote['discount']?['coverage'] == 'FULL' &&
         r.quote['total_minor'] == 0;
     return [
+      Container(
+          width: double.infinity,
+          margin: const EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+              color: AccountTheme.surface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AccountTheme.border)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            const Text('原订单当前状态',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+            const SizedBox(height: 10),
+            Semantics(header: true,
+                child: Text(tradeStatuses[r.status] ?? r.status,
+                    style: const TextStyle(fontSize: 24,
+                        fontWeight: FontWeight.w700, color: AccountTheme.text))),
+            const SizedBox(height: 14),
+            Text(fullyCovered
+                ? '本单由制作权益全额抵扣，应付现金为0，无需支付首款、中款或尾款。权益在开工时核销，制作进度与交付仍按原约定确认。'
+                : r.quote['stock_video'] != null
+                    ? '付款核实后查看本单内容、原购买许可与售后。'
+                    : r.quote['audition'] != null
+                        ? '按本单接单与核实收款状态办理预约、材料和售后。'
+                        : '款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。',
+                style: const TextStyle(fontSize: 14, height: 1.6,
+                    color: AccountTheme.text)),
+            const SizedBox(height: 16),
+            const Divider(color: AccountTheme.border),
+            const Text('原订单编号',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+            const SizedBox(height: 6),
+            SelectableText(r.id,
+                style: const TextStyle(fontSize: 12, height: 1.5,
+                    color: AccountTheme.muted)),
+          ])),
+      _tradeSubjectCard(r.title, '原单版本 ${r.version} · ${tradeMoney(r.amount)}'),
       if (r.isBuyer(api.owner()))
         tradeButton(
             '按本订单申请开票',
@@ -705,16 +852,6 @@ class _TradeDetailState extends State<_TradeDetail> {
                 : () =>
                     Navigator.pushNamed(context, '/invoices?orderId=${r.id}'),
             outline: true),
-      tradeSection('订单 ${shortSupplyId(r.id)}', [
-        tradeStatus(r),
-        appNotice(fullyCovered
-            ? '本单由制作权益全额抵扣，应付现金为0，无需支付首款、中款或尾款。权益在开工时核销，制作进度与交付仍按原约定确认。'
-            : r.quote['stock_video'] != null
-                ? '付款核实后查看本单内容、原购买许可与售后。'
-                : r.quote['audition'] != null
-                    ? '按本单接单与核实收款状态办理预约、材料和售后。'
-                    : '款项收齐不等于制作完成。按当前具体版本审阅、验收与核对交付条件。')
-      ]),
       if (r.quote['stock_video'] != null)
         tradeButton(
             '查看已购视频与许可',
@@ -986,17 +1123,28 @@ class _TradeDetailState extends State<_TradeDetail> {
     final ready = installmentReady(order, installment['trigger']);
     final channel = order.quote['channel'];
     return [
-      tradeHeading('确认付款', eyebrow: '${order.title} / 原订单付款节点'),
-      const Text('本次节点金额',
-          style: TextStyle(fontSize: 16, color: AccountTheme.muted)),
-      const SizedBox(height: 10),
-      Text(tradeMoney(installmentAmount(installment)),
-          key: const Key('trade-cashier-amount'),
-          style: const TextStyle(fontSize: 40, fontWeight: FontWeight.w700)),
-      const SizedBox(height: 10),
-      Text(tradeTriggers[installment['trigger']]!,
-          style: const TextStyle(fontSize: 14, color: AccountTheme.muted)),
-      tradeSection('对应原订单', [
+      tradeHeading('确认付款', eyebrow: '${order.title} / 原订单付款节点', fontSize: 28),
+      Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          margin: const EdgeInsets.only(bottom: 20),
+          decoration: BoxDecoration(
+              color: AccountTheme.surface,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AccountTheme.border)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('本次节点金额',
+                style: TextStyle(fontSize: 14, color: AccountTheme.muted)),
+            const SizedBox(height: 12),
+            Text(tradeMoney(installmentAmount(installment)),
+                key: const Key('trade-cashier-amount'),
+                style: const TextStyle(fontSize: 32,
+                    color: AccountTheme.accent, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 12),
+            Text(tradeTriggers[installment['trigger']]!,
+                style: const TextStyle(fontSize: 14, color: AccountTheme.muted)),
+          ])),
+      _tradeReadPanel('对应原订单', [
         Text(order.title,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
         tradeFact('订单编号', shortSupplyId(order.id)),
@@ -1008,15 +1156,18 @@ class _TradeDetailState extends State<_TradeDetail> {
         tradeFact('合同服务方', shortSupplyId(order.merchant)),
       ]),
       Container(
-          color: AccountTheme.text,
+          decoration: BoxDecoration(
+              color: AccountTheme.selectedSurface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AccountTheme.accent)),
           padding: const EdgeInsets.all(16),
           child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Icon(Icons.check, color: AccountTheme.canvas),
+            const Icon(Icons.check, color: AccountTheme.accent),
             const SizedBox(width: 12),
             Expanded(
                 child: Text('${tradeChannel(channel)} · 原订单已固定',
                     style: const TextStyle(
-                        color: AccountTheme.canvas,
+                        color: AccountTheme.accent,
                         fontSize: 18,
                         fontWeight: FontWeight.w700))),
           ])),
@@ -1032,7 +1183,7 @@ class _TradeDetailState extends State<_TradeDetail> {
         appNotice('当前订单不处于可建立付款记录的状态，请查看原订单与付款计划。')
       else if (!ready)
         appNotice('当前付款节点尚未确认可办理，请返回原订单核对当前版本与履约条件。'),
-      tradeSection('建立记录后', [
+      _tradeReadPanel('建立记录后', [
         const Text(
             bool.fromEnvironment('CLIENT_TEST_ONLY')
                 ? '这是模拟付款，不会真实扣款。核对金额并勾选确认后，可选择模拟成功、失败或暂未确认；每笔结果仍由服务器核对原订单。'
@@ -1063,16 +1214,10 @@ class _TradeDetailState extends State<_TradeDetail> {
         ['OPEN', 'PARTIALLY_PAID'].contains(order.status) &&
         order.quote['channel'] != 'CUSTODY' &&
         installmentReady(order, installment['trigger']);
-    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Expanded(
-          flex: 2,
-          child: OutlinedButton(
-              onPressed: locked ? null : () => open(order.id),
-              child: const Text('查看付款计划'))),
-      const SizedBox(width: 10),
-      Expanded(
-          flex: 3,
-          child: FilledButton(
+    final back = OutlinedButton(
+        onPressed: locked ? null : () => open(order.id),
+        child: const Text('查看付款计划'));
+    final action = FilledButton(
               key: const Key('trade-cashier-action'),
               onPressed: locked
                   ? null
@@ -1085,15 +1230,42 @@ class _TradeDetailState extends State<_TradeDetail> {
                   ? '查看本节点原付款'
                   : order.quote['channel'] == 'CUSTODY'
                       ? '托管消费尚未接通'
-                      : '建立本节点付款记录'))),
-    ]);
+                      : '建立本节点付款记录'));
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth < 340 ||
+          MediaQuery.textScalerOf(context).scale(14) > 20) {
+        return Column(mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          back, const SizedBox(height: 8), action,
+        ]);
+      }
+      return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Expanded(flex: 2, child: back),
+        const SizedBox(width: 10),
+        Expanded(flex: 3, child: action),
+      ]);
+    });
   }
 
   List<Widget> contractView(TradeRecord r) {
     final c = r.data['contract'];
     return [
-      tradeBanner('合同内容已保存，尚未签署', '这是本订单返回的合同快照，用于留存与核对。',
+      tradeBanner(
+          r.quote['commercial'] != null ? '非标商单 · 先核对签署前置' : '合同内容已保存，尚未签署',
+          '这是本订单返回的合同快照，用于留存与核对。报价已确认不等于合同已签署，付款也不能代替签署。',
           icon: Icons.description_outlined),
+      if (r.quote['commercial'] != null)
+        tradeSection('本版本商业条件与分成', [
+          tradeFact('原订单版本', r.version),
+          tradeFact('接单约定编号', r.quote['commercial']['offer_id']),
+          gigScopeFacts(gigMap(r.quote['commercial']['scope'])),
+          gigCommissionFacts(gigMap(r.quote['commercial']['commission']),
+              marketplace: r.quote['commercial']['marketplace_terms']),
+          appNotice('按原约定核对身份、授权范围与签署材料。当前页面不能发起电子签署，也不把内容确认或材料留存记为已签署。'),
+          tradeButton('帮助与反馈',
+              locked ? null : () => Navigator.pushNamed(context, '/help'),
+              outline: true),
+        ]),
       if (r.quote['artist_service'] != null)
         tradeSection(
             '对应的真人与服务', tradeArtistFacts(tradeMap(r.quote['artist_service']))),
@@ -1154,21 +1326,27 @@ class _TradeDetailState extends State<_TradeDetail> {
     ];
   }
 
-  List<Widget> paymentView(TradeRecord r) => [
-        tradeSection('本次金额', [
-          Text(tradeMoney(r.amount),
-              style: const TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.w700,
-                  color: AccountTheme.text)),
-          const Divider(),
-          tradeFact('付款节点', r.data['installment_key']),
-          tradeFact('付款编号', r.id)
-        ]),
-        tradeSection('付款渠道', [
-          tradeFact('渠道', tradeChannel(r.data['provider'])),
-          tradeFact('环境', r.data['environment'] == 'SANDBOX' ? '测试环境' : '正式环境')
-        ]),
+  List<Widget> paymentView(TradeRecord r) {
+    final awaitingResult =
+        ['SUBMITTING', 'PENDING', 'UNKNOWN', 'REVIEW_REQUIRED'].contains(r.status);
+    return [
+        if (awaitingResult)
+          Container(
+            margin: const EdgeInsets.only(bottom: 18),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+                color: const Color(0xFF332E1B),
+                border: Border.all(color: const Color(0xFFE5C66B))),
+            child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('正在核对付款',
+                      style: TextStyle(color: Color(0xFFE5C66B),
+                          fontSize: 18, fontWeight: FontWeight.w700)),
+                  SizedBox(height: 8),
+                  Text('结果暂未确定。请保留原支付记录并查询原结果，不要再次支付。超时、按钮点击或渠道客户端返回都不能证明已到账。'),
+                ]),
+          ),
         tradeBanner(
             tradeStatuses[r.status]!,
             r.status == 'SUCCEEDED'
@@ -1181,6 +1359,38 @@ class _TradeDetailState extends State<_TradeDetail> {
                         : '服务器已核实真实收款，仍须另行办理制作、签署和许可。'
                 : '请先核对这笔付款，不要重复支付。客户端不能发起实际支付。',
             icon: Icons.receipt_long_outlined),
+        _tradeReadPanel(r.status == 'SUCCEEDED' ? '本次已核实金额' : '本次原付款申请金额', [
+          Text(tradeMoney(r.amount),
+              style: const TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w700,
+                  color: AccountTheme.text)),
+          const Divider(),
+          tradeFact('原订单', r.orderId),
+          tradeFact('付款节点', r.data['installment_key']),
+          const Text('付款编号 · 保留原记录用于核对',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+          SelectableText(r.id, style: const TextStyle(fontSize: 12))
+        ]),
+        _tradeReadPanel('原付款渠道与环境', [
+          tradeFact('渠道', tradeChannel(r.data['provider'])),
+          tradeFact('环境', r.data['environment'] == 'SANDBOX' ? '测试环境' : '正式环境')
+        ]),
+        _tradeSubjectCard(r.title, '对应原付款记录 · ${shortSupplyId(r.id)}'),
+        _tradeReadPanel('原付款凭据', [
+          tradeFact('原付款编号', r.id),
+          if (r.data['transaction_id'] is String &&
+              (r.data['transaction_id'] as String).trim().isNotEmpty)
+            tradeFact('渠道交易编号', r.data['transaction_id']),
+          const Text('此处为原记录字段，不是已开具的发票或可下载凭证。成功状态、渠道环境与许可条件仍分别核对。',
+              style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        ]),
+        _tradeReadPanel('接下来', [
+          Text(r.status == 'SUCCEEDED'
+              ? '返回原订单核对当前履约、签署和许可，不把付款成功当成所有办理步骤完成。'
+              : '先核对原付款结果。未知或待核对时不要重复支付，后续以原订单与服务器结果为准。',
+              style: const TextStyle(fontSize: 14, height: 1.6)),
+        ]),
         if (r.data['provider'] == 'APPLE')
           tradeSection('核对 Apple 交易', [
             appNotice('请填写这笔真实付款的 Apple 交易编号；没有交易编号时请等待，不填写示例编号。'),
@@ -1191,7 +1401,7 @@ class _TradeDetailState extends State<_TradeDetail> {
           ]),
         if (r.isBuyer(api.owner()))
           tradeButton(
-              '核对这笔付款',
+              awaitingResult ? '查询原付款结果' : '核对这笔付款',
               locked
                   ? null
                   : () => mutate(
@@ -1210,10 +1420,47 @@ class _TradeDetailState extends State<_TradeDetail> {
                       if (mounted) load();
                     },
               outline: true),
-        if (r.orderId != null)
-          tradeButton('返回订单', locked ? null : () => open(r.orderId!),
+        if (r.status == 'CLOSED')
+          appNotice('原付款记录已关闭，但关闭状态本身不等于已证实未扣款。请回原订单核对金额和全部付款记录，勿据此重复支付。'),
+        if (awaitingResult || r.status == 'CLOSED')
+          tradeButton('帮助与反馈',
+              locked ? null : () => Navigator.pushNamed(context, '/help'),
               outline: true),
       ];
+  }
+  List<Widget> refundChannelFacts(TradeRecord r) {
+    final proof = r.data['proof'];
+    final matched = proof is Map &&
+        r.status == 'SUCCEEDED' &&
+        proof['status'] == 'SUCCEEDED' &&
+        proof['refund_id'] == r.id &&
+        proof['payment_id'] == r.data['payment_id'] &&
+        proof['amount_minor'] == r.amount &&
+        proof['currency'] == r.data['currency'] &&
+        proof['provider'] == r.data['provider'] &&
+        proof['environment'] == r.data['environment'];
+    return [
+      tradeSection('退款渠道与回执摘要', [
+        tradeFact('原退款渠道', tradeChannel(r.data['provider'])),
+        tradeFact('渠道环境',
+            r.data['environment'] == 'SANDBOX' ? '测试环境' : '正式环境'),
+        if (r.data['environment'] == 'SANDBOX')
+          appNotice('此笔为测试渠道记录，成功状态不代表真实资金到账。'),
+        if (matched) ...[
+          appNotice('服务器已核对渠道成功回执；摘要与当前退款编号、原付款及金额一致。'),
+          tradeFact('回执对应退款编号', r.id),
+          tradeFact('回执对应原付款编号', r.data['payment_id']),
+          tradeFact('回执退款金额', tradeMoney(r.amount)),
+          tradeFact('回执币种', r.data['currency']),
+        ] else if (proof != null)
+          appNotice('当前回执摘要无法与本笔成功退款完整核对，请保留原记录并联系平台核查；此处不据摘要判定到账。')
+        else
+          appNotice('当前记录未提供可核对的渠道成功回执摘要。'),
+        const Text('当前接口未提供渠道终态发生时间或到账时间；不以记录更新时间或业务汇总同步时间代替。此处仅为结构化回执摘要，不是可下载的银行凭证或发票。'),
+      ]),
+    ];
+  }
+
   List<Widget> refundView(TradeRecord r) => [
         tradeBanner(
             tradeStatuses[r.status]!,
@@ -1231,6 +1478,7 @@ class _TradeDetailState extends State<_TradeDetail> {
             tradeFact('明细 ${a['line_id']}', tradeMoney(a['amount_minor'])),
           tradeFact('原因', r.data['reason'])
         ]),
+        ...refundChannelFacts(r),
         tradeSection('独立审核', [
           tradeFact(
               '审核结论',
@@ -1309,12 +1557,15 @@ class _TradeDetailState extends State<_TradeDetail> {
                     ? '这次约定的原文'
                     : switch (r.kind) {
                         'QUOTE' => '确认这份报价',
-                        'ORDER' => '这次约定',
-                        'PAYMENT' => '付款结果与凭证',
+                        'ORDER' => r.quote['audition'] != null ? '这次试镜' : r.title,
+                        'PAYMENT' => r.status == 'SUCCEEDED'
+                            ? r.data['environment'] == 'SANDBOX'
+                                ? '测试付款已核实' : '付款已核实'
+                            : '付款结果待核对',
                         'REFUND' => '售后与退款',
                         _ => '保留原来的约定',
                       },
-                eyebrow: '${tradeKinds[r.kind]} / ${shortSupplyId(r.id)}'),
+                eyebrow: '${tradeKinds[r.kind]} / ${shortSupplyId(r.id)}', fontSize: 28),
           if (busy) const LinearProgressIndicator(),
           if (error != null) supplyNote(error!, error: true),
           if (error?.contains('个人月度限额') == true)
@@ -1355,6 +1606,10 @@ class _TradeDetailState extends State<_TradeDetail> {
             : '操作结果尚未确认，请先恢复原请求核对。',
         footer: cashier && r?.kind == 'ORDER'
             ? cashierFooter(r!)
+            : r?.kind == 'PAYMENT' && linkedOrderId != null
+                ? OutlinedButton(
+                    onPressed: locked ? null : () => open(linkedOrderId),
+                    child: const Text('返回原订单与业务'))
             : r?.kind == 'QUOTE' &&
                     r!.status == 'ACCEPTED' &&
                     linkedOrderId != null

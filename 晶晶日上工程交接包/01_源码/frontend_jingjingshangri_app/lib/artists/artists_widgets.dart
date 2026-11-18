@@ -74,16 +74,17 @@ class ArtistsGate extends StatelessWidget {
 
 Widget artistRow(String title, String description, VoidCallback? onTap,
         {String? status, Key? key}) =>
-    Material(
-        color: AccountTheme.canvas,
+    Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Material(
+        color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        clipBehavior: Clip.antiAlias,
         child: InkWell(
             key: key,
             onTap: onTap,
             child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: const BoxDecoration(
-                    border:
-                        Border(bottom: BorderSide(color: AccountTheme.border))),
+                padding: const EdgeInsets.all(18),
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -111,8 +112,8 @@ Widget artistRow(String title, String description, VoidCallback? onTap,
                                           color: AccountTheme.accent)))
                           ])),
                       const SizedBox(width: 12),
-                      const Icon(Icons.north_east, size: 18),
-                    ]))));
+                      const Icon(Icons.north_east, size: 18, color: AccountTheme.accent),
+                    ])))));
 String artistFormRoute(String mode,
         {String? personId, String? avatarId, String? recordId}) =>
     Uri(path: '/artists/form', queryParameters: {
@@ -198,14 +199,16 @@ Widget artistEditorScaffold(String title, List<Widget> children,
                               width: double.infinity, child: footer)))))),
     ));
 
-/// The full-width archive cover and black identity strip from screens 34/36.
+/// V5 identity card; an absent verified portrait stays an honest placeholder.
 /// A private material is never selected as a portrait without a cover contract.
 Widget artistIdentityCover(String name, String subtitle,
         {VoidCallback? onTap, Key? key, String imageLabel = '未提供本人肖像封面'}) =>
     Padding(
         padding: const EdgeInsets.only(bottom: 20),
         child: Material(
-          color: AccountTheme.text,
+          color: AccountTheme.surface,
+          borderRadius: BorderRadius.circular(24),
+          clipBehavior: Clip.antiAlias,
           child: InkWell(
               key: key,
               onTap: onTap,
@@ -215,7 +218,7 @@ Widget artistIdentityCover(String name, String subtitle,
                     AspectRatio(
                         aspectRatio: 350 / 216,
                         child: ColoredBox(
-                            color: const Color(0xFFE7E4DA),
+                            color: AccountTheme.selectedSurface,
                             child: Center(
                                 child: Padding(
                                     padding: const EdgeInsets.all(20),
@@ -241,19 +244,35 @@ Widget artistIdentityCover(String name, String subtitle,
                                             fontSize: 24,
                                             height: 1.25,
                                             fontWeight: FontWeight.w700,
-                                            color: AccountTheme.canvas)),
+                                            color: AccountTheme.text)),
                                     const SizedBox(height: 8),
                                     Text(subtitle,
                                         style: const TextStyle(
                                             fontSize: 12,
                                             height: 1.6,
-                                            color: AccountTheme.canvas)),
+                                            color: AccountTheme.text)),
                                   ])),
                               if (onTap != null)
                                 const Padding(
                                     padding: EdgeInsets.only(left: 12),
                                     child: Icon(Icons.north_east,
-                                        size: 18, color: AccountTheme.canvas)),
+                                        size: 18, color: AccountTheme.text)),
                             ])),
                   ])),
         ));
+
+/// Use only the record status read from the server; this does not grant access.
+Widget artistNextStep(ArtistRecord record) {
+  final message = switch (record.status) {
+    'PENDING' || 'UNKNOWN' => '请核对原核验记录，结果未确定前不要重复提交或按已通过办理。',
+    'SUBMITTED' => '等待独立审核；可查看本版材料与审核记录，提交不代表已公开或已授权。',
+    'NEEDS_MATERIAL' || 'REJECTED' => '先阅读审核原因，再按原记录补充或修改材料；不要重复建立相同申请。',
+    'REQUESTED' => '查看本次服务报价与付款记录，申请受理不代表服务交付。',
+    'REFUND_REQUIRED' => '请跟进原订单的退款结果，待退款不代表资金已经到账。',
+    'WITHDRAWN' || 'CANCELLED' => '原记录保留供核对，不能继续把该记录当作有效授权使用。',
+    _ => '按下方当前记录、用途和期限办理；实名、本人同意、委托和公开展示各自独立核验。',
+  };
+  return tradeSection('接下来', [
+    Text(message, style: const TextStyle(fontSize: 14, height: 1.6)),
+  ]);
+}

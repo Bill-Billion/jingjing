@@ -1,3 +1,4 @@
+import '../account/account_theme.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
@@ -81,7 +82,7 @@ class _CatalogueState extends State<_Catalogue> {
                       title: p['title'],
                       eyebrow: '剧目档案 / 演出记录',
                       description: '公开招募 · ${role['title']}'),
-                supplyCard(widget.roleId == null ? p['title'] : '项目与角色', [
+                tradeSection(widget.roleId == null ? p['title'] : '项目与角色', [
                   projectScopeFacts(projectMap(p['scope'])),
                   tradeFact('角色名称', role['title']),
                   tradeFact('角色总名额', '${role['capacity']} 个名额'),
@@ -113,12 +114,12 @@ class _CatalogueState extends State<_Catalogue> {
               p['kind'] == 'PROJECT' &&
               (p['roles'] as List).any(
                   (r) => widget.roleId == null || r['id'] == widget.roleId)))
-            supplyCard(widget.roleId == null ? '暂时没有公开招募项目' : '角色当前未开放',
+            tradeSection(widget.roleId == null ? '暂时没有公开招募项目' : '角色当前未开放',
                 [supplyNote('仅显示实际可公开展示的招募摘要。请重新读取当前目录。')])
         ],
         tradeButton('重新读取目录', busy ? null : load, outline: true),
         if (widget.roleId == null)
-          supplyCard('我的项目', [
+          tradeSection('我的项目', [
             supplyNote('查看我参与的项目与进展。'),
             tradeButton(
                 '我的项目', () => Navigator.pushNamed(context, '/my-projects'))
@@ -160,7 +161,10 @@ class _ProjectsListState extends State<_ProjectsList> {
     setState(() {
       busy = true;
       error = null;
-      if (!more) rows = [];
+      if (!more) {
+        rows = [];
+        cursor = null;
+      }
     });
     try {
       final d = await api.page(cursor: more ? cursor : null);
@@ -203,35 +207,108 @@ class _ProjectsListState extends State<_ProjectsList> {
   @override
   Widget build(BuildContext context) => tradeScaffold(
       context,
-      '我的项目',
+      '我参与的故事',
       [
+        tradeHeading('我参与的故事', eyebrow: '从念头到自己的片尾', fontSize: 28),
+        SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(children: [
+              const Padding(padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Text('参与项目', style: TextStyle(color: AccountTheme.accent))),
+              TextButton(onPressed: busy || widget.session.projectsPending.isNotEmpty
+                  ? null : () => Navigator.pushNamed(context, '/production'),
+                  child: const Text('制作任务 ↗')),
+              TextButton(onPressed: busy || widget.session.projectsPending.isNotEmpty
+                  ? null : () => Navigator.pushNamed(context, '/projects/participation'),
+                  child: const Text('参演约定 ↗')),
+              TextButton(onPressed: busy || widget.session.projectsPending.isNotEmpty
+                  ? null : () => Navigator.pushNamed(context, '/customization'),
+                  child: const Text('业务草稿 ↗')),
+            ])),
+        const SizedBox(height: 16),
+        const Text('制作、参演与共创记录分别保留待办和成果。需要你确认的合同、授权与版本会出现在对应任务中。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+        const SizedBox(height: 12),
+        const Text('下列仅为当前主体获准读取的项目；上方为分来源入口，不是跨业务的全量筛选。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+
         projectParagraph(
             '当前主体：${widget.session.party?['display_name'] ?? shortSupplyId(api.owner())}'),
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         for (final op in widget.session.projectsPending)
-          supplyCard('原操作结果待核实', [
+          tradeSection('原操作结果待核实', [
             supplyNote('原内容、版本和请求编号已保留。核对前不要重新办理。'),
             tradeButton('恢复原请求核对', busy ? null : () => restore(op['path']))
           ]),
         for (final r in rows)
-          supplyCard(r.data['title'], [
-            tradeFact('状态', projectStatuses[r.status]),
-            projectScopeFacts(projectMap(r.data['scope'])),
-            tradeFact(
-                '当前方案', r.data['current_plan_id'] == null ? '尚未建立' : '方案已关联'),
-            tradeButton(
-                '进入项目',
-                busy || widget.session.projectsPending.isNotEmpty
-                    ? null
-                    : () => open(r))
-          ]),
-        if (!busy && rows.isEmpty)
-          supplyCard('暂时没有参与项目', [supplyNote('只展示当前主体获准参与的项目。')]),
-        if (cursor != null)
+          Container(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              decoration: const BoxDecoration(border: Border(
+                  bottom: BorderSide(color: AccountTheme.border))),
+              child: LayoutBuilder(builder: (context, constraints) {
+                final compact = constraints.maxWidth < 360 ||
+                    MediaQuery.textScalerOf(context).scale(14) > 18;
+                final details = Column(crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(r.data['title'], style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 6),
+                  Text('版本 ${r.version} · ${projectStatuses[r.status] ?? r.status}',
+                      style: const TextStyle(fontSize: 12, color: AccountTheme.accent)),
+                  const SizedBox(height: 6),
+                  Text(r.data['current_plan_id'] == null ? '当前尚未建立方案' : '当前方案已关联',
+                      style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                  ExpansionTile(tilePadding: EdgeInsets.zero,
+                      title: const Text('查看项目范围', style: TextStyle(fontSize: 12)),
+                      children: [projectScopeFacts(projectMap(r.data['scope']))]),
+                ]);
+                final action = TextButton(
+                    onPressed: busy || widget.session.projectsPending.isNotEmpty
+                        ? null : () => open(r),
+                    child: const Text('进入原项目', textAlign: TextAlign.center));
+                final media = Container(width: 60, height: 80,
+                    decoration: BoxDecoration(color: AccountTheme.surface,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: const Icon(Icons.movie_outlined, color: AccountTheme.muted));
+                if (compact) {
+                  return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    Align(alignment: Alignment.centerLeft, child: media),
+                    const SizedBox(height: 12), details,
+                    const SizedBox(height: 8), action,
+                  ]);
+                }
+                return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  media, const SizedBox(width: 12), Expanded(child: details),
+                  const SizedBox(width: 8), SizedBox(width: 70, child: action),
+                ]);
+              })),
+        if (!busy && error == null && rows.isEmpty)
+          tradeSection('暂时没有参与项目', [supplyNote('只展示当前主体获准参与的项目。')]),
+        if (error == null && cursor != null)
           tradeButton('加载更多', busy ? null : () => load(more: true),
               outline: true),
-        tradeButton('重新读取', busy ? null : load, outline: true)
+        tradeButton('重新读取', busy ? null : load, outline: true),
+        const SizedBox(height: 16),
+        LayoutBuilder(builder: (context, constraints) {
+          final drafts = tradeButton('查看业务草稿',
+              busy || widget.session.projectsPending.isNotEmpty
+                  ? null : () => Navigator.pushNamed(context, '/customization'),
+              outline: true);
+          final create = tradeButton('发起制作需求',
+              busy || widget.session.projectsPending.isNotEmpty
+                  ? null : () => Navigator.pushNamed(context, '/customization/new'));
+          if (constraints.maxWidth < 340 ||
+              MediaQuery.textScalerOf(context).scale(14) > 18) {
+            return Column(mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [drafts, const SizedBox(height: 12), create]);
+          }
+          return Row(children: [
+            Expanded(child: drafts), const SizedBox(width: 12),
+            Expanded(child: create),
+          ]);
+        })
       ],
       locked: busy || widget.session.projectsPending.isNotEmpty);
 }
@@ -372,7 +449,7 @@ class _RecordState extends State<_Record> {
 
   List<Widget> pending() => [
         for (final op in widget.session.projectsPending)
-          supplyCard('原操作结果待核实', [
+          tradeSection('原操作结果待核实', [
             supplyNote('原请求内容、版本和编号已保留，请先恢复核对。'),
             tradeButton(
                 '恢复原请求核对',
@@ -387,15 +464,16 @@ class _RecordState extends State<_Record> {
       locked ? null : () => open('/projects/record?recordId=${r.id}'),
       outline: true);
   List<Widget> workspace(ProjectRecord p) => [
-        EditorialFeature(
-            title: p.data['title'],
-            eyebrow: '剧目档案 / 演出记录',
-            description: projectStatuses[p.status]),
-        supplyCard('项目介绍', [
+        tradeHeading(p.data['title'],
+            eyebrow: '剧目档案 / 演出记录', fontSize: 28),
+        Text(projectStatuses[p.status] ?? p.status,
+            style: const TextStyle(fontSize: 13, color: AccountTheme.accent)),
+        const SizedBox(height: 20),
+        tradeSection('项目用途与制作状态', [
           tradeFact('当前状态', projectStatuses[p.status]),
           projectScopeFacts(projectMap(p.data['scope']))
         ]),
-        supplyCard('当前方案', [
+        tradeSection('已保存的制作方案', [
           if (p.data['current_plan_id'] == null)
             supplyNote('当前方案尚未建立，由项目发起方在网页工作台办理。')
           else if ((kinds['PLAN'] ?? [])
@@ -407,8 +485,8 @@ class _RecordState extends State<_Record> {
           else
             supplyNote('当前身份未获准读取该方案。项目可读不表示所有子记录可读。')
         ]),
-        supplyCard('参演与发行收入约定', [
-          supplyNote('按本次完整原条款核对片酬、用途、分成、会签及后续变更。'),
+        tradeSection('参演与发行收入约定', [
+          supplyNote('参演与版权不是固定商品SKU。按本次完整原报价和合同核对片酬、用途、分成、会签及后续变更，不因投稿或入组自动授予版权。'),
           tradeButton(
               '参演约定与会签',
               locked
@@ -419,9 +497,13 @@ class _RecordState extends State<_Record> {
               locked ? null : () => open('/projects/income?projectId=${p.id}'),
               outline: true)
         ]),
-        supplyCard('本人记录', [
+        tradeSection('获准查看的参与记录', [
           for (final r in kinds['CANDIDATE'] ?? []) ...[
+            tradeFact('角色编号', shortSupplyId(r.data['role_id'])),
+            tradeFact('参与主体', shortSupplyId(r.owner)),
             tradeFact('参与状态', projectStatuses[r.status]),
+            tradeFact('本人确认', r.data['final_confirmed_by'] == null
+                ? '尚无最终确认记录' : '已记录确认主体'),
             tradeFact(
                 '本次报价',
                 r.data['amount_minor'] == null
@@ -435,7 +517,7 @@ class _RecordState extends State<_Record> {
         tradeButton('刷新条件', locked ? null : load, outline: true),
         for (final kind in ['PLAN', 'EDITION'])
           if ((kinds[kind] ?? []).isNotEmpty)
-            supplyCard(kind == 'PLAN' ? '方案版本记录' : '成片材料版本', [
+            tradeSection(kind == 'PLAN' ? '方案版本记录' : '成片材料版本', [
               for (final r in kinds[kind]!) ...[
                 tradeFact('状态', projectStatuses[r.status]),
                 link(
@@ -459,7 +541,7 @@ class _RecordState extends State<_Record> {
                       '/projects/participation?view=new&recordId=${record!.id}'),
               outline: true),
         if (p.owner == api.owner()) ...[
-          supplyCard('发行办理', [
+          tradeSection('发行办理', [
             for (final r in kinds['RELEASE'] ?? []) ...[
               tradeFact('申请状态', projectStatuses[r.status]),
               link('查看发行进度', r),
@@ -476,7 +558,7 @@ class _RecordState extends State<_Record> {
                     : () => open('/projects/release/new?projectId=${p.id}')),
             supplyNote('需当前成片材料已审核、各方确认，且最终制作验收付款与权利有效。')
           ]),
-          supplyCard('项目管理', [
+          tradeSection('项目管理', [
             supplyNote('角色邀请、筛选、六层方案、开工与成片材料在网页工作台由发起方办理。取消不等于退款或外部撤下。'),
             projectField(reason, '取消原因',
                 enabled: !locked, changed: (_) => setState(() {})),
@@ -494,7 +576,7 @@ class _RecordState extends State<_Record> {
                 outline: true)
           ])
         ],
-        supplyCard('项目留言', [
+        tradeSection('项目留言', [
           operationCommentLink(context, 'PROJECTS', p.id, '项目留言',
               enabled: !locked, returned: load)
         ])
@@ -505,7 +587,7 @@ class _RecordState extends State<_Record> {
             r.status == 'SELECTED'
                 ? '请仔细核对，获选后仍需本人最终确认。'
                 : '邀请接受仅为报名；筛选与本人入组确认分别办理。'),
-        supplyCard('项目与角色', [
+        tradeSection('项目与角色', [
           tradeFact('项目名称',
               project?.data['title'] ?? '项目 · ${shortSupplyId(r.projectId!)}'),
           tradeFact('角色编号', shortSupplyId(r.data['role_id'])),
@@ -526,7 +608,7 @@ class _RecordState extends State<_Record> {
                   ? '尚未报价'
                   : tradeMoney(r.data['amount_minor']))
         ]),
-        supplyCard('角色约定', [
+        tradeSection('角色约定', [
           projectParagraph(r.data['terms']),
           if (r.data['note'] != null) projectParagraph(r.data['note'])
         ]),
@@ -539,7 +621,7 @@ class _RecordState extends State<_Record> {
                     : () => open('/projects/invitation?candidateId=${r.id}')),
           if (['INVITED', 'APPLIED', 'SELECTED', 'CONFIRMED']
               .contains(r.status))
-            supplyCard('本人确认', [
+            tradeSection('本人确认', [
               if (r.status == 'SELECTED')
                 CheckboxListTile(
                     contentPadding: EdgeInsets.zero,
@@ -586,7 +668,7 @@ class _RecordState extends State<_Record> {
                   r.id
               ? '确认绑定本次准确内容。换版后需要重新阅读与确认。'
               : '历史版本，当前确认已失效。'),
-      supplyCard(r.kind == 'PLAN' ? '当前方案' : '当前成片材料', [
+      tradeSection(r.kind == 'PLAN' ? '当前方案' : '当前成片材料', [
         tradeFact('准确版本', '第 ${r.version} 版 · ${shortSupplyId(r.id)}'),
         tradeFact('内容摘要', r.hash),
         if (r.kind == 'EDITION') ...[
@@ -596,8 +678,8 @@ class _RecordState extends State<_Record> {
         ]
       ]),
       if (r.kind == 'PLAN') ...[
-        supplyCard('方案条款', [projectParagraph(r.data['terms'])]),
-        supplyCard('权利摘要', [
+        tradeSection('方案条款', [projectParagraph(r.data['terms'])]),
+        tradeSection('权利摘要', [
           for (final x in r.data['rights'])
             ExpansionTile(
                 title: Text(projectLayers[x['layer']]!),
@@ -618,7 +700,7 @@ class _RecordState extends State<_Record> {
                           ]))
                 ])
         ]),
-        supplyCard('角色费用依据', [
+        tradeSection('角色费用依据', [
           for (final f in r.data['funding']) ...[
             tradeFact('候选记录', shortSupplyId(f['candidate_id'])),
             tradeFact('已付订单', shortSupplyId(f['order_id'])),
@@ -628,7 +710,7 @@ class _RecordState extends State<_Record> {
             supplyNote('本方案未列正价角色资金明细。以实际角色与明确约定为准。')
         ])
       ],
-      supplyCard('确认顺序', [
+      tradeSection('确认顺序', [
         for (final s in signers) ...[
           tradeFact('确认主体',
               '${s['party_id'] == own ? '本人 · ' : ''}${shortSupplyId(s['party_id'])}'),
@@ -654,7 +736,7 @@ class _RecordState extends State<_Record> {
                   : '尚未确认')
         ]
       ]),
-      supplyCard('已有结果', [
+      tradeSection('已有结果', [
         projectParagraph(mine == null
             ? '本人尚未确认本版本。'
             : mine['decision'] == 'APPROVED'
@@ -665,7 +747,7 @@ class _RecordState extends State<_Record> {
           supplyNote('请核对本人是否被指定、当前版本是否已审核，以及前置方是否已确认。')
       ]),
       if (eligible)
-        supplyCard('意见', [
+        tradeSection('意见', [
           CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               value: read,
@@ -696,18 +778,18 @@ class _RecordState extends State<_Record> {
   }
 
   List<Widget> release(ProjectRecord r) => [
-        supplyCard('项目与成片版本', [
+        tradeSection('项目与成片版本', [
           tradeFact('项目名称', project!.data['title']),
           tradeFact('关联版本', shortSupplyId(r.data['edition_id'])),
           tradeFact('渠道', shortSupplyId(r.data['channel_id']))
         ]),
-        supplyCard('内部审核', [
+        tradeSection('内部审核', [
           tradeFact('当前状态', projectStatuses[r.status]),
           if (r.data['review'] != null)
             projectParagraph(r.data['review']['reason']),
           supplyNote('内部通过仅表示可送出，实际外部提交与发行须凭据独立核实。')
         ]),
-        supplyCard('本次材料', [
+        tradeSection('本次材料', [
           projectParagraph(r.data['note']),
           if (r.data['prior_release_id'] != null)
             tradeButton(
@@ -718,7 +800,7 @@ class _RecordState extends State<_Record> {
                         '/projects/record?recordId=${r.data['prior_release_id']}'),
                 outline: true)
         ]),
-        supplyCard('外部渠道', [
+        tradeSection('外部渠道', [
           tradeFact(
               '已核实结果',
               r.data['last_external_event_id'] == null
@@ -753,7 +835,7 @@ class _RecordState extends State<_Record> {
         appNotice('补件建立新申请并关联上一记录，不覆盖历史意见；发行不新增一轮会签。')
       ];
   List<Widget> external(ProjectRecord r) => [
-        supplyCard('外部结果登记', [
+        tradeSection('外部结果登记', [
           tradeFact('核验状态', projectStatuses[r.status]),
           tradeFact('真实结果', projectOutcomes[r.data['outcome']]),
           tradeFact('外部编号', r.data['external_reference']),
@@ -772,7 +854,7 @@ class _RecordState extends State<_Record> {
     };
     if (ids.isEmpty) return [];
     return [
-      supplyCard('私有材料', [
+      tradeSection('私有材料', [
         for (final id in ids) ...[
           tradeFact('材料编号', shortSupplyId(id)),
           if ((project?.owner ?? r.owner) == api.owner())
@@ -838,6 +920,7 @@ class _RecordState extends State<_Record> {
           if (notice != null) appNotice(notice!),
           ...pending(),
           if (r != null) ...[
+            projectNextStep(r),
             if (r.kind == 'PROJECT')
               ...workspace(r)
             else if (r.kind == 'CANDIDATE')
@@ -851,7 +934,7 @@ class _RecordState extends State<_Record> {
             if (r.data['review'] != null &&
                 r.kind != 'RELEASE' &&
                 r.kind != 'EXTERNAL_EVENT')
-              supplyCard(
+              tradeSection(
                   '独立审核意见', [projectParagraph(r.data['review']['reason'])]),
             ...attachments(r),
             ExpansionTile(title: const Text('完整保存记录'), children: [

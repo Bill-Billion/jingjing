@@ -41,6 +41,7 @@ class SupplyFiles extends StatefulWidget {
       required this.ids,
       this.onChanged,
       this.single = false,
+      this.maxFiles,
       this.acceptedPurposes,
       this.enabled = true});
   final SupplyApi api;
@@ -49,6 +50,7 @@ class SupplyFiles extends StatefulWidget {
   final List<String> ids;
   final ValueChanged<List<String>>? onChanged;
   final bool single, enabled;
+  final int? maxFiles;
   @override
   State<SupplyFiles> createState() => _SupplyFilesState();
 }
@@ -94,6 +96,11 @@ class _SupplyFilesState extends State<SupplyFiles> {
   }
 
   Future<void> _upload({bool retry = false}) async {
+    if (!retry && !widget.single && widget.maxFiles != null &&
+        widget.ids.length >= widget.maxFiles!) {
+      setState(() => _notice = '本次最多选择 ${widget.maxFiles} 份材料，请先移除不需要的文件。');
+      return;
+    }
     final epoch = widget.api.session.epoch, party = widget.api.owner();
     setState(() {
       _busy = true;
@@ -241,6 +248,9 @@ class _SupplyFilesState extends State<SupplyFiles> {
                         onPressed: _busy ||
                                 !widget.enabled ||
                                 blocked ||
+                                (pending == null && !widget.single &&
+                                    widget.maxFiles != null &&
+                                    widget.ids.length >= widget.maxFiles!) ||
                                 (pending != null &&
                                     pending['query']['purpose'] !=
                                         widget.purpose)

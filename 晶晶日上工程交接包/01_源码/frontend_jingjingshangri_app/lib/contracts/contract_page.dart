@@ -9,6 +9,7 @@ import '../trade/trade_widgets.dart';
 import 'contract_api.dart';
 import 'contract_reader.dart';
 import 'contract_text.dart';
+import 'contract_signing_boundary.dart';
 
 class ContractPage extends StatefulWidget {
   const ContractPage({super.key, this.snapshotId});
@@ -56,8 +57,34 @@ class _ContractPageState extends State<ContractPage> {
   }
 
   Widget _card(String title, List<Widget> children, {IconData? icon}) =>
-      tradeSection(title, children);
-  Widget _fact(String label, dynamic value) => supplyFact(label, value);
+      Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          decoration: BoxDecoration(
+              border: const Border(
+                  bottom: BorderSide(color: AccountTheme.border))),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Row(children: [
+              if (icon != null) ...[
+                Icon(icon, size: 22, color: AccountTheme.accent),
+                const SizedBox(width: 10),
+              ],
+              Expanded(child: Text(title,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700))),
+            ]),
+            const SizedBox(height: 16),
+            ...children,
+          ]));
+  Widget _fact(String label, dynamic value) => Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: AccountTheme.border))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(label, style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        const SizedBox(height: 6),
+        SelectableText(value == null ? '未提供' : '$value',
+            style: const TextStyle(fontSize: 14, height: 1.5)),
+      ]));
   Widget _notice(String message, {bool error = false}) => Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Text(message,
@@ -77,7 +104,7 @@ class _ContractPageState extends State<ContractPage> {
               final snapshot = reader.snapshot;
               return Scaffold(
                 appBar: AppBar(
-                    title: const Text('合同与原约定'),
+                    title: const Text('合同与许可凭证'),
                     leading: BackButton(onPressed: () {
                       if (Navigator.canPop(context)) {
                         Navigator.pop(context);
@@ -93,7 +120,8 @@ class _ContractPageState extends State<ContractPage> {
                               padding:
                                   const EdgeInsets.fromLTRB(20, 40, 20, 24),
                               children: [
-                                tradeHeading('合同与许可', eyebrow: '每次使用都有依据'),
+                                tradeHeading(snapshot == null ? '合同与许可' : '核对当前版本',
+                                    eyebrow: '原合同内容 / 签署与许可分别核对', fontSize: 28),
                                 _notice('按合同编号读取当时保存的内容。能否查看，由当前账号和办事身份的授权决定。'),
                                 if (!session.isLoggedIn ||
                                     session.partyId == null) ...[
@@ -135,7 +163,8 @@ class _ContractPageState extends State<ContractPage> {
                                                     Icons.description_outlined),
                                                 label: Text(source.$1))),
                                     ]),
-                                  _card('指定合同', [
+                                  _card('按编号核对原合同', [
+                                    _notice('通常从订单、许可或参演记录直接进入；仅在需要核对指定记录时填写编号，不会创建新合同。'),
                                     _fact(
                                         '当前办事身份',
                                         session.party?['display_name'] ??
@@ -176,8 +205,20 @@ class _ContractPageState extends State<ContractPage> {
                                   if (reader.error != null)
                                     _notice(reader.error!, error: true),
                                   if (snapshot != null) ...[
-                                    tradeBanner('合同内容已保存',
-                                        '保存时尚未签署，留存原约定。实际签署与付款须另行核验。'),
+                                    Container(
+                                        padding: const EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                            color: const Color(0xFF202320),
+                                            borderRadius: BorderRadius.circular(16)),
+                                        child: const Column(
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                                            children: [
+                                              Text('合同内容已保存', style: TextStyle(
+                                                  color: Colors.white, fontSize: 20, fontWeight: FontWeight.w700)),
+                                              SizedBox(height: 12),
+                                              Text('保存时尚未签署，留存原约定。实际签署与付款须另行核验。',
+                                                  style: TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+                                            ])),
                                     const SizedBox(height: 16),
                                     _card(
                                         '合同信息',
@@ -208,6 +249,8 @@ class _ContractPageState extends State<ContractPage> {
                                     _card('当时保存的承诺',
                                         [_text(snapshot['commitments'])],
                                         icon: Icons.fact_check_outlined),
+                                    ContractSigningBoundary(key: ValueKey(
+                                        '${session.epoch}:${session.partyId}:${snapshot['id']}:${snapshot['content_sha256']}')),
                                     _card(
                                         '这份合同采用的规则',
                                         [

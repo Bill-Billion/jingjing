@@ -729,14 +729,57 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         method: 'PATCH',
         account: true,
         reload: false,
-        validate: (r) => communityRequire(r['object_version'] is int &&
-            r['personalization'] == body['personalization'] &&
-            r['marketing'] == body['marketing'] &&
-            r['rest_reminder_minutes'] == body['rest_reminder_minutes']));
+        validate: (r) {
+          communityRequire(r['object_version'] is int &&
+              r['personalization'] == body['personalization'] &&
+              r['marketing'] == body['marketing'] &&
+              r['rest_reminder_minutes'] == body['rest_reminder_minutes']);
+          for (final field in ['push_enabled', 'night_reminder_enabled']) {
+            if (body.containsKey(field)) {
+              communityRequire(r[field] is bool && r[field] == body[field]);
+            }
+          }
+          if (body.containsKey('quiet_hours')) {
+            final expected = communityMap(body['quiet_hours']);
+            final actual = communityMap(r['quiet_hours']);
+            communityRequire(actual['enabled'] is bool &&
+                actual['start_minute'] is int &&
+                actual['end_minute'] is int &&
+                actual['enabled'] == expected['enabled'] &&
+                actual['start_minute'] == expected['start_minute'] &&
+                actual['end_minute'] == expected['end_minute']);
+          }
+        });
     if (r != null && mounted) {
       loadedPreferences = false;
       await load();
     }
+  }
+
+  Widget _quietTimeField(TextEditingController controller, String label) {
+    final parsed = int.tryParse(controller.text);
+    final value = parsed != null && parsed >= 0 && parsed < 1440 ? parsed : null;
+    final text = value == null
+        ? '请选择时间'
+        : '${(value ~/ 60).toString().padLeft(2, '0')}:${(value % 60).toString().padLeft(2, '0')}';
+    return ListTile(
+        contentPadding: EdgeInsets.zero,
+        title: Text(label),
+        subtitle: Text(text),
+        trailing: const Icon(Icons.schedule),
+        enabled: enabled,
+        onTap: !enabled ? null : () async {
+          final epoch = widget.session.epoch, currentTicket = ticket;
+          final picked = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay(hour: (value ?? 0) ~/ 60, minute: (value ?? 0) % 60),
+              builder: (context, child) => MediaQuery(
+                  data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                  child: child!));
+          if (!mounted || picked == null || !enabled ||
+              widget.session.epoch != epoch || ticket != currentTicket) return;
+          setState(() => controller.text = '${picked.hour * 60 + picked.minute}');
+        });
   }
 
   List<Widget> preferenceView() => [
@@ -762,14 +805,11 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
               enabled ? (v) => setState(() => nightEnabled = v) : null),
           _preferenceSwitch('夜间推送免打扰', '此时段暂停非必要推送，不隐藏站内业务通知', quietEnabled,
               enabled ? (v) => setState(() => quietEnabled = v) : null),
-          communityField(quietStart, '夜间开始：距北京时间零点分钟数',
-              keyboard: TextInputType.number, enabled: enabled),
-          communityField(quietEnd, '夜间结束：距北京时间零点分钟数',
-              keyboard: TextInputType.number, enabled: enabled),
-          const Text('0—1439，起止不能相同。跨午夜可设置开始大于结束。'),
+          _quietTimeField(quietStart, '夜间开始（北京时间）'),
+          _quietTimeField(quietEnd, '夜间结束（北京时间）'),
+          const Text('按北京时间保存，起止不能相同；开始晚于结束表示跨午夜。'),
         ],
-        tradeButton(
-            '保存本次偏好', enabled ? () => submit(() => savePreferences()) : null),
+
         if (remotePreferences?['marketing'] == true)
           tradeButton(
               '关闭营销通知',
@@ -1030,7 +1070,16 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             : '注销结果尚未确认，请凭申请编号 ${ref.requestId} 联系工作人员核对；不要重复提交。'),
       menu(),
       const SizedBox(height: 20),
-      communityFact('进展', privacyStatus(r['current_status'])),
+      communitySection('本次申请状态', [
+        communityFact('进展', privacyStatus(r['current_status'])),
+        const Text('申请识别号 · 可复制并保留以供后续核对',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+        const SizedBox(height: 8),
+        SelectableText('${r['id']}', style: const TextStyle(fontSize: 12)),
+        const SizedBox(height: 12),
+        const Text('审核答复与实际执行分别记录。请继续查看下方处理方案、期限及执行结果。',
+            style: TextStyle(fontSize: 13, color: AccountTheme.muted, height: 1.6)),
+      ]),
       communityFact('申请范围',
           (q['scopes'] as List).map((s) => privacyScopes[s] ?? s).join('、')),
       communityFact('原申请说明', q['details']),
@@ -1480,6 +1529,9 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             scopes.toList()..sort(),
             personalization,
             marketing,
+            pushEnabled,
+            nightEnabled,
+            quietEnabled,
             agreed,
             selectedFile,
             selectedPolicy,
@@ -1500,5 +1552,9 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             tradeButton('重新读取当前记录', busy || checking ? null : load,
                 outline: true)
           ],
+          footer: widget.view == 'preferences'
+              ? tradeButton('保存本次偏好',
+                  enabled ? () => submit(() => savePreferences()) : null)
+              : null,
           onBack: () => draftGuard.currentState?.back()));
 }

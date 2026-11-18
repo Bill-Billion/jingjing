@@ -385,13 +385,17 @@ class _StoryAttachmentPanelState extends State<StoryAttachmentPanel>
         Text(widget.readOnly ? '此版本没有可读取附件。' : '尚无附件上传记录。'),
       for (final file in visible)
         Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: AccountTheme.border))),
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+                color: AccountTheme.surface,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(color: AccountTheme.border)),
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(file.name,
                   style: const TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
               Text('${file.size} 字节 · ${file.mediaType} · ${{
                 'READY': '可读取',
                 'UPLOADING': '上传待核对',

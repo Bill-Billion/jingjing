@@ -19,10 +19,14 @@ class StockPublicCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Material(
-      color: AccountTheme.canvas,
+      color: AccountTheme.surface,
+      borderRadius: BorderRadius.circular(20),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
           onTap: onTap,
-          child:
+          child: Padding(
+              padding: const EdgeInsets.all(12),
+              child:
               Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
             StockPublicMediaView(
                 session: session,
@@ -42,5 +46,5 @@ class StockPublicCard extends StatelessWidget {
             const Text('查看详情与预览 ↗',
                 style: TextStyle(
                     fontSize: 11, color: AccountTheme.muted, height: 1.5)),
-          ])));
+          ]))));
 }

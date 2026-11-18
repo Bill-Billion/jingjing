@@ -349,8 +349,12 @@ class _AccountPageState extends State<AccountPage> {
         !_busy && !['SUSPENDED', 'CLOSED'].contains(value['current_status']);
     void choose() => session.select(row);
     return Card(
+        color: selected ? AccountTheme.selectedSurface : AccountTheme.surface,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: selected ? AccountTheme.accent : AccountTheme.border)),
         child: InkWell(
-            borderRadius: BorderRadius.zero,
+            borderRadius: BorderRadius.circular(20),
             onTap: enabled ? choose : null,
             child: Padding(
                 padding: const EdgeInsets.all(16),
@@ -361,12 +365,14 @@ class _AccountPageState extends State<AccountPage> {
                         Container(
                             width: 48,
                             height: 48,
-                            color: AccountTheme.text,
+                            decoration: BoxDecoration(
+                                color: AccountTheme.selectedSurface,
+                                borderRadius: BorderRadius.circular(14)),
                             child: Icon(
                                 value['kind'] == 'ORGANIZATION'
                                     ? Icons.apartment_outlined
                                     : Icons.person_outline,
-                                color: AccountTheme.canvas,
+                                color: AccountTheme.accent,
                                 size: 24)),
                         const SizedBox(width: 12),
                         Expanded(
@@ -465,7 +471,7 @@ class _AccountPageState extends State<AccountPage> {
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.fromLTRB(20, 40, 20, 32),
               children: [
-                tradeHeading('账号与身份', eyebrow: '你的资料 / 代表谁办事'),
+                tradeHeading('资料与设置', eyebrow: '你的资料与使用偏好', fontSize: 28),
                 if (session.account?['id'] is String)
                   ClosureReferenceNotice(
                       key: ValueKey(session.account!['id']),
@@ -492,7 +498,7 @@ class _AccountPageState extends State<AccountPage> {
                       child: Text(_notice!,
                           style: const TextStyle(color: AccountTheme.accent))),
                 _card(
-                    '账号与机构',
+                    '本人账号',
                     [
                       Text('${session.account?['display_name'] ?? '我的账号'}',
                           style: const TextStyle(fontSize: 17)),
@@ -523,12 +529,12 @@ class _AccountPageState extends State<AccountPage> {
                           icon: Icons.phonelink_lock_outlined),
                       _small('偏好单独保存。展示名更正按本人申请处理；换号需要原、新手机号分别验证并明确确认。'),
                     ],
-                    subtitle: '管理账号、机构和成员，按授权阅读保存的合同。'),
-                const Text('选择办事身份',
+                    subtitle: '资料由当前账号读取；公开头像与昵称更正需按本人资料流程办理。'),
+                const Text('办事身份与机构授权',
                     style:
                         TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 8),
-                _small('切换只选择代表谁办事，具体权限由服务器核对。'),
+                _small('切换只选择代表谁办事，不改变五栏导航。机构批量经营使用独立 PC 后台；具体权限由服务器核对。'),
                 const SizedBox(height: 12),
                 if (session.parties.isEmpty) _small('暂无可用身份，请刷新获取。'),
                 ...session.parties.map((row) => _identityCard(row, session)),

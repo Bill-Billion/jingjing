@@ -242,20 +242,20 @@ class _LoginPageState extends State<LoginPage> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),
               child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 40, 20, 24),
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
                 children: [
                   const Text('返回你的片场',
                       style:
-                          TextStyle(fontSize: 12, color: AccountTheme.accent)),
-                  const SizedBox(height: 24),
+                          TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                  const SizedBox(height: 20),
                   const Text('登录晶晶日上',
                       style: TextStyle(
-                          fontFamily: AccountTheme.serif,
-                          fontSize: 32,
+                          fontFamily: AccountTheme.sans,
+                          fontSize: 24,
                           fontWeight: FontWeight.w900,
                           height: 1.25)),
                   const SizedBox(height: 20),
-                  Text(widget.reason ?? '新的角色，新的故事。从这里开始。',
+                  Text(widget.reason ?? '登录后返回刚才的业务；仅恢复页面，不自动继续提交。',
                       style: const TextStyle(
                           fontSize: 14,
                           color: AccountTheme.muted,
@@ -272,6 +272,8 @@ class _LoginPageState extends State<LoginPage> {
                       enabled:
                           !_sending && !busy && !_pendingSms && !_pendingLogin,
                       controller: _phoneCtrl,
+                      style: const TextStyle(color: Colors.white),
+                      cursorColor: Colors.white,
                       focusNode: _phoneFocus,
                       keyboardType: TextInputType.phone,
                       autofillHints: const [
@@ -280,7 +282,10 @@ class _LoginPageState extends State<LoginPage> {
                       maxLength: 11,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: const InputDecoration(
-                          hintText: '请输入11位手机号', counterText: ''),
+                          hintText: '请输入11位手机号', counterText: '',
+                          filled: true, fillColor: Color(0xFF202320),
+                          hintStyle: TextStyle(color: Color(0xFFBCC3BA)),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 18)),
                       onChanged: (_) => setState(() {
                         if (_challengePhone != _phoneCtrl.text.trim()) {
                           _challengeId = null;
@@ -291,7 +296,7 @@ class _LoginPageState extends State<LoginPage> {
                       }),
                     ),
                   ),
-                  const Divider(height: 14),
+                  const SizedBox(height: 10),
                   const Text('用于接收登录验证码',
                       style:
                           TextStyle(fontSize: 12, color: AccountTheme.muted)),
@@ -305,6 +310,8 @@ class _LoginPageState extends State<LoginPage> {
                     child: TextField(
                       enabled: !_sending && !busy && !_pendingLogin,
                       controller: _codeCtrl,
+                      style: const TextStyle(color: Colors.white),
+                      cursorColor: Colors.white,
                       focusNode: _codeFocus,
                       keyboardType: TextInputType.number,
                       autofillHints: const [AutofillHints.oneTimeCode],
@@ -312,10 +319,13 @@ class _LoginPageState extends State<LoginPage> {
                       maxLength: 6,
                       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       decoration: const InputDecoration(
-                          hintText: '输入6位验证码', counterText: ''),
+                          hintText: '输入6位验证码', counterText: '',
+                          filled: true, fillColor: Color(0xFF202320),
+                          hintStyle: TextStyle(color: Color(0xFFBCC3BA)),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 18, vertical: 18)),
                     ),
                   ),
-                  const Divider(height: 14),
+                  const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton(

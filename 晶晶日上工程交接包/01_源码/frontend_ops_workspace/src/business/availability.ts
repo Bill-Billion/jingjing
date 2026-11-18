@@ -16,6 +16,12 @@ export function actionAvailability(domain: string, operation: Operation, record:
   const sixReason=sixActionReason(domain,key,record,context.accountId,context.partyId)
   if(sixReason)return blocked(sixReason)
   if(domain==='redemption'&&['draw-one','draw-ten'].includes(key)){const reason=lotteryReason(record);if(reason)return blocked(reason)}
+  if (domain === 'redemption' && key === 'release') {
+    // A grant is not its checkout hold. Keep the successful hold receipt's own id/version.
+    if (record?.kind !== 'COUPON_HOLD') return blocked('请先读取本次占用回执；权益本身的编号和版本不能用于取消占用。')
+    if (!context.owner || record.owner_party_id !== context.partyId) return blocked('请由本次占用所属身份的负责人办理。')
+    if (status !== 'HELD' || data.order_id !== null) return blocked('仅可取消尚未绑定订单的原占用；已有订单请沿原订单办理。')
+  }
   let explicit = false
   if (targetsRecord && record && Array.isArray(record.allowed_actions)) {
     const roomActions: Record<string, string[]> = { invite: ['INVITE'], close: ['CLOSE'], case: ['REQUEST_EXTENSION', 'REQUEST_RESUME', 'REQUEST_CANCEL'] }

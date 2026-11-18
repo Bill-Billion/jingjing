@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../account/account_session.dart';
+import '../account/account_theme.dart';
 import '../account/account_api.dart';
 import '../projects/project_api.dart';
 import '../projects/project_models.dart';
@@ -81,7 +82,7 @@ class _CheckoutState extends State<_Checkout> {
   Future<void> submit() async {
     final epoch = widget.session.epoch, party = api.owner(), a = agreement;
     final recovering = pending;
-    if (!recovering && (a == null || amount <= 0 || project?.owner != party)) {
+    if (!recovering && (a == null || amount <= 0 || channel == 'CUSTODY' || project?.owner != party)) {
       return;
     }
     if (!await tradeConfirm(
@@ -115,9 +116,26 @@ class _CheckoutState extends State<_Checkout> {
       context,
       '参演付款约定',
       [
-        tradeHeading('按原约定付款', eyebrow: 'PARTICIPATION / PAYMENT'),
+        tradeHeading('按原约定付款', eyebrow: '参演约定 / 本次现金节点'),
         if (error != null) Text(error!),
         if (busy) const LinearProgressIndicator(),
+        if (agreement != null)
+          Container(
+              padding: const EdgeInsets.all(24),
+              margin: const EdgeInsets.only(bottom: 18),
+              decoration: BoxDecoration(
+                  color: AccountTheme.surface,
+                  borderRadius: BorderRadius.circular(24)),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                const Text('本次核定现金金额',
+                    style: TextStyle(color: AccountTheme.muted, fontSize: 13)),
+                const SizedBox(height: 10),
+                Text(tradeMoney(amount), style: const TextStyle(
+                    fontSize: 36, color: AccountTheme.accent, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 12),
+                const Text('建立订单、付款核实和参演授权分别办理，不以本页金额代替到账结果。',
+                    style: TextStyle(color: AccountTheme.muted, height: 1.6)),
+              ])),
         if (agreement != null)
           tradeSection('本次已读取的约定', [
             tradeFact('合同版本', agreement!.version),
@@ -132,7 +150,7 @@ class _CheckoutState extends State<_Checkout> {
                 items: const [
                   DropdownMenuItem(value: 'ALIPAY', child: Text('支付宝')),
                   DropdownMenuItem(
-                      value: 'CUSTODY', child: Text('资金托管账户 · 当前服务未接通'))
+                      value: 'CUSTODY', enabled: false, child: Text('资金托管账户 · 当前服务未接通'))
                 ],
                 onChanged: busy || pending
                     ? null
@@ -154,6 +172,7 @@ class _CheckoutState extends State<_Checkout> {
                   (!pending &&
                       (agreement == null ||
                           amount <= 0 ||
+                          channel == 'CUSTODY' ||
                           project?.owner != api.owner()))
               ? null
               : submit,

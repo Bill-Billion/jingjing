@@ -390,6 +390,14 @@ class V5Api extends ChangeNotifier {
   }
 }
 
+// Layout ownership only: the form retains the sole action and all write state.
+class _V5ActionScope extends InheritedWidget {
+  const _V5ActionScope({required this.form, required super.child});
+  final V5FormState? form;
+  @override
+  bool updateShouldNotify(_V5ActionScope oldWidget) => form != oldWidget.form;
+}
+
 class V5Frame extends StatefulWidget {
   const V5Frame(
       {super.key,
@@ -455,7 +463,16 @@ class _V5FrameState extends State<V5Frame> {
   Widget build(BuildContext context) => AnimatedBuilder(
       animation: widget.api,
       builder: (context, _) {
-        return PopScope(
+        final candidates = _forms
+            .where((form) => form.mounted && form.widget.actionInFooter)
+            .toList();
+        // Ambiguous ownership falls back to each form's original inline action.
+        final footerForm = widget.footer == null && candidates.length == 1
+            ? candidates.single : null;
+        final footer = widget.footer ?? footerForm?._action();
+        return _V5ActionScope(
+          form: footerForm,
+          child: PopScope(
             canPop: !locked && !dirty,
             onPopInvokedWithResult: (didPop, result) {
               if (!didPop) leave();
@@ -467,10 +484,10 @@ class _V5FrameState extends State<V5Frame> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           ...widget.children,
-                          if (widget.footer != null) widget.footer!
+                          if (footer != null) footer
                         ]))
                 : tradeScaffold(context, widget.title, widget.children,
-                    onBack: leave, footer: widget.footer, plaza: widget.plaza));
+                    onBack: leave, footer: footer, plaza: widget.plaza)));
       });
 }
 
@@ -730,12 +747,14 @@ class V5Form extends StatefulWidget {
       this.reload,
       this.onSuccess,
       this.canSubmit = true,
+      this.actionInFooter = false,
       this.beforeSubmit,
       this.facts = const [],
       this.factsBuilder,
+      this.beforeField,
       this.extra});
   final V5Api api;
-  final bool canSubmit;
+  final bool canSubmit, actionInFooter;
   final Future<void> Function(Map<String, dynamic>)? beforeSubmit;
   final String title, action, suffix;
   final List<V5Field> fields;
@@ -748,6 +767,9 @@ class V5Form extends StatefulWidget {
   final void Function(Map<String, dynamic>)? onSuccess;
   final List<Widget> facts;
   final List<Widget> Function(Map<String, dynamic>)? factsBuilder;
+  // Optional UI-only insertion; omitted callers retain their flat field order.
+  final List<Widget> Function(V5Field, Map<String, dynamic>,
+      void Function(String, dynamic), bool)? beforeField;
   final List<Widget> Function(
       Map<String, dynamic>, void Function(String, dynamic), bool)? extra;
   @override
@@ -884,6 +906,11 @@ class V5FormState extends State<V5Form>
   @override
   void didUpdateWidget(covariant V5Form oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.actionInFooter != oldWidget.actionInFooter ||
+        widget.canSubmit != oldWidget.canSubmit ||
+        widget.action != oldWidget.action) {
+      _frame?.formChanged();
+    }
     // Reading private media can advance the parent record before any input.
     // Only pristine forms follow that version; drafts and uncertain writes
     // retain their original concurrency boundary and explicit recovery flow.
@@ -951,6 +978,7 @@ class V5FormState extends State<V5Form>
   }
 
   Future<void> submit() async {
+    if (busy || completed) return;
     final op = pending;
     if (op == null &&
         (!widget.canSubmit ||
@@ -1003,7 +1031,7 @@ class V5FormState extends State<V5Form>
       return;
     }
     widget.api.check(epoch, party);
-    if (!mounted) return;
+    if (!mounted || busy || completed) return;
     final t = ++ticket;
     setState(() {
       busy = true;
@@ -1104,9 +1132,22 @@ class V5FormState extends State<V5Form>
     ]);
   }
 
+  Widget _action() {
+    final op = pending;
+    return tradeButton(
+        op != null ? '恢复原请求核对' : widget.action,
+        busy ||
+                completed ||
+                op == null && (!widget.canSubmit || conflict && !reviewed)
+            ? null
+            : submit);
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final footerOwner =
+        context.dependOnInheritedWidgetOfExactType<_V5ActionScope>()?.form;
     final op = pending,
         locked = busy || op != null,
         enabled = !locked && !completed;
@@ -1140,7 +1181,8 @@ class V5FormState extends State<V5Form>
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    for (final f in widget.fields)
+                    for (final f in widget.fields) ...[
+                      ...?widget.beforeField?.call(f, values, change, enabled),
                       Padding(
                           padding: const EdgeInsets.only(bottom: 16),
                           child: f.type == 'bool'
@@ -1192,6 +1234,7 @@ class V5FormState extends State<V5Form>
                                                           v.trim().isEmpty)
                                                   ? '请填写${f.label}'
                                                   : null)),
+                    ],
                     ...?widget.extra?.call(values, change, enabled),
                   ])),
           if (conflict && widget.reload != null) ...[
@@ -1203,15 +1246,12 @@ class V5FormState extends State<V5Form>
                   value: reviewed,
                   onChanged: busy
                       ? null
-                      : (v) => setState(() => reviewed = v == true)),
+                      : (v) {
+                          setState(() => reviewed = v == true);
+                          _frame?.formChanged();
+                        }),
           ],
-          tradeButton(
-              op != null ? '恢复原请求核对' : widget.action,
-              busy ||
-                      completed ||
-                      op == null && (!widget.canSubmit || conflict && !reviewed)
-                  ? null
-                  : submit),
+          if (footerOwner != this) _action(),
         ]));
   }
 }

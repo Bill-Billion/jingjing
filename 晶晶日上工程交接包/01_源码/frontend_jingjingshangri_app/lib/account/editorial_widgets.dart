@@ -26,11 +26,11 @@ class EditorialFeature extends StatelessWidget {
         final scale = MediaQuery.textScalerOf(context);
         final captionWidth = width * 16 / 35;
         final longTitle = title.runes.length > 8;
-        final typeSize = longTitle ? 42.0 : math.min(64.0, captionWidth * .4);
+        final typeSize = longTitle ? 28.0 : math.min(36.0, captionWidth * .3);
         // Long real titles and enlarged text flow below the portrait rather
         // than clipping the identity or covering a following action.
         final stacked = longTitle || width < 280 || scale.scale(14) > 19;
-        final foreground = dark ? AccountTheme.canvas : AccountTheme.text;
+        const foreground = AccountTheme.text;
         final caption = Padding(
             padding: const EdgeInsets.fromLTRB(0, 20, 12, 20),
             child: Column(
@@ -59,7 +59,7 @@ class EditorialFeature extends StatelessWidget {
                     Text(description!,
                         style: TextStyle(
                             color:
-                                dark ? AccountTheme.canvas : AccountTheme.muted,
+                                AccountTheme.muted,
                             fontSize: 12,
                             height: 1.6)),
                   ],
@@ -70,7 +70,7 @@ class EditorialFeature extends StatelessWidget {
             child: image ??
                 DecoratedBox(
                     decoration: const BoxDecoration(
-                        color: Color(0xFFE7E4DA),
+                        color: AccountTheme.surface,
                         border: Border.fromBorderSide(
                             BorderSide(color: AccountTheme.border))),
                     child: Center(
@@ -84,8 +84,12 @@ class EditorialFeature extends StatelessWidget {
                                     height: 1.6))))));
         return Padding(
             padding: const EdgeInsets.only(bottom: 20),
-            child: ColoredBox(
-                color: dark ? AccountTheme.text : AccountTheme.canvas,
+            child: Container(
+                clipBehavior: Clip.antiAlias,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                    color: dark ? AccountTheme.selectedSurface : AccountTheme.surface,
+                    borderRadius: BorderRadius.circular(24)),
                 child: stacked
                     ? Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,

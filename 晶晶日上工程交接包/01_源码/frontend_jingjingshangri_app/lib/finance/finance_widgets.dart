@@ -29,7 +29,7 @@ class FinanceGate extends StatelessWidget {
           child: builder(s));
     }
     return tradeScaffold(context, '我的结算', [
-      supplyCard('先确认办事身份', [
+      tradeSection('先确认办事身份', [
         appNotice(s.financeAccessDenied
             ? '记录权限已失效，私有结算内容已清空。请重新核对身份。'
             : '请登录并选择当前有效的个人或机构负责人身份，查看获准参与的结算约定。'),
@@ -52,27 +52,43 @@ class FinanceGate extends StatelessWidget {
   }
 }
 
-Widget financeIdFact(String label, String id) => Row(children: [
-      Expanded(child: tradeFact(label, '尾号 ${shortSupplyId(id)}')),
-      IconButton(
-          tooltip: '复制$label',
-          onPressed: () => Clipboard.setData(ClipboardData(text: id)),
-          icon: const Icon(Icons.copy_outlined, size: 20))
+Widget financeIdFact(String label, String id) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Row(children: [
+        Expanded(child: tradeFact(label, '尾号 ${shortSupplyId(id)}')),
+        IconButton(
+            tooltip: '复制$label',
+            onPressed: () => Clipboard.setData(ClipboardData(text: id)),
+            icon: const Icon(Icons.copy_outlined, size: 20))
+      ]),
+      ExpansionTile(
+          key: ValueKey('finance-full-id:$label:$id'),
+          tilePadding: EdgeInsets.zero,
+          childrenPadding: const EdgeInsets.only(bottom: 12),
+          title: Text('查看完整$label', style: const TextStyle(fontSize: 12)),
+          children: [
+            Align(alignment: Alignment.centerLeft,
+                child: SelectableText(id, style: const TextStyle(fontSize: 13, height: 1.5))),
+          ]),
     ]);
 Widget financeEditorialBanner(String title, String body) => Container(
     margin: const EdgeInsets.only(bottom: 24),
     padding: const EdgeInsets.all(18),
-    color: AccountTheme.text,
+    decoration: BoxDecoration(
+        color: AccountTheme.selectedSurface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AccountTheme.border)),
     child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(title,
           style: const TextStyle(
-              color: AccountTheme.canvas,
+              color: AccountTheme.text,
               fontSize: 16,
               fontWeight: FontWeight.w700)),
       const SizedBox(height: 8),
       Text(body,
           style: const TextStyle(
-              color: AccountTheme.canvas, fontSize: 14, height: 1.6))
+              color: AccountTheme.text, fontSize: 14, height: 1.6))
     ]));
 
 Widget financeEditorialFact(String label, String value,
@@ -119,9 +135,13 @@ Widget financeAmounts(Map<String, dynamic> d) =>
         ('当前可申请', 'available_minor')
       ])
         Container(
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: AccountTheme.border))),
+          margin: const EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+              color: entry.$2 == 'available_minor'
+                  ? AccountTheme.selectedSurface : AccountTheme.canvas,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AccountTheme.border)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -130,8 +150,11 @@ Widget financeAmounts(Map<String, dynamic> d) =>
                       const TextStyle(fontSize: 13, color: AccountTheme.muted)),
               const SizedBox(height: 8),
               Text(financeMoneyText(d[entry.$2]),
-                  style: const TextStyle(
-                      fontSize: 28, fontWeight: FontWeight.w700, height: 1.3)),
+                  style: TextStyle(
+                      fontFamily: AccountTheme.sans,
+                      color: entry.$2 == 'available_minor'
+                          ? AccountTheme.accent : AccountTheme.text,
+                      fontSize: 30, fontWeight: FontWeight.w700, height: 1.3)),
             ],
           ),
         ),
@@ -226,4 +249,21 @@ const financeLabels = {
   'rule_key': '规则名称',
   'content_sha256': '保存指纹',
   'format_version': '内容格式'
+};
+
+/// State guidance is descriptive only. Allowed actions remain server-checked.
+String financeNextStep(FinanceRecord r) => switch (r.status) {
+  'IN_REVIEW' || 'REQUESTED' => '等待独立审核。申请受理不是实际付款，请在原记录查看后续核验结果。',
+  'APPROVED' => r.kind == 'PAYOUT'
+      ? '付款申请已审核；实际外部付款、凭据和独立核验仍须分别完成。'
+      : '当前记录已审核，仍按原约定及获准操作继续办理；不据此推定资金到账。',
+  'PAID' => '真实付款已核实，请核对本记录金额与私有凭据。',
+  'FAILED' || 'RETURNED' => '付款失败或退回已核实，请核对原凭据及原因，不重复提交未知结果的请求。',
+  'ACTION_REQUIRED' => '已有处理要求，补救仍待核实。请查看具体决定与关联处理记录。',
+  'DIFFERENCES' => '对账存在差异，请逐项核对来源事实；差异不能作为已结清金额。',
+  'MATCHED' => '本次账单比对一致，不替代各笔真实付款或收款核验。',
+  'REJECTED' => '请核对审核说明和原申请资料；未通过不能按已批准状态办理。',
+  'SUPERSEDED' => '本约定已被替代，历史事实保留；后续办理请核对适用的新约定。',
+  'CANCELLED' || 'RESOLVED' => '当前处理已结束，金额及资金结果仍以相关原记录为准。',
+  _ => '查看本记录的处理说明与可用操作，刷新可获取最新结果。',
 };

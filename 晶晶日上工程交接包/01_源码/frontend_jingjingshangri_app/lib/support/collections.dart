@@ -38,6 +38,7 @@ class CollectionsApi extends CommunityApi {
     // A visit belongs only to this actual detail opening; never queue/replay it.
     final epoch = session.epoch;
     final p = await preferences();
+    check(epoch, null);
     if (p['history_enabled'] != true) return;
     try {
       await write('history', {'kind': kind, 'target_id': id},
@@ -57,9 +58,11 @@ class CollectionDetailActions extends StatefulWidget {
       {super.key,
       required this.session,
       required this.kind,
-      required this.targetId});
+      required this.targetId,
+      this.purchaseAction});
   final AccountSession session;
   final String kind, targetId;
+  final Widget? purchaseAction;
   @override
   State<CollectionDetailActions> createState() =>
       _CollectionDetailActionsState();
@@ -142,6 +145,38 @@ class _CollectionDetailActionsState extends State<CollectionDetailActions> {
   @override
   Widget build(BuildContext context) {
     final pending = api.pending('favorites', account: true);
+    if (widget.purchaseAction != null) {
+      return Column(mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        if (error != null)
+          Text(error!, style: const TextStyle(color: AccountTheme.danger)),
+        LayoutBuilder(builder: (context, constraints) {
+          final favorite = OutlinedButton(
+              onPressed: busy || saved == null || pending != null ? null : toggle,
+              child: Text(saved == true ? '已收藏' : '收藏'));
+          if (constraints.maxWidth < 340 ||
+              MediaQuery.textScalerOf(context).scale(14) > 20) {
+            return Column(mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              favorite,
+              const SizedBox(height: 8),
+              widget.purchaseAction!,
+            ]);
+          }
+          return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Expanded(flex: 4, child: favorite),
+            const SizedBox(width: 10),
+            Expanded(flex: 6, child: widget.purchaseAction!),
+          ]);
+        }),
+        if (pending != null)
+          tradeButton('核对并恢复原收藏操作',
+              busy ? null : () => toggle(recover: true), outline: true),
+        if (saved == null)
+          TextButton(onPressed: busy ? null : load,
+              child: const Text('重读收藏状态')),
+      ]);
+    }
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       if (error != null)
         Text(error!, style: const TextStyle(color: AccountTheme.danger)),
@@ -203,6 +238,11 @@ class _CollectionsState extends State<_Collections> {
   Future<void> load({bool more = false}) async {
     if (more && (busy || cursor == null)) return;
     final t = ++ticket, previous = more ? cursor : null;
+    final epoch = widget.session.epoch;
+    final requestedHistory = history, requestedKind = kind;
+    bool current() => mounted && t == ticket &&
+        epoch == widget.session.epoch && history == requestedHistory &&
+        kind == requestedKind && cursor == previous;
     setState(() {
       busy = true;
       error = null;
@@ -214,12 +254,16 @@ class _CollectionsState extends State<_Collections> {
     });
     try {
       final p = await api.preferences();
+      if (!current()) return;
+      api.check(epoch, null);
       final d = await api
-          .read(history ? 'history' : 'favorites', account: true, query: {
+          .read(requestedHistory ? 'history' : 'favorites', account: true, query: {
         'limit': 20,
-        if (kind != null) 'kind': kind,
+        if (requestedKind != null) 'kind': requestedKind,
         if (previous != null) 'cursor': previous
       });
+      if (!current()) return;
+      api.check(epoch, null);
       final result = validatePublicPage(d, previous: previous);
       for (final r in result) {
         communityRequire(collectionKinds.containsKey(r['kind']) &&
@@ -229,7 +273,7 @@ class _CollectionsState extends State<_Collections> {
                 ? r['title'] == null && r['city'] == null
                 : r['title'] is String && r['city'] is String));
       }
-      if (!mounted || t != ticket) return;
+      if (!current()) return;
       communityRequire(d['next_cursor'] == null || seen.add(d['next_cursor']));
       setState(() {
         preferences = p;
@@ -237,7 +281,7 @@ class _CollectionsState extends State<_Collections> {
         cursor = d['next_cursor'];
       });
     } catch (e) {
-      if (mounted && t == ticket) {
+      if (current()) {
         setState(() {
           error = communityError(e);
           if (e is AccountError &&
@@ -323,39 +367,97 @@ class _CollectionsState extends State<_Collections> {
     super.dispose();
   }
 
+  Widget savedRow(Map<String, dynamic> item, List<Widget> actions) =>
+      Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: const BoxDecoration(border: Border(
+              bottom: BorderSide(color: AccountTheme.border))),
+          child: LayoutBuilder(builder: (context, constraints) {
+            final stacked = constraints.maxWidth < 340 ||
+                MediaQuery.textScalerOf(context).scale(14) > 16.8;
+            final openAction = TextButton(
+                    onPressed: locked ? null : () async {
+                      await Navigator.pushNamed(context,
+                          publicContentRoute(item['kind'], item['target_id']));
+                      if (mounted) load();
+                    },
+                    child: Text(item['kind'] == 'ARTIST' ? '查看档案' : '查看',
+                        textAlign: TextAlign.center));
+            return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(width: 60, height: 80,
+                  decoration: BoxDecoration(color: AccountTheme.surface,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Icon(item['kind'] == 'ARTIST'
+                      ? Icons.person_outline
+                      : item['kind'] == 'STOCK'
+                          ? Icons.movie_outlined : Icons.description_outlined,
+                      color: AccountTheme.muted)),
+              const SizedBox(width: 12),
+              Expanded(child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(item['availability'] == 'AVAILABLE'
+                    ? item['title'] : '内容已不可用',
+                    style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                const SizedBox(height: 8),
+                Text(item['availability'] == 'AVAILABLE'
+                    ? '${collectionKinds[item['kind']]} · ${item['city'] is String && (item['city'] as String).trim().isNotEmpty ? item['city'] : '城市未提供'}'
+                    : '${collectionKinds[item['kind']]} · 当前不可用',
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.accent)),
+                const SizedBox(height: 6),
+                Text('${history ? "浏览" : "收藏"}于 ${communityDate(item['recorded_at'])}',
+                    style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+              ])),
+              if (item['availability'] == 'AVAILABLE' && !stacked) ...[
+                const SizedBox(width: 8),
+                SizedBox(width: 72, child: openAction),
+              ],
+            ]),
+            if (item['availability'] == 'AVAILABLE' && stacked) ...[
+              const SizedBox(height: 8),
+              Align(alignment: Alignment.centerRight, child: openAction),
+            ],
+            const SizedBox(height: 10),
+            ...actions,
+          ]);
+          }));
+
   @override
   Widget build(BuildContext context) => tradeScaffold(context, '我的收藏与浏览记录', [
-        tradeHeading('留住感兴趣的内容', eyebrow: '只属于当前登录账号'),
-        const Text('同一账号的个人与机构身份共用这份私人清单，不属于机构资产。'),
+        tradeHeading('留住喜欢的', eyebrow: '留给下次相遇', fontSize: 28),
+        Row(children: [
+          for (final tab in const [(false, '我的收藏'), (true, '浏览足迹')])
+            Expanded(child: DecoratedBox(
+                decoration: BoxDecoration(border: Border(bottom: BorderSide(
+                    color: history == tab.$1 ? AccountTheme.accent : AccountTheme.border,
+                    width: history == tab.$1 ? 3 : 1))),
+                child: TextButton(
+                    onPressed: locked ? null : () {
+                      setState(() => history = tab.$1);
+                      load();
+                    },
+                    style: TextButton.styleFrom(
+                        foregroundColor: history == tab.$1
+                            ? AccountTheme.text : AccountTheme.muted),
+                    child: Text(tab.$2)))),
+        ]),
         const SizedBox(height: 16),
-        SegmentedButton<bool>(
-            segments: const [
-              ButtonSegment(value: false, label: Text('我的收藏')),
-              ButtonSegment(value: true, label: Text('浏览记录'))
-            ],
-            selected: {
-              history
-            },
-            onSelectionChanged: locked
-                ? null
-                : (v) {
-                    setState(() => history = v.single);
-                    load();
-                  }),
-        const SizedBox(height: 16),
-        communitySelect(
-            '内容类型',
-            kind ?? '',
-            [
-              ('', '全部'),
-              ...collectionKinds.entries.map((e) => (e.key, e.value))
-            ],
-            locked
-                ? null
-                : (v) {
-                    kind = v == '' ? null : v;
-                    load();
-                  }),
+        Wrap(spacing: 8, runSpacing: 8, children: [
+          for (final option in [
+            const MapEntry<String, String>('', '全部'),
+            ...collectionKinds.entries
+          ])
+            ChoiceChip(
+                label: Text(option.value),
+                selected: (kind ?? '') == option.key,
+                onSelected: locked ? null : (_) {
+                  kind = option.key.isEmpty ? null : option.key;
+                  load();
+                }),
+        ]),
+        const SizedBox(height: 12),
+        const Text('仅当前账号可见；收藏不锁定价格、授权或内容可用性。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
         if (preferences != null) ...[
           SwitchListTile(
               contentPadding: EdgeInsets.zero,
@@ -401,22 +503,10 @@ class _CollectionsState extends State<_Collections> {
                         recovery: true)),
           ]),
         for (final r in rows)
-          tradeSection(
-              r['availability'] == 'AVAILABLE' ? r['title'] : '内容已不可用', [
-            tradeFact('类型', collectionKinds[r['kind']]),
-            if (r['availability'] == 'AVAILABLE') tradeFact('城市', r['city']),
-            tradeFact(
-                history ? '浏览时间' : '收藏时间', communityDate(r['recorded_at'])),
-            if (r['availability'] == 'AVAILABLE')
-              tradeButton(
-                  '重新查看当前内容',
-                  locked
-                      ? null
-                      : () async {
-                          await Navigator.pushNamed(context,
-                              publicContentRoute(r['kind'], r['target_id']));
-                          if (mounted) load();
-                        }),
+          savedRow(r, [
+            if (r['availability'] != 'AVAILABLE')
+              const Text('原内容已不能打开。清单记录仍保留，可按需移除，不会删除原订单。',
+                  style: TextStyle(color: AccountTheme.muted, height: 1.6)),
             tradeButton(
                 history ? '删除这条浏览记录' : '取消收藏',
                 locked
@@ -445,6 +535,10 @@ class _CollectionsState extends State<_Collections> {
         if (cursor != null)
           tradeButton('继续读取', locked ? null : () => load(more: true),
               outline: true),
-        tradeButton('刷新清单', busy ? null : load, outline: true),
+        tradeButton('刷新清单', locked ? null : load, outline: true),
+        const SizedBox(height: 16),
+        tradeSection('足迹只为你保留', [
+          const Text('清空足迹只影响浏览记录，不删除原作品、收藏、订单或许可；不可用内容不显示旧标题或缩略图。'),
+        ]),
       ]);
 }

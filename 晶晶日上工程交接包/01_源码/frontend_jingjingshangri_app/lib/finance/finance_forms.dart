@@ -153,11 +153,20 @@ class _FormState extends State<_Form> {
   }
 
   List<Widget> payout() => [
-        financeEditorialBanner(
-            mine == null
-                ? '当前可申请金额待核对'
-                : '当前可申请 ${financeMoneyText(mine!['available_minor'])}',
-            '这是当前约定下本人的可付金额，不包含消费钱包余额。'),
+        Container(
+            margin: const EdgeInsets.only(bottom: 24),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(color: const Color(0xFF202320),
+                borderRadius: BorderRadius.circular(16)),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              const Text('当前可申请', style: TextStyle(color: Color(0xFFDDDFDA))),
+              const SizedBox(height: 12),
+              Text(mine == null ? '金额待核对' : financeMoneyText(mine!['available_minor']),
+                  style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 12),
+              const Text('仅当前约定下本人额度，不包含消费钱包余额。申请通过不等于到账。',
+                  style: TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+            ])),
         tradeSection('收款主体', [
           financeIdFact('当前主体', api.owner()),
           supplyNote('本次申请的收款主体为当前登录身份，收款资料另行核验。')
@@ -197,27 +206,27 @@ class _FormState extends State<_Form> {
       ];
   List<Widget> dispute() => [
         if (target != null)
-          supplyCard('本次结算记录', [
+          tradeSection('本次结算记录', [
             tradeFact('记录类型', financeKinds[target!.kind]),
             financeIdFact('异议对象', target!.id),
             tradeFact('当前版本', '第 ${target!.version} 版')
           ]),
         financeParagraph('如对结算、权利或相关约定有异议，请提交真实说明与材料。处理结果保留历史，退款另走原付款记录。'),
-        supplyCard('问题类型', [
+        tradeSection('问题类型', [
           projectSelect(
               '问题类型',
               category,
               [for (final e in financeCategories.entries) (e.key, e.value)],
               locked ? null : (v) => setState(() => category = v))
         ]),
-        supplyCard('原因', [
+        tradeSection('原因', [
           projectField(note, '原因',
               lines: 4,
               max: 8000,
               enabled: !locked,
               changed: (_) => setState(() {}))
         ]),
-        supplyCard('证据', [
+        tradeSection('证据', [
           supplyNote('上传相关私有证据，如合同、截图或沟通记录。'),
           SupplyFiles(
               api: supply,
@@ -231,14 +240,18 @@ class _FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) => tradeScaffold(
       context,
-      widget.mode == 'PAYOUT' ? '申请付款' : '结算或权利异议',
+      widget.mode == 'PAYOUT' ? '收益收款申请' : '结算或权利异议',
       [
         tradeHeading(widget.mode == 'PAYOUT' ? '收益收款申请' : '提出结算异议',
-            eyebrow: '本人确认 / 按原约定办理'),
+            eyebrow: widget.mode == 'PAYOUT'
+                ? '仅限已具备可付条件的收益' : '本人确认 / 按原约定办理', fontSize: 28),
+        if (widget.mode != 'PAYOUT')
+          financeEditorialBanner('说明异议并提供依据',
+              '明确涉及的原记录、问题与私有证据。提交后等待处理，补救结果另行核实。'),
         if (busy) const LinearProgressIndicator(),
         if (error != null) appNotice(error!, icon: Icons.error_outline),
         if (api.pending(path) != null)
-          supplyCard('原请求结果待核实', [
+          tradeSection('原请求结果待核实', [
             supplyNote('原内容、版本和请求编号已保留。恢复会先读取目标与获准结果，再原样核对。'),
             tradeButton('恢复原请求核对', busy ? null : () => submit(retry: true))
           ]),
@@ -247,19 +260,33 @@ class _FormState extends State<_Form> {
       ],
       locked: locked,
       footer: widget.mode == 'PAYOUT' && target != null
-          ? Row(children: [
-              Expanded(
-                  child: OutlinedButton(
-                      onPressed: locked
-                          ? null
-                          : () => Navigator.pushNamed(context,
-                              '/finance/records?agreementId=${widget.id}&kind=PAYOUT'),
-                      child: const Text('查看收款记录'))),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: FilledButton(
-                      onPressed: canSubmit ? submit : null,
-                      child: const Text('提交付款申请')))
-            ])
+          ? _financeFooterActions(
+              OutlinedButton(
+                  onPressed: locked
+                      ? null
+                      : () => Navigator.pushNamed(context,
+                          '/finance/records?agreementId=${widget.id}&kind=PAYOUT'),
+                  child: const Text('查看收款记录')),
+              FilledButton(
+                  onPressed: canSubmit ? submit : null,
+                  child: const Text('提交收款申请')),
+            )
           : null);
 }
+
+Widget _financeFooterActions(Widget first, Widget second) => LayoutBuilder(
+    builder: (context, constraints) {
+      final stacked = constraints.maxWidth < 340 ||
+          MediaQuery.textScalerOf(context).scale(14) / 14 > 1.2;
+      return stacked
+          ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              first,
+              const SizedBox(height: 8),
+              second,
+            ])
+          : Row(children: [
+              Expanded(child: first),
+              const SizedBox(width: 10),
+              Expanded(child: second),
+            ]);
+    });

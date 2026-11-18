@@ -60,7 +60,7 @@ class _GigFormState extends State<_GigForm> {
   List<Map<String, dynamic>> relationArtists = [];
   String? sourceListing;
   bool modern = false;
-  final supplyShare = TextEditingController(text: '20');
+  final supplyShare = TextEditingController();
   Map<String, dynamic>? gig;
   String? ruleId, category, specId, avatarId, consentId, relationChoice, error;
   DateTime? validFrom, validUntil;
@@ -96,8 +96,9 @@ class _GigFormState extends State<_GigForm> {
       return gigText(title.text, 200) &&
           gigText(brief.text) &&
           gigText(territory.text, 128) &&
-          ruleId != null &&
+          selectedRule != null &&
           category != null &&
+          categories.any((c) => c['code'] == category) &&
           validUntil != null &&
           validUntil!.isAfter(DateTime.now()) &&
           requiredProofs.every((p) => proofs[p]?.length == 1);
@@ -132,7 +133,10 @@ class _GigFormState extends State<_GigForm> {
         specId == null ||
         avatarId == null ||
         consentId == null ||
-        relationChoice == null) {
+        relationChoice == null ||
+        !specs.any((s) => s.id == specId) ||
+        !avatars.any((a) => a['id'] == avatarId) ||
+        !eligibleConsents.any((c) => c['id'] == consentId)) {
       return false;
     }
     if (relationChoice == 'NONE') return m == 0;
@@ -194,8 +198,8 @@ class _GigFormState extends State<_GigForm> {
       consents = [];
       relations = [];
       relationArtists = [];
-      sourceListing = null;
-      artist.clear();
+      // Retain the user's choice across refresh. Submission still requires it
+      // to be present in the newly read public relation options.
       gig = null;
     });
     try {
@@ -292,8 +296,8 @@ class _GigFormState extends State<_GigForm> {
               container: true,
               explicitChildNodes: true,
               child: DropdownButtonFormField<String>(
-                  key: ValueKey('$label:$value'),
-                  initialValue: value,
+                  key: ValueKey('$label:$value:${rows.map((r) => r.$1).join(',')}'),
+                  initialValue: rows.any((r) => r.$1 == value) ? value : null,
                   decoration: InputDecoration(labelText: label),
                   isExpanded: true,
                   items: rows
@@ -414,11 +418,11 @@ class _GigFormState extends State<_GigForm> {
   }
 
   List<Widget> requestFields() => [
-        supplyCard('1 需求标题与简述', [
+        tradeSection('1 需求标题与简述', [
           gigTextField(title, '需求标题', max: 200, enabled: !locked),
           gigTextField(brief, '需求简述', lines: 4, enabled: !locked)
         ]),
-        supplyCard('2 生效规则与商业类别', [
+        tradeSection('2 生效规则与商业类别', [
           select(
               '生效商单规则',
               ruleId,
@@ -449,12 +453,12 @@ class _GigFormState extends State<_GigForm> {
           ],
           if (rules.isEmpty && !busy) supplyNote('没有可读取的生效规则，暂不能提交。')
         ]),
-        supplyCard('3 用途范围', [
+        tradeSection('3 用途范围', [
           tradeFact('用途', '商业用途'),
           gigTextField(territory, '适用地区', max: 128, enabled: !locked),
           timeField('需求有效截止', false)
         ]),
-        supplyCard('4 按类别上传证明', [
+        tradeSection('4 按类别上传证明', [
           if (category == null) supplyNote('先选择规则与类别，按实际所需证明上传。'),
           for (final p in requiredProofs) ...[
             gigParagraph('必需证明：$p'),
@@ -472,12 +476,12 @@ class _GigFormState extends State<_GigForm> {
       ];
   List<Widget> offerFields() => [
         if (gig != null)
-          supplyCard('本次商单', [
+          tradeSection('本次商单', [
             gigParagraph(gig!['title']),
             gigScopeFacts(gigMap(gig!['scope'])),
             tradeFact('需求方编号', gig!['buyer_party_id'])
           ]),
-        supplyCard('1 服务规格与数字人', [
+        tradeSection('1 服务规格与数字人', [
           select(
               '已发布服务规格',
               specId,
@@ -509,9 +513,11 @@ class _GigFormState extends State<_GigForm> {
                     avatarId = v;
                     consentId = null;
                   })),
-          supplyNote('没有公开人物目录。本栏只读取当前身份的实际数字人；缺少材料请先在有相应授权的网页办理。')
+          supplyNote('本栏只读取当前身份的实际数字人，不从公开目录擅自获取私人材料。'),
+          if (avatars.isEmpty)
+            tradeButton('管理本人数字人与授权', locked ? null : () => Navigator.pushNamed(context, '/my-humans'), outline: true)
         ]),
-        supplyCard('2 本人同意范围', [
+        tradeSection('2 本人同意范围', [
           select(
               '覆盖本次商业用途的本人同意',
               consentId,
@@ -537,7 +543,7 @@ class _GigFormState extends State<_GigForm> {
             supplyNote('没有覆盖本次数字人、商业用途、地区与完整期限的已审同意。不能用私人用途同意或已撤回记录替代。',
                 error: true)
         ]),
-        supplyCard('3 直接合作与佣金', [
+        tradeSection('3 直接合作与佣金', [
           select(
               '直接 MCN 合作',
               relationChoice,
@@ -557,7 +563,7 @@ class _GigFormState extends State<_GigForm> {
             ],
           ...commissionFields()
         ]),
-        supplyCard('4 完整约定与公开榜单', [
+        tradeSection('4 完整约定与公开榜单', [
           gigTextField(terms, '完整接单约定', lines: 5, enabled: !locked),
           CheckboxListTile(
               contentPadding: EdgeInsets.zero,
@@ -584,7 +590,7 @@ class _GigFormState extends State<_GigForm> {
           supplyNote(
               '请按本次实际约定填写，0–100%，最多两位小数。MCN 分成不超过平台费用；不引用合作时须明确填 0%。没有默认费率。')
         ];
-  Widget evidenceFields(String heading) => supplyCard(heading, [
+  Widget evidenceFields(String heading) => tradeSection(heading, [
         SupplyFiles(
             api: upload,
             purpose: 'RIGHTS_EVIDENCE',
@@ -594,12 +600,12 @@ class _GigFormState extends State<_GigForm> {
         supplyNote('至少一份当前身份的私有证明。仅用于本合作或约定，提交不会公开材料。')
       ]);
   List<Widget> relationFields() => [
-        supplyCard('1 当前 MCN 身份', [
+        tradeSection('1 当前 MCN 身份', [
           tradeFact('发起主体', api.owner()),
           if (!mcnActive) supplyNote('当前身份没有有效 MCN 服务授权，不能发送邀请。', error: true),
           supplyNote('MCN 能力须已获有效服务授权；不能在此自行批准。服务授权不代表有权代本人接受合作。')
         ]),
-        supplyCard('2 直接合作对象与范围', [
+        tradeSection('2 直接合作对象与范围', [
           select('选择公开展示的艺人', sourceListing, [
             for (final r in relationArtists)
               (r['listing_id'] as String, '${r['display_name']} · ${r['city']}')
@@ -613,7 +619,7 @@ class _GigFormState extends State<_GigForm> {
           tradeFact('范围', '商业用途'),
           supplyNote('只列仍获本人授权公开展示的艺人，邀请后仍须本人接受，不替本人授权。')
         ]),
-        supplyCard('3 期间与排他', [
+        tradeSection('3 期间与排他', [
           timeField('合作开始', true),
           timeField('合作结束', false),
           select(
@@ -626,7 +632,7 @@ class _GigFormState extends State<_GigForm> {
               [('YES', '排他'), ('NO', '不排他')],
               (v) => setState(() => exclusive = v == 'YES'))
         ]),
-        supplyCard('4 条款与佣金', [
+        tradeSection('4 条款与佣金', [
           gigTextField(terms, '完整合作条款', lines: 5, enabled: !locked),
           ...commissionFields()
         ]),
@@ -641,15 +647,24 @@ class _GigFormState extends State<_GigForm> {
               ? '提交接单约定'
               : '发起直接合作',
       [
-        gigHeading(widget.kind == 'GIG'
-            ? '发布商业需求'
-            : widget.kind == 'OFFER'
-                ? '提交接单约定'
-                : '发起直接合作'),
+        if (widget.kind == 'RELATION') ...[
+          tradeHeading('发起直接合作', eyebrow: '邀请申请 / 对方本人确认', fontSize: 28),
+          supplyNote('按真实约定填写机构分成，不预设示例比例。只邀请当前可选的本人主体；一人一直接 MCN，不包含代签或多级分佣。'),
+        ] else
+          gigHeading(widget.kind == 'GIG' ? '发布商业需求' : '提交接单约定'),
+        tradeSection('本次需要准备', [
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            Chip(label: Text(widget.kind == 'GIG' ? '需求与类别' : '本人或机构身份')),
+            Chip(label: Text(widget.kind == 'RELATION' ? '合作范围与期间' : '用途与授权')),
+            const Chip(label: Text('条款与证明')),
+          ]),
+          const SizedBox(height: 12),
+          supplyNote('先选择服务器当前可用的材料，再核对完整内容。刷新不会使已失效的选项重新有效。'),
+        ]),
         if (busy) const LinearProgressIndicator(),
         if (error != null) supplyNote(error!, error: true),
         for (final p in widget.session.gigsPending)
-          supplyCard('有操作结果待核实', [
+          tradeSection('有操作结果待核实', [
             supplyNote('原内容、版本与请求依据仍保留，恢复前不能改写或离页。', error: true),
             tradeButton('恢复原请求核对',
                 busy ? null : () => finish(() => api.retry(p['path'])))

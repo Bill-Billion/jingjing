@@ -1,3 +1,4 @@
+import '../trade/trade_widgets.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
@@ -32,6 +33,8 @@ class _FormState extends State<_Form> {
       supply = SupplyApi(widget.session);
   LicenseRecord? grant;
   List<LicenseRecord> bindings = [];
+  Map<String, String> projectTitles = {};
+  String? projectReadNotice;
   List<String> assets = [];
   final fields = {
     for (final k in [
@@ -75,28 +78,68 @@ class _FormState extends State<_Form> {
   }
 
   Future<void> load() async {
-    setState(() => busy = true);
+    setState(() {
+      busy = true;
+      error = null;
+      projectTitles = {};
+      projectReadNotice = null;
+      confirmed = false;
+    });
     try {
+      final epoch = widget.session.epoch, party = api.owner();
       final r = await api.record(widget.id), b = await api.all('BINDING');
       if (r.kind != 'GRANT' || r.data['procurement'] == null) {
         throw const AccountError(403, 'IP_PROCUREMENT_REQUIRED');
       }
+      final currentBindings = b.where((x) => x.parent == r.id).toList();
+      final boundIds = currentBindings.map((x) => x.data['project_id']).toSet();
+      final names = <String, String>{};
+      String? nameNotice;
+      // These are licensing usage projects, not the separate casting/release
+      // ProjectsApi domain. Reuse the same authorized PROJECT list as binding.
+      if (boundIds.isNotEmpty) {
+        try {
+          final projects = await api.all('PROJECT');
+          for (final candidate in projects) {
+            if (boundIds.contains(candidate.id)) {
+              names[candidate.id] = candidate.title;
+            }
+          }
+          if (names.length < boundIds.length) {
+            nameNotice = '部分用途项目名称当前无权读取或未返回，保留真实编号供核对；不会用其他项目名称替代。';
+          }
+        } catch (_) {
+          nameNotice = '用途项目名称暂未核对，以下保留原许可已绑定的真实编号。可重新读取名称，不影响原请求恢复。';
+        }
+      }
+      api.check(epoch, party);
       if (mounted) {
         setState(() {
           grant = r;
-          bindings = b.where((x) => x.parent == r.id).toList();
+          bindings = currentBindings;
+          projectTitles = names;
+          projectReadNotice = nameNotice;
         });
       }
     } catch (e) {
-      if (mounted) setState(() => error = licenseError(e));
+      if (mounted) {
+        setState(() {
+          grant = null;
+          bindings = [];
+          projectTitles = {};
+          projectReadNotice = null;
+          error = licenseError(e);
+        });
+      }
     } finally {
       if (mounted) setState(() => busy = false);
     }
   }
 
   String iso(String key) {
-    final v = DateTime.tryParse(fields[key]!.text.trim());
-    if (v == null) {
+    final input = fields[key]!.text.trim();
+    final v = DateTime.tryParse(input);
+    if (v == null || !RegExp(r'(?:[zZ]|[+-]\d{2}:?\d{2})$').hasMatch(input)) {
       throw const FormatException('请填写带时区的准确时间，例如 2026-11-02T10:00:00+08:00。');
     }
     return v.toUtc().toIso8601String();
@@ -207,6 +250,7 @@ class _FormState extends State<_Form> {
         p['mode'] == 'REVENUE_SHARE' &&
         !beforeLicenseEnd(g.terms!.data['development_until']);
     return licenseScaffold(context, 'IP采购事实与分红账单', [
+      tradeHeading('记录实际履约', eyebrow: 'IP采购 / 事实与账单'),
       const Text('仅在本许可内提交实际记录。开发、上线、撤回均等待独立核验；账面应计及更正均未转账，不自动扣款。'),
       if (error != null) supplyNote(error!, error: true),
       if (g == null)
@@ -219,6 +263,7 @@ class _FormState extends State<_Form> {
             onPressed: busy ? null : submit, child: const Text('恢复原请求并核对'))
       ],
       if (g != null) ...[
+        tradeSection('1 · 选择本次事项', [
         DropdownButtonFormField<String>(
             isExpanded: true,
             initialValue: kind.isEmpty ? null : kind,
@@ -244,17 +289,31 @@ class _FormState extends State<_Form> {
         if (kind != 'WITHDRAWAL_REQUEST')
           DropdownButtonFormField<String>(
               isExpanded: true,
+              itemHeight: null,
               initialValue: project.isEmpty ? null : project,
               decoration: const InputDecoration(labelText: '原许可已绑定项目'),
               items: [
                 for (final r in bindings)
                   DropdownMenuItem(
                       value: r.data['project_id'] as String,
-                      child: Text(r.data['project_id'],
-                          overflow: TextOverflow.ellipsis))
+                      child: Text(projectTitles[r.data['project_id']] == null
+                          ? '名称未核对 · ${r.data['project_id']}'
+                          : '${projectTitles[r.data['project_id']]} · ${r.data['project_id']}',
+                          maxLines: 3, overflow: TextOverflow.ellipsis))
               ],
               onChanged:
-                  locked ? null : (v) => setState(() => project = v ?? '')),
+                  locked ? null : (v) => setState(() {
+                    project = v ?? '';
+                    confirmed = false;
+                  })),
+        if (kind != 'WITHDRAWAL_REQUEST' && projectReadNotice != null) ...[
+          const SizedBox(height: 12),
+          supplyNote(projectReadNotice!),
+          OutlinedButton(onPressed: locked ? null : load,
+              child: const Text('重新读取项目名称')),
+        ],
+        ]),
+        tradeSection(kind == 'ROYALTY_STATEMENT' ? '2 · 实际账期与金额' : '2 · 事实与时间', [
         if (kind == 'ROYALTY_STATEMENT') ...[
           input('from', '账期开始（ISO时间，含时区）'),
           input('until', '账期结束（ISO时间，含时区）'),
@@ -266,6 +325,8 @@ class _FormState extends State<_Form> {
           const Text('负数仅用于有依据的更正。重复或重叠账期不能提交为新收入。')
         ] else
           input('at', '事实时间（ISO时间，含时区）'),
+        ]),
+        tradeSection('3 · 核验依据', [
         input('external', '外部凭证或账单编号'),
         input('note', '说明及核验依据', lines: 3),
         SupplyFiles(
@@ -277,6 +338,8 @@ class _FormState extends State<_Form> {
                   assets = v;
                   confirmed = false;
                 })),
+        ]),
+        tradeBanner('提交后等待独立核验', '账面应计与更正不是转账结果，许可状态也不会因填写表单自动改变。', icon: Icons.fact_check_outlined),
         CheckboxListTile(
             value: confirmed,
             title: const Text('已核对本次记录、原许可和实际依据；尚待独立审核'),

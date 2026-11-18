@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
+import '../account/account_theme.dart';
 import '../account/app_visual.dart';
 import '../supply/supply_widgets.dart';
 import '../trade/trade_api.dart';
@@ -12,6 +13,28 @@ import '../trade/trade_widgets.dart';
 import 'gig_api.dart';
 import 'gig_models.dart';
 import 'gig_widgets.dart';
+
+Widget _mcnPanel(String title, List<Widget> children) => Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AccountTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AccountTheme.border),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        Text(title,
+            style: const TextStyle(
+                fontSize: 20, fontWeight: FontWeight.w700, height: 1.35)),
+        const SizedBox(height: 14),
+        ...children,
+      ]),
+    );
+
+Widget _gigRecordPanel(GigRecord record, List<Widget> children) =>
+    record.kind == 'RELATION'
+        ? _mcnPanel(record.title, children)
+        : tradeSection(record.title, children);
 
 // Gallery APP-19-01-v2; the photograph is decorative, with no artist claims.
 class GigCataloguePage extends StatelessWidget {
@@ -65,7 +88,7 @@ class _CatalogueState extends State<_Catalogue> {
     final children = <Widget>[
       gigHeading('让创作连接真实需求'),
       ClipRRect(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(24),
           child: SizedBox(
               height: 210,
               child: Stack(fit: StackFit.expand, children: [
@@ -96,7 +119,7 @@ class _CatalogueState extends State<_Catalogue> {
                         ]))
               ]))),
       const SizedBox(height: 16),
-      supplyCard('我的商单', [
+      tradeSection('我的商单', [
         tradeButton('查看我的商单',
             () => Navigator.pushNamed(context, '/gigs/records?kind=GIG')),
         tradeButton('我的接单约定',
@@ -125,7 +148,7 @@ class _CatalogueState extends State<_Catalogue> {
       if (error != null) supplyNote(error!, error: true),
       if (data != null && data!.items.isEmpty) appNotice('暂时没有可读取的已发布商单。'),
       for (final d in data?.items ?? <Map<String, dynamic>>[])
-        supplyCard(d['title'], [
+        tradeSection(d['title'], [
           gigParagraph(d['brief']),
           tradeFact('类别', d['category']),
           gigScopeFacts(gigMap(d['scope'])),
@@ -136,7 +159,7 @@ class _CatalogueState extends State<_Catalogue> {
               outline: true)
         ]),
       for (final r in data?.rules ?? <Map<String, dynamic>>[])
-        supplyCard('当前商单规则 · ${r['rule']['version']}', [
+        tradeSection('当前商单规则 · ${r['rule']['version']}', [
           ExpansionTile(
               title: const Text('查看类别与完整规则'),
               childrenPadding: const EdgeInsets.all(16),
@@ -216,12 +239,12 @@ class _PublicRequestState extends State<_PublicRequest> {
         if (data != null) ...[
           gigHeading(data!['title']),
           appNotice('商业用途 · 已发布摘要'),
-          supplyCard('需求简述', [gigParagraph(data!['brief'])]),
-          supplyCard('用途与期限', [
+          tradeSection('需求简述', [gigParagraph(data!['brief'])]),
+          tradeSection('用途与期限', [
             tradeFact('类别', data!['category']),
             gigScopeFacts(gigMap(data!['scope']))
           ]),
-          supplyCard('需求方', [
+          tradeSection('需求方', [
             tradeFact('主体编号', data!['buyer_party_id']),
             TextButton.icon(
                 onPressed: () => Clipboard.setData(
@@ -336,14 +359,18 @@ class _RecordsState extends State<_Records> {
   @override
   Widget build(BuildContext c) => tradeScaffold(
       c,
-      gigKinds[widget.kind]!,
+      widget.kind == 'RELATION' ? '我的合作' : gigKinds[widget.kind]!,
       [
-        gigHeading(gigKinds[widget.kind]!),
+        if (widget.kind == 'RELATION')
+          tradeHeading('我的合作', eyebrow: '本人确认 / 真实合作', fontSize: 24)
+        else
+          gigHeading(gigKinds[widget.kind]!),
         tradeFact('当前身份', widget.session.party?['display_name'] ?? api.owner()),
         if (widget.kind == 'RELATION') ...[
-          appNotice('只办理直接合作，不设置上下级或多级分佣。'),
+          appNotice('一人一直接 MCN，生效以原记录及各方确认结果为准；不设置上下级或多级分佣。'),
+          supplyNote('本页按真实记录分别列出邀请、有效与历史关系，不把当前页第一条当作唯一有效关系。'),
           tradeButton(
-              '发起直接合作',
+              '合作邀请与申请',
               busy || widget.session.gigsPending.isNotEmpty
                   ? null
                   : () => Navigator.pushNamed(c, '/gigs/relations/new'),
@@ -359,7 +386,7 @@ class _RecordsState extends State<_Records> {
         if (widget.kind == 'COMMISSION')
           supplyNote('佣金按订单原约定与实际收款、退款事实计提。没有提现、税务或出款接口，核算不代表已到账。'),
         for (final p in widget.session.gigsPending)
-          supplyCard('有操作结果待核实', [
+          tradeSection('有操作结果待核实', [
             supplyNote('原请求已保留，请先恢复核对。', error: true),
             if (p['resultId'] != null) tradeFact('已知结果编号', p['resultId']),
             tradeButton('恢复原请求核对', busy ? null : () => restore(p['path']))
@@ -368,15 +395,24 @@ class _RecordsState extends State<_Records> {
         if (error != null) supplyNote(error!, error: true),
         if (!busy && data.isEmpty && error == null) appNotice('当前身份没有这类记录。'),
         for (final r in data)
-          supplyCard(r.title, [
+          _gigRecordPanel(r, [
             tradeFact('记录编号', r.id),
             tradeFact('当前状态', gigStatuses[r.status]),
+            if (r.kind == 'RELATION') ...[
+              tradeFact('MCN 主体', r.owner),
+              tradeFact('合作本人', r.counterparty),
+              tradeFact('合作开始', tradeDate(r.data['valid_from'])),
+              tradeFact('合作截止', tradeDate(r.data['valid_until'])),
+              gigCommissionFacts(gigMap(r.data['commission']),
+                  marketplace: r.data['marketplace_terms'], v5: r.data['v5_terms']),
+              supplyNote('代管范围以本份合作条款为准，不默认包含代签；超出范围须本人另行确认。'),
+            ],
             if (r.kind == 'GIG') gigParagraph(r.data['brief']),
             if (r.kind == 'COMMISSION')
               tradeFact('核实净额', tradeMoney(r.data['facts']['net_minor']),
                   accent: true),
             tradeButton(
-                '查看详情',
+                r.kind == 'RELATION' ? '查看合作协议与办理事项' : '查看详情',
                 busy || widget.session.gigsPending.isNotEmpty
                     ? null
                     : () async {
@@ -386,6 +422,14 @@ class _RecordsState extends State<_Records> {
                       },
                 outline: true)
           ]),
+        if (widget.kind == 'RELATION') ...[
+          tradeSection('历史合作订单', [
+            supplyNote('结束或更换合作不改写旧订单的费用、分配与授权。进入具体合作记录核对旧单交接，不将其他关系的订单合并。'),
+          ]),
+          tradeSection('资产仍属于本人', [
+            supplyNote('直接合作不转移数字人与素材的所有权。使用与代管按明确授权范围办理，解除合作不自动改变已保存的原合同。'),
+          ]),
+        ],
         tradeButton('重新读取', busy ? null : () => load(), outline: true),
         if (cursor != null)
           tradeButton('加载更多', busy ? null : () => load(more: true),
@@ -516,10 +560,11 @@ class _RecordState extends State<_Record> {
         context: context,
         builder: (c) => AlertDialog(
                 title: Text(labels[value]!),
-                content: Column(mainAxisSize: MainAxisSize.min, children: [
-                  gigParagraph(r.data['terms']),
-                  gigTextField(reason, '办理原因', lines: 3, max: 2000)
-                ]),
+                content: SingleChildScrollView(
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      gigParagraph(r.data['terms']),
+                      gigTextField(reason, '办理原因', lines: 3, max: 2000)
+                    ])),
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(c, false),
@@ -559,8 +604,8 @@ class _RecordState extends State<_Record> {
     return switch (r.kind) {
       'GIG' => [
           gigHeading(d['title']),
-          supplyCard('需求简述', [gigParagraph(d['brief'])]),
-          supplyCard('用途与期限', [
+          tradeSection('需求简述', [gigParagraph(d['brief'])]),
+          tradeSection('用途与期限', [
             tradeFact('类别', d['category']),
             gigScopeFacts(gigMap(d['scope'])),
             tradeFact('需求方编号', r.owner),
@@ -577,19 +622,19 @@ class _RecordState extends State<_Record> {
               outline: true)
         ],
       'OFFER' => [
-          supplyCard('约定双方', [
+          tradeSection('约定双方', [
             tradeFact('需求方编号', r.counterparty),
             tradeFact('服务提供方编号', r.owner),
             tradeFact('关联需求编号', r.parent)
           ]),
-          supplyCard('服务与本人同意', [
+          tradeSection('服务与本人同意', [
             tradeFact('服务规格编号', d['spec_id']),
             tradeFact('数字人编号', d['avatar_id']),
             tradeFact('本人同意编号', d['consent_id']),
             supplyNote('独立审核核对商业用途与授权覆盖。本人同意不等于实名核验或生成工具已开通。')
           ]),
-          supplyCard('完整接单约定', [gigParagraph(d['terms'])]),
-          supplyCard('佣金与公开榜单', [
+          tradeSection('完整接单约定', [gigParagraph(d['terms'])]),
+          tradeSection('佣金与公开榜单', [
             gigCommissionFacts(gigMap(d['commission']),
                 marketplace: d['marketplace_terms'], v5: d['v5_terms']),
             tradeFact('公开入榜', d['ranking_opt_in'] ? '明确选择参与' : '不参与'),
@@ -600,7 +645,7 @@ class _RecordState extends State<_Record> {
             ]
           ]),
           if (r.status == 'ACCEPTED')
-            supplyCard('后续报价与订单', [
+            tradeSection('后续报价与订单', [
               if (linked.isEmpty)
                 supplyNote('当前约定尚无对应报价或订单。仍需服务提供方在网页建立带本约定的正式报价，经审核后由买方确认。'),
               for (final q in linked) ...[
@@ -629,7 +674,8 @@ class _RecordState extends State<_Record> {
                 busy || widget.session.gigsPending.isNotEmpty ? null : accept)
         ],
       'RELATION' => [
-          supplyCard('合作双方', [
+          _mcnPanel(relationNames[r.owner] ?? 'MCN 合作主体', [
+            tradeFact('当前状态', gigStatuses[r.status]),
             tradeFact('MCN 显示名称', relationNames[r.owner] ?? '名称暂未提供，请结合编号核对'),
             tradeFact(
                 '合作本人显示名称', relationNames[r.counterparty] ?? '名称暂未提供，请结合编号核对'),
@@ -637,17 +683,26 @@ class _RecordState extends State<_Record> {
             tradeFact('MCN 主体编号', r.owner),
             tradeFact('合作本人主体编号', r.counterparty)
           ]),
-          supplyCard('合作范围与期间', [
+          tradeSection('合作范围与期间', [
             tradeFact('范围', '商业用途'),
             tradeFact('开始时间', tradeDate(d['valid_from'])),
             tradeFact('结束时间', tradeDate(d['valid_until'])),
             tradeFact('排他约定', d['exclusive'] ? '排他' : '不排他')
           ]),
-          supplyCard('原合作条款', [
-            gigParagraph(d['terms']),
-            gigCommissionFacts(gigMap(d['commission']),
-                marketplace: d['marketplace_terms'], v5: d['v5_terms'])
+          tradeSection('约定代管范围', [
+            supplyNote('按本份明确条款核对，不默认包含代签或超范围使用。未约定事项由本人另行确认；合作关系不转移本人的数字人与素材所有权。'),
           ]),
+          tradeSection('本份合作分成', [
+            gigCommissionFacts(gigMap(d['commission']),
+                marketplace: d['marketplace_terms'], v5: d['v5_terms']),
+            supplyNote('分成按本份原约定核对；旧订单仍按各自保存的规则结算，不因关系变更重算。'),
+          ]),
+          Container(
+            child: _mcnPanel('原合作条款', [
+              gigParagraph(d['terms']),
+              supplyNote('这里展示已读取记录的原约定，不代表新增电子签署，也不替代各方独立确认。'),
+            ]),
+          ),
           if (d['ended_reason'] != null) tradeFact('结束原因', d['ended_reason']),
           if (d['handover'] != null) ...[
             tradeFact('七日旧单交接截止', tradeDate(d['handover']['deadline_at'])),
@@ -673,16 +728,12 @@ class _RecordState extends State<_Record> {
                     : () => decide('REJECT'),
                 outline: true)
           ],
-          if (['ACTIVE', 'INVITED'].contains(r.status))
-            tradeButton(
-                '结束合作',
-                busy || widget.session.gigsPending.isNotEmpty
-                    ? null
-                    : () => decide('END'),
-                outline: true)
+          _mcnPanel('资产仍属于本人', [
+            supplyNote('合作不转移本人的数字人与素材所有权。解除或结束关系不自动废止旧订单的有效授权，仍须按原记录核对交接。'),
+          ]),
         ],
       'COMMISSION' => [
-          supplyCard('核算依据', [
+          tradeSection('核算依据', [
             tradeFact('订单编号', d['order_id']),
             tradeFact('约定编号', d['agreement']['offer_id']),
             tradeFact(
@@ -696,7 +747,7 @@ class _RecordState extends State<_Record> {
             tradeFact('已核实退款', tradeMoney(d['facts']['refunded_minor'])),
             tradeFact('核实净额', tradeMoney(d['facts']['net_minor']), accent: true)
           ]),
-          supplyCard('按原约定计提', [
+          tradeSection('按原约定计提', [
             gigCommissionFacts(gigMap(d['agreement']['commission']),
                 marketplace: d['agreement']['marketplace_terms']),
             tradeFact('服务提供方', tradeMoney(d['amounts']['supplier_minor'])),
@@ -709,7 +760,7 @@ class _RecordState extends State<_Record> {
             tradeFact('已出款', tradeMoney(d['paid_out_minor'])),
             supplyNote('没有出款接口。核算与待记账金额不代表已支付、到账、可提现或税务已处理。')
           ]),
-          supplyCard('逐次变动记录', [
+          tradeSection('逐次变动记录', [
             for (final e in entries) ...[
               tradeFact('核算版本', e['object_version']),
               tradeFact('服务提供方变动',
@@ -739,6 +790,52 @@ class _RecordState extends State<_Record> {
     };
   }
 
+  Widget? relationFooter() {
+    final r = data;
+    if (r == null || r.kind != 'RELATION') return null;
+    final locked = busy || widget.session.gigsPending.isNotEmpty;
+    final actions = <Widget>[
+      if (['ACTIVE', 'INVITED'].contains(r.status))
+        tradeButton('结束合作', locked ? null : () => decide('END'),
+            outline: true),
+      tradeButton('查看原合作约定', locked ? null : () {
+        showDialog<void>(
+            context: context,
+            builder: (c) => AlertDialog(
+                  title: const Text('原合作约定'),
+                  content: SingleChildScrollView(
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      tradeFact('记录编号', r.id),
+                      tradeFact('记录版本', r.version),
+                      gigParagraph(r.data['terms']),
+                      gigCommissionFacts(gigMap(r.data['commission']),
+                          marketplace: r.data['marketplace_terms'],
+                          v5: r.data['v5_terms']),
+                      supplyNote('只读展示本次读取的约定，不发起签署或代替各方确认。'),
+                    ]),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(c),
+                        child: const Text('返回合作记录')),
+                  ],
+                ));
+      }),
+    ];
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth < 340 ||
+          MediaQuery.textScalerOf(context).scale(14) > 20) {
+        return Column(mainAxisSize: MainAxisSize.min, children: actions);
+      }
+      return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        for (var i = 0; i < actions.length; i++) ...[
+          if (i > 0) const SizedBox(width: 10),
+          Expanded(child: actions[i]),
+        ],
+      ]);
+    });
+  }
+
   @override
   Widget build(BuildContext c) => tradeScaffold(
       c,
@@ -751,17 +848,20 @@ class _RecordState extends State<_Record> {
         if (busy) const LinearProgressIndicator(),
         if (error != null) supplyNote(error!, error: true),
         for (final p in widget.session.gigsPending)
-          supplyCard('有操作结果待核实', [
+          tradeSection('有操作结果待核实', [
             supplyNote('请恢复原请求核对结果，原内容与版本已保留。', error: true),
             tradeButton('恢复原请求核对',
                 busy ? null : () => perform(() => api.retry(p['path'])))
           ]),
         if (data != null) ...[
+          if (data!.kind == 'RELATION')
+            tradeHeading('我的合作', eyebrow: '本人确认 / 真实合作', fontSize: 24),
           gigStatus(data!),
+          gigNextStep(data!),
           const SizedBox(height: 16),
           ...detail(data!),
           if (data!.data['review'] != null)
-            supplyCard('独立审核结论', [
+            tradeSection('独立审核结论', [
               tradeFact(
                   '结论',
                   data!.data['review']['decision'] == 'APPROVED'
@@ -770,7 +870,7 @@ class _RecordState extends State<_Record> {
               gigParagraph(data!.data['review']['reason'])
             ]),
           if (['GIG', 'OFFER', 'RELATION'].contains(data!.kind))
-            supplyCard('受控证明材料', [
+            tradeSection('受控证明材料', [
               supplyNote('文件仅经本记录权限核验后提供，材料不会公开。'),
               for (final id in data!.kind == 'GIG'
                   ? gigList(data!.data['proofs'], max: 30)
@@ -791,6 +891,7 @@ class _RecordState extends State<_Record> {
         ],
         tradeButton('重新读取', busy ? null : load, outline: true)
       ],
+      footer: relationFooter(),
       locked: busy || widget.session.gigsPending.isNotEmpty);
 }
 
@@ -842,7 +943,7 @@ class _NotificationsState extends State<_Notifications> {
         if (error != null) supplyNote(error!, error: true),
         if (!busy && rows.isEmpty && error == null) appNotice('当前身份暂无商单域通知。'),
         for (final r in rows)
-          supplyCard(gigEvents[r['event_code']] ?? '商单业务动态', [
+          tradeSection(gigEvents[r['event_code']] ?? '商单业务动态', [
             tradeFact('关联记录', r['record_id']),
             if (!gigEvents.containsKey(r['event_code']))
               tradeFact('事件代码', r['event_code']),
@@ -914,7 +1015,7 @@ class _RankingState extends State<_Ranking> {
   @override
   Widget build(BuildContext c) => tradeScaffold(c, '片场榜单', [
         gigHeading('片场榜单'),
-        supplyCard('读取已发布快照', [
+        tradeSection('读取已发布快照', [
           gigTextField(identifier, '已发布榜单编号', max: 36, enabled: !busy),
           supplyNote('请使用实际已发布快照编号。当前没有公开快照索引接口，不能自动列出最新榜单。'),
           tradeButton('读取榜单', busy ? null : load)
@@ -922,7 +1023,7 @@ class _RankingState extends State<_Ranking> {
         if (busy) const LinearProgressIndicator(),
         if (error != null) supplyNote(error!, error: true),
         if (data != null) ...[
-          supplyCard('本次榜单依据', [
+          tradeSection('本次榜单依据', [
             tradeFact('统计截点', tradeDate(data!['as_of'])),
             tradeFact('统计窗口', '${data!['rule']['window_days']} 天'),
             tradeFact(
@@ -944,7 +1045,7 @@ class _RankingState extends State<_Ranking> {
             tradeBanner('暂未形成榜单', '目前尚未满足计算条件，没有可展示的排名。请待真实数据达到条件后查看新的已发布快照。',
                 icon: Icons.bar_chart),
           for (final row in data!['boards'][board])
-            supplyCard('主体 ${row['party_id']}', [
+            tradeSection('主体 ${row['party_id']}', [
               tradeFact('地区', row['territory']),
               tradeFact('有效订单数', row['orders']),
               tradeFact(board == 'emerging' ? '新兴分值' : '热度分值',

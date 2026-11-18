@@ -1,15 +1,26 @@
 import 'dart:async';
+import 'dart:ui' show FontVariation;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
+import '../wallet/wallet_api.dart';
+import '../wallet/wallet_models.dart';
+import '../stock/v5_support.dart';
 import '../auditions/auditions_pages.dart';
 import '../notices/notices_pages.dart';
 import '../operations/identity_notifications.dart';
 import '../plaza/plaza_pages.dart';
 import '../widgets/editorial_icons.dart';
 import 'package:flutter/services.dart';
+
+// Local 05 palette from Figma 4016:6960; shared navigation stays unchanged.
+const _mineCanvas = Color(0xff101513);
+const _mineSurface = Color(0xff1c2420);
+const _mineText = Color(0xfff2f5ef);
+const _mineMuted = Color(0xffa5aea8);
+const _mineBorder = Color(0xff34403a);
 
 /// Keep the current tab address without replacing the mounted shell. Child
 /// routes still use ordinary Material routes and return to this updated address.
@@ -104,14 +115,14 @@ class _AppShellState extends State<AppShell> {
   Widget _entry(
           String title, String description, IconData icon, VoidCallback open) =>
       Material(
-          color: AccountTheme.canvas,
+          color: AccountTheme.surface,
+          borderRadius: BorderRadius.circular(20),
           child: InkWell(
+              borderRadius: BorderRadius.circular(20),
               onTap: open,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: const BoxDecoration(
-                    border:
-                        Border(bottom: BorderSide(color: AccountTheme.border))),
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.all(16),
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -135,7 +146,7 @@ class _AppShellState extends State<AppShell> {
                           ])),
                       const SizedBox(width: 16),
                       const Icon(Icons.north_east,
-                          size: 20, color: AccountTheme.text),
+                          size: 20, color: AccountTheme.accent),
                     ]),
               )));
 
@@ -181,79 +192,65 @@ class _AppShellState extends State<AppShell> {
           const SizedBox(height: 12),
           Text(session.authNotice ?? '登录后选择办事身份，管理自己的资料与合同。',
               style: const TextStyle(
-                  fontSize: 14, color: AccountTheme.muted, height: 1.6)),
+                  fontSize: 14, color: _mineMuted, height: 1.6)),
           const SizedBox(height: 20),
           FilledButton(
               onPressed: () => _open('/login'), child: const Text('手机号登录')),
           const SizedBox(height: 24),
         ] else ...[
           Container(
-              color: AccountTheme.text,
-              padding: const EdgeInsets.fromLTRB(20, 22, 16, 22),
-              child:
-                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                const Text('我',
-                    style: TextStyle(
-                        fontFamily: AccountTheme.serif,
-                        color: AccountTheme.canvas,
-                        fontSize: 104,
-                        fontWeight: FontWeight.w900,
-                        height: 1.15)),
-                const SizedBox(width: 20),
-                Expanded(
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      Text(session.account?['display_name'] ?? '我的账号',
-                          style: const TextStyle(
-                              color: AccountTheme.canvas,
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700)),
-                      const SizedBox(height: 8),
-                      const Text('把每一次出场，留成作品。',
-                          style: TextStyle(
-                              color: AccountTheme.canvas,
-                              fontSize: 11,
-                              height: 1.7)),
-                    ])),
+            color: _mineSurface,
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Row(children: [
+                Container(
+                    width: 56, height: 56,
+                    decoration: BoxDecoration(
+                        color: AccountTheme.selectedSurface,
+                        borderRadius: BorderRadius.circular(12)),
+                    child: const Icon(Icons.person_outline,
+                        size: 32, color: _mineText)),
+                const SizedBox(width: 10),
+                Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(session.account?['display_name'] ?? '我的账号',
+                      style: const TextStyle(fontSize: 20, height: 1.4,
+                          color: _mineText, fontWeight: FontWeight.w700)),
+                  const SizedBox(height: 4),
+                  const Text('认证与成长以本人记录为准',
+                      style: TextStyle(fontSize: 11, color: _mineMuted)),
+                ])),
                 IconButton(
                     tooltip: '复制账号编号',
                     onPressed: () => Clipboard.setData(
                         ClipboardData(text: session.account?['id'] ?? '')),
-                    icon: const Icon(Icons.copy_outlined,
-                        size: 18, color: AccountTheme.canvas)),
-              ])),
-          Card(
-              child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(children: [
-                    const Icon(Icons.badge_outlined,
-                        size: 32, color: AccountTheme.accent),
-                    const SizedBox(width: 12),
-                    Expanded(
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          const Text('当前操作身份',
-                              style: TextStyle(
-                                  fontSize: 12, color: AccountTheme.muted)),
-                          const SizedBox(height: 6),
-                          Text(session.party?['display_name'] ?? '尚未选择办事身份',
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600)),
-                        ])),
-                    const SizedBox(width: 8),
-                    FilledButton(
-                        onPressed: () => _open('/account'),
-                        child: const Text('切换身份')),
-                  ]))),
+                    icon: const Icon(Icons.copy_outlined, size: 18)),
+              ]),
+              const SizedBox(height: 10),
+              TextButton(
+                  style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(0, 32),
+                      alignment: Alignment.centerLeft,
+                      foregroundColor: _mineText),
+                  onPressed: () => _open('/account'),
+                  child: const Text('个人资料与身份 ↗')),
+              Row(children: [
+                Expanded(child: Text(
+                    '当前身份 · ${session.party?['display_name'] ?? '尚未选择办事身份'}',
+                    style: const TextStyle(fontSize: 12, color: _mineMuted))),
+                TextButton(onPressed: () => _open('/account'),
+                    child: const Text('切换身份')),
+              ]),
+            ]),
+          ),
         ],
         Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _myDirectory()),
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+            child: _myDirectory(session)),
       ];
 
-  Widget _myDirectory() {
+  Widget _myDirectory(AccountSession session) {
     final groups = <(String, String, List<(String, String)>)>[
       (
         '业务与作品',
@@ -270,12 +267,18 @@ class _AppShellState extends State<AppShell> {
           ('参演条款与会签', '/projects/participation'),
           ('独立发行收入约定', '/projects/income'),
           ('合同与原约定', '/library?section=contracts'),
+          ('多人共创', '/cocreation'),
+          ('我的许可办理', '/licensing'),
+          ('我的许可项目', '/licensing?kind=PROJECT'),
+          ('我的预约', '/auditions/bookings'),
+          ('我的通告与投稿', '/notices/records?kind=SUBMISSION'),
         ]
       ),
       (
         '艺人与商品',
         '我的艺人 · 数字人 · 视频 · 试镜设置',
         [
+          ('管理我的艺人', '/artists'),
           ('数字人资料', '/my-humans'),
           ('我的现成作品上架', '/stock/listings'),
           ('试镜服务与接单', '/auditions/offers'),
@@ -286,10 +289,13 @@ class _AppShellState extends State<AppShell> {
       ),
       (
         '认证与成长',
-        '实名 · 授权 · 成长与合作',
+        '实名 · 主角光环 · 晶钻 · 星探',
         [
           ('账号与机构', '/account'),
           ('成长与推荐', '/engagement?view=growth'),
+          ('晶钻中心', '/wallet/points'),
+          ('星探中心', '/wallet/scout'),
+          ('权益兑换与抽奖', '/redemption'),
           ('MCN 直接合作', '/mcn'),
           ('MCN 经营与委派', '/engagement?view=mcn'),
         ]
@@ -298,9 +304,7 @@ class _AppShellState extends State<AppShell> {
         '资金与收益',
         '消费余额 · 晶钻 · 艺人收入',
         [
-          ('钱包、晶钻与会员', '/wallet'),
-          ('晶钻中心', '/wallet/points'),
-          ('星探中心', '/wallet/scout'),
+          ('消费钱包、晶钻与会员', '/wallet'),
           ('发票与票据', '/invoices'),
           ('我的结算', '/finance'),
           ('佣金核算', '/gigs/records?kind=COMMISSION'),
@@ -308,24 +312,9 @@ class _AppShellState extends State<AppShell> {
         ]
       ),
       (
-        '共创与权益',
-        '参与记录 · 制作金 · 活动规则',
-        [
-          ('多人共创', '/cocreation'),
-          ('权益兑换与抽奖', '/redemption'),
-          ('我的许可办理', '/licensing'),
-          ('我的许可项目', '/licensing?kind=PROJECT'),
-        ]
-      ),
-      (
-        '业务通知',
-        '系统通知 · 商单与履约变化',
-        [
-          ('系统与业务通知', '/operations/notifications'),
-          ('商单通知', '/gigs/notifications'),
-          ('我的预约', '/auditions/bookings'),
-          ('我的通告与投稿', '/notices/records?kind=SUBMISSION'),
-        ]
+        '收藏与足迹',
+        '收藏的艺人、作品与通告',
+        [('收藏与足迹', '/saved')]
       ),
       (
         '账号与帮助',
@@ -336,14 +325,17 @@ class _AppShellState extends State<AppShell> {
           ('侵权通知与反通知', '/contract-six/infringement'),
           ('设置与帮助', '/settings'),
           ('帮助与反馈', '/help'),
+          ('系统与业务通知', '/operations/notifications'),
+          ('商单通知', '/gigs/notifications'),
         ]
       ),
     ];
     return Column(children: [
       for (final g in groups)
-        DecoratedBox(
+        Container(
+            constraints: const BoxConstraints(minHeight: 70),
             decoration: const BoxDecoration(
-                border: Border(bottom: BorderSide(color: AccountTheme.border))),
+                border: Border(bottom: BorderSide(color: _mineBorder))),
             child: ExpansionTile(
                 tilePadding: EdgeInsets.zero,
                 childrenPadding: const EdgeInsets.only(left: 12),
@@ -352,13 +344,32 @@ class _AppShellState extends State<AppShell> {
                 title: Text(g.$1,
                     style: const TextStyle(
                         fontFamily: AccountTheme.serif,
-                        fontSize: 23,
-                        height: 1.3,
+                        fontSize: 20,
+                        height: 1.4,
+                        color: _mineText,
                         fontWeight: FontWeight.w700)),
-                subtitle: Text(g.$2,
-                    style: const TextStyle(
-                        fontSize: 11, color: AccountTheme.muted)),
-                trailing: const Icon(Icons.north_east, size: 22),
+                subtitle: g.$1 == '资金与收益'
+                    ? Column(crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          if (session.isLoggedIn && session.isOwner &&
+                              session.party?['kind'] == 'PERSON')
+                            _PersonalWalletSummary(
+                                key: ValueKey((session.epoch,
+                                    session.account?['id'], session.partyId)),
+                                session: session)
+                          else
+                            TextButton(onPressed: () => _open('/wallet'),
+                                child: const Text('消费余额 · 查看本人钱包')),
+                          Align(alignment: Alignment.centerLeft,
+                              child: TextButton(
+                                  onPressed: () => _open('/finance'),
+                                  child: const Text('收入与结算 · 查看获准记录'))),
+                        ])
+                    : Padding(padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(g.$2, style: const TextStyle(
+                            fontSize: 12, height: 1.5, color: _mineMuted))),
+                trailing: const Icon(Icons.north_east,
+                    size: 26, color: _mineText),
                 children: [
                   for (final item in g.$3)
                     _entry(item.$1, '', Icons.north_east, () => _open(item.$2))
@@ -426,33 +437,24 @@ class _AppShellState extends State<AppShell> {
     final session = context.watch<AccountSession>();
     return AccountTheme(
         child: Scaffold(
-      appBar: _selected == 0 || session.isLoggedIn && [1, 2].contains(_selected)
+      backgroundColor: _selected == 4 ? _mineCanvas : null,
+      appBar: _selected == 0 || _selected == 3 || session.isLoggedIn && [1, 2].contains(_selected)
           ? null
           : AppBar(
               backgroundColor: _selected == 4 && session.isLoggedIn
-                  ? AccountTheme.text
+                  ? _mineSurface
                   : AccountTheme.canvas,
-              foregroundColor: _selected == 4 && session.isLoggedIn
-                  ? AccountTheme.canvas
-                  : AccountTheme.text,
+              foregroundColor: _selected == 4 ? _mineText : AccountTheme.text,
               automaticallyImplyLeading: false,
               centerTitle: false,
-              titleSpacing: 16,
-              toolbarHeight: _selected > 0 && _selected < 4 ? 78 : 44,
+              titleSpacing: _selected == 4 ? 20 : 16,
+              toolbarHeight: _selected == 4 ? 44 : 64,
               title: Text(_selected == 0 ? '晶晶日上' : _labels[_selected],
                   style: TextStyle(
-                      color: _selected == 4 && session.isLoggedIn
-                          ? AccountTheme.canvas
-                          : AccountTheme.text,
-                      fontFamily: AccountTheme.serif,
-                      fontSize: _selected > 0 && _selected < 4
-                          ? 52
-                          : _selected == 0
-                              ? 27
-                              : 14,
-                      fontWeight: _selected > 0 && _selected < 4
-                          ? FontWeight.w900
-                          : FontWeight.w700)),
+                      color: _selected == 4 ? _mineText : AccountTheme.text,
+                      fontFamily: AccountTheme.sans,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700)),
               actions: [
                   IconButton(
                       tooltip: _selected == 4 ? '设置与帮助' : '通知',
@@ -486,8 +488,9 @@ class _AppShellState extends State<AppShell> {
                 border: Border(top: BorderSide(color: AccountTheme.border))),
             child: NavigationBarTheme(
                 data: NavigationBarThemeData(
-                    iconTheme: const WidgetStatePropertyAll(
-                        IconThemeData(size: 22, color: AccountTheme.text)),
+                    iconTheme: WidgetStateProperty.resolveWith((states) =>
+                        IconThemeData(size: 22, color: states.contains(WidgetState.selected)
+                            ? AccountTheme.accent : AccountTheme.muted)),
                     labelTextStyle: WidgetStateProperty.resolveWith((states) =>
                         TextStyle(
                             fontFamily: AccountTheme.sans,
@@ -588,63 +591,60 @@ class AppUnknownPage extends StatelessWidget {
 
 class AppHelpPage extends StatelessWidget {
   const AppHelpPage({super.key});
-  Widget _section(String title, String description, IconData icon,
-          List<Widget> actions) =>
-      Card(
-          child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(icon, size: 32, color: AccountTheme.accent),
-                          const SizedBox(width: 16),
-                          Expanded(
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                Text(title,
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w700)),
-                                const SizedBox(height: 8),
-                                Text(description,
-                                    style: const TextStyle(
-                                        fontSize: 14,
-                                        color: AccountTheme.muted,
-                                        height: 1.5))
-                              ])),
-                        ]),
-                    if (actions.isNotEmpty) const SizedBox(height: 16),
-                    ...actions,
-                  ])));
+  Widget _entry(BuildContext context, String title, String description,
+          String route, {String action = '管理'}) =>
+      InkWell(
+          onTap: () => Navigator.pushNamed(context, route),
+          child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              decoration: const BoxDecoration(
+                  border: Border(bottom: BorderSide(color: AccountTheme.border))),
+              child: Row(children: [
+                Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(title, style: const TextStyle(
+                      fontSize: 15, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 6),
+                  Text(description, style: const TextStyle(
+                      fontSize: 12, color: AccountTheme.muted, height: 1.5)),
+                ])),
+                const SizedBox(width: 16),
+                Text(action, style: const TextStyle(fontSize: 12)),
+                const SizedBox(width: 4),
+                const Icon(Icons.chevron_right, size: 16),
+              ])));
   @override
-  Widget build(BuildContext context) => _ChildPage(title: '设置与帮助', children: [
-        const Text('设置与帮助',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700)),
+  Widget build(BuildContext context) =>
+      _ChildPage(title: '个人资料与账号设置', children: [
+        const Text('你的资料与使用偏好',
+            style: TextStyle(color: AccountTheme.accent, fontSize: 12)),
+        const SizedBox(height: 16),
+        const Text('资料与设置',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
+        const SizedBox(height: 12),
+        _entry(context, '个人资料与账号', '查看本人资料、绑定手机号与账号安全。',
+            '/account', action: '编辑'),
+        _entry(context, '推荐、通知与休息偏好',
+            '读取并保存本人偏好；系统推送是否可设以实际支持为准，必要站内业务通知保留。',
+            '/privacy?view=preferences'),
+        _entry(context, '账号、安全与隐私权利',
+            '本人资料申请、信息副本、删除与注销。',
+            '/privacy?view=requests', action: '查看'),
+        _entry(context, '机构经营与平台工作',
+            '查看已授权的办事身份与机构成员；批量经营使用独立工作台。',
+            '/account', action: '进入'),
+        _entry(context, '用户协议', '查看当前保留的协议文本与更新说明。',
+            '/agreement', action: '阅读'),
+        _entry(context, '隐私政策', '查看隐私文本与适用范围说明。',
+            '/privacy', action: '阅读'),
+        _entry(context, '帮助与反馈', '查找办理问题、提交问题并查看处理进度。',
+            '/help', action: '打开'),
+        const SizedBox(height: 20),
+        const Text('各项偏好在对应页面读取并保存；本页不显示尚未读取的开关状态。退出账号请进入账号管理。',
+            style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
         const SizedBox(height: 24),
-        _section('隐私与协议', '查看保存的条款文本与当前说明。', Icons.description_outlined, [
-          OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, '/agreement'),
-              child: const Text('用户协议')),
-          const SizedBox(height: 12),
-          OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, '/privacy'),
-              child: const Text('隐私政策')),
-        ]),
-        _section('账号与机构', '管理本人账号、办事身份与机构成员。', Icons.person_outline, [
-          FilledButton(
-              onPressed: () => Navigator.pushNamed(context, '/account'),
-              child: const Text('管理账号与机构'))
-        ]),
-        _section('帮助与反馈', '查找常见办理问题与当前可用入口。', Icons.help_outline, [
-          OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, '/help'),
-              child: const Text('打开帮助与反馈'))
-        ]),
-        _section('产品工作名', '晶晶日上', Icons.info_outline, []),
+        const Text('晶晶日上', style: TextStyle(
+            color: AccountTheme.muted, fontSize: 12)),
       ]);
 }
 
@@ -714,4 +714,92 @@ class _ChildPage extends StatelessWidget {
                       child: ListView(
                           padding: const EdgeInsets.all(16),
                           children: children))))));
+}
+
+// Read-only account summary. A new session/party gets a fresh widget instance.
+class _PersonalWalletSummary extends StatefulWidget {
+  const _PersonalWalletSummary({super.key, required this.session});
+  final AccountSession session;
+  @override
+  State<_PersonalWalletSummary> createState() => _PersonalWalletSummaryState();
+}
+
+class _PersonalWalletSummaryState extends State<_PersonalWalletSummary> {
+  WalletSummary? summary;
+  bool busy = false;
+  String? error;
+  int ticket = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    load();
+  }
+
+  @override
+  void dispose() {
+    ticket++;
+    summary = null;
+    super.dispose();
+  }
+
+  Future<void> load() async {
+    final s = widget.session, epoch = widget.session.epoch,
+        party = widget.session.partyId, t = ++ticket;
+    setState(() { busy = true; error = null; summary = null; });
+    try {
+      final result = await WalletApi(s).summary();
+      v5Require(result.raw['account_id'] == s.account?['id']);
+      if (!mounted || t != ticket || s.epoch != epoch ||
+          s.partyId != party || !s.isLoggedIn ||
+          !s.isOwner || s.party?['kind'] != 'PERSON') return;
+      setState(() { summary = result; busy = false; });
+    } catch (_) {
+      if (!mounted || t != ticket || s.epoch != epoch || s.partyId != party) return;
+      setState(() {
+        busy = false;
+        error = '暂未读到本人钱包记录，请重试或进入钱包核对。';
+      });
+    }
+  }
+
+  Future<void> openWallet() async {
+    await Navigator.pushNamed(context, '/wallet');
+    if (mounted) await load();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final d = summary?.raw;
+    return Padding(
+        padding: const EdgeInsets.only(top: 8),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          const Text('消费钱包 · 本人账本', style: TextStyle(
+              fontSize: 11, height: 16 / 11, color: _mineMuted)),
+          const SizedBox(height: 4),
+          if (busy) const Text('正在读取本人钱包…'),
+          if (error != null) ...[
+            Text(error!),
+            TextButton(onPressed: load, child: const Text('重新读取')),
+          ],
+          if (d != null) ...[
+            Text.rich(TextSpan(children: [
+              const TextSpan(text: '账面可用余额  '),
+              TextSpan(text: v5Money(d['available_balance_minor'] as int),
+                  style: const TextStyle(fontFamily: 'WalletBalanceInter',
+                      fontFamilyFallback: ['NotoSansSC'],
+                      fontVariations: [FontVariation('wght', 600),
+                        FontVariation('opsz', 14)])),
+            ]), style: const TextStyle(fontSize: 16, height: 1.25, color: _mineText,
+                fontWeight: FontWeight.w600)),
+            const SizedBox(height: 8),
+            Text('待核对或锁定  ${v5Money(d['reserved_balance_minor'] as int)}'),
+            Text('可用晶钻  ${d['available_points']}'),
+          ],
+          const SizedBox(height: 8),
+          const Text('本人账本摘要，不代表可提现、转账或渠道已开放支付。',
+              style: TextStyle(fontSize: 12, color: _mineMuted)),
+          TextButton(onPressed: openWallet, child: const Text('查看钱包与原始流水')),
+        ]));
+  }
 }

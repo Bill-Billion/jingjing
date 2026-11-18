@@ -1,3 +1,4 @@
+import 'auditions_visual.dart';
 import 'package:flutter/material.dart';
 import '../account/account_api.dart';
 import '../account/account_session.dart';
@@ -63,6 +64,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
     photos.clear();
     videos.clear();
     consents.clear();
+    versions..clear()..addAll({'NEW': '首次私人造型版本'});
     if (!mounted) return;
     setState(() {
       record = null;
@@ -89,6 +91,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
       photos.clear();
       videos.clear();
       consents.clear();
+    versions..clear()..addAll({'NEW': '首次私人造型版本'});
       load();
     }
   }
@@ -143,6 +146,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
           photos.clear();
           videos.clear();
           consents.clear();
+    versions..clear()..addAll({'NEW': '首次私人造型版本'});
         });
         final choices = await _deliveryChoices(r);
         if (!current()) return null;
@@ -172,6 +176,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
             person = await artists.person(r.data['offer']['person_id']);
         if (!current()) return null;
         consents.clear();
+    versions..clear()..addAll({'NEW': '首次私人造型版本'});
         if (person.person.owner == widget.session.partyId) {
           for (final c in (await artists.allRecords(
                   person.person.id, 'CONSENT'))
@@ -200,6 +205,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
           photos.clear();
           videos.clear();
           consents.clear();
+    versions..clear()..addAll({'NEW': '首次私人造型版本'});
           _clearDeliverySelection();
         }
         setState(() => error = v5Error(e));
@@ -239,6 +245,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
           photos.clear();
           videos.clear();
           consents.clear();
+    versions..clear()..addAll({'NEW': '首次私人造型版本'});
         });
         _clearDeliverySelection();
       }
@@ -406,6 +413,18 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
           ],
         _ => const [],
       };
+  bool deliverySelectionReady(AuditionRecord r) {
+    final values = deliveryFormKey.currentState?.values;
+    if (values == null) return false;
+    final p = v5InputIds(values['photos'] ?? ''),
+        v = v5InputIds(values['videos'] ?? '');
+    return p.length == r.data['rules']['photo_count'] &&
+        v.length == r.data['rules']['video_count'] &&
+        {...p, ...v}.length == p.length + v.length &&
+        p.every((id) => photos.any((item) => item['id'] == id)) &&
+        v.every((id) => videos.any((item) => item['id'] == id));
+  }
+
   bool allowed(AuditionRecord r) {
     final a = widget.action, buyer = r.buyer(api.owner()), d = r.data;
     return switch (a) {
@@ -462,7 +481,8 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
   Widget build(BuildContext context) {
     final r = record, a = widget.action;
     return V5Frame(api: api, title: titles[a] ?? '本单办理', children: [
-      tradeHeading(titles[a] ?? '本单办理', eyebrow: '原订单内 / 每次选择单独确认'),
+      tradeHeading(a == 'delivery' ? '提交试镜素材' : titles[a] ?? '本单办理',
+          eyebrow: '原订单内 / 每次选择单独确认', fontSize: 28),
       V5RecoveryPanel(
           api: api,
           label: api.recoveryLabel,
@@ -475,6 +495,7 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
         tradeButton('重新读取本预约材料与授权', busy ? null : _refreshDelivery,
             outline: true),
       if (r != null) ...[
+        auditionGuide(auditionStates[r.status]!, auditionNextStep(r), label: '原单办理'),
         tradeSection(r.title, [
           tradeFact('当前真实状态', auditionStates[r.status]),
           tradeFact('原约定一口价', v5Money(r.data['offer']['unit_minor'])),
@@ -486,8 +507,15 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
               outline: true),
           appNotice('材料须先由本人上传并关联到艺人；本次选择不授予后续出演或商用权。'),
           tradeButton('前往艺人素材管理', () => Navigator.pushNamed(context, '/artists'), outline: true),
-          tradeBanner('按本单真实规则取样',
-              '${r.data['rules']['photo_count']} 张照片、${r.data['rules']['video_count']} 段视频；${r.data['rules']['acceptance_policy'] == 'CONTRACT_20261029' ? '交付审核通过起' : '明确收讫后'} ${r.data['rules']['acceptance_hours']} 小时。'),
+          tradeSection('本单默认交付规则', [
+            tradeFact('照片', '${r.data['rules']['photo_count']} 张'),
+            tradeFact('视频', '${r.data['rules']['video_count']} 段'),
+            tradeFact('验收期限',
+                '${r.data['rules']['acceptance_policy'] == 'CONTRACT_20261029' ? '交付审核通过起' : '明确收讫后'} ${r.data['rules']['acceptance_hours']} 小时'),
+            tradeFact('本单真人档案', r.data['offer']['person_id']),
+            const Text('本页只提交本次试镜取样。私人造型归档须由本人另给同意，不随选择或交付自动建立。',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6)),
+          ]),
           if (consents.isEmpty) appNotice('当前没有本预约可用的取样授权，请核对本人、买方与授权状态后重新读取。')
         ],
         if (!widget.session.isOwner &&
@@ -499,18 +527,24 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
         if (a == 'dispute-evidence')
           appNotice('补交材料会关联当前争议并保留原记录；文件仅供获准独立客服核对。'),
         if (a == 'reschedule') appNotice('须由另一方明确确认，再由独立人员安全复核。完成两步前不改写原行程。'),
-        if (a == 'baseplate')
-          appNotice('仅艺人本人另给私人归档同意后保存。此次试镜不授予买方出演、发行或重新生成权。'),
+        if (a == 'baseplate') ...[
+          appNotice('造型底板归艺人本人，仅在本人另给私人归档同意后保存。机构代表权不能替代本人同意；不自动授予买方或后续参演、发行、重新生成权。'),
+          tradeButton('暂不关联，返回本次试镜',
+              busy || api.pendingOperations.isNotEmpty ? null
+                  : () => Navigator.pop(context), outline: true),
+        ],
         if (!allowed(r))
           appNotice('当前记录不满足本项办理条件。保留本页输入，按最新原记录核对；不通过更改技术编号绕过。'),
         V5Form(
+            actionInFooter: a == 'delivery',
             key: a == 'delivery' ? deliveryFormKey : ValueKey('${r.id}:$a'),
             api: api,
             title: titles[a]!,
             action: titles[a]!,
             suffix: '/bookings/${r.id}/$a',
             version: r.version,
-            canSubmit: allowed(r) && !busy,
+            canSubmit: allowed(r) && !busy &&
+                (a != 'delivery' || deliverySelectionReady(r)),
             beforeSubmit:
                 a == 'delivery' ? (body) => _recheckDelivery(body, r) : null,
             factsBuilder: a == 'dispute-evidence' ? (v) => [
@@ -586,7 +620,8 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
                       ),
                       ('videos', '本次视频', videos, r.data['rules']['video_count'])
                     ])
-                      tradeSection('${choice.$2} · 按约 ${choice.$4} 项', [
+                      tradeSection('${choice.$2} · 已选 ${v5InputIds(v[choice.$1] ?? '').length} / ${choice.$4} 项', [
+                        appNotice('按本订单保存的数量选择，选齐后才能提交；授权与文件可用性仍会在提交前重新核对。'),
                         if (choice.$3.isEmpty)
                           appNotice('当前没有获准使用的材料，请核对艺人素材及授权。'),
                         for (final item in choice.$3)
@@ -603,14 +638,34 @@ class _AuditionActionPageState extends State<AuditionActionPage> {
                                       final selected =
                                           v5InputIds(v[choice.$1] ?? '');
                                       if (checked == true) {
+                                        if (selected.length >= choice.$4) return;
                                         selected.add(item['id']);
                                       } else {
                                         selected.remove(item['id']);
                                       }
                                       set(choice.$1, selected.join(', '));
+                                      setState(() {});
                                     }
                                   : null)
-                      ])
+                      ]),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          const Text('交付准备进度',
+                              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 10),
+                          LinearProgressIndicator(
+                              value: (r.data['rules']['photo_count'] + r.data['rules']['video_count']) > 0
+                                  ? ((v5InputIds(v['photos'] ?? '').length + v5InputIds(v['videos'] ?? '').length) /
+                                      (r.data['rules']['photo_count'] + r.data['rules']['video_count'])).clamp(0.0, 1.0).toDouble()
+                                  : 0),
+                          const SizedBox(height: 8),
+                          Text('${v5InputIds(v['photos'] ?? '').length + v5InputIds(v['videos'] ?? '').length} / ${r.data['rules']['photo_count'] + r.data['rules']['video_count']} 项已选择',
+                              style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                          const Text('选择不等于交付成功；提交时仍需重新核验授权。',
+                              style: TextStyle(fontSize: 12, color: AccountTheme.muted)),
+                        ])),
                   ],
                 ]),
       ]

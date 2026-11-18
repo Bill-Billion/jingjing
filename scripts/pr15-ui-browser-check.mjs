@@ -140,7 +140,8 @@ async function run() {
     assert.equal(seen.length, 1); assert.deepEqual(JSON.parse(seen[0].body), { quote_sha256: quote.content_sha256 }); p.off('request', observe)
     await p.getByText('合同内容已保存，尚未签署', { exact: false }).first().waitFor(); await shot(p, 'order-desktop')
   })
-  if (testUnverifiedLegacy) await check('未核验账号仍可核对本人已发出的旧付款，不另建付款', async () => {
+  if (testUnverifiedLegacy) await check('实名复核失效后仍可核对本人已发出的旧付款，不另建付款', async () => {
+    assert.equal((await control('/synthetic-reject-buyer')).status, 'REJECTED')
     const p = buyer.page, previous = state.records.unknownPayment, created = []
     assert.equal(previous.status, 'UNKNOWN'); assert.equal(previous.buyerPartyId, buyer.personalPartyId)
     await go(p, '/trade/payments/' + previous.id)
@@ -154,7 +155,7 @@ async function run() {
     evidenceRecords.legacy_payment = { payment_id: previous.id, order_id: previous.orderId, from: previous.status, to: original.current_status, new_payment_requests: created.length }
     p.off('request', observe)
   })
-  await check(testUnverifiedLegacy ? '未核验拦截新付款；合成成年后付款503保留原请求并同编号恢复' : '付款实际503保留原请求；核对列表再同编号重试，返回UNKNOWN原付款', async () => {
+  await check(testUnverifiedLegacy ? '实名复核失效拦截新付款；重新核验后付款503保留原请求并同编号恢复' : '付款实际503保留原请求；核对列表再同编号重试，返回UNKNOWN原付款', async () => {
     const p = buyer.page, seen = []; await go(p, '/trade/payments/new')
     await p.getByTestId('trade-order-id').fill(order.id); await p.getByRole('button', { name: '读取原订单', exact: true }).click()
     await p.getByTestId('trade-installment').selectOption('browser-first'); await shot(p, 'payment-create-desktop')
@@ -168,13 +169,13 @@ async function run() {
       const deniedResponse = await denied; assert.equal(deniedResponse.status(), 409)
       assert.equal((await deniedResponse.json()).error.code, 'VERIFIED_ADULT_REQUIRED')
       await p.getByText('VERIFIED_ADULT_REQUIRED', { exact: false }).waitFor(); assert.equal(seen.length, 0)
-      // The fixture prepared this historical payment directly before any
-      // synthetic identity verification; record the existing API/UI mismatch.
+      // These payments were prepared while identity was valid. Rejected recheck
+      // must preserve old payment facts without permitting a new payment.
       const protectionStatus = await api(buyer, 'GET', '/wallet/consumer-risk/status', undefined, { party: null })
       assert.equal(protectionStatus.configured, false)
       assert.equal(state.records.succeededPayment.buyerPartyId, buyer.personalPartyId)
       assert.equal(state.records.succeededPayment.status, 'SUCCEEDED')
-      evidenceRecords.unverified_policy_difference = { prior_direct_payment_id: state.records.succeededPayment.id,
+      evidenceRecords.identity_loss_recovery = { identity_at_creation: 'VERIFIED', identity_now: 'REJECTED', prior_direct_payment_id: state.records.succeededPayment.id,
         prior_direct_status: state.records.succeededPayment.status, preview_status: deniedResponse.status(),
         preview_code: 'VERIFIED_ADULT_REQUIRED', policy_configured: protectionStatus.configured }
       assert.equal((await control('/synthetic-verify-buyer')).status, 'VERIFIED')

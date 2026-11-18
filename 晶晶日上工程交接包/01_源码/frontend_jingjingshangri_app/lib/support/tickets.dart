@@ -6,6 +6,7 @@ import '../account/account_api.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../engagement/community_support.dart';
+import '../engagement/activity_summary_card.dart';
 import '../supply/supply_models.dart';
 import '../trade/trade_widgets.dart';
 
@@ -25,6 +26,15 @@ const supportActions = {
   'CLOSE': '结束本次反馈',
   'REOPEN': '重新提出问题'
 };
+String supportNextStep(String state) => switch (state) {
+  'SUBMITTED' => '问题已提交，等待客服受理。可在本页核对后续记录，不必重复提交。',
+  'PROCESSING' => '客服正在处理，请留意本页答复和补充材料要求。',
+  'NEEDS_INFO' => '请阅读客服要求，在下方补充说明与附件，原材料不会被覆盖。',
+  'ANSWERED' => '请阅读答复；确认解决可结束本次反馈，仍有问题可重新提出。',
+  'CLOSED' => '本次反馈已关闭，处理记录保留。如仍有问题，可使用下方重新提出入口。',
+  _ => '请重新读取当前处理状态。',
+};
+
 Map<String, dynamic> supportTicket(Map<String, dynamic> d, AccountSession s) {
   communityRequire(communityId(d['id']) &&
       d['party_id'] == s.partyId &&
@@ -232,24 +242,34 @@ class _SupportState extends State<_Support> {
   }
 
   Future<void> moreHistory() async {
-    if (busy || historyCursor == null) return;
-    final before = historyCursor;
-    setState(() => busy = true);
+    if (busy || historyCursor == null || widget.ticketId == null ||
+        record?['id'] != widget.ticketId) return;
+    final before = historyCursor!;
+    final ticketId = widget.ticketId!;
+    final t = ++ticket, epoch = widget.session.epoch;
+    final party = widget.session.partyId;
+    bool current() => mounted && t == ticket &&
+        widget.session.epoch == epoch && widget.session.partyId == party &&
+        widget.ticketId == ticketId && record?['id'] == ticketId &&
+        historyCursor == before;
+    setState(() { busy = true; error = null; });
     try {
-      final d = await api.read('tickets/${widget.ticketId}/history',
+      final d = await api.read('tickets/$ticketId/history',
           query: {'limit': 20, 'cursor': before});
+      if (!current()) return;
       final list = validateHistory(d);
       communityRequire(d['next_cursor'] == null || d['next_cursor'] > before);
-      if (mounted) {
-        setState(() {
-          events = [...events, ...list];
-          historyCursor = d['next_cursor'];
-        });
-      }
+      if (!current()) return;
+      setState(() {
+        events = [...events, ...list];
+        historyCursor = d['next_cursor'];
+      });
     } catch (e) {
-      if (mounted) setState(() => error = communityError(e));
+      if (current()) setState(() => error = communityError(e));
     } finally {
-      if (mounted) setState(() => busy = false);
+      // Release only this request's lock, even if its identity/cursor expired.
+      // Never publish records or errors here, or clear a newer request's lock.
+      if (mounted && t == ticket) setState(() => busy = false);
     }
   }
 
@@ -447,11 +467,11 @@ class _SupportState extends State<_Support> {
           [
             tradeHeading(
                 widget.create
-                    ? '说说遇到的问题'
+                    ? '我们来帮你'
                     : widget.ticketId == null
                         ? '我的反馈'
                         : '查看处理进度',
-                eyebrow: '本人反馈 / 当前办事身份'),
+                eyebrow: '本人反馈 / 当前办事身份', fontSize: 28),
             tradeFact('办事身份', widget.session.party?['display_name']),
             if (busy) const LinearProgressIndicator(),
             if (error != null)
@@ -465,11 +485,22 @@ class _SupportState extends State<_Support> {
                     busy || uploading ? null : () => submit(recovery: op)),
               ]),
             if (widget.create) ...[
-              communitySelect(
-                  '问题类型',
-                  kind,
-                  [('FEEDBACK', '意见反馈'), ('REPORT', '内容举报')],
-                  locked ? null : (v) => setState(() => kind = v!)),
+              const ActivitySummaryCard(
+                  label: '新反馈', value: '保留问题现场',
+                  icon: Icons.edit_note_outlined,
+                  description: '说明发生在哪一步、预期结果与实际情况，并按需附上材料。提交后在同一记录里跟进，不代替退款或隐私业务申请。'),
+              const Text('问题类型',
+                  style: TextStyle(fontWeight: FontWeight.w700)),
+              for (final option in [('FEEDBACK', '意见反馈'), ('REPORT', '内容举报')])
+                Container(
+                    decoration: const BoxDecoration(
+                        border: Border(bottom: BorderSide(color: AccountTheme.border))),
+                    child: RadioListTile<String>(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(option.$2),
+                        value: option.$1,
+                        groupValue: kind,
+                        onChanged: locked ? null : (v) => setState(() => kind = v!))),
               TextField(
                   controller: title,
                   enabled: !locked,
@@ -482,11 +513,25 @@ class _SupportState extends State<_Support> {
                   enabled: !locked,
                   maxLength: 4000,
                   maxLines: 5,
-                  decoration: const InputDecoration(labelText: '具体情况')),
-              ...attachmentFields(),
+                  decoration: const InputDecoration(
+                      labelText: '问题说明',
+                      hintText: '发生在哪一步？预期结果与实际情况是什么？请勿填写无关个人信息。')),
+              Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: AccountTheme.border),
+                      borderRadius: BorderRadius.circular(12)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    const Text('补充截图与材料',
+                        style: TextStyle(fontWeight: FontWeight.w700)),
+                    ...attachmentFields(),
+                  ])),
               const Text('举报作为待核查线索，不代表已认定违规。退款、争议和隐私请求仍在原业务办理。',
                   style: TextStyle(color: AccountTheme.muted, height: 1.6)),
-              tradeButton('确认提交', locked ? null : submit),
+              const Text('平台将通过这条反馈记录答复，不是即时私聊。可在我的反馈查看处理进度。'),
+              TextButton(
+                  onPressed: locked ? null : () => leave(route: '/support'),
+                  child: const Text('我的反馈记录')),
             ] else if (widget.ticketId == null) ...[
               communitySelect(
                   '处理状态',
@@ -511,7 +556,10 @@ class _SupportState extends State<_Support> {
                           })),
               for (final r in rows)
                 tradeSection(r['title'], [
-                  tradeFact('当前进度', supportStates[r['current_status']]),
+                  Align(alignment: Alignment.centerLeft,
+                      child: Chip(label: Text(supportStates[r['current_status']]!))),
+                  Text(supportNextStep(r['current_status']),
+                      style: const TextStyle(color: AccountTheme.muted, height: 1.6)),
                   tradeFact('更新时间', communityDate(r['updated_at'])),
                   tradeButton(
                       '查看处理记录',
@@ -528,6 +576,11 @@ class _SupportState extends State<_Support> {
                 tradeButton('继续读取', busy ? null : () => load(more: true),
                     outline: true),
             ] else if (record != null) ...[
+              ActivitySummaryCard(
+                  label: '反馈办理进度',
+                  value: supportStates[record!['current_status']]!,
+                  icon: Icons.support_agent_outlined,
+                  description: supportNextStep(record!['current_status'])),
               tradeSection(record!['title'], [
                 tradeFact('当前进度', supportStates[record!['current_status']]),
                 tradeFact('类型', record!['kind'] == 'REPORT' ? '内容举报' : '意见反馈'),
@@ -574,6 +627,13 @@ class _SupportState extends State<_Support> {
                 '查看原订单与售后', () => Navigator.pushNamed(context, '/orders'),
                 outline: true),
           ],
+          footer: widget.create ? Wrap(spacing: 12, runSpacing: 8, children: [
+            TextButton(
+                onPressed: locked ? null : () => leave(route: '/help'),
+                child: const Text('阅读帮助')),
+            FilledButton(onPressed: locked ? null : submit,
+                child: const Text('提交反馈')),
+          ]) : null,
           locked: busy || uploading,
           onBack: leave));
 }

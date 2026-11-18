@@ -768,7 +768,7 @@ class _ArtistFormState extends State<_ArtistForm> {
       Padding(
           padding: const EdgeInsets.only(bottom: 18),
           child: DropdownButtonFormField<String>(
-              key: ValueKey(key ?? 'artist-select-$label-$value'),
+              key: ValueKey('${key ?? 'artist-select-$label'}:$value:${options.map((o) => o.$1).join(',')}'),
               initialValue: options.any((o) => o.$1 == value) ? value : null,
               isExpanded: true,
               isDense: false,
@@ -885,13 +885,23 @@ class _ArtistFormState extends State<_ArtistForm> {
     switch (mode) {
       case 'PERSON':
         return [
-          text('name', '本人档案显示名称'),
+          tradeSection('本人资料', [text('name', '本人档案显示名称')]),
           appNotice('只能为当前账号本人建立真人档案。建档后仍需服务方核验，不能自行提交已实名结果。')
         ];
       case 'AVATAR':
         return [
-          text('name', '数字人名称'),
-          appNotice('这里只建立属于这位真人的数字人档案，不扣款，也不表示长期模型可用。')
+          tradeSection('数字人名称', [text('name', '数字人名称')]),
+          tradeSection('基础创建与托管永久免费', [
+            const Text('本步建立属于这位真人的数字人档案，不扣款。人工服务另行报价。',
+                style: TextStyle(fontSize: 13, height: 1.6)),
+          ]),
+          tradeSection('建立档案之后', [
+            const Text('在本人档案中补充形象、声音及具体用途的授权材料，再进入实际创建服务申请。',
+                style: TextStyle(fontSize: 13, height: 1.6)),
+            const SizedBox(height: 12),
+            const Text('这里没有上传材料或保存业务草稿。提交不会即时生成长期模型，不产生训练或托管费用；真实交付另行核对。',
+                style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+          ])
         ];
       case 'IDENTITY':
         if (const bool.fromEnvironment('CLIENT_TEST_ONLY')) {
@@ -899,12 +909,24 @@ class _ArtistFormState extends State<_ArtistForm> {
         }
         return [
           appNotice('请提供实名服务方当前会话引用。仅接收受信结果，不能自行选择“已实名”。'),
-          text('session', '实名服务会话引用', max: 128)
+          tradeSection('服务方核验', [text('session', '实名服务会话引用', max: 128)])
         ];
       case 'CONSENT':
         return [
+          Container(
+              padding: const EdgeInsets.all(18),
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(color: const Color(0xFF202320),
+                  borderRadius: BorderRadius.circular(16)),
+              child: const Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                Text('本人肖像、声音与明确用途',
+                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
+                SizedBox(height: 12),
+                Text('亲友须由权利人本人确认；企业代表权不是个人肖像授权。未成年人流程暂未开放。',
+                    style: TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+              ])),
           avatarInput(),
-          tradeSection('本次允许使用什么', [
+          tradeSection('授权对象与用途', [
             choices(artistFeatures, features),
             choices(artistPurposes, purposes, purpose: true),
             if (purposes.contains('STOCK_COMMERCIAL')) ...[
@@ -917,7 +939,12 @@ class _ArtistFormState extends State<_ArtistForm> {
           date('from', '开始时间'),
           date('until', '截止时间'),
           text('terms', '本人同意条款', lines: 3, max: 8000),
-          tradeSection('本人同意证据', [fileInput()])
+          tradeSection('上传授权材料', [
+            const Text('保存材料不代表已核验或可公开使用；脸部、声音、用途和期限须分别取得本人同意。',
+                style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.5)),
+            const SizedBox(height: 12),
+            fileInput()
+          ])
         ];
       case 'DELEGATION':
         return [
@@ -978,8 +1005,27 @@ class _ArtistFormState extends State<_ArtistForm> {
         ];
       case 'HALO':
         return [
-          select('申请认证等级', '$halo', const [('1', 'L1免费认证'), ('2', 'L2认证审核')],
-              (v) => halo = int.parse(v!)),
+          Container(
+              padding: const EdgeInsets.all(18),
+              margin: const EdgeInsets.only(bottom: 20),
+              decoration: BoxDecoration(color: AccountTheme.surface,
+                  borderRadius: BorderRadius.circular(16)),
+              child: const Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('认证、成长与评价分别记录',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                SizedBox(height: 8),
+                Text('L1免费核验；L2按已审服务申请人工审核。L3不在此付费升级。付款只进入审核流程，不代表认证通过。',
+                    style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
+              ])),
+          for (final option in const [(1, 'L1免费认证'), (2, 'L2认证审核')])
+            Container(
+                decoration: const BoxDecoration(
+                    border: Border(bottom: BorderSide(color: AccountTheme.border))),
+                child: RadioListTile<int>(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(option.$2),
+                    value: option.$1, groupValue: halo,
+                    onChanged: enabled ? (v) => change(() => halo = v!) : null)),
           if (halo == 2)
             select(
                 '沿用同一笔L2审核服务',
@@ -995,6 +1041,26 @@ class _ArtistFormState extends State<_ArtistForm> {
                     )
                 ],
                 (v) => serviceId = v),
+          if (halo == 2)
+            for (final original in serviceRecords.where((r) =>
+                r.id == serviceId && r.data['kind'] == 'HALO_REVIEW' &&
+                r.data['specification']['service']['halo_level'] == 2 &&
+                r.status == 'READY'))
+              Container(
+                  margin: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(color: const Color(0xFF202320),
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    const Text('本次选定原审核服务费用',
+                        style: TextStyle(color: Color(0xFFDDDFDA))),
+                    const SizedBox(height: 12),
+                    Text(artistMoney(original.data['price_minor']),
+                        style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 12),
+                    const Text('沿用这笔已就绪审核服务，不在此重复缴费；费用不代表审核通过。',
+                        style: TextStyle(color: Color(0xFFDDDFDA), height: 1.6)),
+                  ])),
           appNotice('L1免费。L2先核对已付款的同一笔审核服务；补件沿用原申请。L3尚不开放。'),
           if (classified) ...classifiedInputs() else haloMaterials(),
           CheckboxListTile(
@@ -1008,10 +1074,13 @@ class _ArtistFormState extends State<_ArtistForm> {
       case 'LISTING':
         return [
           avatarInput(),
-          text('name', '公开名称'),
-          text('city', '公开城市', max: 100),
-          text('intro', '公开介绍', lines: 3, max: 2000),
-          text('tags', '公开标签', hint: '多个标签以逗号分隔', max: 600),
+          appNotice('公开资料须审核后展示。当前页面提交待审版本，不把私人材料自动公开；已有公开版本须按原审核记录核对。'),
+          tradeSection('艺人基本资料', [
+            text('name', '公开名称'),
+            text('intro', '个人简介', lines: 3, max: 2000),
+            text('city', '常驻城市（公开资料与筛选）', max: 100),
+            text('tags', '公开标签', hint: '多个标签以逗号分隔', max: 600),
+          ]),
           consentInput(),
           select(
               '已记录造型版本',
@@ -1033,12 +1102,13 @@ class _ArtistFormState extends State<_ArtistForm> {
             consent = null;
           }),
           appNotice('声音版本用于说明本次引用的版本；声音预览仍按下方指定材料随本次申请独立审核。'),
-          CheckboxListTile(
+          SwitchListTile(
               contentPadding: EdgeInsets.zero,
               value: audition,
               onChanged:
                   enabled ? (v) => change(() => audition = v == true) : null,
-              title: const Text('这份申请同时允许公开试镜展示')),
+              title: const Text('本次申请允许公开试镜展示'),
+              subtitle: const Text('保存不表示已公开；需核对本次审核与当前授权。')),
           tradeSection('只公开指定预览，最多六份', [
             if (self || actions.contains('MANAGE_MATERIALS'))
               fileInput()
@@ -1201,8 +1271,44 @@ class _ArtistFormState extends State<_ArtistForm> {
               tradeHeading(
                   mode == 'WITHDRAW' && record?.kind == 'LISTING'
                       ? '撤回这份公开展示'
-                      : _titles[mode] ?? '这个入口不存在',
-                  eyebrow: '本人档案 / 明确用途'),
+                      : mode == 'IDENTITY'
+                          ? '完成实名认证'
+                          : mode == 'CONSENT'
+                              ? '确认使用授权'
+                              : mode == 'DELEGATION'
+                                  ? '确认机构代表权'
+                                  : mode == 'AVATAR' ? '创建数字人档案'
+                                      : mode == 'LISTING' ? '艺人公开资料'
+                                          : mode == 'HALO' ? '点亮主角光环' : _titles[mode] ?? '这个入口不存在',
+                  eyebrow: mode == 'IDENTITY'
+                      ? '身份与交易安全'
+                      : ['CONSENT', 'DELEGATION'].contains(mode)
+                          ? '权利链材料' : '本人档案 / 明确用途',
+                  fontSize: ['HALO', 'IDENTITY', 'CONSENT', 'DELEGATION'].contains(mode) ? 24 : ['IDENTITY', 'CONSENT', 'DELEGATION', 'AVATAR', 'LISTING'].contains(mode)
+                      ? 28 : 32),
+              if (mode == 'IDENTITY')
+                Container(
+                    margin: const EdgeInsets.only(bottom: 20),
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                        color: const Color(0xFF202320),
+                        borderRadius: BorderRadius.circular(18)),
+                    child: const Column(
+                        crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Text('实名认证免费',
+                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
+                      SizedBox(height: 8),
+                      Text('成年实名可发普通通告，无需星探；机构按已审范围发布。其他业务仍须满足对应条件。',
+                          style: TextStyle(fontSize: 12, height: 1.6, color: Color(0xFFDDDFDA))),
+                    ])),
+              if (['CONSENT', 'DELEGATION'].contains(mode))
+                Padding(
+                    padding: const EdgeInsets.only(bottom: 20),
+                    child: Text(mode == 'CONSENT'
+                        ? '本页确认本人脸部、声音与具体用途。亲友的使用须由权利人本人确认；未成年人流程暂未开放。'
+                        : '企业代表权不代替本人同意；代办范围与期限须单独确认。',
+                        style: const TextStyle(fontSize: 12, height: 1.6,
+                            color: AccountTheme.muted))),
               if (detail != null)
                 tradeSection('这次为谁办理', [
                   tradeFact('真人本人', detail!.person.name),
@@ -1256,9 +1362,34 @@ class _ArtistFormState extends State<_ArtistForm> {
               ],
             ],
             onBack: goBack,
-            footer: FilledButton(
-                key: const ValueKey('artist-submit'),
-                onPressed: enabled && ready ? submit : null,
-                child: Text(mode == 'SYNC' ? '核对原订单与服务状态' : '提交本次办理'))));
+            footer: ['IDENTITY', 'CONSENT', 'DELEGATION', 'AVATAR', 'LISTING'].contains(mode)
+                ? LayoutBuilder(builder: (context, constraints) {
+                    final back = OutlinedButton(
+                        onPressed: locked ? null : goBack,
+                        child: Text(mode == 'IDENTITY' ? '稍后处理' : '返回'));
+                    final action = FilledButton(
+                        key: const ValueKey('artist-submit'),
+                        onPressed: enabled && ready ? submit : null,
+                        child: Text(switch (mode) {
+                          'IDENTITY' => '提交认证核对',
+                          'AVATAR' => '建立数字人档案',
+                          'LISTING' => '提交公开审核',
+                          _ => '提交授权材料',
+                        }));
+                    if (constraints.maxWidth < 320 ||
+                        MediaQuery.textScalerOf(c).scale(14) > 20) {
+                      return Column(mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [back, const SizedBox(height: 10), action]);
+                    }
+                    return Row(children: [
+                      Expanded(child: back), const SizedBox(width: 12),
+                      Expanded(flex: 2, child: action),
+                    ]);
+                  })
+                : FilledButton(
+                    key: const ValueKey('artist-submit'),
+                    onPressed: enabled && ready ? submit : null,
+                    child: Text(mode == 'SYNC' ? '核对原订单与服务状态' : '提交本次办理'))));
   }
 }

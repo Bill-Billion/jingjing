@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
 import '../widgets/editorial_icons.dart';
 
-/// Paper, ink and vermilion from the supplied film editorial prototype.
+/// V5 晶晶光场: green-black surfaces, lime actions and sans-serif type.
+/// Implementation tokens follow the current V5 canvas visually; they are not
+/// an exported Figma variable library. Keep business status colours semantic.
 class AccountTheme extends StatelessWidget {
   const AccountTheme({super.key, required this.child, this.plaza = false});
   final Widget child;
   final bool plaza;
-  static const canvas = Color(0xFFF3F1E8);
-  static const surface = Color(0xFFF3F1E8);
-  static const text = Color(0xFF151515);
-  static const muted = Color(0xFF66645F);
-  static const accent = Color(0xFFA73124);
-  static const vermilion = Color(0xFFEF4938);
-  static const border = Color(0xFFCECBC2);
-  static const danger = Color(0xFFB62F25);
-  static const serif = 'EditorialSerif';
+  static const canvas = Color(0xFF101713);
+  static const surface = Color(0xFF1C2820);
+  static const selectedSurface = Color(0xFF2D4025);
+  static const onAccent = Color(0xFF14200E);
+  static const text = Color(0xFFF2F6EF);
+  static const muted = Color(0xFFA6B2A8);
+  static const accent = Color(0xFFC7F36B);
+  static const vermilion = Color(0xFFC7F36B);
+  static const border = Color(0xFF344238);
+  static const danger = Color(0xFFFF8E85);
+  static const serif = 'NotoSansSC';
   static const sans = 'NotoSansSC';
   static const sansFallback = [
     'NotoSansSC',
@@ -22,14 +26,15 @@ class AccountTheme extends StatelessWidget {
     'Microsoft YaHei',
     'sans-serif'
   ];
-  static const _square = RoundedRectangleBorder();
+  static const _shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(16)));
   static ThemeData get data => ThemeData(
         useMaterial3: true,
-        colorScheme: const ColorScheme.light(
-            primary: text,
-            onPrimary: canvas,
+        colorScheme: const ColorScheme.dark(
+            primary: accent,
+            onPrimary: onAccent,
             secondary: accent,
-            onSecondary: Colors.white,
+            onSecondary: onAccent,
             surface: surface,
             onSurface: text,
             outline: border,
@@ -93,77 +98,79 @@ class AccountTheme extends StatelessWidget {
                 fontWeight: FontWeight.w500),
             centerTitle: false),
         cardTheme: const CardThemeData(
-            color: canvas,
+            color: surface,
             surfaceTintColor: Colors.transparent,
             elevation: 0,
             margin: EdgeInsets.only(bottom: 16),
-            shape: RoundedRectangleBorder(side: BorderSide(color: border))),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                side: BorderSide(color: border))),
         dialogTheme: const DialogThemeData(
             backgroundColor: canvas,
             surfaceTintColor: Colors.transparent,
-            shape: _square),
+            shape: _shape),
         datePickerTheme: const DatePickerThemeData(
             backgroundColor: canvas,
             surfaceTintColor: Colors.transparent,
-            shape: _square,
+            shape: _shape,
             headerHeadlineStyle: TextStyle(
                 fontFamily: serif, fontSize: 32, fontWeight: FontWeight.w900),
             todayForegroundColor: WidgetStatePropertyAll(vermilion)),
         timePickerTheme: const TimePickerThemeData(
             backgroundColor: canvas,
-            shape: _square,
-            hourMinuteShape: _square,
+            shape: _shape,
+            hourMinuteShape: _shape,
             hourMinuteTextStyle: TextStyle(
                 fontFamily: sans, fontSize: 40, fontWeight: FontWeight.w600)),
         bottomSheetTheme: const BottomSheetThemeData(
             backgroundColor: canvas,
             surfaceTintColor: Colors.transparent,
-            shape: _square),
+            shape: _shape),
         inputDecorationTheme: const InputDecorationTheme(
             filled: true,
-            fillColor: Colors.white,
+            fillColor: surface,
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            border: UnderlineInputBorder(
-                borderRadius: BorderRadius.zero,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(14)),
                 borderSide: BorderSide(color: border)),
-            enabledBorder: UnderlineInputBorder(
-                borderRadius: BorderRadius.zero,
+            enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(14)),
                 borderSide: BorderSide(color: border)),
-            focusedBorder: UnderlineInputBorder(
-                borderRadius: BorderRadius.zero,
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(14)),
                 borderSide: BorderSide(color: text, width: 1.5)),
-            errorBorder: UnderlineInputBorder(
-                borderRadius: BorderRadius.zero,
+            errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(14)),
                 borderSide: BorderSide(color: danger))),
         filledButtonTheme: FilledButtonThemeData(
             style: FilledButton.styleFrom(
-                backgroundColor: text,
-                foregroundColor: canvas,
+                backgroundColor: accent,
+                foregroundColor: onAccent,
                 minimumSize: const Size(44, 48),
-                shape: _square,
+                shape: _shape,
                 elevation: 0)),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-                backgroundColor: text,
-                foregroundColor: canvas,
+                backgroundColor: accent,
+                foregroundColor: onAccent,
                 minimumSize: const Size(44, 48),
-                shape: _square,
+                shape: _shape,
                 elevation: 0)),
         outlinedButtonTheme: OutlinedButtonThemeData(
             style: OutlinedButton.styleFrom(
                 foregroundColor: text,
                 minimumSize: const Size(44, 48),
                 side: const BorderSide(color: text),
-                shape: _square)),
+                shape: _shape)),
         textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
                 foregroundColor: text,
                 minimumSize: const Size(44, 44),
-                shape: _square)),
+                shape: _shape)),
         chipTheme: const ChipThemeData(
             backgroundColor: canvas,
-            selectedColor: text,
-            secondarySelectedColor: text,
+            selectedColor: selectedSurface,
+            secondarySelectedColor: selectedSurface,
             labelStyle: TextStyle(
                 fontFamily: sans,
                 fontFamilyFallback: sansFallback,
@@ -172,31 +179,32 @@ class AccountTheme extends StatelessWidget {
             secondaryLabelStyle: TextStyle(
                 fontFamily: sans,
                 fontFamilyFallback: sansFallback,
-                color: canvas,
+                color: accent,
                 fontSize: 13),
-            shape: _square,
+            shape: _shape,
             side: BorderSide(color: border),
             showCheckmark: false),
         segmentedButtonTheme: SegmentedButtonThemeData(
             style: ButtonStyle(
-                shape: const WidgetStatePropertyAll(_square),
+                shape: const WidgetStatePropertyAll(_shape),
                 backgroundColor: WidgetStateProperty.resolveWith((states) =>
-                    states.contains(WidgetState.selected) ? text : canvas),
+                    states.contains(WidgetState.selected) ? selectedSurface : surface),
                 foregroundColor: WidgetStateProperty.resolveWith((states) =>
-                    states.contains(WidgetState.selected) ? canvas : text))),
+                    states.contains(WidgetState.selected) ? accent : text))),
         dividerTheme: const DividerThemeData(color: border, thickness: 1),
         progressIndicatorTheme: const ProgressIndicatorThemeData(
             color: accent, linearTrackColor: border),
         navigationBarTheme: NavigationBarThemeData(
             indicatorColor: Colors.transparent,
-            iconTheme: const WidgetStatePropertyAll(
-                IconThemeData(size: 22, color: text)),
+            backgroundColor: canvas,
+            iconTheme: WidgetStateProperty.resolveWith((states) =>
+                IconThemeData(size: 22, color: states.contains(WidgetState.selected) ? accent : muted)),
             labelTextStyle: WidgetStateProperty.resolveWith((states) =>
                 TextStyle(
                     fontFamily: sans,
                     fontFamilyFallback: sansFallback,
                     fontSize: 11,
-                    color: text,
+                    color: states.contains(WidgetState.selected) ? accent : muted,
                     fontWeight: states.contains(WidgetState.selected)
                         ? FontWeight.w600
                         : FontWeight.w400))),
@@ -204,14 +212,14 @@ class AccountTheme extends StatelessWidget {
   static ThemeData get plazaData {
     final base = data;
     const fieldBorder = OutlineInputBorder(
-        borderRadius: BorderRadius.zero, borderSide: BorderSide(color: border));
+        borderRadius: BorderRadius.all(Radius.circular(14)), borderSide: BorderSide(color: border));
     return base.copyWith(
         visualDensity: VisualDensity.standard,
         actionIconTheme: ActionIconThemeData(
             backButtonIconBuilder: (_) =>
                 const Icon(EditorialIcons.arrowLeft, size: 22)),
         colorScheme:
-            base.colorScheme.copyWith(primary: accent, onPrimary: Colors.white),
+            base.colorScheme.copyWith(primary: accent, onPrimary: onAccent),
         appBarTheme: base.appBarTheme.copyWith(
             titleTextStyle: const TextStyle(
                 fontFamily: serif,
@@ -234,20 +242,20 @@ class AccountTheme extends StatelessWidget {
             border: fieldBorder,
             enabledBorder: fieldBorder,
             focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.zero,
+                borderRadius: BorderRadius.all(Radius.circular(14)),
                 borderSide: BorderSide(color: text, width: 1.5)),
             errorBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.zero,
+                borderRadius: BorderRadius.all(Radius.circular(14)),
                 borderSide: BorderSide(color: danger)),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 14)),
         filledButtonTheme: FilledButtonThemeData(
             style: FilledButton.styleFrom(
-                // White 14px labels need the readable deep-red token.
+                // Lime actions use dark labels, never white-on-lime.
                 backgroundColor: accent,
-                foregroundColor: Colors.white,
+                foregroundColor: onAccent,
                 minimumSize: const Size(44, 44),
-                shape: _square,
+                shape: _shape,
                 textStyle:
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                 elevation: 0)),
@@ -258,7 +266,7 @@ class AccountTheme extends StatelessWidget {
                 side: const BorderSide(color: border),
                 textStyle:
                     const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                shape: _square)),
+                shape: _shape)),
         dialogTheme: base.dialogTheme.copyWith(
             titleTextStyle: const TextStyle(
                 fontFamily: serif,
