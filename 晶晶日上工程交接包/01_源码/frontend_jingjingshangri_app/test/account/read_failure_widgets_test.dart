@@ -126,9 +126,15 @@ void main() {
                       onBack: () => backs++, onRetry: () => retries++));
             }))));
     await t.pumpAndSettle();
-    final title = t.widget<Text>(find.text('这页还没\n加载出来'));
-    expect(title.style!.fontSize, 36);
-    expect(title.style!.fontWeight, FontWeight.w900);
+    final heading = find.ancestor(
+        of: find.text('暂时无法读取'),
+        matching: find.byWidgetPredicate(
+            (w) => w is Semantics && w.properties.header == true));
+    expect(heading, findsOneWidget);
+    final title = t.widget<Text>(
+        find.descendant(of: heading, matching: find.text('暂时无法读取')));
+    expect(title.style!.fontSize, 28);
+    expect(title.style!.fontWeight, FontWeight.w700);
     final body = t.widget<Text>(find.text(reason));
     expect(body.maxLines, isNull);
     expect(body.overflow, isNot(TextOverflow.ellipsis));
