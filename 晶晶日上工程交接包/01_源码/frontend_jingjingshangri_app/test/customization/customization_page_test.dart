@@ -38,10 +38,11 @@ Future<void> host(
 
 Future<void> exposeStoryControl(WidgetTester tester, Finder finder) async {
   if (finder.evaluate().isEmpty) {
-    final editor = find.descendant(
-        of: find.byType(CustomizationPage), matching: find.byType(ListView)).first;
-    final scroll = find.descendant(
-        of: editor, matching: find.byType(Scrollable)).first;
+    final editor = find
+        .descendant(of: find.byType(Scaffold), matching: find.byType(ListView))
+        .first;
+    final scroll =
+        find.descendant(of: editor, matching: find.byType(Scrollable)).first;
     tester.state<ScrollableState>(scroll).position.jumpTo(0);
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(finder, 180, scrollable: scroll);
@@ -314,8 +315,10 @@ void main() {
       adapter.requests.last.headers['Idempotency-Key'],
       original.headers['Idempotency-Key'],
     );
-    final commands = adapter.requests.where(
-        (r) => r.method == 'PATCH' && r.path == '$storyCollection/$requestId').toList();
+    final commands = adapter.requests
+        .where((r) =>
+            r.method == 'PATCH' && r.path == '$storyCollection/$requestId')
+        .toList();
     expect(commands, hasLength(2));
     expect(commands.last.data, original.data);
     expect(commands.last.headers['If-Match'], original.headers['If-Match']);
@@ -373,8 +376,8 @@ void main() {
     await exposeStoryControl(tester, answer);
     await tester.pumpAndSettle();
     expect(tester.widget<SelectableText>(answer).data, '保存并正式提交');
-    expect(
-        tester.widget<SelectableText>(answer).style?.color, const Color(0xFFF2F5EF));
+    expect(tester.widget<SelectableText>(answer).style?.color,
+        const Color(0xFFF2F5EF));
     expect(
         tester
             .widget<SelectableText>(

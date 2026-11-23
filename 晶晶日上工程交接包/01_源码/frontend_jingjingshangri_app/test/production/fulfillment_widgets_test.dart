@@ -3,7 +3,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:file_picker/src/platform/file_picker_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:jingjingshangri_app/account/editorial_widgets.dart';
 import '../account/fake_account_api.dart';
 import '../navigation/app_navigation_test.dart' as nav;
 import '../trade/trade_api_test.dart' show buyerSession;
@@ -164,9 +163,12 @@ void main() {
         s = (await t.runAsync(() => buyerSession(a)))!;
     await nav.openApp(t, s,
         route: '/production/project?projectId=$productionProjectId');
-    expect(find.byType(EditorialFeature), findsOneWidget);
-    expect(t.widget<EditorialFeature>(find.byType(EditorialFeature)).title,
-        '私人短片制作');
+    expect(find.text('私人短片制作'), findsOneWidget);
+    expect(
+        a.requests.any((r) =>
+            r.method == 'GET' &&
+            r.path == '/api/v1/production/records/$productionProjectId'),
+        isTrue);
     await reveal(t, find.text('订单记账收款'));
     await reveal(t, find.text('测试渠道的记账不代表真实资金到账；请核对原付款和退款记录的渠道、环境及回执。'));
     await reveal(t, find.text('这笔制作不使用可识别人物，普通买家无需先建立或购买自己的数字人。'));
