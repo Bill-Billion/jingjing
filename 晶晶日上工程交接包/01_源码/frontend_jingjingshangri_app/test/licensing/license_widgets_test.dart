@@ -293,12 +293,30 @@ void main() {
     await t.enterText(find.byType(TextField).last, '123456');
     FocusManager.instance.primaryFocus?.unfocus();
     await frames(t);
-    await t.scrollUntilVisible(find.byType(Checkbox), 200,
-        scrollable: find.byType(Scrollable).first);
-    await t.tap(find.byType(Checkbox));
+    final login = find.byType(LoginPage);
+    final checkbox = find.descendant(of: login, matching: find.byType(Checkbox));
+    final form = find.descendant(of: login, matching: find.byType(ListView));
+    await t.dragUntilVisible(checkbox.hitTestable(), form,
+        const Offset(0, -140), maxIteration: 7);
+    expect(t.widget<Checkbox>(checkbox).value, isFalse);
+    await t.tap(checkbox.hitTestable());
     await frames(t);
-    await t.tap(find.text('登录并继续'));
+    expect(t.widget<Checkbox>(checkbox).value, isTrue);
+    final submit = find.widgetWithText(FilledButton, '登录并继续');
+    expect(t.widget<FilledButton>(submit).onPressed, isNotNull);
+    const original = '/api/v1/licensing/records/$productId';
+    expect(adapter.requests.where((r) => r.path == original), isEmpty);
+    await t.tap(submit.hitTestable());
     await frames(t);
+    final loginRequest = adapter.requests.singleWhere(
+        (r) => r.method == 'POST' && r.path == '/api/v1/auth/sessions');
+    final recoveredReads = adapter.requests
+        .where((r) => r.method == 'GET' && r.path.startsWith('/api/v1/licensing/'))
+        .toList();
+    expect(recoveredReads, isNotEmpty);
+    expect(recoveredReads.every((r) => r.path == original &&
+        adapter.requests.indexOf(r) > adapter.requests.indexOf(loginRequest)),
+        isTrue, reason: '只在实际登录成功后读取原许可，不访问其他记录');
     expect(destination, '/licensing/record?recordId=$productId');
     expect(find.byType(LoginPage), findsNothing);
     expect(find.text('回到那年夏天'), findsOneWidget);

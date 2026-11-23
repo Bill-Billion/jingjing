@@ -207,11 +207,32 @@ void main() {
         const InvoicePage(orderId: accountId));
     expect(find.byType(TextField), findsNothing);
     expect(find.text('¥0.00'), findsNothing);
+    expect(find.text('本订单当前可申请'), findsNothing);
     fails = false;
     await press(t, '重新读取当前进度');
     await reveal(t, find.text('¥70.00'));
     expect(find.text('¥70.00'), findsOneWidget);
-    expect(find.text('模拟环境，非真实发票'), findsOneWidget);
+    expect(find.text('模拟环境，仅形成模拟凭证，不是真实发票。'), findsOneWidget);
+    expect(find.text(accountId), findsOneWidget);
+    await reveal(t, find.text('额度构成'));
+    for (final entry in const {
+      '已核实收款': '¥100.00',
+      '已退款': '¥10.00',
+      '退款待处理': '¥20.00',
+      '其他申请占用': '¥0.00'
+    }.entries) {
+      final label = find.text(entry.key);
+      await reveal(t, label);
+      expect(find.ancestor(of: label, matching: find.byType(Column)).first,
+          findsOneWidget);
+      final row = find.ancestor(of: label, matching: find.byType(Column)).first;
+      expect(find.descendant(of: row, matching: find.text(entry.value)), findsOneWidget);
+    }
+    final eligibility = a.requests.where((r) => r.path.endsWith('/eligibility')).toList();
+    expect(eligibility, hasLength(2));
+    expect(eligibility.every((r) =>
+        r.path == '/api/v1/invoices/orders/$accountId/eligibility' &&
+        r.method == 'GET' && r.headers['X-Acting-Party'] == personId), isTrue);
     expect(
         a.requests.where((r) =>
             r.method == 'POST' && r.path.startsWith('/api/v1/invoices/')),

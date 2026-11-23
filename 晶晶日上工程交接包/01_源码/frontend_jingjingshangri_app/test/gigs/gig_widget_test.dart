@@ -255,16 +255,26 @@ void main() {
       tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
       2,
     );
-    final beforeSwitch = a.requests.length;
-    for (final i in [4, 0, 2]) {
+    Future<void> openTab(int i) async {
       await tester.tap(find.byKey(Key('app-tab-$i')));
       await tester.pump();
       nav.expectFiveTabs();
+      expect(
+          tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+          i);
+      await nav.frames(tester);
     }
-    // The new plaza starts four public GETs on its first mount. Complete their
-    // fake-async IO before disposing, while keeping the instant-switch checks.
-    await nav.frames(tester);
-    final plazaReads = a.requests.skip(beforeSwitch).toList();
+
+    final beforeMine = a.requests.length;
+    await openTab(4);
+    final mine = a.requests.skip(beforeMine).toList();
+    expect(mine.map((r) => r.path), ['/api/v1/wallet/summary']);
+    expect(mine.single.method, 'GET');
+    expect(mine.single.headers['X-Acting-Party'], personId);
+
+    final beforePlaza = a.requests.length;
+    await openTab(0);
+    final plazaReads = a.requests.skip(beforePlaza).toList();
     expect(
         plazaReads.map((r) => r.path),
         unorderedEquals([
@@ -277,6 +287,9 @@ void main() {
         plazaReads.every(
             (r) => r.method == 'GET' && r.headers['X-Acting-Party'] == null),
         isTrue);
+    final beforeNotice = a.requests.length;
+    await openTab(2);
+    expect(a.requests.skip(beforeNotice), isEmpty);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());
     await nav.frames(tester);
