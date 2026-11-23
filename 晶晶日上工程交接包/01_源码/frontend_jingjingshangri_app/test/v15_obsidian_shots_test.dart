@@ -4,7 +4,9 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart'
     show FontLoader, MethodChannel, MethodCall;
@@ -50,6 +52,27 @@ import 'package:jingjingshangri_app/pages/custom_request/custom_request_page.dar
 import 'package:jingjingshangri_app/pages/theater/theater_page.dart';
 import 'package:jingjingshangri_app/pages/my_humans/my_humans_page.dart';
 import 'package:jingjingshangri_app/pages/audition/audition_page.dart';
+
+class _OfflineCoverCache extends BaseCacheManager with ImageCacheManager {
+  final requested = <Uri>[];
+
+  @override
+  Stream<FileResponse> getImageFile(
+    String url, {
+    String? key,
+    Map<String, String>? headers,
+    bool withProgress = false,
+    int? maxHeight,
+    int? maxWidth,
+  }) {
+    requested.add(Uri.parse(url));
+    return Stream<FileResponse>.error(
+        const HttpException('Synthetic offline screenshot: no cover bytes'));
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 Future<void> _bootDemo() async {
   // 离屏补齐 path_provider，供 CachedNetworkImage/flutter_cache_manager 取缓存目录（测试 HTTP 400 时落占位/errorWidget，不抛 MissingPlugin）
@@ -174,7 +197,13 @@ Future<void> _shoot(
 }
 
 void main() {
-  setUpAll(_bootDemo);
+  final offlineCovers = _OfflineCoverCache();
+  setUpAll(() async {
+    // This screenshot file runs in a separate test isolate. Do not read the
+    // default here: constructing it already starts a desktop SQLite plugin.
+    CachedNetworkImageProvider.defaultCacheManager = offlineCovers;
+    await _bootDemo();
+  });
 
   // ── 一级页基准 390x844 ──
   testWidgets('01 登录页', (tester) async {
@@ -325,7 +354,12 @@ void main() {
   });
 
   testWidgets('15 选剧样片库', (tester) async {
+    final before = offlineCovers.requested.length;
     await _shoot(tester, '15_sample_library_390', const SampleLibraryPage());
+    expect(offlineCovers.requested.skip(before).map((u) => u.path),
+        contains('/uploads/samples/huangdi_ttx_cover.jpg'));
+    expect(find.text('选剧库'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('16 晶典剧场', (tester) async {
