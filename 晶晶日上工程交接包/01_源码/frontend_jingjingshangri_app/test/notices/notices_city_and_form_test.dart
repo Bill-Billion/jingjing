@@ -64,12 +64,12 @@ void main() {
       expect(find.text('查看个人钱包与资格'), findsNothing);
       expect(find.text('查看历史会员资格'), findsNothing);
       if (active) {
-        final type =
-            find.widgetWithText(DropdownButtonFormField<String>, '本次可发布类型');
-        await reveal(t, type);
-        await t.tap(type);
-        await frames(t);
-        await t.tap(find.text('商单').last);
+        final commercial = find.widgetWithText(ListTile, '商单');
+        await reveal(t, commercial);
+        for (final label in ['招募', '活动', '平台官方']) {
+          expect(find.widgetWithText(ListTile, label), findsNothing);
+        }
+        await t.tap(commercial.hitTestable());
         await frames(t);
         await reveal(t, find.widgetWithText(TextFormField, '通告标题'));
         expect(find.widgetWithText(TextFormField, '通告标题'), findsOneWidget);
@@ -77,6 +77,13 @@ void main() {
         expect(find.textContaining('充值不能代替核验'), findsOneWidget);
         expect(find.widgetWithText(TextFormField, '通告标题'), findsNothing);
       }
+      final eligibility = adapter.requests.singleWhere(
+          (r) => r.method == 'GET' && r.path == '/api/v1/notices/eligibility');
+      expect(eligibility.queryParameters['rule_id'], noticeId);
+      expect(
+          adapter.requests.where((r) =>
+              r.method == 'POST' && r.path.startsWith('/api/v1/notices')),
+          isEmpty);
       expect(t.takeException(), isNull);
     });
   }
@@ -212,8 +219,19 @@ void main() {
     await host(t, session, const NoticesPage(mode: 'new'));
     final rule =
         find.widgetWithText(DropdownButtonFormField<String>, '选择已生效发布规则');
-    final type =
-        find.widgetWithText(DropdownButtonFormField<String>, '本次可发布类型');
+    Finder tile(String label) => find.widgetWithText(ListTile, label);
+    void expectSelected(String label) {
+      final radio = t.widget<Icon>(find.descendant(
+          of: tile(label), matching: find.byIcon(Icons.radio_button_checked)));
+      expect(radio.icon, Icons.radio_button_checked);
+    }
+
+    Future<void> selectType(String label) async {
+      await reveal(t, tile(label));
+      await t.tap(tile(label).hitTestable());
+      await frames(t);
+    }
+
     Future<void> select(Finder field, String option) async {
       await reveal(t, field);
       await t.tap(field);
@@ -223,15 +241,16 @@ void main() {
     }
 
     await select(rule, '第一版 · 投稿7天');
-    await select(type, '商单');
+    await selectType('商单');
     final title = find.widgetWithText(TextFormField, '通告标题');
     await reveal(t, title);
     await t.enterText(title, '尚未提交的通告');
-    await select(type, '招募');
+    await selectType('招募');
     expect(find.text('更换当前选择？'), findsOneWidget);
     await t.tap(find.text('继续填写'));
     await frames(t);
-    expect(t.state<FormFieldState<String>>(type).value, 'COMMERCIAL');
+    await reveal(t, tile('商单'));
+    expectSelected('商单');
     await reveal(t, title);
     expect(t.widget<TextFormField>(title).controller!.text, '尚未提交的通告');
     await select(rule, '第二版 · 投稿7天');
@@ -242,13 +261,13 @@ void main() {
     expect(
         adapter.requests.where((r) => r.path.endsWith('/eligibility')).length,
         1);
-    await select(type, '招募');
+    await selectType('招募');
     await t.tap(find.text('放弃填写并更换'));
     await frames(t);
     await reveal(t, title);
     expect(t.widget<TextFormField>(title).controller!.text, '');
-    await reveal(t, type);
-    expect(t.state<FormFieldState<String>>(type).value, 'RECRUITMENT');
+    await reveal(t, tile('招募'));
+    expectSelected('招募');
     expect(
         adapter.requests.where(
             (r) => r.method == 'POST' && r.path.endsWith('/announcements')),
