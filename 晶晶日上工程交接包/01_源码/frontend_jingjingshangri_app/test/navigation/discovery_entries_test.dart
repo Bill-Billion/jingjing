@@ -81,16 +81,25 @@ void main() {
     final active = (await t.runAsync(() => buyerSession(adapter)))!;
     await v5.host(t, active, const DiscoverySearchPage(initialCity: '上海'));
     expect(find.text('匹配 96%'), findsNothing);
-    await v5.reveal(t, find.byType(TextField).last);
-    await t.enterText(find.byType(TextField).last, '悬疑');
-    await v5.reveal(t, find.text('查找'));
-    await t.tap(find.text('查找'));
+    final keyword = find.byWidgetPredicate(
+        (w) => w is TextField && w.decoration?.labelText == '关键词或需求片段');
+    await v5.reveal(t, keyword);
+    await t.enterText(keyword, '悬疑');
+    final search = find.widgetWithText(FilledButton, '开始查找');
+    await v5.reveal(t, search);
+    await t.tap(search.hitTestable());
     await v5.frames(t);
     final request =
         adapter.requests.lastWhere((r) => r.path == '/api/v1/discovery/search');
     expect(request.queryParameters,
         {'kind': 'ARTIST', 'limit': 20, 'city': '上海', 'q': '悬疑'});
+    expect(request.method, 'GET');
     expect(request.headers['X-Acting-Party'], isNull);
+    expect(find.text('匹配 96%'), findsNothing);
+    expect(
+        adapter.requests.where((r) =>
+            r.method == 'POST' && r.path.startsWith('/api/v1/discovery')),
+        isEmpty);
     expect(t.takeException(), isNull);
   });
 
