@@ -166,14 +166,6 @@ void main() {
     }
   }
 
-  Future<void> select(WidgetTester t, String label, String option) async {
-    final f = find.byWidgetPredicate((w) =>
-        w is DropdownButtonFormField<String> &&
-        w.decoration.labelText == label);
-    await press(t, f);
-    await press(t, find.text(option).last);
-  }
-
   testWidgets(
       'Native sample commission separates copyright and personality rights; agency cannot confirm',
       (t) async {

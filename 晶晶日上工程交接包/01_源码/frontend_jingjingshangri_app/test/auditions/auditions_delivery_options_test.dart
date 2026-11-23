@@ -31,6 +31,33 @@ Map<String, dynamic> media(String id, String type) => {
 Map<String, dynamic> consent() =>
     {'id': auditionConsentId, 'valid_until': '2099-01-01T00:00:00.000Z'};
 
+Future<Map<String, dynamic>> selectDelivery(WidgetTester t) async {
+  final form = find.byType(V5Form);
+  for (final item in [
+    for (final id in auditionPhotos) ('photos', id),
+    ('videos', auditionVideoId),
+  ]) {
+    final choice = find.byKey(ValueKey('audition-${item.$1}-${item.$2}'));
+    await reveal(t, choice);
+    await t.tap(choice.hitTestable());
+    await frames(t);
+    expect(t.widget<CheckboxListTile>(choice).value, isTrue);
+  }
+  final consentLabel = t.widget<V5Form>(form).fields.single.choices![auditionConsentId]!;
+  final consentChoice = find.byWidgetPredicate((w) =>
+      w is DropdownButtonFormField<String> &&
+      w.decoration.labelText == '本人与本次买方的取样授权');
+  await reveal(t, consentChoice);
+  await t.tap(consentChoice.hitTestable());
+  await frames(t);
+  await t.tap(find.text(consentLabel).hitTestable().last);
+  await frames(t);
+  final actual = t.state<V5FormState>(form).values;
+  expect(actual['consent_id'], auditionConsentId);
+  expect(t.widget<V5Form>(form).canSubmit, isTrue);
+  return t.widget<V5Form>(form).buildBody(actual);
+}
+
 void main() {
   test('预约选项翻过空页且严格验证同预约、人物、形象与材料类型', () async {
     var wrong = false;
@@ -104,13 +131,9 @@ void main() {
         AuditionActionPage(session: s, id: auditionId, action: 'delivery'));
     await reveal(t, find.byType(V5Form));
     final form = t.widget<V5Form>(find.byType(V5Form));
-    expect(form.canSubmit, isTrue);
+    expect(form.canSubmit, isFalse, reason: '加载获准选项不等于已选齐材料');
     expect(form.fields.single.choices!.containsKey(auditionConsentId), isTrue);
-    final body = form.buildBody({
-      'photos': auditionPhotos.join(','),
-      'videos': auditionVideoId,
-      'consent_id': auditionConsentId
-    });
+    final body = await selectDelivery(t);
     expect(body['delivery']['photos'], auditionPhotos);
     expect(body['delivery']['videos'], [auditionVideoId]);
     expect(a.requests.where((r) => r.path.endsWith('/delivery-options')).length,
@@ -154,22 +177,32 @@ void main() {
     await t.tap(find.text('重新读取本预约材料与授权'));
     await frames(t);
     await reveal(t, find.byType(V5Form));
-    final form = t.widget<V5Form>(find.byType(V5Form));
-    expect(form.canSubmit, isTrue);
-    final body = form.buildBody({
-      'photos': auditionPhotos.join(','),
-      'videos': auditionVideoId,
-      'consent_id': auditionConsentId
-    });
+    expect(t.widget<V5Form>(find.byType(V5Form)).canSubmit, isFalse);
+    final selected = await selectDelivery(t);
+    expect(selected['delivery']['photos'], auditionPhotos);
+    final submit = find.widgetWithText(FilledButton, '提交本次试镜取样');
+    await reveal(t, submit);
+    await t.tap(submit.hitTestable());
+    await frames(t);
+    final dialog = find.byType(AlertDialog);
+    expect(dialog, findsOneWidget);
+    final before = a.requests.length;
     denied = true;
-    await t.runAsync(() async {
-      await expectLater(form.beforeSubmit!(body), throwsA(isA<AccountError>()));
-    });
-    await t.pump();
+    await t.tap(find.descendant(of: dialog,
+        matching: find.text('确认办理')).hitTestable());
+    await frames(t);
+    final original = '/api/v1/auditions/bookings/$auditionId/delivery-options';
+    final rechecked = a.requests.skip(before).where((r) => r.path == original);
+    expect(rechecked, isNotEmpty);
+    expect(rechecked.every((r) => r.method == 'GET' &&
+        r.headers['X-Acting-Party'] == orgId), isTrue);
     final currentForm = find.byType(V5Form);
-    if (currentForm.evaluate().isNotEmpty) {
-      expect(t.widget<V5Form>(currentForm).canSubmit, isFalse);
-    }
+    expect(t.widget<V5Form>(currentForm).canSubmit, isFalse);
+    final remaining = t.state<V5FormState>(currentForm).values;
+    expect(remaining['photos'] ?? '', '');
+    expect(remaining['videos'] ?? '', '');
+    expect(remaining['consent_id'].toString(), isNot(auditionConsentId));
+    expect(find.byKey(ValueKey('audition-photos-${auditionPhotos.first}')), findsNothing);
     expect(s.auditionsAccessDenied, isFalse);
     expect(
         a.requests

@@ -77,12 +77,6 @@ void main() {
     await frames(t, 2);
   }
 
-  Future<void> press(WidgetTester t, Finder f) async {
-    await reveal(t, f);
-    await t.tap(f.first);
-    await frames(t);
-  }
-
   Future<void> shot(WidgetTester t, String name) async {
     await frames(t);
     await control('capture', {'name': name});
@@ -164,14 +158,6 @@ void main() {
         i++) {
       await frames(t, 1);
     }
-  }
-
-  Future<void> select(WidgetTester t, String label, String option) async {
-    final f = find.byWidgetPredicate((w) =>
-        w is DropdownButtonFormField<String> &&
-        w.decoration.labelText == label);
-    await press(t, f);
-    await press(t, find.text(option).last);
   }
 
   testWidgets(
