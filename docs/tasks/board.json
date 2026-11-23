@@ -18553,7 +18553,7 @@
     "title": "PM04—冻结原需求、PR40质量收敛及全条款验收",
     "status": "IN_PROGRESS_G0_INDEPENDENT_WORK",
     "source_pr": "https://github.com/Bill-Billion/jingjing/pull/40",
-    "as_of": "2026-11-18",
+    "as_of": "2026-11-23",
     "reviewed_pr_head": "0786030e88e905013c61e3d7e00c052c99301cde",
     "stage_gate": "PM03未通过；PM04作为下一工作包执行，禁止将规划视为PM03验收完成",
     "status_semantics": "PLANNED/UNCLAIMED不代表负责人已读或同意；TESTED仅在本轮日志回执齐全时设置；DONE须同记录+维护者核验",
@@ -18626,7 +18626,7 @@
         "title": "远端CI限时失败归因与统一可复现运行入口",
         "owner_suggested": "chengcongcong222",
         "claim_status": "CLAIMED",
-        "execution_status": "DEPENDENCY_FIX_VERIFIED_FULL_CI_PENDING",
+        "execution_status": "BACKEND_CI_VERIFIED_PRODUCTION_PREPARATION_FIXED_FRONTEND_PENDING",
         "phase": "G0",
         "priority": "P0",
         "depends_on": [
@@ -18641,9 +18641,11 @@
         "branch": "core/pm04-ci-20261118",
         "claim_scope": "CI dependency diagnosis and backend-owned fixes; no frontend source changes",
         "evidence": [
-          "docs/reviews/pm04/CI_ROOT_CAUSES.md"
+          "docs/reviews/pm04/CI_ROOT_CAUSES.md",
+          "docs/reviews/pm04-production-20261123/REPORT.md"
         ],
-        "code_commit": "914aa43063d3f13367ff830d10cf20d12d466ee2"
+        "code_commit": "914aa43063d3f13367ff830d10cf20d12d466ee2",
+        "production_preparation_commit": "62fa0a3128f4928f76712b61b65eaa45324eff8f"
       },
       {
         "id": "PM04-FE-02",
@@ -18678,12 +18680,14 @@
         ],
         "claimed_on": "2026-11-19",
         "branch": "handoff/pm04-environment-20261119",
-        "claim_scope": "Backend roles, record and file manifest, local reproducibility only; frontend unclaimed; joined testing not started",
+        "claim_scope": "Backend roles, records, files and production identity prerequisites only; frontend maintains own registration; new joined testing not started",
         "evidence": [
           "docs/reviews/pm04/JOINED_17_SCOPE_EVIDENCE.md",
-          "docs/reviews/pm04/ENVIRONMENT_PREPARATION.json"
+          "docs/reviews/pm04/ENVIRONMENT_PREPARATION.json",
+          "docs/reviews/pm04-production-20261123/RESULT.json"
         ],
-        "code_commit": "66272c93a8d1bda094a82bee4762f959fc297b15"
+        "code_commit": "66272c93a8d1bda094a82bee4762f959fc297b15",
+        "production_preparation_commit": "62fa0a3128f4928f76712b61b65eaa45324eff8f"
       },
       {
         "id": "PM04-PM-04",
@@ -18783,6 +18787,21 @@
     "plan_commit": "aa106e9f601e9be3c7715181b402c59e4ade69a3",
     "plan_pr": "https://github.com/Bill-Billion/jingjing/pull/41",
     "backend_pr": "https://github.com/Bill-Billion/jingjing/pull/42",
-    "environment_branch": "handoff/pm04-environment-20261119"
+    "environment_branch": "handoff/pm04-environment-20261119",
+    "latest_user_direction": {
+      "date": "2026-11-23",
+      "frontend_branch": "pm/pm04-acceptance-20261118",
+      "frontend_pr": 41,
+      "new_frontend_remote_branch": false,
+      "priorities": [
+        "Reach actual business action before diagnosing stale tests versus functional defects",
+        "Changed quote must not create an old-price order",
+        "Account switch must clear prior private content",
+        "Failed or unknown retry must not create another operation"
+      ],
+      "backend": "Prepare normal synthetic adult seller in production fixture; retain unverified refusal; deliver versions, roles and records",
+      "joint": "Freeze both candidates after batch delivery, then same-record App/Web/independent review; maintainer reviews at stage end",
+      "handoff": "docs/pm04/PRODUCTION_HANDOFF_20261123.md"
+    }
   }
 }
