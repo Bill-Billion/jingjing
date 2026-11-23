@@ -93,7 +93,18 @@ async function main() {
       assert.notEqual(state.people.producer.account_id, state.people.reviewer.account_id);
       for (const role of ['producer', 'reviewer']) assert(state.people[role].operator_actions.includes('PRIVACY_HANDLE'));
     });
-    const listingId = access.scenarios.stock_unpaid.listing_id;
+    // An existing fixture listing already belongs to this buyer's old order.
+    // Create and independently review a new listing, preserving duplicate-order rejection.
+    assert(access.requests.stock_listing, 'CURRENT_BATCH_LISTING_TEMPLATE_REQUIRED');
+    let listing = await write('joint-listing', '/stock/listings', 'stock_seller', access.requests.stock_listing);
+    for (const channel of ['RIGHTS','CONTENT']) {
+      const verification = channel === 'RIGHTS'
+        ? { rights_verified: true, all_people_authorized: true, seller_qualified: true, source_sha256: listing.data.files.full_sha256 }
+        : { content_verified: true, preview_watermark_verified: true, ai_labels_verified: true, source_sha256: listing.data.files.full_sha256 };
+      listing = await write('joint-listing-' + channel, '/stock/listings/' + listing.id + '/reviews', 'stock_reviewer',
+        { channel, decision: 'APPROVED', reason: 'Synthetic PM04 independent new listing review', verification }, { account: true, version: listing.object_version });
+    }
+    const listingId = listing.id;
     const offer = (await call('GET', '/stock/catalog/' + listingId, 'stock_buyer', undefined, { account: true })).data;
     const order = await write('joint-order', '/stock/checkout', 'stock_buyer', { listing_id: listingId, offer_sha256: offer.offer_sha256, channel: 'ALIPAY' });
     state.order_id = order.id; state.listing_id = listingId; await save();

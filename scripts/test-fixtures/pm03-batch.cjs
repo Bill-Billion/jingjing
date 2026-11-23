@@ -62,8 +62,9 @@ async function seed(db,out,deadline,check,storageAt){
  }
  const storage=storageAt(out)();for(const [k,body]of f.allFiles())await storage.put({key:k,body});
  check();
+ const {party_id:stockParty,...stockListing}=S.listingInput;
  return {secret:f.secret,merchant_party_id:S.seller.personal_party_id,customization_merchant_party_id:f.merchantId,accounts,scenarios:f.scenarios,
-  requests:{notice_submission:{rule_id:rule.id,submission},guardian_refund:{child_party_id:S.buyer2.personal_party_id,guardian_link_id:link.id,recharge_id:recharge.id,amount_minor:1000,reason:'synthetic refund',evidence_asset_ids:[proof.id]}},
+  requests:{stock_listing:stockListing,notice_submission:{rule_id:rule.id,submission},guardian_refund:{child_party_id:S.buyer2.personal_party_id,guardian_link_id:link.id,recharge_id:recharge.id,amount_minor:1000,reason:'synthetic refund',evidence_asset_ids:[proof.id]}},
   coverage:{current_additions:['ordinary_notice','notice_receipt','guardian_refund'],legacy_samples:['notice'],media_limit:'Synthetic colour bars and playable MP4 cover stock, audition and cocreation. No real-person material.',payment_limit:'New interactive trade payments use the order merchant. Seeded paid records retain their historical synthetic provider bindings; no claim they have been exercised through current payment UI.',frontend_tested:false}};
 }
 module.exports={seed};
