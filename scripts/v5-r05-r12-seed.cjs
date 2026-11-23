@@ -7,7 +7,9 @@ const backend=path.resolve(__dirname,'../晶晶日上工程交接包/01_源码/b
 const load=rel=>require(path.join(backend,rel));
 
 async function prepare(db,checkRunning,options={}){
- const stock=await load('test/helpers/stock-seed.cjs').seedStock(db);checkRunning();
+ const stock=await load('test/helpers/stock-seed.cjs').seedStock(db,options.currentStock?{
+  ruleKey:'stock.pm04-current',marketplaceFinance:{platform_bps:1800,rounding:'LARGEST_REMAINDER_PLATFORM_MAX_ONE_FEN'},
+ }:undefined);checkRunning();
  const notices=await load('test/helpers/notices-seed.cjs').seedNotices(db);checkRunning();
  const auditions=await load('test/helpers/auditions-seed.cjs').seedAuditions(db);checkRunning();
  const firstAuditions=options.firstSupply?await load('test/helpers/auditions-seed.cjs').seedAuditions(db,{ruleVersion:'first-supply'}):null;checkRunning();

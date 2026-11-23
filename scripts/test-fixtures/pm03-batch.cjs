@@ -10,7 +10,7 @@ async function seed(db,out,deadline,check,storageAt){
  for(const [file,source]of [['sample-1-full.mp4','testsrc2'],['sample-1-preview.mp4','smptebars'],['sample-3-full.mp4','smptebars']])run(['-f','lavfi','-i',source+'=size=320x180:rate=15','-t','2','-an','-c:v','libx264','-pix_fmt','yuv420p',path.join(samples,file)]);
  // The existing seed filename is retained, but this image is colour bars, not a portrait.
  run(['-f','lavfi','-i','smptebars=size=320x180','-frames:v','1','-update','1',path.join(samples,'test-portrait.jpg')]);
- const f=await require('../v5-r05-r12-seed.cjs').prepare(db,check,{firstSupply:true,samples,currentCommercial:true});
+ const f=await require('../v5-r05-r12-seed.cjs').prepare(db,check,{firstSupply:true,samples,currentCommercial:true,currentStock:true});
  const app=load('src/http/account-api').createAccountApi({db,secret:f.secret,supplyStorageFactory:f.storageFactory,supplyEnv:{MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'},tradeEnv:{CUSTOMIZATION_MERCHANT_PARTY_ID:f.merchantId,MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}});
  const server=app.listen(0,'127.0.0.1');
  await new Promise((resolve,reject)=>{server.once('listening',resolve);server.once('error',reject);});
