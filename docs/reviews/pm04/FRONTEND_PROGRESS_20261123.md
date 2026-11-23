@@ -3,7 +3,7 @@
 ## 收到、已完成与当前证据
 
 - 原要求：[前端指令](../../pm04/PM04_FRONTEND_CODEX.md)、[执行计划](../../pm04/PM04_PLAN.md)、[历史 App 失败源](../pm03-joint-20261118/APP_FAILURES_FOLLOWUP.json)。FE-02 已实际开始，不把历史 74 项当作未开发功能。原有前端工作树和未提交内容不动。
-- [逐项记录 74 项](APP_FAILURE_TRIAGE.csv)，每项保留原日志行；32 项已按现有行为或合成回包精确复测通过，42 项待单独归因或修复。未知不猜为产品缺陷、也不当通过。本机早期全量额外 1 个样片截图失败在未修改的同机基线同样复现（`databaseFactory not initialized`），不混入原74。
+- [逐项记录 74 项](APP_FAILURE_TRIAGE.csv)，每项保留原日志行；51 项已按现有行为或合成回包精确复测通过，23 项待单独归因或修复。未知不猜为产品缺陷、也不当通过。本机早期全量额外 1 个样片截图失败在未修改的同机基线同样复现（`databaseFactory not initialized`），不混入原74。
 - [e7e6ae8d](https://github.com/Bill-Billion/jingjing/commit/e7e6ae8d) 同机四文件 45通过/12失败→52通过/6失败，无新增失败：旧价不发 checkout POST；预览撤权后清内容；退出或切身份后清私有剧本；原制作反馈/通告撤回以原记录、原键和版本重试。
 - [f4d4d1cf](https://github.com/Bill-Billion/jingjing/commit/f4d4d1cf) 同机同四文件 58/58：通告读取失败保留过滤条件、重读不写入，401 保留原回跳且不继续办理；剧本确认、样片原版本反馈及独立制作/许可入口。
 - [a740b357](https://github.com/Bill-Billion/jingjing/commit/a740b357) 三文件 29/29：四类条件匹配（包括独立试镜入口）的同条件续页、命中理由、回到普通搜索；单条/批量通知结果未知时先挡住另行刷新，仅恢复同身份、同快照、同 key 的原操作。
@@ -15,6 +15,9 @@
 - [定制、试镜及合同专项](https://github.com/Bill-Billion/jingjing/commit/7d767dbaec6d27120f04312e4c11b34bf4dacc2d)：定制／试镜两文件 18/18，合同两文件 13/13，其中 10 条为历史失败复测。
 - [远端更新运行](https://github.com/Bill-Billion/jingjing/actions/runs/45134278515) 实际 checkout `26e98e91cf233b7881b8cc79db430958d247702c`，App 选定套件 867/52/1，不包含上述新专项；独立库浏览器 Stage16 与 Stage18 通过，Stage19 合成供给准备时 `POST /supply/avatars` 准确返回成年账号前置 409，随后六步跳过。
 - 另保留 `a48c9862` 本机完整 App 1173/57/1、Vue npm test/构建及 Flutter Web 构建通过；不是上述远端选定套件计数。
+
+- 项目会签、个人权益、结算回执、帐号与艺人材料、项目/制作/补件再确认：固定候选 App 目录树见 `3faccc76`；三次专项分别 8/8（会签/权益）、37/37（账号/艺人）、69/69（财务与项目/制作/定制），此次合计覆盖19条历史失败。另修复旧历史版本页测试助手依赖单一宿主造成的失败，不计入历史74。
+- [远端 App 复验](https://github.com/Bill-Billion/jingjing/actions/runs/45136191488/job/137563031988) 实际 checkout `2d3c8071` 选定套件 876/43/1；含一条上述本机已修正的历史版本页助手问题，不宣称远端已全部通过。
 
 ## 构建和设备：分开记
 
