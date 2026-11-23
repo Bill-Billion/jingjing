@@ -126,9 +126,17 @@ void main() {
               : FakeAccountAdapter().defaultReply(r));
       final s = (await t.runAsync(() => buyerSession(a)))!;
       await host(t, s, const NoticesPage(mode: 'records', kind: 'NOTICE'));
+      final read = a.requests.singleWhere(
+          (r) => r.method == 'GET' && r.path == '/api/v1/notices/records');
+      expect(read.queryParameters['kind'], 'NOTICE');
       if (status == 401) {
         expect(find.byType(ReadSessionExpiredPage), findsOneWidget);
-        expect(find.text('回来，\n继续这个故事'), findsOneWidget);
+        final expiry = find.byType(ReadSessionExpiredPage);
+        expect(find.descendant(of: expiry, matching: find.text('登录已过期')),
+            findsOneWidget);
+        expect(find.descendant(of: expiry,
+            matching: find.textContaining('不会自动继续付款、签署或确认操作')),
+            findsOneWidget);
         expect(
             t
                 .widget<ReadSessionExpiredPage>(
@@ -170,20 +178,35 @@ void main() {
         await host(
             t, s, NoticesPage(mode: mode, kind: 'NOTICE', initialCity: '杭州'));
         final empty = mode == 'catalog' ? '当前筛选没有仍有效的已审公开通告。' : '当前没有本类型的可读记录。';
-        expect(a.requests.where((r) => r.path == path), isNotEmpty);
+        final reads = () => a.requests.where(
+            (r) => r.method == 'GET' && r.path == path).toList();
+        expect(reads(), hasLength(1));
+        final criteria = mode == 'catalog' ? 'city' : 'kind';
+        final expected = mode == 'catalog' ? '杭州' : 'NOTICE';
+        expect(reads().single.queryParameters[criteria], expected);
         if (failed) {
           expect(find.byType(ReadFailureContent), findsOneWidget);
-          expect(find.text('这页还没\n加载出来'), findsOneWidget);
+          final failure = find.byType(ReadFailureContent);
+          expect(t.widget<ReadFailureContent>(failure).reason, isNotEmpty);
+          expect(find.descendant(of: failure,
+              matching: find.textContaining('暂时无法读取')), findsWidgets);
           expect(find.text(empty), findsNothing);
-          expect(find.textContaining('重读不会重复提交业务'), findsOneWidget);
+          expect(find.textContaining('不会再次提交业务或付款'), findsOneWidget);
           expect(find.textContaining('本次操作结果待核对'), findsNothing);
           expect(
               a.requests.where((r) =>
                   r.method == 'POST' && r.path.startsWith('/api/v1/notices/')),
               isEmpty);
-          await t.tap(find.byKey(const ValueKey('read-failure-retry')));
+          await t.tap(find.byKey(const ValueKey('read-failure-retry')).hitTestable());
           await frames(t);
+          expect(reads(), hasLength(2));
+          expect(reads().last.queryParameters, reads().first.queryParameters);
           expect(find.byType(ReadFailureContent), findsOneWidget);
+          expect(find.text(empty), findsNothing);
+          expect(
+              a.requests.where((r) =>
+                  r.method == 'POST' && r.path.startsWith('/api/v1/notices/')),
+              isEmpty);
           await t.tap(find.byKey(const ValueKey('read-failure-back')));
           await frames(t);
           expect(find.byType(ReadFailureContent), findsNothing);
