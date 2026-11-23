@@ -6,9 +6,9 @@
 
 |任务|阶段|建议负责人|实际领取|执行状态|
 |---|---|---|---|---|
-|PM04-BE-01|G0|chengcongcong222|chengcongcong222|BACKEND_CI_VERIFIED_PRODUCTION_PREPARATION_FIXED_FRONTEND_PENDING|
-|PM04-FE-02|G0|Bill-Billion|待本人领取|NOT_STARTED|
-|PM04-JT-03|G1|chengcongcong222 + Bill-Billion（分别认领）|chengcongcong222|BACKEND_PREPARATION_VERIFIED_JOINED_PENDING|
+|PM04-BE-01|G0|chengcongcong222|chengcongcong222|BACKEND_CI_VERIFIED_BATCH_ENVIRONMENT_READY_FRONTEND_CI_PENDING|
+|PM04-FE-02|G0|Bill-Billion|Bill-Billion|IN_PROGRESS|
+|PM04-JT-03|G1|chengcongcong222 + Bill-Billion（分别认领）|chengcongcong222|BACKEND_READY_FRONTEND_PENDING|
 |PM04-PM-04|G2|产品负责人 + 法务（未指派GitHub人员）|待本人领取|NOT_STARTED_REQUIRED_DEFERRED|
 |PM04-BE-05|G2|chengcongcong222|待本人领取|NOT_STARTED_REQUIRED_DEFERRED|
 |PM04-FE-06|G2|Bill-Billion|待本人领取|NOT_STARTED_REQUIRED_DEFERRED|

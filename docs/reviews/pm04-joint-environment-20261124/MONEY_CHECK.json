@@ -1,0 +1,186 @@
+{
+  "status": "PASS",
+  "backend_revision": "7e35958a6e53de1f33f526de16a0f2be0e5cb60c",
+  "source_sha256": "9e3d89a8b5adf410fd40ed9a4da3e43248af795965ab978e629d67a1c8253688",
+  "checker_sha256": "095218f06a3b54b67a0dcc8acf13b97e20eb44d5041858face94178ba8c0e8c8",
+  "checked_at": "2026-11-23T18:07:33.087Z",
+  "synthetic_only": true,
+  "frontend_tested": false,
+  "control_order_id": "2f8cc1ce-6aaf-434c-9dfe-231ac616259a",
+  "payment_id": "30bf25e1-c356-411e-bf1c-0ae55979246a",
+  "refund_id": "8ec66b7a-d092-4194-9041-293465fd4e89",
+  "joint_order_id": "e1c04ed6-0b7a-47c8-b240-bf4db0b011bd",
+  "joint_order_untouched": true,
+  "financial": {
+    "net_minor": 60,
+    "received_minor": 100,
+    "refunded_minor": 40
+  },
+  "license_action": "KEEP",
+  "file_sha256": "aa5680914cf5cf08d268913a27b9eef59a665566f10ee33979e2c76520f67fb0",
+  "events": [
+    {
+      "method": "GET",
+      "route": "/trade/records/2f8cc1ce-6aaf-434c-9dfe-231ac616259a",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/stock/purchases/2f8cc1ce-6aaf-434c-9dfe-231ac616259a/content",
+      "role": "stock_buyer",
+      "status": 409,
+      "code": "STOCK_LICENSE_NOT_ACTIVE"
+    },
+    {
+      "method": "POST",
+      "route": "/trade/payments",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/testing/payments/outcome",
+      "role": "stock_outsider",
+      "status": 404,
+      "code": "TRADE_NOT_FOUND"
+    },
+    {
+      "method": "POST",
+      "route": "/testing/payments/outcome",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/trade/payments/30bf25e1-c356-411e-bf1c-0ae55979246a/reconciliation",
+      "role": "stock_buyer",
+      "status": 503,
+      "code": "SERVICE_UNAVAILABLE"
+    },
+    {
+      "method": "GET",
+      "route": "/stock/purchases/2f8cc1ce-6aaf-434c-9dfe-231ac616259a/content",
+      "role": "stock_buyer",
+      "status": 409,
+      "code": "STOCK_LICENSE_NOT_ACTIVE"
+    },
+    {
+      "method": "POST",
+      "route": "/testing/payments/outcome",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/trade/payments/30bf25e1-c356-411e-bf1c-0ae55979246a/reconciliation",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/trade/payments/30bf25e1-c356-411e-bf1c-0ae55979246a/reconciliation",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/stock/purchases/2f8cc1ce-6aaf-434c-9dfe-231ac616259a/content",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/stock/purchases/2f8cc1ce-6aaf-434c-9dfe-231ac616259a",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/stock/purchases/2f8cc1ce-6aaf-434c-9dfe-231ac616259a/cases",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/stock/purchases/2f8cc1ce-6aaf-434c-9dfe-231ac616259a/content",
+      "role": "stock_buyer",
+      "status": 409,
+      "code": "STOCK_LICENSE_NOT_ACTIVE"
+    },
+    {
+      "method": "POST",
+      "route": "/stock/purchases/2f8cc1ce-6aaf-434c-9dfe-231ac616259a/case-resolution",
+      "role": "stock_buyer",
+      "status": 403,
+      "code": "STOCK_REVIEW_FORBIDDEN"
+    },
+    {
+      "method": "POST",
+      "route": "/stock/purchases/2f8cc1ce-6aaf-434c-9dfe-231ac616259a/case-resolution",
+      "role": "stock_reviewer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/trade/refunds",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/trade/records/8ec66b7a-d092-4194-9041-293465fd4e89/reviews",
+      "role": "stock_reviewer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/trade/refunds/8ec66b7a-d092-4194-9041-293465fd4e89/execution",
+      "role": "stock_reviewer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/stock/purchases/2f8cc1ce-6aaf-434c-9dfe-231ac616259a/content",
+      "role": "stock_buyer",
+      "status": 409,
+      "code": "STOCK_LICENSE_NOT_ACTIVE"
+    },
+    {
+      "method": "POST",
+      "route": "/testing/payments/outcome",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/trade/refunds/8ec66b7a-d092-4194-9041-293465fd4e89/reconciliation",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "POST",
+      "route": "/trade/refunds/8ec66b7a-d092-4194-9041-293465fd4e89/reconciliation",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/trade/records/2f8cc1ce-6aaf-434c-9dfe-231ac616259a",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/stock/purchases/2f8cc1ce-6aaf-434c-9dfe-231ac616259a/content",
+      "role": "stock_buyer",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "route": "/trade/records/e1c04ed6-0b7a-47c8-b240-bf4db0b011bd",
+      "role": "stock_buyer",
+      "status": 200
+    }
+  ]
+}
