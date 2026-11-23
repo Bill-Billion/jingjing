@@ -9,7 +9,6 @@ import '../operations/operation_widgets.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
-import '../account/editorial_widgets.dart';
 import '../account/read_failure_widgets.dart';
 import '../supply/supply_widgets.dart';
 import '../trade/trade_api.dart';

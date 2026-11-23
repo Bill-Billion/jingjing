@@ -13,6 +13,9 @@ const server=await createServer({root,configFile:false,plugins:[vue()],resolve:{
 const savedFetch=globalThis.fetch,storageDescriptor=Object.getOwnPropertyDescriptor(globalThis,'sessionStorage'),storage=new Map()
 Object.defineProperty(globalThis,'sessionStorage',{configurable:true,value:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>storage.delete(k)}})
 const tests=[],test=(name,run)=>tests.push({name,run}),id=n=>`00000000-0000-0000-0000-${String(n).padStart(12,'0')}`,sha='a'.repeat(64),at='2026-10-22T08:00:00.000Z',until='2026-11-22T08:00:00.000Z'
+// Room creation compares against the current clock; this suite must not expire.
+const roomFixtureNow=Date.now(),day=86400000
+const roomDeadline=new Date(roomFixtureNow+30*day).toISOString(),expiredRoomDeadline=new Date(roomFixtureNow-day).toISOString()
 const response=(data,party=id(2),account=id(1))=>new Response(JSON.stringify({meta:{request_id:'synthetic-request',actor:{account_id:account},acting_party:party},data}),{status:200,headers:{'Content-Type':'application/json'}})
 const failure=(status,code)=>new Response(JSON.stringify({error:{code,message:'synthetic failure'}}),{status,headers:{'Content-Type':'application/json'}})
 try{
@@ -436,7 +439,7 @@ try{
  const ruleOption={id:id(4),content_sha256:require(`${root}/../backend_server/src/modules/governance/content.js`).digest({rule:creationRule,review:{decision:'APPROVE',reason:'synthetic'}}),rule:creationRule}
  const producerOption={id:id(3),display_name:'本次平台承制方',role:'PLATFORM_CONTRACTING_PARTY'}
  const storyOption=(n,status='SUBMITTED')=>({id:id(n),party_id:id(2),template_version_id:id(90),category_title:'本人的合成故事'+n,current_status:status,object_version:status==='DRAFT'?1:2,submitted_at:status==='DRAFT'?null:at,intake_at:status==='INTAKE'?at:null,allowed_actions:status==='DRAFT'?['READ','SAVE','SUBMIT']:['READ']})
- const roomBody=()=>({request_id:id(5),producer_party_id:id(3),rule_id:id(4),title:'本次共同故事',deadline:until,purpose:'共同制作与约定分享',territory:'中国'})
+ const roomBody=()=>({request_id:id(5),producer_party_id:id(3),rule_id:id(4),title:'本次共同故事',deadline:roomDeadline,purpose:'共同制作与约定分享',territory:'中国'})
  const roomReply=(body=roomBody())=>({id:id(20),object_version:1,current_status:'OPEN',title:body.title,deadline:body.deadline,producer_party_id:body.producer_party_id,purpose:body.purpose,territory:body.territory,rule_snapshot:creationRule,participation_sha256:sha,counts:{joined_count:0,eligible_count:0,minimum_people:10,benefit_people:20,people_remaining:10,benefit_remaining:20},cutoff:null,order_id:null,project_id:null,members:[],allowed_actions:['READ','INVITE','CLOSE','REQUEST_EXTENSION','REQUEST_CANCEL']})
  const creationResponse=url=>{const u=new URL(url,'http://local');return response({items:u.searchParams.get('kind')==='PRODUCER'?[producerOption]:[ruleOption],next_cursor:null,unavailable_reason:null})}
  async function readyCreation(vm){vm.operationKey='room';vm.draft={...roomBody(),producer_party_id:'',rule_id:''};await vm.readCreationContext();vm.draft.producer_party_id=id(3);vm.draft.rule_id=id(4);vm.agreed=true;assert(vm.creationReady)}
@@ -501,6 +504,15 @@ try{
    await readyCreation(vm);await vm.submit();const write=calls.find(c=>c.o.method==='POST');assert.deepEqual(body,roomBody());assert.equal(write.url,'/api/v1/cocreation/rooms');assert.equal(write.o.headers['X-Acting-Party'],id(2));assert.equal(write.o.headers['If-Match'],undefined);assert.equal(vm.route.fullPath,'/cocreation/rooms/'+id(20));assert.equal(vm.ui.pending.value,null)
   })
  })
+ test('报名截止已经过去时保留草稿且不发送建房请求',async()=>{
+  storage.clear();let writes=0,observed
+  await render('/cocreation/rooms',null,async vm=>{
+   globalThis.fetch=async(url,o)=>o.method==='POST'?(writes++,response(roomReply(JSON.parse(o.body)))):creationResponse(url)
+   await readyCreation(vm);vm.draft.deadline=expiredRoomDeadline;vm.agreed=true;await vm.submit()
+   observed={field:vm.errorField,title:vm.draft.title,deadline:vm.draft.deadline,pending:vm.ui.pending.value}
+  })
+  assert.equal(writes,0);assert.deepEqual(observed,{field:'room-deadline',title:'本次共同故事',deadline:expiredRoomDeadline,pending:null})
+ })
  test('建房POST遭已有房间拒绝保留文字，不自动重建第二个房间',async()=>{
   storage.clear();await render('/cocreation/rooms',null,async vm=>{
    let writes=0;globalThis.fetch=async(url,o)=>o.method==='POST'?(writes++,failure(409,'COCREATION_ROOM_EXISTS')):creationResponse(url);await readyCreation(vm);await vm.submit();assert.equal(writes,1);assert.equal(vm.ui.pending.value,null);assert.equal(vm.draft.title,'本次共同故事');assert.equal(vm.draft.rule_id,'');assert(vm.creationProblem.links.some(link=>link.to==='/cocreation/rooms'));vm.agreed=true;await vm.submit();assert.equal(writes,1)
@@ -508,7 +520,9 @@ try{
  })
  test('承制方配置403清掉失效资格，同时保留原始日期控件值与文字',async()=>{
   storage.clear();await render('/cocreation/rooms',null,async vm=>{
-   globalThis.fetch=async(url,o)=>o.method==='POST'?failure(403,'CUSTOMIZATION_MERCHANT_FORBIDDEN'):creationResponse(url);await readyCreation(vm);vm.draft.deadline='2026-11-22T16:00';vm.agreed=true;await vm.submit();assert.equal(vm.operationKey,'room');assert.equal(vm.draft.title,'本次共同故事');assert.equal(vm.draft.deadline,'2026-11-22T16:00');assert.equal(vm.draft.rule_id,'');assert.equal(vm.draft.producer_party_id,'');assert.equal(vm.creationVerifiedRequest,'');assert.equal(vm.ui.pending.value,null)
+   const deadline=new Date(roomDeadline),localDeadline=new Date(deadline.getTime()-deadline.getTimezoneOffset()*60000).toISOString().slice(0,16)
+   let writes=0
+   globalThis.fetch=async(url,o)=>o.method==='POST'?(writes++,failure(403,'CUSTOMIZATION_MERCHANT_FORBIDDEN')):creationResponse(url);await readyCreation(vm);vm.draft.deadline=localDeadline;vm.agreed=true;await vm.submit();assert.equal(writes,1);assert.equal(vm.operationKey,'room');assert.equal(vm.draft.title,'本次共同故事');assert.equal(vm.draft.deadline,localDeadline);assert.equal(vm.draft.rule_id,'');assert.equal(vm.draft.producer_party_id,'');assert.equal(vm.creationVerifiedRequest,'');assert.equal(vm.ui.pending.value,null)
   })
  })
  test('建房未知结果重开后先核对房间索引再原key恢复，不依赖旧目录资格',async()=>{

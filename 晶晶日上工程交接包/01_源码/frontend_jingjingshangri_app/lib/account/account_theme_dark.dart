@@ -55,8 +55,6 @@ class AccountThemeDark extends StatelessWidget {
 
   static const _cardRadius = BorderRadius.all(Radius.circular(20));
   static const _controlRadius = BorderRadius.all(Radius.circular(14));
-  static const _cardShape =
-      RoundedRectangleBorder(borderRadius: _cardRadius);
   static const _controlShape =
       RoundedRectangleBorder(borderRadius: _controlRadius);
   static const _pill = StadiumBorder();

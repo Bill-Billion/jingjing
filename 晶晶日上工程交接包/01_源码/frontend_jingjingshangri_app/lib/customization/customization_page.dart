@@ -82,19 +82,6 @@ Widget _eyebrow(String text) => Padding(
     );
 Widget _section(String title, List<Widget> children) =>
     tradeSection(title, children);
-Widget _storyPanel(String title, List<Widget> children) => Container(
-    margin: const EdgeInsets.only(bottom: 18),
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(color: AccountTheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AccountTheme.border)),
-    child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-      if (title.isNotEmpty) ...[
-        Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-        const SizedBox(height: 12),
-      ],
-      ...children,
-    ]));
 Widget _note(String text) => Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
