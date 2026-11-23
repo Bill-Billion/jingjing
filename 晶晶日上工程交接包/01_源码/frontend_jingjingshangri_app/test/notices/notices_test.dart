@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart' show RequestOptions;
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -178,7 +179,7 @@ void main() {
         await host(
             t, s, NoticesPage(mode: mode, kind: 'NOTICE', initialCity: '杭州'));
         final empty = mode == 'catalog' ? '当前筛选没有仍有效的已审公开通告。' : '当前没有本类型的可读记录。';
-        final reads = () => a.requests.where(
+        List<RequestOptions> reads() => a.requests.where(
             (r) => r.method == 'GET' && r.path == path).toList();
         expect(reads(), hasLength(1));
         final criteria = mode == 'catalog' ? 'city' : 'kind';
