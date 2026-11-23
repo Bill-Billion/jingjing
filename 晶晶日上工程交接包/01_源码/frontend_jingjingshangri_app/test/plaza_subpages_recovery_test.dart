@@ -289,13 +289,27 @@ void main() {
     });
     final session = (await t.runAsync(() => buyerSession(adapter)))!;
     await host(t, session, const StockPage(mode: 'video', id: stockId));
-    await reveal(t, find.byType(CheckboxListTile));
-    await t.tap(find.byType(CheckboxListTile));
-    await reveal(t, find.text('确认本版购买并查看原订单'));
-    await t.tap(find.text('确认本版购买并查看原订单'));
+    final buy = find.widgetWithText(FilledButton, '立即购买');
+    final consent = find.byType(CheckboxListTile);
+    expect(t.widget<FilledButton>(buy).onPressed, isNull);
+    await reveal(t, consent);
+    await t.tap(consent.hitTestable());
     await frames(t);
-    await t.tap(find.text('确认办理'));
+    expect(t.widget<CheckboxListTile>(consent).value, isTrue);
+    expect(t.widget<FilledButton>(buy).onPressed, isNotNull);
+    expect(reads, 1);
+    await t.tap(buy.hitTestable());
     await frames(t);
+    final confirmation = find.widgetWithText(AlertDialog, '按本版许可购买');
+    expect(confirmation, findsOneWidget);
+    expect(reads, 1);
+    await t.tap(find.descendant(
+        of: confirmation, matching: find.text('确认办理')).hitTestable());
+    await frames(t);
+    expect(reads, 2, reason: '确认后必须重新读取同一商品的当前报价');
+    final offerReads = adapter.requests.where(
+        (r) => r.method == 'GET' && r.path == '/api/v1/stock/catalog/$stockId');
+    expect(offerReads, hasLength(2));
     await reveal(t, find.text('重新确认本版许可'));
     expect(find.text('合成现货作品'), findsNothing);
     await reveal(t, find.byType(CheckboxListTile));
@@ -304,7 +318,8 @@ void main() {
     expect(t.widget<CheckboxListTile>(find.byType(CheckboxListTile)).onChanged,
         isNull);
     expect(
-        adapter.requests.where((r) => r.path.endsWith('/checkout')), isEmpty);
+        adapter.requests.where((r) =>
+            r.method == 'POST' && r.path == '/api/v1/stock/checkout'), isEmpty);
     expect(t.takeException(), isNull);
   });
 
@@ -322,23 +337,34 @@ void main() {
     final session = (await t.runAsync(() => buyerSession(adapter)))!;
     await host(t, session, const StockPage(mode: 'video', id: stockId));
     final consent = find.byType(CheckboxListTile);
+    final buy = find.widgetWithText(FilledButton, '立即购买');
+    final recoverBuy = find.widgetWithText(FilledButton, '恢复原购买请求');
+    expect(buy, findsOneWidget);
+    expect(t.widget<FilledButton>(buy).onPressed, isNull);
+    expect(recoverBuy, findsNothing);
     await reveal(t, consent);
     await t.tap(consent);
     await frames(t);
     expect(t.widget<CheckboxListTile>(consent).value, isTrue);
+    expect(t.widget<FilledButton>(buy).onPressed, isNotNull);
     await reveal(t, find.text('读取已审预览'));
     await t.tap(find.text('读取已审预览'));
     await frames(t);
     expect(find.text('合成现货作品'), findsNothing);
     expect(find.byType(CheckboxListTile), findsNothing);
-    expect(find.text('确认本版购买并查看原订单'), findsNothing);
+    expect(buy, findsNothing);
+    expect(recoverBuy, findsNothing);
+    expect(adapter.requests.where((r) =>
+        r.method == 'GET' &&
+        r.path == '/api/v1/stock/catalog/$stockId/preview'), hasLength(1));
     await reveal(t, find.text('重新读取本页'));
     await t.tap(find.text('重新读取本页'));
     await frames(t);
     expect(find.text('合成现货作品'), findsOneWidget);
     await reveal(t, consent);
-    expect(t.widget<CheckboxListTile>(find.byType(CheckboxListTile)).value,
-        isFalse);
+    expect(t.widget<CheckboxListTile>(consent).value, isFalse);
+    expect(t.widget<FilledButton>(buy).onPressed, isNull);
+    expect(recoverBuy, findsNothing);
     expect(
         adapter.requests.where((r) => r.path.endsWith('/checkout')), isEmpty);
     expect(t.takeException(), isNull);

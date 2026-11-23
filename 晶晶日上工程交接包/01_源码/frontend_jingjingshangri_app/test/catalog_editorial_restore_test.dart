@@ -52,6 +52,26 @@ void main() {
     expect(t.takeException(), isNull);
   });
 
+  testWidgets('公开艺人详情姓名沿用当前设计的标题字号', (t) async {
+    final adapter = artistAdapter(override: (r) {
+      if (r.path == '$artistRoot/catalog') {
+        return envelope({'items': [publicListing()], 'next_cursor': null});
+      }
+      if (r.path == '$artistRoot/catalog/$listingKey') {
+        return envelope(publicListing());
+      }
+      if (r.path == '$artistRoot/catalog/$listingKey/media') {
+        return envelope(publicMediaData(primary: null));
+      }
+      return null;
+    });
+    final session = (await t.runAsync(() => artistSession(adapter)))!;
+    await artists.host(t, session, const ArtistCataloguePage());
+    await artists.press(t, find.text('当前公开艺人'));
+    expect(t.widget<Text>(find.text('当前公开艺人')).style!.fontSize, 28);
+    expect(t.takeException(), isNull);
+  });
+
   testWidgets('公开艺人详情沿用真实资料，预览撤权后不保留名称与简介', (t) async {
     var revoked = false;
     final adapter = artistAdapter(override: (request) {
@@ -87,15 +107,18 @@ void main() {
             .queryParameters['city'],
         '杭州');
     await artists.press(t, find.text('当前公开艺人'));
-    expect(t.widget<Text>(find.text('当前公开艺人')).style!.fontSize, 32);
+    expect(find.text('已审核的公开介绍'), findsOneWidget);
     expect(find.text('当前公开艺人'), findsOneWidget);
     expect(
         adapter.requests.where((r) => r.path.endsWith('/content')).every((r) =>
             r.path ==
             '$artistRoot/catalog/$listingKey/assets/$assetKey/content'),
         isTrue);
+    final contentPath = '$artistRoot/catalog/$listingKey/assets/$assetKey/content';
+    final before = adapter.requests.where((r) => r.path == contentPath).length;
     revoked = true;
     await artists.press(t, find.text('读取图片预览 1'));
+    expect(adapter.requests.where((r) => r.path == contentPath), hasLength(before + 1));
     expect(find.text('当前公开艺人'), findsNothing);
     expect(find.text('已审核的公开介绍'), findsNothing);
     expect(find.text('这份公开资料当前不可用'), findsOneWidget);

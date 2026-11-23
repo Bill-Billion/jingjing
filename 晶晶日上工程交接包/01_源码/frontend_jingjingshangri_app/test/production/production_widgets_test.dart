@@ -262,7 +262,10 @@ void main() {
             null);
       } on AccountError {/* Expected unresolved write. */}
     });
-    final key = adapter.requests.last.headers['Idempotency-Key'];
+    final first = adapter.requests.singleWhere(
+        (r) => r.method == 'POST' && r.path == feedbackPath);
+    final key = first.headers['Idempotency-Key'];
+    expect(key, isNotEmpty);
     await nav.openApp(tester, s,
         route: '/production/feedback?versionId=$productionVersionId');
     expect(find.text('原意见结果待核实'), findsOneWidget);
@@ -278,13 +281,29 @@ void main() {
     await quickFrames(tester);
     expect(s.productionPending, isEmpty);
     expect(find.text('操作结果尚未确认，请先恢复原请求核对。'), findsNothing);
-    expect(
-        adapter.requests
-            .where((r) => r.path == feedbackPath)
-            .last
-            .headers['Idempotency-Key'],
-        key);
-    expect(find.text('制作项目'), findsOneWidget);
+    final relevant = adapter.requests.where((r) =>
+        r.path == feedbackPath ||
+        r.path == '/api/v1/production/records/$productionVersionId' ||
+        r.path == '/api/v1/production/projects/$productionProjectId/records' ||
+        r.path == '/api/v1/production/records/$productionProjectId').toList();
+    final writesToOriginal = relevant.where((r) => r.method == 'POST').toList();
+    expect(writesToOriginal, hasLength(2));
+    final replay = writesToOriginal.last;
+    expect(replay.headers['Idempotency-Key'], key);
+    expect(replay.headers['If-Match'], first.headers['If-Match']);
+    expect(replay.data, first.data);
+    final rereads = relevant.sublist(relevant.indexOf(first) + 1,
+        relevant.indexOf(replay));
+    expect(rereads.any((r) => r.method == 'GET' &&
+        r.path == '/api/v1/production/records/$productionVersionId'), isTrue);
+    expect(rereads.any((r) => r.method == 'GET' &&
+        r.path == '/api/v1/production/projects/$productionProjectId/records' &&
+        r.queryParameters['kind'] == 'FEEDBACK'), isTrue);
+    expect(relevant.skip(relevant.indexOf(replay) + 1).any((r) =>
+        r.method == 'GET' &&
+        r.path == '/api/v1/production/records/$productionProjectId'), isTrue);
+    expect(find.text('制作任务详情'), findsOneWidget);
+    expect(find.byType(ProductionProjectPage), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
   testWidgets('412保留旧说明并读取新版本，明确重核后才能再次提交', (tester) async {
@@ -377,19 +396,27 @@ void main() {
     expect(adapter.requests.any((r) => r.path.endsWith('/content')), isFalse);
     expect(tester.takeException(), isNull);
   });
-  testWidgets('身份切换与退出立即清理私有剧本和未完成意见', (tester) async {
+  testWidgets('退出账号立即清理已读取的私有剧本和意见表单', (tester) async {
     final adapter = productionAdapter(),
         s = (await tester.runAsync(() => buyerSession(adapter)))!;
     await nav.openApp(tester, s,
         route: '/production/version?versionId=$productionVersionId');
-    await tester.tap(find.text('完整阅读'));
+    final read = find.text('完整阅读');
+    await reveal(tester, read);
+    await tester.tap(read.hitTestable());
     await nav.frames(tester);
-    await tester.tap(find.text('返回审阅'));
+    await tester.tap(find.text('返回审阅').hitTestable());
     await nav.frames(tester);
     expect(find.text(scriptBody), findsOneWidget);
+    final opinion = find.byWidgetPredicate((widget) =>
+        widget is TextField && widget.decoration?.labelText == '本版修改意见');
+    await reveal(tester, opinion);
+    await tester.enterText(opinion, '只在旧身份的草稿');
+    expect(find.text('只在旧身份的草稿'), findsOneWidget);
     await tester.runAsync(() => s.logout());
     await nav.frames(tester);
     expect(find.text(scriptBody), findsNothing);
+    expect(find.text('只在旧身份的草稿'), findsNothing);
     expect(find.text('先确认办事身份'), findsOneWidget);
     expect(find.byType(TextField), findsNothing);
     expect(tester.takeException(), isNull);
@@ -399,7 +426,9 @@ void main() {
         s = (await tester.runAsync(() => buyerSession(adapter)))!;
     await nav.openApp(tester, s,
         route: '/production/version?versionId=$productionVersionId');
-    await tester.tap(find.text('完整阅读'));
+    final read = find.text('完整阅读');
+    await reveal(tester, read);
+    await tester.tap(read.hitTestable());
     await nav.frames(tester);
     expect(
         find.descendant(
@@ -412,8 +441,11 @@ void main() {
             of: find.byType(Dialog), matching: find.text(scriptBody)),
         findsNothing);
     expect(find.text('当前身份已变化，私有内容已清空。'), findsOneWidget);
-    await tester.tap(find.text('返回审阅'));
+    await tester.tap(find.text('返回审阅').hitTestable());
     await nav.frames(tester);
+    expect(find.text(scriptBody), findsNothing);
+    expect(adapter.requests.where((r) =>
+        r.method == 'POST' && r.path == feedbackPath), isEmpty);
     expect(tester.takeException(), isNull);
   });
   testWidgets('订单展示真实当前阶段，只有全部制作明细当前样片已确认才衔接付款', (tester) async {

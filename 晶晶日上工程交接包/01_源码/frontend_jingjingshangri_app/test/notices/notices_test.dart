@@ -258,14 +258,24 @@ void main() {
     expect(() => NoticeRecord(d, personId), throwsA(isA<AccountError>()));
   });
   test('未知撤回先读同一记录，再按原说明版本与同键恢复', () async {
-    var posts = 0;
+    var posts = 0, effects = 0;
+    String? originalKey;
+    Map<String, dynamic> withdrawn() {
+      final record = noticeRecord(version: 5, status: 'WITHDRAWN');
+      record['data']['closed_reason'] = '原撤回说明';
+      return record;
+    }
     final a = FakeAccountAdapter(handler: (r) {
       if (r.path.endsWith('/close')) {
         posts++;
-        return posts == 1
-            ? envelope({'code': 'COMMIT_OUTCOME_UNKNOWN'},
-                status: 503, error: true)
-            : envelope(noticeRecord(version: 5, status: 'WITHDRAWN'));
+        if (posts == 1) {
+          originalKey = r.headers['Idempotency-Key'] as String;
+          effects++;
+          return envelope({'code': 'COMMIT_OUTCOME_UNKNOWN'},
+              status: 503, error: true);
+        }
+        if (r.headers['Idempotency-Key'] != originalKey) effects++;
+        return envelope(withdrawn());
       }
       if (r.path.endsWith('/records/$submissionId')) {
         return envelope(noticeRecord(version: 9));
@@ -279,7 +289,20 @@ void main() {
         api.post(suffix, {'reason': '原撤回说明'}, (d) => NoticeRecord(d, personId),
             version: 4),
         throwsA(isA<AccountError>()));
-    await api.restoreOperation(api.path(suffix));
+    final restored = await api.restoreOperation(api.path(suffix));
+    expect(restored['id'], submissionId);
+    expect(restored['current_status'], 'WITHDRAWN');
+    expect(restored['data']['closed_reason'], '原撤回说明');
+    final targetRequests = a.requests
+        .where((r) => r.path.startsWith('/api/v1/notices/records/'))
+        .map((r) => '${r.method} ${r.path}')
+        .toList();
+    expect(targetRequests, [
+      'POST /api/v1/notices/records/$submissionId/close',
+      'GET /api/v1/notices/records/$submissionId',
+      'POST /api/v1/notices/records/$submissionId/close',
+    ]);
+    expect(effects, 1, reason: '同一模拟记录只执行一次撤回');
     final writes = a.requests.where((r) => r.path.endsWith('/close')).toList();
     expect(writes.length, 2);
     expect(writes.last.data, {'reason': '原撤回说明'});
