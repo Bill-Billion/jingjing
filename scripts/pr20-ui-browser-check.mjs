@@ -2,7 +2,7 @@
 /** Normal browser UI → isolated real HTTP/MySQL. Business writes never bypass UI. */
 import assert from 'node:assert/strict'
 import assertCashReport from './support/pr20-cash-report.cjs'
-import { ensureWorkspaceNavigation, checkWorkspaceNavigation } from './workspace-navigation-check.mjs'
+import { ensureWorkspaceNavigation, checkWorkspaceNavigation, WORKSPACE_ENTRY_COUNT, WORKSPACE_CATEGORY_COUNT, RECHARGE_REFUND_PATH, RECHARGE_REFUND_LABEL, assertRechargeRefundNavigation } from './workspace-navigation-check.mjs'
 import {readFile,writeFile,mkdir,stat} from 'node:fs/promises'
 import {createRequire} from 'node:module'
 import {createHash} from 'node:crypto'
@@ -282,11 +282,11 @@ async function run(){
   for(const kind of ['evidence','storage']){await control('/'+kind+'?enabled=false');const response=wait(p,'GET',path);await p.getByTestId('finance-proof-'+asset).click();assert.equal((await response).status(),503);await control('/'+kind+'?enabled=true')}
   const response=wait(p,'GET',path),download=handled(p.waitForEvent('download'));await p.getByTestId('finance-proof-'+asset).click();const raw=await response;assert.equal(raw.status(),200);assert.equal(raw.headers()['cache-control'],'no-store');assert.equal(raw.headers()['x-content-type-options'],'nosniff');const bytes=await readFile(await (await download).path()),known=Object.values(state.assets).find(a=>a.id===asset);assert.equal(bytes.length,known.byteSize);assert.equal(sha(bytes),known.contentSha256);verification.push({check:'actual private source proof rejects corruption/storage fault then exact restored download',record_id:g,asset_id:asset,byte_size:bytes.length,sha256:sha(bytes)});await shot(p,'source-proof-recovered-desktop')
  })
- await check('完整79项分类菜单每入口新版有效无404、高亮稳定及390宽通知留言报告',async()=>{
-  const a=actors.payer,p=a.page;await go(p,'/operations/notifications');const links=await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()})));assert.equal(links.length,79);for(const href of ['/guardians/records','/infringement/cases','/handover/orders'])assert(links.some(link=>link.href===href),'Missing six-contract entry '+href)
-  for(const link of links){await go(p,link.href);assert.equal(new URL(p.url()).pathname,link.href);assert.equal(await p.locator('.workspace-nav a').count(),79);assert.deepEqual(await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()}))),links);assert.equal(await p.locator('.workspace-nav a[aria-current=page]').filter({hasText:link.text}).count(),1);assert.equal(await p.getByText('页面未找到',{exact:true}).count(),0);assert.equal(await p.locator('.legacy-shell').count(),0)}
+ await check('完整工作区分类菜单每入口新版有效无404、高亮稳定及390宽通知留言报告',async()=>{
+  const a=actors.payer,p=a.page;await go(p,'/operations/notifications');const links=await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()})));assert.equal(links.length,WORKSPACE_ENTRY_COUNT);assert.equal(new Set(links.map(link=>link.href)).size,links.length);assert.equal(await p.locator('.workspace-nav-parent').count(),WORKSPACE_CATEGORY_COUNT);await assertRechargeRefundNavigation(p.locator('.workspace-nav'),p);for(const href of ['/guardians/records','/infringement/cases','/handover/orders'])assert(links.some(link=>link.href===href),'Missing six-contract entry '+href)
+  for(const link of links){await go(p,link.href);assert.equal(new URL(p.url()).pathname,link.href);assert.equal(await p.locator('.workspace-nav a').count(),WORKSPACE_ENTRY_COUNT);assert.deepEqual(await p.locator('.workspace-nav a').evaluateAll(ns=>ns.map(n=>({href:n.getAttribute('href'),text:n.textContent.trim()}))),links);assert.equal(await p.locator(`.workspace-nav a[href="${link.href}"][aria-current=page]`).count(),1);if(link.href===RECHARGE_REFUND_PATH)await p.getByRole('heading',{name:RECHARGE_REFUND_LABEL,exact:true}).waitFor();assert.equal(await p.getByText('页面未找到',{exact:true}).count(),0);assert.equal(await p.locator('.legacy-shell').count(),0)}
   await p.setViewportSize({width:390,height:844});for(const [route,name,gallery] of [['/operations/notifications','notifications-390','WEB-32-01'],[commentRoute('PROJECTS',scenario.projectId),'comments-390','WEB-32-02-v2'],[reportRoute(facts.ownerSettlement.id,false),'report-390','WEB-33-02']]){await go(p,route);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));await shot(p,name+'-narrow',gallery)}await p.setViewportSize({width:1440,height:1000})
-   verification.push({check:'all79 current shared navigation URLs/titles/highlight valid, no old shell; actual390 pages fit viewport',menu_count:links.length,menu:links})
+   verification.push({check:'all current shared navigation URLs/titles/highlight valid, no old shell; actual390 pages fit viewport',menu_count:links.length,menu:links})
  })
 }
 

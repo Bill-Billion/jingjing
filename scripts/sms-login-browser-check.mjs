@@ -1,5 +1,6 @@
 // Existing Vue pages + actual SMS adapter + isolated HTTP/MySQL; synthetic HTTPS only.
 import assert from 'node:assert/strict'
+import { WORKSPACE_ENTRY_COUNT, WORKSPACE_CATEGORY_COUNT, assertRechargeRefundNavigation } from './workspace-navigation-check.mjs'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
@@ -39,14 +40,10 @@ try {
  const navigation=page.locator('.workspace-nav'),parent=navigation.getByRole('button',{name:'账号与个人服务',exact:true}),accountLink=navigation.getByRole('link',{name:'账号与机构',exact:true})
  const identity=page.locator('.identity').first();await identity.waitFor({state:'visible'});await identity.click({trial:true})
  check('正确验证码经过实际后端校验，身份直接可见且可选择',await identity.isVisible()&&await identity.isEnabled())
- assert.equal(await navigation.locator('a').count(),80)
- assert.equal(await navigation.locator('.workspace-nav-parent').count(),7)
- const refundPath='/wallet-refunds/operations',refundLink=navigation.locator(`a[href="${refundPath}"]`)
- const financeGroup=navigation.locator('.workspace-nav-group').filter({has:page.getByRole('button',{name:/^财务与运营/u})})
- check('充值退款核验与任务只在财务与运营分类出现一次',
-  await refundLink.count()===1&&
-  await financeGroup.locator(`a[href="${refundPath}"]`).count()===1&&
-  (await refundLink.textContent()).trim()==='充值退款核验与任务')
+ assert.equal(await navigation.locator('a').count(),WORKSPACE_ENTRY_COUNT)
+ assert.equal(await navigation.locator('.workspace-nav-parent').count(),WORKSPACE_CATEGORY_COUNT)
+ await assertRechargeRefundNavigation(navigation,page)
+ check('充值退款核验与任务只在财务与运营分类出现一次',true)
  for(const href of ['/guardians/records','/infringement/cases','/handover/orders','/licensing/procurement-events','/licensing/royalty-statements','/licensing/reviews/procurement-events','/licensing/reviews/royalty-statements'])assert.equal(await navigation.locator('a[href="'+href+'"]').count(),1)
  await page.getByRole('button',{name:'全部收起',exact:true}).click();await accountLink.waitFor({state:'hidden'});await parent.click();await accountLink.waitFor({state:'visible'})
  check('手机父级分类可展开子入口',await parent.getAttribute('aria-expanded')==='true'&&await accountLink.isVisible())
