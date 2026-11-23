@@ -42,6 +42,7 @@ Future<void> press(WidgetTester tester, String label) async {
               ? find.widgetWithText(InkWell, '我的结算')
               : find.widgetWithText(FilledButton, label);
   await reveal(tester, finder);
+  expect(finder.hitTestable(), findsOneWidget);
   await tester.tap(finder);
   await nav.frames(tester);
 }
@@ -75,12 +76,18 @@ void main() {
     await reveal(tester, find.text('本人金额'));
     expect(find.text('-¥1.01'), findsOneWidget);
     expect(find.text('全局余额'), findsNothing);
+    await reveal(tester, find.text('本约定累计已核实付款'));
+    expect(find.text('¥81.01'), findsOneWidget);
     await reveal(tester, find.text('待追回'));
     expect(find.text('¥1.01'), findsOneWidget);
-    await reveal(tester, find.text('申请付款'));
+    await reveal(tester, find.text('订单已核实净收款'));
+    expect(find.text('¥100.00'), findsOneWidget);
+    expect(
+        a.requests.any((r) => r.path.startsWith('/api/v1/wallet/')), isFalse);
+    await reveal(tester, find.text('申请收益收款'));
     expect(
         tester
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '申请付款'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '申请收益收款'))
             .onPressed,
         isNull);
     expect(tester.takeException(), isNull);
@@ -95,15 +102,26 @@ void main() {
     await nav.frames(tester);
     await press(tester, '我的结算');
     expect(find.byType(NavigationBar), findsNothing);
+    await reveal(tester, find.text('查看本人结算'));
     expect(find.text('查看本人结算'), findsOneWidget);
     await tester.tap(find.byType(BackButton));
     await nav.frames(tester);
     nav.expectFiveTabs();
-    await reveal(tester, find.text('共创与权益'));
-    await tester.tap(find.text('共创与权益'));
+    expect(
+        tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+        4);
+    await reveal(tester, find.text('业务与作品'));
+    await tester.tap(find.text('业务与作品'));
     await nav.frames(tester);
-    await reveal(tester, find.text('我的许可办理'));
-    expect(find.text('我的许可办理'), findsOneWidget);
+    for (final label in ['我的参与项目', '我的许可办理']) {
+      await reveal(tester, find.widgetWithText(InkWell, label));
+      expect(find.widgetWithText(InkWell, label), findsOneWidget);
+    }
+    await reveal(tester, find.text('艺人与商品'));
+    await tester.tap(find.text('艺人与商品'));
+    await nav.frames(tester);
+    await reveal(tester, find.widgetWithText(InkWell, '我的商单与接单约定'));
+    expect(find.widgetWithText(InkWell, '我的商单与接单约定'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
   testWidgets('结算需阅读和本人意见，准确GET确认后展示本人已同意', (tester) async {
@@ -204,19 +222,89 @@ void main() {
   testWidgets('付款申请批准不冒充实付，真实PAID/RETURNED展示原事实', (tester) async {
     for (final state in ['APPROVED', 'PAID', 'RETURNED']) {
       await tester.pumpWidget(const SizedBox.shrink());
+      Map<String, dynamic> verifiedEvidence(String outcome, String id) {
+        final record = financeData('PAYOUT_EVIDENCE', status: 'APPROVED');
+        record['id'] = id;
+        record['data']['outcome'] = outcome;
+        record['data']['external_reference'] = 'synthetic-$outcome';
+        record['data']['review'] = financeReviewData();
+        record['content_sha256'] = financeDigest(record['data']);
+        return record;
+      }
+
       final a = financeAdapter(
+              override: (r) => r.method == 'GET' &&
+                      r.queryParameters['kind'] == 'PAYOUT_EVIDENCE'
+                  ? envelope({
+                      'items': [
+                        if (state != 'APPROVED')
+                          verifiedEvidence('PAID', evidenceKey),
+                        if (state == 'RETURNED')
+                          verifiedEvidence('RETURNED',
+                              'f2000000-0000-4000-8000-000000000013'),
+                      ],
+                      'next_cursor': null,
+                    })
+                  : null,
               records: (k) =>
                   financeData(k, status: k == 'PAYOUT' ? state : null)),
           s = (await tester.runAsync(() => buyerSession(a)))!;
       await nav.openApp(tester, s,
           route: '/finance/record?recordId=$payoutKey');
-      expect(
-          find.text({
-            'APPROVED': '申请已获准，尚未核实付款',
-            'PAID': '真实付款已核实',
-            'RETURNED': '款项退回已核实'
-          }[state]!),
+      const copy = {
+        'APPROVED': ('申请已获准，尚未核实付款', '申请、审核与真实付款分别保存。'),
+        'PAID': ('真实付款已核实', '已核实真实外部付款。'),
+        'RETURNED': ('款项退回已核实', '原付款事实保留，退回款项另有追加记录。'),
+      };
+      final (label, explanation) = copy[state]!;
+      // The overall record summary can repeat the status. Assert the status
+      // beside its payout-specific factual explanation, not the global count.
+      await reveal(tester, find.text(explanation));
+      final banner = find.ancestor(
+          of: find.text(explanation),
+          matching: find.byWidgetPredicate((w) =>
+              w is Row &&
+              w.children.any((child) =>
+                  child is Icon && child.icon == Icons.hourglass_empty)));
+      expect(find.descendant(of: banner, matching: find.text(label)),
           findsOneWidget);
+      for (final other in copy.entries.where((e) => e.key != state)) {
+        expect(find.descendant(of: banner, matching: find.text(other.value.$1)),
+            findsNothing);
+        expect(find.text(other.value.$2), findsNothing);
+      }
+      await reveal(tester, find.text('付款凭据'));
+      final receiptPanel = find.ancestor(
+          of: find.text('付款凭据'),
+          matching: find.byWidgetPredicate((w) =>
+              w is Column &&
+              w.children
+                  .any((child) => child is Text && child.data == '付款凭据')));
+      Finder receiptText(String value) =>
+          find.descendant(of: receiptPanel, matching: find.text(value));
+      if (state == 'APPROVED') {
+        expect(receiptText('暂无已核实结果。'), findsOneWidget);
+        expect(find.text('真实付款已核实'), findsNothing);
+        expect(receiptText('登记事实'), findsNothing);
+      } else {
+        final count = state == 'RETURNED' ? 2 : 1;
+        expect(receiptText('暂无已核实结果。'), findsNothing);
+        expect(receiptText('登记事实'), findsNWidgets(count));
+        expect(receiptText('独立核验'), findsNWidgets(count));
+        expect(receiptText('审核通过'), findsNWidgets(count));
+        expect(receiptText('真实付款已核实'), findsOneWidget);
+        expect(receiptText('款项退回已核实'),
+            state == 'RETURNED' ? findsOneWidget : findsNothing);
+      }
+      expect(
+          a.requests.any((r) =>
+              r.method == 'GET' &&
+              r.queryParameters['kind'] == 'PAYOUT_EVIDENCE'),
+          isTrue);
+      expect(
+          a.requests.any((r) =>
+              r.method != 'GET' && r.path.startsWith('/api/v1/finance/')),
+          isFalse);
       expect(find.text('取消付款申请'), findsNothing);
       expect(tester.takeException(), isNull);
     }
@@ -295,29 +383,35 @@ void main() {
             .controller!
             .text,
         isEmpty);
-    await input(tester, '申请金额（元）', '30.001');
-    await input(tester, '备注', '本次真实本人申请。');
-    await reveal(tester, find.text('提交付款申请'));
-    expect(
-        tester
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '提交付款申请'))
-            .onPressed,
-        isNull);
-    await input(tester, '申请金额（元）', '30.00');
+    final submit = find.widgetWithText(FilledButton, '提交收款申请');
+    VoidCallback? onSubmit() => tester.widget<FilledButton>(submit).onPressed;
+    await input(tester, '申请金额（元）', '30.01');
+    expect(onSubmit(), isNull, reason: '备注和私有收款资料不可缺');
     await press(tester, '选择并上传文件');
-    await reveal(tester, find.text('提交付款申请'));
-    expect(
-        tester
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '提交付款申请'))
-            .onPressed,
-        isNotNull);
-    await press(tester, '提交付款申请');
+    expect(onSubmit(), isNull, reason: '上传后仍必须填写备注');
+    await input(tester, '备注', '本次真实本人申请。');
+    for (final invalid in ['30.001', '60.01']) {
+      await input(tester, '申请金额（元）', invalid);
+      expect(onSubmit(), isNull, reason: '拒绝非整分或超出本人额度的金额');
+      expect(
+          a.requests
+              .any((r) => r.method == 'POST' && r.path == financePayoutPath),
+          isFalse);
+    }
+    await input(tester, '申请金额（元）', '30.01');
+    expect(onSubmit(), isNotNull);
+    await press(tester, '提交收款申请');
     await tester.tap(find.text('确认办理'));
     await nav.frames(tester);
     expect(find.text('付款申请详情'), findsOneWidget);
     final post = a.requests
         .singleWhere((r) => r.method == 'POST' && r.path == financePayoutPath);
-    expect(post.data['amount_minor'], 3000);
+    expect(post.data['amount_minor'], 3001);
+    expect(post.data['note'], '本次真实本人申请。');
+    expect(post.headers['X-Acting-Party'], personId);
+    final upload = a.requests.singleWhere(
+        (r) => r.method == 'POST' && r.path == '/api/v1/supply/assets');
+    expect(a.requests.indexOf(upload), lessThan(a.requests.indexOf(post)));
     expect(post.data['recipient_party_id'], personId);
     expect(post.data['destination_asset_id'], materialKey);
     expect(post.headers['If-Match'], '"2"');
@@ -344,11 +438,13 @@ void main() {
         s = (await tester.runAsync(() => buyerSession(a)))!;
     await nav.openApp(tester, s,
         route: '/finance/payout/new?agreementId=$agreementKey');
-    expect(find.text('当前可申请金额待核对'), findsOneWidget);
+    await reveal(tester, find.text('金额待核对'));
+    expect(find.text('金额待核对'), findsOneWidget);
+    expect(find.text('服务器没有返回本人可申请额度，不能填写其他主体金额。'), findsOneWidget);
     expect(find.textContaining('¥0.00'), findsNothing);
     expect(
         tester
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '提交付款申请'))
+            .widget<FilledButton>(find.widgetWithText(FilledButton, '提交收款申请'))
             .onPressed,
         isNull);
     expect(
