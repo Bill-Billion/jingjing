@@ -189,6 +189,14 @@ async function main() {
   verified.push('same approved private bytes; different account denied');
   await fixture('create');
   if (mode === 'prepare') await fixture('download', { request_id: proof.request_id, sha256: proof.sha256 });
+  else {
+    // The resumed API may use a new port. Retain the selected same request/file
+    // while refreshing both fixtures; never send the App to an old listener.
+    const previous = JSON.parse(await fs.readFile(path.join(out, 'pm04-app-privacy-download.json'), 'utf8'));
+    assert.match(previous.request_id, /^[a-f0-9-]{36}$/i);
+    await call('GET', '/privacy/requests/' + previous.request_id, 'stock_buyer', undefined, { account: true });
+    await fixture('download', { request_id: previous.request_id, sha256: previous.sha256 });
+  }
   const receipt = { status: 'READY', synthetic_only: true, frontend_tested: false, revision,
     helper_sha256: hash(await fs.readFile(__filename)), source_sha256: access.source_sha256, versions: access.versions,
     expires_at: access.expires_at, checked_at: new Date().toISOString(), checks: state.checks, current_checks: verified,
