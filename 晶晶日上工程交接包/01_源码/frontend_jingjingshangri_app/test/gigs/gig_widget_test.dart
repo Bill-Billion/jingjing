@@ -46,6 +46,16 @@ Future<void> consentConfirm(WidgetTester tester) async {
   await tester.pump(const Duration(milliseconds: 500));
 }
 
+Finder _fact(String label, String value) {
+  final row = find.byWidgetPredicate(
+      (w) =>
+          w is Row &&
+          w.children.whereType<Expanded>().any((part) =>
+              part.child is Text && (part.child as Text).data == label),
+      description: '商单事实 $label');
+  return find.descendant(of: row, matching: find.text(value));
+}
+
 ResponseBody emptyPage() => envelope({'items': [], 'next_cursor': null});
 void main() {
   testWidgets('合作详情展示双方名称，重新读取遇到拒绝会清空名称', (tester) async {
@@ -77,16 +87,28 @@ void main() {
     });
     final s = (await tester.runAsync(() => buyerSession(a)))!;
     await nav.openApp(tester, s, route: '/gigs/record?recordId=$relationId');
-    await reveal(tester, find.text('测试MCN公司'));
-    expect(find.text('测试MCN公司'), findsOneWidget);
-    expect(find.text('测试合作本人'), findsOneWidget);
+    final mcn = _fact('MCN 显示名称', '测试MCN公司');
+    final person = _fact('合作本人显示名称', '测试合作本人');
+    await reveal(tester, mcn);
+    expect(mcn, findsOneWidget);
+    expect(person, findsOneWidget);
     denied = true;
-    // Dispose the previous route so reopening really performs a fresh request.
-    await tester.pumpWidget(const SizedBox.shrink());
-    await nav.openApp(tester, s, route: '/gigs/record?recordId=$relationId');
+    await click(tester, '重新读取', outline: true);
     await nav.frames(tester);
     expect(find.text('测试MCN公司'), findsNothing);
     expect(find.text('测试合作本人'), findsNothing);
+    final requests = a.requests
+        .where((r) => r.path == '/api/v1/gigs/relations/$relationId/parties')
+        .toList();
+    expect(requests, hasLength(2));
+    expect(
+        requests.every((r) =>
+            r.method == 'GET' && r.headers['X-Acting-Party'] == personId),
+        isTrue);
+    expect(
+        a.requests.where(
+            (r) => r.path.startsWith('/api/v1/gigs/') && r.method != 'GET'),
+        isEmpty);
     expect(tester.takeException(), isNull);
   });
 
@@ -260,7 +282,9 @@ void main() {
       await tester.pump();
       nav.expectFiveTabs();
       expect(
-          tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+          tester
+              .widget<NavigationBar>(find.byType(NavigationBar))
+              .selectedIndex,
           i);
       await nav.frames(tester);
     }
@@ -398,14 +422,38 @@ void main() {
     final s = (await tester.runAsync(() => buyerSession(a)))!;
     await nav.openApp(tester, s, route: '/gigs/record?recordId=$relationId');
     await click(tester, '接受合作');
+    await tester.tap(find.widgetWithText(FilledButton, '确认办理'));
+    await nav.frames(tester);
+    await reveal(tester, find.text('请填写办理原因。'));
+    expect(find.text('请填写办理原因。'), findsOneWidget);
+    expect(a.requests.where((r) => r.path.endsWith('/decision')), isEmpty);
+    await click(tester, '接受合作');
     await tester.enterText(
         find.widgetWithText(TextField, '办理原因'), '本人已核对直接合作原文');
     await tester.tap(find.widgetWithText(FilledButton, '确认办理'));
     await nav.frames(tester);
-    expect(a.requests.where((r) => r.path.endsWith('/decision')).single.data,
-        {'decision': 'ACCEPT', 'reason': '本人已核对直接合作原文'});
-    await reveal(tester, find.text('合作有效'));
-    expect(find.text('合作有效'), findsOneWidget);
+    final decision =
+        a.requests.where((r) => r.path.endsWith('/decision')).single;
+    expect(decision.method, 'POST');
+    expect(decision.headers['X-Acting-Party'], personId);
+    expect(decision.headers['If-Match'], '"2"');
+    expect(decision.data, {'decision': 'ACCEPT', 'reason': '本人已核对直接合作原文'});
+    final status = _fact('当前状态', '合作有效');
+    await reveal(tester, status);
+    expect(status, findsOneWidget);
+    expect(
+        a.requests.skip(a.requests.indexOf(decision) + 1).any((r) =>
+            r.method == 'GET' && r.path == '/api/v1/gigs/records/$relationId'),
+        isTrue);
+    expect(
+        a.requests
+            .where((r) =>
+                r.method != 'GET' &&
+                (r.path.startsWith('/api/v1/gigs/') ||
+                    r.path.startsWith('/api/v1/trade/') ||
+                    r.path.startsWith('/api/v1/finance/')))
+            .toList(),
+        [decision]);
     expect(tester.takeException(), isNull);
   });
   testWidgets('通知只来自当前商单域；旧发现与商单通知入口正常返回', (tester) async {
