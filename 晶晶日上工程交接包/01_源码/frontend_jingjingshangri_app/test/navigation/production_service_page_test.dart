@@ -13,12 +13,15 @@ void main() {
         route: '/production/services');
     expect(find.byType(ProductionServicePage), findsOneWidget);
     expect(find.text('把故事拍成片'), findsOneWidget);
-    final image = t.widget<Image>(find.byType(Image));
-    expect((image.image as AssetImage).assetName,
-        'assets/images/editorial-rain.webp');
-    expect(image.semanticLabel, contains('视觉示意'));
+    final service = find.byType(ProductionServicePage);
+    expect(
+        find.descendant(of: service, matching: find.text('本页尚未提供可播放的服务介绍媒体')),
+        findsOneWidget);
+    expect(find.descendant(of: service, matching: find.byType(Image)),
+        findsNothing,
+        reason: '无服务媒体时使用诚实的占位说明，不展示替代图片');
     await v5.reveal(t, find.text('付费精修'));
-    expect(find.text('须从原制作项目核对追加约定'), findsOneWidget);
+    expect(find.text('从原制作项目核对追加约定'), findsOneWidget);
     expect(find.widgetWithText(FilledButton, '付费精修'), findsNothing);
     expect(find.widgetWithText(OutlinedButton, '代做样片'), findsNothing);
     expect(find.byType(NavigationBar), findsNothing);
@@ -83,7 +86,9 @@ void main() {
           home: const ProductionServicePage()));
       await t.pump();
       expect(find.text('把故事拍成片'), findsOneWidget);
-      await v5.reveal(t, find.textContaining('规格、金额与付款节点以原确认报价为准。'));
+      await v5.reveal(t, find.text('以本次确认报价为准'));
+      expect(find.text('以本次确认报价为准'), findsOneWidget);
+      expect(find.text('确认费用、付款节点及交付标准'), findsOneWidget);
       expect(find.textContaining('2500'), findsNothing);
       expect(find.textContaining('2,500'), findsNothing);
       expect(find.textContaining('90秒'), findsNothing);

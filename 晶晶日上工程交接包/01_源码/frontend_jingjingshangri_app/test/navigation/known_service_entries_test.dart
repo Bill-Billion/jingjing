@@ -99,20 +99,24 @@ void main() {
   }
 
   testWidgets('帮助的个人信息投诉进入限定原服务，一般反馈进入独立工单', (t) async {
-    final session =
-        (await t.runAsync(() => buyerSession(FakeAccountAdapter())))!;
+    final adapter = FakeAccountAdapter();
+    final session = (await t.runAsync(() => buyerSession(adapter)))!;
+    final initialRequestCount = adapter.requests.length;
     String? opened;
     await host(t, session, const HelpFeedbackPage(), (route) => opened = route);
-    await v5.reveal(t, find.text('提交反馈或举报'));
-    expect(
-        t
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '提交反馈或举报'))
-            .onPressed,
-        isNotNull);
+    final support = find.widgetWithText(FilledButton, '向平台提交问题');
+    expect(support.hitTestable(), findsOneWidget);
+    await t.tap(support);
+    await v5.frames(t);
+    expect(opened, '/support/new');
+    Navigator.of(t.element(find.text('原业务入口'))).pop();
+    await v5.frames(t);
     await v5.reveal(t, find.text('个人信息投诉与保护'));
     await t.tap(find.text('个人信息投诉与保护'));
     await v5.frames(t);
     expect(opened, '/privacy?view=complaint');
+    expect(adapter.requests.skip(initialRequestCount), isEmpty,
+        reason: '打开任一入口都不会自行提交或读取另一类服务');
     expect(t.takeException(), isNull);
   });
 }
