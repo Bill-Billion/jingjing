@@ -180,9 +180,9 @@ async function main() {
   const app = fromBackend('./src/http/account-api').createAccountApi({ db, secret: crypto.randomBytes(32).toString('base64'),
     sms: { async call(operation, input) { assert.equal(operation, 'send'); assert(Object.values(phones).includes(input.phone)); sent.set(input.phone, input.code); return { accepted: true, provider_request_id: 'synthetic-pr18-local-only' }; } },
     supplyStorageFactory: storageFactory, supplyEnv: { NODE_ENV: 'test' }, governanceEnvironment: 'SANDBOX',
-    artistIdentityProviderFactory: () => ({ async assertReady() {}, async verify(input) {
-      return { request_key: input.request_key, person_id: input.person_id, status: 'VERIFIED', issuer: 'synthetic.pr18.identity', subject_fingerprint: sha(Buffer.from(input.account_id)), age_band: 'ADULT', valid_until: validUntil, evidence_ref: 'synthetic:pr18-identity', liveness_verified: true, phone_verified: true };
-    } }),
+    artistIdentityProviderFactory: () => require('./support/synthetic-identity-provider.cjs')({
+      namespace: 'synthetic.pr18.identity', allowedAccounts: () => [people.sponsor?.accountId, people.producer?.accountId],
+    }),
     tradeProvidersFactory: () => ({ get(code) { assert(providers); return providers.get(code); } }),
     authSettings: { resendMs: 1000, phoneSendsPerHour: 1000, ipSendsPerHour: 1000, totalSendsPerHour: 1000, ipLoginsPerMinute: 1000 }, allowedOrigins: origins });
   apiServer = http.createServer((req, res) => {
@@ -284,10 +284,27 @@ async function main() {
   const hostingContext = {}, resolveHostingPrincipal = async ctx => ctx === hostingContext ? { subject_ref: principal.subject_ref } : null;
   const artistServices = fromBackend('./src/modules/artists/services').createArtistServices(db, { resolvePrincipal: resolveHostingPrincipal, merchantPartyId: sponsorOrganizationId });
   const hostingTrade = fromBackend('./src/modules/trade/repository').createTradeRepository(db, { resolvePrincipal: resolveHostingPrincipal });
-  const hostingSpec = await tr(await call('POST', '/trade/specifications', { person: sponsor, party: sponsorOrganizationId, body: {
+  const hostingBody = {
     previous_spec_id: null, title: 'PR18合成人物一个月托管', provider_party_id: sponsorOrganizationId, line_kind: 'OTHER', unit_minor: 2900, currency: 'CNY',
     product_profile: { version: 'V5', type: 'AVATAR_HOSTING' }, specification: { version: 'synthetic-v1', service_tier: '仅隔离合成托管', service: { kind: 'AVATAR_HOSTING', unit: 'AVATAR_MONTH', rule_version: 'V5-20261013', source_ref: 'synthetic:pr18-hosting', retry_limit: 0, hosting_months: 1, halo_level: null, failure_policy: 'REFUND_UNDELIVERED' }, deliverables: ['该合成人物一个月托管权益'], terms: '仅PR18隔离服务，不代表真实托管或自动扣款。' }
-  } }));
+  };
+  const specCount = async () => Number((await db.execute(
+    "SELECT COUNT(*) AS total FROM trade_records WHERE kind='SPEC' AND merchant_party_id=?", [sponsorOrganizationId]))[0][0].total);
+  const beforeSpecs = await specCount(), hostingKey = key();
+  const hostingWrite = { person: sponsor, party: sponsorOrganizationId, body: hostingBody, operationKey: hostingKey };
+  const deniedHosting = await request('POST', '/trade/specifications', { ...hostingWrite, status: 409 });
+  assert.equal(deniedHosting.body.error.code, 'VERIFIED_ADULT_REQUIRED');
+  assert.equal(await specCount(), beforeSpecs);
+  const sponsorPerson = await call('POST', '/artists/people', { person: sponsor, party: sponsor.personalPartyId,
+    body: { display_name: 'PR18合成托管经办人（无真人）' } });
+  assert.equal((await call('POST', `/artists/people/${sponsorPerson.id}/identity`, { person: sponsor,
+    party: sponsor.personalPartyId, body: { session_ref: 'synthetic:pr18-sponsor-identity' } })).current_status, 'VERIFIED');
+  const openedSpec = await call('POST', '/trade/specifications', hostingWrite);
+  const replayedSpec = await call('POST', '/trade/specifications', hostingWrite);
+  assert.equal(replayedSpec.id, openedSpec.id);
+  assert.equal(await specCount(), beforeSpecs + 1);
+  checks.push('Unverified sponsor OWNER gets VERIFIED_ADULT_REQUIRED with zero specs; approved synthetic identity uses the sponsor personal party, then the same organization and original key create exactly one specification');
+  const hostingSpec = await tr(openedSpec);
   let hosting = await artistServices.request(hostingContext, { person_id: records.performer.id, party_id: producer.personalPartyId, avatar_id: records.avatar.id, spec_id: hostingSpec.id, renewal_reminder: false, operation_key: key() });
   const hostingQuote = await tr(await call('POST', '/trade/quotes', { person: sponsor, party: sponsorOrganizationId, body: { buyer_party_id: producer.personalPartyId, lines: [{ line_id: 'hosting', spec_id: hostingSpec.id, quantity: 1 }], installments: [{ key: 'hosting', trigger: 'ORDER_ACCEPTED', allocations: [{ line_id: 'hosting', amount_minor: 2900 }], apple_product_id: null }], channel: 'ALIPAY', transaction_model: 'PLATFORM_PRINCIPAL', rule_id: ruleId, expires_at: validUntil, payment_window_minutes: 30, license_reservation_id: null, artist_service_source: { service_id: hosting.id } } }));
   const hostingOrder = await call('POST', `/trade/quotes/${hostingQuote.id}/acceptance`, { person: producer, party: producer.personalPartyId, version: hostingQuote.object_version, body: { quote_sha256: hostingQuote.content_sha256 } });
