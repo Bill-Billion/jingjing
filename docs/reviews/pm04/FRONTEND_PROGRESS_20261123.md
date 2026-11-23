@@ -25,6 +25,18 @@
 
 - 最后 11 项本机专项：实际消息/公开搜索/身份/广场 39/39，艺人 53/53，评价/权益12/12。另做 [FE-06 前端预核对](FRONTEND_G2_PRECHECK_20261123.md)，监护/钱包/隐私/权益/合同独立回归 60通过/1既有跳过，不代正式专项。
 
+- [远端 f9d0b419](https://github.com/Bill-Billion/jingjing/actions/runs/45138605272) 选定 App 908/11/1。Stage20 报表已真正走通，最后浏览器旧断言要求79项、实际80项。当前仅改测试共用同一 80 项/7 类口径，按真实路由逐个访问，明确校验 W18 充值退款仅在财务分组一次、原地址/标题/高亮正确，保留 390px 界面测试；更改后需重新跑 Stage20 和后五步。
+
+## 固定候选复验
+
+App 固定输入 `ebaef1837b0020f577901dd46b54f6324a23aba1`，目录树 `453e5e42bc6bda600f20bd449a09cda7ecf7fe96`。此后改动仅证据文档和浏览器脚本，无 App 或 Vue 源码差异。
+
+- 完整 App 1230通过、0失败、1既有跳过：`test/privacy/pm01_live_copy_test.dart` 只有指定同库隔离执行器注入 `JX_PM01_APP_FIXTURE` 才可运行。本机没有这份合成夹具；不算通过，也不混入原74。
+- 全量 Dart 静态分析退出0、无 warning/error（106 infos），历史截图整文件49/49。
+- 同 App 源码的隔离 Android debug APK 构建成功；固定无效 HTTPS 及 `.acceptance` 后缀，SHA-256 `d3b858553ed77e9ff8cdd9aec327824ebdc9ff31369dd7817df71f66397a9b71`。没有安装、没有替换旧 APK，不是签名包或真机验收。
+- 同一固定 Vue 源码的 `npm test` 及 `npm run build` 退出0，不代替真实隔离浏览器。
+
+
 ## 构建和设备：分开记
 
 | 项目 | 当前真实证据 | 仍未验证 |
