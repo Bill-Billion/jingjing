@@ -1,0 +1,35 @@
+# PM04 前端阶段回执（2026-11-23）
+
+## 收到、已完成与当前证据
+
+- 原要求：[前端指令](../../pm04/PM04_FRONTEND_CODEX.md)、[执行计划](../../pm04/PM04_PLAN.md)、[历史 App 失败源](../pm03-joint-20261118/APP_FAILURES_FOLLOWUP.json)。FE-02 已实际开始，不把历史 74 项当作未开发功能。原有前端工作树和未提交内容不动。
+- [逐项记录 74 项](APP_FAILURE_TRIAGE.csv)，每项保留原日志行；22 项已按现有行为或合成回包精确复测通过，52 项待单独归因或修复。未知不猜为产品缺陷、也不当通过。本机早期全量额外 1 个样片截图失败在未修改的同机基线同样复现（`databaseFactory not initialized`），不混入原74。
+- [e7e6ae8d](https://github.com/Bill-Billion/jingjing/commit/e7e6ae8d) 同机四文件 45通过/12失败→52通过/6失败，无新增失败：旧价不发 checkout POST；预览撤权后清内容；退出或切身份后清私有剧本；原制作反馈/通告撤回以原记录、原键和版本重试。
+- [f4d4d1cf](https://github.com/Bill-Billion/jingjing/commit/f4d4d1cf) 同机同四文件 58/58：通告读取失败保留过滤条件、重读不写入，401 保留原回跳且不继续办理；剧本确认、样片原版本反馈及独立制作/许可入口。
+- [a740b357](https://github.com/Bill-Billion/jingjing/commit/a740b357) 三文件 29/29：四类条件匹配（包括独立试镜入口）的同条件续页、命中理由、回到普通搜索；单条/批量通知结果未知时先挡住另行刷新，仅恢复同身份、同快照、同 key 的原操作。
+- [a48c9862](https://github.com/Bill-Billion/jingjing/commit/a48c9862) 原样接入 PR43 的两文件合成 Stage16 夹具 `62fa0a3`。仅本机 Node/解析及通用启动/合成供应者 13 项通过；本机无独立 MySQL 配置，preflight 明确拒跑 `ISOLATED_TEST_ENV_REQUIRED`，本机未触达实际制作浏览器。远端 [45132805455](https://github.com/Bill-Billion/jingjing/actions/runs/45132805455) 已用合成隔离库跑通 Stage16；Stage18 准备时成年实名前置 409，随后七步仍跳过，原负例不得删除。后端运行时、接口 `0.31.79-rc.1` 和 0225 迁移未变。
+
+- [权限与发票专项](https://github.com/Bill-Billion/jingjing/commit/423b05cbd7e727aac8da7e4815831f05b8d5ed5c) 4/4：登录后只读原许可不发办理写入；私人钱包仅在「我的」读取，广场公共窗不读取；错申请的真实样式合成依据不可见，回原申请正确重读后才可选；发票失败不显可申零额，原订单按真实收/退/待退/占用重读，不误报真实票据。
+- 远端 [App 选定套件](https://github.com/Bill-Billion/jingjing/actions/runs/45132805455/job/137551955999) 实际 checkout `3556c6236ede31d1f56ea9555b323a71f81242a7`：分析 0 warning（78 info）、863通过/56失败/1跳过；较同套的 844/74/1 修复18条加新增标题用例。这个回执不包含上方较新的4个专项，不代本机完整 App 回归。
+
+## 构建和设备：分开记
+
+| 项目 | 当前真实证据 | 仍未验证 |
+|---|---|---|
+| App analyzer | `0a668ef3` 同 CI 范围 10 个 warning 清零、exit 0；全目录另有旧 native helper warnings；受影响文件分批复测 | 当前固定候选的完整分析及未解决项 |
+| Android | `f4d4d1cf` 独立一次性树，官方仓库既有脚本只加入 debug 应用后缀、无效 HTTPS 地址和测试标识，`assembleDebug` 成功。APK SHA256 `931fb2383d8be113ef162c15f1364ae0e71933a37b3c3a93339b9a7448be48b3` | 未安装、未替换旧 APK，非签名发布、非真机/业务 验收 |
+| Flutter Web | 本机 `0a668ef3` 成功，固定 `a48c9862` 再跑 | 新版完整回执及同记录实操 |
+| Vue 管理网页 | 本机 `0a668ef3` npm test、类型检查/构建及本机回环模拟登录下导航通过，固定 `a48c9862` 再跑 | 实际隔离接口浏览器 Stage16、后续八步，不拿本机模拟代验 |
+
+固定命令运行输入 `a48c98625da81661b778077271ef89d2893f922a`：App 目录树 `e8e5ec273200f5dbfd48f563f81a8df59834493a`，Vue `9c9b60b2dbf839fc0fc00299d8058fea0b860059`，后端 `1b3b6b86cec55c8fa1cf0979b8d3b874122f2b2e`；这不是只凭 HEAD 就声称全部检查通过。较新提交必须另记准确受测版本。
+
+## 能独立准备与必须共同验收的边界
+
+| 事项 | 前端已可执行 | 仍需实际外部条件 |
+|---|---|---|
+| FE-02 (G0) | 按现有功能与原断言定位剩余失败、可复现才做小补丁，按固定候选重跑 App/分析/Android/两种 Web 构建 | 自动检查全绿不是凭提交宣布；正式真机仍另验 |
+| JT-03 (G1) | 保留 [17 范围与角色对照](../../collaboration/PM03_BATCH_DELIVERY_ALIGNMENT_20261117.md) 和 [PR40 联合交接](../../collaboration/PM03_JOINT_HANDOFF_20261118.md)，使用独立合成账号验证同一记录、权限、原 key/版本；准备 App/Flutter Web/Vue 可操作版本 | 后端已冻结 SHA、共享合成环境及角色/同一业务 ID；同订单的原文审核、退款/下载回执、多方角色实操和维护者审阅未签 |
+| FE-06 (G2) | 保留 [原要求冻结表](../../pm04/PM04_REQUIREMENTS_FREEZE_20261118.md) 的八组证据与 W18 既有入口；一旦确证未成年付费越权、儿童资料泄漏或原退款丢失立即 P0 | G2 专项仍必交，不把本机/合成环境、单端/单案例当所有未成年人覆盖；真实外部服务和真机单列 |
+| QA-07／RL-08 | 按现有交付、失败与外部依赖留下查验证据，不代签 | 尚未正式整批验收、版本签收或上线决定；保持 NO-GO |
+
+18组 0/18、12条整链历史部分、151条 19/124/8，不修改 PR40 原始历史回执、不合并、不部署。
