@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /** Normal browser UI → isolated real HTTP/MySQL. Business writes never bypass UI. */
 import assert from 'node:assert/strict'
+import assertCashReport from './support/pr20-cash-report.cjs'
 import { ensureWorkspaceNavigation, checkWorkspaceNavigation } from './workspace-navigation-check.mjs'
 import {readFile,writeFile,mkdir,stat} from 'node:fs/promises'
 import {createRequire} from 'node:module'
@@ -250,7 +251,7 @@ async function run(){
  await check('原后台worker真实生成三类结果，JSON指纹与业务来源逐行核对',async()=>{
   await control('/worker?enabled=true')
   for(const [name,actor,operator] of [...['CASH','SETTLEMENT','WORKLOAD'].map(k=>['queued'+k,reviewer,true]),['ownerSettlement',payer,false]]){
-   let r=await report(actor,facts[name].id,{operator});for(let n=0;r.current_status!=='SUCCEEDED';n++){assert(n<60);await actor.page.waitForTimeout(250);r=await refresh(actor,r.id)}reportValid(r);facts[name]=r;await save();if(name==='queuedCASH'){assert.equal(r.result.totals.RECEIPT,20000);assert.equal(r.result.totals.REFUND,100)}if(name==='queuedSETTLEMENT')assert.equal(r.result.totals.PAYOUT,-2000);if(name==='queuedWORKLOAD'){assert.equal(r.result.row_count,2);assert.equal(r.result.totals.ACCEPTED,2)}if(name==='ownerSettlement')assert(r.result.rows.every(row=>row.party_id===party(payer)))
+   let r=await report(actor,facts[name].id,{operator});for(let n=0;r.current_status!=='SUCCEEDED';n++){assert(n<60);await actor.page.waitForTimeout(250);r=await refresh(actor,r.id)}reportValid(r);facts[name]=r;await save();if(name==='queuedCASH')assertCashReport(r.result,{web:state.scenarios.web.tradeOrderId,app:state.scenarios.app.tradeOrderId,hosting:id('hostingOrder')});if(name==='queuedSETTLEMENT')assert.equal(r.result.totals.PAYOUT,-2000);if(name==='queuedWORKLOAD'){assert.equal(r.result.row_count,2);assert.equal(r.result.totals.ACCEPTED,2)}if(name==='ownerSettlement')assert(r.result.rows.every(row=>row.party_id===party(payer)))
   }
   await control('/worker?enabled=false');verification.push({check:'original leased worker generated four UI-requested reports',reports:['queuedCASH','queuedSETTLEMENT','queuedWORKLOAD','ownerSettlement'].map(k=>facts[k].id)})
  })

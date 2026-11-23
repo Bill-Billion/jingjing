@@ -473,7 +473,7 @@ async function main() {
     const name=side+kind[0]+kind.slice(1).toLowerCase()+'Report',r=await reportRead(records[name],context(side));records[name]=r;assert.equal(r.current_status,'SUCCEEDED');assert(r.result.row_count>0);
     const csv=await request('GET',ops(`/reports/${r.id}/content`),context(side)),bytes=csv.body;assert(Buffer.isBuffer(bytes));assert(bytes.subarray(0,3).equals(Buffer.from([239,187,191])));assert.equal(csv.headers.get('cache-control'),'no-store');assert.equal(csv.headers.get('x-content-type-options'),'nosniff');
     const text=bytes.toString('utf8');assert(text.includes('\r\n'));assert(!text.replaceAll('\r\n','').includes('\n'));assert(text.includes('"environment","SANDBOX"'));assert(text.includes('"row_count",'+r.result.row_count));assert.notEqual(sha(bytes),r.content_sha256);
-    if(kind==='CASH'){assert.equal(r.result.totals.RECEIPT,20000);assert.equal(r.result.totals.REFUND,100);}
+    if(kind==='CASH') require('./support/pr20-cash-report.cjs')(r.result, { web: records.webProductionOrder.id, app: records.appProductionOrder.id, hosting: records.hostingOrder.id });
     if(kind==='SETTLEMENT') assert.equal(r.result.totals.PAYOUT,-2000);
     if(kind==='WORKLOAD'){assert.equal(r.result.row_count,2);assert.equal(r.result.totals.ACCEPTED,2);}
     scenarios[side][kind.toLowerCase()+'ReportId']=r.id;
@@ -482,7 +482,7 @@ async function main() {
   await request('GET',ops(`/reports/${records.webCashReport.id}`),{person:payer,party:payerOrganizationId,status:404});await request('GET',ops(`/reports/${records.appCashReport.id}/content`),{person:outsider,party:outsider.personalPartyId,status:404});
   await request('POST',ops('/reports'),{person:member,party:payerOrganizationId,body:{kind:'CASH',...period},status:403});await request('POST',ops('/reports'),{person:independentReviewer,body:{kind:'CASH',...period,period_end:period.period_start},status:400});
   const productionEmpty=await reportRequest('verificationProductionReport','CASH',{person:independentReviewer},{...period,environment:'PRODUCTION'});await runWorker();const emptyReport=await reportRead(productionEmpty,{person:independentReviewer});assert.equal(emptyReport.result.row_count,0);records.verificationProductionReport=emptyReport;
-  checks.push('Three CASH/SETTLEMENT/WORKLOAD reports per side really enqueue; original leased worker generates immutable snapshots with receipt20000/refund100,actual settlement/payout and two ACCEPTED paid productions; CSV real BOM/CRLF metadata/row count/no-store/nosniff with distinct CSV vs JSON hash; original formula safety escapes text while numeric negative amount stays numeric; requester-only/OWNER/bounds checked and PRODUCTION report excludes SANDBOX money');
+  checks.push('Three CASH/SETTLEMENT/WORKLOAD reports per side really enqueue; original leased worker generates immutable snapshots with separate production receipts (20000), hosting receipt (2900) and original refund (100), actual settlement/payout and two ACCEPTED paid productions; CSV real BOM/CRLF metadata/row count/no-store/nosniff with distinct CSV vs JSON hash; original formula safety escapes text while numeric negative amount stays numeric; requester-only/OWNER/bounds checked and PRODUCTION report excludes SANDBOX money');
 
   const blocked=[];for(const name of ['webBlockedReport','verificationRetryReport']) blocked.push(await reportRequest(name,'WORKLOAD',{person:independentReviewer}));
   await grant('independentReviewer','OPERATIONS_REPORT',false);await runWorker();await grant('independentReviewer','OPERATIONS_REPORT',true);
