@@ -200,21 +200,37 @@ void main() {
         child: MaterialApp(
             home: ProjectIncomePage(view: 'agreement', recordId: id))));
     await frames(tester);
-    await tester.ensureVisible(find.byType(TextField));
-    await tester.enterText(find.byType(TextField), '我确认这份原约定');
+    final opinion = find.byWidgetPredicate(
+        (w) => w is TextField && w.decoration?.labelText == '本人会签意见');
+    final checklist =
+        find.widgetWithText(CheckboxListTile, '我已阅读全部原条款、金额、分成及变更影响，确认这一份版本');
+    final scroll = find.byType(Scrollable).first;
+    await tester.scrollUntilVisible(opinion, 230, scrollable: scroll);
+    await tester.enterText(opinion, '我确认这份原约定');
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byType(CheckboxListTile));
+    await tester.scrollUntilVisible(checklist, 160, scrollable: scroll);
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(CheckboxListTile));
+    await tester.tap(checklist.hitTestable());
     await tester.pump();
-    await tester.ensureVisible(find.text('本人同意本次约定'));
+    await tester.scrollUntilVisible(find.text('本人同意本次约定'), 150,
+        scrollable: scroll);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('本人同意本次约定'));
+    await tester.tap(find.text('本人同意本次约定').hitTestable());
     await frames(tester);
     expect(s.projectsPending, hasLength(1));
+    expect(find.text('已同意本次原文'), findsNothing);
+    final proofPath = '/api/v1/projects/records/$id/confirmations';
+    final postPath = '/api/v1/projects/income-agreements/$id/confirmation';
     final original = a.requests.lastWhere(
         (r) => r.method == 'POST' && r.path.contains('confirmation'));
+    expect(original.path, postPath);
+    expect(original.headers['X-Acting-Party'], personId);
+    expect(
+        a.requests
+            .skip(a.requests.indexOf(original) + 1)
+            .any((r) => r.method == 'GET' && r.path == proofPath),
+        isTrue);
     expect(original.data, {
       'content_sha256': projectDigest(agreement['data']),
       'decision': 'APPROVED',
@@ -236,7 +252,16 @@ void main() {
     expect(retried.headers['Idempotency-Key'],
         original.headers['Idempotency-Key']);
     expect(retried.headers['If-Match'], original.headers['If-Match']);
+    expect(retried.path, postPath);
+    expect(retried.headers['X-Acting-Party'], personId);
     expect(retried.data, original.data);
+    expect(a.requests.where((r) => r.method == 'POST' && r.path == postPath),
+        hasLength(2));
+    expect(
+        a.requests
+            .skip(a.requests.indexOf(retried) + 1)
+            .any((r) => r.method == 'GET' && r.path == proofPath),
+        isTrue);
     await tester.scrollUntilVisible(find.text('我的原会签说明'), 300,
         scrollable: find.byType(Scrollable).first);
     expect(find.text('我的原会签说明'), findsOneWidget);

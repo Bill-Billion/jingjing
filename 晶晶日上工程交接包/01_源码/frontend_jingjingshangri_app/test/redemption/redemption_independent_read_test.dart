@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:jingjingshangri_app/account/account_session.dart';
 import 'package:jingjingshangri_app/engagement/community_support.dart';
+import 'package:jingjingshangri_app/engagement/activity_summary_card.dart';
 import 'package:jingjingshangri_app/redemption/redemption_pages.dart';
 import '../account/fake_account_api.dart';
 import '../engagement/community_safety_test.dart' show communitySession;
@@ -69,8 +70,24 @@ void main() {
       await tester.runAsync(
           () => Future<void>.delayed(const Duration(milliseconds: 40)));
       await tester.pumpAndSettle();
-      expect(find.text('合成面试权益'), findsOneWidget);
-      expect(find.text('已绑定本人'), findsOneWidget);
+      if (view == 'grants') {
+        // The same title is intentionally present on the exact entitlement
+        // card and its compact row; the action and status remain one record.
+        expect(find.text('合成面试权益'), findsNWidgets(2));
+        expect(find.text('查看条款与办理进展'), findsOneWidget);
+        expect(find.text('已绑定本人'), findsOneWidget);
+      } else {
+        expect(find.text('合成面试权益'), findsOneWidget);
+        final summary = tester
+            .widget<ActivitySummaryCard>(find.byType(ActivitySummaryCard));
+        expect(summary.value, '已绑定本人');
+      }
+      final path = '/api/v1/redemption/grants'
+          "${view == 'grant' ? '/$invitationId' : ''}";
+      final reads =
+          adapter.requests.where((r) => r.method == 'GET' && r.path == path);
+      expect(reads, hasLength(1));
+      expect(reads.single.headers['X-Acting-Party'], personId);
       expect(adapter.requests.where((r) => r.path == '/api/v1/trade/records'),
           isEmpty);
     });
@@ -175,8 +192,21 @@ void main() {
           'cast': null,
           'profile_id': artists.recordKey
         });
-        exposure['current_status'] = 'BOUND';
-        exposure['effective_status'] = 'BOUND';
+        expect(request.path, '/api/v1/redemption/grants/$invitationId/bind');
+        expect(request.headers['X-Acting-Party'], personId);
+        expect(request.headers['If-Match'], isNotEmpty);
+        expect(request.headers['Idempotency-Key'], isNotEmpty);
+        final boundData = <String, dynamic>{
+          ...data,
+          'binding': request.data,
+          'fulfillment_party_id': personId,
+        };
+        exposure
+          ..['current_status'] = 'BOUND'
+          ..['effective_status'] = 'BOUND'
+          ..['object_version'] = 2
+          ..['data'] = boundData
+          ..['content_sha256'] = communityDigest(boundData);
         return envelope(exposure);
       }
       if (request.path == '/api/v1/redemption/grants/$invitationId') {
