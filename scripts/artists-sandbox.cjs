@@ -11,6 +11,7 @@ const mysql = require(path.join(backend, 'node_modules/mysql2/promise'));
 const { openDatabase } = require(path.join(backend, 'src/infrastructure/database'));
 const { migrate } = require(path.join(backend, 'src/infrastructure/database/migrator'));
 const { createPartyRepository } = require(path.join(backend, 'src/modules/party/repository'));
+const assert = require('node:assert/strict');
 const { createAuthRepository } = require(path.join(backend, 'src/modules/auth/repository'));
 const { maintainOperatorGrant } = require(path.join(backend, 'src/modules/governance/operator-access'));
 const { createCustomizationRepository } = require(path.join(backend, 'src/modules/customization/repository'));
@@ -59,6 +60,7 @@ async function main() {
   process.stdin.setEncoding('utf8');
   process.stdin.on('data',data=>{if(data.trim()==='quit')stop();});
   process.stdin.unref?.();
+  let phase='ISOLATED_DATABASE';
   try {
     control=await mysql.createConnection({host:env.MYSQL_HOST,port:Number(env.MYSQL_PORT),user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE});
     checkRunning();
@@ -95,15 +97,43 @@ async function main() {
     const halo=await review(await repo.requestHalo(artist.ctx,{...base,level:1,ownership_promise:true,evidence_asset_ids:[evidence.id],operation_key:randomUUID()}));
     const ruleId=randomUUID(),rule=createRuleContent({id:ruleId,rule_key:'synthetic.artist.services',version:'1',terms:{notice:'仅本机合成服务订单，不开真实收费'}});
     await db.execute('INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,?)',[ruleId,'synthetic.artist.services','1',JSON.stringify(rule),'2020-01-01 00:00:00',people.merchant.account_id,'EFFECTIVE']);
+    phase='PREPARE_SERVICES';
     const specs={};let hosting,reviewService=null,freeCreation=null,certificationMaterials=null;
     for(const kind of (modern?['HALO_REVIEW']:['AVATAR_CREATION','AVATAR_HOSTING','HALO_REVIEW'])){
-      let spec=await trade.createSpec(people.merchant.ctx,{party_id:merchant.party_id,previous_spec_id:null,title:'仅合成测试 '+kind,provider_party_id:merchant.party_id,line_kind:'OTHER',unit_minor:kind==='AVATAR_CREATION'?6000:kind==='AVATAR_HOSTING'?2900:1000,currency:'CNY',product_profile:{version:'V5',type:kind},specification:{version:'synthetic-v1',service_tier:'本机合成测试',service:{kind,unit:kind==='AVATAR_CREATION'?'PERSON_FIRST':kind==='AVATAR_HOSTING'?'AVATAR_MONTH':'HALO_APPLICATION',rule_version:modern?contractPolicy:'V5-20261013',source_ref:'synthetic:only',retry_limit:kind==='AVATAR_CREATION'?1:0,hosting_months:kind==='AVATAR_HOSTING'?1:null,halo_level:kind==='HALO_REVIEW'?2:null,failure_policy:modern?'REVIEW_FEE_NON_REFUNDABLE':'REFUND_UNDELIVERED'},deliverables:['仅合成档案或服务结果'],terms:'测试费用不会向外部渠道发送'},operation_key:randomUUID()});
+      phase='CREATE_SPEC:'+kind;
+      const specInput={party_id:merchant.party_id,previous_spec_id:null,title:'仅合成测试 '+kind,provider_party_id:merchant.party_id,line_kind:'OTHER',unit_minor:kind==='AVATAR_CREATION'?6000:kind==='AVATAR_HOSTING'?2900:1000,currency:'CNY',product_profile:{version:'V5',type:kind},specification:{version:'synthetic-v1',service_tier:'本机合成测试',service:{kind,unit:kind==='AVATAR_CREATION'?'PERSON_FIRST':kind==='AVATAR_HOSTING'?'AVATAR_MONTH':'HALO_APPLICATION',rule_version:modern?contractPolicy:'V5-20261013',source_ref:'synthetic:only',retry_limit:kind==='AVATAR_CREATION'?1:0,hosting_months:kind==='AVATAR_HOSTING'?1:null,halo_level:kind==='HALO_REVIEW'?2:null,failure_policy:modern?'REVIEW_FEE_NON_REFUNDABLE':'REFUND_UNDELIVERED'},deliverables:['仅合成档案或服务结果'],terms:'测试费用不会向外部渠道发送'},operation_key:randomUUID()};
+      if (Object.keys(specs).length === 0) {
+        phase='UNVERIFIED_MERCHANT_SPEC:'+kind;
+        const specCount = async () => Number((await db.execute(
+          "SELECT COUNT(*) AS total FROM trade_records WHERE kind='SPEC' AND merchant_party_id=?",
+          [merchant.party_id]))[0][0].total);
+        const before = await specCount();
+        await assert.rejects(() => trade.createSpec(people.merchant.ctx,specInput),
+          error => error.code === 'VERIFIED_ADULT_REQUIRED');
+        assert.equal(await specCount(),before);
+        phase='VERIFY_SYNTHETIC_MERCHANT';
+        const owner=people.merchant, personal={party_id:owner.personal_party_id};
+        const profile=await repo.createPerson(owner.ctx,{...personal,display_name:'合成成年平台经办人',operation_key:randomUUID()});
+        const submitted=await repo.prepareIdentity(owner.ctx,{...personal,person_id:profile.id,session_ref:'synthetic:platform-operator',operation_key:randomUUID()});
+        const result=await repo.applyIdentity(submitted.id,{request_key:submitted.data.request_key,person_id:profile.id,status:'VERIFIED',issuer:'synthetic-only',subject_fingerprint:'c'.repeat(64),age_band:'ADULT',valid_until:until,evidence_ref:'synthetic:platform-operator-no-real-person',liveness_verified:true,phone_verified:true});
+        assert.equal(result.current_status,'VERIFIED');
+        phase='CREATE_SPEC:'+kind;
+        const opened=await trade.createSpec(owner.ctx,specInput);
+        const replay=await trade.createSpec(owner.ctx,specInput);
+        assert.equal(replay.id,opened.id);
+        assert.equal(await specCount(),before+1);
+      }
+      let spec=await trade.createSpec(people.merchant.ctx,specInput);
+      phase='REVIEW_SPEC:'+kind;
       spec=await trade.review(people.reviewer.ctx,{record_id:spec.id,expected_version:spec.object_version,decision:'APPROVED',reason:'合成商品',operation_key:randomUUID()});specs[kind]=spec.id;
       if(kind==='AVATAR_HOSTING'||modern&&kind==='HALO_REVIEW'){
         const price=kind==='HALO_REVIEW'?1000:2900;
+        phase='REQUEST_SERVICE:'+kind;
         const service=await services.request(artist.ctx,{...base,avatar_id:kind==='HALO_REVIEW'?null:avatar.id,spec_id:spec.id,renewal_reminder:false,operation_key:randomUUID()});
+        phase='CREATE_QUOTE:'+kind;
         let quote=await trade.quote(people.merchant.ctx,{party_id:merchant.party_id,buyer_party_id:artist.personal_party_id,lines:[{line_id:'service',spec_id:spec.id,quantity:1}],installments:[{key:'all',trigger:'ORDER_ACCEPTED',allocations:[{line_id:'service',amount_minor:price}],apple_product_id:null}],channel:'ALIPAY',transaction_model:'PLATFORM_PRINCIPAL',rule_id:ruleId,expires_at:until,payment_window_minutes:30,license_reservation_id:null,artist_service_source:{service_id:service.id},operation_key:randomUUID()});
         quote=await trade.review(people.reviewer.ctx,{record_id:quote.id,expected_version:quote.object_version,decision:'APPROVED',reason:'合成报价',operation_key:randomUUID()});const order=await trade.accept(artist.ctx,{record_id:quote.id,party_id:artist.personal_party_id,expected_version:quote.object_version,quote_sha256:quote.content_sha256,operation_key:randomUUID()});
+        phase='PAYMENT:'+kind;
         const config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:merchant.party_id,config_revision:'synthetic'};const payment=await trade.preparePayment(artist.ctx,{party_id:artist.personal_party_id,order_id:order.id,installment_key:'all',operation_key:randomUUID()},config);
         await trade.applyPayment({...config,payment_id:payment.id,currency:'CNY',amount_minor:price,transaction_id:'synthetic.'+payment.id,status:'SUCCEEDED',product_id:null,app_account_token:null});const result=await services.sync(artist.ctx,{...base,record_id:service.id,operation_key:randomUUID()});if(kind==='HALO_REVIEW')reviewService=result;else hosting=result;
       }
@@ -150,7 +180,10 @@ async function main() {
     starting=false;
     const result=await cleanup();
     if(e.code==='LOCAL_STOP_REQUESTED')console.log(JSON.stringify(result));
-    else throw e;
+    else {
+      console.error('ARTISTS_SANDBOX_PHASE '+phase);
+      throw e;
+    }
   }
 }
 main().catch(e=>{console.error(e.code||'ARTISTS_SANDBOX_START_FAILED');process.exitCode=1;});
