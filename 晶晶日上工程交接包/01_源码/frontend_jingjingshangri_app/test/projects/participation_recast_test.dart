@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:jingjingshangri_app/account/account_api.dart';
 import 'package:jingjingshangri_app/account/account_session.dart';
+import 'package:jingjingshangri_app/engagement/community_support.dart';
 import 'package:jingjingshangri_app/projects/participation_pages.dart';
 import 'package:jingjingshangri_app/projects/project_models.dart';
 import 'package:jingjingshangri_app/projects/project_pages.dart';
@@ -36,6 +37,84 @@ Future<void> settle(WidgetTester t) async {
 }
 
 void main() {
+  for (final state in ['CONFIRMED', 'WITHDRAWN', 'DENIED']) {
+    testWidgets('换角未知结果恢复只核本人候选，状态 $state 不读取旧私约', (t) async {
+      final c = projectData('CANDIDATE',
+          status: state == 'DENIED' ? 'CONFIRMED' : state);
+      final result = projectData('PARTICIPATION', status: 'IN_REVIEW');
+      const suffix = 'participations/$assetKey/amendments';
+      const path = '/api/v1/projects/$suffix';
+      final body = {'candidate_id': candidateKey, 'reason': '原换角申请'};
+      var writes = 0;
+      late FakeAccountAdapter a;
+      a = FakeAccountAdapter(handler: (r) {
+        if (r.path == path && r.method == 'POST') {
+          writes++;
+          if (writes == 1) {
+            return envelope({
+              'error': {
+                'code': 'RESULT_UNKNOWN',
+                'message': 'synthetic timeout'
+              }
+            }, status: 503, error: true);
+          }
+          return envelope(result);
+        }
+        if (r.path == '/api/v1/projects/records/$candidateKey' &&
+            state != 'DENIED') return envelope(c);
+        if (r.path == '/api/v1/projects/projects') {
+          return envelope({'items': <Object>[], 'next_cursor': null});
+        }
+        if (r.path.startsWith('/api/v1/projects/')) {
+          return envelope({
+            'error': {'code': 'PROJECT_NOT_FOUND', 'message': 'private'}
+          }, status: 404, error: true);
+        }
+        return a.defaultReply(r);
+      });
+      final s = (await t.runAsync(() => communitySession(a)))!;
+      await t.runAsync(() async {
+        await expectLater(
+            CommunityApi(s, 'projects').write(suffix, body, version: 2),
+            throwsA(isA<AccountError>()));
+      });
+      expect(s.projectsPending, hasLength(1));
+      final original = a.requests.singleWhere((r) => r.path == path);
+      await t.pumpWidget(ChangeNotifierProvider<AccountSession>.value(
+          value: s,
+          child: const MaterialApp(home: ProjectParticipationPage())));
+      await settle(t);
+      await t.scrollUntilVisible(find.text('先核对当前记录'), 200,
+          scrollable: find.byType(Scrollable).first);
+      await t.tap(find.text('先核对当前记录').hitTestable());
+      await settle(t);
+      expect(
+          a.requests.any((r) => r.method == 'GET' && r.path.contains(assetKey)),
+          isFalse);
+      expect(
+          a.requests.any((r) => r.path.endsWith('/recast-sources')), isFalse);
+      if (state == 'DENIED') {
+        expect(writes, 1);
+        expect(s.projectsPending, hasLength(1));
+        expect(s.projectsAccessDenied, isTrue);
+      } else {
+        expect(s.projectsAccessDenied, isFalse);
+        await t.ensureVisible(find.text('使用原编号继续核对'));
+        await t.pumpAndSettle();
+        await t.tap(find.text('使用原编号继续核对').hitTestable());
+        await settle(t);
+        expect(writes, 2);
+        expect(s.projectsPending, isEmpty);
+        final retry = a.requests.lastWhere((r) => r.path == path);
+        for (final key in ['Idempotency-Key', 'If-Match', 'X-Acting-Party']) {
+          expect(retry.headers[key], original.headers[key]);
+        }
+        expect(retry.data, original.data);
+      }
+      await t.pumpWidget(const SizedBox.shrink());
+      s.dispose();
+    });
+  }
   test('换角来源绑定本人候选及同角色版本，仅接收最小标识', () {
     final c = candidate();
     expect(participationRecastSources(sources(c), c)['items'], hasLength(1));

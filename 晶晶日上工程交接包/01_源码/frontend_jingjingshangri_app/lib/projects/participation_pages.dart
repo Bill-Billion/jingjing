@@ -586,6 +586,17 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
   @override
   Future<void> reconcilePending() async {
     final p = recoverySuffix!.split('/');
+    if (p.length == 3 && p[0] == 'participations' && p[2] == 'amendments') {
+      // The new performer has no access to the previous private agreement.
+      // Read the original request's own candidate, without imposing today's
+      // proposal eligibility on replay of a possibly committed operation.
+      final id = communityMap(recovery!['body'])['candidate_id'];
+      communityRequire(communityId(id));
+      final candidate = participationRecord(await api.read('records/$id'),
+          id: id, kind: 'CANDIDATE');
+      communityRequire(candidate['owner_party_id'] == session.partyId);
+      return;
+    }
     if (p.length > 1) {
       await api.read('records/${p[1]}');
     } else {
