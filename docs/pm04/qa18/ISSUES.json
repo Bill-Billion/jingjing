@@ -450,6 +450,46 @@
         "TASK-12"
       ],
       "limits": "15 scoped final browser checks, simulated channel only, physical Android and full 18-group regression remain; older invoice/refund retained as blocked evidence."
+    },
+    {
+      "id": "QA18-ENV-026",
+      "group": "G13",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "隔离短信缺少受控换号目标",
+      "actual": "原允许名单只包含已有测试账号，无法按正常换号流程收取新号码验证码。",
+      "expected": "仅BATCH合成环境允许对应角色的固定新号码；未知号码、伪造元数据和非BATCH仍拒绝。",
+      "evidence": "docs/testing/evidence/pm04-g1-account-wallet-20261125-10/phone-targets.log",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-account-wallet-20261125-10/phone/1795593889395-RESULT.json",
+      "fix_sha": "c5a09bbae7e362b16a363bba83f9696a9649dbb3",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "TASK-13"
+      ],
+      "limits": "8 scoped checks across original records and five driver attempts. Fresh uninterrupted full regression, physical Android and real SMS remain."
+    },
+    {
+      "id": "QA18-TEST-027",
+      "group": "G13",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "换号驱动的DTO、协议勾选和登录重入定位假设错误",
+      "actual": "误读/me结构、点击协议链接、等待旧页面按钮，及恢复脚本编码/状态释放先后导致4次停点；原业务记录已完成部分步骤。",
+      "expected": "按实际契约、真实登录路由及勾选位置办理，原记录接续，新号码登录后同账号同合同订单；不放宽认证。",
+      "evidence": "docs/testing/evidence/pm04-g1-account-wallet-20261125-10/phone/1795593172923-RESULT.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-account-wallet-20261125-10/phone/1795593889395-RESULT.json",
+      "fix_sha": "d8868a6c610744b54d126f144bb22d7a783403e2",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "TASK-13"
+      ],
+      "limits": "8 scoped checks across original records and five driver attempts. Fresh uninterrupted full regression, physical Android and real SMS remain."
     }
   ]
 }

@@ -1,0 +1,905 @@
+{
+  "source": "f3f2af30fb0f4ae22dbbf7e0873a9e4a295c1145",
+  "database": "jx_test_qa18_wallet_855aa12772eddb2cd513",
+  "synthetic_only": true,
+  "real_started_at": "2026-11-25T08:03:37.880Z",
+  "expires_at": "2026-11-25T16:03:37.880Z",
+  "clock_steps": [
+    {
+      "days": 0,
+      "at": "2025-10-21T08:03:37.880Z",
+      "method": "SET timestamp on isolated one-connection pool; no business-state/date SQL edits"
+    },
+    {
+      "days": 8,
+      "at": "2025-10-29T08:03:37.880Z",
+      "method": "SET timestamp on isolated one-connection pool; no business-state/date SQL edits"
+    },
+    {
+      "days": 374,
+      "at": "2026-10-30T08:03:37.880Z",
+      "method": "SET timestamp on isolated one-connection pool; no business-state/date SQL edits"
+    }
+  ],
+  "checks": [
+    {
+      "name": "api-app-vue-01-pending-not-issued",
+      "order_ids": [
+        "1e7d8bd9-4ebf-4fc7-9928-efdc75dd9bd9",
+        "3e8a61fa-3256-4346-aea1-19bb775ec542"
+      ]
+    },
+    {
+      "name": "api-app-vue-02-issued-once",
+      "order_ids": [
+        "1e7d8bd9-4ebf-4fc7-9928-efdc75dd9bd9",
+        "3e8a61fa-3256-4346-aea1-19bb775ec542"
+      ]
+    },
+    {
+      "name": "api-app-vue-03-spent-does-not-reduce-total",
+      "order_ids": [
+        "1e7d8bd9-4ebf-4fc7-9928-efdc75dd9bd9",
+        "3e8a61fa-3256-4346-aea1-19bb775ec542"
+      ]
+    },
+    {
+      "name": "api-app-vue-04-refund-net-once-with-shortfall",
+      "order_ids": [
+        "1e7d8bd9-4ebf-4fc7-9928-efdc75dd9bd9",
+        "3e8a61fa-3256-4346-aea1-19bb775ec542"
+      ]
+    },
+    {
+      "name": "api-app-vue-05-next-earning-settles-debt-once",
+      "order_ids": [
+        "1e7d8bd9-4ebf-4fc7-9928-efdc75dd9bd9",
+        "3e8a61fa-3256-4346-aea1-19bb775ec542"
+      ]
+    },
+    {
+      "name": "api-app-vue-06-expiry-keeps-cumulative",
+      "order_ids": [
+        "1e7d8bd9-4ebf-4fc7-9928-efdc75dd9bd9",
+        "3e8a61fa-3256-4346-aea1-19bb775ec542"
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "72d45951cf93d64dc9b20c56ac698bc43cb6ccfc458780eaea2a76d0ca74ac8a"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 403,
+      "sha256": "57cca1ae18d88e83ef0fc5fd6fd39e4c4cd514f13b95a4ba18aa1327c8e406b8"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "387a3b0cc3b8e9f88acdb3052c8d745c5da2817fc34062e36f5e5c4e9258048b"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "3ba71173160802a3f5fbf5696e50a91ccfba631cdd4cc6e45d30cedf41d73c97"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "2f18200a889ae318ead4157315efffa08d9b78ebcaaca0d625326a14fec54f10"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "c71c4f8edcb20517a873ad72cc8811660f43d892efa25bf0db11855c6713ae22"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "0be32df6298f48e60ee48ff196dd12f70525191be32cac86a1849391fdc452d4"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "9857f08e675b2990dd349648f188c4736fd856729bd3e900771be522ef35a96b"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "ed4178513f5d95d2a3703a30f0bbf74a6a8ebfc7c422f24c2a24a1a13499dcdd"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "b422541c186edb53d6f40d5987a84be47b809b34462084404bb148f069b1e6a8"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/rules",
+      "method": "GET",
+      "status": 200,
+      "sha256": "6c7d5da7e7bd88bfc27a79c69f2171d6abe099761928089c7d178ee8fb5bdf03"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "d970b5d939131cd66d2e661d90d0d9e9482429ea75f8dc62b69078a6041cf7ef"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 403,
+      "sha256": "ef0e3a307002093c6db2a6d6850c64657bb6c5a6b27f572f3d640e2ef910fc53"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "94dc06b128318a4f95da6ab54569e03c11955cea6647a1e3934007de48fdb4bd"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "83140f8c362fe007340374214d41bfa49783258b08d9d43e72fd045752ab0bff"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1fb98f579a3a4d633470ce6f1a68353cd2b9cddc629ddbd32d65415cbc967519"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "d0f1074c1069082484c2508dbb0b7568b0e60faeaa4d2932c52dc79cc5767098"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "c3178007b598cc6ebc2dfd7b0ebccd8247760d53089f0a5757b620192865476e"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "9f6603fd41bdb353f9936d19f5ca65749fd7aa5e2b99ed48180d074d8879a204"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "26cef8cec198976bc8a17172933069da08896a859eaf0f16537704deb37c6122"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "c823a0134aa790240ff206ce9848e9ad06533f032f6d41441d92e4ef4756b490"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/rules",
+      "method": "GET",
+      "status": 200,
+      "sha256": "efa164fa7e6f46965729f902fbf3ef02ec145085625b1df5122865961a02cc57"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "aca37c2963c4318f17329830cf9e54286a6a40de84a6301003dcdca93a662395"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 403,
+      "sha256": "7d0aa1dd2bb449e92e11603800c3149ee5fb88ee381c057d00416acd65582615"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "245cd6ca72b3dd3c8605b4e5abc6e7add6810b7f040302d0067ba48c68f40e02"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "38d7725587a2085406ec843f62b1ed882086361f9e7c7f972c43abb315548666"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "52ec974f80df9a8d1d620761c70dcd9a01e7f29081f5be2a509d555b33f68954"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "450bd56aa2ca8fdd72f90257dd9b1887b392f8fc333e43d84cb360494014f297"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "b52a52504701a4d72485123e025bed247f10cffeef9cc5440cbaf69bfd8938ba"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "4e45c8305a1eb6bbc930cf06ffef5b54b6b3a5423aa14dd4dd3b79feb636c179"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "7a02403d3ced7182df9b0407f1341bb7c12c29cccec9483a54ffbfdccdf5fed5"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "0feb38aca56410c973a136d1ee85b520af15f644905ba0d49e398718a594741d"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/rules",
+      "method": "GET",
+      "status": 200,
+      "sha256": "39cdb8cf23e4522a5d7d67e68a31d77f48dc6041360f944d08527caa54969eb0"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "2c019a419291770f396c9e6b3fa287bd834d6956f03285fafa0c7b5086a98f38"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 403,
+      "sha256": "a1079956f4c104c137b5cc24fee573a52150eec0d2ca69ab93da5bc33a839589"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "89a6b342e01622e5516dbd9fc9e04f0e204d2930cf722dfc210eb7dd982c9d42"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "377aa1ca7991667c313e96a72e23dab6997e2c8b91c993f50af9c019f79db69f"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "d24c24b5b09210dc75792082d14354fe2d8b9a9f9bf951810f7d595cca6edcc8"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "0b1274505cb6a9ef0ddab75b32f747c19f3a49a4c1696f642ecbede9bc9f872e"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "6cae9aff8f65a1a8c0feaeb97fdaa1aea164b17fe2d6743df5c1ba5718735c40"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "ed8edc110d795e90504e98ee74e18a16f7ce5ebd742fc1b1b10bb4d18659ee3a"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "5afe12065763c2b62a248d80377e2336fef23b4e2f2baa0370d26daf77f539c5"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "ca0248dadd5c251660b9437aa34c87950007d28c28f86574a4d36fd88d42c219"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/rules",
+      "method": "GET",
+      "status": 200,
+      "sha256": "77abba10723c690e8386564aa847118d8684e5503383d0190f5615088ed29282"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "3cd9f58e2a2ed4e3ec9a8d7e41e2d2909807df219f3eb18906b525d0da7fdf43"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 403,
+      "sha256": "64c70b26cbaaca9a1bf1eec59e2fc2d55ced78dec86ff875e53b082c58cf294f"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "fa8bb676f1222885ef0db7b628056774da96ac48b2d95d48b3cd7d8471063288"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "584b059a7e133ba2619e4ecd3d112c3517e8982373c06fabeccb79b6bfa1813b"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "89e80e892d50a6924f7d152b1341238555ab4b7ba8ef958d24f7588d4ba3ca28"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1525604907a881f61ef79b212b1688e794c000bd6f18cffa779f66e9ed44851d"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "c7b05bac4a9cfc54aa280ad1ff02b51e3b6f9b6cf897c77db625bbef626d3c97"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "c9ef494c25c62ab3f7c003951fbeef3ad9625c21f51b35d0945eb61b4f83b850"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "cb82103971dd632b01461bc0dc31086ec8d712432e9d2312d6d439cae736bbc2"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "d1e56841d6dc470fb6aed6cedfc010bd2c332cd122a0da0def0bd4a1ed2b3b41"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/rules",
+      "method": "GET",
+      "status": 200,
+      "sha256": "4d50bab40cff0c08d58917a9016cee32b1d3818acd4dc3c083af031390c6ade7"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "df103120c432a9ca23af123e3c6c5f914dfed8a955418f835419db06a3e52a63"
+    },
+    {
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 403,
+      "sha256": "c5a44b06d0c58299b5cb02c33c9dea1772c735bdcd446f9deda517dfb19fea7e"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "87beb8379f78d9dfa9d82a69048900c234b75e557c91f8d7e02cc8948c97f49a"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "c215889a501cd7c42fe56d4f8129f98d745871e1bccb72e126458d8415a09348"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "f90f1499ecc6686b731953b6e01219ba6922c1670d57ebea32e23829ee968acc"
+    },
+    {
+      "surface": "vue",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "b1e5d51c0b81858abb756ad4f7a373616ec2668fae08d520530e797c907a5e7a"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "sha256": "d686b2242751d17b520b1c69bcea125e15fd25580baa4b8872728933315aa975"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/me/parties?limit=20",
+      "method": "GET",
+      "status": 200,
+      "sha256": "361384792d9a37807f0d0888403ee58ac5f57da4d4f68932b37dc1f43411609b"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "bc86f6af4deee871bba9b2919b34f47e716b696d0c6b158948e9db4e7c1d6af1"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "771f80ccc9e3056b3eb4696a82099ad908ff3a07e46504e174eb0577fc9cdf5c"
+    },
+    {
+      "surface": "app",
+      "path": "/api/v1/wallet/rules",
+      "method": "GET",
+      "status": 200,
+      "sha256": "80f52953f8fc8f6456a3a0536c4f36770893961f1d9140b089d3bb7b5d8f72ef"
+    }
+  ],
+  "stages": [
+    {
+      "label": "01-pending-not-issued",
+      "expected": {
+        "available_points": 0,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 0,
+          "withdrawn": 0,
+          "net_issued": 0
+        },
+        "points_pending_reversal": 0,
+        "qualifying_growth": 0
+      },
+      "summary": {
+        "account_id": "84c708e2-4363-4f0f-b4ac-20ca1bc7eb0d",
+        "rule_id": "561ee0b6-1e35-41c4-9143-f82a28d0c854",
+        "currency": "CNY",
+        "recorded_balance_minor": 0,
+        "available_balance_minor": 0,
+        "reserved_balance_minor": 0,
+        "available_points": 0,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 0,
+          "withdrawn": 0,
+          "net_issued": 0
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 0,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      }
+    },
+    {
+      "label": "02-issued-once",
+      "expected": {
+        "available_points": 10,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 10,
+          "withdrawn": 0,
+          "net_issued": 10
+        },
+        "points_pending_reversal": 0,
+        "qualifying_growth": 10
+      },
+      "summary": {
+        "account_id": "84c708e2-4363-4f0f-b4ac-20ca1bc7eb0d",
+        "rule_id": "561ee0b6-1e35-41c4-9143-f82a28d0c854",
+        "currency": "CNY",
+        "recorded_balance_minor": 0,
+        "available_balance_minor": 0,
+        "reserved_balance_minor": 0,
+        "available_points": 10,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 10,
+          "withdrawn": 0,
+          "net_issued": 10
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 10,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 10,
+          "valid_until": null,
+          "renewal_credit_minor": 0,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      }
+    },
+    {
+      "label": "03-spent-does-not-reduce-total",
+      "expected": {
+        "available_points": 6,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 10,
+          "withdrawn": 0,
+          "net_issued": 10
+        },
+        "points_pending_reversal": 0,
+        "qualifying_growth": 10
+      },
+      "summary": {
+        "account_id": "84c708e2-4363-4f0f-b4ac-20ca1bc7eb0d",
+        "rule_id": "561ee0b6-1e35-41c4-9143-f82a28d0c854",
+        "currency": "CNY",
+        "recorded_balance_minor": 0,
+        "available_balance_minor": 0,
+        "reserved_balance_minor": 0,
+        "available_points": 6,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 10,
+          "withdrawn": 0,
+          "net_issued": 10
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 10,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 10,
+          "valid_until": null,
+          "renewal_credit_minor": 0,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      }
+    },
+    {
+      "label": "04-refund-net-once-with-shortfall",
+      "expected": {
+        "available_points": 0,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 10,
+          "withdrawn": 10,
+          "net_issued": 0
+        },
+        "points_pending_reversal": 4,
+        "qualifying_growth": 0
+      },
+      "summary": {
+        "account_id": "84c708e2-4363-4f0f-b4ac-20ca1bc7eb0d",
+        "rule_id": "561ee0b6-1e35-41c4-9143-f82a28d0c854",
+        "currency": "CNY",
+        "recorded_balance_minor": 0,
+        "available_balance_minor": 0,
+        "reserved_balance_minor": 0,
+        "available_points": 0,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 10,
+          "withdrawn": 10,
+          "net_issued": 0
+        },
+        "points_pending_reversal": 4,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_REVERSAL_PENDING",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 0,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      }
+    },
+    {
+      "label": "05-next-earning-settles-debt-once",
+      "expected": {
+        "available_points": 6,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 20,
+          "withdrawn": 10,
+          "net_issued": 10
+        },
+        "points_pending_reversal": 0,
+        "qualifying_growth": 10
+      },
+      "summary": {
+        "account_id": "84c708e2-4363-4f0f-b4ac-20ca1bc7eb0d",
+        "rule_id": "561ee0b6-1e35-41c4-9143-f82a28d0c854",
+        "currency": "CNY",
+        "recorded_balance_minor": 0,
+        "available_balance_minor": 0,
+        "reserved_balance_minor": 0,
+        "available_points": 6,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 20,
+          "withdrawn": 10,
+          "net_issued": 10
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 10,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 10,
+          "valid_until": null,
+          "renewal_credit_minor": 0,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      }
+    },
+    {
+      "label": "06-expiry-keeps-cumulative",
+      "expected": {
+        "available_points": 0,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 20,
+          "withdrawn": 10,
+          "net_issued": 10
+        },
+        "points_pending_reversal": 0,
+        "qualifying_growth": 10
+      },
+      "summary": {
+        "account_id": "84c708e2-4363-4f0f-b4ac-20ca1bc7eb0d",
+        "rule_id": "561ee0b6-1e35-41c4-9143-f82a28d0c854",
+        "currency": "CNY",
+        "recorded_balance_minor": 0,
+        "available_balance_minor": 0,
+        "reserved_balance_minor": 0,
+        "available_points": 0,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 20,
+          "withdrawn": 10,
+          "net_issued": 10
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 10,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 10,
+          "valid_until": null,
+          "renewal_credit_minor": 0,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      }
+    }
+  ],
+  "complete": true,
+  "source_hashes": {
+    "src/modules/wallet/repository.js": "81ab261d2928e1e27dc06733f4f4e3e465420bd6a2c6a138d0a2bd5b21243f55",
+    "src/modules/wallet/totals.js": "343847e9012c64cf4dd3b0e2bc76bafe4591e46224d420085f25d0c137ea85c8",
+    "src/modules/wallet/earnings.js": "8c18a921bde99d9e5e11eab69f85d5e16ce23d5cfcc5960b689a75be422b7ae2",
+    "src/modules/wallet/points.js": "b26f7990ef8b7847b0eebe61ed89abc93089cc8297f289d091d3eede19ef22ce"
+  },
+  "orders": [
+    {
+      "order_id": "1e7d8bd9-4ebf-4fc7-9928-efdc75dd9bd9",
+      "payment_id": "5d084e0e-89fb-47be-a57a-5bbd04b77d63",
+      "earning_id": "de8954d1-afbd-42a0-b22b-dcd3957c90d5"
+    },
+    {
+      "order_id": "3e8a61fa-3256-4346-aea1-19bb775ec542",
+      "payment_id": "212e1fbd-9213-44cc-822a-5e25223333e0",
+      "earning_id": "195a6c2b-e5cb-447a-ba6b-dfe4a306ea8e"
+    }
+  ],
+  "rule_id": "561ee0b6-1e35-41c4-9143-f82a28d0c854",
+  "buyer_party_id": "d41ae8e8-9404-4318-8b71-144ccbf611a4",
+  "api_base": "http://127.0.0.1:54803/api/v1",
+  "refund_id": "246a2a3d-eb4e-47c9-97b7-167cfabbe366",
+  "limits": [
+    "Synthetic provider receipts through normal repositories, no real payment or full UI purchase/refund chain",
+    "Points spend uses authorized internal port with explicit synthetic VOTE source; not an actual competition vote",
+    "Business clock advances monotonically from 400 days before wall start to 26 days before it in one isolated DB connection; browser HTTP sees same clock",
+    "Two normal stock orders and actual accept/aftercare/issue/refund/debt/expiry transitions; no inserted balances or forced earning statuses",
+    "App/Vue asset servers are reused, API requests proxy to actual dedicated isolated server; no business response mocks",
+    "Flutter Web not physical Android; no full formal G14 inherited criteria or18-group regression"
+  ],
+  "database_removed": true,
+  "finished_at": "2026-11-25T08:04:11.561Z",
+  "services_stopped": true,
+  "sources_unchanged": true
+}
