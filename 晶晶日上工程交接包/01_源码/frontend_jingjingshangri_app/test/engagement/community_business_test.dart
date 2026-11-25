@@ -74,6 +74,31 @@ Map<String, dynamic> buyers() => {
       'organization_wallet_enabled': false
     };
 void main() {
+  testWidgets('没有生效曝光时保留独立可读的空状态提示', (tester) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      late FakeAccountAdapter a;
+      a = FakeAccountAdapter(handler: (r) {
+        if (r.path == '/api/v1/engagement/exposures' ||
+            r.path == '/api/v1/engagement/rewards') {
+          return envelope({'items': <Object>[]});
+        }
+        return a.defaultReply(r);
+      });
+      final s = (await tester.runAsync(() => communitySession(a)))!;
+      await open(tester, s, 'exposures');
+      await tester.enterText(find.byType(TextField), '上海');
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('读取当前生效曝光'));
+      await frames(tester);
+      expect(find.bySemanticsLabel('当前所选城市暂无生效曝光记录。'), findsOneWidget);
+      expect(find.text('当前所选城市暂无生效曝光记录。'), findsOneWidget);
+      expect(find.text('曝光截止'), findsNothing);
+    } finally {
+      semantics.dispose();
+    }
+  });
   testWidgets('未配置同城排名只显示分组名单，不把顺序写成名次；公开选择不默认同意', (tester) async {
     late FakeAccountAdapter a;
     a = FakeAccountAdapter(

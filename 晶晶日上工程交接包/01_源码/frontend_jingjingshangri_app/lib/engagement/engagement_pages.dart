@@ -1712,7 +1712,11 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         communityField(city, '所在城市'),
         tradeButton('读取当前生效曝光', enabled ? load : null),
         if (rows.isEmpty && !checking && error == null)
-          appNotice('当前所选城市暂无生效曝光记录。'),
+          Semantics(
+              container: true,
+              label: '当前所选城市暂无生效曝光记录。',
+              excludeSemantics: true,
+              child: appNotice('当前所选城市暂无生效曝光记录。')),
         for (final r in rows)
           tradeSection(artistName(r['person_id']), [
             communityFact('资源位', r['placement']),
