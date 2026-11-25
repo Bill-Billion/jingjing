@@ -16,7 +16,7 @@ await mkdir(out,{recursive:true});const cases=[];
 const sha=b=>createHash('sha256').update(b).digest('hex');
 async function call(path,{body,version,status=200}={}){
  const response=await fetch(a.base_url+path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+a.accounts.buyer.bearer_token,'X-Acting-Party':a.accounts.buyer.party_id,...body?{'Content-Type':'application/json','Idempotency-Key':randomUUID(),'If-Match':'"'+version+'"'}:{}},...body?{body:JSON.stringify(body)}:{}});
- const value=await response.json();cases.push({method:body?'POST':'GET',path:new URL(a.base_url+path).pathname,schema:response.status===200?(path.endsWith('/records')?'ProjectRecordListResponse':'ProjectRecordResponse'):'ErrorResponse',value});
+ const value=await response.json();cases.push({method:body?'POST':'GET',path:new URL(a.base_url+path).pathname,schema:response.status===200?(new URL(a.base_url+path).pathname.endsWith('/records')?'ProjectRecordListResponse':'ProjectRecordResponse'):'ErrorResponse',value});
  await writeFile(join(out,'old-production-guard-http.json'),JSON.stringify({synthetic_only:true,cases},null,2));assert.equal(response.status,status,JSON.stringify(value.error));return response.status===200?value.data:value.error;
 }
 const path='/projects/projects/'+previous.project.id+'/plans',record='/projects/records/'+previous.project.id;
