@@ -1546,6 +1546,126 @@
       "acceptance_ids": [
         "E2E-09"
       ]
+    },
+    {
+      "id": "QA18-TEST-079",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "误等付款第二启动按钮",
+      "actual": "原付款已建立，脚本仍等不存在按钮。",
+      "expected": "沿用同一原付款详情核实，不重复建款。",
+      "evidence": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/browser01.log",
+      "fix_sha": "c1f0a6ff20d0357cd6518d854896c2fb2a1bdbfd",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/EXECUTION_SUMMARY.json",
+      "limits": "旧失败保留；最终新一致环境单次商单完整通过，不是18/12全量，无真实收付款。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-10"
+      ]
+    },
+    {
+      "id": "QA18-TEST-080",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "新提案前置字段与环境策略不匹配",
+      "actual": "gig_id不存在及HTTP默认产品策略拒绝。",
+      "expected": "真实parent_id、明确原合同仓库前置，不弱化HTTP规则。",
+      "evidence": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/browser03.log",
+      "fix_sha": "d43213c92fc7c035d6a7ebe858fa443dfb9e76af",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/EXECUTION_SUMMARY.json",
+      "limits": "旧失败保留；最终新一致环境单次商单完整通过，不是18/12全量，无真实收付款。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-10"
+      ]
+    },
+    {
+      "id": "QA18-TEST-081",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "固定同毫秒点击未代表先后推荐",
+      "actual": "原新单按同时间ID排序仍使用旧推荐。",
+      "expected": "保留旧未付单，推进独立业务日再新点击新报价。",
+      "evidence": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/browser04.log",
+      "fix_sha": "95503d6557751e88f7a9504dcafa3cd49b8342da",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/EXECUTION_SUMMARY.json",
+      "limits": "旧失败保留；最终新一致环境单次商单完整通过，不是18/12全量，无真实收付款。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-10"
+      ]
+    },
+    {
+      "id": "QA18-TEST-082",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "未按真实商单控件和确认流程操作",
+      "actual": "漏已读勾选、错定制入口及提交按钮、错审核项。",
+      "expected": "原App明确已读、商单入口、四项独审清单完整执行。",
+      "evidence": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/browser08.log",
+      "fix_sha": "eca4214e97f27fe910593b638a704aefab9de7d5",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/EXECUTION_SUMMARY.json",
+      "limits": "旧失败保留；最终新一致环境单次商单完整通过，不是18/12全量，无真实收付款。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-10"
+      ]
+    },
+    {
+      "id": "QA18-ENV-083",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "生产口径合成回执混入沙箱启动载荷",
+      "actual": "Vue正确拒绝PRODUCTION+SIMULATED_PAYMENT混合数据。",
+      "expected": "新隔离环境使用无SDK的checkout=null可信回执；旧样例不改。",
+      "evidence": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/browser09.log",
+      "fix_sha": "95503d6557751e88f7a9504dcafa3cd49b8342da",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/EXECUTION_SUMMARY.json",
+      "limits": "旧失败保留；最终新一致环境单次商单完整通过，不是18/12全量，无真实收付款。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-10"
+      ]
+    },
+    {
+      "id": "QA18-FE-084",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "退款表单付款读取错误被后续读取清掉",
+      "actual": "前置付款解码失败但随后成功退款读取清掉错误，页面空选项。",
+      "expected": "付款读取失败停止后续读取，首开/刷新保留明确错误；正常付款可退。",
+      "evidence": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/refund-options-probe.json",
+      "fix_sha": "95503d6557751e88f7a9504dcafa3cd49b8342da",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-mcn-commercial-20261125-25/EXECUTION_SUMMARY.json",
+      "limits": "旧失败保留；最终新一致环境单次商单完整通过，不是18/12全量，无真实收付款。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-10"
+      ]
     }
   ]
 }

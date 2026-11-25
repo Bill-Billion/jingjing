@@ -1,0 +1,13 @@
+{
+  "browser": "V5_ACCESS_FILE=<private environment-consistent/access.json> QA18_OUTPUT_DIR=<private browser-consistent> CHROME_PATH=<Edge> node scripts/qa18-mcn-commercial-browser.mjs",
+  "environment": "QA18_TRUSTED_RECEIPT_FIXTURE=PRODUCTION_LABEL_ONLY_NO_REAL_MONEY QA18_ENV_DIR=<private environment-consistent> JX_MYSQL_TEST_ENV_FILE=<local guard> node scripts/qa18-mcn-commercial-environment.cjs",
+  "backend_files": [
+    "test/referral-commercial-fulfillment.integration.test.cjs",
+    "test/referral-mcn-history.integration.test.cjs"
+  ],
+  "contract": "validate_contract.validate([mcn-fulfilled-commercial-http.json,referral-commercial-fulfilled-http.json])",
+  "vue": "npm run build; npm run test:trade; physical absolute frontend_ops_workspace cwd",
+  "negative": "V5_ACCESS_FILE=<original invalid fixture/access.json> QA18_OUTPUT_DIR=<private output> node scripts/qa18-refund-list-rejection-browser.mjs",
+  "census": "node scripts/qa18-mcn-commercial-record-check.cjs .local/qa18/mcn-commercial-20261125-25",
+  "app": "Unchanged round24 build byte manifest verified; actual Flutter browser UI this round, no new Flutter test/build execution"
+}
