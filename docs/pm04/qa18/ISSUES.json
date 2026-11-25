@@ -989,7 +989,13 @@
       "acceptance_ids": [
         "E2E-06",
         "E2E-07"
-      ]
+      ],
+      "followup_retest": {
+        "status": "PASS_SCOPED",
+        "run": "pm04-g1-contract-lottery-20261125-21",
+        "evidence": "docs/testing/evidence/pm04-g1-contract-lottery-20261125-21/browser/checkpoint.json",
+        "note": "New original-contract pool with same App session after quota and retirement. Prior hard reload failure remains historical; no final full regression."
+      }
     },
     {
       "id": "QA18-TEST-052",
@@ -1051,6 +1057,46 @@
       "phase": "T1_DISCOVERY",
       "acceptance_ids": [
         "E2E-06",
+        "E2E-07"
+      ]
+    },
+    {
+      "id": "QA18-TEST-055",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "原请求恢复成功后的页面跳转断言过时",
+      "actual": "同一App会话原键重放200并GET原draw结果，驱动仍要求原页提示句而失败。",
+      "expected": "按原key/body、原drawID GET及结果页核对；保留首次证据后只读接续，不重抽。",
+      "evidence": "docs/testing/evidence/pm04-g1-contract-lottery-20261125-21/browser.log",
+      "fix_sha": "c868fc1dea343b445f70065b245d1dd516744bb2",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-contract-lottery-20261125-21/EXECUTION_SUMMARY.json",
+      "limits": "局部同记录恢复与核数，权益后续兑现和最终同版全量仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-07"
+      ]
+    },
+    {
+      "id": "QA18-TEST-056",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "权益来源奖项索引类型断言错误",
+      "actual": "只读核数把来源索引当数字；现行权益来源为字符串索引。",
+      "expected": "严格核LOTTERY/原drawID/String(index)，保留源规范及全部账目断言。",
+      "evidence": "docs/testing/evidence/pm04-g1-contract-lottery-20261125-21/census.log",
+      "fix_sha": "5616af03e69f623a068c3c60741b7a7fae685964",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-contract-lottery-20261125-21/EXECUTION_SUMMARY.json",
+      "limits": "局部同记录恢复与核数，权益后续兑现和最终同版全量仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
         "E2E-07"
       ]
     }
