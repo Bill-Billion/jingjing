@@ -38,7 +38,7 @@ async function artistSubmit(p,path){const confirm=p.getByTestId('artists-form-co
 async function artistReview(id,kind,proof){const p=await web(artReviewer,'/artists/reviews/'+kind+'/people/'+s.person_id+'/records/'+id);const read=p.waitForResponse(r=>r.url().includes('/assets/'+proof+'/content'));await p.getByTestId('artists-evidence-'+proof).click();assert.equal((await read).status(),200);await p.getByTestId('artists-review-action').click();await fields(p,{decision:'APPROVE',reason:'核对合成资料、本次公开范围、本人同意和有效期限；非真实业务签收。'});const r=await artistSubmit(p,person+'/records/'+id+'/reviews');assert.equal(r.current_status,'APPROVED');await snap(p,'review-'+kind);await p.close();return r;}
 async function prepareArtist(){
  const d=s.g05;
- if(!d.proof){d.proof=(await api(artist,person+'/assets?purpose=CONSENT_EVIDENCE&media_type=text%2Fplain',{bytes:Buffer.from('Synthetic G05 personal rights evidence; no real personal data.'),type:'text/plain'})).data.id;await save();}
+ if(!d.proof){d.proof=(await api(artist,person+'/assets?purpose=CONSENT_EVIDENCE&media_type=text%2Fplain',{bytes:Buffer.from('Synthetic G05 personal rights evidence; no real personal data.'),type:'application/octet-stream'})).data.id;await save();}
  if(!d.consent){d.consent=(await api(artist,person+'/consents',{body:{avatar_id:s.avatar_id,consent:{features:['FACE'],purposes:['PRIVATE_ARCHIVE','PUBLIC_DISPLAY'],grantee_party_id:f.accounts[artist].party_id,territories:['CN'],...s.period,terms:'合成脸部仅用于本人私人档案和本次公开色块展示，不授权声音、销售或训练。',evidence_asset_ids:[d.proof]}}})).data.id;await save();}
  if(!d.consentApproved){await artistReview(d.consent,'CONSENT',d.proof);d.consentApproved=true;await save();}
  if(!d.halo){d.halo=(await api(artist,person+'/halos',{body:{level:1,ownership_promise:true,evidence_asset_ids:[d.proof]}})).data.id;await save();}
@@ -70,7 +70,7 @@ async function g05(){
 }
 async function g06(){
  const d=s.g06;if(d.complete)return;const owner=await web('mcn_owner','/directory/manage/new');
- if(!d.record){await owner.getByLabel('公开名称',{exact:true}).fill('QA18合成机构公开资料');await owner.getByLabel('城市',{exact:true}).fill('北京市');await owner.getByLabel('机构公开介绍',{exact:true}).fill('合成机构公开资料，用于独审、主图和撤回核权检查，无私人联系方式。');await owner.getByRole('checkbox',{name:'经纪',exact:true}).check();await owner.getByLabel('有效开始（本地时间）',{exact:true}).fill(s.period.valid_from.slice(0,16));await owner.getByLabel('有效结束（本地时间）',{exact:true}).fill(s.period.valid_until.slice(0,16));
+ if(!d.record){await owner.getByLabel('公开名称',{exact:true}).fill('QA18合成机构公开资料');await owner.getByLabel('城市',{exact:true}).fill('北京市');await owner.getByLabel('机构公开介绍',{exact:true}).fill('合成机构公开资料，用于独审、主图和撤回核权检查，无私人联系方式。');await owner.getByRole('checkbox',{name:'艺人经营',exact:true}).check();await owner.getByLabel('有效开始（本地时间）',{exact:true}).fill(s.period.valid_from.slice(0,16));await owner.getByLabel('有效结束（本地时间）',{exact:true}).fill(s.period.valid_until.slice(0,16));
   for(const [index,file]of [[0,{name:'synthetic-cover.jpg',mimeType:'image/jpeg',buffer:photo}],[1,{name:'synthetic-organization-proof.txt',mimeType:'text/plain',buffer:Buffer.from('Synthetic private organization proof; never public.')}]] ){
    const box=owner.locator('.service-assets').nth(index);await box.locator('input[type=file]').setInputFiles(file);const a=await post(owner,'/supply/assets',()=>box.getByRole('button',{name:'上传所选文件',exact:true}).click());if(index===0)d.cover=a.id;else d.proof=a.id;await save();
   }
