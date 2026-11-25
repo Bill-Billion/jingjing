@@ -1574,7 +1574,9 @@ class _TradeDetailState extends State<_TradeDetail> {
                 outline: true),
           for (final op in widget.session.tradePending)
             tradeSection('操作结果待核实', [
-              appNotice('请恢复原请求核对，不要修改原内容或重复建立付款。'),
+              appNotice(op['path'].startsWith('/api/v1/trade/refunds')
+                  ? '请按原订单恢复这笔退款请求并核对结果，不要修改原内容或重复申请退款。'
+                  : '请恢复原请求核对，不要修改原内容或重复建立付款。'),
               if (op['resultId'] != null) tradeFact('已知结果编号', op['resultId']),
               tradeButton(
                   '恢复原请求核对',
