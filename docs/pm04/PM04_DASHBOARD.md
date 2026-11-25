@@ -4,7 +4,7 @@
 
 [G1执行入口](qa18/README.md) · [实际运行回执](qa18/RUN_REPORT.md) · [前端机测交接](qa18/FRONTEND_HANDOFF.md)
 
-测试总负责人：chengcongcong222；运行批次：`pm04-g1-rollback-build-20261126-41`；阶段：T1_DISCOVERY。
+测试总负责人：chengcongcong222；运行批次：`pm04-g1-current-media-20261126-42`；阶段：T1_DISCOVERY。
 
 顺序：首轮发现 → 集中修复 → 最终同版18组/12链完整回归 → 安装包人工体验 → 原151标准签收。
 
