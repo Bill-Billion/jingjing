@@ -1,0 +1,647 @@
+TAP version 13
+# Subtest: new artist contract, classified review and free services in isolated MySQL
+    # Subtest: cutover exposes free options, filters old offers and blocks old new purchases
+    ok 1 - cutover exposes free options, filters old offers and blocks old new purchases
+      ---
+      duration_ms: 33.7514
+      type: 'test'
+      ...
+    # Subtest: pending historical creation is not silently replaced and can finish its original payment
+    ok 2 - pending historical creation is not silently replaced and can finish its original payment
+      ---
+      duration_ms: 56.5594
+      type: 'test'
+      ...
+    # Subtest: free hosting is perpetual and deduplicates simultaneous requests without money records
+    ok 3 - free hosting is perpetual and deduplicates simultaneous requests without money records
+      ---
+      duration_ms: 77.3136
+      type: 'test'
+      ...
+    # Subtest: free creation failure records no refund, requires independent operator and is retryable
+    ok 4 - free creation failure records no refund, requires independent operator and is retryable
+      ---
+      duration_ms: 54.0484
+      type: 'test'
+      ...
+    # Subtest: free archive needs owned files and both face and voice; never enables a provider model
+    ok 5 - free archive needs owned files and both face and voice; never enables a provider model
+      ---
+      duration_ms: 141.1657
+      type: 'test'
+      ...
+    # Subtest: free routes still enforce minor restrictions and cancellation does not create money
+    ok 6 - free routes still enforce minor restrictions and cancellation does not create money
+      ---
+      duration_ms: 71.2258
+      type: 'test'
+      ...
+    # Subtest: unpaid classified review cannot submit; failed attempt leaves the same order unpaid and no application
+    ok 7 - unpaid classified review cannot submit; failed attempt leaves the same order unpaid and no application
+      ---
+      duration_ms: 124.5856
+      type: 'test'
+      ...
+    # Subtest: paid review fee is recorded separately from an application and certification approval
+    ok 8 - paid review fee is recorded separately from an application and certification approval
+      ---
+      duration_ms: 19.1974
+      type: 'test'
+      ...
+    # Subtest: new certification refuses missing categories, wrong files and another owner assets
+    ok 9 - new certification refuses missing categories, wrong files and another owner assets
+      ---
+      duration_ms: 133.7101
+      type: 'test'
+      ...
+    # Subtest: supplement replaces classified snapshot, preserves original evidence and consumes one fee
+    ok 10 - supplement replaces classified snapshot, preserves original evidence and consumes one fee
+      ---
+      duration_ms: 93.621
+      type: 'test'
+      ...
+    # Subtest: new fee cannot be refunded; previous contract remains refundable
+    ok 11 - new fee cannot be refunded; previous contract remains refundable
+      ---
+      duration_ms: 25.3902
+      type: 'test'
+      ...
+    # Subtest: withdrawing a new application consumes its review, keeps evidence and grants no certification
+    ok 12 - withdrawing a new application consumes its review, keeps evidence and grants no certification
+      ---
+      duration_ms: 186.1744
+      type: 'test'
+      ...
+    # Subtest: expiry removes effective certification without rewriting approval history or automatically charging again
+    ok 13 - expiry removes effective certification without rewriting approval history or automatically charging again
+      ---
+      duration_ms: 37.2459
+      type: 'test'
+      ...
+    # Subtest: certification alone expires at its original boundary while renewed identity and free base qualification remain valid
+    ok 14 - certification alone expires at its original boundary while renewed identity and free base qualification remain valid
+      ---
+      duration_ms: 62.8162
+      type: 'test'
+      ...
+    1..14
+ok 1 - new artist contract, classified review and free services in isolated MySQL
+  ---
+  duration_ms: 12055.3178
+  type: 'test'
+  ...
+# Subtest: artist employee list and effective actions retain person and delegation boundaries
+    # Subtest: active member without any per-person grant has no delegated list
+    ok 1 - active member without any per-person grant has no delegated list
+      ---
+      duration_ms: 71.7537
+      type: 'test'
+      ...
+    # Subtest: list and detail include assigned person without transferring ownership
+    ok 2 - list and detail include assigned person without transferring ownership
+      ---
+      duration_ms: 47.4427
+      type: 'test'
+      ...
+    # Subtest: owner sees mandate actions; employee does not inherit all organization actions
+    ok 3 - owner sees mandate actions; employee does not inherit all organization actions
+      ---
+      duration_ms: 39.603
+      type: 'test'
+      ...
+    # Subtest: staff cannot read private consent or create personal authorization
+    ok 4 - staff cannot read private consent or create personal authorization
+      ---
+      duration_ms: 31.9075
+      type: 'test'
+      ...
+    # Subtest: staff grant intersection enables only explicitly permitted material upload
+    ok 5 - staff grant intersection enables only explicitly permitted material upload
+      ---
+      duration_ms: 49.6436
+      type: 'test'
+      ...
+    # Subtest: material revocation removes action and rejects old-key upload replay
+    ok 6 - material revocation removes action and rejects old-key upload replay
+      ---
+      duration_ms: 56.2242
+      type: 'test'
+      ...
+    # Subtest: revoked staff disappears from list and cannot read previous detail
+    ok 7 - revoked staff disappears from list and cannot read previous detail
+      ---
+      duration_ms: 14.7489
+      type: 'test'
+      ...
+    # Subtest: personal mandate withdrawal also removes owner and regranted employee access
+    ok 8 - personal mandate withdrawal also removes owner and regranted employee access
+      ---
+      duration_ms: 57.7996
+      type: 'test'
+      ...
+    1..8
+ok 2 - artist employee list and effective actions retain person and delegation boundaries
+  ---
+  duration_ms: 10546.2374
+  type: 'test'
+  ...
+# Subtest: artist rights and delegated access in isolated MySQL
+    # Subtest: real person creation is personal only, idempotent, and never verified by client flags
+    ok 1 - real person creation is personal only, idempotent, and never verified by client flags
+      ---
+      duration_ms: 118.4438
+      type: 'test'
+      ...
+    # Subtest: provider not enabled is visible and creates no fake identity result
+    ok 2 - provider not enabled is visible and creates no fake identity result
+      ---
+      duration_ms: 29.2442
+      type: 'test'
+      ...
+    # Subtest: trusted verification binds a real person; duplicate identity does not transfer ownership
+    ok 3 - trusted verification binds a real person; duplicate identity does not transfer ownership
+      ---
+      duration_ms: 41.4183
+      type: 'test'
+      ...
+    # Subtest: service purchase rejects a personal party mistakenly configured as platform merchant
+    ok 4 - service purchase rejects a personal party mistakenly configured as platform merchant
+      ---
+      duration_ms: 3.9086
+      type: 'test'
+      ...
+    # Subtest: minor actual materials and avatar creation are blocked without guardian policy
+    ok 5 - minor actual materials and avatar creation are blocked without guardian policy
+      ---
+      duration_ms: 23.2566
+      type: 'test'
+      ...
+    # Subtest: one person can own multiple avatars; neither claims a long-lived model exists
+    ok 6 - one person can own multiple avatars; neither claims a long-lived model exists
+      ---
+      duration_ms: 46.9792
+      type: 'test'
+      ...
+    # Subtest: private materials belong to person and cannot be fetched by another account
+    ok 7 - private materials belong to person and cannot be fetched by another account
+      ---
+      duration_ms: 54.2397
+      type: 'test'
+      ...
+    # Subtest: consent needs independent review; rejected and withdrawn rights cannot create versions
+    ok 8 - consent needs independent review; rejected and withdrawn rights cannot create versions
+      ---
+      duration_ms: 60.678
+      type: 'test'
+      ...
+    # Subtest: paid hosting is linked to one avatar; duplicate sync never extends the paid term
+    ok 9 - paid hosting is linked to one avatar; duplicate sync never extends the paid term
+      ---
+      duration_ms: 171.7076
+      type: 'test'
+      ...
+    # Subtest: unpaid creation cannot be delivered and a second avatar cannot double-charge first creation
+    ok 10 - unpaid creation cannot be delivered and a second avatar cannot double-charge first creation
+      ---
+      duration_ms: 146.173
+      type: 'test'
+      ...
+    # Subtest: creation retries use the purchased limit; failure leaves a refund obligation, never a fake refund
+    ok 11 - creation retries use the purchased limit; failure leaves a refund obligation, never a fake refund
+      ---
+      duration_ms: 84.4133
+      type: 'test'
+      ...
+    # Subtest: L1 and public directory need identity and reviewed independent public consent
+    ok 12 - L1 and public directory need identity and reviewed independent public consent
+      ---
+      duration_ms: 78.5034
+      type: 'test'
+      ...
+    # Subtest: approved media manifest preserves privacy, explicit portrait choice and withdrawal
+    ok 13 - approved media manifest preserves privacy, explicit portrait choice and withdrawal
+      ---
+      duration_ms: 156.8405
+      type: 'test'
+      ...
+    # Subtest: public detail and new invitation use a live approved listing; withdrawn context cannot be submitted
+    ok 14 - public detail and new invitation use a live approved listing; withdrawn context cannot be submitted
+      ---
+      duration_ms: 162.8012
+      type: 'test'
+      ...
+    # Subtest: L2 fee binds one application; supplemental review is same case and does not sell another fee
+    ok 15 - L2 fee binds one application; supplemental review is same case and does not sell another fee
+      ---
+      duration_ms: 193.2189
+      type: 'test'
+      ...
+    # Subtest: review inbox and owner record list restore actual work; stranger has no review access
+    ok 16 - review inbox and owner record list restore actual work; stranger has no review access
+      ---
+      duration_ms: 18.6149
+      type: 'test'
+      ...
+    # Subtest: archive material consent stays tied to the exact latest submitted versions
+        # Subtest: operator can read an authorized current material before withdrawal
+        ok 1 - operator can read an authorized current material before withdrawal
+          ---
+          duration_ms: 22.4563
+          type: 'test'
+          ...
+        # Subtest: withdrawal blocks reads and delivery despite another valid consent
+        ok 2 - withdrawal blocks reads and delivery despite another valid consent
+          ---
+          duration_ms: 45.193
+          type: 'test'
+          ...
+        # Subtest: new consent alone cannot reauthorize the old version; explicit replacement can
+        ok 3 - new consent alone cannot reauthorize the old version; explicit replacement can
+          ---
+          duration_ms: 102.8739
+          type: 'test'
+          ...
+        # Subtest: voice uses its own original authorization, not the face consent
+        ok 4 - voice uses its own original authorization, not the face consent
+          ---
+          duration_ms: 78.1253
+          type: 'test'
+          ...
+        # Subtest: expiry or missing material fails closed without falling back to history
+        ok 5 - expiry or missing material fails closed without falling back to history
+          ---
+          duration_ms: 31.5806
+          type: 'test'
+          ...
+        # Subtest: delivery contains only current explicitly authorized versions and keeps the old record
+        ok 6 - delivery contains only current explicitly authorized versions and keeps the old record
+          ---
+          duration_ms: 35.4337
+          type: 'test'
+          ...
+        # Subtest: withdrawal during file transfer prevents response bytes from reaching the operator
+        ok 7 - withdrawal during file transfer prevents response bytes from reaching the operator
+          ---
+          duration_ms: 37.1597
+          type: 'test'
+          ...
+        1..7
+    ok 17 - archive material consent stays tied to the exact latest submitted versions
+      ---
+      duration_ms: 494.4993
+      type: 'test'
+      ...
+    # Subtest: versioned updates reject stale changes and audit failure rolls back both data and request key
+    ok 18 - versioned updates reject stale changes and audit failure rolls back both data and request key
+      ---
+      duration_ms: 25.9533
+      type: 'test'
+      ...
+    # Subtest: creator identity is not agency identity; verified service result is tied to the request and recovery uses same key
+    ok 19 - creator identity is not agency identity; verified service result is tied to the request and recovery uses same key
+      ---
+      duration_ms: 57.3727
+      type: 'test'
+      ...
+    # Subtest: concurrent duplicate avatar commands create one archive identifier
+    ok 20 - concurrent duplicate avatar commands create one archive identifier
+      ---
+      duration_ms: 29.1337
+      type: 'test'
+      ...
+    # Subtest: only selected public preview bytes and attached reviewer evidence are downloadable
+    ok 21 - only selected public preview bytes and attached reviewer evidence are downloadable
+      ---
+      duration_ms: 68.0597
+      type: 'test'
+      ...
+    # Subtest: ranking listen reads authorized audio bytes before counting and deduplicates
+    ok 22 - ranking listen reads authorized audio bytes before counting and deduplicates
+      ---
+      duration_ms: 271.7764
+      type: 'test'
+      ...
+    # Subtest: renewal reminder can be cancelled; unpaid service cancellation requires cancelling its real order
+    ok 23 - renewal reminder can be cancelled; unpaid service cancellation requires cancelling its real order
+      ---
+      duration_ms: 112.7583
+      type: 'test'
+      ...
+    # Subtest: appeal records a challenge without silently reversing original decision or granting rights
+    ok 24 - appeal records a challenge without silently reversing original decision or granting rights
+      ---
+      duration_ms: 35.5341
+      type: 'test'
+      ...
+    # Subtest: agency cannot claim person and only artist can authorize finite actions
+    ok 25 - agency cannot claim person and only artist can authorize finite actions
+      ---
+      duration_ms: 65.0865
+      type: 'test'
+      ...
+    # Subtest: agency upload stays artist-owned; withdrawal denies new and replayed agency operations
+    ok 26 - agency upload stays artist-owned; withdrawal denies new and replayed agency operations
+      ---
+      duration_ms: 59.1357
+      type: 'test'
+      ...
+    # Subtest: expired hosting removes new listing eligibility but retains delivered archive and owned files
+    ok 27 - expired hosting removes new listing eligibility but retains delivered archive and owned files
+      ---
+      duration_ms: 30.6308
+      type: 'test'
+      ...
+    # Subtest: withdrawing public consent hides directory immediately but keeps historical records and files
+    ok 28 - withdrawing public consent hides directory immediately but keeps historical records and files
+      ---
+      duration_ms: 45.2763
+      type: 'test'
+      ...
+    # Subtest: registered artist cannot bypass new identity/material rules through old supply entry
+    ok 29 - registered artist cannot bypass new identity/material rules through old supply entry
+      ---
+      duration_ms: 6.9144
+      type: 'test'
+      ...
+    # Subtest: stored content tampering is rejected, not silently returned
+    ok 30 - stored content tampering is rejected, not silently returned
+      ---
+      duration_ms: 6.485
+      type: 'test'
+      ...
+    1..30
+ok 3 - artist rights and delegated access in isolated MySQL
+  ---
+  duration_ms: 11675.3502
+  type: 'test'
+  ...
+# Subtest: engagement real database journey and permission boundaries
+    # Subtest: reviewed rules, self-review refusal and explicit unconfigured starlight
+    ok 1 - reviewed rules, self-review refusal and explicit unconfigured starlight
+      ---
+      duration_ms: 105.0549
+      type: 'test'
+      ...
+    # Subtest: profile belongs to verified artist, repeated interaction deduplicates
+    ok 2 - profile belongs to verified artist, repeated interaction deduplicates
+      ---
+      duration_ms: 52.5922
+      type: 'test'
+      ...
+    # Subtest: own visible ranking profile can be selected without revealing another person
+    ok 3 - own visible ranking profile can be selected without revealing another person
+      ---
+      duration_ms: 72.5095
+      type: 'test'
+      ...
+    # Subtest: sandbox orders excluded; verified fixture receipts and fulfillment create rank facts
+    ok 4 - sandbox orders excluded; verified fixture receipts and fulfillment create rank facts
+      ---
+      duration_ms: 352.6665
+      type: 'test'
+      ...
+    # Subtest: reward inventory reviewed independently and competition cannot over-reserve
+    ok 5 - reward inventory reviewed independently and competition cannot over-reserve
+      ---
+      duration_ms: 106.3334
+      type: 'test'
+      ...
+    # Subtest: votes debit once; concurrent daily cap, outsider access and appeal return
+    ok 6 - votes debit once; concurrent daily cap, outsider access and appeal return
+      ---
+      duration_ms: 120.7692
+      type: 'test'
+      ...
+    # Subtest: appeal return first clears debt from the very same refunded earning lot
+    ok 7 - appeal return first clears debt from the very same refunded earning lot
+      ---
+      duration_ms: 268.6463
+      type: 'test'
+      ...
+    # Subtest: candidate with operator permission cannot adjudicate votes for self; independent review retains the same spent points
+    ok 8 - candidate with operator permission cannot adjudicate votes for self; independent review retains the same spent points
+      ---
+      duration_ms: 63.1927
+      type: 'test'
+      ...
+    # Subtest: same vote appeal restoration preserves withdrawal and original debit until explicit public opt-in
+    ok 9 - same vote appeal restoration preserves withdrawal and original debit until explicit public opt-in
+      ---
+      duration_ms: 124.4728
+      type: 'test'
+      ...
+    # Subtest: appeals block finalization; confirmed award and proof-backed redemption
+    ok 10 - appeals block finalization; confirmed award and proof-backed redemption
+      ---
+      duration_ms: 102.004
+      type: 'test'
+      ...
+    # Subtest: starlight configuration is independent, version frozen, no exchange
+    ok 11 - starlight configuration is independent, version frozen, no exchange
+      ---
+      duration_ms: 111.9527
+      type: 'test'
+      ...
+    # Subtest: last valid referral is frozen at checkout and receives only platform allocation
+    ok 12 - last valid referral is frozen at checkout and receives only platform allocation
+      ---
+      duration_ms: 819.1234
+      type: 'test'
+      ...
+    # Subtest: staff need accepted membership and artist-scoped grant; revoke immediately denies access
+    ok 13 - staff need accepted membership and artist-scoped grant; revoke immediately denies access
+      ---
+      duration_ms: 101.6775
+      type: 'test'
+      ...
+    # Subtest: exact score tie blocks award until two independent operators review; exposure is dated
+    ok 14 - exact score tie blocks award until two independent operators review; exposure is dated
+      ---
+      duration_ms: 314.7943
+      type: 'test'
+      ...
+    # Subtest: same installation across accounts counts once and generic POST cannot forge a listen
+    ok 15 - same installation across accounts counts once and generic POST cannot forge a listen
+      ---
+      duration_ms: 24.0814
+      type: 'test'
+      ...
+    # Subtest: automatic growth work requires current lease and schedules continuation
+    ok 16 - automatic growth work requires current lease and schedules continuation
+      ---
+      duration_ms: 49.1285
+      type: 'test'
+      ...
+    # Subtest: front-end can discover rankings, events and remaining votes without operator access
+    ok 17 - front-end can discover rankings, events and remaining votes without operator access
+      ---
+      duration_ms: 96.2502
+      type: 'test'
+      ...
+    # Subtest: seller with operator permission cannot exclude or restore buyer review of own order
+    ok 18 - seller with operator permission cannot exclude or restore buyer review of own order
+      ---
+      duration_ms: 55.6806
+      type: 'test'
+      ...
+    # Subtest: ranked artist cannot moderate own popularity evidence; independent appeal preserves original interaction
+    ok 19 - ranked artist cannot moderate own popularity evidence; independent appeal preserves original interaction
+      ---
+      duration_ms: 44.2249
+      type: 'test'
+      ...
+    # Subtest: confirmed manipulation removes order facts and independent appeal restores them
+    ok 20 - confirmed manipulation removes order facts and independent appeal restores them
+      ---
+      duration_ms: 119.6219
+      type: 'test'
+      ...
+    # Subtest: city buyer list has separate organization facts; only reviewed weights enable ranking
+    ok 21 - city buyer list has separate organization facts; only reviewed weights enable ranking
+      ---
+      duration_ms: 102.6363
+      type: 'test'
+      ...
+    # Subtest: MCN can assign an actual booking only to a currently delegated employee
+    ok 22 - MCN can assign an actual booking only to a currently delegated employee
+      ---
+      duration_ms: 324.8481
+      type: 'test'
+      ...
+    # Subtest: recommendation preference does not personalize public rankings; participation withdrawal removes historic visibility
+    ok 23 - recommendation preference does not personalize public rankings; participation withdrawal removes historic visibility
+      ---
+      duration_ms: 118.313
+      type: 'test'
+      ...
+    # Subtest: artist cannot erase operator exclusion by editing public profile
+    ok 24 - artist cannot erase operator exclusion by editing public profile
+      ---
+      duration_ms: 41.4506
+      type: 'test'
+      ...
+    # Subtest: MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation
+        # Subtest: income filters use order creation UTC boundaries, keep actual receipts separate, and count each order once
+        ok 1 - income filters use order creation UTC boundaries, keep actual receipts separate, and count each order once
+          ---
+          duration_ms: 90.2743
+          type: 'test'
+          ...
+        # Subtest: income retains gross receipts and refunds, excludes sandbox totals, and does not invent artist attribution
+        ok 2 - income retains gross receipts and refunds, excludes sandbox totals, and does not invent artist attribution
+          ---
+          duration_ms: 39.3704
+          type: 'test'
+          ...
+        # Subtest: frozen multi-artist stock history filters either artist without doubling receipts or trusting assignments
+        ok 3 - frozen multi-artist stock history filters either artist without doubling receipts or trusting assignments
+          ---
+          duration_ms: 160.1924
+          type: 'test'
+          ...
+        1..3
+    ok 25 - MCN dashboard limits employees to delegated artists and assigned orders, including totals and revocation
+      ---
+      duration_ms: 580.8557
+      type: 'test'
+      ...
+    # Subtest: HTTP routes require authentication and preserve response envelope
+    ok 26 - HTTP routes require authentication and preserve response envelope
+      ---
+      duration_ms: 13.2553
+      type: 'test'
+      ...
+    # Subtest: leaving public participation hides old competition result and rejoining restores its unchanged facts
+    ok 27 - leaving public participation hides old competition result and rejoining restores its unchanged facts
+      ---
+      duration_ms: 91.6556
+      type: 'test'
+      ...
+    # Subtest: operator exclusion hides the same published result; only independent recovery restores original facts
+    ok 28 - operator exclusion hides the same published result; only independent recovery restores original facts
+      ---
+      duration_ms: 101.0794
+      type: 'test'
+      ...
+    # Subtest: same interaction restoration cannot undo profile exclusion or opt-out and leaves the other winner visible
+    ok 29 - same interaction restoration cannot undo profile exclusion or opt-out and leaves the other winner visible
+      ---
+      duration_ms: 150.6507
+      type: 'test'
+      ...
+    # Subtest: withdrawing public consent immediately removes the selectable profile
+    ok 30 - withdrawing public consent immediately removes the selectable profile
+      ---
+      duration_ms: 28.6248
+      type: 'test'
+      ...
+    # Subtest: restoring an interaction after public consent withdrawal cannot restore public ranking or results
+    ok 31 - restoring an interaction after public consent withdrawal cannot restore public ranking or results
+      ---
+      duration_ms: 52.1509
+      type: 'test'
+      ...
+    1..31
+ok 4 - engagement real database journey and permission boundaries
+  ---
+  duration_ms: 14009.0494
+  type: 'test'
+  ...
+# Subtest: MCN supplier and broker income: real orders, role separation and access
+    # Subtest: same agency sees its actual supplier sale and artist brokerage sale exactly once with separate income roles
+    ok 1 - same agency sees its actual supplier sale and artist brokerage sale exactly once with separate income roles
+      ---
+      duration_ms: 44.3767
+      type: 'test'
+      ...
+    # Subtest: supplier assignment still requires every artist delegation and separate read-income permission
+    ok 2 - supplier assignment still requires every artist delegation and separate read-income permission
+      ---
+      duration_ms: 264.6342
+      type: 'test'
+      ...
+    # Subtest: created period and person filters count an order once; wrong account and another organization see no money
+    ok 3 - created period and person filters count an order once; wrong account and another organization see no money
+      ---
+      duration_ms: 36.1262
+      type: 'test'
+      ...
+    # Subtest: sandbox and unpaid supplier orders remain identifiable but do not inflate verified production totals or posted income
+    ok 4 - sandbox and unpaid supplier orders remain identifiable but do not inflate verified production totals or posted income
+      ---
+      duration_ms: 283.4327
+      type: 'test'
+      ...
+    # Subtest: overlapping roles and inconsistent supplier snapshots fail closed without rewriting the original contract
+    ok 5 - overlapping roles and inconsistent supplier snapshots fail closed without rewriting the original contract
+      ---
+      duration_ms: 46.7227
+      type: 'test'
+      ...
+    # Subtest: partial refund recomputes supplier accrual using original rounding and retains only independently allowed access
+    ok 6 - partial refund recomputes supplier accrual using original rounding and retains only independently allowed access
+      ---
+      duration_ms: 150.3208
+      type: 'test'
+      ...
+    # Subtest: ended artist delegation removes staff history but owner retains original supplier order and full-refund accounting
+    ok 7 - ended artist delegation removes staff history but owner retains original supplier order and full-refund accounting
+      ---
+      duration_ms: 139.1964
+      type: 'test'
+      ...
+    1..7
+ok 5 - MCN supplier and broker income: real orders, role separation and access
+  ---
+  duration_ms: 10595.9451
+  type: 'test'
+  ...
+1..5
+# tests 105
+# suites 0
+# pass 105
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 34065.0496

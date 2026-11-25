@@ -1,5 +1,9 @@
 # 后端同版复跑要点
 
+2026-11-25第四轮追加：员工逐人授权修复后端与双端源码07822585，API0.31.79-rc.2、迁移0225未变；详情见[第四轮](ROUND_04_STAFF_AUTHORIZATION.md)。下面f071及7e为首批历史版本。
+
+Flutter Web合成入口实际命令为 `flutter build web --release --no-pub --no-web-resources-cdn --target test/support/v5_business_browser_main.dart --dart-define=R05_R12_SYNTHETIC_ONLY=true`，在App源码目录运行。隔离测试必须携带本地渲染资源，不能等待外部CanvasKit CDN。此包仅供回环5500合成测试，不代替lib/main.dart安装包或实体机。PowerShell收集原生命令stderr时保留提示并读取实际退出码，不因提示字符串判为业务失败；先确认输出目录存在并使用物理绝对日志路径。等待UI宿主READY、确认ui-access已生成后才启动浏览器检查。
+
 本轮实际测试输入为f0710079585be912291ea1708e0b49e9bc96f0ca；产品后端/API/迁移与PR43环境7e35958a相同。QA后续文档/工具提交不是重新受测产品SHA。原始G01—17运行目录不覆盖，补测或回归使用新的批号。
 
 1. 在独立QA树按后端package-lock运行`npm ci --no-audit --no-fund`。准备本机MySQL8、回环33316、专用jx_local用户和jx_dev基础库；`JX_MYSQL_TEST_ENV_FILE`指向本机受控JSON，不打印或入库。各集成文件自行创建随机测试库，不能以此宣称跨端同记录。

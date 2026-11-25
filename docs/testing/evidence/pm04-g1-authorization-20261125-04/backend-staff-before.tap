@@ -1,0 +1,221 @@
+TAP version 13
+# Subtest: artist employee list and effective actions retain person and delegation boundaries
+    # Subtest: active member without any per-person grant has no delegated list
+    not ok 1 - active member without any per-person grant has no delegated list
+      ---
+      duration_ms: 42.6689
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists-staff-access.integration.test.cjs:28:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"code":"ARTIST_PARTY_FORBIDDEN","message":"请求未通过校验或权限检查","retryable":false,"details":[]}
+        
+        403 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 403
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:26:25)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:28:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:28:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: list and detail include assigned person without transferring ownership
+    not ok 2 - list and detail include assigned person without transferring ownership
+      ---
+      duration_ms: 10.7513
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists-staff-access.integration.test.cjs:30:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"code":"ARTIST_PARTY_FORBIDDEN","message":"请求未通过校验或权限检查","retryable":false,"details":[]}
+        
+        403 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 403
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:26:25)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:30:110)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:30:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: owner sees mandate actions; employee does not inherit all organization actions
+    not ok 3 - owner sees mandate actions; employee does not inherit all organization actions
+      ---
+      duration_ms: 17.0838
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists-staff-access.integration.test.cjs:31:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        
+        + Set(0) {}
+        - Set(3) {
+        -   'MANAGE_AUDITIONS',
+        -   'MANAGE_MATERIALS',
+        -   'READ_PROFILE'
+        - }
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+      actual:
+      operator: 'deepStrictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:31:151)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:31:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: staff cannot read private consent or create personal authorization
+    ok 4 - staff cannot read private consent or create personal authorization
+      ---
+      duration_ms: 27.1835
+      type: 'test'
+      ...
+    # Subtest: staff grant intersection enables only explicitly permitted material upload
+    not ok 5 - staff grant intersection enables only explicitly permitted material upload
+      ---
+      duration_ms: 10.3974
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists-staff-access.integration.test.cjs:35:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        
+        + Set(0) {}
+        - Set(2) {
+        -   'MANAGE_MATERIALS',
+        -   'READ_PROFILE'
+        - }
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+      actual:
+      operator: 'deepStrictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:35:150)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:35:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: material revocation removes action and rejects old-key upload replay
+    not ok 6 - material revocation removes action and rejects old-key upload replay
+      ---
+      duration_ms: 8.8542
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists-staff-access.integration.test.cjs:37:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        
+        + undefined
+        - [
+        -   'READ_PROFILE'
+        - ]
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        0: 'READ_PROFILE'
+      operator: 'deepStrictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:37:104)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:37:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: revoked staff disappears from list and cannot read previous detail
+    not ok 7 - revoked staff disappears from list and cannot read previous detail
+      ---
+      duration_ms: 5.6474
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists-staff-access.integration.test.cjs:39:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"code":"ARTIST_PARTY_FORBIDDEN","message":"请求未通过校验或权限检查","retryable":false,"details":[]}
+        
+        403 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 403
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:26:25)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:39:112)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:39:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: personal mandate withdrawal also removes owner and regranted employee access
+    not ok 8 - personal mandate withdrawal also removes owner and regranted employee access
+      ---
+      duration_ms: 18.131
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists-staff-access.integration.test.cjs:42:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"code":"ARTIST_PARTY_FORBIDDEN","message":"请求未通过校验或权限检查","retryable":false,"details":[]}
+        
+        403 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 403
+      operator: 'strictEqual'
+      stack: |-
+        ok (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:26:25)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:42:155)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\artists-staff-access.integration.test.cjs:42:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..8
+not ok 1 - artist employee list and effective actions retain person and delegation boundaries
+  ---
+  duration_ms: 8720.2994
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\artists-staff-access.integration.test.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '7 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 9
+# suites 0
+# pass 1
+# fail 8
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10816.9609

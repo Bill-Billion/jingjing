@@ -210,6 +210,56 @@
       "owner": "chengcongcong222",
       "phase": "T1_DISCOVERY",
       "product_bug_confirmed": false
+    },
+    {
+      "id": "QA18-ACCESS-015",
+      "group": "G02",
+      "kind": "BACKEND_FRONTEND_AUTHORIZATION",
+      "product_bug_confirmed": true,
+      "summary": "有效逐人授权员工被人物列表及双端负责人入口错误拦截",
+      "actual": "同一员工直接读取已授权人物200，人物列表403；Vue和Flutter Web未发人物请求即要求OWNER。旧端还从整份机构委托推断操作。",
+      "expected": "有效员工按本人委托与当前逐人事项交集读取，未获权、个人同意、撤权及素材所有权边界保持",
+      "evidence": "docs/testing/evidence/pm04-g1-authorization-20261125-04/staff-before/RESULT.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-authorization-20261125-04/staff-after-local/RESULT.json",
+      "additional_retest": [
+        "docs/testing/evidence/pm04-g1-authorization-20261125-04/backend/summary.json",
+        "docs/testing/evidence/pm04-g1-authorization-20261125-04/app-artists-after.log",
+        "docs/testing/evidence/pm04-g1-authorization-20261125-04/vue-artists-after.log"
+      ],
+      "fix_sha": "07822585dc90d589f8e3363957b0024ff9d1f769",
+      "full_regression": null,
+      "acceptance_ids": [
+        "ACC-DEL-01.02",
+        "ACC-DEL-01.03",
+        "ACC-DEL-02.04",
+        "ACC-DEL-25.01",
+        "TASK-02"
+      ],
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY"
+    },
+    {
+      "id": "QA18-ENV-016",
+      "group": "G02/G18",
+      "kind": "TEST_ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "本轮执行准备遗漏本地CanvasKit及误用日志/解释器设置",
+      "actual": "缺少jsonschema的默认Python未开始契约检查；PowerShell将提示stderr当作终止；Web包依赖外部CanvasKit导致页面未启动；宿主READY之前读取凭据文件失败。",
+      "expected": "独立venv、真实退出码、物理日志路径、等待READY及本地渲染资源，在同一新环境完成复测",
+      "evidence": "docs/testing/evidence/pm04-g1-authorization-20261125-04/staff-after/RESULT.json",
+      "additional_before": [
+        "docs/testing/evidence/pm04-g1-authorization-20261125-04/contract.log",
+        "docs/testing/evidence/pm04-g1-authorization-20261125-04/staff-after.log",
+        "docs/testing/evidence/pm04-g1-authorization-20261125-04/flutter-start-diagnostic-full.json"
+      ],
+      "targeted_retest": "docs/testing/evidence/pm04-g1-authorization-20261125-04/staff-after-local/RESULT.json",
+      "fix_sha": null,
+      "resolution": "使用已有venv；日志目录校验后收集真实退出码；build web --no-web-resources-cdn；宿主READY后复测",
+      "full_regression": null,
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY"
     }
   ]
 }
