@@ -10,6 +10,17 @@ export interface ReferenceOption {value:string;label:string;record:BusinessData}
 export interface ReferenceSource {path:string;party:PartyMode;participationProject?:string;creation?:CreationKind|'STORY';noticeCase?:string;privacyPolicy?:{requestId:string;action?:string;scope?:string};delivery?:{booking:string;person:string;avatar:string;kind:'PHOTO'|'VIDEO'|'CONSENT'};redemptionEvidence?:{grant:string;purpose:'SCHEDULE'|'COMPLETION'};ownProfiles?:{person?:string};filter?:(r:BusinessData)=>boolean}
 export function sourceFor(key:string,context:Record<string,unknown>,domain:string,party:string):ReferenceSource|null{
  const person=context.person_id||context.seller_person_id
+ if(domain==='redemption'&&key==='stock_id'&&context.redemption_action==='pool'){
+  const prizes=(context.config as BusinessData|undefined)?.prizes
+  const prize=Array.isArray(prizes)?prizes.find(p=>p&&typeof p==='object'&&(p as BusinessData).key===context.key) as BusinessData|undefined:undefined
+  const kinds:Record<string,string>={INTERVIEW_OPEN:'INTERVIEW',INTERVIEW_PRIORITY:'INTERVIEW',PRODUCTION_CREDIT:'PRODUCTION_CREDIT',PRODUCTION_FREE:'PRODUCTION_FREE',EXPOSURE:'EXPOSURE'}
+  const expected=kinds[String(prize?.kind)]
+  return {path:'/redemption/queue?kind=STOCK&limit=100',party:'none',filter:r=>{
+   const d=rowData(r),t=d.template as BusinessData|undefined,interview=t?.interview as BusinessData|undefined
+   return !!expected&&r.kind==='STOCK'&&r.owner_party_id===party&&r.current_status==='AVAILABLE'&&t?.kind===expected&&
+    (prize?.kind!=='INTERVIEW_OPEN'||interview?.channel==='OPEN')&&(prize?.kind!=='INTERVIEW_PRIORITY'||interview?.channel==='PRIORITY')
+  }}
+ }
  if(domain==='redemption'&&key==='spec_ids')return {path:'/trade/records?kind=SPEC',party:'required',filter:r=>r.kind==='SPEC'&&r.current_status==='PUBLISHED'&&r.merchant_party_id===party&&(rowData(r).product_profile as BusinessData|undefined)?.type==='PRIVATE_CUSTOMIZATION'}
  if(domain==='participation'&&key==='rule_id'){
   const candidate=context.candidate_id||context.record_id
