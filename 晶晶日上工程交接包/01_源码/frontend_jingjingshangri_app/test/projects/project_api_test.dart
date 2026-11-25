@@ -314,10 +314,14 @@ void main() {
     return r;
   }
 
-  Future<List<Map<String, dynamic>>> choicesFor(Map<String, dynamic> record) async {
-    final a = projectsAdapter(override: (request) =>
-        request.path == '/api/v1/supply/records'
-            ? envelope({'items': [record], 'next_cursor': null})
+  Future<List<Map<String, dynamic>>> choicesFor(
+      Map<String, dynamic> record) async {
+    final a = projectsAdapter(
+        override: (request) => request.path == '/api/v1/supply/records'
+            ? envelope({
+                'items': [record],
+                'next_cursor': null
+              })
             : null);
     return ProjectsApi(await buyerSession(a)).supplyChoices('AVATAR');
   }
@@ -327,20 +331,47 @@ void main() {
     expect((await choicesFor(record)).single['id'], avatarKey);
     record['data']['archive_status'] = 'DELIVERED';
     record['data']['material_asset_ids'] = [assetKey];
-    expect((await choicesFor(record)).single['data']['artist_person_id'], candidateKey);
+    expect((await choicesFor(record)).single['data']['artist_person_id'],
+        candidateKey);
   });
-  for (final defect in ['person', 'archive', 'model', 'provider', 'material', 'missing', 'extra', 'owner']) {
+  for (final defect in [
+    'person',
+    'archive',
+    'model',
+    'provider',
+    'material',
+    'missing',
+    'extra',
+    'owner'
+  ]) {
     test('档案数字人选项仍拒绝非法字段或归属：$defect', () async {
-      final record = linkedAvatar(), data = record['data'] as Map<String, dynamic>;
+      final record = linkedAvatar(),
+          data = record['data'] as Map<String, dynamic>;
       switch (defect) {
-        case 'person': data['artist_person_id'] = 'not-a-person-id'; break;
-        case 'archive': data['archive_status'] = 'APPROVED'; break;
-        case 'model': data['long_lived_model_status'] = 'ENABLED'; break;
-        case 'provider': data['provider_asset_ref'] = 'unexpected-provider'; break;
-        case 'material': data['material_asset_ids'] = ['not-an-asset']; break;
-        case 'missing': data.remove('archive_status'); break;
-        case 'extra': data['silently_trusted'] = true; break;
-        case 'owner': record['owner_party_id'] = orgId; break;
+        case 'person':
+          data['artist_person_id'] = 'not-a-person-id';
+          break;
+        case 'archive':
+          data['archive_status'] = 'APPROVED';
+          break;
+        case 'model':
+          data['long_lived_model_status'] = 'ENABLED';
+          break;
+        case 'provider':
+          data['provider_asset_ref'] = 'unexpected-provider';
+          break;
+        case 'material':
+          data['material_asset_ids'] = ['not-an-asset'];
+          break;
+        case 'missing':
+          data.remove('archive_status');
+          break;
+        case 'extra':
+          data['silently_trusted'] = true;
+          break;
+        case 'owner':
+          record['owner_party_id'] = orgId;
+          break;
       }
       await expectLater(choicesFor(record), throwsA(isA<AccountError>()));
     });
