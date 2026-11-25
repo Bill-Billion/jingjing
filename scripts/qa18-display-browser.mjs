@@ -10,8 +10,11 @@ const root=process.cwd(),accessFile=resolve(process.env.V5_ACCESS_FILE),f=JSON.p
 assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1'&&Date.parse(f.expires_at)>Date.now());
 const out=resolve(process.env.QA18_OUTPUT_DIR);assert(out.startsWith(join(root,'.local')+sep));await mkdir(out,{recursive:true});
 const checkpoint=join(out,'checkpoint.json'),sha=b=>createHash('sha256').update(b).digest('hex');
+const typedMedia=process.env.QA18_TYPED_MEDIA==='1';
 let s;try{s=JSON.parse(await readFile(checkpoint,'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;s={environment:dirname(accessFile).split(/[\\/]/).at(-1),person_id:f.scenarios.first_audition.person_id,avatar_id:f.scenarios.first_audition.avatar_id,period:{valid_from:new Date(Date.now()-3600000).toISOString(),valid_until:new Date(Date.now()+86400000).toISOString()},ops:{},checks:[],requests:[],attempts:[],g05:{},g06:{}};}
 assert.equal(s.person_id,f.scenarios.first_audition.person_id);assert(!s.complete,'Completed batch must not be repeated');
+if(s.typed_media!==undefined)assert.equal(s.typed_media,typedMedia,'Keep original media coverage on resume');
+else {assert(!s.g05.consent||!typedMedia,'Typed media requires a fresh consent');s.typed_media=typedMedia;}
 const attempt=Date.now().toString(),source=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();s.attempts.push({attempt,source,started_at:new Date().toISOString()});
 const save=()=>writeFile(checkpoint,JSON.stringify(s,null,2));
 async function done(name,detail={}){s.checks.push({name,attempt,...detail});await save();}
@@ -39,7 +42,7 @@ async function artistReview(id,kind,proof){const p=await web(artReviewer,'/artis
 async function prepareArtist(){
  const d=s.g05;
  if(!d.proof){d.proof=(await api(artist,person+'/assets?purpose=CONSENT_EVIDENCE&media_type=text%2Fplain',{bytes:Buffer.from('Synthetic G05 personal rights evidence; no real personal data.'),type:'application/octet-stream'})).data.id;await save();}
- if(!d.consent){d.consent=(await api(artist,person+'/consents',{body:{avatar_id:s.avatar_id,consent:{features:['FACE'],purposes:['PRIVATE_ARCHIVE','PUBLIC_DISPLAY'],grantee_party_id:f.accounts[artist].party_id,territories:['CN'],...s.period,terms:'合成脸部仅用于本人私人档案和本次公开色块展示，不授权声音、销售或训练。',evidence_asset_ids:[d.proof]}}})).data.id;await save();}
+ if(!d.consent){d.consent=(await api(artist,person+'/consents',{body:{avatar_id:s.avatar_id,consent:{features:typedMedia?['FACE','VOICE']:['FACE'],purposes:['PRIVATE_ARCHIVE','PUBLIC_DISPLAY'],grantee_party_id:f.accounts[artist].party_id,territories:['CN'],...s.period,terms:typedMedia?'合成色块、视频与测试纯音仅用于私人档案和本次公开展示，不是真人声音，不授权销售或训练。':'合成脸部仅用于本人私人档案和本次公开色块展示，不授权声音、销售或训练。',evidence_asset_ids:[d.proof]}}})).data.id;await save();}
  if(!d.consentApproved){await artistReview(d.consent,'CONSENT',d.proof);d.consentApproved=true;await save();}
  if(!d.halo){d.halo=(await api(artist,person+'/halos',{body:{level:1,ownership_promise:true,evidence_asset_ids:[d.proof]}})).data.id;await save();}
  if(!d.haloApproved){await artistReview(d.halo,'HALO',d.proof);d.haloApproved=true;await save();}
@@ -49,13 +52,15 @@ async function g05(){
  const d=s.g05;if(d.complete)return;
  await prepareArtist();const owner=await web(artist,person);
  if(!d.material){await owner.getByTestId('artists-materials').locator('summary').click();await owner.getByTestId('artists-asset-file').setInputFiles({name:'synthetic-colour-bars.jpg',mimeType:'image/jpeg',buffer:photo});await owner.getByTestId('artists-asset-type').selectOption('image/jpeg');const a=await post(owner,person+'/assets',()=>owner.getByTestId('artists-asset-upload').click());assert.equal(a.content_sha256,sha(photo));d.material=a.id;await save();}
+ if(typedMedia)await prepareTypedMedia(owner,d);
  if(!d.look){await go(owner,person+'/variants/new');await fields(owner,{avatar_id:s.avatar_id,kind:'LOOK',display_name:'QA18公开色块造型',consent_id:d.consent,material_asset_ids:d.material});d.look=(await artistSubmit(owner,person+'/variants')).id;await save();}
- if(!d.listing){await go(owner,person+'/listings/new');await fields(owner,{avatar_id:s.avatar_id,display_name:'QA18合成公开艺人',city:'北京市',introduction:'仅用于机器检查的合成色块与公开资料，不是真人肖像或资质。',tags:'合成测试',consent_id:d.consent,look_version_id:d.look,preview_asset_ids:d.material});await owner.getByTestId('artists-read-portraits').click();await owner.getByTestId('artists-field-primary_portrait_asset_id').selectOption(d.material);await owner.getByTestId('artists-inspect-portrait').click();await owner.getByTestId('artists-preview').waitFor();d.listing=(await artistSubmit(owner,person+'/listings')).id;await save();await snap(owner,'listing-submitted-with-selected-portrait');}
+ if(!d.listing){await go(owner,person+'/listings/new');await fields(owner,{avatar_id:s.avatar_id,display_name:'QA18合成公开艺人',city:'北京市',introduction:'仅用于机器检查的合成色块与公开资料，不是真人肖像或资质。',tags:'合成测试',consent_id:d.consent,look_version_id:d.look,...typedMedia?{voice_version_id:d.voice}:{},preview_asset_ids:typedMedia?[d.material,d.audio.id,d.video.id].join('\n'):d.material});await owner.getByTestId('artists-read-portraits').click();await owner.getByTestId('artists-field-primary_portrait_asset_id').selectOption(d.material);await owner.getByTestId('artists-inspect-portrait').click();await owner.getByTestId('artists-preview').waitFor();d.listing=(await artistSubmit(owner,person+'/listings')).id;await save();await snap(owner,'listing-submitted-with-selected-portrait');}
  if(!d.approved){await api('buyer','/artists/catalog/'+d.listing,{account:true,allowed:[404]});const r=(await api(artist,person+'/records/'+d.listing)).data;await api(artist,person+'/records/'+d.listing+'/reviews',{account:true,version:r.object_version,body:{decision:'APPROVE',reason:'Synthetic self-review negative'},allowed:[403]});await artistReview(d.listing,'LISTING',d.material);d.approved=true;await done('vue-personal-selected-portrait-and-independent-listing-review');}
  const viewer=await web('buyer','/artists/catalog/'+d.listing),mobile=await app('buyer','/artists/public?listingId='+d.listing);
  if(!d.withdrawn){
   await viewer.getByTestId('artists-public-detail').waitFor();assert.equal(await viewer.locator('.artist-public-portrait img').count(),1);await snap(viewer,'vue-public-selected-portrait');await snap(mobile,'flutter-public-selected-portrait');
   const media=(await api('buyer','/artists/catalog/'+d.listing+'/media',{account:true})).data;assert.equal(media.primary_portrait_asset_id,d.material);assert(!JSON.stringify(media).includes(d.proof));
+  if(typedMedia&&!d.typedPlayed)await verifyTypedMedia(viewer,mobile,d,media);
   const old=await api('buyer','/artists/catalog/'+d.listing+'/assets/'+d.material+'/content',{account:true});assert.equal(sha(old.bytes),sha(photo));await api('buyer','/artists/assets/'+d.proof+'/content',{allowed:[403,404]});await done('same-public-listing-and-selected-portrait-across-flutter-vue',{listing_id:d.listing});
   if(!d.feature){const curator=await web(artReviewer,'/directory/featured/new');await curator.getByRole('combobox',{name:'选择当前公开艺人',exact:true}).selectOption(d.listing);await curator.getByLabel('推荐说明',{exact:true}).fill('QA18合成推荐，独立于明星认证或排名');await curator.getByLabel('有效开始（本地时间）',{exact:true}).fill(s.period.valid_from.slice(0,16));await curator.getByLabel('有效结束（本地时间）',{exact:true}).fill(s.period.valid_until.slice(0,16));const r=await post(curator,'/directory/featured-artists',()=>curator.getByRole('button',{name:'提交并等待独立审核',exact:true}).click());d.feature=r.id;await save();await api(artReviewer,'/directory/records/'+r.id+'/reviews',{account:true,version:r.object_version,body:{decision:'APPROVE',reason:'Synthetic curator cannot self-review',checks:{public_source_verified:true,recommendation_reviewed:true,not_star_certification:true}},allowed:[403]});await curator.close();}
   if(!d.featureApproved){const reviewer=await web('reviewer','/directory/reviews/FEATURED_ARTIST/'+d.feature);await reviewer.getByLabel('本次处理说明',{exact:true}).fill('独立核对合成公开来源及推荐，非明星认证。');for(const cb of await reviewer.getByRole('checkbox').all())await cb.check();await post(reviewer,'/directory/records/'+d.feature+'/reviews',()=>reviewer.getByRole('button',{name:'通过独立审核',exact:true}).click());d.featureApproved=true;await save();await snap(reviewer,'feature-independent-review');await reviewer.close();}
@@ -66,7 +71,40 @@ async function g05(){
   await webFeatures.getByRole('button',{name:'刷新当前资料',exact:true}).click();await webFeatures.waitForLoadState('networkidle');assert(!(await webFeatures.locator('body').innerText()).includes('QA18合成公开艺人'));await appClick(appFeatures,'刷新当前公开资料');await appFeatures.waitForLoadState('networkidle');assert(!(await appFeatures.locator('body').ariaSnapshot()).includes('QA18合成公开艺人'));await snap(appFeatures,'flutter-feature-hidden');await snap(webFeatures,'vue-feature-hidden');d.cachedRevocation=true;await done('withdrawn-consent-clears-loaded-public-pages-and-feature-lists');
  }
  await api('buyer','/artists/catalog/'+d.listing+'/assets/'+d.material+'/content',{account:true,allowed:[403,404,409]});assert(!(await api('buyer','/directory/featured-artists',{account:true})).data.items.some(x=>x.record_id===d.feature));assert.equal(sha((await api(artist,'/artists/assets/'+d.material+'/content')).bytes),sha(photo));
+ if(typedMedia){assert(d.typedPlayed);for(const item of [d.audio,d.video])await api('buyer','/artists/catalog/'+d.listing+'/assets/'+item.id+'/content',{account:true,allowed:[403,404,409]});await done('withdrawal-denies-original-audio-video-bytes');}
  assert(d.cachedRevocation,'Loaded page revocation remains unproven after interrupted attempt');d.complete=true;await done('g05-scoped-public-display-chain-complete-not-full-criterion');
+}
+async function prepareTypedMedia(owner,d){
+ for(const [kind,type,name]of [['audio','audio/wav','synthetic-tone.wav'],['video','video/mp4','full.mp4']]){
+  if(d[kind])continue;
+  let bytes;
+  if(kind==='audio'){
+   const file=join(out,name);execFileSync(process.env.JX_TEST_FFMPEG||'ffmpeg',['-nostdin','-hide_banner','-loglevel','error','-y','-f','lavfi','-i','sine=frequency=440:sample_rate=16000','-t','2','-c:a','pcm_s16le',file],{windowsHide:true,timeout:30000,stdio:'pipe'});bytes=await readFile(file);
+  }else bytes=await readFile(join(dirname(accessFile),'samples',name));
+  await go(owner,person);await owner.getByTestId('artists-materials').locator('summary').click();
+  await owner.getByTestId('artists-asset-file').setInputFiles({name,mimeType:type,buffer:bytes});await owner.getByTestId('artists-asset-type').selectOption(type);
+  const a=await post(owner,person+'/assets',()=>owner.getByTestId('artists-asset-upload').click());assert.equal(a.content_sha256,sha(bytes));d[kind]={id:a.id,type,bytes:bytes.length,sha256:sha(bytes)};await save();
+ }
+ if(!d.voice){await go(owner,person+'/variants/new');await fields(owner,{avatar_id:s.avatar_id,kind:'VOICE',display_name:'QA18非真人测试纯音',consent_id:d.consent,material_asset_ids:d.audio.id});d.voice=(await artistSubmit(owner,person+'/variants')).id;await save();}
+}
+async function verifyTypedMedia(viewer,mobile,d,media){
+ assert.equal(media.items.length,3);
+ for(const [kind,label]of [['audio','声音'],['video','视频']]){
+  const item=d[kind],metadata=media.items.find(x=>x.asset_id===item.id);assert(metadata);assert.equal(metadata.media_type,item.type);assert.equal(metadata.media_kind,kind==='audio'?'AUDIO':'VIDEO');assert.equal(metadata.content_sha256,item.sha256);
+  const path='/api/v1/artists/catalog/'+d.listing+'/assets/'+item.id+'/content';
+  for(const [surface,page]of [['vue',viewer],['flutter',mobile]]){
+   const response=page.waitForResponse(r=>new URL(r.url()).pathname===path&&r.request().method()==='GET');
+   if(surface==='vue')await page.getByTestId('artists-catalog-preview-'+item.id).click();else await appClick(page,'读取'+label+'预览 1');
+   const res=await response;assert.equal(res.status(),200);assert.equal(sha(await res.body()),item.sha256);
+   const player=surface==='vue'?page.locator('[data-testid="artists-preview"] '+kind):page.locator('video').last();await player.waitFor({state:'attached'});
+   await page.waitForFunction(el=>el.readyState>=2&&el.duration>0,await player.elementHandle());
+   await player.evaluate(el=>{el.muted=true;return el.play();});await page.waitForFunction(el=>el.currentTime>0,await player.elementHandle());
+   const played=await player.evaluate(el=>({duration:el.duration,current_time:el.currentTime,paused:el.paused,error:el.error?.code??null}));assert.equal(played.error,null);assert(played.duration>1&&played.duration<3);
+   await snap(page,surface+'-actual-'+kind+'-playback');await player.evaluate(el=>el.pause());await done(surface+'-actual-'+kind+'-typed-playback',{listing_id:d.listing,asset_id:item.id,sha256:item.sha256,...played});
+   if(surface==='vue')await page.getByRole('button',{name:'关闭并清除预览',exact:true}).click();
+  }
+ }
+ d.typedPlayed=true;await save();
 }
 async function g06(){
  const d=s.g06;if(d.complete)return;const owner=await web('mcn_owner','/directory/manage/new');
