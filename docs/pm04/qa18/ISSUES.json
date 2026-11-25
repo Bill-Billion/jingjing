@@ -349,6 +349,26 @@
         "TASK-08"
       ],
       "limits": "Resumed discovery, not final full regression. Retention test initial prep path failed, actual test ran unchanged and was committed afterwards; source digest recorded."
+    },
+    {
+      "id": "QA18-FE-021",
+      "group": "G09",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "App反馈附件无扩展名，FilePicker Web拒绝保存已返回的正确字节",
+      "actual": "真实App浏览器读取私有附件HTTP200/40字节摘要正确，但无download事件并显示失败；Vue保存同文件正常。",
+      "expected": "获准的私有附件实际交给保存器并可保存；拒绝后不得保存旧字节。",
+      "evidence": "docs/testing/evidence/pm04-g1-support-notifications-20261125-08/chain/1795589890146-RESULT.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-support-notifications-20261125-08/chain/1795590175774-RESULT.json",
+      "fix_sha": "8bf349e9a5b89d6f693da10b06338c933a773ebb",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "TASK-09"
+      ],
+      "limits": "Flutter Web/browser plus widget regression; physical Android and final clean full regression pending."
     }
   ]
 }
