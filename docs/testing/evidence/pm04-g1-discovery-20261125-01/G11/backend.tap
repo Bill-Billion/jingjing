@@ -1,0 +1,101 @@
+TAP version 13
+# {"time":"2026-11-25T03:30:37.585Z","level":"info","event":"migration_applied"}
+# {"time":"2026-11-25T03:30:37.590Z","level":"info","event":"migration_applied"}
+# {"time":"2026-11-25T03:30:37.594Z","level":"info","event":"migration_applied"}
+# {"time":"2026-11-25T03:30:37.596Z","level":"info","event":"migration_applied"}
+# {"time":"2026-11-25T03:30:37.603Z","level":"info","event":"migration_applied"}
+# {"time":"2026-11-25T03:30:37.606Z","level":"info","event":"migration_applied"}
+# {"time":"2026-11-25T03:30:37.606Z","level":"info","event":"db_migrations_applied"}
+# {"time":"2026-11-25T03:30:37.624Z","level":"info","event":"refund_success"}
+# {"time":"2026-11-25T03:30:37.625Z","level":"info","event":"refund_success"}
+# {"time":"2026-11-25T03:30:37.626Z","level":"info","event":"refund_success"}
+# {"time":"2026-11-25T03:30:37.627Z","level":"info","event":"refund_success"}
+# {"time":"2026-11-25T03:30:37.630Z","level":"info","event":"reconciliation_done"}
+# Subtest: 成功（无退款）：四账守恒、reconcile 无该单差异
+ok 1 - 成功（无退款）：四账守恒、reconcile 无该单差异
+  ---
+  duration_ms: 3.0494
+  type: 'test'
+  ...
+# Subtest: 全额退款：kind=full、支付单 refunded、账仍平
+ok 2 - 全额退款：kind=full、支付单 refunded、账仍平
+  ---
+  duration_ms: 1.385
+  type: 'test'
+  ...
+# Subtest: 部分退两次到全退：partial→refunded，超额被拒，账平
+ok 3 - 部分退两次到全退：partial→refunded，超额被拒，账平
+  ---
+  duration_ms: 2.3813
+  type: 'test'
+  ...
+# Subtest: 重复回调/重复请求幂等：同 idemKey 不重复出款
+ok 4 - 重复回调/重复请求幂等：同 idemKey 不重复出款
+  ---
+  duration_ms: 0.9046
+  type: 'test'
+  ...
+# Subtest: 默认旧退款服务不可用：不建退款单、不改支付记录、绝不假退
+ok 5 - 默认旧退款服务不可用：不建退款单、不改支付记录、绝不假退
+  ---
+  duration_ms: 0.9023
+  type: 'test'
+  ...
+# Subtest: runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+ok 6 - runAndReport 落表：balanced 状态与汇总写入 reconciliation_runs
+  ---
+  duration_ms: 1.1797
+  type: 'test'
+  ...
+# Subtest: 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+ok 7 - 对账能抓出坏账：费用结构错配 + 已支付状态却无支付流水
+  ---
+  duration_ms: 1.4874
+  type: 'test'
+  ...
+# Subtest: personal center uses original business permissions, real dates and independent source recovery
+    # Subtest: all categories enumerate explicit sources; paid purchases return original IDs and statuses without file links
+    ok 1 - all categories enumerate explicit sources; paid purchases return original IDs and statuses without file links
+      ---
+      duration_ms: 144.1399
+      type: 'test'
+      ...
+    # Subtest: order is by stored creation time, ties are stable; signed pagination isolates scopes
+    ok 2 - order is by stored creation time, ties are stable; signed pagination isolates scopes
+      ---
+      duration_ms: 70.4483
+      type: 'test'
+      ...
+    # Subtest: unrelated account and alternate identity cannot see private orders or snapshots; member revocation takes effect
+    ok 3 - unrelated account and alternate identity cannot see private orders or snapshots; member revocation takes effect
+      ---
+      duration_ms: 60.0138
+      type: 'test'
+      ...
+    # Subtest: one corrupted source reports retryable failure without hiding successful sources; fixing original record restores same request
+    ok 4 - one corrupted source reports retryable failure without hiding successful sources; fixing original record restores same request
+      ---
+      duration_ms: 42.563
+      type: 'test'
+      ...
+    # Subtest: withdrawing snapshot reader access removes old entry and original detail remains denied
+    ok 5 - withdrawing snapshot reader access removes old entry and original detail remains denied
+      ---
+      duration_ms: 33.8423
+      type: 'test'
+      ...
+    1..5
+ok 8 - personal center uses original business permissions, real dates and independent source recovery
+  ---
+  duration_ms: 8705.2216
+  type: 'test'
+  ...
+1..8
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8970.8759

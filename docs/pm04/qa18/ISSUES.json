@@ -1,0 +1,37 @@
+{
+  "run_id": "pm04-g1-discovery-20261125-01",
+  "formal_acceptance_updated": false,
+  "issues": [
+    {
+      "id": "QA18-ENV-001",
+      "kind": "DELIVERY_TOOL",
+      "status": "BLOCKED",
+      "owner": "chengcongcong222 coordinates package receipt",
+      "summary": "收到01/02/03三份计划，完整ZIP、落库README、04规范、qa18_registry.py及安装器缺失",
+      "reproduction": "本机PM04目录/G1仅三份文件；仓库scripts无qa18_registry.py",
+      "impact": "官方登记工具不能安装；真实后端测试及原始证据采集继续",
+      "next": "用户提供完整包路径后，校验原件并按README安全落库、导入现有证据",
+      "fix_sha": null,
+      "targeted_retest": null,
+      "full_regression": null
+    },
+    {
+      "id": "QA18-ENV-002",
+      "kind": "TEST_ENVIRONMENT",
+      "status": "REPRODUCED",
+      "owner": "chengcongcong222",
+      "group": "G05",
+      "criterion_refs": ["TASK-05"],
+      "summary": "首轮执行环境设置FFmpeg但漏设JX_TEST_FFPROBE及JX_TEST_FONT，媒体接口503",
+      "reproduction": "保持源码f0710079，仅设置JX_MYSQL_TEST_ENV_FILE与JX_TEST_FFMPEG；node scripts/qa18-backend-discovery.cjs G05 pm04-g1-discovery-<新批号>",
+      "expected": "有效实际视频返回时长和预览封面；原拒绝断言保持",
+      "actual": "stock-media 5个子测试失败+1父项，MEDIA_PROCESS_NOT_CONFIGURED/503；artists通过",
+      "evidence": "docs/testing/evidence/pm04-g1-discovery-20261125-01/G05/backend.tap",
+      "classification_basis": "stock-media测试第14行读取FFprobe，第74行读取字体；启动命令未设置两变量；非权限放行，未证实产品逻辑缺陷",
+      "next": "首轮后补全本机配置、独立新批号专项复测，保留本次失败；不改测试断言或产品规则",
+      "fix_sha": null,
+      "targeted_retest": null,
+      "full_regression": null
+    }
+  ]
+}

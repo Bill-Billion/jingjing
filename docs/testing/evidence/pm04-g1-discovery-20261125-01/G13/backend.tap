@@ -1,0 +1,65 @@
+TAP version 13
+# Subtest: phone replacement preserves account and requires separate original/new proofs
+    # Subtest: recent login and real phone binding required; no identity delegation or arbitrary fields
+    ok 1 - recent login and real phone binding required; no identity delegation or arbitrary fields
+      ---
+      duration_ms: 313.8727
+      type: 'test'
+      ...
+    # Subtest: create and SMS retry are idempotent, bound to original session and account
+    ok 2 - create and SMS retry are idempotent, bound to original session and account
+      ---
+      duration_ms: 641.0986
+      type: 'test'
+      ...
+    # Subtest: ordinary login proof cannot change phone, wrong proofs commit capped attempts without double counting retries
+    ok 3 - ordinary login proof cannot change phone, wrong proofs commit capped attempts without double counting retries
+      ---
+      duration_ms: 190.3199
+      type: 'test'
+      ...
+    # Subtest: manual resend near request expiry returns the active challenge, not an older code with the same deadline
+    ok 4 - manual resend near request expiry returns the active challenge, not an older code with the same deadline
+      ---
+      duration_ms: 100.0298
+      type: 'test'
+      ...
+    # Subtest: unknown delivery does not resend automatically; cancellation and expiry retire codes and encrypted phones
+    ok 5 - unknown delivery does not resend automatically; cancellation and expiry retire codes and encrypted phones
+      ---
+      duration_ms: 98.9642
+      type: 'test'
+      ...
+    # Subtest: both proofs required; complete change preserves account and parties, revokes all old sessions and old pending login codes
+    ok 6 - both proofs required; complete change preserves account and parties, revokes all old sessions and old pending login codes
+      ---
+      duration_ms: 311.4683
+      type: 'test'
+      ...
+    # Subtest: claimed target never merges accounts and concurrent claim cannot overwrite another user
+    ok 7 - claimed target never merges accounts and concurrent claim cannot overwrite another user
+      ---
+      duration_ms: 314.6008
+      type: 'test'
+      ...
+    # Subtest: failed audit rolls back phone mapping, sessions and result so original confirmation can recover
+    ok 8 - failed audit rolls back phone mapping, sessions and result so original confirmation can recover
+      ---
+      duration_ms: 156.9987
+      type: 'test'
+      ...
+    1..8
+ok 1 - phone replacement preserves account and requires separate original/new proofs
+  ---
+  duration_ms: 9991.8111
+  type: 'test'
+  ...
+1..1
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10217.7214
