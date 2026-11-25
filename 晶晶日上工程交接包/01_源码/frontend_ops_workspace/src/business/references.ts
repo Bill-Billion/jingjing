@@ -62,6 +62,7 @@ export function sourceFor(key:string,context:Record<string,unknown>,domain:strin
  if(key==='account_id'||key==='assignee_account_id')return uuid(party)?{path:`/parties/${party}/members`,party:'required'}:null
  if(domain==='cocreation'&&['file_id','final_version_id'].includes(key))return uuid(context.project_id)?{path:`/production/projects/${context.project_id}/records?kind=${key==='file_id'?'FILE':'VERSION'}`,party:'required',filter:r=>key==='file_id'?r.current_status==='READY':r.current_status==='APPROVED'&&rowData(r).stage==='FINAL'}:null
  if(key==='offer_id')return{path:'/auditions/catalog',party:'none'}
+ if(domain==='auditions'&&key==='record_id'&&['messages','contacts','itinerary','supplements'].includes(String(context.audition_section)))return{path:'/auditions/records?kind=BOOKING',party:'required'}
  if(key==='booking_id')return{path:'/auditions/records?kind=BOOKING',party:'required'}
  if(key==='source_listing_id'&&domain==='notices')return{path:'/artists/catalog',party:'none'}
  if(key==='listing_id')return{path:'/stock/catalog',party:'none'}
