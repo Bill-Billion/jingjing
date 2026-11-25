@@ -74437,10 +74437,12 @@ components:
           - items
           - next_cursor
           properties:
-            request_id: &id001
+            request_id:
               type: string
               format: uuid
-            handler_account_id: *id001
+            handler_account_id:
+              type: string
+              format: uuid
             items:
               type: array
               maxItems: 100
@@ -74453,7 +74455,9 @@ components:
                 - byte_size
                 - media_type
                 properties:
-                  id: *id001
+                  id:
+                    type: string
+                    format: uuid
                   content_sha256:
                     type: string
                     pattern: ^[a-f0-9]{64}$
