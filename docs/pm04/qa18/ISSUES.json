@@ -512,6 +512,46 @@
         "TASK-16"
       ],
       "limits": "17 scoped checks across original-record resumes; not uninterrupted final regression. New room has no payment/order/project. All required surfaces/scenarios and full regression remain."
+    },
+    {
+      "id": "QA18-TEST-029",
+      "group": "G17",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "人工定制及同单售后的控件和恢复入口定位假设错误",
+      "actual": "正常链4次、售后2次驱动失败；派单输入框、付款恢复滚动、反馈选择及退款/同步入口与假设不符。",
+      "expected": "按当前控件及接口办理；原订单接续，保留失败和同操作键恢复证据。",
+      "evidence": "docs/testing/evidence/pm04-g1-manual-journey-20261125-12/chain/1795597142666-RESULT.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-manual-journey-20261125-12/EXECUTION_SUMMARY.json",
+      "fix_sha": "711d8d8b3b27f628f57d4b2f1e7db133a3861fed",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-02"
+      ],
+      "limits": "35 scoped checks on same order across resumed drivers; final fixed-version18group/12chain regression and all required surface/case slots remain. ENV fix is invocation physical cwd, no product source change."
+    },
+    {
+      "id": "QA18-ENV-030",
+      "group": "G17",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "盘符别名改变后端测试证据目录解析",
+      "actual": "从R盘别名运行，三处证据写入指向不存在的R:/.local，首轮46通过/4失败（含父项），未确认业务断言缺陷。",
+      "expected": "用实际仓库绝对路径运行同四文件，50通过/0失败，651响应契约通过；保留原失败。",
+      "evidence": "docs/testing/evidence/pm04-g1-manual-journey-20261125-12/backend.log",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-manual-journey-20261125-12/EXECUTION_SUMMARY.json",
+      "fix_sha": "a09b862e4805edee31a49e8ad6b5a6b016140598",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-02"
+      ],
+      "limits": "35 scoped checks on same order across resumed drivers; final fixed-version18group/12chain regression and all required surface/case slots remain. ENV fix is invocation physical cwd, no product source change."
     }
   ]
 }

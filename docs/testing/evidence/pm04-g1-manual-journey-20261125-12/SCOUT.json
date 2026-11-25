@@ -1,0 +1,572 @@
+{
+  "order": {
+    "status": 200,
+    "meta": {
+      "request_id": "1431e650-2232-4edc-a35d-fd9dac850cad",
+      "actor": {
+        "account_id": "6aebc225-1cf6-46cb-8acf-c7b40722a29d"
+      },
+      "acting_party": "d6ffc34d-1393-4dac-83e3-9fbce280cf9a"
+    },
+    "data": {
+      "id": "f677713f-3555-46c9-a627-98cc282a323d",
+      "kind": "ORDER",
+      "buyer_party_id": "d6ffc34d-1393-4dac-83e3-9fbce280cf9a",
+      "merchant_party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62",
+      "parent_id": "570d32fb-4c0c-403e-8471-34bddf126479",
+      "order_id": null,
+      "created_by": "6aebc225-1cf6-46cb-8acf-c7b40722a29d",
+      "current_status": "PAID",
+      "object_version": 4,
+      "content_sha256": "91e572ba85a12bc8bcad9d669f92881b8d10bb9408a843236318d0000dea3337",
+      "data": {
+        "quote": {
+          "lines": [
+            {
+              "title": "测试定制短片 · 家庭记忆",
+              "review": {
+                "reason": "synthetic",
+                "decision": "APPROVED",
+                "account_id": "3ea5a012-b22a-4496-a0e4-7a25f8b4210e"
+              },
+              "line_id": "film",
+              "spec_id": "6221564b-e570-4f33-a847-b66f74a8b74d",
+              "currency": "CNY",
+              "quantity": 1,
+              "line_kind": "PRODUCTION",
+              "unit_minor": 10000,
+              "total_minor": 10000,
+              "spec_version": 2,
+              "specification": {
+                "terms": "synthetic non-commercial",
+                "version": "synthetic1",
+                "deliverables": [
+                  "synthetic manual film"
+                ],
+                "service_tier": "test",
+                "final_seconds": 90,
+                "revision_limit": 1,
+                "sample_seconds": 20,
+                "customization_delivery": {
+                  "version": "V5-Q05-Q06",
+                  "source_ref": "synthetic:test-only",
+                  "acceptance_hours": 168,
+                  "cancellation_terms": "before start full refund; confirmed completed work only; failure refund",
+                  "preview_payment_order": "PREVIEW_BEFORE_INTERIM"
+                }
+              },
+              "product_profile": {
+                "type": "PRIVATE_CUSTOMIZATION",
+                "version": "V5"
+              },
+              "provider_party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+            }
+          ],
+          "review": {
+            "reason": "synthetic",
+            "decision": "APPROVED",
+            "account_id": "3ea5a012-b22a-4496-a0e4-7a25f8b4210e"
+          },
+          "channel": "ALIPAY",
+          "rule_id": "6b9f9a22-6d67-4e2e-90c3-5a60d7053cbd",
+          "currency": "CNY",
+          "cocreation": {
+            "room_id": "39a41fde-33a5-45b3-b12b-b203b8895a1f",
+            "deadline": "2026-11-25T07:48:40.401Z",
+            "rule_sha256": "1a9015610edaa982f23e2ac07deb74bf47aeebff27724d6f98a7b773dba1b73c",
+            "rule_snapshot": {
+              "benefit": {
+                "valid_days": 30,
+                "description": "隔离个人片段权益",
+                "credit_minor": 1000,
+                "service_code": "synthetic-personal-clip"
+              },
+              "version": "synthetic-cocreation-r05r12",
+              "max_people": 40,
+              "source_ref": "synthetic:Q11",
+              "extension_days": 7,
+              "participation_terms": "每人单独确认，只获本人片段；非正式生产约定。"
+            },
+            "participation_sha256": "2c2e56754d60628ba762ff9d6f0b4aadb44d97138e40c3f884ccc6416317730e"
+          },
+          "expires_at": "2099-01-01T00:00:00.000Z",
+          "total_minor": 10000,
+          "installments": [
+            {
+              "key": "first",
+              "trigger": "ORDER_ACCEPTED",
+              "allocations": [
+                {
+                  "line_id": "film",
+                  "amount_minor": 3000
+                }
+              ],
+              "apple_product_id": null
+            },
+            {
+              "key": "interim",
+              "trigger": "CUSTOMIZATION_INTERIM_CONFIRMED",
+              "allocations": [
+                {
+                  "line_id": "film",
+                  "amount_minor": 6000
+                }
+              ],
+              "apple_product_id": null
+            },
+            {
+              "key": "last",
+              "trigger": "FINAL_ACCEPTED",
+              "allocations": [
+                {
+                  "line_id": "film",
+                  "amount_minor": 1000
+                }
+              ],
+              "apple_product_id": null
+            }
+          ],
+          "customization": {
+            "request_id": "e7aa8b57-3fb6-4297-93f0-ce859c50ef7e",
+            "submission_id": "982f4022-3a8a-4e58-a1b6-9548bda86e94",
+            "content_sha256": "f220318a19c9766d2829f9ce39eff522d714c7abaaf24394658326d663f545fe"
+          },
+          "transaction_model": "PLATFORM_PRINCIPAL",
+          "customization_finance": {
+            "model": "V5_SELF_OPERATED",
+            "rules": {
+              "lines": [
+                {
+                  "shares": [
+                    {
+                      "bps": 10000,
+                      "role": "PLATFORM",
+                      "party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+                    }
+                  ],
+                  "line_id": "film",
+                  "deductions": []
+                }
+              ],
+              "terms": "synthetic only",
+              "version": "synthetic1",
+              "settlement_at": "2020-01-01T00:00:00.000Z",
+              "release_condition": "DELIVERY_ACCEPTED"
+            },
+            "rounding": "HALF_UP_PLATFORM_REMAINDER",
+            "rule_snapshot": {
+              "content": {
+                "id": "6b9f9a22-6d67-4e2e-90c3-5a60d7053cbd",
+                "terms": {
+                  "explicit": "synthetic no real agreement",
+                  "customization_finance": {
+                    "model": "V5_SELF_OPERATED",
+                    "rules": {
+                      "lines": [
+                        {
+                          "shares": [
+                            {
+                              "bps": 10000,
+                              "role": "PLATFORM",
+                              "party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+                            }
+                          ],
+                          "line_id": "film",
+                          "deductions": []
+                        }
+                      ],
+                      "terms": "synthetic only",
+                      "version": "synthetic1",
+                      "settlement_at": "2020-01-01T00:00:00.000Z",
+                      "release_condition": "DELIVERY_ACCEPTED"
+                    },
+                    "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                    "platform_party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+                  }
+                },
+                "version": "1",
+                "rule_key": "r04.synthetic",
+                "content_sha256": "416d15bc0ddf281925efdea18ddf4cc9cdd1018b582f6496a30bf688530e00f0",
+                "format_version": "rule-content-v1"
+              },
+              "effective_at": "2020-01-01T00:00:00.000Z",
+              "current_status": "EFFECTIVE"
+            },
+            "platform_party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+          },
+          "license_reservation_id": null,
+          "payment_window_minutes": 30
+        },
+        "contract": {
+          "id": "6ed99175-61f7-4cfe-8db9-c674c94b1581",
+          "party_ids": [
+            "d6ffc34d-1393-4dac-83e3-9fbce280cf9a",
+            "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+          ],
+          "created_at": "2026-11-25T07:48:25.436Z",
+          "commitments": {
+            "quote": {
+              "lines": [
+                {
+                  "title": "测试定制短片 · 家庭记忆",
+                  "review": {
+                    "reason": "synthetic",
+                    "decision": "APPROVED",
+                    "account_id": "3ea5a012-b22a-4496-a0e4-7a25f8b4210e"
+                  },
+                  "line_id": "film",
+                  "spec_id": "6221564b-e570-4f33-a847-b66f74a8b74d",
+                  "currency": "CNY",
+                  "quantity": 1,
+                  "line_kind": "PRODUCTION",
+                  "unit_minor": 10000,
+                  "total_minor": 10000,
+                  "spec_version": 2,
+                  "specification": {
+                    "terms": "synthetic non-commercial",
+                    "version": "synthetic1",
+                    "deliverables": [
+                      "synthetic manual film"
+                    ],
+                    "service_tier": "test",
+                    "final_seconds": 90,
+                    "revision_limit": 1,
+                    "sample_seconds": 20,
+                    "customization_delivery": {
+                      "version": "V5-Q05-Q06",
+                      "source_ref": "synthetic:test-only",
+                      "acceptance_hours": 168,
+                      "cancellation_terms": "before start full refund; confirmed completed work only; failure refund",
+                      "preview_payment_order": "PREVIEW_BEFORE_INTERIM"
+                    }
+                  },
+                  "product_profile": {
+                    "type": "PRIVATE_CUSTOMIZATION",
+                    "version": "V5"
+                  },
+                  "provider_party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+                }
+              ],
+              "review": {
+                "reason": "synthetic",
+                "decision": "APPROVED",
+                "account_id": "3ea5a012-b22a-4496-a0e4-7a25f8b4210e"
+              },
+              "channel": "ALIPAY",
+              "rule_id": "6b9f9a22-6d67-4e2e-90c3-5a60d7053cbd",
+              "currency": "CNY",
+              "cocreation": {
+                "room_id": "39a41fde-33a5-45b3-b12b-b203b8895a1f",
+                "deadline": "2026-11-25T07:48:40.401Z",
+                "rule_sha256": "1a9015610edaa982f23e2ac07deb74bf47aeebff27724d6f98a7b773dba1b73c",
+                "rule_snapshot": {
+                  "benefit": {
+                    "valid_days": 30,
+                    "description": "隔离个人片段权益",
+                    "credit_minor": 1000,
+                    "service_code": "synthetic-personal-clip"
+                  },
+                  "version": "synthetic-cocreation-r05r12",
+                  "max_people": 40,
+                  "source_ref": "synthetic:Q11",
+                  "extension_days": 7,
+                  "participation_terms": "每人单独确认，只获本人片段；非正式生产约定。"
+                },
+                "participation_sha256": "2c2e56754d60628ba762ff9d6f0b4aadb44d97138e40c3f884ccc6416317730e"
+              },
+              "expires_at": "2099-01-01T00:00:00.000Z",
+              "total_minor": 10000,
+              "installments": [
+                {
+                  "key": "first",
+                  "trigger": "ORDER_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "film",
+                      "amount_minor": 3000
+                    }
+                  ],
+                  "apple_product_id": null
+                },
+                {
+                  "key": "interim",
+                  "trigger": "CUSTOMIZATION_INTERIM_CONFIRMED",
+                  "allocations": [
+                    {
+                      "line_id": "film",
+                      "amount_minor": 6000
+                    }
+                  ],
+                  "apple_product_id": null
+                },
+                {
+                  "key": "last",
+                  "trigger": "FINAL_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "film",
+                      "amount_minor": 1000
+                    }
+                  ],
+                  "apple_product_id": null
+                }
+              ],
+              "customization": {
+                "request_id": "e7aa8b57-3fb6-4297-93f0-ce859c50ef7e",
+                "submission_id": "982f4022-3a8a-4e58-a1b6-9548bda86e94",
+                "content_sha256": "f220318a19c9766d2829f9ce39eff522d714c7abaaf24394658326d663f545fe"
+              },
+              "transaction_model": "PLATFORM_PRINCIPAL",
+              "customization_finance": {
+                "model": "V5_SELF_OPERATED",
+                "rules": {
+                  "lines": [
+                    {
+                      "shares": [
+                        {
+                          "bps": 10000,
+                          "role": "PLATFORM",
+                          "party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+                        }
+                      ],
+                      "line_id": "film",
+                      "deductions": []
+                    }
+                  ],
+                  "terms": "synthetic only",
+                  "version": "synthetic1",
+                  "settlement_at": "2020-01-01T00:00:00.000Z",
+                  "release_condition": "DELIVERY_ACCEPTED"
+                },
+                "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                "rule_snapshot": {
+                  "content": {
+                    "id": "6b9f9a22-6d67-4e2e-90c3-5a60d7053cbd",
+                    "terms": {
+                      "explicit": "synthetic no real agreement",
+                      "customization_finance": {
+                        "model": "V5_SELF_OPERATED",
+                        "rules": {
+                          "lines": [
+                            {
+                              "shares": [
+                                {
+                                  "bps": 10000,
+                                  "role": "PLATFORM",
+                                  "party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+                                }
+                              ],
+                              "line_id": "film",
+                              "deductions": []
+                            }
+                          ],
+                          "terms": "synthetic only",
+                          "version": "synthetic1",
+                          "settlement_at": "2020-01-01T00:00:00.000Z",
+                          "release_condition": "DELIVERY_ACCEPTED"
+                        },
+                        "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                        "platform_party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+                      }
+                    },
+                    "version": "1",
+                    "rule_key": "r04.synthetic",
+                    "content_sha256": "416d15bc0ddf281925efdea18ddf4cc9cdd1018b582f6496a30bf688530e00f0",
+                    "format_version": "rule-content-v1"
+                  },
+                  "effective_at": "2020-01-01T00:00:00.000Z",
+                  "current_status": "EFFECTIVE"
+                },
+                "platform_party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+              },
+              "license_reservation_id": null,
+              "payment_window_minutes": 30
+            },
+            "quote_id": "570d32fb-4c0c-403e-8471-34bddf126479",
+            "quote_sha256": "de113778508136a70dd38cf0cb7b33552a15d2a90e6a0bbc73b947a0bf116e97"
+          },
+          "rule_contents": [
+            {
+              "id": "6b9f9a22-6d67-4e2e-90c3-5a60d7053cbd",
+              "terms": {
+                "explicit": "synthetic no real agreement",
+                "customization_finance": {
+                  "model": "V5_SELF_OPERATED",
+                  "rules": {
+                    "lines": [
+                      {
+                        "shares": [
+                          {
+                            "bps": 10000,
+                            "role": "PLATFORM",
+                            "party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+                          }
+                        ],
+                        "line_id": "film",
+                        "deductions": []
+                      }
+                    ],
+                    "terms": "synthetic only",
+                    "version": "synthetic1",
+                    "settlement_at": "2020-01-01T00:00:00.000Z",
+                    "release_condition": "DELIVERY_ACCEPTED"
+                  },
+                  "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                  "platform_party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+                }
+              },
+              "version": "1",
+              "rule_key": "r04.synthetic",
+              "content_sha256": "416d15bc0ddf281925efdea18ddf4cc9cdd1018b582f6496a30bf688530e00f0",
+              "format_version": "rule-content-v1"
+            }
+          ],
+          "content_sha256": "f8886e4e746d0c420389c21e4d15dac74f63e2080ba3847348b0c8177ba26a02",
+          "current_status": "SEALED",
+          "format_version": "contract-content-v1",
+          "object_version": 1,
+          "signing_method": "NOT_SIGNED",
+          "contract_version_id": "b6fd90b0-c2d6-494e-a121-67e2804edf10"
+        },
+        "financial": {
+          "net_minor": 10000,
+          "received_minor": 10000,
+          "refunded_minor": 0
+        },
+        "buyer_acknowledged_by": "6aebc225-1cf6-46cb-8acf-c7b40722a29d"
+      }
+    }
+  },
+  "project": {
+    "status": 200,
+    "meta": {
+      "request_id": "b2acc76c-333f-4fcb-8ae1-ac8d71dc8b63",
+      "actor": {
+        "account_id": "d1b8595b-5bf7-45b8-baf1-ed4b7fb039fc"
+      },
+      "acting_party": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62"
+    },
+    "data": {
+      "id": "f43eef1e-b344-4ea3-9d6e-8bb488a33cf7",
+      "kind": "PROJECT",
+      "project_id": null,
+      "order_id": "f677713f-3555-46c9-a627-98cc282a323d",
+      "created_by": "d1b8595b-5bf7-45b8-baf1-ed4b7fb039fc",
+      "current_status": "ACCEPTED",
+      "object_version": 11,
+      "content_sha256": "e1b964ea49747088a16affb9e166e9ff9c0e38f5a3be0c278777c4369257c45c",
+      "data": {
+        "review": {
+          "method": "EXTERNAL_MANUAL_REVIEW",
+          "reason": "synthetic independent content/rights only",
+          "decision": "APPROVED",
+          "account_id": "3ea5a012-b22a-4496-a0e4-7a25f8b4210e",
+          "verification": {
+            "contract_sha256": "f8886e4e746d0c420389c21e4d15dac74f63e2080ba3847348b0c8177ba26a02",
+            "rights_verified": true,
+            "identity_verified": true,
+            "signatures_verified": true
+          }
+        },
+        "current": {
+          "FINAL": "f4cb4720-ddc7-432a-a6a1-56dd34405eec",
+          "SAMPLE": "6800a4b8-8ed4-4821-ad7c-6ad9bbff7dac",
+          "SCRIPT": "edbb3fcd-8737-4d59-b71e-5a7bccbb324d",
+          "ROUGH_CUT": "fdfe93c5-e942-4837-abd6-f6370547c7ef"
+        },
+        "line_id": "film",
+        "purpose": "PRIVATE",
+        "accepted": {
+          "FINAL": "f4cb4720-ddc7-432a-a6a1-56dd34405eec",
+          "SAMPLE": "6800a4b8-8ed4-4821-ad7c-6ad9bbff7dac",
+          "SCRIPT": "edbb3fcd-8737-4d59-b71e-5a7bccbb324d",
+          "ROUGH_CUT": "fdfe93c5-e942-4837-abd6-f6370547c7ef"
+        },
+        "quantity": 1,
+        "revisions": {
+          "FINAL": 1,
+          "SAMPLE": 1,
+          "SCRIPT": 1,
+          "ROUGH_CUT": 1
+        },
+        "territory": "CN",
+        "consent_ids": [],
+        "specification": {
+          "terms": "synthetic non-commercial",
+          "version": "synthetic1",
+          "deliverables": [
+            "synthetic manual film"
+          ],
+          "service_tier": "test",
+          "final_seconds": 90,
+          "revision_limit": 1,
+          "sample_seconds": 20,
+          "customization_delivery": {
+            "version": "V5-Q05-Q06",
+            "source_ref": "synthetic:test-only",
+            "acceptance_hours": 168,
+            "cancellation_terms": "before start full refund; confirmed completed work only; failure refund",
+            "preview_payment_order": "PREVIEW_BEFORE_INTERIM"
+          }
+        },
+        "buyer_party_id": "d6ffc34d-1393-4dac-83e3-9fbce280cf9a",
+        "change_requests": 0,
+        "contract_sha256": "f8886e4e746d0c420389c21e4d15dac74f63e2080ba3847348b0c8177ba26a02",
+        "evidence_asset_id": "c55c2dde-02ba-4820-8763-23022211c404",
+        "merchant_party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62",
+        "producer_party_id": "22aeb3c9-ba37-4208-8dcd-f72b465a5e62",
+        "script_version_id": "6a8c5fa6-7738-4480-a570-0068ad060f72",
+        "license_project_id": null,
+        "assignee_account_id": "d1b8595b-5bf7-45b8-baf1-ed4b7fb039fc"
+      }
+    }
+  },
+  "specs": {
+    "status": 404,
+    "meta": {
+      "request_id": "d2b32385-5394-40d8-9444-99601af2f853",
+      "actor": {
+        "account_id": "d1b8595b-5bf7-45b8-baf1-ed4b7fb039fc"
+      },
+      "acting_party": null
+    },
+    "error": {
+      "code": "NOT_FOUND",
+      "message": "请求未通过校验或权限检查",
+      "retryable": false,
+      "details": []
+    }
+  },
+  "rules": {
+    "status": 404,
+    "meta": {
+      "request_id": "a4123852-e193-47af-82b8-fe88f8c6a06c",
+      "actor": {
+        "account_id": "d1b8595b-5bf7-45b8-baf1-ed4b7fb039fc"
+      },
+      "acting_party": null
+    },
+    "error": {
+      "code": "NOT_FOUND",
+      "message": "请求未通过校验或权限检查",
+      "retryable": false,
+      "details": []
+    }
+  },
+  "categories": {
+    "status": 400,
+    "meta": {
+      "request_id": "5f913c75-16d0-473a-b8ce-78cec0fc6996",
+      "actor": {
+        "account_id": "6aebc225-1cf6-46cb-8acf-c7b40722a29d"
+      },
+      "acting_party": null
+    },
+    "error": {
+      "code": "ACTING_PARTY_NOT_ALLOWED",
+      "message": "请求未通过校验或权限检查",
+      "retryable": false,
+      "details": []
+    }
+  }
+}
