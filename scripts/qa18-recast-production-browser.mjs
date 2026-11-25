@@ -50,7 +50,7 @@ async function appAccept(v){
 }
 async function receipt(v,label){
  s.receipts??={};if(s.receipts[label])return s.receipts[label];let flow=await api('buyer','/production/projects/'+s.project.id+'/fulfillment'),p;
- if(flow.receipt?.version_id!==v.id){p=await app('/production/version?versionId='+v.id);await click(p,'播放预览');await p.waitForFunction(()=>document.querySelector('video')?.readyState>=2);await click(p,'确认本次交付通知已读');await idle(p);flow=await request(p,'/production/projects/'+s.project.id+'/delivery-receipt',async()=>{await click(p,'明确确认本次交付已收到');await click(p,'确认办理');});}
+ if(flow.receipt?.version_id!==v.id||!flow.receipt?.notified_at){p=await app('/production/version?versionId='+v.id);await click(p,'播放预览');await p.waitForFunction(()=>document.querySelector('video')?.readyState>=2);await click(p,'确认本次交付通知已读');await idle(p);flow=await request(p,'/production/projects/'+s.project.id+'/delivery-receipt',async()=>{await click(p,'明确确认本次交付已收到');await click(p,'确认办理');});}
  assert.equal(flow.terms.acceptance_hours,null);assert.equal(flow.terms.acceptance_working_days,5);assert.equal(flow.receipt.deadline_basis.mode,'WORKING_DAYS');assert.equal(flow.receipt.deadline_basis.days,5);assert.equal(flow.receipt.version_id,v.id);assert.equal(flow.receipt.buyer_account_id,f.accounts.buyer.account_id);assert(flow.receipt.view_observed_at);s.receipts[label]=flow;await done('app-final-delivery-explicit-receipt-'+label,{delivery_id:flow.receipt.delivery_id,version_id:v.id,continuation_read_existing_receipt:!p,working_days:5});if(p){await snap(p,'app-receipt-'+label);await p.close();}return flow;
 }
 
