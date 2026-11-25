@@ -1,4 +1,6 @@
 ## 2026-11-25 第四轮终态：G02员工逐人授权入口修复
+PR41 2eeaeee1 received in QA merge 3b560022; incoming refund widget file retained in full, 14 targeted tests passed. Runtime/product source remains 07822585. New rc2 registry pm04-g1-20261125-rc2-reg02 initialized and checked; partial G02 evidence does not mark a full criterion PASS.
+
 
 目标ACTIVE，仍T1。修复07822585：后端名单允许有效机构成员但逐人核员工授权及本人委托；ArtistDetail可选allowed_actions为当前交集，App/Vue按交集开放入口和按钮，个人同意/私证/资产归属及撤权边界保留，版本材料用MANAGE_MATERIALS。API0.31.79-rc.2/0225（无迁移）。后端五文件105/0/0、App艺人58、Vue45+9、类型/构建及原CI静态80info退出0；5HTTP/631响应通过。两端真实浏览器和API同人物a935c3ac四检查通过；修前1/3及环境CDN失败全部留证。后端/前端/构建均07822585，旧1232完整属于c119，不冒充本版完整回归。新环境QA树9b70dda9、后端49232/App5500/Vue5173，只回环至北京时间21:28:48，凭据.local，过期新建不续期；旧7e环境不是新修复。读docs/pm04/qa18/ROUND_04_STAFF_AUTHORIZATION.md及CORE_CURRENT。继续G02本人同意、同关系撤权页面及其余组端×场景；正式15119/124/8、18组关闭0、首批registry快照不变。没有活跃本轮测试进程，仅限时后端/UI服务；不重跑已终态进程。保持PR41/EXPERIENCE_CURRENT，不合入、不生产、不收费、不动3490及旧APK/总览/监测；每轮六项说明。
 
