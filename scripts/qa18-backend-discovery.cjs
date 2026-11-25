@@ -9,7 +9,7 @@ const root = path.resolve(__dirname, '..');
 const backend = path.join(root, '晶晶日上工程交接包/01_源码/backend_server');
 const groups = {
  G01: ['stock.integration', 'auditions.integration'],
- G02: ['artists.integration', 'artists-contract.integration'],
+ G02: ['artists.integration', 'artists-contract.integration', 'artists-staff-access.integration', 'engagement.integration', 'mcn-supplier.integration'],
  G03: ['stock.integration', 'stock-commercial.integration'],
  G04: ['privacy-execution.integration', 'privacy-response-delivery.integration'],
  G05: ['stock-media.integration', 'artists.integration'],

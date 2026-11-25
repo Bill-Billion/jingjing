@@ -200,10 +200,11 @@ class _ArtistFormState extends State<_ArtistForm> {
         !self) {
       return false;
     }
-    if (['AVATAR', 'VARIANT'].contains(mode) &&
+    if (mode == 'AVATAR' &&
         !actions.contains('MANAGE_AVATARS')) {
       return false;
     }
+    if (mode == 'VARIANT' && !actions.contains('MANAGE_MATERIALS')) return false;
     if (mode == 'LISTING' && !actions.contains('SUBMIT_LISTING')) return false;
     if ([
           'AVATAR',

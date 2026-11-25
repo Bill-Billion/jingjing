@@ -16,7 +16,7 @@ class ArtistsApi {
     }
     if (session.artistsAccessDenied ||
         session.partyId == null ||
-        !session.isOwner ||
+        (!session.isOwner && session.party?['kind'] != 'ORGANIZATION') ||
         session.selected?['membership']?['current_status'] != 'ACTIVE' ||
         ['SUSPENDED', 'CLOSED'].contains(session.party?['current_status'])) {
       throw const AccountError(403, 'ARTIST_PARTY_FORBIDDEN');
@@ -93,6 +93,9 @@ class ArtistsApi {
 
   Future<Set<String>> actions(ArtistDetail detail) async {
     final party = owner();
+    if (detail.allowedActions != null) return detail.allowedActions!;
+    // A legacy organization-wide mandate cannot stand in for a staff grant.
+    if (!session.isOwner) return <String>{};
     if (detail.person.owner == party) return artistActions.keys.toSet();
     final epoch = session.epoch, now = DateTime.now();
     final delegations = await allRecords(detail.person.id, 'DELEGATION');

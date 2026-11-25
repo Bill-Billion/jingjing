@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.79-rc.1
+  version: 0.31.79-rc.2
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -58278,6 +58278,15 @@ components:
       type: object
       additionalProperties: false
       properties:
+        allowed_actions:
+          description: Current actor's effective actions for this person and acting party, intersecting staff grants with the artist's delegation. Informational only; every write rechecks current authorization, identity and consent. Older responses may omit this field; employees must not infer rights from organization-wide delegation alone.
+          type: array
+          uniqueItems: true
+          minItems: 0
+          maxItems: 7
+          items:
+            type: string
+            enum: [COMMISSION_PRODUCTION, READ_PROFILE, MANAGE_MATERIALS, MANAGE_AVATARS, SUBMIT_LISTING, SUBMIT_COOPERATION, MANAGE_AUDITIONS]
         person:
           $ref: '#/components/schemas/ArtistPerson'
         avatars:
