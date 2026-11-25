@@ -17,7 +17,7 @@ async function sourceDigest() {
   const prefix = '晶晶日上工程交接包/01_源码/backend_server/';
   const tracked = execFileSync('git',['ls-files','-z','--',prefix+'src',prefix+'migrations/mysql-runtime',prefix+'test/helpers',prefix+'test/support',prefix+'scripts/test-network-guard.cjs',prefix+'package.json',prefix+'package-lock.json'],{cwd:root,windowsHide:true}).toString('utf8').split('\0').filter(Boolean);
   const untracked = execFileSync('git',['ls-files','--others','--exclude-standard','-z','--',prefix+'src'],{cwd:root,windowsHide:true}).toString('utf8').split('\0').filter(Boolean);
-  const files = [...new Set([...tracked,...untracked,'scripts/stock-sandbox.cjs','scripts/test-fixtures/pm03-stock.cjs','scripts/test-fixtures/pm03-batch.cjs','scripts/v5-r05-r12-seed.cjs','scripts/test-fixtures/private-state.cjs','contracts/openapi.yaml'])].sort();
+  const files = [...new Set([...tracked,...untracked,'scripts/stock-sandbox.cjs','scripts/test-fixtures/pm03-stock.cjs','scripts/test-fixtures/pm03-batch.cjs','scripts/test-fixtures/pm03-phone-targets.cjs','scripts/v5-r05-r12-seed.cjs','scripts/test-fixtures/private-state.cjs','contracts/openapi.yaml'])].sort();
   const hash = createHash('sha256');
   for(const file of files) hash.update(file+'\0').update(await fs.readFile(path.join(root,file))).update('\0');
   return hash.digest('hex');
@@ -155,7 +155,7 @@ async function run() {
       await privateJson(path.join(out,'state.json'),state);
     }
     const sms = {call:async(operation,input,context)=>{
-      if(operation !== 'send' || !Object.values(state.accounts).some(u=>u.phone === input.phone)) fail('PM03_UNKNOWN_SYNTHETIC_PHONE');
+      if(operation !== 'send' || !require('./pm03-phone-targets.cjs').allowed(state,input.phone)) fail('PM03_UNKNOWN_SYNTHETIC_PHONE');
       const dest = path.join(out,'sms'); await fs.mkdir(dest,{recursive:true});
       await privateJson(path.join(dest,context.request_id+'.json'),{synthetic_only:true,challenge_id:context.request_id,...input});
       return {accepted:true};
