@@ -32,7 +32,8 @@ function methods({db,run,locked,independent,guardian}){
     A.match(r,i.expected_version);
     if(!r.data.dispatch_job_id||!['APPROVED','SUBMITTING','UNKNOWN','SUCCEEDED','CLOSED','CANCELLED','REJECTED'].includes(r.current_status))throw error('CUSTODY_REFUND_NOT_SCHEDULABLE',409);
     if(r.current_status==='APPROVED')await guardian.current(tx,r);
-    await jobs.manualRetry(r.data.dispatch_job_id,{actor_ref:a.id,reason_ref:r.id,additional_attempts:10},tx);
+    try{await jobs.manualRetry(r.data.dispatch_job_id,{actor_ref:a.id,reason_ref:r.id,additional_attempts:10},tx);}
+    catch(e){if(e.code==='JOB_NOT_RETRYABLE')throw error('JOB_NOT_RETRYABLE',409);throw e;}
     return C.save(tx,a,r,r.current_status,{...r.data,task_retry:{by:a.id,reason:i.reason,at:await A.now(tx)}},'RECHARGE_REFUND_TASK_RETRY_AUTHORIZED');
    });
   });

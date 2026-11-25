@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.80-rc.1
+  version: 0.31.80-rc.2
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -35855,7 +35855,7 @@ paths:
     post:
       operationId: retryRechargeRefundTask
       summary: 独立操作人按原案件重试失败任务
-      description: 明确核对本人、有效监护关系或独审权限；响应白名单不含商户绑定、渠道回执、任务编号和他人材料。排队不代表退款成功；真实渠道未注册。
+      description: 明确核对本人、有效监护关系或独审权限；仅实际FAILED或BLOCKED任务可人工重试。原任务尚在PENDING、RUNNING或自动RETRY，或已经终态时返回409/JOB_NOT_RETRYABLE，保留同一任务和原退款，不视为此前未成功或服务故障。响应白名单不含商户绑定、渠道回执、任务编号和他人材料。排队不代表退款成功；真实渠道未注册。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
