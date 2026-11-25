@@ -1,0 +1,10 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict'),{canonicalDump,seal,unseal}=require('./qa18-batch-backup.cjs'),{randomBytes,createHash}=require('node:crypto');
+test('normalize only redundant DDL charset; preserve data and genuine schema differences',()=>{
+ const original="CREATE TABLE `a` (\n  `x` varchar(20) COLLATE utf8mb4_0900_bin NOT NULL\n);\nINSERT INTO `a` VALUES (' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');\n";
+ const restored=original.replace('varchar(20) COLLATE','varchar(20) CHARACTER SET utf8mb4 COLLATE');assert.equal(canonicalDump(restored),canonicalDump(original));
+ assert.notEqual(canonicalDump(restored.replace('varchar(20)','varchar(21)')),canonicalDump(original));assert.notEqual(canonicalDump(restored.replaceAll('utf8mb4_0900_bin','utf8mb4_0900_ai_ci')),canonicalDump(original));assert.notEqual(canonicalDump(restored.replace("VALUES (' ","VALUES ('changed ")),canonicalDump(original));assert(canonicalDump(restored).includes("VALUES (' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin')"));
+});
+test('encrypted archive authenticates SQL and asset bytes and rejects traversal, tamper and wrong key',()=>{
+ const key=randomBytes(32),database='jx_test_stock_pm03_'+randomBytes(12).toString('hex'),sql='SELECT 1;\n',body=Buffer.from('synthetic private content'),hash=b=>createHash('sha256').update(b).digest('hex');const p={format:'PM03_BATCH_OFFLINE_1',synthetic_only:true,source_database:database,state:{database,synthetic_only:true,mode:'BATCH'},sql,sql_sha256:hash(sql),assets:[{name:'a'.repeat(64),base64:body.toString('base64'),sha256:hash(body)}]};const b=seal(p,key);assert.deepEqual(unseal(b,key),p);assert(!b.includes(body));const changed=Buffer.from(b);changed[changed.length-1]^=1;assert.throws(()=>unseal(changed,key));assert.throws(()=>unseal(b,randomBytes(32)));assert.throws(()=>seal({...p,assets:[{...p.assets[0],name:'../state.json'}]},key));assert.throws(()=>seal({...p,sql:'changed'},key));assert.throws(()=>seal({...p,assets:[{...p.assets[0],sha256:'0'.repeat(64)}]},key));
+});
