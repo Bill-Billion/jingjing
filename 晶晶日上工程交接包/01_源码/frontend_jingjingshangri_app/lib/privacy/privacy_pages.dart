@@ -795,7 +795,9 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                     picked == null ||
                     !enabled ||
                     widget.session.epoch != epoch ||
-                    ticket != currentTicket) return;
+                    ticket != currentTicket) {
+                  return;
+                }
                 setState(() =>
                     controller.text = '${picked.hour * 60 + picked.minute}');
               });
