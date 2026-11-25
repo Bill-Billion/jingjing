@@ -271,6 +271,9 @@ class TradeRecordPage extends StatelessWidget {
           customizationSourceCurrent: customizationSourceCurrent));
 }
 
+final _refundReconciliationPath = RegExp(
+    r'^/api/v1/trade/refunds/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}/reconciliation$');
+
 class _TradeDetail extends StatefulWidget {
   const _TradeDetail(
       {required this.session,
@@ -1574,7 +1577,11 @@ class _TradeDetailState extends State<_TradeDetail> {
                 outline: true),
           for (final op in widget.session.tradePending)
             tradeSection('操作结果待核实', [
-              appNotice('请恢复原请求核对，不要修改原内容或重复建立付款。'),
+              appNotice(op['path'] == '/api/v1/trade/refunds'
+                  ? '退款申请结果待核对。请点击下方「恢复原请求核对」，不要重新申请退款。'
+                  : _refundReconciliationPath.hasMatch(op['path'] as String)
+                      ? '这笔退款的结果待核对。请恢复原退款请求，不要重新申请退款。'
+                      : '请恢复原请求核对，不要修改原内容或重复建立付款。'),
               if (op['resultId'] != null) tradeFact('已知结果编号', op['resultId']),
               tradeButton(
                   '恢复原请求核对',
