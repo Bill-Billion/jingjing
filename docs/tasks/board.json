@@ -18646,7 +18646,7 @@
         "title": "74项App回归失败逐项归因、修复和双端静态分析收敛",
         "owner_suggested": "Bill-Billion",
         "claim_status": "CLAIMED",
-        "execution_status": "IN_PROGRESS",
+        "execution_status": "REGRESSION_VERIFIED_PENDING_SIGN_OFF",
         "phase": "G0",
         "priority": "P0",
         "depends_on": [
@@ -18659,14 +18659,15 @@
         ],
         "claimed_on": "2026-11-23",
         "branch": "pm/pm04-acceptance-20261118",
-        "claim_scope": "Frontend App, Flutter Web and Vue; classify and retest historical regressions, record build evidence and prepare same-record joined testing. No release or joined sign-off."
+        "claim_scope": "Frontend App, Flutter Web and Vue; classify and retest historical regressions, record build evidence and prepare same-record joined testing. No release or joined sign-off.",
+        "verification_note": "历史74项已归因及复测；本机完整1230通过/1跳过；PR41前端CI通过。未签收。"
       },
       {
         "id": "PM04-JT-03",
         "title": "同记录关键业务闭环验证，不把17范围重新开发",
         "owner_suggested": "chengcongcong222 + Bill-Billion（分别认领）",
         "claim_status": "PARTIALLY_CLAIMED",
-        "execution_status": "BACKEND_PREPARATION_ONLY",
+        "execution_status": "PARTIAL_LOCAL_EVIDENCE",
         "phase": "G1",
         "priority": "P0",
         "depends_on": [
@@ -18680,7 +18681,8 @@
         ],
         "claimed_on": "2026-11-19",
         "branch": "core/pm04-ci-20261118",
-        "claim_scope": "Backend roles, record and file manifest, local reproducibility only; frontend unclaimed; joined testing not started"
+        "claim_scope": "Original backend claim covers roles, record and file manifest, and local reproducibility; no new claim or full joint sign-off is recorded.",
+        "verification_note": "已记录前端本地同现货订单、两类退款及隐私同申请局部证据；模拟器和整批正式验收未完成，不变更原认领。"
       },
       {
         "id": "PM04-PM-04",
@@ -18776,6 +18778,25 @@
       "未成年人 REQUIRED_DEFERRED 不等于删除；最终全151项覆盖通过前发布 NO-GO"
     ],
     "policy": "原需求不变；未成年人 REQ/ACC 后置 G2 专项、最终必须全部覆盖，无新增产品策略变更。",
-    "execution_updated_on": "2026-11-19"
+    "execution_updated_on": "2026-11-25",
+    "frontend_update": {
+      "evidence": "docs/reviews/pm04/JOINED_17_SCOPE_EVIDENCE.md",
+      "candidate": "80d826565764e9f2e912004418716a3c45e462ed",
+      "hosted_ci": {
+        "backend": 45523101286,
+        "app_web": 45523101342,
+        "status": "PASS",
+        "app_pass": 919,
+        "app_skip": 1
+      },
+      "local_scope": {
+        "frontend": "6708802cc4adb4bad5f20f5a51e57ac72e55251e",
+        "backend": "7e35958a6e53de1f33f526de16a0f2be0e5cb60c",
+        "status": "PARTIAL_LOCAL_EVIDENCE"
+      },
+      "android_emulator": "NOT_RUN",
+      "physical_device": "NOT_RUN",
+      "formal_acceptance": "NOT_SIGNED"
+    }
   }
 }

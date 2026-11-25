@@ -49,8 +49,10 @@ def views(cycle):
     lines += ['', '共同节奏：独立开发、集中交付，再固定双方版本整批联测，最后维护者实际审阅。', '',
               'G0 尚未通过；G1 有局部历史证据；G2 原151条含后置未成年人专项必须全覆盖；G3 发布 NO-GO。', '',
               'PR40历史：App 1155通过/74失败/1跳过；18组0/18、12整链部分、151条19/124/8不变。', '',
-              'JT-03 的本侧领取仅限后端准备，不代表前端认领或已开展新整批联测。', '',
+              'JT-03 原正式认领只覆盖后端准备；前端局部实测与整批正式验收分别记录。', '',
               '更新领取：本人修改 board.json#pm04_cycle_20261118，再运行 python scripts/pm04_check.py --render。', '']
+    if cycle.get('frontend_update'):
+        lines += ['[前端联测证据和页面收尾清单](../reviews/pm04/JOINED_17_SCOPE_EVIDENCE.md)：当前 PR41 前后端 CI 已通过；JT-03 有本地局部证据，Android 模拟器和正式验收未完成。', '']
     return {'PM04_CYCLE.json': serialized(cycle), 'PM04_TASKS.json': serialized(definitions),
             'PM04_DASHBOARD.html': html, 'PM04_DASHBOARD.md': '\n'.join(lines)}
 
