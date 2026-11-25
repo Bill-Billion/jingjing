@@ -7,7 +7,7 @@ async function main(){
  const read=async p=>JSON.parse(await fs.readFile(p,'utf8')),a=await read(path.join(dir,'access.json')),prep=await read(path.join(dir,'prepared.json')),s=await read(path.join(out,'browser/checkpoint.json')),status=await read(path.join(dir,'STATUS.json')),env=await read(process.env.JX_MYSQL_TEST_ENV_FILE);
  assert(a.synthetic_only&&a.database===s.environment&&s.complete&&/^jx_test_qa18_guardian_[a-f0-9]{20}$/.test(a.database));assert(env.MYSQL_HOST==='127.0.0.1'&&env.MYSQL_PORT==='33316'&&env.MYSQL_DATABASE==='jx_dev');
  const db=await load('src/infrastructure/database').openDatabase({...env,MYSQL_DATABASE:a.database}),cases=[];
- async function get(role,p,schema,expected=200){const r=await fetch(a.base_url+p,{headers:{Authorization:'Bearer '+a.accounts[role].bearer_token,...role==='child'?{'X-Acting-Party':a.accounts[role].party_id}:{}}});const value=await r.json();assert.equal(r.status,expected,p);cases.push({method:'GET',path:'/api/v1'+p,status:r.status,schema:expected===200?schema:'ErrorResponse',value});return value.data;}
+ async function get(role,p,schema,expected=200){const r=await fetch(a.base_url+p,{headers:{Authorization:'Bearer '+a.accounts[role].bearer_token,...role==='child'?{'X-Acting-Party':a.accounts[role].party_id}:{}}});const value=await r.json();assert.equal(r.status,expected,p);cases.push({method:'GET',path:'/api/v1'+p.split('?')[0],status:r.status,schema:expected===200?schema:'ErrorResponse',value});return value.data;}
  const parse=r=>typeof r.data_json==='string'?JSON.parse(r.data_json):r.data_json;
  try{
   const migrations=await load('src/infrastructure/database/migrator').status(db);assert.equal(migrations.migrations.length,225);assert(migrations.migrations.every(x=>x.status==='APPLIED'));
