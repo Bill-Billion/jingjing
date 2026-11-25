@@ -1,0 +1,8 @@
+{
+  "browser": "V5_ACCESS_FILE=<controlled existing QA27 access>; QA18_PRIOR_CHECKPOINT=<QA27 browser/checkpoint.json>; QA18_ADAPTER_STATUS=<QA28 adapter/STATUS.json>; QA18_OUTPUT_DIR=<QA28 browser>; CHROME_PATH=<Edge>; node scripts/qa18-privacy-aftercare-browser.mjs",
+  "adapter": "QA18_ENV_DIR=<existing QA27 environment>; QA18_OUTPUT_DIR=<new QA28 adapter>; JX_MYSQL_TEST_ENV_FILE=<local controlled mysql env>; node scripts/qa18-privacy-refund-adapter.cjs",
+  "census": "node scripts/qa18-privacy-aftercare-record-check.cjs <QA27 environment> <QA28 output> <QA27 output>",
+  "contract": "validate_contract.validate([<QA28 privacy-aftercare-http.json>])",
+  "backup": "qa18-environment-assets.prepare(<QA27 environment>); qa18-batch-backup.manager().backupEnvironment(<QA27 environment>), verify(file), restore(file)",
+  "warning": "Do not rerun a completed browser checkpoint or restore with old credentials. Keep original service expiry."
+}
