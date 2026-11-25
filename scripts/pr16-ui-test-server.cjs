@@ -2,7 +2,7 @@
 
 // Local PR16 integration only: real HTTP/account/OWNER/member/operator checks,
 // real isolated MySQL, private bytes, licensing and production/payment gates.
-// SMS, private storage and Alipay transport are synthetic. Public generation stays
+// SMS, identity verification, private storage and Alipay transport are synthetic. Public generation stays
 // disabled; one trusted synthetic recovery scenario uses the actual durable worker.
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
@@ -23,6 +23,7 @@ const phones = { seller: '13900009401', buyer: '13900009402', reviewer: '1390000
 const sent = new Map(), files = new Map(), paymentQueries = new Map(), refundQueries = new Map();
 const people = {}, records = {}, assets = {}, checks = [], scenarios = {}, media = {}, recovery = [];
 let creation;
+const identityPreparation = {};
 let mysql, connection, db, apiServer, controlServer, startupPromise, cleanupPromise, schemaCreated = false, stateOwned = false;
 let mediaDir, organization, ruleId, providers, grantMaintainer, reviewerGrant, storageAvailable = true;
 let phase = 'configuration', responseLoss = null, puts = 0;
@@ -72,7 +73,7 @@ async function request(method, route, { person, party, body, key, version, statu
   const bytes = Buffer.from(await response.arrayBuffer());
   const result = (response.headers.get('content-type') || '').includes('application/json') && bytes.length ? JSON.parse(bytes.toString()) : bytes;
   assert.equal(response.status, status, `${method} ${route}: ${response.status} (${result?.error?.code || 'bytes'})`);
-  return { body: result, headers: response.headers };
+  return { body: result, headers: response.headers, status: response.status };
 }
 const call = async (method, route, options) => (await request(method, route, options)).body.data;
 const read = id => call('GET', `/production/records/${id}`, { person: people.seller, party: organization.party_id });
@@ -101,7 +102,7 @@ async function snapshot() {
     records: Object.fromEntries(Object.entries(records).map(([name, record]) => [name, summary(byId.get(record.id) || record)])),
     assets: Object.fromEntries(Object.entries(assets).map(([name, asset]) => [name, { id: asset.id, ownerPartyId: asset.owner_party_id,
       purpose: asset.purpose, byteSize: asset.byte_size, contentSha256: asset.content_sha256 }])),
-    allRecords: rows.map(summary), scenarios, creation,
+    allRecords: rows.map(summary), scenarios, creation, identityPreparation,
     media: Object.fromEntries(Object.entries(media).map(([name, item]) => [name, { path: item.path, byteSize: item.bytes.length,
       contentSha256: crypto.createHash('sha256').update(item.bytes).digest('hex'), label: item.label }])),
     recovery, recoveryTask: recoveryTask ? { ...recoveryTask, publicProviderEnabled: recoveryApiEnabled, ...recoveryTransport,
@@ -221,6 +222,9 @@ async function main() {
     return current[method](...args);
   };
   const app = createAccountApi({ db, secret: crypto.randomBytes(32).toString('base64'), sms, supplyStorageFactory: storageFactory,
+    artistIdentityProviderFactory: () => require('./support/synthetic-identity-provider.cjs')({
+      namespace: 'synthetic.pr16.identity', allowedAccounts: () => [people.seller?.accountId, people.buyer?.accountId],
+    }),
     supplyEnv: { NODE_ENV: 'test' }, governanceEnvironment: 'SANDBOX',
     tradeProvidersFactory: () => ({ get(code) { assert(providers); return providers.get(code); } }),
     productionProviderFactory: () => apiProductionProvider,
@@ -396,8 +400,46 @@ async function main() {
   records.organizationProfile = await createProfile(seller, organization.party_id, assets.organizationProof, '晴川合成制作方');
   records.buyerProfile = await createProfile(buyer, buyer.personalPartyId, assets.buyerProof, '合成私人项目作者');
   records.originalWork = await createWork(seller, organization.party_id, assets.organizationProof, assets.originalContent, '窗前短笺 · 合成原作');
-  records.avatar = await call('POST', '/supply/avatars', { person: seller, party: organization.party_id,
-    body: { display_name: 'PR16合成形象资料（未创建长期数字人）', material_asset_ids: [assets.avatarMaterial.id] } });
+  // The actor is verified in their own personal party, then acts as the existing
+  // organization OWNER. Never create a person owned by the organization or patch
+  // an identity status in SQL to make the legacy organization avatar route pass.
+  const avatarBody = { display_name: 'PR16合成形象资料（未创建长期数字人）', material_asset_ids: [assets.avatarMaterial.id] };
+  const avatarKey = crypto.randomUUID();
+  const avatarCount = async partyId => Number((await db.execute("SELECT COUNT(*) AS total FROM supply_records WHERE kind='AVATAR' AND owner_party_id=?", [partyId]))[0][0].total);
+  const beforeAvatars = await avatarCount(organization.party_id);
+  const unverifiedSeller = await request('POST', '/supply/avatars', { person: seller, party: organization.party_id, body: avatarBody, key: avatarKey, status: 409 });
+  assert.equal(unverifiedSeller.body.error.code, 'VERIFIED_ADULT_REQUIRED');
+  assert.equal(await avatarCount(organization.party_id), beforeAvatars);
+  async function verifyAdult(role, person) {
+    const profile = await call('POST', '/artists/people', { person, party: person.personalPartyId,
+      body: { display_name: `PR16合成成年${role}（非真实核验）` } });
+    const verified = await call('POST', `/artists/people/${profile.id}/identity`, { person, party: person.personalPartyId,
+      body: { session_ref: `synthetic:pr16-${role}-identity` } });
+    assert.equal(verified.current_status, 'VERIFIED');
+    identityPreparation[role] = { accountId: person.accountId, personalPartyId: person.personalPartyId,
+      personId: profile.id, identityRecordId: verified.id, status: verified.current_status };
+  }
+  await verifyAdult('seller', seller);
+  // These scenarios subsequently accept quotes and pay as the normal buyer.
+  // Only those two explicit normal actors are verified; negative roles stay so.
+  await verifyAdult('buyer', buyer);
+  records.avatar = await call('POST', '/supply/avatars', { person: seller, party: organization.party_id, body: avatarBody, key: avatarKey });
+  assert.equal(records.avatar.owner_party_id, organization.party_id);
+  assert.equal((await call('POST', '/supply/avatars', { person: seller, party: organization.party_id, body: avatarBody, key: avatarKey })).id, records.avatar.id);
+  assert.equal(await avatarCount(organization.party_id), beforeAvatars + 1);
+  // A different unverified OWNER with their own valid material still cannot
+  // create an avatar; this is not a wrong-party permission failure in disguise.
+  const unverifiedOrg = await call('POST', '/organizations', { person: outsider, body: { display_name: 'PR16未认证拒绝样本机构' } });
+  const unverifiedMaterial = await uploadAsset(outsider, unverifiedOrg.party_id, 'AVATAR_MATERIAL', 'PR16合成未认证反例素材');
+  const unverifiedOther = await request('POST', '/supply/avatars', { person: outsider, party: unverifiedOrg.party_id,
+    body: { display_name: 'PR16必须被拒绝的未认证形象', material_asset_ids: [unverifiedMaterial.id] }, status: 409 });
+  assert.equal(unverifiedOther.body.error.code, 'VERIFIED_ADULT_REQUIRED');
+  assert.equal(await avatarCount(unverifiedOrg.party_id), 0);
+  identityPreparation.avatar = { id: records.avatar.id, actingPartyId: organization.party_id, originalKey: avatarKey,
+    unverifiedBeforeStatus: unverifiedSeller.status, afterStatus: 200, replaySameId: true, createdCount: 1 };
+  identityPreparation.unverifiedOwner = { accountId: outsider.accountId, actingPartyId: unverifiedOrg.party_id,
+    materialId: unverifiedMaterial.id, httpStatus: unverifiedOther.status, code: unverifiedOther.body.error.code, createdCount: 0 };
+  checks.push('Unverified organization OWNER avatar creation is rejected with zero writes; explicit seller and buyer use normal personal identity API with bounded synthetic adult provider; seller creates one organization-owned avatar and exact-key replay keeps one record; separate unverified OWNER with own material still gets VERIFIED_ADULT_REQUIRED');
   async function makeConsent() {
     return supplyReview('consents', await call('POST', '/supply/consents', { person: seller, party: seller.personalPartyId, body: { consent: {
       avatar_id: records.avatar.id, subject_party_id: seller.personalPartyId, features: ['FACE'], purposes: ['PRIVATE', 'AI_TRAIN'], territories: ['CN'],

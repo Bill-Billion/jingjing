@@ -1,0 +1,1069 @@
+{
+  "observed_at": "2026-11-23T18:12:46.944Z",
+  "frontend_sha": "f77a10fb8ef7ef76942931201c5465db9c212829",
+  "frontend_pr": {
+    "url": "https://github.com/Bill-Billion/jingjing/pull/41",
+    "number": 41,
+    "state": "open",
+    "merged": false,
+    "mergeable": true,
+    "draft": true,
+    "body": "PM04 原包尚未入库，双方需要同一任务和协作节奏。本 PR 基于 PR40 的 `0786030e`，归档 v1.1 原包并建立当前执行入口：后端 BE-01、前端 FE-02 分别独立开发，集中交付后固定版本联测，最后交维护者审核。\n\n- 原包 21 个文件保留，清单 20 项字节及 SHA256 全部匹配；原任务、旧失败和 PM03 证据不覆盖。\n- 八项 PM04 任务追加在原 board 的独立周期中，原 159 条任务和 18/12/151 验收计数不变。本侧已领 BE-01、JT-03 后端准备，前端/维护者未代领。\n- 更新 AGENTS、START_HERE、CORE_CURRENT、主线及来源导航；驾驶舱/JSON 由 board 同步，`pm04_check.py` 检查原包、原需求定义与状态一致。原包 HTML 把 BE-05/FE-06 写在 G1 的标签已按原计划 G2 修正，原件保留。\n- 前端从 `docs/pm04/README.md` 接收，EXPERIENCE_CURRENT 不变。本侧 CI 修复另交 `core/pm04-ci-20261118`，本 PR 不改产品前后端源码。\n\n验证：PM04 20原件/8任务一致性检查通过；协作检查 159任务、2357导航链接通过；提交差异检查通过。没有开展新的 App/管理网页联测，PM03历史 App 1155/74失败/1跳过及远端失败保留。\n\nPM-04/BE-05/FE-06 为 G2 后置必交，原需求不删改，确证安全问题仍立即修。保持草稿；不合并、部署或启用真实收费/儿童数据/公网/生产，不动3490与原离线APK。任务文件发布不代表前端已读，8份Issue仍为仓库草稿，未创建远端Issue或指派别人。\n",
+    "title": "PM04：原需求冻结与双方独立开发计划",
+    "base": "core/pm03-joint-20261118",
+    "base_sha": "0786030e88e905013c61e3d7e00c052c99301cde",
+    "head": "pm/pm04-acceptance-20261118",
+    "head_sha": "f77a10fb8ef7ef76942931201c5465db9c212829",
+    "head_repo_id": 1363407074,
+    "head_repo_full_name": "Bill-Billion/jingjing",
+    "merge_commit_sha": "332de0ed47aa2212e98053e8b93d09c53bd90516",
+    "user": {
+      "login": "chengcongcong222",
+      "name": "chengcongcong222",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/101156237?v=4",
+      "id": 101156237
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-18T16:05:19Z",
+    "updated_at": "2026-11-23T08:40:02Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 29,
+    "changed_files": 116,
+    "additions": 4230,
+    "deletions": 459,
+    "display_url": "https://github.com/Bill-Billion/jingjing/pull/41",
+    "display_title": "PM04：原需求冻结与双方独立开发计划"
+  },
+  "current_jobs": [
+    {
+      "jobs": [
+        {
+          "id": 137576922766,
+          "name": "App 账号合同作品许可交易商单测试与网页构建",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 45140473521,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "获取固定版本 Flutter 工具",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run flutter pub get --enforce-lockfile",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Run dart analyze lib/contract_six lib/account lib/contracts lib/supply lib/licensing lib/trade lib/gigs lib/production lib/projects lib/finance lib/operations lib/navigation lib/customization lib/artists lib/discovery lib/support lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists lib/stock lib/notices lib/auditions lib/wallet lib/engagement lib/cocreation lib/redemption lib/privacy test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy test/catalog_editorial_restore_test.dart lib/plaza test/plaza test/discovery test/support test/plaza_subpages_layout_test.dart test/plaza_subpages_recovery_test.dart",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Run flutter test test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy test/plaza test/discovery test/support test/plaza_subpages_layout_test.dart test/plaza_subpages_recovery_test.dart test/interaction_flows_test.dart test/widget_test.dart test/catalog_editorial_restore_test.dart",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "检查完整 App 可以生成网页发布文件",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            }
+          ]
+        },
+        {
+          "id": 137576923267,
+          "name": "网页构建与真实接口浏览器检查",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_id": 45140473521,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run npm ci --no-audit --no-fund",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Run npm run test:contracts",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Run npm run test:supply",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Run npm run test:licensing",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Run npm run test:trade",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Run npm run test:gigs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Run npm run test:production",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Run npm run test:projects",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Run npm run test:finance",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12
+            },
+            {
+              "name": "Run npm run test:operations",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13
+            },
+            {
+              "name": "Run npm run test:customization",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14
+            },
+            {
+              "name": "Run npm run test:artists",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            },
+            {
+              "name": "Run npm run test:delivery",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16
+            },
+            {
+              "name": "Run npm run test:business",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 17
+            },
+            {
+              "name": "Run npm run build",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 18
+            },
+            {
+              "name": "安装浏览器及隔离接口测试依赖",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 19
+            },
+            {
+              "name": "检查测试服务退出、端口占用和失败清理",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 20
+            },
+            {
+              "name": "启动一次性测试数据库",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21
+            },
+            {
+              "name": "用真实账号接口检查页面（仅短信模拟）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22
+            },
+            {
+              "name": "保存短信页面检查摘要和合成截图",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23
+            },
+            {
+              "name": "用真实许可接口检查选本、核验、项目与阅稿页面",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 24
+            },
+            {
+              "name": "用真实交易接口检查报价、付款、退款与历史依据页面",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 25
+            },
+            {
+              "name": "用真实商单、MCN关系与收退款记录检查网页",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 26
+            },
+            {
+              "name": "用真实制作接口检查版本、独立审片、反馈与受控交付",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 27
+            },
+            {
+              "name": "用真实项目接口检查选角、准确会签、独立核验与发行事实",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 28
+            },
+            {
+              "name": "用真实财务接口检查约定、结算、实付、收入与争议",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 29
+            },
+            {
+              "name": "用真实通知、留言、审计和报表接口检查网页",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 30
+            },
+            {
+              "name": "开票结果丢失、刷新与独立核准回归",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 31
+            },
+            {
+              "name": "人工视频同单客户与运营办理回归",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 32
+            },
+            {
+              "name": "现货准入、原单与免费认证页面回归",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 33
+            },
+            {
+              "name": "人工视频券后分期及独立取消退款回归",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 34
+            },
+            {
+              "name": "新商单供给分成与原订单规则网页闭环",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 35
+            },
+            {
+              "name": "保存开票恢复和人工视频模拟证据",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 36
+            },
+            {
+              "name": "清理本次测试数据库",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 37
+            },
+            {
+              "name": "Post Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 73
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 74
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 75
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobs": [
+        {
+          "id": 137577061064,
+          "name": "数据库、后台任务和服务器功能",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 45140473533,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "获取本次代码",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "准备 Node.js",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "检查原始资料和任务记录",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "按锁定版本安装服务器依赖",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "准备真实视频处理检查工具",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "启动一次性测试数据库",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "运行检查并保存结果",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "校验真实隔离HTTP返回与接口文档一致",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "关闭并移除本次测试数据库",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "保存测试记录（不含数据库或口令）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Post 准备 Node.js",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21
+            },
+            {
+              "name": "Post 获取本次代码",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23
+            }
+          ]
+        },
+        {
+          "id": 137577061341,
+          "name": "无需数据库的接口格式与权限规则检查",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 45140473533,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "获取本次代码",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "准备 Node.js",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "离线检查配置缺项和凭证不外泄",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "扫描当前提交的受限材料和凭证模式（不检查图片内容）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "保存材料扫描路径与类别（无凭证正文）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "核对需求验收登记与拒绝假通过的反例（不表示完整业务通过）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "单独检查账号权限规则",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "安装锁定版本的接口检查工具",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "检查批量校验不会漏文件或误报通过",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "检查接口格式和示例（不调用服务器）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Post 准备 Node.js",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21
+            },
+            {
+              "name": "Post 获取本次代码",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "prior_backend_head": "7338e77e82483d8eb4adbb0fb3953d0566c469d8",
+  "prior_backend_jobs": [
+    {
+      "jobs": [
+        {
+          "id": 137501412701,
+          "name": "无需数据库的接口格式与权限规则检查",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 45116809448,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "获取本次代码",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "准备 Node.js",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "离线检查配置缺项和凭证不外泄",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "扫描当前提交的受限材料和凭证模式（不检查图片内容）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "保存材料扫描路径与类别（无凭证正文）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "核对需求验收登记与拒绝假通过的反例（不表示完整业务通过）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "单独检查账号权限规则",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "安装锁定版本的接口检查工具",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "检查批量校验不会漏文件或误报通过",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "检查接口格式和示例（不调用服务器）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Post 准备 Node.js",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21
+            },
+            {
+              "name": "Post 获取本次代码",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23
+            }
+          ]
+        },
+        {
+          "id": 137501412958,
+          "name": "数据库、后台任务和服务器功能",
+          "status": "completed",
+          "conclusion": "success",
+          "run_id": 45116809448,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "获取本次代码",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "准备 Node.js",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "检查原始资料和任务记录",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "按锁定版本安装服务器依赖",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "准备真实视频处理检查工具",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "启动一次性测试数据库",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "运行检查并保存结果",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "校验真实隔离HTTP返回与接口文档一致",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "关闭并移除本次测试数据库",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "保存测试记录（不含数据库或口令）",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Post 准备 Node.js",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 21
+            },
+            {
+              "name": "Post 获取本次代码",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 22
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "jobs": [
+        {
+          "id": 137501413085,
+          "name": "网页构建与真实接口浏览器检查",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_id": 45116809573,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run npm ci --no-audit --no-fund",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Run npm run test:contracts",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 5
+            },
+            {
+              "name": "Run npm run test:supply",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 6
+            },
+            {
+              "name": "Run npm run test:licensing",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 7
+            },
+            {
+              "name": "Run npm run test:trade",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 8
+            },
+            {
+              "name": "Run npm run test:gigs",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 9
+            },
+            {
+              "name": "Run npm run test:production",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 10
+            },
+            {
+              "name": "Run npm run test:projects",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 11
+            },
+            {
+              "name": "Run npm run test:finance",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 12
+            },
+            {
+              "name": "Run npm run test:operations",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 13
+            },
+            {
+              "name": "Run npm run test:customization",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14
+            },
+            {
+              "name": "Run npm run test:artists",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            },
+            {
+              "name": "Run npm run test:delivery",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 16
+            },
+            {
+              "name": "Run npm run test:business",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 17
+            },
+            {
+              "name": "Run npm run build",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 18
+            },
+            {
+              "name": "安装浏览器及隔离接口测试依赖",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 19
+            },
+            {
+              "name": "检查测试服务退出、端口占用和失败清理",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 20
+            },
+            {
+              "name": "启动一次性测试数据库",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 21
+            },
+            {
+              "name": "用真实账号接口检查页面（仅短信模拟）",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 22
+            },
+            {
+              "name": "保存短信页面检查摘要和合成截图",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 23
+            },
+            {
+              "name": "用真实许可接口检查选本、核验、项目与阅稿页面",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 24
+            },
+            {
+              "name": "用真实交易接口检查报价、付款、退款与历史依据页面",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 25
+            },
+            {
+              "name": "用真实商单、MCN关系与收退款记录检查网页",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 26
+            },
+            {
+              "name": "用真实制作接口检查版本、独立审片、反馈与受控交付",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 27
+            },
+            {
+              "name": "用真实项目接口检查选角、准确会签、独立核验与发行事实",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 28
+            },
+            {
+              "name": "用真实财务接口检查约定、结算、实付、收入与争议",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 29
+            },
+            {
+              "name": "用真实通知、留言、审计和报表接口检查网页",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 30
+            },
+            {
+              "name": "开票结果丢失、刷新与独立核准回归",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 31
+            },
+            {
+              "name": "人工视频同单客户与运营办理回归",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 32
+            },
+            {
+              "name": "现货准入、原单与免费认证页面回归",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 33
+            },
+            {
+              "name": "人工视频券后分期及独立取消退款回归",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 34
+            },
+            {
+              "name": "新商单供给分成与原订单规则网页闭环",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 35
+            },
+            {
+              "name": "保存开票恢复和人工视频模拟证据",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 36
+            },
+            {
+              "name": "清理本次测试数据库",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 37
+            },
+            {
+              "name": "Post Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 73
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 74
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 75
+            }
+          ]
+        },
+        {
+          "id": 137501413350,
+          "name": "App 账号合同作品许可交易商单测试与网页构建",
+          "status": "completed",
+          "conclusion": "failure",
+          "run_id": 45116809573,
+          "logs_url": null,
+          "steps": [
+            {
+              "name": "Set up job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 1
+            },
+            {
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 2
+            },
+            {
+              "name": "获取固定版本 Flutter 工具",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 3
+            },
+            {
+              "name": "Run flutter pub get --enforce-lockfile",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 4
+            },
+            {
+              "name": "Run dart analyze lib/contract_six lib/account lib/contracts lib/supply lib/licensing lib/trade lib/gigs lib/production lib/projects lib/finance lib/operations lib/navigation lib/customization lib/artists lib/discovery lib/support lib/app.dart lib/main.dart lib/pages/login/login_page.dart lib/pages/splash/splash_page.dart lib/widgets/main_scaffold.dart test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists lib/stock lib/notices lib/auditions lib/wallet lib/engagement lib/cocreation lib/redemption lib/privacy test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy test/catalog_editorial_restore_test.dart lib/plaza test/plaza test/discovery test/support test/plaza_subpages_layout_test.dart test/plaza_subpages_recovery_test.dart",
+              "status": "completed",
+              "conclusion": "failure",
+              "number": 5
+            },
+            {
+              "name": "Run flutter test test/account test/contracts test/supply test/licensing test/trade test/gigs test/production test/projects test/finance test/operations test/navigation test/customization test/artists test/stock test/notices test/auditions test/wallet test/engagement test/cocreation test/redemption test/privacy test/plaza test/discovery test/support test/plaza_subpages_layout_test.dart test/plaza_subpages_recovery_test.dart test/interaction_flows_test.dart test/widget_test.dart test/catalog_editorial_restore_test.dart",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 6
+            },
+            {
+              "name": "检查完整 App 可以生成网页发布文件",
+              "status": "completed",
+              "conclusion": "skipped",
+              "number": 7
+            },
+            {
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 14
+            },
+            {
+              "name": "Complete job",
+              "status": "completed",
+              "conclusion": "success",
+              "number": 15
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "web_failure_excerpt": "2026-11-23T08:50:42.7544178Z Error: Fixture stopped: VERIFIED_ADULT_REQUIRED",
+  "source": "GitHub Actions jobs and raw Web job 137576923267; no frontend executed locally."
+}

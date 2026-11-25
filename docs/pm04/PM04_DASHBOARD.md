@@ -6,9 +6,9 @@
 
 |任务|阶段|建议负责人|实际领取|执行状态|
 |---|---|---|---|---|
-|PM04-BE-01|G0|chengcongcong222|chengcongcong222|IN_PROGRESS|
-|PM04-FE-02|G0|Bill-Billion|待本人领取|NOT_STARTED|
-|PM04-JT-03|G1|chengcongcong222 + Bill-Billion（分别认领）|chengcongcong222|BACKEND_PREPARATION_ONLY|
+|PM04-BE-01|G0|chengcongcong222|chengcongcong222|CI_PATCH_ON_PR41_DEPENDENCIES_PASSED_FULL_RUN_PENDING|
+|PM04-FE-02|G0|Bill-Billion|Bill-Billion|IN_PROGRESS|
+|PM04-JT-03|G1|chengcongcong222 + Bill-Billion（分别认领）|chengcongcong222|JOINED_PARTIAL_USER_REPORTED_PRIVACY_MANUAL_RECHECK_PENDING|
 |PM04-PM-04|G2|产品负责人 + 法务（未指派GitHub人员）|待本人领取|NOT_STARTED_REQUIRED_DEFERRED|
 |PM04-BE-05|G2|chengcongcong222|待本人领取|NOT_STARTED_REQUIRED_DEFERRED|
 |PM04-FE-06|G2|Bill-Billion|待本人领取|NOT_STARTED_REQUIRED_DEFERRED|
