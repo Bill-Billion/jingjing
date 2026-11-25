@@ -1887,6 +1887,46 @@
       "acceptance_ids": [
         "E2E-12"
       ]
+    },
+    {
+      "id": "QA18-TEST-096",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "旧合同回执被脚本误按统一计时字段核验",
+      "actual": "已成功收讫，但旧168小时回执没有deadline_basis，脚本读取mode失败。",
+      "expected": "只读已提交回执核对原合同168小时、版本、买方及预览时间，不重提。",
+      "evidence": "docs/testing/evidence/pm04-g1-participation-delivery-20261126-30/browser-01.log",
+      "fix_sha": "32d0c64e5d35ca4689d2a58fb5366fc2cbcddadb",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-participation-delivery-20261126-30/EXECUTION_SUMMARY.json",
+      "limits": "专项接续，不代完整E2E12/最终18组；旧失败保留。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-12"
+      ]
+    },
+    {
+      "id": "QA18-TEST-097",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "HTTP采集将查询参数合入OpenAPI路径",
+      "actual": "实际404响应正确，采集content?variant=final导致路径匹配失败。",
+      "expected": "保留实际请求含参数另列，path使用真实pathname，重取10响应并核验。",
+      "evidence": "docs/testing/evidence/pm04-g1-participation-delivery-20261126-30/live-contract-report-01-failed.json",
+      "fix_sha": "e115634d1ba917548730acfb8ec86ff379f97086",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-participation-delivery-20261126-30/EXECUTION_SUMMARY.json",
+      "limits": "专项接续，不代完整E2E12/最终18组；旧失败保留。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-12"
+      ]
     }
   ]
 }
