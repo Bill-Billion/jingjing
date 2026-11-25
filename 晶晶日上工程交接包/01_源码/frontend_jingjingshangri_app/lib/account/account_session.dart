@@ -581,9 +581,10 @@ class AccountSession extends ChangeNotifier {
         query: {'operation': spec[1]});
     _check(started);
     void require(bool ok) {
-      if (!ok)
+      if (!ok) {
         throw const AccountError(200, 'UNEXPECTED_RESPONSE_SHAPE',
             uncertain: true);
+      }
     }
 
     require(receipt['operation'] == spec[1] && receipt['operation_key'] == key);

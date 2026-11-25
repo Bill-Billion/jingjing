@@ -453,14 +453,18 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         .firstMatch(suffix);
     if (!['votes', 'appeals', 'mcn/staff', 'profiles', 'reviews',
         'referrals/sync', 'mcn/assignments', 'buyer-city-profile'].contains(suffix) &&
-        revoke == null) return null;
+        revoke == null) {
+      return null;
+    }
     // Freeze the submitted body, not editable fields or a refreshed list.
     final body = communityMap(jsonDecode(jsonEncode(input)));
     bool sameSet(Object? actual, Object? expected, {bool ids = false}) {
       if (actual is! List || expected is! List || actual.isEmpty ||
           (ids && actual.length > 100) ||
           actual.any((x) => x is! String || (ids && !communityId(x))) ||
-          expected.any((x) => x is! String || (ids && !communityId(x)))) return false;
+          expected.any((x) => x is! String || (ids && !communityId(x)))) {
+        return false;
+      }
       final a = actual.toSet(), b = expected.toSet();
       return a.length == actual.length && b.length == expected.length &&
           a.length == b.length && a.containsAll(b);
@@ -629,8 +633,10 @@ class _EngagementState extends CommunityPageState<_Engagement> {
       setState(() {
         nominationProfiles = rows.where((row) => ['city', 'district', 'category']
             .every((key) => row[key] == detail?[key])).toList();
-        if (nominationProfiles.isEmpty) nominationError =
+        if (nominationProfiles.isEmpty) {
+          nominationError =
             '没有与本活动地域和类别匹配的本人有效档案；这不代表此前没有提交提名。';
+        }
       });
     } catch (e) {
       if (current()) setState(() => nominationError = communityError(e));
@@ -641,7 +647,9 @@ class _EngagementState extends CommunityPageState<_Engagement> {
 
   Future<void> nominate() async {
     if (!enabled || checking || nominationReading || !nominationOpen ||
-        !nominationAgreed || nominationUnknown || nominationResult != null) return;
+        !nominationAgreed || nominationUnknown || nominationResult != null) {
+      return;
+    }
     final selected = nominationProfiles.where((p) => p['id'] == nominationProfile)
         .firstOrNull;
     if (selected == null) return;
@@ -674,14 +682,26 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         canVote ? readNominationProfiles : null, outline: true),
     if (nominationReading) const LinearProgressIndicator(),
     if (nominationError != null) appNotice(nominationError!),
-    for (final profile in nominationProfiles)
-      RadioListTile<String>(value: profile['id'], groupValue: nominationProfile,
-          title: Text('${profile['city']} · ${profile['district']} · ${profile['category']}'),
-          subtitle: Text('本人档案 ${communityShort(profile['id'])}'),
-          onChanged: enabled && !checking && !nominationReading && !nominationUnknown &&
-              nominationResult == null ? (value) => setState(() {
-                nominationProfile = value; nominationAgreed = false;
-              }) : null),
+    RadioGroup<String>(
+        groupValue: nominationProfile,
+        onChanged: (value) {
+          if (!enabled || checking || nominationReading || nominationUnknown ||
+              nominationResult != null || value == null) {
+            return;
+          }
+          setState(() {
+            nominationProfile = value;
+            nominationAgreed = false;
+          });
+        },
+        child: Column(children: [
+          for (final profile in nominationProfiles)
+            RadioListTile<String>(value: profile['id'],
+                title: Text('${profile['city']} · ${profile['district']} · ${profile['category']}'),
+                subtitle: Text('本人档案 ${communityShort(profile['id'])}'),
+                enabled: enabled && !checking && !nominationReading && !nominationUnknown &&
+                    nominationResult == null),
+        ])),
     communityCheck('我以本人身份提交选定档案提名，资格以本活动审核为准', nominationAgreed,
         enabled && !checking && !nominationReading && nominationOpen &&
             nominationProfile != null && !nominationUnknown && nominationResult == null
@@ -731,7 +751,9 @@ class _EngagementState extends CommunityPageState<_Engagement> {
     // generation and its actual event/candidate data, not an invented version.
     final eventSnapshot = jsonEncode(d), candidateSnapshot = jsonEncode(candidate);
     if (!communityRows(d['candidates']).any((r) =>
-        r['id'] == candidateId && jsonEncode(r) == candidateSnapshot)) return;
+        r['id'] == candidateId && jsonEncode(r) == candidateSnapshot)) {
+      return;
+    }
     final yes = await showDialog<bool>(
         context: context,
         builder: (c) => AlertDialog(
@@ -753,7 +775,9 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         current == null || current['id'] != eventId ||
         jsonEncode(current) != eventSnapshot ||
         !communityRows(current['candidates']).any((r) =>
-            r['id'] == candidateId && jsonEncode(r) == candidateSnapshot)) return;
+            r['id'] == candidateId && jsonEncode(r) == candidateSnapshot)) {
+      return;
+    }
     await actBound('votes', {'event_id': eventId, 'candidate_id': candidateId});
   }
 
@@ -771,8 +795,10 @@ class _EngagementState extends CommunityPageState<_Engagement> {
               label: Text(x.$2),
               selected: widget.view == x.$1,
               onSelected: !enabled || checking ? null : (_) {
-                if (widget.view != x.$1) Navigator.pushReplacementNamed(
+                if (widget.view != x.$1) {
+                  Navigator.pushReplacementNamed(
                     context, '/engagement?view=${x.$1}');
+                }
               })
       ]);
   List<Widget> rankingIndex() => [
@@ -883,8 +909,10 @@ class _EngagementState extends CommunityPageState<_Engagement> {
         rulesSection = GlobalKey();
     void scrollTo(GlobalKey key) {
       final target = key.currentContext;
-      if (target != null) Scrollable.ensureVisible(target,
+      if (target != null) {
+        Scrollable.ensureVisible(target,
           duration: const Duration(milliseconds: 240));
+      }
     }
     return [Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       tradeHeading(communityText(d['title']),
@@ -1483,7 +1511,7 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                             MediaQuery.textScalerOf(context).scale(14) / 14 > 1.2;
                         final caption = Column(
                             crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text('${r['party_id'] == session.partyId ? communityText(session.party?['display_name']) : '已公开主体 ${communityShort(r['party_id'])}'}',
+                          Text(r['party_id'] == session.partyId ? communityText(session.party?['display_name']) : '已公开主体 ${communityShort(r['party_id'])}',
                               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
                           const SizedBox(height: 8),
                           Text(r['facts_available'] == true

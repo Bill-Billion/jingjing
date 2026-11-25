@@ -916,7 +916,7 @@ class _SixState extends CommunityPageState<_Six> {
         if (widget.kind == 'guardians' && !widget.operations)
           tradeButton('监护充值退款进度（与订单退款分开）',
               !enabled || checking ? null : () async {
-                if (await guard.currentState!.confirmLeave() && mounted) {
+                if (await guard.currentState!.confirmLeave() && context.mounted) {
                   await Navigator.pushNamed(context, '/wallet/guardian-refunds');
                 }
               }, outline: true),

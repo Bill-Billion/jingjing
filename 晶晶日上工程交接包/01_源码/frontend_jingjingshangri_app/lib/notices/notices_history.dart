@@ -116,15 +116,19 @@ class _NoticeHistoryState extends State<_NoticeHistory> {
         hasRead = true;
       });
     } on AccountError catch (e) {
-      if (active()) setState(() {
+      if (active()) {
+        setState(() {
         clearData();
         error = v5Error(e);
       });
+      }
     } catch (_) {
-      if (active()) setState(() {
+      if (active()) {
+        setState(() {
         clearData();
         error = '历史记录格式未能核对，已清空本次结果，请重新读取。';
       });
+      }
     } finally {
       if (active()) setState(() => busy = false);
     }

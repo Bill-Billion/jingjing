@@ -22,7 +22,7 @@ class NoticeConfirmationPage extends StatelessWidget {
 // Only this panel observes definitive confirmation errors. Shared write/key
 // machinery remains in V5Api and AccountApi, including uncertain retries.
 class _ConfirmationApi extends NoticesApi {
-  _ConfirmationApi(AccountSession session, this.target, this.onInvalid) : super(session);
+  _ConfirmationApi(super.session, this.target, this.onInvalid);
   final String target;
   final void Function(AccountError) onInvalid;
   @override
@@ -117,7 +117,9 @@ class _ConfirmationState extends State<_Confirmation> {
   Future<void> refresh({bool initial = false, bool afterSuccess = false}) async {
     // An existing unknown request owns its original context until restored.
     if (busy || !initial && api.pending(suffix) != null ||
-        !afterSuccess && formKey.currentState?.busy == true) return;
+        !afterSuccess && formKey.currentState?.busy == true) {
+      return;
+    }
     final request = ++ticket, epoch = widget.session.epoch,
         party = widget.session.partyId;
     setState(() {
@@ -133,14 +135,18 @@ class _ConfirmationState extends State<_Confirmation> {
         formKey = GlobalKey<V5FormState>();
       });
     } on AccountError catch (e) {
-      if (mounted && request == ticket) setState(() {
+      if (mounted && request == ticket) {
+        setState(() {
         source = null; current = null; stale = true; error = v5Error(e);
       });
+      }
     } catch (_) {
-      if (mounted && request == ticket) setState(() {
+      if (mounted && request == ticket) {
+        setState(() {
         source = null; current = null; stale = true;
         error = '未能核对本人投稿与通告快照，内容已清空。';
       });
+      }
     } finally {
       if (mounted && request == ticket) setState(() => busy = false);
     }

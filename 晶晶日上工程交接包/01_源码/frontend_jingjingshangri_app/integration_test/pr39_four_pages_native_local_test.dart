@@ -121,10 +121,12 @@ void main() {
             requestOptions: o, type: DioExceptionType.connectionError));
         return;
       }
-      if (o.method == 'POST' && o.path.endsWith('/consumer-controls'))
+      if (o.method == 'POST' && o.path.endsWith('/consumer-controls')) {
         commandKeys.add('${o.headers['Idempotency-Key']}');
-      if (o.method == 'POST' && o.path.endsWith('/usage/acknowledge'))
+      }
+      if (o.method == 'POST' && o.path.endsWith('/usage/acknowledge')) {
         ackKeys.add('${o.headers['Idempotency-Key']}');
+      }
       if (first &&
           o.method == 'POST' &&
           o.path.endsWith('/api/v1/auth/sessions')) {
@@ -254,8 +256,9 @@ void main() {
       await press(t, find.text('修改本人的月度上限'));
       await reveal(t, find.text('本人确认已到期的提额申请'));
       final confirm = find.widgetWithText(ElevatedButton, '本人确认已到期的提额申请');
-      if (confirm.evaluate().isNotEmpty)
+      if (confirm.evaluate().isNotEmpty) {
         expect(t.widget<ElevatedButton>(confirm).onPressed, isNull);
+      }
       await agree(t);
       await press(t, find.text('取消待生效的提额申请'));
       await press(t, find.text('查看本人变更记录'));

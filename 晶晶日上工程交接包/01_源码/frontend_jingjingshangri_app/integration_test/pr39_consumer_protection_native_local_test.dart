@@ -120,14 +120,18 @@ void main() {
     var first = true;
     dio.interceptors.add(InterceptorsWrapper(onRequest: (o, h) {
       debugPrint('NATIVE_HTTP ${o.method} ${o.uri.path}');
-      if (o.method == 'PATCH' && o.path.endsWith('/privacy/preferences'))
+      if (o.method == 'PATCH' && o.path.endsWith('/privacy/preferences')) {
         commandKeys.add('${o.headers['Idempotency-Key']}');
-      if (o.method == 'POST' && o.path.endsWith('/consumer-risk/confirm'))
+      }
+      if (o.method == 'POST' && o.path.endsWith('/consumer-risk/confirm')) {
         ackKeys.add('${o.headers['Idempotency-Key']}');
-      if (o.method == 'POST' && o.path == '/api/v1/trade/payments')
+      }
+      if (o.method == 'POST' && o.path == '/api/v1/trade/payments') {
         paymentKeys.add('${o.headers['Idempotency-Key']}');
-      if (o.method == 'POST' && o.path == '/api/v1/redemption/draws')
+      }
+      if (o.method == 'POST' && o.path == '/api/v1/redemption/draws') {
         drawKeys.add('${o.headers['Idempotency-Key']}');
+      }
       if (first &&
           o.method == 'POST' &&
           o.path.endsWith('/api/v1/auth/sessions')) {
@@ -152,10 +156,14 @@ void main() {
       final path = r.requestOptions.path;
       if (r.statusCode == 200 &&
           r.requestOptions.method == 'POST' &&
-          path == '/api/v1/trade/payments') paymentId = r.data['data']['id'];
+          path == '/api/v1/trade/payments') {
+        paymentId = r.data['data']['id'];
+      }
       if (r.statusCode == 200 &&
           r.requestOptions.method == 'POST' &&
-          path == '/api/v1/redemption/draws') drawId = r.data['data']['id'];
+          path == '/api/v1/redemption/draws') {
+        drawId = r.data['data']['id'];
+      }
       if (r.statusCode == 200 &&
           ((losePrefs &&
                   r.requestOptions.method == 'PATCH' &&
@@ -375,8 +383,9 @@ void main() {
       expect(prefs['night_reminder_enabled'], true);
       expect(prefs['quiet_hours'],
           {'enabled': true, 'start_minute': 0, 'end_minute': 1439});
-      if (find.text('本日夜间提示已读').evaluate().isNotEmpty)
+      if (find.text('本日夜间提示已读').evaluate().isNotEmpty) {
         await press(t, find.text('本日夜间提示已读'));
+      }
       await open(t, '/privacy?view=preferences');
       await reveal(t, find.text('系统推送开关'));
       expect(find.text('本日夜间提示已读'), findsNothing);

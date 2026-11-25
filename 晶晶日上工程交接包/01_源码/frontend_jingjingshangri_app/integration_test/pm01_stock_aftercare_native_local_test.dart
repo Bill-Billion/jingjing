@@ -68,8 +68,9 @@ void main() {
       await frames(t, 2);
     }
     for (var i = 0; i < 40 && f.evaluate().isEmpty; i++) {
-      if (find.byType(Scrollable).evaluate().isNotEmpty)
+      if (find.byType(Scrollable).evaluate().isNotEmpty) {
         await t.drag(find.byType(Scrollable).first, const Offset(0, -400));
+      }
       await frames(t, 2);
     }
     await wait(t, f);
@@ -178,7 +179,7 @@ void main() {
       'Native stock checkout and independently reviewed KEEP then REVOKE on the same order',
       (t) async {
     await boot(t, 'stock');
-    await open(t, '/stock/video?listingId=' + data['listing_id']);
+    await open(t, '/stock/video?listingId=${data['listing_id']}');
     await press(t, find.text('我已阅读本版价格、许可用途、地域、期间与售后约定'));
     await press(t, find.text('确认本版购买并查看原订单'));
     await press(t, find.text('确认办理'));
@@ -189,7 +190,7 @@ void main() {
     await press(t, find.text('核对这笔付款'));
     await press(t, find.text('确认办理'));
     await control('verify-paid');
-    await open(t, '/stock/purchase?orderId=' + id);
+    await open(t, '/stock/purchase?orderId=$id');
     await press(t, find.text('受控播放已购作品'));
     await wait(t, find.text('本次私有预览已打开，请核对完整内容。'));
     await shot(t, 'native-paid');
@@ -200,7 +201,7 @@ void main() {
     expect(find.text('本次私有预览已打开，请核对完整内容。'), findsNothing);
     await control('renew');
     await boot(t, 'stock');
-    await open(t, '/stock/purchase?orderId=' + id);
+    await open(t, '/stock/purchase?orderId=$id');
     await control('picker', {'mode': 'cancel'});
     await press(t, find.text('下载本次私有文件'));
     await wait(t, find.text('已取消保存，本次未确认收件。'));
@@ -215,14 +216,14 @@ void main() {
       final field = find.byWidgetPredicate(
           (w) => w is TextField && w.decoration?.labelText == '问题说明');
       await reveal(t, field);
-      await t.enterText(field, '本机模拟逐案售后 ' + action);
+      await t.enterText(field, '本机模拟逐案售后 $action');
       FocusManager.instance.primaryFocus?.unfocus();
       await frames(t);
       await press(t, find.text('提交本单售后问题'));
       await press(t, find.text('确认办理'));
       await wait(t, find.textContaining('本单售后处理中'));
       await control('refund', {'license_action': action});
-      await open(t, '/stock/purchase?orderId=' + id);
+      await open(t, '/stock/purchase?orderId=$id');
       if (action == 'KEEP') {
         await press(t, find.text('受控播放已购作品'));
         await wait(t, find.text('本次私有预览已打开，请核对完整内容。'));
@@ -230,7 +231,7 @@ void main() {
         await reveal(t, find.textContaining('当前不可读取正式文件'));
         expect(find.text('受控播放已购作品'), findsNothing);
       }
-      await shot(t, 'native-' + action);
+      await shot(t, 'native-$action');
     }
     await control('complete');
     await session!.logout();

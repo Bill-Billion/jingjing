@@ -142,7 +142,9 @@ bool isStockTerms(dynamic v, {bool snapshot = false}) {
   } else if (v['scope'] != 'PERSONAL_NONCOMMERCIAL' ||
       v['territory'] != 'WORLDWIDE' ||
       v['duration'] != 'PERPETUAL' ||
-      v['personal_social_sharing'] != true) return false;
+      v['personal_social_sharing'] != true) {
+    return false;
+  }
   if (snapshot) {
     final excluded = stockExclusions
         .where((x) =>

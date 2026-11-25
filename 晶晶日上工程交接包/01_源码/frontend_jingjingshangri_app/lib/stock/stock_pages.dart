@@ -911,12 +911,16 @@ class _StockScreenState extends State<_StockScreen> {
                     if (!mounted || mediaTicket != ticket ||
                         mediaEpoch != widget.session.epoch ||
                         mediaParty != widget.session.partyId ||
-                        purchase?.orderId != p.orderId) return;
+                        purchase?.orderId != p.orderId) {
+                      return;
+                    }
                     final current = await api.purchase(p.orderId);
                     if (!mounted || mediaTicket != ticket ||
                         mediaEpoch != widget.session.epoch ||
                         mediaParty != widget.session.partyId ||
-                        purchase?.orderId != p.orderId) return;
+                        purchase?.orderId != p.orderId) {
+                      return;
+                    }
                     setState(() {
                       purchase = current;
                       opened = true;

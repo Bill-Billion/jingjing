@@ -54,7 +54,7 @@ void main() {
               'original_status': scenario == 'absent409' ? null : 'IN_REVIEW',
             });
           }
-          if (r.path.contains('/records/'))
+          if (r.path.contains('/records/')) {
             return envelope({
               'id': invitationId,
               'kind': entry.value[2],
@@ -62,6 +62,7 @@ void main() {
               'current_status': 'APPROVED',
               'data': {'current': true},
             });
+          }
           return adapter.defaultReply(r);
         });
         final s = AccountSession(api: adapter.createApi());

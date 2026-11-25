@@ -39,12 +39,13 @@ void main() {
     final pending = Completer<ResponseBody>();
     var blocked = false;
     final a = artistAdapter(override: (r) {
-      if (r.path == '/api/v1/stock/seller-eligibility')
+      if (r.path == '/api/v1/stock/seller-eligibility') {
         return blocked
             ? pending.future
             : envelope(eligibility(
                 person: r.queryParameters['person_id'],
                 approved: r.queryParameters['person_id'] == personKey));
+      }
       return null;
     });
     final s = await communitySession(a), api = StockApi(s);
@@ -60,11 +61,13 @@ void main() {
   });
   testWidgets('L1艺人明确显示人工审核缺项，不从等级推断上架资格', (t) async {
     final a = artistAdapter(override: (r) {
-      if (r.path == '/api/v1/stock/seller-eligibility')
+      if (r.path == '/api/v1/stock/seller-eligibility') {
         return envelope(eligibility(approved: false));
+      }
       if (r.path == '/api/v1/stock/sales-publications' ||
-          r.path == '/api/v1/stock/participant-options')
+          r.path == '/api/v1/stock/participant-options') {
         return envelope({'items': [], 'next_cursor': null});
+      }
       return null;
     });
     final s = (await t.runAsync(() => communitySession(a)))!;
@@ -87,7 +90,7 @@ void main() {
         reads++;
         return envelope(eligibility(approved: approved));
       }
-      if (r.path == '/api/v1/stock/sales-publications')
+      if (r.path == '/api/v1/stock/sales-publications') {
         return envelope({
           'items': [
             {
@@ -103,8 +106,10 @@ void main() {
           ],
           'next_cursor': null
         });
-      if (r.path == '/api/v1/stock/participant-options')
+      }
+      if (r.path == '/api/v1/stock/participant-options') {
         return envelope({'items': [], 'next_cursor': null});
+      }
       return null;
     });
     final s = (await t.runAsync(() => communitySession(a)))!;

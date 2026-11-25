@@ -170,11 +170,15 @@ class _NoticesSubmissionState extends State<NoticesSubmission> {
 
   Future<void> selectSubmissionKind(String next) async {
     if (busy || next == widget.kind || api.writes > 0 ||
-        api.pendingOperations.isNotEmpty) return;
+        api.pendingOperations.isNotEmpty) {
+      return;
+    }
     final epoch = widget.session.epoch, party = widget.session.partyId;
     if (!(await submissionFormKey.currentState?.confirmDiscardChanges() ?? true)) return;
     if (!mounted || busy || epoch != widget.session.epoch ||
-        party != widget.session.partyId || api.pendingOperations.isNotEmpty) return;
+        party != widget.session.partyId || api.pendingOperations.isNotEmpty) {
+      return;
+    }
     Navigator.pushReplacementNamed(context, Uri(
         path: '/notices/submit',
         queryParameters: {

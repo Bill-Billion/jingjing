@@ -68,8 +68,9 @@ void main() {
       await frames(t, 2);
     }
     for (var i = 0; i < 40 && f.evaluate().isEmpty; i++) {
-      if (find.byType(Scrollable).evaluate().isNotEmpty)
+      if (find.byType(Scrollable).evaluate().isNotEmpty) {
         await t.drag(find.byType(Scrollable).first, const Offset(0, -400));
+      }
       await frames(t, 2);
     }
     await wait(t, f);

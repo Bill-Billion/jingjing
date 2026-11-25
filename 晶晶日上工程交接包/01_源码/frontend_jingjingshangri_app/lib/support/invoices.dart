@@ -440,7 +440,9 @@ class _InvoicesState extends State<_Invoices> {
     }
     if (create && recovery == null) {
       if (eligibility == null || eligibility!['available_minor'] <= 0 ||
-          eligibility!['environment'] == null || amountInputError != null) return;
+          eligibility!['environment'] == null || amountInputError != null) {
+        return;
+      }
       final confirmed = await tradeConfirm(context, '核对本次开票申请', [
         tradeFact('原订单', widget.orderId),
         tradeFact('抬头类型', kind == 'PERSON' ? '个人' : '企业'),

@@ -644,7 +644,9 @@ class _VersionReviewState extends State<_VersionReview> {
       final page = await api.page(projectId: p.id, kind: 'VERSION',
           cursor: more ? versionCursor : null);
       if (!mounted || t != versionsTicket || parentTicket != ticket ||
-          epoch != widget.session.epoch || party != widget.session.partyId) return;
+          epoch != widget.session.epoch || party != widget.session.partyId) {
+        return;
+      }
       productionRequire(page.nextCursor == null || seenVersionCursors.add(page.nextCursor!));
       setState(() {
         final merged = <String, ProductionRecord>{};

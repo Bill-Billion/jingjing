@@ -243,7 +243,9 @@ class _SupportState extends State<_Support> {
 
   Future<void> moreHistory() async {
     if (busy || historyCursor == null || widget.ticketId == null ||
-        record?['id'] != widget.ticketId) return;
+        record?['id'] != widget.ticketId) {
+      return;
+    }
     final before = historyCursor!;
     final ticketId = widget.ticketId!;
     final t = ++ticket, epoch = widget.session.epoch;
@@ -493,16 +495,23 @@ class _SupportState extends State<_Support> {
                   description: '说明发生在哪一步、预期结果与实际情况，并按需附上材料。提交后在同一记录里跟进，不代替退款或隐私业务申请。'),
               const Text('问题类型',
                   style: TextStyle(fontWeight: FontWeight.w700)),
-              for (final option in [('FEEDBACK', '意见反馈'), ('REPORT', '内容举报')])
-                Container(
-                    decoration: const BoxDecoration(
-                        border: Border(bottom: BorderSide(color: AccountTheme.border))),
-                    child: RadioListTile<String>(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(option.$2),
-                        value: option.$1,
-                        groupValue: kind,
-                        onChanged: locked ? null : (v) => setState(() => kind = v!))),
+              RadioGroup<String>(
+                  groupValue: kind,
+                  onChanged: (value) {
+                    if (locked || value == null) return;
+                    setState(() => kind = value);
+                  },
+                  child: Column(children: [
+                    for (final option in [('FEEDBACK', '意见反馈'), ('REPORT', '内容举报')])
+                      Container(
+                          decoration: const BoxDecoration(
+                              border: Border(bottom: BorderSide(color: AccountTheme.border))),
+                          child: RadioListTile<String>(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(option.$2),
+                              value: option.$1,
+                              enabled: !locked)),
+                  ])),
               TextField(
                   controller: title,
                   enabled: !locked,
