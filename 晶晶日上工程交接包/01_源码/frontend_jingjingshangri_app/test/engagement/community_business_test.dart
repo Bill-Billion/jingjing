@@ -83,6 +83,9 @@ void main() {
             r.path == '/api/v1/engagement/rewards') {
           return envelope({'items': <Object>[]});
         }
+        if (r.path == '/api/v1/artists/catalog') {
+          return envelope({'items': <Object>[], 'next_cursor': null});
+        }
         return a.defaultReply(r);
       });
       final s = (await tester.runAsync(() => communitySession(a)))!;
