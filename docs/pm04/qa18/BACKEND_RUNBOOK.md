@@ -1,0 +1,23 @@
+# 后端同版复跑要点
+
+本轮实际测试输入为f0710079585be912291ea1708e0b49e9bc96f0ca；产品后端/API/迁移与PR43环境7e35958a相同。QA后续文档/工具提交不是重新受测产品SHA。原始G01—17运行目录不覆盖，补测或回归使用新的批号。
+
+1. 在独立QA树按后端package-lock运行`npm ci --no-audit --no-fund`。准备本机MySQL8、回环33316、专用jx_local用户和jx_dev基础库；`JX_MYSQL_TEST_ENV_FILE`指向本机受控JSON，不打印或入库。各集成文件自行创建随机测试库，不能以此宣称跨端同记录。
+2. 在执行测试的同一PowerShell中明确设置下列工具变量为本机真实绝对路径；只设FFmpeg会导致G05前置失败。`FFMPEG_PATH`是旧恢复演练工具使用的另一变量，不要假定与`JX_TEST_FFMPEG`自动互通。
+
+```powershell
+$env:JX_MYSQL_TEST_ENV_FILE='<本机受控测试配置绝对路径>'
+$env:JX_TEST_FFMPEG='<本机ffmpeg.exe绝对路径>'
+$env:JX_TEST_FFPROBE='<本机ffprobe.exe绝对路径>'
+$env:JX_TEST_FONT='<本机实际字体文件绝对路径>'
+$env:FFMPEG_PATH=$env:JX_TEST_FFMPEG
+node scripts/qa18-backend-discovery.cjs G01 pm04-g1-discovery-<新批号>
+```
+
+将占位换为实际值，不能字面执行。原执行器保留命令、测试源码摘要、原始TAP、逐检查JSONL、同次HTTP夹具与异常结果。发现普通失败记录后继续无依赖组；重大安全/权限/资金问题停止相关链并处理。G09实际使用已有support和contract-six，不找不存在的infringement文件。
+
+3. 契约检查使用独立venv和`contracts/requirements-lock.txt`固定版本；该文件没有哈希，不能附加`--require-hashes`。测试夹具必须来自当前运行且位于`.local/`，逐文件报告路径必须位于`.local/ci-evidence/`；保留首次准备失败和正确运行的不同日志，不修改校验器绕过路径要求。
+4. G18实际备份恢复需要显式`JX_MYSQL_EXE`和`JX_MYSQLDUMP_EXE`。旧explore-seed还需`.local/client-samples`中的sample-1/2/3-full与preview.mp4、test-portrait.jpg。本轮使用带标记的合成色块视频/图片，摘要见证据G18/synthetic-media-manifest；不复制真人或用户私有素材冒充已授权。实际恢复到新库，不覆盖任何原库；保留原已付款订单与反馈记录的关联。完整代码回退、到期实测和真实候选产物冒烟需另验。
+5. 提供方登记程序`qa18_registry.py`只登记准确标准×端×场景，不接收模块总PASS替代全部标准。已有原始目录不能`init`覆盖，本轮登记目录为`pm04-g1-discovery-20261125-reg01`；后续事实追加，并用`check/report/export`核查。不同机器/环境的PASS各建run_id；最终完整回归另建`full_regression`，输入双方最终准确SHA。
+
+原始HTTP响应、凭据和受控文件保留在.local。发布报告只保留必要断言、记录别名/合成ID、结果与原文哈希；任何新候选上传前核机密材料。安装包人工体验在完整机测回归之后进行。

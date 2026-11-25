@@ -1,0 +1,70 @@
+{
+  "source_product_sha": "f0710079585be912291ea1708e0b49e9bc96f0ca",
+  "package_verified": {
+    "package": "PM04-G1-QA18-20261125",
+    "manifest_entries_verified": 14,
+    "all_hashes_match": true,
+    "three_original_plan_files_unchanged": true,
+    "installer_pending_clean_checkpoint": false,
+    "clean_checkpoint": "3ff5ad24ebefda2bbd4d8d6f0c1e28a5dba2765d",
+    "installed_files": 9,
+    "synthetic_selftest": "PASS",
+    "real_registry_run": "pm04-g1-discovery-20261125-reg01"
+  },
+  "final_checks": [
+    {
+      "command": [
+        "python",
+        "scripts/full_business_check.py"
+      ],
+      "exit_code": 0,
+      "output": "{\n  \"registration\": \"PASS\",\n  \"readiness_checked\": false,\n  \"client_test_version_ready\": false,\n  \"source_items\": 133,\n  \"supplemental_items\": 18,\n  \"acceptance_counts\": {\n    \"NOT_RUN\": 8,\n    \"PARTIAL\": 124,\n    \"PASS\": 19\n  },\n  \"product_tests\": \"NOT_RUN_BY_THIS_CHECK\",\n  \"errors\": []\n}",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python",
+        "scripts/acceptance_work_queue.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": "{\"registered\": 151, \"statuses\": {\"NOT_RUN\": 8, \"PARTIAL\": 124, \"PASS\": 19}, \"partial_links\": 133, \"status_changed\": false, \"output\": \"docs\\\\testing\\\\ACCEPTANCE_WORK_QUEUE_20261102.md\"}",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python",
+        "scripts/acceptance_progress.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "output": "Acceptance progress matches all 151 entries.",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python",
+        "scripts/pm04_check.py"
+      ],
+      "exit_code": 0,
+      "output": "{\"result\": \"PASS\", \"original_files\": 20, \"historical_tasks\": 159, \"pm04_tasks\": 8, \"application_tests\": \"NOT_RUN\"}",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python",
+        "scripts/qa18_registry.py",
+        "check",
+        "--run-id",
+        "pm04-g1-discovery-20261125-reg01"
+      ],
+      "exit_code": 0,
+      "output": "{\"run_id\": \"pm04-g1-discovery-20261125-reg01\", \"audit_journal\": \"VALID\", \"evidence_sha\": \"VALID\", \"original_source\": \"UNCHANGED\", \"formal_acceptance_unchanged\": true}",
+      "stderr": ""
+    }
+  ],
+  "product_tree_diff": "",
+  "formal_acceptance_unchanged": true,
+  "frontend_run_by_backend": false,
+  "production_enabled": false
+}
