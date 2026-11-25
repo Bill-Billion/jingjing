@@ -1,0 +1,11 @@
+{
+  "preserve": "JX_MYSQL_TEST_ENV_FILE=<guarded local fixture> node scripts/qa18-environment-assets.cjs <explicit QA environment relative path>",
+  "backup": "node scripts/qa18-batch-backup.cjs backupEnvironment <explicit QA environment relative path>; original PM03 uses backup <exact source DB>",
+  "verify": "node scripts/qa18-batch-backup.cjs verify <exact encrypted file>",
+  "restore": "node scripts/qa18-batch-backup.cjs restore <same encrypted file>; creates new OFFLINE_ONLY target, never starts it",
+  "mysql_executables": "Explicit local MySQL8.4.11 binaries; protected temporary option file; no password in CLI/log",
+  "tool_tests": "node --test scripts/qa18-batch-backup.test.cjs",
+  "backend": "node --require ./scripts/test-network-guard.cjs --test --test-concurrency=1 test/production.integration.test.cjs test/privacy-cross-module.integration.test.cjs test/privacy-response-delivery.integration.test.cjs test/privacy-execution.integration.test.cjs test/privacy-actions.integration.test.cjs test/privacy-copy.integration.test.cjs test/privacy-policy-options.integration.test.cjs",
+  "contract": "validate_contract.validate(six same-run HTTP fixture files); local qa18-python interpreter",
+  "frontend": "No new build/tests; actual existing App/Vue build SHA manifests verified unchanged"
+}

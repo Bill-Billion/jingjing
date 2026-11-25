@@ -1666,6 +1666,46 @@
       "acceptance_ids": [
         "E2E-10"
       ]
+    },
+    {
+      "id": "QA18-ENV-085",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "后续内存私有文件未纳入旧备份",
+      "actual": "旧17轮备份不含18-25；五套文件API保全各5份无现有所有人会话。",
+      "expected": "原字节/完整READY引用清单核SHA，8库加密备份实际恢复，不扩权或改业务。",
+      "evidence": "docs/testing/evidence/pm04-g1-backup-20261125-26/earned-points-20261125-19.log",
+      "fix_sha": "da8b4e85ff3199dc44aefa8b5837c876cbd36ed2",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-backup-20261125-26/EXECUTION_SUMMARY.json",
+      "limits": "8新离线恢复不是正式发布回退/最终18组全量；不激活旧凭据。",
+      "group": "G18",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "TASK-18"
+      ]
+    },
+    {
+      "id": "QA18-TEST-086",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "混淆项目ACCEPTED与履约DELIVERED",
+      "actual": "恢复核数错误断言项目DELIVERED，源/目标实际都为ACCEPTED。",
+      "expected": "分别断言项目ACCEPTED与履约DELIVERED并比较完整行。",
+      "evidence": "docs/testing/evidence/pm04-g1-backup-20261125-26/restored-records-first.log",
+      "fix_sha": "06f94adc56cffc69edb4b2ea1fb3bc620c4fa689",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-backup-20261125-26/EXECUTION_SUMMARY.json",
+      "limits": "8新离线恢复不是正式发布回退/最终18组全量；不激活旧凭据。",
+      "group": "G18",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "TASK-18"
+      ]
     }
   ]
 }
