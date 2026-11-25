@@ -15,7 +15,7 @@ export const privacy:Domain={key:'privacy',title:'本人资料与权益',journal
 {key:'closure',label:'本人的核验后注销期限',path:'/privacy/requests/:request_id/closure-clock',party:'none'},
 {key:'closure-queue',label:'注销逾期与待审列表',path:'/privacy/operations/closure-clocks',party:'none',query:[select('filter','待办范围',[['ALL','全部核验记录'],['OVERDUE','执行已逾期'],['PENDING','待独立复核']])]},
 {key:'closure-operations',label:'运营核验与执行期限',path:'/privacy/operations/requests/:request_id/closure-clock',party:'none'},
-{key:'operations',label:'运营处理本人申请',path:'/privacy/operations/requests',detail:'/privacy/operations/requests/:request_id',party:'none'},
+{key:'operations',label:'运营处理本人申请',path:'/privacy/operations/requests',detail:'/privacy/operations/requests/:request_id',party:'none',files:[{label:'读取本次答复依据',path:'/privacy/operations/requests/:request_id/evidence/:asset_id/content',party:'none',type:'private-evidence'}]},
 {key:'reviews',label:'执行方案独立核验',path:'/privacy/operations/requests/:request_id/executions',party:'none'}],operations:[
 op('clock-propose','提出核验、延期或完成方案','/privacy/operations/requests/:request_id/closure-clock/proposals',[select('kind','本次方案',[['VERIFY','独立核验起点'],['EXTEND','有依据延长期限'],['COMPLETE','实际执行后结案']]),reason(),{...ids('evidence_asset_ids','本人的核验或执行依据'),min:1},{...text('due_on','延期后日期（YYYY-MM-DD）',10),visible:r=>r.kind==='EXTEND',inactive:null}],'none',true,['closure-operations']),
 op('clock-review','另一岗位独立复核期限方案','/privacy/operations/requests/:request_id/closure-clock/reviews',review(),'none',true,['closure-operations']),
