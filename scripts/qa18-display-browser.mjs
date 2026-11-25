@@ -93,9 +93,10 @@ async function verifyTypedMedia(viewer,mobile,d,media){
   const item=d[kind],metadata=media.items.find(x=>x.asset_id===item.id);assert(metadata);assert.equal(metadata.media_type,item.type);assert.equal(metadata.media_kind,kind==='audio'?'AUDIO':'VIDEO');assert.equal(metadata.content_sha256,item.sha256);
   const path='/api/v1/artists/catalog/'+d.listing+'/assets/'+item.id+'/content';
   for(const [surface,page]of [['vue',viewer],['flutter',mobile]]){
-   const response=page.waitForResponse(r=>new URL(r.url()).pathname===path&&r.request().method()==='GET');
-   if(surface==='vue')await page.getByTestId('artists-catalog-preview-'+item.id).click();else await appClick(page,'读取'+label+'预览 1');
-   const res=await response;assert.equal(res.status(),200);assert.equal(sha(await res.body()),item.sha256);
+   const [res]=await Promise.all([
+    page.waitForResponse(r=>new URL(r.url()).pathname===path&&r.request().method()==='GET'),
+    surface==='vue'?page.getByTestId('artists-catalog-preview-'+item.id).click():appClick(page,'读取'+label+'预览 '+(media.items.findIndex(x=>x.asset_id===item.id)+1)),
+   ]);assert.equal(res.status(),200);assert.equal(sha(await res.body()),item.sha256);
    const player=surface==='vue'?page.locator('[data-testid="artists-preview"] '+kind):page.locator('video').last();await player.waitFor({state:'attached'});
    await page.waitForFunction(el=>el.readyState>=2&&el.duration>0,await player.elementHandle());
    await player.evaluate(el=>{el.muted=true;return el.play();});await page.waitForFunction(el=>el.currentTime>0,await player.elementHandle());
