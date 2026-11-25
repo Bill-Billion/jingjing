@@ -2,7 +2,7 @@
 // observations stay distinct; checkpoints prevent a retry creating another order.
 import assert from 'node:assert/strict';
 import {readFile, writeFile, mkdir} from 'node:fs/promises';
-import {resolve, join, dirname, sep} from 'node:path';
+import {resolve, join, sep} from 'node:path';
 import {createRequire} from 'node:module';
 import {createHash, randomUUID} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
@@ -78,7 +78,9 @@ try{
   state.paid=true;await done('web-recovered-same-payment-key-and-body-no-second-payment');
  }
  if(!state.downloaded){
-  phase='same-file-download';const expected=sha(await readFile(join(dirname(accessPath),'samples/full.mp4')));
+  phase='same-file-download';const purchase=(await request('stock_buyer',`/stock/purchases/${orderId}`)).data;
+  const listing=(await request('stock_seller','/stock/listings/'+purchase.listing_id)).data;
+  const expected=listing.data.files.full_sha256;assert.match(expected,/^[a-f0-9]{64}$/);
   const file=await request('stock_buyer',`/stock/purchases/${orderId}/content`);assert.equal(sha(file.bytes),expected);
   await request('unverified',`/stock/purchases/${orderId}/content`,{allowed:[403,404]});
   await go(buyer,'/stock/purchases/'+orderId);const response=buyer.waitForResponse(r=>r.request().method()==='GET'&&r.url().endsWith(`/stock/purchases/${orderId}/content`));await buyer.getByRole('button',{name:'明确取得正式影片',exact:true}).click();const r=await response;assert.equal(r.status(),200);assert.equal(sha(await r.body()),expected);await buyer.screenshot({path:join(out,attempt+'-web-purchased-file.png'),fullPage:true});
