@@ -61,7 +61,9 @@ void main() {
           return envelope(result);
         }
         if (r.path == '/api/v1/projects/records/$candidateKey' &&
-            state != 'DENIED') return envelope(c);
+            state != 'DENIED') {
+          return envelope(c);
+        }
         if (r.path == '/api/v1/projects/projects') {
           return envelope({'items': <Object>[], 'next_cursor': null});
         }
