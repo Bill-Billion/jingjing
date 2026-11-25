@@ -283,6 +283,51 @@
         "ACC-DEL-25.01"
       ],
       "limits": "Synthetic resumed chain; no all-purpose consent, physical Android, or complete criterion PASS."
+    },
+    {
+      "id": "QA18-ENV-018",
+      "group": "G05/G06/G18",
+      "kind": "TEST_ENVIRONMENT",
+      "summary": "BATCH隔离环境遗漏现行艺人合同及平台主体",
+      "actual": "实际艺人服务目录返回ARTIST_PLATFORM_MERCHANT_NOT_CONFIGURED和LEGACY_COMPATIBLE，免费服务为空。",
+      "expected": "使用已有合同和平台机构，通过正常免费托管接口及独审准备，不直接变更资格或认证状态。",
+      "evidence": "docs/testing/evidence/pm04-g1-display-20261125-06/services-before.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-display-20261125-06/batch-smoke.log",
+      "fix_sha": "73fac5447a9bdb3b00ae497a27994f918662bf7a",
+      "acceptance_ids": [
+        "TASK-05",
+        "TASK-06",
+        "TASK-16",
+        "TASK-18"
+      ],
+      "resolution": "新建隔离库，合同/平台补配置后16项HTTP通过；冒烟另去除过时rc.1常量，写前核对真实OpenAPI版本。",
+      "product_bug_confirmed": false,
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "full_regression": null
+    },
+    {
+      "id": "QA18-TEST-019",
+      "group": "G05/G06",
+      "kind": "TEST_ORCHESTRATION",
+      "summary": "公开展示驱动上传传输类型和两处页面定位与实际契约不符",
+      "actual": "第1次G05上传400 INVALID_ASSET_SIZE及G06错误能力名称超时；第2次G05精选select定位超时，G06实际完成。",
+      "expected": "按现有原始字节上传契约和真实可访问名称操作，不改页面/资格规则，不重做已成功记录。",
+      "evidence": "docs/testing/evidence/pm04-g1-display-20261125-06/chain/1795587832633-RESULT.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-display-20261125-06/chain/1795588116478-RESULT.json",
+      "fix_sha": "2856e2370f383489600f750984fe38c4b4ac3110",
+      "acceptance_ids": [
+        "TASK-05",
+        "TASK-06",
+        "ACC-DEL-04.01"
+      ],
+      "resolution": "第3次G05完成，G06沿第2次成功检查点不重复；所有失败保留，不称干净一遍完整回归。",
+      "product_bug_confirmed": false,
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "full_regression": null
     }
   ]
 }
