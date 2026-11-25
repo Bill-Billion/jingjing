@@ -174,6 +174,8 @@ async function run() {
     const authSettings={sessionMs:duration,...state.mode==='BATCH'?{ipSendsPerHour:100,totalSendsPerHour:200,ipLoginsPerMinute:100}:{}};
     const app = load('src/http/account-api').createAccountApi({db,secret:state.secret,sms,authSettings,supplyStorageFactory:storageAt(out),tradeProvidersFactory:()=>sim,
       supplyEnv:state.mode==='BATCH'?{
+        NODE_ENV:'test',
+        INVOICE_SANDBOX_ENABLED:'true',
         MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029',
         ARTIST_CONTRACT_POLICY:'CONTRACT_20261029',
         ARTIST_PLATFORM_MERCHANT_PARTY_ID:state.customization_merchant_party_id,
