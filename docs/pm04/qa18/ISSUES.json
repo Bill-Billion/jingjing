@@ -21,7 +21,9 @@
       "status": "RETARGET_PASS",
       "owner": "chengcongcong222",
       "group": "G05",
-      "criterion_refs": ["TASK-05"],
+      "criterion_refs": [
+        "TASK-05"
+      ],
       "summary": "首轮执行环境设置FFmpeg但漏设JX_TEST_FFPROBE及JX_TEST_FONT，媒体接口503",
       "reproduction": "保持源码f0710079，仅设置JX_MYSQL_TEST_ENV_FILE与JX_TEST_FFMPEG；node scripts/qa18-backend-discovery.cjs G05 pm04-g1-discovery-<新批号>",
       "expected": "有效实际视频返回时长和预览封面；原拒绝断言保持",
@@ -72,6 +74,54 @@
       "targeted_retest": "docs/testing/evidence/pm04-g1-discovery-20261125-01/CONTRACT_VALIDATED.json",
       "fix_sha": null,
       "full_regression": null
+    },
+    {
+      "id": "QA18-FE-006",
+      "kind": "FRONTEND_COPY",
+      "status": "RETARGET_PASS",
+      "summary": "Pending refund used payment-specific duplication warning; now identifies original refund",
+      "fix_sha": "b56ce7c9b54909a5f1ea125f392e5db8f12bb230",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-continuous-20261125-02/app-trade-retest.log",
+      "owner": "chengcongcong222",
+      "full_regression": null,
+      "report": "docs/pm04/qa18/ROUND_02_CONTINUOUS.md"
+    },
+    {
+      "id": "QA18-FE-007",
+      "kind": "FRONTEND_COPY",
+      "status": "RETARGET_PASS",
+      "summary": "Privacy upload receipt omitted next-step choice-loading instructions; same-page guidance added",
+      "fix_sha": "b56ce7c9b54909a5f1ea125f392e5db8f12bb230",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-continuous-20261125-02/privacy-web-third/result.json",
+      "targeted_scope": "Upload instruction, selecting the same actual file and submitting it passed; later reviewer locator in this attempt failed",
+      "owner": "chengcongcong222",
+      "full_regression": null,
+      "report": "docs/pm04/qa18/ROUND_02_CONTINUOUS.md"
+    },
+    {
+      "id": "QA18-TEST-008",
+      "kind": "TEST_ORCHESTRATION",
+      "status": "NOT_A_BUG",
+      "summary": "New driver used wrong received status, organization upload identity and generic review file selector; existing dedicated evidence review is correct",
+      "fix_sha": "0566dac6511271ab2c00f5ac85f4322b37f6b16c",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-continuous-20261125-02/privacy-web-final/result.json",
+      "before_proof": "docs/testing/evidence/pm04-g1-continuous-20261125-02/privacy-web-third/result.json",
+      "correction": "Duplicate product file entry added in 57557e99 was removed in 0566dac6. Final runtime diff contains only the two approved text changes.",
+      "owner": "chengcongcong222",
+      "full_regression": null,
+      "report": "docs/pm04/qa18/ROUND_02_CONTINUOUS.md"
+    },
+    {
+      "id": "QA18-ENV-009",
+      "kind": "TEST_ENVIRONMENT",
+      "status": "RETARGET_PASS",
+      "summary": "Unicode Flutter SDK shader include failure left incomplete generated assets. ASCII mappings plus preserved-and-rebuilt test asset cache fixed the environment. No shader bypass.",
+      "fix_sha": null,
+      "targeted_retest": "docs/testing/evidence/pm04-g1-continuous-20261125-02/app-trade-retest.log",
+      "before_proof": "docs/testing/evidence/pm04-g1-continuous-20261125-02/app-trade.log",
+      "owner": "chengcongcong222",
+      "full_regression": null,
+      "report": "docs/pm04/qa18/ROUND_02_CONTINUOUS.md"
     }
   ]
 }

@@ -2,7 +2,7 @@
 // The input contains credentials and must stay in .local. Output never includes headers.
 import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
-import {resolve,join} from 'node:path';
+import {resolve,join,dirname} from 'node:path';
 import {createRequire} from 'node:module';
 import {pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
@@ -15,7 +15,8 @@ assert.equal(access.synthetic_only,true);assert(Date.parse(access.expires_at)>Da
 assert.match(access.base_url,/^http:\/\/127\.0\.0\.1:\d+\/api\/v1$/);
 const created=await read(join(env,'pm04-app-privacy-create-result.json')),requestId=created.request.id;
 assert.match(requestId,/^[a-f0-9-]{36}$/);
-await mkdir(out,{recursive:true});
+await mkdir(dirname(out),{recursive:true});
+await mkdir(out); // A run must never overwrite a prior failure or its evidence.
 const report={frontend_sha:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),backend_sha:state.revision,request_id:requestId,order_id:state.order_id,synthetic_only:true,steps:[],requests:[],failures:[]};
 const wr=createRequire(join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'));
 const {chromium}=wr('playwright-core'),{preview}=await import(pathToFileURL(wr.resolve('vite')));
