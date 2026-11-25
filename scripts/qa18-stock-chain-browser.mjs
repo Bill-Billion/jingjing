@@ -11,6 +11,7 @@ const root=process.cwd(), accessPath=resolve(process.env.V5_ACCESS_FILE);
 const access=JSON.parse(await readFile(accessPath,'utf8'));
 assert(access.synthetic_only && new URL(access.base_url).hostname==='127.0.0.1');
 assert(Date.parse(access.expires_at)>Date.now());
+for(const role of ['stock_buyer','stock_seller','stock_outsider'])assert(access.accounts[role],role);
 const orderId=process.env.QA18_STOCK_ORDER_ID;
 assert.match(orderId||'',/^[a-f0-9-]{36}$/);
 const out=resolve(process.env.QA18_OUTPUT_DIR);
@@ -82,7 +83,7 @@ try{
   const listing=(await request('stock_seller','/stock/listings/'+purchase.listing_id)).data;
   const expected=listing.data.files.full_sha256;assert.match(expected,/^[a-f0-9]{64}$/);
   const file=await request('stock_buyer',`/stock/purchases/${orderId}/content`);assert.equal(sha(file.bytes),expected);
-  await request('unverified',`/stock/purchases/${orderId}/content`,{allowed:[403,404]});
+  await request('stock_outsider',`/stock/purchases/${orderId}/content`,{allowed:[403,404]});
   await go(buyer,'/stock/purchases/'+orderId);const response=buyer.waitForResponse(r=>r.request().method()==='GET'&&r.url().endsWith(`/stock/purchases/${orderId}/content`));await buyer.getByRole('button',{name:'明确取得正式影片',exact:true}).click();const r=await response;assert.equal(r.status(),200);assert.equal(sha(await r.body()),expected);await buyer.screenshot({path:join(out,attempt+'-web-purchased-file.png'),fullPage:true});
   const customer=await app('/stock/purchase?orderId='+orderId),button=customer.getByRole('button',{name:'受控播放已购作品',exact:true});await seek(customer,button);const content=customer.waitForResponse(r=>r.request().method()==='GET'&&r.url().endsWith(`/stock/purchases/${orderId}/content`));await button.click();const ar=await content;assert.equal(ar.status(),200);assert.equal(sha(await ar.body()),expected);await customer.screenshot({path:join(out,attempt+'-app-purchased-file.png')});
   state.downloaded=true;state.file_sha256=expected;state.file_bytes=file.bytes.length;await done('api-vue-flutter-web-read-same-file-and-foreign-account-denied',{sha256:expected,bytes:file.bytes.length});
