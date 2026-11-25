@@ -3,7 +3,7 @@ import {createServer} from 'vite'
 import {fileURLToPath} from 'node:url'
 const root=fileURLToPath(new URL('..',import.meta.url)),server=await createServer({root,configFile:false,resolve:{alias:{'@':`${root}/src`}},server:{middlewareMode:true,ws:false},appType:'custom'})
 try{
- const {sourceFor,readReferences,referenceOptions}=await server.ssrLoadModule('/src/business/references.ts'),id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`,party=id(1),context={redemption_action:'pool',key:'free',config:{prizes:[{key:'free',kind:'PRODUCTION_FREE'}]}},source=sourceFor('stock_id',context,'redemption',party),good={id:id(2),kind:'STOCK',owner_party_id:party,current_status:'AVAILABLE',data:{template:{kind:'PRODUCTION_FREE',exchange_points:null,title:'Synthetic full production'}}}
+ const {sourceFor,readReferences,referenceOptions,poolReviewEvidence}=await server.ssrLoadModule('/src/business/references.ts'),id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`,party=id(1),context={redemption_action:'pool',key:'free',config:{prizes:[{key:'free',kind:'PRODUCTION_FREE'}]}},source=sourceFor('stock_id',context,'redemption',party),good={id:id(2),kind:'STOCK',owner_party_id:party,current_status:'AVAILABLE',data:{template:{kind:'PRODUCTION_FREE',exchange_points:null,title:'Synthetic full production'}}}
  assert.equal(source.path,'/redemption/queue?kind=STOCK&limit=100');assert.equal(source.party,'none');assert(source.filter(good))
  const wrong=[{...good,id:id(3),owner_party_id:id(9)},{...good,id:id(4),current_status:'IN_REVIEW'},{...good,id:id(5),current_status:'RETIRED'},{...good,id:id(6),data:{template:{kind:'PRODUCTION_CREDIT'}}}]
  for(const r of wrong)assert(!source.filter(r))
@@ -12,5 +12,6 @@ try{
  const interview=(kind,channel)=>sourceFor('stock_id',{...context,config:{prizes:[{key:'free',kind}]}},'redemption',party).filter({...good,data:{template:{kind:'INTERVIEW',interview:{channel}}}})
  assert(interview('INTERVIEW_OPEN','OPEN'));assert(!interview('INTERVIEW_OPEN','PRIORITY'));assert(interview('INTERVIEW_PRIORITY','PRIORITY'));assert(!interview('INTERVIEW_PRIORITY','OPEN'))
  assert(!sourceFor('stock_id',{...context,key:'missing'},'redemption',party).filter(good));assert.equal(sourceFor('stock_id',{redemption_action:'exchange'},'redemption',party).path,'/redemption/catalog')
+ const pool={id:id(20),kind:'POOL',current_status:'IN_REVIEW',data:{evidence_asset_ids:[id(21),id(21),id(22)]}};assert.deepEqual(poolReviewEvidence(pool).map(x=>x.value),[id(21),id(22)]);for(const bad of [null,{...pool,kind:'STOCK'},{...pool,current_status:'PUBLISHED'},{...pool,id:'invalid'},{...pool,data:{evidence_asset_ids:[id(21),'invalid']}}])assert.deepEqual(poolReviewEvidence(bad),[]);
  console.log('PASS pool stock: operator directory includes non-exchange free prize; own approved matching-kind inventory only; channels distinct; pagination retained; public exchange source unchanged')
 }finally{await server.close()}

@@ -8,6 +8,12 @@ import { isStorySummary } from '@/api/modules/customizationOwn'
 import { creationPage,type CreationKind } from './cocreationCreation'
 export interface ReferenceOption {value:string;label:string;record:BusinessData}
 export interface ReferenceSource {path:string;party:PartyMode;participationProject?:string;creation?:CreationKind|'STORY';noticeCase?:string;privacyPolicy?:{requestId:string;action?:string;scope?:string};delivery?:{booking:string;person:string;avatar:string;kind:'PHOTO'|'VIDEO'|'CONSENT'};redemptionEvidence?:{grant:string;purpose:'SCHEDULE'|'COMPLETION'};ownProfiles?:{person?:string};filter?:(r:BusinessData)=>boolean}
+export function poolReviewEvidence(record:BusinessData|null):ReferenceOption[]{
+ if(!record||record.kind!=='POOL'||!uuid(record.id)||record.current_status!=='IN_REVIEW')return []
+ const data=rowData(record),ids=data.evidence_asset_ids
+ if(!Array.isArray(ids)||ids.some(v=>!uuid(v)))return []
+ return [...new Set(ids as string[])].map(value=>({value,label:'本奖池已列明的核验依据 · '+value.slice(-8),record:{id:value,pool_id:record.id}}))
+}
 export function sourceFor(key:string,context:Record<string,unknown>,domain:string,party:string):ReferenceSource|null{
  const person=context.person_id||context.seller_person_id
  if(domain==='redemption'&&key==='stock_id'&&context.redemption_action==='pool'){
