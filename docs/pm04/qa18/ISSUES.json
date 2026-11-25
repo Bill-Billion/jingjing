@@ -1246,6 +1246,166 @@
       "acceptance_ids": [
         "E2E-08"
       ]
+    },
+    {
+      "id": "QA18-ENV-064",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "环境媒体源路径错误且在部分准备后才发现",
+      "actual": "首次读取缺失媒体，部分合成前置已入独立库后失败。",
+      "expected": "先验证媒体存在再建库，保留失败库；新环境使用真实已有合成视频。",
+      "evidence": "docs/testing/evidence/pm04-g1-exposure-20261125-23/environment.log",
+      "fix_sha": "92874cca2a1d6700f9b50432e06a125622941c15",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-exposure-20261125-23/EXECUTION_SUMMARY.json",
+      "limits": "同记录分段复测，非最终同版本全量；隔离合成资源位不代表实际广告。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-TEST-065",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "Flutter焦点与弹出菜单尚未完成下一帧",
+      "actual": "输入即检查为空、菜单尚未出现时count为0。",
+      "expected": "等待焦点和实际菜单可见，再核值并选择，不改变业务断言。",
+      "evidence": "docs/testing/evidence/pm04-g1-exposure-20261125-23/prefix01.log",
+      "fix_sha": "a24e29026867d4bfbe6c7ac79b21d7dce2997a0b",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-exposure-20261125-23/EXECUTION_SUMMARY.json",
+      "limits": "同记录分段复测，非最终同版本全量；隔离合成资源位不代表实际广告。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-FE-066",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "App曝光空状态肉眼可见但语义缺失",
+      "actual": "实际页面显示暂无生效曝光，语义树和DOM均缺提示。",
+      "expected": "提供独立完整语义标签，保留原视觉和判断。",
+      "evidence": "docs/testing/evidence/pm04-g1-exposure-20261125-23/exposure02.log",
+      "fix_sha": "43909a166bce76cce348c31cb184f8b4f39bf8fc",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-exposure-20261125-23/EXECUTION_SUMMARY.json",
+      "limits": "同记录分段复测，非最终同版本全量；隔离合成资源位不代表实际广告。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-TEST-067",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "兑换曝光误用冠军接口及列表代替详情检查",
+      "actual": "两类曝光接口不同；Vue列表不承诺完整字段，原断言未打开详情。",
+      "expected": "用正确兑换接口，实际打开原记录办理摘要，再核资源位和时间。",
+      "evidence": "docs/testing/evidence/pm04-g1-exposure-20261125-23/exposure05.log",
+      "fix_sha": "4d48dd38ac2a967257ed76f99c2417fac27dbbbf",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-exposure-20261125-23/EXECUTION_SUMMARY.json",
+      "limits": "同记录分段复测，非最终同版本全量；隔离合成资源位不代表实际广告。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-FE-068",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "App真实曝光漏读积分兑换来源",
+      "actual": "生效期redemption接口1条但App只读engagement，显示暂无。",
+      "expected": "补读既有兑换曝光，验证同城原起止；无冠军编号不生成活动链接，刷新到期清空。",
+      "evidence": "docs/testing/evidence/pm04-g1-exposure-20261125-23/exposure03.log",
+      "fix_sha": "db0f2000028d3e51ec3a2e23eb3891be5da99ddc",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-exposure-20261125-23/EXECUTION_SUMMARY.json",
+      "limits": "同记录分段复测，非最终同版本全量；隔离合成资源位不代表实际广告。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-FE-069",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "Vue曝光办理摘要缺资源位与时间",
+      "actual": "接口已返回1条，列表及正常详情均空，关键事实只藏在原始数据。",
+      "expected": "正常摘要显示资源位与原起止；冠军未给开始时间仍明示缺项。",
+      "evidence": "docs/testing/evidence/pm04-g1-exposure-20261125-23/exposure06.log",
+      "fix_sha": "c59c10aa167cba3a365dd80dbf100b92b2b808fe",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-exposure-20261125-23/EXECUTION_SUMMARY.json",
+      "limits": "同记录分段复测，非最终同版本全量；隔离合成资源位不代表实际广告。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-TEST-070",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "widget前置及核数排期状态不符实际",
+      "actual": "新增空态测试缺公开目录响应；核数将本人确认后的排期误断为APPROVED。",
+      "expected": "补真实公开目录前置；核CONFIRMED和本人确认时间，不改变原数据。",
+      "evidence": "docs/testing/evidence/pm04-g1-exposure-20261125-23/census.log",
+      "fix_sha": "29aec9d1ff44acf4c7e860914c43d582d6e98360",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-exposure-20261125-23/EXECUTION_SUMMARY.json",
+      "limits": "同记录分段复测，非最终同版本全量；隔离合成资源位不代表实际广告。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-ENV-071",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "浏览器在新构建未结束时启动",
+      "actual": "exposure04仍读旧包，不能作为修复后产品结果。",
+      "expected": "等待构建真实退出再测试；最终07实际消费新App/Vue，失败保留。",
+      "evidence": "docs/testing/evidence/pm04-g1-exposure-20261125-23/exposure04.log",
+      "fix_sha": null,
+      "targeted_retest": "docs/testing/evidence/pm04-g1-exposure-20261125-23/EXECUTION_SUMMARY.json",
+      "limits": "同记录分段复测，非最终同版本全量；隔离合成资源位不代表实际广告。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
     }
   ]
 }
