@@ -725,12 +725,16 @@ Widget communitySection(String title, List<Widget> children) => Container(
       const SizedBox(height: 14),
       ...children
     ])));
-Widget communityFact(String label, Object? value) => Padding(
+Widget communityFact(String label, Object? value) => Semantics(
+    container: true,
+    label: '$label: ${communityText(value)}',
+    excludeSemantics: true,
+    child: Padding(
     padding: const EdgeInsets.only(bottom: 10),
     child: Wrap(spacing: 12, runSpacing: 4, children: [
       Text(label, style: const TextStyle(color: AccountTheme.muted)),
       SelectableText(communityText(value), style: const TextStyle(height: 1.5))
-    ]));
+    ])));
 Widget communityField(TextEditingController c, String label,
         {int lines = 1, TextInputType? keyboard, bool enabled = true}) =>
     Padding(
