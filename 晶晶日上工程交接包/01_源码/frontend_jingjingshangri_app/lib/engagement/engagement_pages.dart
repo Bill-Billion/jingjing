@@ -311,6 +311,18 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                 DateTime.tryParse('${x['ends_at']}') != null &&
                 x['source'] == 'EARNED_REWARD_NOT_PAID_AD');
           }
+          final earned = communityItems(
+              await CommunityApi(session, 'redemption').read('exposures',
+                  account: true, query: {'city': city.text.trim()}));
+          for (final x in earned) {
+            communityRequire(communityId(x['person_id']) &&
+                communityId(x['avatar_id']) &&
+                x['placement'] is String &&
+                DateTime.tryParse('${x['starts_at']}') != null &&
+                DateTime.tryParse('${x['ends_at']}') != null &&
+                x['source'] == 'EARNED_REWARD_NOT_PAID_AD');
+          }
+          r = [...r, ...earned];
           final page =
               await ArtistsApi(session).catalog(city: city.text.trim());
           if (mounted && t == ticket) {
@@ -1719,9 +1731,11 @@ class _EngagementState extends CommunityPageState<_Engagement> {
               child: appNotice('当前所选城市暂无生效曝光记录。')),
         for (final r in rows)
           tradeSection(artistName(r['person_id']), [
-            communityFact('资源位', r['placement']),
-            communityFact('曝光截止', communityDate(r['ends_at'])),
-            communityFact('来源', '实际取得的奖励，非付费广告排序'),
+            _exposureFact('资源位', r['placement']),
+            _exposureFact('曝光截止', communityDate(r['ends_at'])),
+            _exposureFact('来源', '实际取得的奖励，非付费广告排序'),
+            if (r['starts_at'] != null)
+              _exposureFact('曝光开始', communityDate(r['starts_at'])),
             for (final own in secondary.where((x) =>
                 communityMap(x['data'])['event_id'] == r['event_id'] &&
                 communityMap(x['data'])['person_id'] == r['person_id'] &&
@@ -1730,12 +1744,12 @@ class _EngagementState extends CommunityPageState<_Engagement> {
                   '本人已登记曝光开始',
                   communityDate(communityMap(
                       communityMap(own['data'])['delivery'])['starts_at'])),
-            if (!secondary.any((x) =>
+            if (r['starts_at'] == null && !secondary.any((x) =>
                 communityMap(x['data'])['event_id'] == r['event_id'] &&
                 communityMap(x['data'])['person_id'] == r['person_id'] &&
                 communityMap(x['data'])['delivery'] is Map))
               appNotice('公开摘要确认当前生效并提供截止时间，未提供开始日期。'),
-            tradeButton(
+            if (r['event_id'] != null) tradeButton(
                 '查看对应活动的实际结果',
                 () => Navigator.pushNamed(context,
                     '/engagement?view=competition&recordId=${r['event_id']}'),
@@ -1760,6 +1774,11 @@ class _EngagementState extends CommunityPageState<_Engagement> {
             communityFact('登记进展', communityState(own['current_status']))
           ])
       ];
+  Widget _exposureFact(String label, Object? value) => Semantics(
+      container: true,
+      label: '$label: ${communityText(value)}',
+      excludeSemantics: true,
+      child: communityFact(label, value));
   Future<String?> _reasonDialog(String title) async {
     final c = TextEditingController(text: reason.text);
     final value = await showDialog<String>(

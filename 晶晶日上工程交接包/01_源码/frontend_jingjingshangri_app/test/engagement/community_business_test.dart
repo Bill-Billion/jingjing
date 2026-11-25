@@ -74,12 +74,59 @@ Map<String, dynamic> buyers() => {
       'organization_wallet_enabled': false
     };
 void main() {
+  testWidgets('兑换曝光按同城生效结果展示起止，刷新到期清空且不伪造冠军活动链接', (tester) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      var active = true;
+      late FakeAccountAdapter a;
+      a = FakeAccountAdapter(handler: (r) {
+        if (r.path == '/api/v1/redemption/exposures') {
+          expect(r.queryParameters['city'], '上海');
+          expect(r.headers.containsKey('X-Acting-Party'), false);
+          return envelope({'items': active ? [{
+            'person_id': personId, 'avatar_id': invitationId,
+            'placement': '已审兑换曝光',
+            'starts_at': '2026-11-01T00:00:00.000Z',
+            'ends_at': '2026-11-08T00:00:00.000Z',
+            'source': 'EARNED_REWARD_NOT_PAID_AD'
+          }] : <Object>[]});
+        }
+        if (r.path == '/api/v1/engagement/exposures' ||
+            r.path == '/api/v1/engagement/rewards') {
+          return envelope({'items': <Object>[]});
+        }
+        if (r.path == '/api/v1/artists/catalog') {
+          return envelope({'items': <Object>[], 'next_cursor': null});
+        }
+        return a.defaultReply(r);
+      });
+      final s = (await tester.runAsync(() => communitySession(a)))!;
+      await open(tester, s, 'exposures');
+      await tester.enterText(find.byType(TextField), '上海');
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('读取当前生效曝光'));
+      await frames(tester);
+      expect(find.bySemanticsLabel('资源位: 已审兑换曝光'), findsOneWidget);
+      expect(find.text('曝光开始'), findsOneWidget);
+      expect(find.text('查看对应活动的实际结果'), findsNothing);
+      expect(find.textContaining('未提供开始日期'), findsNothing);
+      active = false;
+      await tester.tap(find.text('读取当前生效曝光'));
+      await frames(tester);
+      expect(find.text('已审兑换曝光'), findsNothing);
+      expect(find.bySemanticsLabel('当前所选城市暂无生效曝光记录。'), findsOneWidget);
+    } finally {
+      semantics.dispose();
+    }
+  });
   testWidgets('没有生效曝光时保留独立可读的空状态提示', (tester) async {
     final semantics = tester.ensureSemantics();
     try {
       late FakeAccountAdapter a;
       a = FakeAccountAdapter(handler: (r) {
         if (r.path == '/api/v1/engagement/exposures' ||
+            r.path == '/api/v1/redemption/exposures' ||
             r.path == '/api/v1/engagement/rewards') {
           return envelope({'items': <Object>[]});
         }
@@ -232,7 +279,8 @@ void main() {
           ]
         });
       }
-      if (r.path == '/api/v1/engagement/rewards') {
+      if (r.path == '/api/v1/engagement/rewards' ||
+          r.path == '/api/v1/redemption/exposures') {
         return envelope({'items': <Object>[]});
       }
       if (r.path == '/api/v1/artists/catalog') {
