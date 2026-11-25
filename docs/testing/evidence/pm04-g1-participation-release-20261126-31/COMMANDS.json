@@ -1,0 +1,8 @@
+{
+  "browser": "V5_ACCESS_FILE=<controlled QA29 access>; QA18_OUTPUT_DIR=<QA31 browser>; CHROME_PATH=<Edge>; node scripts/qa18-participation-release-browser.mjs",
+  "census": "JX_MYSQL_TEST_ENV_FILE=<controlled localhost33316>; node scripts/qa18-participation-release-record-check.cjs <QA29 environment> <QA31 output>",
+  "guards": "V5_ACCESS_FILE=<controlled QA29 access>; node scripts/qa18-participation-release-guards.mjs",
+  "contract": "validate_contract.validate([release-live-http.json, release-guards-http.json])",
+  "backup": "qa18-environment-assets.prepare(QA29 environment); qa18-batch-backup manager backupEnvironment,verify,restore",
+  "continuation_note": "Completed browser driver rejects rerun; preserve original released project and both paid fee orders."
+}

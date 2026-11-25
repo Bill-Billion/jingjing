@@ -1927,6 +1927,26 @@
       "acceptance_ids": [
         "E2E-12"
       ]
+    },
+    {
+      "id": "QA18-TEST-098",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "发行驱动漏INTERNAL_PENDING内部审核",
+      "actual": "INTERNAL_PENDING时直接审核外部SUBMITTED事件，被正确409/EXTERNAL_TRANSITION_INVALID拒绝。",
+      "expected": "先内部审核发行到READY_TO_SUBMIT，再按原外部事件继续；不改门禁、不重建事件。",
+      "evidence": "docs/testing/evidence/pm04-g1-participation-release-20261126-31/browser-01.log",
+      "fix_sha": "fda4a8906cc4d3a589666722a0eb8d473d0c2392",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-participation-release-20261126-31/EXECUTION_SUMMARY.json",
+      "limits": "专项接续，不代完整E2E12/最终18组；旧失败保留。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-12"
+      ]
     }
   ]
 }
