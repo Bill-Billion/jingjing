@@ -1,0 +1,1224 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rules",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "35d6f53a-4f8a-4ef1-9cf6-51cdb132b34e",
+          "actor": {
+            "account_id": "ea0f45db-2b02-486a-8666-834256227ebe"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "5f89d804-5a17-4b86-9dc9-2585193d5bd7",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "ea0f45db-2b02-486a-8666-834256227ebe",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "6ea46c0b2df09449031d8348bb5e3659eecd9d56b709a0b5319b388ccb6c20ac",
+          "data": {
+            "rule": {
+              "benefit": {
+                "credit_minor": 1000,
+                "description": "synthetic",
+                "service_code": "synthetic",
+                "valid_days": 30
+              },
+              "extension_days": 7,
+              "max_people": 40,
+              "participation_terms": "Synthetic own participation only, not consent by host.",
+              "source_ref": "synthetic:demo-invitation",
+              "version": "synthetic-private-family"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rules/5f89d804-5a17-4b86-9dc9-2585193d5bd7/review",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "7e320c77-32d7-4ce6-a64b-c0b357f9251f",
+          "actor": {
+            "account_id": "985ff938-4e0b-402c-9f1e-12972b197cb7"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "5f89d804-5a17-4b86-9dc9-2585193d5bd7",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "ea0f45db-2b02-486a-8666-834256227ebe",
+          "current_status": "EFFECTIVE",
+          "object_version": 2,
+          "content_sha256": "0d648a8e0551dd3e97cd56ec924e67877c3006e0cfe61eb011dc1b3f8bb62b4f",
+          "data": {
+            "rule": {
+              "benefit": {
+                "valid_days": 30,
+                "description": "synthetic",
+                "credit_minor": 1000,
+                "service_code": "synthetic"
+              },
+              "version": "synthetic-private-family",
+              "max_people": 40,
+              "source_ref": "synthetic:demo-invitation",
+              "extension_days": 7,
+              "participation_terms": "Synthetic own participation only, not consent by host."
+            },
+            "review": {
+              "by": "985ff938-4e0b-402c-9f1e-12972b197cb7",
+              "reason": "synthetic separate reviewer"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "6d8a6772-d1e8-4645-874d-376a669e75b7",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "object_version": 1,
+          "current_status": "OPEN",
+          "title": "Synthetic family film",
+          "deadline": "2026-11-27T10:15:34.762Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic",
+              "credit_minor": 1000,
+              "service_code": "synthetic"
+            },
+            "version": "synthetic-private-family",
+            "max_people": 40,
+            "source_ref": "synthetic:demo-invitation",
+            "extension_days": 7,
+            "participation_terms": "Synthetic own participation only, not consent by host."
+          },
+          "participation_sha256": "b1274d51c8e442e8e6d0e69861d6b71992d548e786555461e5ff0222618ca9a4",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "417ec423-9d1f-4104-abe5-24fdf06f7c14",
+          "counts": {
+            "joined_count": 0,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": null,
+          "project_id": null,
+          "members": [],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "6f1f08bf-beeb-43f4-80d1-7138c65bdc01",
+          "actor": {
+            "account_id": "7fe5e8b5-1921-41a5-b28a-91a7d6a1603c"
+          },
+          "acting_party": "ce39f268-deb1-4c6f-bf0f-998002270f0f"
+        },
+        "error": {
+          "code": "COCREATION_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "CocreationInviteLinkResponse",
+      "value": {
+        "meta": {
+          "request_id": "3ecae21a-2674-4d47-aebe-faf597da6de3",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "2995fe06-0cc5-4bd5-8bce-b948fb41d9e8",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "expires_at": "2026-11-26T10:15:34.810Z",
+          "token": "[REDACTED_SYNTHETIC_CREDENTIAL]",
+          "participation_required": true
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "CocreationInviteLinkResponse",
+      "value": {
+        "meta": {
+          "request_id": "0674513e-43a9-4c0b-8ffd-cf679728ab72",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "2995fe06-0cc5-4bd5-8bce-b948fb41d9e8",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "expires_at": "2026-11-26T10:15:34.810Z",
+          "token": "[REDACTED_SYNTHETIC_CREDENTIAL]",
+          "participation_required": true
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "CocreationInviteLinkResponse",
+      "value": {
+        "meta": {
+          "request_id": "88857237-e499-4300-8bed-025cf01fc020",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "2995fe06-0cc5-4bd5-8bce-b948fb41d9e8",
+              "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+              "current_status": "ACTIVE",
+              "object_version": 1,
+              "expires_at": "2026-11-26T10:15:34.810Z"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "ad590187-6932-417c-b4cf-3500d6b420a8",
+          "actor": {
+            "account_id": "7fe5e8b5-1921-41a5-b28a-91a7d6a1603c"
+          },
+          "acting_party": "ce39f268-deb1-4c6f-bf0f-998002270f0f"
+        },
+        "error": {
+          "code": "COCREATION_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "1c9ec487-29ce-42e0-8a8b-70afd73bf99c",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "error": {
+          "code": "COCREATION_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "e854b5ed-ea8a-4024-b17b-3fbe20978b65",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "error": {
+          "code": "COCREATION_INVITE_LINK_UNAVAILABLE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "db1dafc8-b1e8-4298-b212-9c85bc8a5ab9",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "error": {
+          "code": "ARTIST_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "CocreationInviteClaimResponse",
+      "value": {
+        "meta": {
+          "request_id": "6283c6f1-6780-4c2d-9e7e-40b9c427b873",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "data": {
+          "invitation_id": "fa1d8ac5-9a09-4140-9a4e-32c16b67ae86",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "person_id": "2a5e4679-0721-43fd-86ed-12ad1a32c098",
+          "current_status": "INVITED",
+          "participation_required": true
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "CocreationInviteClaimResponse",
+      "value": {
+        "meta": {
+          "request_id": "cafc42bd-4a6b-45e5-a87a-a07cff6e5922",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "data": {
+          "invitation_id": "fa1d8ac5-9a09-4140-9a4e-32c16b67ae86",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "person_id": "2a5e4679-0721-43fd-86ed-12ad1a32c098",
+          "current_status": "INVITED",
+          "participation_required": true
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "f573d619-a0f6-4f34-a9cf-0e8092c0c101",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "data": {
+          "id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "object_version": 1,
+          "current_status": "OPEN",
+          "title": "Synthetic family film",
+          "deadline": "2026-11-27T10:15:34.762Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic",
+              "credit_minor": 1000,
+              "service_code": "synthetic"
+            },
+            "version": "synthetic-private-family",
+            "max_people": 40,
+            "source_ref": "synthetic:demo-invitation",
+            "extension_days": 7,
+            "participation_terms": "Synthetic own participation only, not consent by host."
+          },
+          "participation_sha256": "b1274d51c8e442e8e6d0e69861d6b71992d548e786555461e5ff0222618ca9a4",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "417ec423-9d1f-4104-abe5-24fdf06f7c14",
+          "counts": {
+            "joined_count": 0,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": null,
+          "project_id": null,
+          "members": [],
+          "allowed_actions": [
+            "READ",
+            "SUBMIT_OWN",
+            "WITHDRAW"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "c71aeb2a-2f19-4300-976a-01f304990f19",
+          "actor": {
+            "account_id": "4625e097-efb0-4244-a52e-99d90290cce9"
+          },
+          "acting_party": "d7fb5cf5-2914-4ab6-94ff-5592a30b8d43"
+        },
+        "error": {
+          "code": "COCREATION_INVITE_LINK_UNAVAILABLE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/invitations",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "012398e3-1183-4052-99c2-cb0718390396",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "data": {
+          "items": [
+            {
+              "id": "fa1d8ac5-9a09-4140-9a4e-32c16b67ae86",
+              "kind": "INVITE",
+              "owner_party_id": "67779092-ea38-4407-a154-59de5eea3af6",
+              "parent_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+              "created_by": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16",
+              "current_status": "INVITED",
+              "object_version": 1,
+              "content_sha256": "b8d1b8936b8dd18fb5e46facfd9930ac477a0ef117bd2f02fc6758590c8224d3",
+              "data": {
+                "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+                "person_id": "2a5e4679-0721-43fd-86ed-12ad1a32c098"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "adca2eab-381b-4e33-8407-b435fee91b40",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "data": {
+          "id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "object_version": 1,
+          "current_status": "OPEN",
+          "title": "Synthetic family film",
+          "deadline": "2026-11-27T10:15:34.762Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic",
+              "credit_minor": 1000,
+              "service_code": "synthetic"
+            },
+            "version": "synthetic-private-family",
+            "max_people": 40,
+            "source_ref": "synthetic:demo-invitation",
+            "extension_days": 7,
+            "participation_terms": "Synthetic own participation only, not consent by host."
+          },
+          "participation_sha256": "b1274d51c8e442e8e6d0e69861d6b71992d548e786555461e5ff0222618ca9a4",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "417ec423-9d1f-4104-abe5-24fdf06f7c14",
+          "counts": {
+            "joined_count": 0,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": null,
+          "project_id": null,
+          "members": [],
+          "allowed_actions": [
+            "READ",
+            "SUBMIT_OWN",
+            "WITHDRAW"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/members",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "ccaa125a-0cd8-416e-8bb6-a22fcd2eea2c",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "error": {
+          "code": "COCREATION_PARTICIPATION_REQUIRED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/members",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "02a8d3a8-542a-433e-b019-056e8646cdd2",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "data": {
+          "id": "3f954ec5-19a4-46f4-bde9-4c63a1e63a0a",
+          "kind": "MEMBER",
+          "owner_party_id": "67779092-ea38-4407-a154-59de5eea3af6",
+          "parent_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "created_by": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "content_sha256": "8a3fc84c670c81f3b9e4cccdaf37dea3f67cb99a84ee6c36367926f234e3f60d",
+          "data": {
+            "person_id": "2a5e4679-0721-43fd-86ed-12ad1a32c098",
+            "private_story": "synthetic own private story",
+            "material_asset_ids": [
+              "5d4c4e14-0f80-4c4a-b710-59b98372c28a"
+            ],
+            "sharing_allowed": false,
+            "participation_sha256": "b1274d51c8e442e8e6d0e69861d6b71992d548e786555461e5ff0222618ca9a4",
+            "confirmed_at": "2026-11-25T10:15:34.955Z",
+            "withdrawal": null
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "8d4fef1c-6a7a-44c7-9024-e6856f1acd82",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "object_version": 2,
+          "current_status": "OPEN",
+          "title": "Synthetic family film",
+          "deadline": "2026-11-27T10:15:34.762Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic",
+              "credit_minor": 1000,
+              "service_code": "synthetic"
+            },
+            "version": "synthetic-private-family",
+            "max_people": 40,
+            "source_ref": "synthetic:demo-invitation",
+            "extension_days": 7,
+            "participation_terms": "Synthetic own participation only, not consent by host."
+          },
+          "participation_sha256": "b1274d51c8e442e8e6d0e69861d6b71992d548e786555461e5ff0222618ca9a4",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "417ec423-9d1f-4104-abe5-24fdf06f7c14",
+          "counts": {
+            "joined_count": 1,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": null,
+          "project_id": null,
+          "members": [
+            {
+              "member_id": "3f954ec5-19a4-46f4-bde9-4c63a1e63a0a",
+              "person_id": "2a5e4679-0721-43fd-86ed-12ad1a32c098",
+              "active": true,
+              "valid": false,
+              "reason_code": "PRODUCTION_PAYMENT_REQUIRED"
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "33b47b5e-33be-4715-a5cf-ddc486d08f5e",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "object_version": 2,
+          "current_status": "OPEN",
+          "title": "Synthetic family film",
+          "deadline": "2026-11-27T10:15:34.762Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic",
+              "credit_minor": 1000,
+              "service_code": "synthetic"
+            },
+            "version": "synthetic-private-family",
+            "max_people": 40,
+            "source_ref": "synthetic:demo-invitation",
+            "extension_days": 7,
+            "participation_terms": "Synthetic own participation only, not consent by host."
+          },
+          "participation_sha256": "b1274d51c8e442e8e6d0e69861d6b71992d548e786555461e5ff0222618ca9a4",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "417ec423-9d1f-4104-abe5-24fdf06f7c14",
+          "counts": {
+            "joined_count": 1,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": null,
+          "project_id": null,
+          "members": [
+            {
+              "member_id": "3f954ec5-19a4-46f4-bde9-4c63a1e63a0a",
+              "person_id": "2a5e4679-0721-43fd-86ed-12ad1a32c098",
+              "active": true,
+              "valid": false,
+              "reason_code": "PRODUCTION_PAYMENT_REQUIRED"
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "CocreationInviteLinkResponse",
+      "value": {
+        "meta": {
+          "request_id": "985d044d-1558-4dc1-a63c-a22358844277",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "db7006e1-2ac2-4e3c-802d-c8607d01f968",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "expires_at": "2026-11-26T10:15:35.003Z",
+          "token": "[REDACTED_SYNTHETIC_CREDENTIAL]",
+          "participation_required": true
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/db7006e1-2ac2-4e3c-802d-c8607d01f968/revoke",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "4523f411-f85b-45b9-9c57-e29f0b29c3f7",
+          "actor": {
+            "account_id": "7fe5e8b5-1921-41a5-b28a-91a7d6a1603c"
+          },
+          "acting_party": "ce39f268-deb1-4c6f-bf0f-998002270f0f"
+        },
+        "error": {
+          "code": "COCREATION_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/db7006e1-2ac2-4e3c-802d-c8607d01f968/revoke",
+      "schema": "CocreationInviteLinkResponse",
+      "value": {
+        "meta": {
+          "request_id": "6083e10b-abef-4cbe-993d-b2c93b65990a",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "db7006e1-2ac2-4e3c-802d-c8607d01f968",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "current_status": "REVOKED",
+          "object_version": 2,
+          "expires_at": "2026-11-26T10:15:35.003Z"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "05eebd1f-dfc7-429e-a6da-52bcf336203a",
+          "actor": {
+            "account_id": "4625e097-efb0-4244-a52e-99d90290cce9"
+          },
+          "acting_party": "d7fb5cf5-2914-4ab6-94ff-5592a30b8d43"
+        },
+        "error": {
+          "code": "COCREATION_INVITE_LINK_UNAVAILABLE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "2dc2c9dd-0702-434f-9630-4ce87661a823",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "error": {
+          "code": "COCREATION_INVITE_LINK_UNAVAILABLE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "8aa1c1ae-e95f-434f-b086-e54bc4b5f914",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "object_version": 2,
+          "current_status": "OPEN",
+          "title": "Synthetic family film",
+          "deadline": "2026-11-27T10:15:34.762Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic",
+              "credit_minor": 1000,
+              "service_code": "synthetic"
+            },
+            "version": "synthetic-private-family",
+            "max_people": 40,
+            "source_ref": "synthetic:demo-invitation",
+            "extension_days": 7,
+            "participation_terms": "Synthetic own participation only, not consent by host."
+          },
+          "participation_sha256": "b1274d51c8e442e8e6d0e69861d6b71992d548e786555461e5ff0222618ca9a4",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "417ec423-9d1f-4104-abe5-24fdf06f7c14",
+          "counts": {
+            "joined_count": 1,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": null,
+          "project_id": null,
+          "members": [
+            {
+              "member_id": "3f954ec5-19a4-46f4-bde9-4c63a1e63a0a",
+              "person_id": "2a5e4679-0721-43fd-86ed-12ad1a32c098",
+              "active": true,
+              "valid": false,
+              "reason_code": "PRODUCTION_PAYMENT_REQUIRED"
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "CocreationInviteLinkResponse",
+      "value": {
+        "meta": {
+          "request_id": "43ebe451-4f48-4223-9ad3-cad6579117a6",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "8bebd701-100e-4bda-acd7-94f374c8f80b",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "expires_at": "2026-11-26T10:15:35.063Z",
+          "token": "[REDACTED_SYNTHETIC_CREDENTIAL]",
+          "participation_required": true
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "CocreationInviteClaimResponse",
+      "value": {
+        "meta": {
+          "request_id": "b80f8c98-7e60-41ef-810f-ca12807cd4dc",
+          "actor": {
+            "account_id": "2267ad71-b3f2-4e8b-b56c-b7d1294c9d16"
+          },
+          "acting_party": "67779092-ea38-4407-a154-59de5eea3af6"
+        },
+        "data": {
+          "invitation_id": "fa1d8ac5-9a09-4140-9a4e-32c16b67ae86",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "person_id": "2a5e4679-0721-43fd-86ed-12ad1a32c098",
+          "current_status": "INVITED",
+          "participation_required": true
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "e56bd0be-c5d8-4d28-bc97-81d9b47196bf",
+          "actor": {
+            "account_id": "4625e097-efb0-4244-a52e-99d90290cce9"
+          },
+          "acting_party": "d7fb5cf5-2914-4ab6-94ff-5592a30b8d43"
+        },
+        "error": {
+          "code": "COCREATION_INVITE_LINK_UNAVAILABLE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "05424ddc-c20b-4387-8a45-609331e55a62",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "object_version": 2,
+          "current_status": "OPEN",
+          "title": "Synthetic family film",
+          "deadline": "2026-11-27T10:15:34.762Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic",
+              "credit_minor": 1000,
+              "service_code": "synthetic"
+            },
+            "version": "synthetic-private-family",
+            "max_people": 40,
+            "source_ref": "synthetic:demo-invitation",
+            "extension_days": 7,
+            "participation_terms": "Synthetic own participation only, not consent by host."
+          },
+          "participation_sha256": "b1274d51c8e442e8e6d0e69861d6b71992d548e786555461e5ff0222618ca9a4",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "417ec423-9d1f-4104-abe5-24fdf06f7c14",
+          "counts": {
+            "joined_count": 1,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": null,
+          "project_id": null,
+          "members": [
+            {
+              "member_id": "3f954ec5-19a4-46f4-bde9-4c63a1e63a0a",
+              "person_id": "2a5e4679-0721-43fd-86ed-12ad1a32c098",
+              "active": true,
+              "valid": false,
+              "reason_code": "PRODUCTION_PAYMENT_REQUIRED"
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "CocreationInviteLinkResponse",
+      "value": {
+        "meta": {
+          "request_id": "d713ef70-c8b1-4e6d-92f9-c87730124716",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "2541e1aa-5824-491a-9ffd-6315cdca642b",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "expires_at": "2026-11-26T10:15:35.116Z",
+          "token": "[REDACTED_SYNTHETIC_CREDENTIAL]",
+          "participation_required": true
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "002e53f7-7095-4bd5-b0b2-54780c2da84d",
+          "actor": {
+            "account_id": "4625e097-efb0-4244-a52e-99d90290cce9"
+          },
+          "acting_party": "d7fb5cf5-2914-4ab6-94ff-5592a30b8d43"
+        },
+        "error": {
+          "code": "ARTIST_PARTY_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859",
+      "schema": "CocreationResponse",
+      "value": {
+        "meta": {
+          "request_id": "4d3aea9c-7736-47d6-b5b4-9f34baf02aae",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "object_version": 2,
+          "current_status": "OPEN",
+          "title": "Synthetic family film",
+          "deadline": "2026-11-27T10:15:34.762Z",
+          "rule_snapshot": {
+            "benefit": {
+              "valid_days": 30,
+              "description": "synthetic",
+              "credit_minor": 1000,
+              "service_code": "synthetic"
+            },
+            "version": "synthetic-private-family",
+            "max_people": 40,
+            "source_ref": "synthetic:demo-invitation",
+            "extension_days": 7,
+            "participation_terms": "Synthetic own participation only, not consent by host."
+          },
+          "participation_sha256": "b1274d51c8e442e8e6d0e69861d6b71992d548e786555461e5ff0222618ca9a4",
+          "purpose": "PRIVATE",
+          "territory": "CN",
+          "producer_party_id": "417ec423-9d1f-4104-abe5-24fdf06f7c14",
+          "counts": {
+            "joined_count": 1,
+            "eligible_count": 0,
+            "minimum_people": 10,
+            "benefit_people": 20,
+            "people_remaining": 10,
+            "benefit_remaining": 20,
+            "payment_confirmed": false
+          },
+          "cutoff": null,
+          "order_id": null,
+          "project_id": null,
+          "members": [
+            {
+              "member_id": "3f954ec5-19a4-46f4-bde9-4c63a1e63a0a",
+              "person_id": "2a5e4679-0721-43fd-86ed-12ad1a32c098",
+              "active": true,
+              "valid": false,
+              "reason_code": "PRODUCTION_PAYMENT_REQUIRED"
+            }
+          ],
+          "allowed_actions": [
+            "READ",
+            "INVITE",
+            "CLOSE",
+            "REQUEST_EXTENSION",
+            "REQUEST_CANCEL"
+          ]
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "CocreationInviteLinkResponse",
+      "value": {
+        "meta": {
+          "request_id": "25e95307-76e3-47fb-9815-c10f3afe287b",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "b0f3a852-b992-4196-99ec-fbe5257ea219",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "expires_at": "2026-11-26T10:15:35.152Z",
+          "token": "[REDACTED_SYNTHETIC_CREDENTIAL]",
+          "participation_required": true
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "68896646-cd9c-4af0-84d1-0b8118938df7",
+          "actor": {
+            "account_id": "4625e097-efb0-4244-a52e-99d90290cce9"
+          },
+          "acting_party": "d7fb5cf5-2914-4ab6-94ff-5592a30b8d43"
+        },
+        "error": {
+          "code": "COCREATION_INVITE_LINK_UNAVAILABLE",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/rooms/ce43b1d6-a2e7-45a0-8016-31461ed13859/invite-links",
+      "schema": "CocreationInviteLinkResponse",
+      "value": {
+        "meta": {
+          "request_id": "0777bbb6-3175-44e1-a40a-22008f8863d4",
+          "actor": {
+            "account_id": "02c2a83c-b5b7-4c00-9bff-e19b1e7df621"
+          },
+          "acting_party": "0dd687d6-4dff-4cfb-9a98-f4b1b01390ec"
+        },
+        "data": {
+          "id": "2f02462f-8e33-4586-b49c-6670766e7acc",
+          "room_id": "ce43b1d6-a2e7-45a0-8016-31461ed13859",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "expires_at": "2026-11-26T10:15:35.176Z",
+          "token": "[REDACTED_SYNTHETIC_CREDENTIAL]",
+          "participation_required": true
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "9cbde755-7564-45db-aee3-0e740b71024a",
+          "actor": {
+            "account_id": "4625e097-efb0-4244-a52e-99d90290cce9"
+          },
+          "acting_party": "d7fb5cf5-2914-4ab6-94ff-5592a30b8d43"
+        },
+        "error": {
+          "code": "COCREATION_ENROLLMENT_CLOSED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cocreation/invite-links/claim",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "32823a38-9520-421f-a39d-34289e1b0425",
+          "actor": {
+            "account_id": "4625e097-efb0-4244-a52e-99d90290cce9"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "MINOR_OPERATION_RESTRICTED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    }
+  ]
+}
