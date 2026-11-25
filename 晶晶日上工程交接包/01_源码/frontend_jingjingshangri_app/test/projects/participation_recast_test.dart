@@ -95,8 +95,11 @@ void main() {
           a.requests.any((r) => r.path.endsWith('/recast-sources')), isFalse);
       if (state == 'DENIED') {
         expect(writes, 1);
-        expect(s.projectsPending, hasLength(1));
+        // Existing domain-denial policy clears private client operations and
+        // blocks writes; a denied read is not proof of the original outcome.
+        expect(s.projectsPending, isEmpty);
         expect(s.projectsAccessDenied, isTrue);
+        expect(find.text('已按原编号核对原请求结果。'), findsNothing);
       } else {
         expect(s.projectsAccessDenied, isFalse);
         await t.ensureVisible(find.text('使用原编号继续核对'));
