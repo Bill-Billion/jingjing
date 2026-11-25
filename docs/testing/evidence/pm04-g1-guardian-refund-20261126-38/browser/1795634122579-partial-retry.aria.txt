@@ -1,0 +1,100 @@
+- main:
+  - region "工作区入口":
+    - heading "工作区入口" [level=2]
+    - button "全部收起"
+    - paragraph:
+      - text: 当前位置
+      - strong: 充值退款核验与任务
+    - text: 查找工作区入口
+    - searchbox "查找工作区入口"
+    - navigation "工作区导航":
+      - button "账号与个人服务"
+      - button "人物与作品"
+      - button "影片与许可交易"
+      - button "商单与通告"
+      - button "故事与共创"
+      - button "制作与发行"
+      - button "财务与运营" [expanded]
+      - list:
+        - listitem:
+          - link "充值退款核验与任务":
+            - /url: /wallet-refunds/operations
+        - listitem:
+          - link "开票受理与录入":
+            - /url: /invoices/operations/handle
+        - listitem:
+          - link "票据独立核准":
+            - /url: /invoices/operations/verify
+        - listitem:
+          - link "客服处理":
+            - /url: /support/operations
+        - listitem:
+          - link "机构资料与精选审核":
+            - /url: /directory/reviews/ORGANIZATION
+        - listitem:
+          - link "结算约定与余额":
+            - /url: /finance/agreements
+        - listitem:
+          - link "财务付款":
+            - /url: /finance/payouts
+        - listitem:
+          - link "渠道收入与对账":
+            - /url: /finance/income
+        - listitem:
+          - link "争议与账务调整":
+            - /url: /finance/disputes
+        - listitem:
+          - link "业务通知与留言":
+            - /url: /operations/notifications
+        - listitem:
+          - link "经营报表":
+            - /url: /operations/reports
+        - listitem:
+          - link "留言独立管理":
+            - /url: /operations/moderation
+        - listitem:
+          - link "操作审计":
+            - /url: /operations/audit
+        - listitem:
+          - link "独立财务核验":
+            - /url: /finance/reviews/agreements
+        - listitem:
+          - link "财务日对账工作台":
+            - /url: /daily-finance/reports
+  - paragraph: 资金运营 / 原路充值退款
+  - heading "充值退款核验与任务" [level=1]
+  - paragraph: 以登录账号岗位办理，不发送办事主体。每次读取、核验和文件下载均由服务器检查岗位与回避关系；当前页面不代表已取得审核权限。
+  - paragraph: 核定、登记任务、任务重试和实际到账是不同状态。本页不填写支付回执，不直接触发供应商付款或伪造到账。
+  - alert:
+    - paragraph: 本任务当前不可重试；只有实际失败或阻塞后才可申请重试。
+    - paragraph: JOB_NOT_RETRYABLE f260f779-168e-4e2c-9897-5223e78d7e3a
+  - button "刷新当前记录"
+  - link "返回退款清单":
+    - /url: /wallet-refunds/operations
+  - heading "原退款结果待核对" [level=2]
+  - paragraph: 退款 f5c11cc8-4910-402c-be8b-d5e9e9e4d440 · 版本 5
+  - paragraph: 原充值 d1963380-8fa7-4705-b0a9-a4bc6e927fcd
+  - paragraph: 申请 ¥120.00 · 已核定 ¥100.00
+  - paragraph: 合成监护原充值退款 partial；由独立人员核定实际金额，未成年人新增充值继续禁止。
+  - paragraph: 监护人申请，须核真实有效关系
+  - paragraph: 申请时间 2026-11-25T19:10:15.188Z
+  - paragraph: 提交原退款时间 2026-11-25T19:10:20.208Z
+  - paragraph: 结算/关闭时间 未提供；只有状态“退款已核实成功”表示成功。
+  - paragraph: 原任务 已登记，不代表已执行或到账。
+  - heading "本版私有核验依据" [level=2]
+  - paragraph: 逐份取得原文件后实际查看，再人工确认，不自动勾选核实结论。当前接口不返回文件hash，页面不声称完成hash比对。
+  - text: f7459097-88b0-497c-ac10-af90cf71a56c
+  - button "取得本项依据"
+  - group:
+    - heading "办理本项原退款" [level=2]
+    - text: 操作
+    - combobox "操作":
+      - option "请选择"
+      - option "登记或查询原退款任务"
+      - option "授权原任务人工重试" [selected]
+    - text: 本次理由
+    - textbox "本次理由": 已核对原退款任务，授权查询原渠道结果，不发送第二笔退款。
+    - paragraph: 仅授权重试已有任务，不新建退款；已终态记录的重试不代表再次退款，实际由原任务条件处理。
+    - checkbox "已核对本记录版本与上述操作，明确提交。" [checked]
+    - text: 已核对本记录版本与上述操作，明确提交。
+    - button "提交本次办理"
