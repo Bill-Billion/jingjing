@@ -1,12 +1,22 @@
 'use strict';
 // Local compiled App/Web against the retained PM03 backend. No external service.
-const fs=require('node:fs/promises'),path=require('node:path'),http=require('node:http'),{randomUUID}=require('node:crypto');
+const fs=require('node:fs/promises'),path=require('node:path'),http=require('node:http'),{randomUUID}=require('node:crypto'),{execFileSync}=require('node:child_process');
 const root=path.resolve(__dirname,'..'),{protectPrivateState}=require('./test-fixtures/private-state.cjs');
 async function main(){
  const out=path.resolve(process.argv[2]||'');
- if(process.argv.length!==3||path.dirname(out)!==path.join(root,'.local/stock-sandbox')||!/^jx_test_stock_pm03_[a-f0-9]{24}$/.test(path.basename(out)))throw Error('OWN_BATCH_DIRECTORY_REQUIRED');
+ const backendRoot=path.resolve(process.argv[3]||root);
+ if(![3,4].includes(process.argv.length)||path.dirname(out)!==path.join(backendRoot,'.local/stock-sandbox')||!/^jx_test_stock_pm03_[a-f0-9]{24}$/.test(path.basename(out)))throw Error('OWN_BATCH_DIRECTORY_REQUIRED');
+ if(await fs.realpath(out)!==out)throw Error('ENVIRONMENT_REDIRECTION_REFUSED');
  const access=JSON.parse(await fs.readFile(path.join(out,'access.json'),'utf8'));
  if(access.mode!=='BATCH'||access.synthetic_only!==true||!/^http:\/\/127\.0\.0\.1:\d+\/api\/v1$/.test(access.base_url)||Date.parse(access.expires_at)<=Date.now())throw Error('LIVE_LOCAL_BATCH_REQUIRED');
+ if(backendRoot!==root){
+  const revision=execFileSync('git',['rev-parse','HEAD'],{cwd:backendRoot,encoding:'utf8',windowsHide:true}).trim();
+  if(revision!==access.revision)throw Error('USE_THE_PINNED_BACKEND_WORKTREE');
+  for(const source of ['晶晶日上工程交接包/01_源码/backend_server','contracts/openapi.yaml','晶晶日上工程交接包/01_源码/backend_server/migrations']){
+   const object=cwd=>execFileSync('git',['rev-parse','HEAD:'+source],{cwd,encoding:'utf8',windowsHide:true}).trim();
+   if(object(root)!==object(backendRoot))throw Error('BACKEND_CONTRACT_TREE_MISMATCH');
+  }
+ }
  const accounts={},sessions=new Map();
  // Reuse valid local sessions so restarting the UI host does not resend SMS.
  for(const name of ['batch-smoke-private.json','ui-session-cache.json']){
