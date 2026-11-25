@@ -1706,6 +1706,126 @@
       "acceptance_ids": [
         "TASK-18"
       ]
+    },
+    {
+      "id": "QA18-TEST-087",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "实际控件语义与脚本定位不符",
+      "actual": "下拉含当前值、菜单项、本人确认及折叠ID未按实际界面定位。",
+      "expected": "使用实际控件语义，保留业务断言。",
+      "evidence": "docs/testing/evidence/pm04-g1-privacy-20261125-27/browser-01.log",
+      "fix_sha": "eef84966096e01270347b933da2fca4f412207c5",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-privacy-20261125-27/EXECUTION_SUMMARY.json",
+      "limits": "专项证据，不代完整原E2E11、最终18/12或正式验收。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-11"
+      ]
+    },
+    {
+      "id": "QA18-TEST-088",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "本人隐私API误带机构身份头",
+      "actual": "反例先400 ACTING_PARTY_NOT_ALLOWED，未到所有权门禁。",
+      "expected": "本人API不带身份头，另核无关账号404。",
+      "evidence": "docs/testing/evidence/pm04-g1-privacy-20261125-27/browser-03.log",
+      "fix_sha": "51b44cb568d0f817cad646c9ab7e40bd5587de80",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-privacy-20261125-27/EXECUTION_SUMMARY.json",
+      "limits": "专项证据，不代完整原E2E11、最终18/12或正式验收。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-11"
+      ]
+    },
+    {
+      "id": "QA18-FE-089",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "隐私模型与撤回授权状态文案含混",
+      "actual": "DELETED/MODEL_REGISTERED原码及WITHDRAWN显示已退出。",
+      "expected": "明确模型进展、供应商等待和授权已撤回。",
+      "evidence": "docs/testing/evidence/pm04-g1-privacy-20261125-27/browser-05.log",
+      "fix_sha": "e34ef0b4b3281f2a04af9b98a7729d19608f995f",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-privacy-20261125-27/EXECUTION_SUMMARY.json",
+      "limits": "专项证据，不代完整原E2E11、最终18/12或正式验收。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-11"
+      ]
+    },
+    {
+      "id": "QA18-FE-090",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "删除申请答复可未读取文件即提交独审",
+      "actual": "实际附件核对组件及提交/恢复门禁仅QUERY/COPY，DELETE按钮可提交。",
+      "expected": "所有隐私答复通过前实际读取核验本版附件；退回不受影响。",
+      "evidence": "docs/testing/evidence/pm04-g1-privacy-20261125-27/browser-07.log",
+      "fix_sha": "cd5ac8fa39913e003ebd87ef0293af09b388037d",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-privacy-20261125-27/EXECUTION_SUMMARY.json",
+      "limits": "专项证据，不代完整原E2E11、最终18/12或正式验收。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-11"
+      ]
+    },
+    {
+      "id": "QA18-TEST-091",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "未知结果原键UI恢复尚未完成",
+      "actual": "服务器已写一次REOPENED，脚本找不到离屏恢复控件后关闭浏览器。",
+      "expected": "在保留原会话中核对并恢复原key/body/version；当前只读确认不足。",
+      "evidence": "docs/testing/evidence/pm04-g1-privacy-20261125-27/browser-09.log",
+      "fix_sha": "eef84966096e01270347b933da2fca4f412207c5",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-privacy-20261125-27/EXECUTION_SUMMARY.json",
+      "limits": "原浏览器会话已结束，仅只读核对一次事件，原键UI恢复未完。",
+      "group": "G17",
+      "status": "OPEN",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-11"
+      ]
+    },
+    {
+      "id": "QA18-TEST-092",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "采集文件缺契约工具封装",
+      "actual": "JSON数组缺synthetic_only/cases，验证工具未进入响应验证。",
+      "expected": "保留首份并输出工具要求格式，核对5个实际响应。",
+      "evidence": "docs/testing/evidence/pm04-g1-privacy-20261125-27/contract.log",
+      "fix_sha": "c9dd2f4cc43e9ad12a62c6ffea45a18a2d4c7bf7",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-privacy-20261125-27/EXECUTION_SUMMARY.json",
+      "limits": "专项证据，不代完整原E2E11、最终18/12或正式验收。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-11"
+      ]
     }
   ]
 }
