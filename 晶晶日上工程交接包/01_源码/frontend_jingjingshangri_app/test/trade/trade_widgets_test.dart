@@ -25,6 +25,10 @@ void main() {
     const refund = '/api/v1/trade/refunds';
     const refundCopy = '退款申请结果待核对。请点击下方「恢复原请求核对」，不要重新申请退款。';
     const paymentCopy = '请恢复原请求核对，不要修改原内容或重复建立付款。';
+    const allocations = [
+      {'line_id': 'production', 'amount_minor': 38001}
+    ];
+    const reason = '按原约定申请退回';
     var refundAttempts = 0;
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(handler: (r) {
@@ -37,35 +41,62 @@ void main() {
         return envelope({'code': 'SERVICE_UNAVAILABLE'}, status: 503, error: true);
       }
       if (r.path.endsWith(orderId)) return envelope(tradeData('ORDER'));
+      if (r.path.endsWith(paymentId)) return envelope(tradeData('PAYMENT'));
       if (r.path.endsWith(refundId)) return envelope(tradeData('REFUND'));
       if (r.path == '/api/v1/trade/records') {
         return envelope({'items': [], 'next_cursor': null});
-      }
       }
       return adapter.defaultReply(r);
     });
     final s = (await tester.runAsync(() => buyerSession(adapter)))!;
     await tester.runAsync(() async {
-      for (final entry in [(refund, 'REFUND'), (payment, 'PAYMENT')]) {
-        try {
-          await TradeApi(s).write(entry.$1, {}, kind: entry.$2);
-        } catch (_) {}
-      }
+      final api = TradeApi(s);
+      await expectLater(
+        api.refund(TradeRecord.parse(tradeData('PAYMENT'), personId),
+            allocations, reason, []),
+        throwsA(isA<Exception>()),
+      );
+      await expectLater(
+        api.payment(TradeRecord.parse(tradeData('ORDER'), personId), 'deposit'),
+        throwsA(isA<Exception>()),
+      );
     });
     expect(s.tradePending.map((op) => op['path']), [refund, payment]);
     await nav.openApp(tester, s, route: '/trade/record?recordId=$orderId');
     final refundHint = find.text(refundCopy);
     await reveal(tester, refundHint);
     expect(refundHint, findsOneWidget);
+    await reveal(tester, find.text(paymentCopy));
     expect(find.text(paymentCopy), findsOneWidget);
-    final retry = find.text('恢复原请求核对').first;
+    await reveal(tester, refundHint);
+    final panel = tester
+        .element(refundHint)
+        .findAncestorWidgetOfExactType<Material>()!;
+    final retry = find.descendant(
+      of: find.byWidget(panel),
+      matching: find.text('恢复原请求核对'),
+    );
     await reveal(tester, retry);
-    await tester.tap(retry);
+    final requestCount = adapter.requests.length;
+    await tester.tap(retry.hitTestable());
     await recoveryFrames(tester);
-    await tester.tap(find.text('确认办理'));
+    await tester.tap(find.text('确认办理').hitTestable());
     await recoveryFrames(tester);
+    expect(
+      adapter.requests.skip(requestCount).map((r) => '${r.method} ${r.path}'),
+      containsAllInOrder([
+        'GET /api/v1/trade/records/$paymentId',
+        'POST $refund',
+      ]),
+    );
     final writes = adapter.requests.where((r) => r.path == refund).toList();
     expect(writes, hasLength(2));
+    expect(writes.first.data, {
+      'payment_id': paymentId,
+      'allocations': allocations,
+      'reason': reason,
+    });
+    expect(writes.last.data, writes.first.data);
     expect(writes.first.headers['Idempotency-Key'], isNotNull);
     expect(writes.last.headers['Idempotency-Key'],
         writes.first.headers['Idempotency-Key']);
@@ -96,8 +127,9 @@ void main() {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(handler: (r) {
       if (r.path.endsWith(paymentId)) return envelope(payment);
-      if (r.path == '/api/v1/trade/records')
+      if (r.path == '/api/v1/trade/records') {
         return envelope({'items': [], 'next_cursor': null});
+      }
       return adapter.defaultReply(r);
     });
     final session = (await tester.runAsync(() => buyerSession(adapter)))!;
