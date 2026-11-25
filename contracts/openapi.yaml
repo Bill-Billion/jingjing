@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.79-rc.2
+  version: 0.31.79-rc.3
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -50699,20 +50699,23 @@ components:
           minItems: 1
           maxItems: 30
     SupplyAvatarData:
-      type: object
-      additionalProperties: false
-      required:
-      - display_name
-      - material_asset_ids
-      - provider_asset_ref
-      properties:
-        display_name:
-          type: string
-          minLength: 1
-          maxLength: 120
-        material_asset_ids: *fullschema007
-        provider_asset_ref:
-          type: 'null'
+      description: Legacy supply avatars and existing artist-linked archives retain their distinct strict data shapes. Artist-linked material versions are managed by the artist LOOK/VOICE APIs.
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - display_name
+        - material_asset_ids
+        - provider_asset_ref
+        properties:
+          display_name:
+            type: string
+            minLength: 1
+            maxLength: 120
+          material_asset_ids: *fullschema007
+          provider_asset_ref:
+            type: 'null'
+      - $ref: '#/components/schemas/ArtistAvatar/properties/data'
     SupplyConsentData:
       type: object
       additionalProperties: false
