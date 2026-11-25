@@ -417,7 +417,9 @@ class _SupportState extends State<_Support> {
           await api.bytes('tickets/${widget.ticketId}/assets/$id/content');
       if (!mounted) return;
       final saved =
-          await FilePicker.saveFile(fileName: '反馈附件-$id', bytes: bytes);
+          // Ticket history does not expose a trusted original filename/type.
+          // Use a neutral suffix: the web picker requires an extension.
+          await FilePicker.saveFile(fileName: '反馈附件-$id.bin', bytes: bytes);
       if (mounted) {
         setState(() => notice = kIsWeb
             ? '附件已交给浏览器，请查看下载记录。'
