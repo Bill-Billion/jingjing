@@ -30,7 +30,7 @@ try{
   await click(p,'保存业务草稿');await idle(p);assert(s.story.id);const restored=await request(p,'/customization-requests','POST',()=>click(p,'重试原操作'));assert.equal(restored.id,s.story.id);assert.equal(restored.current_status,'DRAFT');assert.equal(posts,2);await p.unroute('**/api/v1/customization-requests');s.story.create_recovered=true;await done('app-new-story-create-loss-restores-one-draft-with-original-key-body',{id:s.story.id});await snap(p,'app-private-draft-recovered');
  }
  if(!s.story.draft_permissions){
-  await api('producer',storyPath(),{party:null,allowed:[404]});await api('outsider',storyPath(),{allowed:[404]});const draft=await api('buyer',storyPath());assert.equal(draft.current_status,'DRAFT');await api('buyer',storyPath()+'/submissions',{body:{},version:draft.object_version,allowed:[400]});await api('buyer','/cocreation/creation-options?request_id='+s.story.id+'&kind=PRODUCER',{allowed:[409]});s.story.draft_permissions=true;await done('private-draft-hidden-from-operator-and-other-account-missing-material-and-early-room-rejected');
+  await api('producer',storyPath(),{party:null,allowed:[404]});await api('outsider',storyPath(),{allowed:[404]});const draft=await api('buyer',storyPath());assert.equal(draft.current_status,'DRAFT');await api('buyer',storyPath()+'/submissions',{body:{},version:draft.object_version,allowed:[422]});assert.equal(s.requests.at(-1).code,'CUSTOMIZATION_VALIDATION_FAILED');await api('buyer','/cocreation/creation-options?request_id='+s.story.id+'&kind=PRODUCER',{allowed:[409]});s.story.draft_permissions=true;await done('private-draft-hidden-from-operator-and-other-account-missing-material-and-early-room-rejected');
  }
  p??=await app('/customization/'+s.story.id);
  if(!s.story.material){
