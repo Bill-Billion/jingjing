@@ -785,6 +785,106 @@
         "E2E-05",
         "E2E-06"
       ]
+    },
+    {
+      "id": "QA18-ENV-042",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "合成现货预览和原片误用同文件",
+      "actual": "初始商品准备被STOCK_SEPARATE_PREVIEW_REQUIRED拒绝，尚未建立消费订单。",
+      "expected": "生成单独带标识预览并保持原文件独立，不放宽上架门禁。",
+      "evidence": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/environment.log",
+      "fix_sha": "4ab145fef0c1d861262695bdfa9d6636c0cb5f64",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+      "limits": "局部接续及核数通过，最终同版完整回归仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06"
+      ]
+    },
+    {
+      "id": "QA18-ENV-043",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "专用单连接时钟库重复身份查询自等，恢复模拟卖方绑定遗漏",
+      "actual": "模拟付款路由事务内外重复占用唯一连接；首次恢复后又因未登记stock seller_party_id出现503。",
+      "expected": "复用本请求已认证身份，正确登记实际卖方；同库恢复核业务摘要不变，不重建原订单或延长到期。",
+      "evidence": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser03.log",
+      "fix_sha": "4e4dac98def96eb3f413af7304c0ffe85662f047",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+      "limits": "局部接续及核数通过，最终同版完整回归仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06"
+      ]
+    },
+    {
+      "id": "QA18-TEST-044",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "驱动遗漏有效规则选择、菜单角色和公开目录请求契约",
+      "actual": "开户前未选规则、按普通文字找菜单、公开读取携带不适用主体，驱动停在业务前置。",
+      "expected": "使用真实页面控件及接口约定，保留零积分及售后期拒绝断言。",
+      "evidence": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser05.log",
+      "fix_sha": "125d532e0204e2ec9a8a0a4463b726867b8f6092",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+      "limits": "局部接续及核数通过，最终同版完整回归仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06"
+      ]
+    },
+    {
+      "id": "QA18-ENV-045",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "隔离数据库和浏览器业务时钟不一致",
+      "actual": "App将第8天库中的HOLD视为按现实日期已过期，未接受原报价。",
+      "expected": "浏览器对齐专用库业务时钟，读取并显式释放原未接单HOLD，再按正常流程占用；不改HOLD日期。",
+      "evidence": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/credit01.log",
+      "fix_sha": "ec9f77e11a3fc039ad04cf960b52e9806184629d",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+      "limits": "局部接续及核数通过，最终同版完整回归仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06"
+      ]
+    },
+    {
+      "id": "QA18-TEST-046",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "核数脚本错误猜测存储类型、字段与许可状态",
+      "actual": "核数误查EXCHANGE记录、current_status列并把REVOKED许可当REFUNDED订单；一次调用漏环境文件。",
+      "expected": "按原命令、原GRANT、POINT_HOLD allocation、许可数据核验，和订单财务状态分开。",
+      "evidence": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census03.log",
+      "fix_sha": "ba9972363768544076d509b648e44f14eee52052",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+      "limits": "局部接续及核数通过，最终同版完整回归仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06"
+      ]
     }
   ]
 }

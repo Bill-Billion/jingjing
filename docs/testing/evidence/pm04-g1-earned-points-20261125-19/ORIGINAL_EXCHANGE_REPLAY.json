@@ -1,0 +1,48 @@
+{
+  "source": "a3359261e88352a662feaea56f93072548319b4c",
+  "environment": "jx_test_qa18_points_011e77633ef8d975c4b7",
+  "grant_id": "38d6cd7a-97f5-4c2b-a494-894a10d15c4a",
+  "earning_id": "f069f6f3-42bc-4ff6-86f3-efb5b16f47fc",
+  "operation_key_sha256": "d8dc046c7d9b103942b107b025ae4d39f2948d3bd55dfc159eb3501835cb4f0e",
+  "requests": [
+    {
+      "path": "/wallet/summary",
+      "status": 200,
+      "sha256": "ba236aa1591d596110648c4ec3caae8cb806f9b0642a35ec1accc1269ae6d6ab"
+    },
+    {
+      "path": "/redemption/exchanges",
+      "status": 200,
+      "sha256": "b41a88501161f69ff1444e7597b447dd9e794c8eddc9e961a754816ff463c10e"
+    },
+    {
+      "path": "/redemption/exchanges",
+      "status": 200,
+      "sha256": "dc95559d314b286f6ba1ff31c1836b1ae6e0490903417ad89da0f8a8256aa6e3"
+    },
+    {
+      "path": "/redemption/exchanges",
+      "status": 409,
+      "code": "IDEMPOTENCY_CONFLICT",
+      "sha256": "e16cd5e7a859d676c114a245b3bf35d2fe1b38faf0b92744835a00cee54f98a3"
+    },
+    {
+      "path": "/redemption/grants/38d6cd7a-97f5-4c2b-a494-894a10d15c4a",
+      "status": 200,
+      "sha256": "811545c392e6bf36ecced7c5687d032967889347275943c79876b65d58079ef2"
+    },
+    {
+      "path": "/wallet/summary",
+      "status": 200,
+      "sha256": "c0ddf70d2ca8f11b0deb037ff1cd85e0fc2dbbd3564f84874350786cea67ae93"
+    }
+  ],
+  "complete": true,
+  "result": "PASS",
+  "checks": [
+    "original-successful-exchange-key-replays-exact-receipt-after-debt",
+    "same-key-different-payload-rejected",
+    "current-grant-still-used-and-wallet-debt-unchanged"
+  ],
+  "limit": "API operation recovery; original receipt AVAILABLE is historical, current GET remains USED. Not an App pending-request recovery test."
+}
