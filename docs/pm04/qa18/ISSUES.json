@@ -369,6 +369,87 @@
         "TASK-09"
       ],
       "limits": "Flutter Web/browser plus widget regression; physical Android and final clean full regression pending."
+    },
+    {
+      "id": "QA18-ENV-022",
+      "group": "G12",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "批量隔离环境缺少显式模拟开票配置",
+      "actual": "测试环境未显式启用模拟开票，按原规则拒绝。",
+      "expected": "仅隔离测试显式启用，实际独审、更正可办，生产仍拒绝。",
+      "evidence": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/invoice-config-check.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/1795592230845-RESULT.json",
+      "fix_sha": "57b2b2df1c847b544b632e88250352ddddfd0694",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "TASK-12"
+      ],
+      "limits": "15 scoped final browser checks, simulated channel only, physical Android and full 18-group regression remain; older invoice/refund retained as blocked evidence."
+    },
+    {
+      "id": "QA18-TEST-023",
+      "group": "G11/G12",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "资料准备契约及App恢复按钮滚动位置假设错误",
+      "actual": "原读取路由/读者名单与实际契约不符；首轮App回执已丢失但驱动未找到位于上方的恢复按钮。",
+      "expected": "保持读者权限与来源创建者条件；实际滚动到原恢复按钮并核对原key，保留中断申请。",
+      "evidence": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/chain/1795591110873-RESULT.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/1795592230845-RESULT.json",
+      "fix_sha": "73693b6bd75dce5e6173ea1753263d46b4cff82d",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "TASK-11",
+        "TASK-12"
+      ],
+      "limits": "15 scoped final browser checks, simulated channel only, physical Android and full 18-group regression remain; older invoice/refund retained as blocked evidence."
+    },
+    {
+      "id": "QA18-FE-024",
+      "group": "G12",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "App开票申请材料文件名无扩展名，保存器拒绝正确字节",
+      "actual": "实际下载HTTP200、48字节摘要正确，但App没有download事件；新增契约回归1失败。",
+      "expected": "获准原材料可保存，原字节不变；后续拒绝时不保存旧字节。",
+      "evidence": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/chain/1795591272552-RESULT.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/1795592230845-RESULT.json",
+      "fix_sha": "18a8d20faa52cb8b8cf7956926a32c820a49dd86",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "TASK-12"
+      ],
+      "limits": "15 scoped final browser checks, simulated channel only, physical Android and full 18-group regression remain; older invoice/refund retained as blocked evidence."
+    },
+    {
+      "id": "QA18-TEST-025",
+      "group": "G12",
+      "kind": "TEST_FIXTURE",
+      "product_bug_confirmed": false,
+      "summary": "历史预置付款绑定不适合当前模拟器退款，测试选择需修正",
+      "actual": "原退款503且保持APPROVED v2；尝试新下单又遇报价摘要/重复订单/旧规则门禁，均为合理拒绝。",
+      "expected": "保留历史样例及拒绝；用原未付订单通过当前服务付款、退款、核对，不重写绑定。",
+      "evidence": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/legacy-payment-block.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/1795592230845-RESULT.json",
+      "fix_sha": "73693b6bd75dce5e6173ea1753263d46b4cff82d",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "TASK-12"
+      ],
+      "limits": "15 scoped final browser checks, simulated channel only, physical Android and full 18-group regression remain; older invoice/refund retained as blocked evidence."
     }
   ]
 }
