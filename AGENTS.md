@@ -1,3 +1,7 @@
+## 2026-11-25 第五轮终态：同意、机构委托与双端撤回
+
+**第五轮终态（2026-11-25）**：G02同一人物本人App同意→Vue独审→本人委托→员工素材/造型→本人撤回已实测。错声音用途/代签/私证拒绝；Flutter与Vue同素材摘要，撤回后两页清理、机构文件拒绝，本人原资产仍在。最后驱动65e646b1退出0，17条检查/15名称含重复；9次驱动停点保留，不是9业务缺陷。产品仍07822585、rc.2/0225；仍T1和局部证据，151/18组未晋级。当前合成人物a935c3ac已经撤回授权，不能按初始已授权样例重测。继续G05受控展示/G06目录及其余端×场景。持续目标ACTIVE；授权直接修前后端及测试/环境的规范继续有效。先读docs/pm04/qa18/ROUND_05_PERSONAL_CONSENT.md及CORE_CURRENT。9b70dda9环境后端49232/App5500/Vue5173仅回环至北京时间21:28:48，到期不续期、异机不复制凭据。无活跃本轮机测，只有限时服务。前端PR41仍2eeaeee1，保护EXPERIENCE_CURRENT。没有新产品修改/迁移；rc2登记578槽未完成整条判定。旧5/573快照及正式15119/124/8不改，18组关闭0。不合入/不生产/不收费/不公网，不动3490/旧APK/总览/自动监测，每轮阶段/动作/效果/剩余/下一步/用户所需。
+
 ## 2026-11-25 第四轮终态：G02员工逐人授权入口修复
 PR41 2eeaeee1 received in QA merge 3b560022; incoming refund widget file retained in full, 14 targeted tests passed. Runtime/product source remains 07822585. New rc2 registry pm04-g1-20261125-rc2-reg02 initialized and checked; partial G02 evidence does not mark a full criterion PASS.
 

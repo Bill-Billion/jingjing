@@ -1,5 +1,7 @@
 # 后端同版复跑要点
 
+**第五轮终态（2026-11-25）**：G02同一人物本人App同意→Vue独审→本人委托→员工素材/造型→本人撤回已实测。错声音用途/代签/私证拒绝；Flutter与Vue同素材摘要，撤回后两页清理、机构文件拒绝，本人原资产仍在。最后驱动65e646b1退出0，17条检查/15名称含重复；9次驱动停点保留，不是9业务缺陷。产品仍07822585、rc.2/0225；仍T1和局部证据，151/18组未晋级。当前合成人物a935c3ac已经撤回授权，不能按初始已授权样例重测。继续G05受控展示/G06目录及其余端×场景。见[第五轮回执](ROUND_05_PERSONAL_CONSENT.md)。
+
 2026-11-25第四轮追加：员工逐人授权修复后端与双端源码07822585，API0.31.79-rc.2、迁移0225未变；详情见[第四轮](ROUND_04_STAFF_AUTHORIZATION.md)。下面f071及7e为首批历史版本。
 
 Flutter Web合成入口实际命令为 `flutter build web --release --no-pub --no-web-resources-cdn --target test/support/v5_business_browser_main.dart --dart-define=R05_R12_SYNTHETIC_ONLY=true`，在App源码目录运行。隔离测试必须携带本地渲染资源，不能等待外部CanvasKit CDN。此包仅供回环5500合成测试，不代替lib/main.dart安装包或实体机。PowerShell收集原生命令stderr时保留提示并读取实际退出码，不因提示字符串判为业务失败；先确认输出目录存在并使用物理绝对日志路径。等待UI宿主READY、确认ui-access已生成后才启动浏览器检查。
