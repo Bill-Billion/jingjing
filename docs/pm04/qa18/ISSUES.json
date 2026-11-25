@@ -722,6 +722,69 @@
       "acceptance_ids": [
         "E2E-05"
       ]
+    },
+    {
+      "id": "QA18-FE-039",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "Vue制作权益库存spec_ids没有引用来源，无法选择合法已审规格",
+      "actual": "点击读取可选实际适用的已审制作规格，界面提示没有可公开选择的引用；原合法机构PUBLISHED定制规格已存在。",
+      "expected": "用当前办理身份读实际规格目录，只选择本机构PUBLISHED的PRIVATE_CUSTOMIZATION规格；保留独审和后端所有规则。",
+      "evidence": "docs/testing/evidence/pm04-g1-service-credit-20261125-18/browser-01.log",
+      "fix_sha": "893c92e7c451f3813b932aeef90384d509483225",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-service-credit-20261125-18/EXECUTION_SUMMARY.json",
+      "limits": "Vue构建/100业务/新增来源专项及同库存实际页面通过，最终同版全量仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-05",
+        "E2E-06"
+      ]
+    },
+    {
+      "id": "QA18-TEST-040",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "完整HOLD ID在折叠详情内，驱动未展开就断言正文可见",
+      "actual": "App及Vue均实际GET原HOLD200且显示HELD/版本2，驱动在折叠正文外找完整ID失败。",
+      "expected": "展开原约定记录后核对完整ID，同时核对实际GET原ID及后续释放状态，不改业务断言。",
+      "evidence": "docs/testing/evidence/pm04-g1-service-credit-20261125-18/browser-03.log",
+      "fix_sha": "7eabb4ce3c25b105fe7fb358121d4799e26bc9f9",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-service-credit-20261125-18/checkpoint.json",
+      "limits": "原占用实际接续读取/释放通过；修前日志保留。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-05",
+        "E2E-06"
+      ]
+    },
+    {
+      "id": "QA18-TEST-041",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "UNKNOWN的503没有data，驱动覆盖了原付款本地对象",
+      "actual": "未知付款正确阻止取消和释放，但驱动随后试图再次走准备付款，页面没有重复创建按钮而停下；并未产生第二笔付款。",
+      "expected": "保留原付款身份，按已观察原请求读取同付款恢复，禁止新建；原付款成功后继续原款退款。",
+      "evidence": "docs/testing/evidence/pm04-g1-service-credit-20261125-18/browser04.log",
+      "fix_sha": "53265ead1156042d7325c9a5cb9f9598a3a318c1",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-service-credit-20261125-18/DATABASE_CENSUS.json",
+      "limits": "真实API恢复原付款，最终同单只有1付款/1退款/2现金流水；1恢复检查单列不混作业务检查。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-05",
+        "E2E-06"
+      ]
     }
   ]
 }
