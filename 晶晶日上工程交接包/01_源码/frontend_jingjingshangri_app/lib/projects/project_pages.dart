@@ -540,6 +540,16 @@ class _RecordState extends State<_Record> {
                   : () => open(
                       '/projects/participation?view=new&recordId=${record!.id}'),
               outline: true),
+        if (record?.kind == 'CANDIDATE' &&
+            record?.owner == api.owner() &&
+            record?.status == 'CONFIRMED')
+          tradeButton(
+              '基于本角色提出换角新约',
+              locked
+                  ? null
+                  : () => open(
+                      '/projects/participation?view=recast&recordId=${record!.id}'),
+              outline: true),
         if (p.owner == api.owner()) ...[
           tradeSection('发行办理', [
             for (final r in kinds['RELEASE'] ?? []) ...[
