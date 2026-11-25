@@ -1406,6 +1406,146 @@
       "acceptance_ids": [
         "E2E-09"
       ]
+    },
+    {
+      "id": "QA18-FE-072",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "活动缺榜单快照及奖励库存选择来源",
+      "actual": "真实活动表单无原PUBLISHED快照和已审核库存选项。",
+      "expected": "接现有运营目录并核状态、剩余容量、到期和权限分页，不要求供应方等于运营。",
+      "evidence": "docs/testing/evidence/pm04-g1-champion-20261125-24/browser01.log",
+      "fix_sha": "22ef9e74f937b9ea2dcfbfd702171dc02ca71dc3",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-champion-20261125-24/EXECUTION_SUMMARY.json",
+      "limits": "原记录分段复测，非最终同版本全量；仅隔离合成曝光，零GMV边界未代业务审定。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-FE-073",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "独立评分缺已审核候选来源",
+      "actual": "Vue独审评分candidate_id无原APPROVED候选。",
+      "expected": "judge/tie接运营候选目录，筛已审和所属活动，普通投票不获运营目录。",
+      "evidence": "docs/testing/evidence/pm04-g1-champion-20261125-24/browser02.log",
+      "fix_sha": "389c45d4ebfc048b21db87c0baf6b52a34bf7811",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-champion-20261125-24/EXECUTION_SUMMARY.json",
+      "limits": "原记录分段复测，非最终同版本全量；仅隔离合成曝光，零GMV边界未代业务审定。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-FE-074",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "冠军评分误限1至5",
+      "actual": "输入80被浏览器校验阻断，未发评分请求。",
+      "expected": "按既有后端整数0..100，订单评价仍1..5；覆盖合法及越界/小数。",
+      "evidence": "docs/testing/evidence/pm04-g1-champion-20261125-24/browser03.log",
+      "fix_sha": "f7d7e0d4562073d3a8ca00048c9b749e98883906",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-champion-20261125-24/EXECUTION_SUMMARY.json",
+      "limits": "原记录分段复测，非最终同版本全量；仅隔离合成曝光，零GMV边界未代业务审定。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-TEST-075",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "投票已原GET恢复仍等第二POST按钮",
+      "actual": "原操作和原投票GET成功，脚本继续等不存在的再次核对按钮。",
+      "expected": "断言原operation查询、原ID及唯一扣分，无需第二POST。",
+      "evidence": "docs/testing/evidence/pm04-g1-champion-20261125-24/browser04.log",
+      "fix_sha": "0e85e101287d5a6918b7b4bcb29eee42013a562c",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-champion-20261125-24/EXECUTION_SUMMARY.json",
+      "limits": "原记录分段复测，非最终同版本全量；仅隔离合成曝光，零GMV边界未代业务审定。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-TEST-076",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "将其他表单库存依据误当当前交付附件选项",
+      "actual": "奖励交付页面不存在其他表单上传文件的全库目录。",
+      "expected": "经实际上传入口提交本次交付依据，选择新文件，不伪造目录。",
+      "evidence": "docs/testing/evidence/pm04-g1-champion-20261125-24/browser05.log",
+      "fix_sha": "d6e8ddf2ff23b4f8090e3243042d9cd2e3a73044",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-champion-20261125-24/EXECUTION_SUMMARY.json",
+      "limits": "原记录分段复测，非最终同版本全量；仅隔离合成曝光，零GMV边界未代业务审定。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-FE-077",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "App实际结果值未进入语义树",
+      "actual": "画面88分而辅助阅读树为空文本框，实际结果断言失败。",
+      "expected": "共享事实组件输出标签和真实值的完整语义，视觉文本保留，动态/0/缺项测试。",
+      "evidence": "docs/testing/evidence/pm04-g1-champion-20261125-24/browser06.log",
+      "fix_sha": "24e29206c9ad2c92d7628652cb94b723ff2550cc",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-champion-20261125-24/EXECUTION_SUMMARY.json",
+      "limits": "原记录分段复测，非最终同版本全量；仅隔离合成曝光，零GMV边界未代业务审定。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
+    },
+    {
+      "id": "QA18-FE-078",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "Vue已核定等真实状态显示未识别",
+      "actual": "原结果/评分/退票/奖励详情显示未识别状态。",
+      "expected": "准确映射FINALIZED/RECORDED/POINTS_RETURNED/REDEEMED/ISSUED，通用已发放不局限奖励。",
+      "evidence": "docs/testing/evidence/pm04-g1-champion-20261125-24/browser/checkpoint.json",
+      "fix_sha": "c982e5ecbfc7761351081d78ae0be748ba174583",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-champion-20261125-24/EXECUTION_SUMMARY.json",
+      "limits": "原记录分段复测，非最终同版本全量；仅隔离合成曝光，零GMV边界未代业务审定。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-09"
+      ]
     }
   ]
 }
