@@ -551,7 +551,19 @@
       "acceptance_ids": [
         "E2E-02"
       ],
-      "limits": "35 scoped checks on same order across resumed drivers; final fixed-version18group/12chain regression and all required surface/case slots remain. ENV fix is invocation physical cwd, no product source change."
+      "limits": "35 scoped checks on same order across resumed drivers; final fixed-version18group/12chain regression and all required surface/case slots remain. ENV fix is invocation physical cwd, no product source change.",
+      "round17_extension": {
+        "scope": "Vue SSR same physical directory requirement",
+        "failed_logs": [
+          "docs/testing/evidence/pm04-g1-cocreation-delivery-20261125-17/vue-business-test.log",
+          "docs/testing/evidence/pm04-g1-cocreation-delivery-20261125-17/vue-delivery-test.log"
+        ],
+        "passed_logs": [
+          "docs/testing/evidence/pm04-g1-cocreation-delivery-20261125-17/vue-business-test-02.log",
+          "docs/testing/evidence/pm04-g1-cocreation-delivery-20261125-17/vue-delivery-test-02.log"
+        ],
+        "no_business_assertions_changed": true
+      }
     },
     {
       "id": "QA18-FE-031",
@@ -652,6 +664,64 @@
         "E2E-03"
       ],
       "limits": "3次接续最后9检查，另1新App只读检查；T+1/新计时规则/全部场景仍待，不升级完整槽。"
+    },
+    {
+      "id": "QA18-FE-036",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "获派制作人员被引到发起人房间读取入口，无法取得片段办理上下文",
+      "actual": "原订单制作已开始，制作人员Vue房间GET404，片段上传无PRODUCTION_FILE选项；合法获派材料接口实际已有。",
+      "expected": "由原项目履约页进入获派材料，核对实际项目/订单/房间/账号/机构，继续上传和独审本人片段；不扩大房间权限。",
+      "evidence": "docs/testing/evidence/pm04-g1-cocreation-delivery-20261125-17/browser-01.log",
+      "fix_sha": "810cd567012b5e988138795ffd04433334b8492f",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-cocreation-delivery-20261125-17/EXECUTION_SUMMARY.json",
+      "limits": "新Vue构建、100业务/22履约、原同记录接续及6不同上下文检查通过；中途修复不代最终同版全量。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-05"
+      ]
+    },
+    {
+      "id": "QA18-ENV-037",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "PM03新离线恢复工具误将MySQL等价字符集显式声明当作数据不一致",
+      "actual": "两次新测试库导入后原始SQL摘要不同，失败目标未启动；差异为恢复后补写的冗余CHARACTER SET。",
+      "expected": "只规范化等价DDL，另核实际列/索引/约束；所有INSERT及其余内容严格比较，篡改/错密钥/同名目标必须拒绝。",
+      "evidence": "docs/testing/evidence/pm04-g1-cocreation-delivery-20261125-17/restore-01.log",
+      "fix_sha": "39f64c2b5e3f169f1551065229ad8d5c0d945780",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-cocreation-delivery-20261125-17/BACKUP_RESTORE_SUMMARY.json",
+      "limits": "2单元测试及真实190表112文件新库恢复通过；不代在线恢复、新凭据、生产备份回滚。",
+      "group": "G18",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": []
+    },
+    {
+      "id": "QA18-TEST-038",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "浏览器上传回执提取及迟到响应测试时机假设有误",
+      "actual": "实际片段上传成功但驱动读取响应正文时浏览器缓存已清理；权限驱动又在材料读取正确锁定期间尝试切换身份。",
+      "expected": "及时取回响应、只读原文件摘要恢复成功上传，不重复上传；在真实允许切换身份的项目读取阶段验证旧响应被丢弃。",
+      "evidence": "docs/testing/evidence/pm04-g1-cocreation-delivery-20261125-17/browser-02.log",
+      "fix_sha": "20ead1de5a130c715242d7f164fb32afd546c64b",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-cocreation-delivery-20261125-17/context/checkpoint.json",
+      "limits": "主驱动50e6ecf1接续25项通过；权限2次尝试最后6不同检查通过，1重复正向观察不加计。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-05"
+      ]
     }
   ]
 }
