@@ -173,7 +173,11 @@ async function run() {
     // sufficient for their first login; this never changes production defaults.
     const authSettings={sessionMs:duration,...state.mode==='BATCH'?{ipSendsPerHour:100,totalSendsPerHour:200,ipLoginsPerMinute:100}:{}};
     const app = load('src/http/account-api').createAccountApi({db,secret:state.secret,sms,authSettings,supplyStorageFactory:storageAt(out),tradeProvidersFactory:()=>sim,
-      supplyEnv:state.mode==='BATCH'?{MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}:undefined,tradeEnv:state.customization_merchant_party_id?{CUSTOMIZATION_MERCHANT_PARTY_ID:state.customization_merchant_party_id,MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}:undefined,allowedOrigins:origins});
+      supplyEnv:state.mode==='BATCH'?{
+        MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029',
+        ARTIST_CONTRACT_POLICY:'CONTRACT_20261029',
+        ARTIST_PLATFORM_MERCHANT_PARTY_ID:state.customization_merchant_party_id,
+      }:undefined,tradeEnv:state.customization_merchant_party_id?{CUSTOMIZATION_MERCHANT_PARTY_ID:state.customization_merchant_party_id,MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}:undefined,allowedOrigins:origins});
     const allowed = /^\/api\/v1\/(auth|me|parties|stock|trade|notices|artists|supply|operations)(\/|$)/;
     server = require('node:http').createServer(async(req,res)=>{
       const error = (status,code) => {res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error:{code}}));};
