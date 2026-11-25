@@ -10,6 +10,7 @@ export interface ReferenceOption {value:string;label:string;record:BusinessData}
 export interface ReferenceSource {path:string;party:PartyMode;participationProject?:string;creation?:CreationKind|'STORY';noticeCase?:string;privacyPolicy?:{requestId:string;action?:string;scope?:string};delivery?:{booking:string;person:string;avatar:string;kind:'PHOTO'|'VIDEO'|'CONSENT'};redemptionEvidence?:{grant:string;purpose:'SCHEDULE'|'COMPLETION'};ownProfiles?:{person?:string};filter?:(r:BusinessData)=>boolean}
 export function sourceFor(key:string,context:Record<string,unknown>,domain:string,party:string):ReferenceSource|null{
  const person=context.person_id||context.seller_person_id
+ if(domain==='redemption'&&key==='spec_ids')return {path:'/trade/records?kind=SPEC',party:'required',filter:r=>r.kind==='SPEC'&&r.current_status==='PUBLISHED'&&r.merchant_party_id===party&&(rowData(r).product_profile as BusinessData|undefined)?.type==='PRIVATE_CUSTOMIZATION'}
  if(domain==='participation'&&key==='rule_id'){
   const candidate=context.candidate_id||context.record_id
   return uuid(candidate)?{path:`/projects/candidates/${candidate}/participation-rules?limit=20`,party:'required',filter:r=>r.current_status==='EFFECTIVE'&&uuid(r.rule_id)}:null
