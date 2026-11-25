@@ -1,0 +1,107 @@
+{
+  "phase": "same-file-download",
+  "error": "ENOENT: no such file or directory, open 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-joint-env\\.local\\stock-sandbox\\jx_test_stock_pm03_26e9f8e16db47f41f201509d\\samples\\full.mp4'",
+  "state": {
+    "order_id": "d3c6439d-1427-4fda-bc81-d69099becee8",
+    "checks": [
+      {
+        "name": "web-created-one-original-payment",
+        "payment_id": "9f82f05a-69b4-49be-bb3c-b05f4869dc1a"
+      },
+      {
+        "name": "unknown-payment-keeps-file-locked",
+        "status": 503
+      },
+      {
+        "name": "web-recovered-same-payment-key-and-body-no-second-payment"
+      }
+    ],
+    "requests": [
+      {
+        "source": "api-observation-or-simulator",
+        "role": "stock_buyer",
+        "path": "/trade/records/d3c6439d-1427-4fda-bc81-d69099becee8",
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "source": "api-observation-or-simulator",
+        "role": "stock_buyer",
+        "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/content",
+        "status": 409,
+        "method": "GET"
+      },
+      {
+        "source": "browser",
+        "role": "stock_buyer",
+        "path": "/api/v1/trade/payments",
+        "method": "POST",
+        "key_sha256": "2941f10e69455d498e431abd3eb5485e468db5857ddc492f9294337fe72b7da9",
+        "body_sha256": "bbf9a781bb2bf50876e59fa8970113da039f4b94cb8e7a98ac6b4a0c393ae5f6"
+      },
+      {
+        "source": "api-observation-or-simulator",
+        "role": "stock_buyer",
+        "path": "/testing/payments/outcome",
+        "status": 200,
+        "method": "POST"
+      },
+      {
+        "source": "browser",
+        "role": "stock_buyer",
+        "path": "/api/v1/trade/payments/9f82f05a-69b4-49be-bb3c-b05f4869dc1a/reconciliation",
+        "method": "POST",
+        "key_sha256": "6cae514d3cd86f0abbb4f2eb998c6c57752cd5c182902781503f9bf5142a9688",
+        "body_sha256": "ef97752c837816abdef164483ae7e3b86ff481ca7e88fe618540c8418cf13afa"
+      },
+      {
+        "source": "api-observation-or-simulator",
+        "role": "stock_buyer",
+        "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/content",
+        "status": 409,
+        "method": "GET"
+      },
+      {
+        "source": "api-observation-or-simulator",
+        "role": "stock_buyer",
+        "path": "/testing/payments/outcome",
+        "status": 200,
+        "method": "POST"
+      },
+      {
+        "source": "browser",
+        "role": "stock_buyer",
+        "path": "/api/v1/trade/payments/9f82f05a-69b4-49be-bb3c-b05f4869dc1a/reconciliation",
+        "method": "POST",
+        "key_sha256": "6cae514d3cd86f0abbb4f2eb998c6c57752cd5c182902781503f9bf5142a9688",
+        "body_sha256": "ef97752c837816abdef164483ae7e3b86ff481ca7e88fe618540c8418cf13afa"
+      },
+      {
+        "source": "api-observation-or-simulator",
+        "role": "stock_buyer",
+        "path": "/trade/records/d3c6439d-1427-4fda-bc81-d69099becee8",
+        "status": 200,
+        "method": "GET"
+      },
+      {
+        "source": "api-observation-or-simulator",
+        "role": "stock_buyer",
+        "path": "/trade/records?kind=PAYMENT",
+        "status": 200,
+        "method": "GET"
+      }
+    ],
+    "synthetic_only": true,
+    "attempts": [
+      {
+        "id": "1795582492619",
+        "source": "73e2df262f42e37d1d837653cd4a91b1e0851190",
+        "started_at": "2026-11-25T04:54:52.647Z"
+      }
+    ],
+    "contract_sha256": "d9ac689638be311461b3764729e7358d1d681a4cfbf95902bacdfb7f8d88648b",
+    "amount_minor": 100,
+    "payment_id": "9f82f05a-69b4-49be-bb3c-b05f4869dc1a",
+    "paid": true
+  }
+}

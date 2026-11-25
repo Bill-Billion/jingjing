@@ -84,7 +84,9 @@
       "targeted_retest": "docs/testing/evidence/pm04-g1-continuous-20261125-02/app-trade-retest.log",
       "owner": "chengcongcong222",
       "full_regression": null,
-      "report": "docs/pm04/qa18/ROUND_02_CONTINUOUS.md"
+      "report": "docs/pm04/qa18/ROUND_02_CONTINUOUS.md",
+      "current_frontend_source": "ad0a6df429615a637fc26b0baed11dcfaf2f3221",
+      "current_variant_note": "保留前端更具体提示，QA合并3ac8e0fe；上轮修复及回执保留为历史"
     },
     {
       "id": "QA18-FE-007",
@@ -96,7 +98,9 @@
       "targeted_scope": "Upload instruction, selecting the same actual file and submitting it passed; later reviewer locator in this attempt failed",
       "owner": "chengcongcong222",
       "full_regression": null,
-      "report": "docs/pm04/qa18/ROUND_02_CONTINUOUS.md"
+      "report": "docs/pm04/qa18/ROUND_02_CONTINUOUS.md",
+      "current_frontend_source": "ad0a6df429615a637fc26b0baed11dcfaf2f3221",
+      "current_variant_note": "保留前端更具体提示，QA合并3ac8e0fe；上轮修复及回执保留为历史"
     },
     {
       "id": "QA18-TEST-008",
@@ -122,6 +126,90 @@
       "owner": "chengcongcong222",
       "full_regression": null,
       "report": "docs/pm04/qa18/ROUND_02_CONTINUOUS.md"
+    },
+    {
+      "id": "QA18-TEST-010",
+      "group": "G17",
+      "summary": "PR41新增原退款恢复用例语法和合法请求前置错误",
+      "actual": "原提交多余右花括号使文件不能编译；仅修语法后13通过/1失败，空DTO尚未走到第二次请求。采用既有合法付款/退款夹具后14通过。",
+      "expected": "真正执行原退款两次同key/同body请求，并保持其他付款恢复项未变",
+      "evidence": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/app-incoming-trade.log",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/app-incoming-trade-fixed.log",
+      "fix_sha": "a4ea3ed83c4b09a4dbefefe9324cd5487291b53b",
+      "full_regression": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/app-full-retest.log",
+      "kind": "TEST_ORCHESTRATION",
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "product_bug_confirmed": false
+    },
+    {
+      "id": "QA18-ENV-011",
+      "group": "G18",
+      "summary": "subst工作目录使两份仓库相对夹具跨出盘根",
+      "actual": "完整1225通过/2失败；中间调整盘符11通过/1文件装载失败。两测试改为物理源码路径读取原夹具，17专项及1232完整通过。",
+      "expected": "映射盘与物理路径读取同一份原后端/合同夹具，不修改业务断言",
+      "evidence": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/app-full.log",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/app-fixture-path-fixed.log",
+      "fix_sha": "c119973e00dd46163d8f736b9b594cee5bf8d5d6",
+      "full_regression": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/app-full-retest.log",
+      "kind": "TEST_ENVIRONMENT",
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "product_bug_confirmed": false
+    },
+    {
+      "id": "QA18-TEST-012",
+      "group": "G01",
+      "summary": "试镜浏览器驱动全局选择重复的预约按钮",
+      "actual": "新方案已由另一账号审核发布；目录有两个合法方案，旧全局按钮定位歧义。改为本方案卡片，沿原方案续测通过。",
+      "expected": "选择本次试镜方案并进入同一方案办理页",
+      "evidence": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/g01-first-attempt/FAILURE.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/g01-resume-original/RESULTS.json",
+      "fix_sha": "dad9774a92f66f44005cc1d10774878c770480a4",
+      "full_regression": null,
+      "kind": "TEST_ORCHESTRATION",
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "product_bug_confirmed": false
+    },
+    {
+      "id": "QA18-TEST-013",
+      "group": "G03",
+      "summary": "现货浏览器驱动仍寻找旧购买按钮文案",
+      "actual": "退回/新版本双审已成功，买家确认许可后驱动未找到旧文案。改为当前立即购买，沿原上架版建立未付款订单。",
+      "expected": "当前购买按钮执行真实checkout并保持新旧版本关联",
+      "evidence": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/g03-stock-first-attempt/FAILURE.json",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/g03-resume-original/RESULTS.json",
+      "fix_sha": "49b0b31c2430c0d45506cf61074d3c117be209ec",
+      "full_regression": null,
+      "kind": "TEST_ORCHESTRATION",
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "product_bug_confirmed": false
+    },
+    {
+      "id": "QA18-TEST-014",
+      "group": "G17",
+      "summary": "新同单驱动沿用了旧样片路径/角色名及错误的独审身份头",
+      "actual": "付款已核实后先后因不存在的full.mp4和unverified角色中断；售后自审反例多传acting-party先得到400。按原商品摘要、stock_outsider及账户级请求修正后，同原订单文件和两次退款通过，自审真实403。",
+      "expected": "正确环境前置下执行下载对照和买家自审拒绝；继续原订单而不重复付款/退款",
+      "evidence": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/stock-chain-01.log",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/stock-aftercare/checkpoint.json",
+      "additional_before": [
+        "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/stock-chain-02.log",
+        "docs/testing/evidence/pm04-g1-frontend-batch-20261125-03/stock-aftercare-01.log"
+      ],
+      "fix_sha": "e92b1aaffcac709b609aec8702fa9f89626b8878",
+      "full_regression": null,
+      "kind": "TEST_ORCHESTRATION",
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "product_bug_confirmed": false
     }
   ]
 }
