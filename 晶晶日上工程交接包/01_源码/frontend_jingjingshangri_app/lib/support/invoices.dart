@@ -594,7 +594,9 @@ class _InvoicesState extends State<_Invoices> {
       if (!mounted) return;
       final saved = await FilePicker.saveFile(
           fileName: document == null
-              ? '开票材料-$id'
+              // Application history has no trusted filename/type. Keep bytes
+              // unchanged and use a neutral suffix required by the web picker.
+              ? '开票材料-$id.bin'
               : content!['simulated']
                   ? '模拟凭证-非真实发票-$id.txt'
                   : '票据-$id.pdf',
