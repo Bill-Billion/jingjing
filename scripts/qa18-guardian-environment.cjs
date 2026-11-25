@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 // Original W18: historical synthetic mistaken charge, corrected age, lawful reviewed relation.
 // Leaves all refund requests, independent approvals and dispatch to actual App/Web/worker.
 const fs=require('node:fs/promises'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
@@ -23,7 +23,7 @@ async function main(){
  // The historical fixture started adult. Correct to known MINOR through trusted identity facts,
  // not a runtime admission bypass or a direct age/status/financial SQL update.
  const child=people.child;const identity=await S.artists.prepareIdentity(child.ctx,{party_id:child.personal_party_id,person_id:child.person.id,session_ref:'synthetic:qa38-age-correction',operation_key:key()});await S.artists.applyIdentity(identity.id,{request_key:identity.data.request_key,person_id:child.person.id,status:'VERIFIED',issuer:previousIdentity.issuer,subject_fingerprint:previousIdentity.subject_fingerprint,age_band:'MINOR',valid_until:expires,evidence_ref:'synthetic:qa38-age-correction',liveness_verified:true,phone_verified:true});
- await assert.rejects(W.recharge(child.ctx,{party_id:child.personal_party_id,amount_minor:100,operation_key:key()}),{code:'MINOR_OPERATION_RESTRICTED'});
+ await assert.rejects(W.recharge(child.ctx,{party_id:child.personal_party_id,amount_minor:100,operation_key:key()}),{code:'VERIFIED_ADULT_REQUIRED'});
  const proof=await S.supply.upload(people.guardian.ctx,{party_id:people.guardian.personal_party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from('QA38 synthetic guardian relationship only; no real child.'),operation_key:key()}),ruleId=key(),content=load('src/modules/governance/content').createRuleContent({id:ruleId,rule_key:'guardian.protection',version:'synthetic-qa38',terms:{guardian_protection:{version:'CONTRACT_20261029',daily_minutes:30,rest_minutes:15,single_minor:1000,daily_minor:2000,night_start:22,night_end:8,terms:'Synthetic original minor protection; no new charges'}}});
  await db.execute("INSERT INTO governance_rules(id,rule_key,version_label,content_json,effective_at,created_by,current_status) VALUES (?,?,?,?,?,?,'EFFECTIVE')",[ruleId,'guardian.protection',content.version,JSON.stringify(content),'2020-01-01 00:00:00',people.reviewer.account_id]);
  const G=load('src/modules/guardians/repository').createGuardianRepository(db,{resolvePrincipal:S.resolvePrincipal});let link=await G.invite(people.guardian.ctx,{child_account_id:child.account_id,relationship:'Synthetic parent relation for isolated original-charge refund',evidence_asset_ids:[proof.id],rule_id:ruleId,valid_until:expires,operation_key:key()});link=await G.decide(child.ctx,{record_id:link.id,expected_version:link.object_version,decision:'ACCEPT',reason:'Synthetic child confirms original relation',operation_key:key()});link=await G.decide(people.reviewer.ctx,{record_id:link.id,operations:true,expected_version:link.object_version,decision:'APPROVE',age_band:'AGE_14_17',identity_checked:true,relationship_checked:true,reason:'Independent synthetic identity and relation review',operation_key:key()});
@@ -37,3 +37,4 @@ async function main(){
  }catch(e){status.error=e.stack;await stop();throw e;}
 }
 main().catch(e=>{console.error(e.stack);process.exitCode=1;});
+
