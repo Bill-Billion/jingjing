@@ -41,7 +41,6 @@ void main() {
       if (r.path == '/api/v1/trade/records') {
         return envelope({'items': [], 'next_cursor': null});
       }
-      }
       return adapter.defaultReply(r);
     });
     final s = (await tester.runAsync(() => buyerSession(adapter)))!;
