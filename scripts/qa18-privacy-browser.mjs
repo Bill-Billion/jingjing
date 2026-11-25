@@ -33,15 +33,18 @@ try{
  web=await preview({root:join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace'),configFile:false,preview:{host:'127.0.0.1',port:5189,strictPort:true,proxy:{'/api':{target:new URL(access.base_url).origin}}}});
  browser=await chromium.launch({executablePath:process.env.CHROME_BIN,headless:true});
  const current=(await (await api('producer','/privacy/operations/requests/'+requestId)).json()).data;
- let asset;
+ let asset;const previous=process.argv[4]?await read(resolve(process.argv[4])):null;
+ if(previous){assert.equal(previous.request_id,requestId);assert.equal(previous.order_id,state.order_id);assert.match(previous.asset_id,/^[a-f0-9-]{36}$/);}
  if(current.current_status==='AWAITING_REVIEW'){
   assert(process.argv[4],'Use the preserved failed report to resume this same request');
-  const previous=await read(resolve(process.argv[4]));assert.equal(previous.request_id,requestId);assert.match(previous.asset_id,/^[a-f0-9-]{36}$/);
   asset={id:previous.asset_id};report.asset_id=asset.id;report.resumed_from=process.argv[4];record('resume-original-pending-answer-without-reupload-or-resubmit');
  }else{
  const op=await actor('producer','/privacy/operations/'+requestId+'?action=start');
  if(current.current_status==='RECEIVED'){await agree(op);const started=await post(op,'/start',()=>op.getByTestId('business-start').click());assert.equal(started.id,requestId);record('operator-starts-same-app-request');}
  await op.goto('http://127.0.0.1:5189/privacy/operations/'+requestId+'?action=response');await op.waitForLoadState('networkidle');
+ if(previous){
+  assert.equal(current.current_status,'PROCESSING');asset={id:previous.asset_id};report.asset_id=asset.id;report.resumed_from=process.argv[4];record('resume-original-uploaded-file-without-reupload');
+ }else{
  const panel=op.getByTestId('privacy-copy-panel');
  await panel.getByLabel('选择本次资料',{exact:true}).selectOption('account:ACCOUNT');
  await panel.getByRole('button',{name:'读取此类第一页',exact:true}).click();
@@ -58,10 +61,12 @@ try{
  await panel.getByRole('button',{name:'生成待核对文件，带入下方上传',exact:true}).click();
  const upload=op.locator('.business-upload');if(!await upload.getAttribute('open'))await upload.locator('summary').click();
  asset=await post(op,'/supply/assets',()=>upload.getByRole('button',{name:'上传私有材料',exact:true}).click());
+ assert.equal(asset.current_status,'READY');
  report.asset_id=asset.id;await save();
- await upload.getByText('文件已上传。请回到本次答复表单，点击“读取可选已脱敏实际答复文件”，勾选刚上传的文件并核对后再提交独审。',{exact:true}).waitFor();
+ await upload.getByRole('status').filter({hasText:'读取可选已脱敏实际答复文件'}).waitFor();
+ }
  await op.getByRole('button',{name:'读取可选已脱敏实际答复文件',exact:true}).click();
- const checkbox=op.locator('#response-result-evidence_asset_ids-field input[type=checkbox]');assert.equal(await checkbox.count(),1);await checkbox.check();
+ const fileLabel=op.locator('#response-result-evidence_asset_ids-field label').filter({hasText:asset.id});await fileLabel.waitFor();assert.equal(await fileLabel.count(),1);await fileLabel.getByRole('checkbox').check();
  await op.locator('#response-result-response').fill('已提供本申请对应账户与原订单副本，其余类别保留后续逐项核对。');
  await op.locator('#response-result-outcome').selectOption('INFORMATION_PROVIDED');
  await op.locator('#response-result-remaining_actions').fill('其他类别及原件尚待逐项核对，不代表全库资料已交付或已删除。');
