@@ -64,6 +64,20 @@ try{
   await api('outsider','/privacy/requests/'+s.privacy.id+'/evidence/'+s.answer_asset.id+'/content',{allowed:[403,404]});
   const p=await actor('buyer','app','/privacy?view=request&recordId='+s.privacy.id);const waiting=p.waitForEvent('download');await click(p,'领取这份审核答复附件');const download=await waiting;const downloaded=join(out,attempt+'-approved-receipt.bin');await download.saveAs(downloaded);assert.equal(hash(await readFile(downloaded)),s.answer_sha256);await snap(p,'app-saved-same-approved-receipt');s.answer_downloaded={file:attempt+'-approved-receipt.bin',sha256:s.answer_sha256,bytes:s.answer_bytes};await p.context().close();await done('app-saves-exact-approved-receipt-unrelated-account-denied');
  }
+
+ phase='app-original-request-recovery';
+ if(!s.reopen_recovered){
+  const p=await actor('buyer','app','/privacy?view=request&recordId='+s.privacy.id);let dropped=false;
+  await p.context().route('**/api/v1/privacy/requests/'+s.privacy.id+'/reopen',async route=>{
+   const q=route.request();if(q.method()!=='POST')return route.fallback();const wire={key_sha256:hash(q.headers()['idempotency-key']||''),body_sha256:hash(q.postDataBuffer()),version:q.headers()['if-match']};
+   const headers=Object.fromEntries(Object.entries(q.headers()).filter(([k])=>!['host','origin','referer'].includes(k)));const r=await route.fetch({url:f.base_url+'/privacy/requests/'+s.privacy.id+'/reopen',headers});assert.equal(r.status(),200);
+   if(!dropped){dropped=true;s.reopen_committed=await r.json();s.reopen_wire=wire;await save();return route.abort('failed');}
+   assert.deepEqual(wire,s.reopen_wire);return route.fulfill({response:r});
+  });
+  await fill(p,'需要重新处理的原因','指定模型回执已领取，但原订单首款处置和保留范围尚未完成，请继续按原记录跟进。');await click(p,'提交本次异议');await seek(p,p.getByRole('button',{name:'先核对当前记录',exact:true}));assert(dropped);await snap(p,'app-reopen-result-unknown');await click(p,'先核对当前记录');await idle(p);await request(p,'/privacy/requests/'+s.privacy.id+'/reopen',()=>click(p,'使用原编号继续核对'),{slot:'reopen_recovered'});assert.equal(s.reopen_recovered.current_status,'REOPENED');assert.equal(s.reopen_recovered.object_version,s.reopen_committed.data.object_version);await snap(p,'app-original-reopen-recovered');await p.context().close();await done('app-unknown-reopen-replays-exact-original-key-body-and-version-once');
+ }
+ phase='final-current-build-read';
+ const finalApp=await actor('buyer','app','/privacy?view=request&recordId='+s.privacy.id);await finalApp.setViewportSize({width:390,height:6000});await idle(finalApp);const finalAria=await finalApp.locator('body').ariaSnapshot();assert(finalAria.includes('该模型已确认删除')&&finalAria.includes('所用授权: 已撤回'));assert(!finalAria.includes('模型进展: DELETED')&&!finalAria.includes('所用授权: 已退出'));await snap(finalApp,'final-app-current-model-and-original-answer');await finalApp.context().close();await done('final-current-app-explains-model-and-consent-with-original-answer-retained');
  s.attempts.at(-1).result='PASS_WITHDRAWAL_DELETION_AND_REVIEWED_RESPONSE';s.model_chain_complete=true;await save();
 }catch(e){s.attempts.at(-1).result='FAIL';s.attempts.at(-1).failure={phase,message:e.message,stack:e.stack};console.error(phase+': '+e.message);for(const[i,p]of pages.entries())if(!p.isClosed())await snap(p,'failure-'+i).catch(()=>{});process.exitCode=1;}
 finally{s.attempts.at(-1).finished_at=new Date().toISOString();await save();await writeFile(join(out,attempt+'-result.json'),JSON.stringify(s,null,2));await browser.close();}
