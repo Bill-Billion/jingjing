@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.80-rc.2
+  version: 0.31.81-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -26878,6 +26878,69 @@ paths:
           $ref: '#/components/responses/PreconditionRequired'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
       description: 只读选项不执行处理，不代替再次核验及独立审核。未生效、不适用的规则不列出；过滤可能产生空页，next_cursor非空时应继续翻页。
+  /api/v1/privacy/operations/requests/{request_id}/response-file-options:
+    get:
+      operationId: listPrivacyResponseFileOptions
+      summary: 当前办理人选择既有私有复核材料，离页后可继续原申请
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyResponseFileOptionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Only the current authorized handler's READY REVIEW_EVIDENCE metadata,
+        excluding active content/infringement restrictions. The request must be PROCESSING
+        or FOLLOW_UP; self handling is forbidden. Does not prove that a file belongs
+        to this request or approve its contents. Existing actual-byte verification and
+        independent review remain mandatory.
   /api/v1/privacy/operations/requests/{request_id}/retention-policy-options:
     get:
       operationId: listPrivacyRetentionPolicyOptions
@@ -74356,6 +74419,56 @@ components:
       required:
       - meta
       - data
+    PrivacyResponseFileOptionsResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - request_id
+          - handler_account_id
+          - items
+          - next_cursor
+          properties:
+            request_id: &id001
+              type: string
+              format: uuid
+            handler_account_id: *id001
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - content_sha256
+                - byte_size
+                - media_type
+                properties:
+                  id: *id001
+                  content_sha256:
+                    type: string
+                    pattern: ^[a-f0-9]{64}$
+                  byte_size:
+                    type: integer
+                    minimum: 1
+                  media_type:
+                    type: string
+                    minLength: 1
+                    maxLength: 100
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              format: uuid
     PrivacyRetentionPolicyOptionsResponse:
       type: object
       additionalProperties: false
