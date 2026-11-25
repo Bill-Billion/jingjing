@@ -885,6 +885,174 @@
       "acceptance_ids": [
         "E2E-06"
       ]
+    },
+    {
+      "id": "QA18-ENV-047",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "准备角色重复创建已有权限",
+      "actual": "隔离准备重复授予REDEMPTION_REVIEW，VERSION_CONFLICT，业务尚未建立。",
+      "expected": "只授予缺失权限一次，保留原权限版本规则。",
+      "evidence": "docs/testing/evidence/pm04-g1-free-production-20261125-20/environment.log",
+      "fix_sha": "5856ce1e65cad312f268b153f7966b9b3b84da67",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-free-production-20261125-20/EXECUTION_SUMMARY.json",
+      "limits": "原合同概率及pending恢复未完整覆盖；最终同版全量仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06",
+        "E2E-07"
+      ]
+    },
+    {
+      "id": "QA18-TEST-048",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "驱动误用未在当前表单关联的预置附件",
+      "actual": "库存依据选择框没有预置S.proof，驱动在勾选前停下。",
+      "expected": "按页面提示上传本次实际合成附件再选入，不假造目录。",
+      "evidence": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup01.log",
+      "fix_sha": "8e11986352ff2f6fb527e3f1628e6ae144976d8b",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-free-production-20261125-20/EXECUTION_SUMMARY.json",
+      "limits": "原合同概率及pending恢复未完整覆盖；最终同版全量仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06",
+        "E2E-07"
+      ]
+    },
+    {
+      "id": "QA18-FE-049",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "Vue奖池库存误用固定兑换目录",
+      "actual": "已审本机构PRODUCTION_FREE存在，但奖池绑定选择器只读/redemption/catalog而无法选到。",
+      "expected": "按既有受权库存目录读取本机构AVAILABLE且类别/通道匹配的库存，固定兑换源不变。",
+      "evidence": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup02.log",
+      "fix_sha": "f1349b6e31a752283a78e6391a57fcd1c09567d9",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-free-production-20261125-20/EXECUTION_SUMMARY.json",
+      "limits": "原合同概率及pending恢复未完整覆盖；最终同版全量仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06",
+        "E2E-07"
+      ]
+    },
+    {
+      "id": "QA18-FE-050",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "Vue奖池独审依据没有关联原附件",
+      "actual": "当前奖池附件可查看，审核依据选择框却为空，不能提交双独审。",
+      "expected": "仅列当前IN_REVIEW奖池实际合法附件ID，拒绝混入其他记录。",
+      "evidence": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup03.log",
+      "fix_sha": "be52ac1e7716cf66ff207282224ca586ed1b244e",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-free-production-20261125-20/EXECUTION_SUMMARY.json",
+      "limits": "原合同概率及pending恢复未完整覆盖；最终同版全量仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06",
+        "E2E-07"
+      ]
+    },
+    {
+      "id": "QA18-TEST-051",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "原请求恢复驱动硬重载丢失内存pending",
+      "actual": "原十连成功后丢响应，停止奖池后硬重载清掉内存请求，恢复按钮不存在。",
+      "expected": "保留原结果及未测项；原键API重放/App原开奖记录读取单列，下一批保留会话补真正pending恢复。",
+      "evidence": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser01.log",
+      "fix_sha": "498bfed23d8db5910679664d18e490c627dad4f0",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-free-production-20261125-20/EXECUTION_SUMMARY.json",
+      "limits": "原合同概率及pending恢复未完整覆盖；最终同版全量仍待。",
+      "group": "G17",
+      "status": "PARTIAL",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06",
+        "E2E-07"
+      ]
+    },
+    {
+      "id": "QA18-TEST-052",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "全免驱动错误处理虚拟列表、返回栈和占用范围",
+      "actual": "按API索引选择虚拟列表选错项，深链返回无原报价栈，动态缩视口语义坐标错误，取消按钮和已接单恢复范围也误用现金流程。",
+      "expected": "选择时完整渲染10券并核原ID，保留报价栈；显式App释放未接单占用，已接单走实际0现金取消。",
+      "evidence": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser02.log",
+      "fix_sha": "e50394e774860470dc254f0e4e39ef55269d5e2e",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-free-production-20261125-20/EXECUTION_SUMMARY.json",
+      "limits": "原合同概率及pending恢复未完整覆盖；最终同版全量仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06",
+        "E2E-07"
+      ]
+    },
+    {
+      "id": "QA18-TEST-053",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "驱动误套另一版合同收讫期限",
+      "actual": "原最终收讫已成功，脚本却读取不存在的5工作日字段；原合同168小时。",
+      "expected": "读取同一已收讫记录并核原168小时，不改合同或重新起算。",
+      "evidence": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser07.log",
+      "fix_sha": "e09f6525c5c7749baa10d7df05c4907c59240980",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-free-production-20261125-20/EXECUTION_SUMMARY.json",
+      "limits": "原合同概率及pending恢复未完整覆盖；最终同版全量仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06",
+        "E2E-07"
+      ]
+    },
+    {
+      "id": "QA18-TEST-054",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "核数把0积分待发误作新增收益",
+      "actual": "两份0现金订单均有0积分待发，脚本误认为钱包只应有1行EARNING。",
+      "expected": "核唯一正数消费批次与2700原allocation，同时确认两条待发的paid/points/spent全部0。",
+      "evidence": "docs/testing/evidence/pm04-g1-free-production-20261125-20/census.log",
+      "fix_sha": "6087bac231cfb813cbce95adeb7555e9f73c24a5",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-free-production-20261125-20/EXECUTION_SUMMARY.json",
+      "limits": "原合同概率及pending恢复未完整覆盖；最终同版全量仍待。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-06",
+        "E2E-07"
+      ]
     }
   ]
 }
