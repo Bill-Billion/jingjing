@@ -1,0 +1,18 @@
+{
+  "session_fixture": "JX_MYSQL_TEST_ENV_FILE=<controlled localhost33316>; node scripts/qa18-participation-reissue-sessions.cjs <QA29 environment> <QA33 output>; run only while environment active and no business test in flight",
+  "browser": "V5_ACCESS_FILE=<controlled current QA29 access>; QA18_OUTPUT_DIR=<QA33 browser>; CHROME_PATH=<Edge>; node scripts/qa18-participation-decrease-browser.mjs",
+  "census": "JX_MYSQL_TEST_ENV_FILE=<controlled localhost33316>; node scripts/qa18-participation-decrease-record-check.cjs <QA29 environment> <QA33 output>",
+  "contract": "validate_contract.validate([decrease-live-http.json])",
+  "backup_environment": {
+    "JX_MYSQL_TEST_ENV_FILE": "<controlled localhost33316 file>",
+    "JX_MYSQLDUMP_EXE": "<existing MySQL8.4.11 mysqldump.exe absolute path>",
+    "JX_MYSQL_EXE": "<existing MySQL8.4.11 mysql.exe absolute path>"
+  },
+  "backup_commands": [
+    "node scripts/qa18-environment-assets.cjs <QA29 environment>",
+    "node scripts/qa18-batch-backup.cjs backupEnvironment <QA29 environment>",
+    "node scripts/qa18-batch-backup.cjs verify <returned archive filename>",
+    "node scripts/qa18-batch-backup.cjs restore <same archive filename>"
+  ],
+  "continuation_note": "Current90 agreement active; original100 order has10 refund and difference25 order fully refunded. Do not retry completed driver or refund again."
+}
