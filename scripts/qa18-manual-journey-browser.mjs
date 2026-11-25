@@ -50,7 +50,7 @@ async function deliver(stage){
 async function appAccept(v){
  s.accepted??={};if(s.accepted[v.id])return;
  const p=await app('/production/version?versionId='+v.id);if(v.data.stage==='SCRIPT'){await click(p,'完整阅读');await click(p,'返回审阅');await click(p,'我已完整阅读本版剧本。','checkbox');await fill(p,'确认说明','已阅读本次合成剧本，仅验证流程。');s.accepted[v.id]=await request(p,'/production/versions/'+v.id+'/feedback','POST',async()=>{await click(p,'确认这版剧本');await click(p,'确认办理');});}
- else{await click(p,'播放预览');await p.waitForFunction(()=>document.querySelector('video')?.readyState>=2);for(const name of ['剧本内容','交付规格','声音','内容标识'])await click(p,name,'checkbox');await click(p,'本版确认与修改意见');await fill(p,'确认说明','已播放本次合成预览，只核办理与权限；不代真实样片质量签收。');s.accepted[v.id]=await request(p,'/production/versions/'+v.id+'/feedback','POST',async()=>{await click(p,'提交本版确认');await click(p,'确认办理');});}
+ else{await click(p,'播放预览');await p.waitForFunction(()=>document.querySelector('video')?.readyState>=2);for(const name of ['剧本内容','交付规格','声音','内容标识'])await click(p,name,'checkbox');await click(p,'本版确认与修改意见');await click(p,'确认本版');await fill(p,'确认说明','已播放本次合成预览，只核办理与权限；不代真实样片质量签收。');s.accepted[v.id]=await request(p,'/production/versions/'+v.id+'/feedback','POST',async()=>{await click(p,'提交本版确认');await click(p,'确认办理');});}
  await done('app-read-and-explicitly-accept-current-'+v.data.stage,{version_id:v.id});await snap(p,'app-accepted-'+v.data.stage);await p.close();
 }
 async function receipt(v,label){
