@@ -6,6 +6,7 @@ import 'package:jingjingshangri_app/account/account_api.dart';
 import 'package:jingjingshangri_app/account/account_session.dart';
 import 'package:jingjingshangri_app/projects/participation_pages.dart';
 import 'package:jingjingshangri_app/projects/project_models.dart';
+import 'package:jingjingshangri_app/projects/project_pages.dart';
 import '../account/fake_account_api.dart';
 import '../engagement/community_safety_test.dart' show communitySession;
 import 'project_fixtures.dart';
@@ -152,5 +153,37 @@ void main() {
         isFalse);
     await t.pumpWidget(const SizedBox.shrink());
     s.dispose();
+  });
+  testWidgets('本人已确认候选实际展示参演和换角入口，导航保留同一候选', (t) async {
+    final c = candidate(), p = projectData('PROJECT', owner: orgId);
+    late FakeAccountAdapter a;
+    a = FakeAccountAdapter(handler: (r) {
+      if (r.path == '/api/v1/projects/records/$candidateKey')
+        return envelope(c);
+      if (r.path == '/api/v1/projects/records/$projectKey') return envelope(p);
+      return a.defaultReply(r);
+    });
+    final session = (await t.runAsync(() => communitySession(a)))!;
+    await t.pumpWidget(ChangeNotifierProvider<AccountSession>.value(
+        value: session,
+        child: MaterialApp(
+          home: const ProjectRecordPage(recordId: candidateKey),
+          onGenerateRoute: (settings) => MaterialPageRoute<void>(
+              builder: (_) => Scaffold(body: Text(settings.name!))),
+        )));
+    await settle(t);
+    await t.scrollUntilVisible(find.text('提出本人参演约定'), 350,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.text('提出本人参演约定'), findsOneWidget);
+    await t.scrollUntilVisible(find.text('基于本角色提出换角新约'), 200,
+        scrollable: find.byType(Scrollable).first);
+    await t.tap(find.text('基于本角色提出换角新约'));
+    await settle(t);
+    expect(
+        find.text('/projects/participation?view=recast&recordId=$candidateKey'),
+        findsOneWidget);
+    expect(a.requests.any((r) => r.method == 'POST'), isFalse);
+    await t.pumpWidget(const SizedBox.shrink());
+    session.dispose();
   });
 }
