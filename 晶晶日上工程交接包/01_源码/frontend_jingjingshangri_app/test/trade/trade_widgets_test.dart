@@ -37,6 +37,7 @@ void main() {
         return envelope({'code': 'SERVICE_UNAVAILABLE'}, status: 503, error: true);
       }
       if (r.path.endsWith(orderId)) return envelope(tradeData('ORDER'));
+      if (r.path.endsWith(paymentId)) return envelope(tradeData('PAYMENT'));
       if (r.path.endsWith(refundId)) return envelope(tradeData('REFUND'));
       if (r.path == '/api/v1/trade/records') {
         return envelope({'items': [], 'next_cursor': null});
@@ -45,9 +46,19 @@ void main() {
     });
     final s = (await tester.runAsync(() => buyerSession(adapter)))!;
     await tester.runAsync(() async {
-      for (final entry in [(refund, 'REFUND'), (payment, 'PAYMENT')]) {
+      for (final operation in <Future<TradeRecord> Function()>[
+        () => TradeApi(s).refund(
+            TradeRecord.parse(tradeData('PAYMENT'), personId),
+            [
+              {'line_id': 'production', 'amount_minor': 38001}
+            ],
+            '按原约定申请退回',
+            []),
+        () => TradeApi(s).payment(
+            TradeRecord.parse(tradeData('ORDER'), personId), 'deposit'),
+      ]) {
         try {
-          await TradeApi(s).write(entry.$1, {}, kind: entry.$2);
+          await operation();
         } catch (_) {}
       }
     });
@@ -68,6 +79,7 @@ void main() {
     expect(writes.first.headers['Idempotency-Key'], isNotNull);
     expect(writes.last.headers['Idempotency-Key'],
         writes.first.headers['Idempotency-Key']);
+    expect(writes.last.data, writes.first.data);
     expect(s.tradePending.map((op) => op['path']), [payment]);
     expect(adapter.requests.where((r) => r.path == payment), hasLength(1));
   });
