@@ -1,0 +1,11 @@
+{
+  "cwd": "Backend/tests at QA physical absolute cwd. Flutter build/analyze at R:/frontend_jingjingshangri_app; same physical QA source. Alias switching generated missing assets initially, all failures preserved.",
+  "environment": "node scripts/qa18-membership-environment.cjs; DB33316, synthetic accounts only, deadline unchanged",
+  "browser": "V5_ACCESS_FILE=<environment/access.json> QA18_OUTPUT_DIR=<browser or refunds> CHROME_PATH=<Edge> node scripts/qa18-membership-browser.mjs then scripts/qa18-membership-refunds-browser.mjs",
+  "backend": "node --require ./scripts/test-network-guard.cjs --test --test-concurrency=1 test/wallet-cross-period.integration.test.cjs test/wallet-policy.test.cjs",
+  "contract": "validate_contract.validate([wallet-cross-period-http-fixtures.json]) via .local/qa18-python;25 same-process HTTP responses",
+  "app_tests": "flutter test --no-pub test/wallet/membership_semantics_test.dart test/wallet/wallet_test.dart --reporter expanded",
+  "app_analyze": "flutter analyze --no-pub --no-fatal-infos lib/wallet/wallet_pages.dart test/wallet/membership_semantics_test.dart; physical LSP failure retained, short R alias exit0 No issues found",
+  "app_build": "flutter build web --release --no-web-resources-cdn --no-wasm-dry-run -t test/support/v5_business_browser_main.dart --dart-define=R05_R12_SYNTHETIC_ONLY=true",
+  "census": "node scripts/qa18-membership-record-check.cjs .local/qa18/wallet-membership-20261125-22;SELECT only"
+}

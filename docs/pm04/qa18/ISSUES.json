@@ -1099,6 +1099,153 @@
       "acceptance_ids": [
         "E2E-07"
       ]
+    },
+    {
+      "id": "QA18-FE-057",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "App会员事实在可访问性树中为空",
+      "actual": "六项会员信息肉眼可见，但原FlutterWeb disabled textarea没有名称和值，无法被辅助阅读准确读出。",
+      "expected": "六项分别提供名称和值，保留SelectableText视觉与选取；不改业务计算。",
+      "evidence": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/browser05.log",
+      "fix_sha": "e7caf8d5bb85050dc821f2425f2263f9ffdfdbdd",
+      "environment_resolution": null,
+      "targeted_retest": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/EXECUTION_SUMMARY.json",
+      "limits": "局部同记录分段复测，非最终同版全量；ENV063根因未完全确认。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-08"
+      ]
+    },
+    {
+      "id": "QA18-TEST-058",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "会员与充值驱动沿用不准确控件及恢复流程",
+      "actual": "错按钮标签、原恢复成功后多等一次确认、按空文本框读取会员事实，停在关键断言前。",
+      "expected": "使用实际按钮和原key/body/原记录恢复证据，修后按完整语义事实严核当前与保留等级。",
+      "evidence": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/browser02.log",
+      "fix_sha": "d6b438da73f42a9490c05858f8ec2ddb27540c57",
+      "environment_resolution": null,
+      "targeted_retest": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/EXECUTION_SUMMARY.json",
+      "limits": "局部同记录分段复测，非最终同版全量；ENV063根因未完全确认。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-08"
+      ]
+    },
+    {
+      "id": "QA18-TEST-059",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "新会员widget测试视口及语义生命周期准备不足",
+      "actual": "默认视口找不到展开控件；语义句柄只在tearDown释放晚于框架验证。",
+      "expected": "足够视口实际展开验证，try/finally及时释放句柄；有效/到期/恢复断言全部保留。",
+      "evidence": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/app-tests03.log",
+      "fix_sha": "ebe117645a87c801d310bd4fe5a5fe0bb6df8d78",
+      "environment_resolution": null,
+      "targeted_retest": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/EXECUTION_SUMMARY.json",
+      "limits": "局部同记录分段复测，非最终同版全量；ENV063根因未完全确认。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-08"
+      ]
+    },
+    {
+      "id": "QA18-ENV-060",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "Windows路径切换导致分析失败和构建缺资源",
+      "actual": "物理路径LSP JSON截断；混合物理/别名构建缓存后exit0但缺FontManifest，真实浏览器白屏。",
+      "expected": "短路径正常依赖步骤重建，验证资源实际存在、完整构建SHA和真实浏览器运行；失败日志保留。",
+      "evidence": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/diagnostic02.log",
+      "fix_sha": null,
+      "environment_resolution": "Short path normal build and actual resources/browser verified",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/EXECUTION_SUMMARY.json",
+      "limits": "局部同记录分段复测，非最终同版全量；ENV063根因未完全确认。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-08"
+      ]
+    },
+    {
+      "id": "QA18-TEST-061",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "退款表单的控件时机及选择框定位错误",
+      "actual": "Flutter radio下一帧已选中但check即时断言先失败；Vue getByLabel含选项文本不匹配。",
+      "expected": "等待实际aria-checked后确认，Vue按combobox真实可访问名称定位；保留原充值和金额校验。",
+      "evidence": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds01.log",
+      "fix_sha": "35499f98ace4bafc21493f2efab39074329e487f",
+      "environment_resolution": null,
+      "targeted_retest": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/EXECUTION_SUMMARY.json",
+      "limits": "局部同记录分段复测，非最终同版全量；ENV063根因未完全确认。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-08"
+      ]
+    },
+    {
+      "id": "QA18-TEST-062",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "从本人DTO读取运营私有附件列表",
+      "actual": "本人退款DTO不暴露evidence_asset_ids，脚本错误依赖该字段。",
+      "expected": "独审身份读取同一运营记录取得依据ID，Vue实际下载并比对原字节SHA；本人视图不扩权。",
+      "evidence": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds02.log",
+      "fix_sha": "6adb78d7b92863e25484cc7ca705d4769eb43345",
+      "environment_resolution": null,
+      "targeted_retest": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/EXECUTION_SUMMARY.json",
+      "limits": "局部同记录分段复测，非最终同版全量；ENV063根因未完全确认。",
+      "group": "G17",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-08"
+      ]
+    },
+    {
+      "id": "QA18-ENV-063",
+      "kind": "ENVIRONMENT",
+      "product_bug_confirmed": false,
+      "summary": "第22个页面启动未产生Flutter语义入口",
+      "actual": "两种退款均已实际成功后，会员读取页在18秒内无语义占位符，未找到确定产品根因。",
+      "expected": "保留空页及原请求；释放已结束context后从原记录接续通过，根因仍待最终全量观察，未重发退款。",
+      "evidence": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds04.log",
+      "fix_sha": "ee1c6596b0bb0e67afe848863873892e088ce31c",
+      "environment_resolution": null,
+      "targeted_retest": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/EXECUTION_SUMMARY.json",
+      "limits": "局部同记录分段复测，非最终同版全量；ENV063根因未完全确认。",
+      "group": "G17",
+      "status": "RECHECK_PASS_ROOT_CAUSE_OPEN",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-08"
+      ]
     }
   ]
 }
