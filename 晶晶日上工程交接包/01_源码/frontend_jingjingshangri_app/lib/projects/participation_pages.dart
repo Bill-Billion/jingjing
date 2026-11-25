@@ -455,9 +455,10 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         } while (cursor != null);
         if (!mounted || t != ticket) return;
         recastSources = sources;
-        if (!sources.any((x) => x['id'] == selectedRecastSource))
+        if (!sources.any((x) => x['id'] == selectedRecastSource)) {
           selectedRecastSource =
               sources.length == 1 ? sources.single['id'] : null;
+        }
       }
       if (['new', 'amend', 'recast'].contains(widget.view) && !widget.income) {
         final list = <ArtistPerson>[], seen = <String>{};
@@ -1305,7 +1306,9 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
       if (!mounted ||
           epoch != session.epoch ||
           t != ticket ||
-          candidate?['id'] != cid) return;
+          candidate?['id'] != cid) {
+        return;
+      }
       communityRequire(page['candidate_id'] == cid);
       final items = communityItems(page), next = page['next_cursor'];
       for (final r in items) {

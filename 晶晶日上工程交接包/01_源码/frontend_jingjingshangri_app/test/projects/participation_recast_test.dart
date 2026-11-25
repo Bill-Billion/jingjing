@@ -94,28 +94,32 @@ void main() {
     var available = true;
     late FakeAccountAdapter a;
     a = FakeAccountAdapter(handler: (r) {
-      if (r.path == '/api/v1/projects/records/$candidateKey')
+      if (r.path == '/api/v1/projects/records/$candidateKey') {
         return envelope(c);
+      }
       if (r.path == '/api/v1/projects/records/$projectKey') return envelope(p);
-      if (r.path == '/api/v1/projects/projects/$projectKey/records')
+      if (r.path == '/api/v1/projects/projects/$projectKey/records') {
         return envelope({
           'items': r.queryParameters['kind'] == 'ROLE'
               ? [projectData('ROLE', owner: orgId)]
               : [c],
           'next_cursor': null
         });
+      }
       if (r.path ==
           '/api/v1/projects/candidates/$candidateKey/recast-sources') {
         final d = sources(c);
         if (!available) d['items'] = <Object>[];
         return envelope(d);
       }
-      if (r.path == '/api/v1/artists/people')
+      if (r.path == '/api/v1/artists/people') {
         return envelope({'items': <Object>[], 'next_cursor': null});
-      if (r.path.contains(assetKey))
+      }
+      if (r.path.contains(assetKey)) {
         return envelope({
           'error': {'code': 'PROJECT_NOT_FOUND', 'message': 'private'}
         }, status: 404, error: true);
+      }
       return a.defaultReply(r);
     });
     final s = (await t.runAsync(() => communitySession(a)))!;
