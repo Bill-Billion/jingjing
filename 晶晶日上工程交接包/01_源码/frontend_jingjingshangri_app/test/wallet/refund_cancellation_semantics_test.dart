@@ -11,16 +11,24 @@ void main() {
     addTearDown(semantics.dispose);
     const id = 'a8000000-0000-4000-8000-000000000009';
     final record = <String, dynamic>{
-      'id': id, 'object_version': 2, 'current_status': 'APPROVED',
+      'id': id,
+      'object_version': 2,
+      'current_status': 'APPROVED',
       'recharge_id': 'a8000000-0000-4000-8000-000000000003',
-      'requested_minor': 2500, 'amount_minor': 2500, 'currency': 'CNY',
+      'requested_minor': 2500,
+      'amount_minor': 2500,
+      'currency': 'CNY',
       'reason': '合成监护申请，由子女取消尚未发送的原申请',
-      'task_scheduled': false, 'applicant_kind': 'GUARDIAN',
+      'task_scheduled': false,
+      'applicant_kind': 'GUARDIAN',
       'created_at': '2026-11-25T12:00:00.000Z',
     };
     final a = FakeAccountAdapter(handler: (r) {
       if (r.path.endsWith('/wallet/recharge-refunds')) {
-        return envelope({'items': [record], 'next_cursor': null});
+        return envelope({
+          'items': [record],
+          'next_cursor': null
+        });
       }
       if (r.path.endsWith('/wallet/recharge-refunds/$id')) {
         return envelope(record);
@@ -36,7 +44,8 @@ void main() {
     await reveal(t, input);
     final node = t.getSemantics(input);
     expect(node.label, '取消原因');
-    expect(node.rect.height, lessThanOrEqualTo(t.getSize(input).height + 1));
+    // communityField includes its 16px bottom spacing, but no record facts.
+    expect(node.rect.height, lessThanOrEqualTo(t.getSize(input).height + 16));
     expect(find.bySemanticsLabel('申请金额: ¥25.00'), findsOneWidget);
     await t.enterText(input, '尚未发出，请取消原申请');
     await reveal(t, find.text('取消未发送的申请'));

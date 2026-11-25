@@ -293,8 +293,8 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
       // The list is a minimal index. Identity/child fields belong to the
       // permission-checked detail and must not be inferred from a list item.
       final links = <Map<String, dynamic>>[];
-      for (final item in communityItems(page).where((r) =>
-          r['kind'] == 'LINK' && r['current_status'] == 'ACTIVE')) {
+      for (final item in communityItems(page).where(
+          (r) => r['kind'] == 'LINK' && r['current_status'] == 'ACTIVE')) {
         communityRequire(communityId(item['id']));
         final link = await CommunityApi(session, 'guardians')
             .read('records/${item['id']}', account: true);
@@ -571,7 +571,10 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
                 if (!widget.guardian &&
                     ['IN_REVIEW', 'APPROVED']
                         .contains(r['current_status'])) ...[
-                  communityField(cancellation, '取消原因', enabled: !locked),
+                  Semantics(
+                      container: true,
+                      child: communityField(cancellation, '取消原因',
+                          enabled: !locked)),
                   tradeButton('取消未发送的申请', locked ? null : cancelRefund,
                       outline: true),
                 ],
