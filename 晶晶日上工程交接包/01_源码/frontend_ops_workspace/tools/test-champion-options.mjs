@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict'
+import {createServer} from 'vite'
+import {fileURLToPath} from 'node:url'
+const root=fileURLToPath(new URL('..',import.meta.url)),server=await createServer({root,configFile:false,resolve:{alias:{'@':`${root}/src`}},server:{middlewareMode:true,ws:false},appType:'custom'})
+try{
+ const{sourceFor,readReferences,referenceOptions}=await server.ssrLoadModule('/src/business/references.ts'),id=n=>`00000000-0000-4000-8000-${String(n).padStart(12,'0')}`
+ const snapshot=sourceFor('snapshot_id',{},'engagement',id(1)),stock=sourceFor('reward_stock_id',{},'engagement',id(1)),rank={id:id(2),kind:'RANK_SNAPSHOT',current_status:'PUBLISHED',data:{city:'synthetic',district:'district',category:'ACTING'}},available={id:id(3),kind:'REWARD_STOCK',owner_party_id:id(9),current_status:'AVAILABLE',data:{title:'Independent supplier stock',capacity:2,reserved:1,issued:0,valid_until:'2099-01-01T00:00:00.000Z'}}
+ assert.equal(snapshot.path,'/engagement/queue?kind=RANK_SNAPSHOT&limit=100');assert.equal(snapshot.party,'none');assert(snapshot.filter(rank));assert(!snapshot.filter({...rank,current_status:'IN_REVIEW'}));assert(!snapshot.filter({...rank,kind:'COMPETITION'}))
+ assert.equal(stock.path,'/engagement/queue?kind=REWARD_STOCK&limit=100');assert(stock.filter(available));for(const changed of [{...available,current_status:'IN_REVIEW'},{...available,kind:'REWARD_GRANT'},{...available,data:{...available.data,issued:1}},{...available,data:{...available.data,valid_until:'2020-01-01T00:00:00.000Z'}},{...available,data:{...available.data,capacity:'invalid'}}])assert(!stock.filter(changed))
+ const original=globalThis.fetch;try{globalThis.fetch=async(url,o)=>{assert(String(url).includes('/engagement/queue?kind=REWARD_STOCK&limit=100'));assert(!o.headers['X-Acting-Party']);return new Response(JSON.stringify({data:{items:[available,{...available,id:id(4),current_status:'IN_REVIEW'}],next_cursor:id(8)},meta:{request_id:id(7),actor:{account_id:id(10)},acting_party:null}}),{status:200,headers:{'Content-Type':'application/json'}})};const rows=await readReferences(stock,{token:'synthetic',accountId:id(10),partyId:id(1)});assert.deepEqual(referenceOptions(rows.items,'reward_stock_id').map(x=>x.value),[available.id]);assert.equal(rows.data.next_cursor,id(8));}finally{globalThis.fetch=original}
+ console.log('PASS championship sources: published snapshot, independently approved available stock, remaining capacity/expiry, operator authority and pagination; supplier need not be event operator')
+}finally{await server.close()}
