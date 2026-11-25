@@ -16,6 +16,7 @@ export function poolReviewEvidence(record:BusinessData|null):ReferenceOption[]{
 }
 export function sourceFor(key:string,context:Record<string,unknown>,domain:string,party:string):ReferenceSource|null{
  const person=context.person_id||context.seller_person_id
+ if(domain==='engagement'&&key==='candidate_id'&&['judge','tie'].includes(String(context.engagement_action)))return {path:'/engagement/queue?kind=CANDIDATE&limit=100',party:'none',filter:r=>r.kind==='CANDIDATE'&&r.current_status==='APPROVED'&&(!uuid(context.event_id)||r.parent_id===context.event_id)}
  if(domain==='engagement'&&key==='snapshot_id')return {path:'/engagement/queue?kind=RANK_SNAPSHOT&limit=100',party:'none',filter:r=>r.kind==='RANK_SNAPSHOT'&&r.current_status==='PUBLISHED'}
  if(domain==='engagement'&&key==='reward_stock_id')return {path:'/engagement/queue?kind=REWARD_STOCK&limit=100',party:'none',filter:r=>{const d=rowData(r);return r.kind==='REWARD_STOCK'&&r.current_status==='AVAILABLE'&&Number.isFinite(Number(d.capacity))&&Number(d.capacity)-Number(d.reserved)-Number(d.issued)>0&&Date.parse(String(d.valid_until))>Date.now()}}
  if(domain==='redemption'&&key==='stock_id'&&context.redemption_action==='pool'){
