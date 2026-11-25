@@ -15,7 +15,7 @@ const groups = {
  G05: ['stock-media.integration', 'artists.integration'],
  G06: ['directory.integration'],
  G07: ['discovery.integration', 'catalog-city'],
- G08: ['collections.integration'],
+ G08: ['collections.integration', 'collections-default-retention.integration'],
  // The package filename is a search hint; notice/counter-notice assertions live here.
  G09: ['support.integration', 'contract-six.integration'],
  G10: ['notifications.integration'],

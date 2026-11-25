@@ -1,0 +1,41 @@
+TAP version 13
+# Subtest: default collection retention: 201 real visits, 200 retained, 30-day physical purge and stale replay
+    # Subtest: default settings require explicit opt-in and advertise original limits
+    ok 1 - default settings require explicit opt-in and advertise original limits
+      ---
+      duration_ms: 86.8042
+      type: 'test'
+      ...
+    # Subtest: 201 independently approved notices create at most 200 actual history rows
+    ok 2 - 201 independently approved notices create at most 200 actual history rows
+      ---
+      duration_ms: 5557.58
+      type: 'test'
+      ...
+    # Subtest: 30-day recorded time and explicit expiry both physically purge; day29 survives
+    ok 3 - 30-day recorded time and explicit expiry both physically purge; day29 survives
+      ---
+      duration_ms: 69.098
+      type: 'test'
+      ...
+    # Subtest: replaying old visits or queued writes cannot resurrect trimmed or cleared rows
+    ok 4 - replaying old visits or queued writes cannot resurrect trimmed or cleared rows
+      ---
+      duration_ms: 58.8204
+      type: 'test'
+      ...
+    1..4
+ok 1 - default collection retention: 201 real visits, 200 retained, 30-day physical purge and stale replay
+  ---
+  duration_ms: 13644.19
+  type: 'test'
+  ...
+1..1
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13855.1209
