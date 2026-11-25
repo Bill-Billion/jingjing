@@ -301,6 +301,51 @@ void main() {
         'APPROVED');
     expect(a.requests.last.headers['X-Acting-Party'], personId);
   });
+  Map<String, dynamic> linkedAvatar() {
+    final r = projectSupply('AVATAR');
+    r['data'] = {
+      'display_name': '本人已认证档案形象',
+      'material_asset_ids': <String>[],
+      'provider_asset_ref': null,
+      'artist_person_id': candidateKey,
+      'archive_status': 'EMPTY',
+      'long_lived_model_status': 'NOT_ENABLED'
+    };
+    return r;
+  }
+
+  Future<List<Map<String, dynamic>>> choicesFor(Map<String, dynamic> record) async {
+    final a = projectsAdapter(override: (request) =>
+        request.path == '/api/v1/supply/records'
+            ? envelope({'items': [record], 'next_cursor': null})
+            : null);
+    return ProjectsApi(await buyerSession(a)).supplyChoices('AVATAR');
+  }
+
+  test('角色报名接受已关联本人档案的新数字人DTO，素材由独立造型版本管理', () async {
+    final record = linkedAvatar();
+    expect((await choicesFor(record)).single['id'], avatarKey);
+    record['data']['archive_status'] = 'DELIVERED';
+    record['data']['material_asset_ids'] = [assetKey];
+    expect((await choicesFor(record)).single['data']['artist_person_id'], candidateKey);
+  });
+  for (final defect in ['person', 'archive', 'model', 'provider', 'material', 'missing', 'extra', 'owner']) {
+    test('档案数字人选项仍拒绝非法字段或归属：$defect', () async {
+      final record = linkedAvatar(), data = record['data'] as Map<String, dynamic>;
+      switch (defect) {
+        case 'person': data['artist_person_id'] = 'not-a-person-id'; break;
+        case 'archive': data['archive_status'] = 'APPROVED'; break;
+        case 'model': data['long_lived_model_status'] = 'ENABLED'; break;
+        case 'provider': data['provider_asset_ref'] = 'unexpected-provider'; break;
+        case 'material': data['material_asset_ids'] = ['not-an-asset']; break;
+        case 'missing': data.remove('archive_status'); break;
+        case 'extra': data['silently_trusted'] = true; break;
+        case 'owner': record['owner_party_id'] = orgId; break;
+      }
+      await expectLater(choicesFor(record), throwsA(isA<AccountError>()));
+    });
+  }
+
   test('成功写入仍须属于原角色，错误关联响应保留原请求结果未知', () async {
     final a = projectsAdapter(override: (r) {
           if (!r.path.endsWith('/applications')) return null;
