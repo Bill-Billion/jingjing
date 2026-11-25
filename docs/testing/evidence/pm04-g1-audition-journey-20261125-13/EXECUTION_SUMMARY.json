@@ -1,0 +1,107 @@
+{
+  "run_id": "pm04-g1-audition-journey-20261125-13",
+  "stage": "T1_DISCOVERY_G17",
+  "goal": "ACTIVE",
+  "criterion": "E2E-03",
+  "result": "PARTIAL_SCOPED_REVERSE_COMPLETE_NORMAL_ACCEPTED",
+  "backend_product_source": "07822585dc90d589f8e3363957b0024ff9d1f769",
+  "app_product_source": "18a8d20faa52cb8b8cf7956926a32c820a49dd86",
+  "vue_product_source": "9c1fbf58908a75ab1afa051afc955990d0329903",
+  "driver_source": "4931e8eeb6a1b6552371ded61adc7a42b23f4fb9",
+  "api_version": "0.31.79-rc.2",
+  "migration": "0225",
+  "environment": "jx_test_stock_pm03_d7cf52eb8ac435ce803300d9",
+  "loopback_ports": [
+    51661,
+    5500,
+    5173
+  ],
+  "expires_at": "2026-11-25T15:48:20.352Z",
+  "scoped_checks": 18,
+  "browser_attempts": 10,
+  "failed_attempts_preserved": 7,
+  "test_driver_failures": 5,
+  "product_failure_attempts": 2,
+  "confirmed_product_defects": 1,
+  "backend_passed": 70,
+  "backend_failed": 0,
+  "backend_skipped": 0,
+  "backend_start_source": "45613ce649e2efbe30cfc78565290b997c5a92bc",
+  "runtime_response_cases": 444,
+  "vue_business_suite_exit": 0,
+  "vue_build_and_types_exit": 0,
+  "vue_build_warning": "bundle size warning retained",
+  "census": {
+    "normal": {
+      "booking_id": "90efb0a0-511e-46e9-92bc-f181703fb4bb",
+      "order_id": "8dd6c894-dca0-4fb1-9aa6-3cd5eb5ceb7f",
+      "payment_count": 1,
+      "refund_count": 0,
+      "financial": {
+        "net_minor": 10000,
+        "received_minor": 10000,
+        "refunded_minor": 0
+      },
+      "contract_unchanged": true,
+      "no_separate_transport_fee": true,
+      "records": [
+        {
+          "id": "8dd6c894-dca0-4fb1-9aa6-3cd5eb5ceb7f",
+          "kind": "ORDER",
+          "status": "PAID"
+        },
+        {
+          "id": "df78eca8-b739-41d5-8c15-4e07f5df3471",
+          "kind": "PAYMENT",
+          "status": "SUCCEEDED",
+          "amount_minor": 10000
+        }
+      ]
+    },
+    "reverse": {
+      "booking_id": "4fe8ef93-91b3-4437-b13b-298dfb41b6ef",
+      "order_id": "26163ac4-4c2d-40f3-bbca-164f31604b73",
+      "payment_count": 1,
+      "refund_count": 1,
+      "financial": {
+        "net_minor": 0,
+        "received_minor": 10000,
+        "refunded_minor": 10000
+      },
+      "contract_unchanged": true,
+      "no_separate_transport_fee": true,
+      "records": [
+        {
+          "id": "26163ac4-4c2d-40f3-bbca-164f31604b73",
+          "kind": "ORDER",
+          "status": "REFUNDED"
+        },
+        {
+          "id": "4ee68147-4b4e-4b28-9dbf-7bcbac7fbd0a",
+          "kind": "PAYMENT",
+          "status": "SUCCEEDED",
+          "amount_minor": 10000
+        },
+        {
+          "id": "57f129e9-40bc-40da-8eae-e24ed8b677c2",
+          "kind": "REFUND",
+          "status": "SUCCEEDED",
+          "amount_minor": 10000,
+          "payment_id": "4ee68147-4b4e-4b28-9dbf-7bcbac7fbd0a"
+        }
+      ]
+    }
+  },
+  "normal_arrival_not_before": "2026-11-25T10:25:00.000Z",
+  "formal_promotions": 0,
+  "groups_closed": 0,
+  "final_full_regression_complete": false,
+  "limits": [
+    "Normal order has reached paid/accepted with same booking, not material delivery, buyer acceptance or T+1 settlement. Real arrival deadline not advanced.",
+    "Original approved synthetic-v1 rule is a historical 48h-from-receipt snapshot, not CONTRACT_20261029 delivery-review timing. Current-policy browser variant remains.",
+    "Seller identity, L2 and material consent are inherited synthetic fixtures. No actual adult certification, person attendance or performance rights acceptance.",
+    "App evidence is compiled Flutter Web, not Android device. Payments/refunds are explicit loopback simulation.",
+    "Independent70backendtests/444responses use different temporary databases and deliberate time fixtures; not the same browser booking or real elapsed T+1.",
+    "Ordinary failures retained. Tests resumed same record after fixes; not final same-version full regression."
+  ]
+}

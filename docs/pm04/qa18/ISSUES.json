@@ -552,6 +552,46 @@
         "E2E-02"
       ],
       "limits": "35 scoped checks on same order across resumed drivers; final fixed-version18group/12chain regression and all required surface/case slots remain. ENV fix is invocation physical cwd, no product source change."
+    },
+    {
+      "id": "QA18-FE-031",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "试镜会话列表清空原预约引用且列表原记录选择无来源",
+      "actual": "直接原预约页面GET200但发送BUSINESS_REFERENCE_REQUIRED；列表入口读取可选原记录无请求、无选项。浏览器第7/8次失败。",
+      "expected": "列表响应没有实体ID时保留已选原预约；会话等预约栏目从本人BOOKING接口选择，仍由后端核权限。",
+      "evidence": "docs/testing/evidence/pm04-g1-audition-journey-20261125-13/browser-07.log",
+      "fix_sha": "9c1fbf58908a75ab1afa051afc955990d0329903",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-audition-journey-20261125-13/EXECUTION_SUMMARY.json",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "limits": "第9/10次同预约选择入口和直接链接均发送成功；business suite及types/build退出0，最终18组回归待。",
+      "group": "G17",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-03"
+      ]
+    },
+    {
+      "id": "QA18-TEST-032",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "试镜App日期菜单和Flutter时间输入焦点假设错误",
+      "actual": "前5次驱动未正确完成真实日期/时段选择，预约尚未创建；原始失败保留。",
+      "expected": "使用真实菜单/日期时间选择器和键盘事件，等待弹层稳定并核每个值后提交；第6次实际预约和安全审核成功。",
+      "evidence": "docs/testing/evidence/pm04-g1-audition-journey-20261125-13/browser-01.log",
+      "fix_sha": "21985d187be2299b563017b641ba471dc2766511",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-audition-journey-20261125-13/checkpoint.json",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "limits": "只修驱动，不改日期门禁或业务断言。",
+      "group": "G17",
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-03"
+      ]
     }
   ]
 }
