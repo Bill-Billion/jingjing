@@ -1,0 +1,89 @@
+{
+  "authoritative_register": "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+  "authoritative_sha256": "dd1e55d8d7e7ef357ba643a070091ea1323017615295077c1427733c40664e2a",
+  "criteria": [
+    {
+      "id": "ACC-DEL-02.01",
+      "work": "真实身份和年龄",
+      "source_expected": "服务端维护已核验/待核验/受限年龄状态及证据引用。；未成年直接调用充值、试镜、经营、抽奖接口须拒绝。",
+      "required_cases": [
+        "normal",
+        "reverse"
+      ],
+      "required_surfaces": [
+        "api"
+      ],
+      "status": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-02.04",
+      "work": "代理及监护",
+      "source_expected": "本人授权、机构代理、监护处理分别记录。；代理管理权不代替脸声单独同意；误判可申诉。",
+      "required_cases": [
+        "normal",
+        "reverse"
+      ],
+      "required_surfaces": [
+        "api"
+      ],
+      "status": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-17.03",
+      "work": "会员年",
+      "source_expected": "300资格/续期、到期冻结、等级保留和恢复按独立期间。；首次达标不能同次无限续多年；未定边界只阻塞该策略。",
+      "required_cases": [
+        "normal",
+        "reverse"
+      ],
+      "required_surfaces": [
+        "api"
+      ],
+      "status": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-23.03",
+      "work": "年龄与消费",
+      "source_expected": "未成年人限制、监护授权、误充原路退，单次/日/月限额及冷静期。；关闭青少年显示模式不绕过服务端年龄限制。",
+      "required_cases": [
+        "normal",
+        "reverse"
+      ],
+      "required_surfaces": [
+        "api"
+      ],
+      "status": "PARTIAL"
+    },
+    {
+      "id": "E2E-08",
+      "work": "充值300→资格解锁→消费发成长→到期/续期→冻结恢复→退款冲回",
+      "source_expected": "充值不发分；同次充值不无限续年；未核验正式储值不启用",
+      "required_cases": [
+        "normal",
+        "reverse",
+        "unauthorized",
+        "duplicate",
+        "state_change",
+        "recovery"
+      ],
+      "required_surfaces": [
+        "api",
+        "app",
+        "web"
+      ],
+      "status": "PARTIAL"
+    }
+  ],
+  "correction": "ACC-DEL-17.03 defines expiry freezing, retained attained level and later renewal recovery. Round22 already demonstrated expiry and recovery. A new operator membership-freeze feature is not specified and must not be invented.",
+  "historical_evidence": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/",
+  "historical_source_current_equivalence_claimed": false,
+  "current_backend_cross_period_test": "backend01/artifacts/wallet-cross-period-result.json",
+  "current_app_membership_widget": "app-tests.log",
+  "remaining": [
+    "Final same-version full E2E08 including actual required surfaces/scenarios and lawful source receipts; no carry-forward of old complete PASS.",
+    "Original guardian recharge refund: App chooses reviewed relation, child and original recharge; own evidence; Vue independent review and amount; same task UNKNOWN/query; child copy, wrong family and revocation.",
+    "Original eight minor-protection clusters remain required deferred as PM04 defines; current tests are safety/adjacent regressions, not completion of G2."
+  ],
+  "new_product_requirement": false,
+  "formal_status_changed": false
+}
