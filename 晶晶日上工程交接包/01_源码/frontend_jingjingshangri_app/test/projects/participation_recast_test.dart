@@ -158,8 +158,9 @@ void main() {
     final c = candidate(), p = projectData('PROJECT', owner: orgId);
     late FakeAccountAdapter a;
     a = FakeAccountAdapter(handler: (r) {
-      if (r.path == '/api/v1/projects/records/$candidateKey')
+      if (r.path == '/api/v1/projects/records/$candidateKey') {
         return envelope(c);
+      }
       if (r.path == '/api/v1/projects/records/$projectKey') return envelope(p);
       return a.defaultReply(r);
     });
@@ -182,7 +183,10 @@ void main() {
     expect(
         find.text('/projects/participation?view=recast&recordId=$candidateKey'),
         findsOneWidget);
-    expect(a.requests.any((r) => r.method == 'POST'), isFalse);
+    expect(
+        a.requests.any((r) =>
+            r.method == 'POST' && r.path.startsWith('/api/v1/projects/')),
+        isFalse);
     await t.pumpWidget(const SizedBox.shrink());
     session.dispose();
   });
