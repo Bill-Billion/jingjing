@@ -75,7 +75,7 @@ async function g05(){
  assert(d.cachedRevocation,'Loaded page revocation remains unproven after interrupted attempt');d.complete=true;await done('g05-scoped-public-display-chain-complete-not-full-criterion');
 }
 async function prepareTypedMedia(owner,d){
- for(const [kind,type,name]of [['audio','audio/wav','synthetic-tone.wav'],['video','video/mp4','full.mp4']]){
+ for(const [kind,type,name]of [['audio','audio/wav','synthetic-tone.wav'],['video','video/mp4','sample-1-full.mp4']]){
   if(d[kind])continue;
   let bytes;
   if(kind==='audio'){
