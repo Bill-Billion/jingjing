@@ -592,6 +592,26 @@
       "acceptance_ids": [
         "E2E-03"
       ]
+    },
+    {
+      "id": "QA18-TEST-033",
+      "group": "G17",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "通告链驱动误用艺人提交标识及原键恢复后的确认弹窗",
+      "actual": "第1次等待不存在的artists-submit；第2次App已按原键恢复同一工单，驱动仍寻找已不再出现的确认办理。两次均保留失败。",
+      "expected": "使用artists-form-confirm和artists-form-submit；以已实际返回的同键/同体200及同工单核对恢复，不额外假设确认弹窗；不重复创建。",
+      "evidence": "docs/testing/evidence/pm04-g1-notice-journey-20261125-14/browser-01.log",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-notice-journey-20261125-14/EXECUTION_SUMMARY.json",
+      "fix_sha": "0ec027474ea84d757b9bba77b1157e265bbb3038",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-04"
+      ],
+      "limits": "4次接续最终20检查；2失败为驱动，当前产品未改。normal三端3槽登记不覆盖其他五类场景或最终全量。"
     }
   ]
 }
