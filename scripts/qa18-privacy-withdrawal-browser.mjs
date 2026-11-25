@@ -15,7 +15,7 @@ async function actor(role,surface,path){const c=await browser.newContext({viewpo
  if(surface==='web')await c.addInitScript(({token,party,expires})=>{sessionStorage.setItem('ops.session.token',token);sessionStorage.setItem('ops.session.selected',party);sessionStorage.setItem('ops.session.expires_at',expires);},{token:f.accounts[role].bearer_token,party:path.startsWith('/privacy/')?f.accounts[role].personal_party_id:f.accounts[role].party_id,expires:f.expires_at});
  const p=await c.newPage();pages.push(p);p.setDefaultTimeout(18000);p.on('dialog',d=>d.accept());observe(p,role+'-'+surface);await p.goto(surface==='app'?'http://127.0.0.1:5500/?fixtureRole='+role+'#'+path:'http://127.0.0.1:5173'+path);if(surface==='app'){await p.locator('flt-semantics-placeholder').waitFor({state:'attached'});await p.locator('flt-semantics-placeholder').evaluate(e=>e.click());}await idle(p);return p;
 }
-async function seek(p,l){for(let n=0;n<55;n++){const b=await l.count()?await l.last().boundingBox():null;if(b&&b.y+b.height/2>=58&&b.y+b.height/2<p.viewportSize().height-8)return l.last();await p.mouse.move(175,420);await p.mouse.wheel(0,b?.y<58?-260:260);await p.waitForTimeout(100);}throw Error('App control not reachable '+l);}
+async function seek(p,l){if(!await l.count()){await p.mouse.move(175,420);await p.mouse.wheel(0,-20000);await p.waitForTimeout(150);}for(let n=0;n<55;n++){const b=await l.count()?await l.last().boundingBox():null;if(b&&b.y+b.height/2>=58&&b.y+b.height/2<p.viewportSize().height-8)return l.last();await p.mouse.move(175,420);await p.mouse.wheel(0,b?.y<58?-260:260);await p.waitForTimeout(100);}throw Error('App control not reachable '+l);}
 async function click(p,name,role='button'){await(await seek(p,p.getByRole(role,{name,exact:true}))).click();}
 async function fill(p,name,value){const l=await seek(p,p.getByRole('textbox',{name}));await l.click();await p.keyboard.press('ControlOrMeta+A');await p.keyboard.insertText(value);await p.waitForTimeout(100);assert.equal(await l.inputValue(),value);await p.keyboard.press('Tab');}
 async function request(p,path,action,{allowed=[200],slot}={}){const wait=p.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1'+path&&r.request().method()==='POST').then(async r=>({status:r.status(),j:await r.json()}));wait.catch(()=>{});await action();const {status,j}=await wait;assert(allowed.includes(status),path+' '+status+' '+j.error?.code);if(slot){s[slot]=j.data;await save();}await idle(p);return j.data;}
@@ -66,7 +66,8 @@ try{
  }
 
  phase='app-original-request-recovery';
- if(!s.reopen_recovered){
+ if(s.reopen_committed&&!s.reopen_recovered&&!s.reopen_readback){const r=await api('buyer','/privacy/requests/'+s.privacy.id);assert.equal(r.current_status,'REOPENED');assert.equal(r.object_version,s.reopen_committed.data.object_version);s.reopen_readback={id:r.id,version:r.object_version,status:r.current_status,ui_original_key_recovery:'NOT_COMPLETED_ORIGINAL_BROWSER_ENDED',no_second_post:true};await done('read-original-committed-reopen-after-driver-failure-without-repeating-operation');}
+ if(!s.reopen_recovered&&!s.reopen_committed){
   const p=await actor('buyer','app','/privacy?view=request&recordId='+s.privacy.id);let dropped=false;
   await p.context().route('**/api/v1/privacy/requests/'+s.privacy.id+'/reopen',async route=>{
    const q=route.request();if(q.method()!=='POST')return route.fallback();const wire={key_sha256:hash(q.headers()['idempotency-key']||''),body_sha256:hash(q.postDataBuffer()),version:q.headers()['if-match']};
@@ -78,7 +79,7 @@ try{
  }
  phase='final-current-build-read';
  const finalApp=await actor('buyer','app','/privacy?view=request&recordId='+s.privacy.id);await finalApp.setViewportSize({width:390,height:6000});await idle(finalApp);const finalAria=await finalApp.locator('body').ariaSnapshot();assert(finalAria.includes('该模型已确认删除')&&finalAria.includes('所用授权: 已撤回'));assert(!finalAria.includes('模型进展: DELETED')&&!finalAria.includes('所用授权: 已退出'));await snap(finalApp,'final-app-current-model-and-original-answer');await finalApp.context().close();await done('final-current-app-explains-model-and-consent-with-original-answer-retained');
- s.attempts.at(-1).result='PASS_WITHDRAWAL_DELETION_AND_REVIEWED_RESPONSE';s.model_chain_complete=true;await save();
+ s.attempts.at(-1).result=s.reopen_recovered?'PASS_WITHDRAWAL_DELETION_AND_REVIEWED_RESPONSE':'PASS_SCOPED_READBACK_WITH_UI_RECOVERY_LIMIT';s.model_chain_complete=true;await save();
 }catch(e){s.attempts.at(-1).result='FAIL';s.attempts.at(-1).failure={phase,message:e.message,stack:e.stack};console.error(phase+': '+e.message);for(const[i,p]of pages.entries())if(!p.isClosed())await snap(p,'failure-'+i).catch(()=>{});process.exitCode=1;}
 finally{s.attempts.at(-1).finished_at=new Date().toISOString();await save();await writeFile(join(out,attempt+'-result.json'),JSON.stringify(s,null,2));await browser.close();}
 
