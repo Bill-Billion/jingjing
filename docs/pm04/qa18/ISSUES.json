@@ -632,6 +632,26 @@
         "E2E-05"
       ],
       "limits": "5次接续最终14检查，3驱动失败；本房间真实截止与后续制作/优惠/片段待，不提升完整场景槽。"
+    },
+    {
+      "id": "QA18-TEST-035",
+      "group": "G17",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "行程依据选择器驱动误用旧取样照片，未走本页上传流程",
+      "actual": "首轮旧照片未在行程依据目录出现，等待选择超时。修订因PowerShell管道中文字编码未应用，原驱动再次失败；两次均留证。",
+      "expected": "在同原预约页面上传明确合成到场依据，再选入行程表单；保持真实开始时间门槛，不绕过权限、不替换预约。",
+      "evidence": "docs/testing/evidence/pm04-g1-audition-delivery-20261125-16/browser-01.log",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-audition-delivery-20261125-16/EXECUTION_SUMMARY.json",
+      "fix_sha": "3d36767afb45d6731d937752c5c554c1a5610d04",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_DISCOVERY",
+      "acceptance_ids": [
+        "E2E-03"
+      ],
+      "limits": "3次接续最后9检查，另1新App只读检查；T+1/新计时规则/全部场景仍待，不升级完整槽。"
     }
   ]
 }
