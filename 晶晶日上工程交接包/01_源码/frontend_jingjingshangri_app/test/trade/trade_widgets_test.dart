@@ -20,6 +20,58 @@ Future<void> recoveryFrames(WidgetTester tester) async {
 }
 
 void main() {
+  testWidgets('同页付款与退款恢复各自提示，重试保留原退款请求键', (tester) async {
+    const payment = '/api/v1/trade/payments';
+    const refund = '/api/v1/trade/refunds';
+    const refundCopy = '退款申请结果待核对。请点击下方「恢复原请求核对」，不要重新申请退款。';
+    const paymentCopy = '请恢复原请求核对，不要修改原内容或重复建立付款。';
+    var refundAttempts = 0;
+    late FakeAccountAdapter adapter;
+    adapter = FakeAccountAdapter(handler: (r) {
+      if (r.method == 'POST' && r.path == refund) {
+        return ++refundAttempts == 1
+            ? envelope({'code': 'SERVICE_UNAVAILABLE'}, status: 503, error: true)
+            : envelope(tradeData('REFUND'));
+      }
+      if (r.method == 'POST' && r.path == payment) {
+        return envelope({'code': 'SERVICE_UNAVAILABLE'}, status: 503, error: true);
+      }
+      if (r.path.endsWith(orderId)) return envelope(tradeData('ORDER'));
+      if (r.path.endsWith(refundId)) return envelope(tradeData('REFUND'));
+      if (r.path == '/api/v1/trade/records') {
+        return envelope({'items': [], 'next_cursor': null});
+      }
+      }
+      return adapter.defaultReply(r);
+    });
+    final s = (await tester.runAsync(() => buyerSession(adapter)))!;
+    await tester.runAsync(() async {
+      for (final entry in [(refund, 'REFUND'), (payment, 'PAYMENT')]) {
+        try {
+          await TradeApi(s).write(entry.$1, {}, kind: entry.$2);
+        } catch (_) {}
+      }
+    });
+    expect(s.tradePending.map((op) => op['path']), [refund, payment]);
+    await nav.openApp(tester, s, route: '/trade/record?recordId=$orderId');
+    final refundHint = find.text(refundCopy);
+    await reveal(tester, refundHint);
+    expect(refundHint, findsOneWidget);
+    expect(find.text(paymentCopy), findsOneWidget);
+    final retry = find.text('恢复原请求核对').first;
+    await reveal(tester, retry);
+    await tester.tap(retry);
+    await recoveryFrames(tester);
+    await tester.tap(find.text('确认办理'));
+    await recoveryFrames(tester);
+    final writes = adapter.requests.where((r) => r.path == refund).toList();
+    expect(writes, hasLength(2));
+    expect(writes.first.headers['Idempotency-Key'], isNotNull);
+    expect(writes.last.headers['Idempotency-Key'],
+        writes.first.headers['Idempotency-Key']);
+    expect(s.tradePending.map((op) => op['path']), [payment]);
+    expect(adapter.requests.where((r) => r.path == payment), hasLength(1));
+  });
   testWidgets('订单汇总不把测试渠道记账当成真实到账', (tester) async {
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(handler: (r) {
