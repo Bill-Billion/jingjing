@@ -94,8 +94,8 @@ void main() {
     await frames(t);
     expect(find.text('本次公开艺人'), findsOneWidget);
     for (final pair in [
-      ['本次真实用途', '本次项目合作'],
-      ['本次意向内容', '希望沟通明确项目的表演合作']
+      ['拍摄目的与本次用途', '本次项目合作'],
+      ['意向内容说明', '希望沟通明确项目的表演合作']
     ]) {
       final field = find.widgetWithText(TextFormField, pair[0]);
       await reveal(t, field);
@@ -110,7 +110,14 @@ void main() {
         .where((r) => r.path.endsWith('/submissions') && r.method == 'POST')
         .toList();
     expect(posts, hasLength(1));
-    expect(posts.single.data['submission']['source_listing_id'], submissionId);
+    expect(posts.single.path, '/api/v1/notices/submissions');
+    expect(posts.single.headers['X-Acting-Party'], personId);
+    expect(posts.single.headers['Idempotency-Key'], isNotEmpty);
+    final body = posts.single.data['submission'];
+    expect(body['purpose'], '本次项目合作');
+    expect(body['content'], '希望沟通明确项目的表演合作');
+    expect(body['consent_id'], consentId);
+    expect(body['source_listing_id'], submissionId);
     expect(posts.single.data['submission']['avatar_id'], avatarId);
     expect(posts.single.data['submission']['target_party_id'], orgId);
     expect(posts.single.data['rule_id'], noticeId);

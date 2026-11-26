@@ -41,7 +41,23 @@ async function main(){
  const ruleInput={version:'test1',categories:[{code:'TEST',allowed:true,required_proofs:['AUTHORITY']},{code:'BANNED_TEST',allowed:false,required_proofs:[]}],ranking:{window_days:7,newcomer_days:30,minimum_orders:1,order_weight:10,net_minor_weight:0,newcomer_bonus:2},terms:'synthetic only, not production policy'};
 
  const rule=await review(take(await api('POST','/rules',author,{rule:ruleInput},null)));
- const gig=await review(take(await api('POST','/requests',buyer,{title:'合成商单'+amount,brief:'合成页面联调，不是真实订单',category:'TEST',scope:{purpose:'COMMERCIAL',territory:'CN',valid_until:'2098-01-01T00:00:00.000Z'},rule_id:rule.id,proofs:[{code:'AUTHORITY',asset_id:buyerEvidence.id}]})));
+ const requestBody={title:'合成商单'+amount,brief:'合成页面联调，不是真实订单',category:'TEST',scope:{purpose:'COMMERCIAL',territory:'CN',valid_until:'2098-01-01T00:00:00.000Z'},rule_id:rule.id,proofs:[{code:'AUTHORITY',asset_id:buyerEvidence.id}]};
+ const requestHeaders={'Idempotency-Key':key()};
+ const countRequests=async()=>Number((await db.execute(
+  "SELECT COUNT(*) AS total FROM gig_records WHERE kind='GIG' AND owner_party_id=?",
+  [buyer.personal_party_id]))[0][0].total);
+ const beforeRequests=await countRequests();
+ const submitGig=()=>api('POST','/requests',buyer,requestBody,buyer.personal_party_id,requestHeaders);
+ const refused=await submitGig();
+ assert.equal(refused.status,409,'Unverified synthetic buyer must not publish a request');
+ assert.equal(refused.body.error.code,'VERIFIED_ADULT_REQUIRED');
+ assert.equal(await countRequests(),beforeRequests);
+ const {seedAdultIdentity}=backendRequire('./helpers/trusted-identity.cjs');
+ await seedAdultIdentity(db,resolvePrincipal,buyer);
+ const originalGig=take(await submitGig());
+ assert.equal(take(await submitGig()).id,originalGig.id);
+ assert.equal(await countRequests(),beforeRequests+1);
+ const gig=await review(originalGig);
  const dir=path.resolve(process.env.JX_COMMERCIAL_OUT);await fs.mkdir(dir,{recursive:true});
  const controlToken=randomBytes(32).toString('base64url');let lastPayment,stopped=false,stopWatch;
  const config={provider:'ALIPAY',environment:'SANDBOX',app_id:'synthetic.app',merchant_id:'synthetic.merchant',merchant_party_id:seller.personal_party_id,config_revision:'synthetic'};

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../account/account_session.dart';
 import '../account/account_theme.dart';
 import '../account/app_visual.dart';
-import '../supply/supply_widgets.dart';
 import '../trade/trade_widgets.dart';
 import 'contract_api.dart';
 import 'contract_reader.dart';

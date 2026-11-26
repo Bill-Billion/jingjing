@@ -215,14 +215,6 @@ void main() {
     }
   }
 
-  Future<void> select(WidgetTester t, String label, String option) async {
-    final f = find.byWidgetPredicate((w) =>
-        w is DropdownButtonFormField<String> &&
-        w.decoration.labelText == label);
-    await press(t, f);
-    await press(t, find.text(option).last);
-  }
-
   Future<void> fill(WidgetTester t, String label, String value) async {
     final f = find.byWidgetPredicate(
         (w) => w is TextField && w.decoration?.labelText == label);

@@ -245,7 +245,9 @@ void main() {
     await tester
         .runAsync(() => session.login('13800000000', invitationId, '123456'));
     await pump(tester, session, const ProfilePage());
-    expect(find.text('账号与机构'), findsOneWidget);
+    final embedded = find.descendant(
+        of: find.byType(ProfilePage), matching: find.byType(AccountPage));
+    expect(tester.widget<AccountPage>(embedded).embedded, isTrue);
     expect(find.text(accountId), findsOneWidget);
     expect(find.text('测试账号'), findsOneWidget);
     await tester.scrollUntilVisible(find.text('角色').first, 200,

@@ -31,7 +31,7 @@ Map<String, dynamic> requestData(String type) => {
     };
 
 FakeAccountAdapter adapterFor(String type,
-    {bool mismatch = false,
+    {bool Function()? wrongPolicyRequest,
     bool closure = false,
     bool wrongTarget = false,
     int executeStatus = 503,
@@ -53,8 +53,22 @@ FakeAccountAdapter adapterFor(String type,
           'next_cursor': null
         });
       }
+      if (wrongPolicyRequest?.call() == true) {
+        return envelope({
+          'request_id': executionId,
+          'action': action,
+          'items': [{
+            'id': policyId,
+            'version': 'v1',
+            'basis': '不属于本申请的合成依据',
+            'contact_reference': '合成联系渠道',
+            'retention_rule_id': null
+          }],
+          'next_cursor': nextId
+        });
+      }
       return envelope({
-        'request_id': mismatch ? executionId : requestId,
+        'request_id': requestId,
         'action': action,
         'items': r.queryParameters['cursor'] == null
             ? []
@@ -150,15 +164,38 @@ void main() {
   });
 
   testWidgets('规则目录返回其他申请时拒绝选择且不提交', (t) async {
-    final a = adapterFor('CORRECT', mismatch: true);
+    var wrongRequest = true;
+    final a = adapterFor('CORRECT', wrongPolicyRequest: () => wrongRequest);
     final s = (await t.runAsync(() => communitySession(a)))!;
     await host(t, s, const PrivacyPage(view: 'request', recordId: requestId));
-    expect(find.text('已审合成依据'), findsNothing);
-    expect(find.textContaining('适用处理依据读取失败'), findsOneWidget);
-    expect(
-        a.requests
-            .where((r) => r.method == 'POST' && r.path.endsWith('/executions')),
-        isEmpty);
+    await reveal(t, find.text('本人提出申请'));
+    final failure = find.textContaining('适用处理依据读取失败');
+    await reveal(t, failure);
+    expect(failure, findsOneWidget);
+    const pickerKey = ValueKey('privacy-account-policy');
+    expect(find.byKey(pickerKey), findsNothing);
+    expect(find.textContaining('不属于本申请的合成依据'), findsNothing);
+    const original = '/api/v1/privacy/requests/$requestId/execution-policy-options';
+    Iterable<RequestOptions> reads() => a.requests.where((r) => r.path == original);
+    expect(reads(), hasLength(1));
+    expect(reads().single.method, 'GET');
+    expect(reads().single.queryParameters['action'], 'PROFILE_CORRECTION');
+    expect(reads().single.headers.containsKey('X-Acting-Party'), isFalse);
+    wrongRequest = false;
+    final refresh = find.text('重新读取当前记录');
+    await reveal(t, refresh);
+    await t.tap(refresh.hitTestable());
+    await frames(t);
+    final picker = find.byKey(pickerKey);
+    await reveal(t, picker);
+    expect(failure, findsNothing);
+    expect(reads().map((r) => r.queryParameters['cursor']), [null, null, nextId]);
+    await t.tap(picker.hitTestable());
+    await frames(t);
+    expect(find.text('v1 · 已审合成依据').hitTestable(), findsWidgets);
+    expect(find.textContaining('不属于本申请的合成依据'), findsNothing);
+    expect(a.requests.where((r) =>
+        r.method != 'GET' && r.path.startsWith('/api/v1/privacy/')), isEmpty);
   });
 
   testWidgets('注销响应未知保存申请编号，重开后可核对且不自动重发', (t) async {

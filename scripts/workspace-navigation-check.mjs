@@ -1,3 +1,21 @@
+import assert from 'node:assert/strict'
+
+export const WORKSPACE_ENTRY_COUNT = 80
+export const WORKSPACE_CATEGORY_COUNT = 7
+export const RECHARGE_REFUND_PATH = '/wallet-refunds/operations'
+export const RECHARGE_REFUND_LABEL = '充值退款核验与任务'
+
+// W18 is its own route in Finance/Operations, not the general refund entry
+// or an authorization grant. Check its distinct name, parent and uniqueness.
+export async function assertRechargeRefundNavigation(navigation, page) {
+  const link = navigation.locator(`a[href="${RECHARGE_REFUND_PATH}"]`)
+  const finance = navigation.locator('.workspace-nav-group')
+    .filter({ has: page.getByRole('button', { name: /^财务与运营/u }) })
+  assert.equal(await link.count(), 1)
+  assert.equal(await finance.locator(`a[href="${RECHARGE_REFUND_PATH}"]`).count(), 1)
+  assert.equal((await link.textContent()).trim(), RECHARGE_REFUND_LABEL)
+}
+
 // Expand actual category controls so callers can follow any business link.
 export async function ensureWorkspaceNavigation(page) {
   const navigation = page.locator('.workspace-nav')

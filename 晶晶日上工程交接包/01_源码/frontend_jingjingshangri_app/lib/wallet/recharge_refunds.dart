@@ -137,7 +137,7 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
             RegExp(r'^recharge-refunds/([0-9a-fA-F-]{36})/cancellation$')
                 .firstMatch(suffix);
         communityRequire(
-            !widget.guardian && match != null && value['id'] == match![1]);
+            !widget.guardian && match != null && value['id'] == match[1]);
       }
     }
   }

@@ -36,7 +36,7 @@ Future<void> layoutHost(WidgetTester t, AccountSession session, Widget page,
 }
 
 void main() {
-  testWidgets('公开详情为32px紧凑肖像并按真实城市进入有效试镜目录', (t) async {
+  testWidgets('公开详情使用紧凑姓名与肖像，并按真实城市进入有效试镜目录', (t) async {
     final adapter = FakeAccountAdapter(
         handler: (request) => request.path ==
                 '/api/v1/artists/catalog/${publicListing()['listing_id']}'
@@ -65,16 +65,22 @@ void main() {
                         onPressed: () => openArtistPublicDetails(context,
                             session: session, listing: publicListing()),
                         child: const Text('公开详情入口')))))));
+    final prior = adapter.requests.length;
     await t.tap(find.text('公开详情入口'));
     await frames(t);
     final name = t.widget<Text>(find.text('当前公开艺人'));
-    expect(name.style!.fontSize, 32);
-    expect(name.style!.fontWeight, FontWeight.w900);
+    expect(name.style!.fontSize, 28);
+    expect(name.style!.fontWeight, FontWeight.w700);
+    expect(t.getSize(find.byKey(const ValueKey('artist-public-portrait'))),
+        const Size(96, 120));
     expect(
-        t.getSize(find.byKey(const ValueKey('artist-public-portrait'))).height,
-        228);
-    await reveal(t, find.text('查看公开试镜方案'));
-    await t.tap(find.text('查看公开试镜方案'));
+        adapter.requests.skip(prior).where((r) =>
+            r.method == 'POST' ||
+            (r.path.contains('/artists/catalog/') &&
+                r.headers['X-Acting-Party'] != null)),
+        isEmpty);
+    await reveal(t, find.text('查看试镜方案'));
+    await t.tap(find.text('查看试镜方案'));
     await frames(t);
     final route = Uri.parse(destination!);
     expect(route.path, '/auditions/catalog');
@@ -250,10 +256,12 @@ void main() {
     await layoutHost(
         t, session, const NoticesPage(initialCity: '上海'), 320, 1.6);
     for (final label in ['全部', '剧与角色', '商演', '商单', '活动', '招募', '平台官方']) {
-      expect(find.widgetWithText(OutlinedButton, label), findsOneWidget);
+      expect(find.widgetWithText(TextButton, label), findsOneWidget);
     }
     expect(find.text('未提供通告封面'), findsNothing);
-    await t.tap(find.widgetWithText(OutlinedButton, '活动'));
+    final events = find.widgetWithText(TextButton, '活动');
+    await t.ensureVisible(events);
+    await t.tap(events.hitTestable());
     await frames(t);
     expect(
         adapter.requests

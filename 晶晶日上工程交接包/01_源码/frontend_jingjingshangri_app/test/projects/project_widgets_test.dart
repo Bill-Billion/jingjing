@@ -8,6 +8,12 @@ import '../production/production_widgets_test.dart' show reveal;
 import '../trade/trade_api_test.dart' show buyerSession;
 import 'project_fixtures.dart';
 
+Finder projectStatusCard(String heading, String status) =>
+    find.byWidgetPredicate((w) =>
+        w is Column &&
+        w.children.whereType<Text>().any((t) => t.data == heading) &&
+        w.children.whereType<Text>().any((t) => t.data == status));
+
 Future<void> readyDecision(WidgetTester t) async {
   await reveal(t, find.byType(CheckboxListTile));
   await t.tap(find.byType(CheckboxListTile));
@@ -146,9 +152,14 @@ void main() {
     final a = projectsAdapter(), s = (await t.runAsync(() => buyerSession(a)))!;
     await nav.openApp(t, s, route: '/projects/record?recordId=$releaseKey');
     expect(find.text('发行进度'), findsOneWidget);
-    expect(find.text('内部通过，待外部提交'), findsOneWidget);
+    expect(projectStatusCard('当前进度与下一步', '内部通过，待外部提交'), findsOneWidget);
     await reveal(t, find.text('独立审核中'));
     expect(find.text('外部发行已核实'), findsNothing);
+    expect(find.text('尚无已核实结果'), findsOneWidget);
+    expect(
+        a.requests.where(
+            (r) => r.method == 'POST' && r.path.startsWith('/api/v1/projects')),
+        isEmpty);
     expect(find.text('已提交'), findsOneWidget);
     expect(t.takeException(), isNull);
   });
@@ -198,10 +209,13 @@ void main() {
     await nav.frames(t);
     final write =
         a.requests.singleWhere((r) => r.path.endsWith('/applications'));
+    expect(write.method, 'POST');
+    expect(write.path, '/api/v1/projects/roles/$roleKey/applications');
     expect(write.data['amount_minor'], 10001);
+    expect(write.data['avatar_id'], avatarKey);
     expect(write.data['consent_id'], consentKey);
     expect(write.headers['If-Match'], '"3"');
-    expect(find.text('已报名，待筛选'), findsOneWidget);
+    expect(projectStatusCard('当前进度与下一步', '已报名，待筛选'), findsOneWidget);
     expect(t.takeException(), isNull);
   });
   testWidgets('入组确认与邀请接受不同，完整约定阅读后确认准确候选hash', (t) async {
@@ -232,12 +246,16 @@ void main() {
                     : null),
         s = (await t.runAsync(() => buyerSession(a)))!;
     await nav.openApp(t, s, route: '/projects/record?recordId=$candidateKey');
-    expect(find.text('已退出'), findsOneWidget);
+    expect(projectStatusCard('当前进度与下一步', '已退出'), findsOneWidget);
     expect(s.projectsAccessDenied, false);
     expect(
         a.requests.any((r) => r.path == '/api/v1/projects/records/$projectKey'),
         false);
     expect(find.text('退出本次申请'), findsNothing);
+    expect(
+        a.requests.where(
+            (r) => r.method == 'POST' && r.path.startsWith('/api/v1/projects')),
+        isEmpty);
     expect(t.takeException(), isNull);
   });
   testWidgets('本人可仅填写说明谢绝邀请，不要求新增资料或同意', (t) async {
@@ -268,6 +286,9 @@ void main() {
     await nav.frames(t);
     final request =
         a.requests.singleWhere((r) => r.path.endsWith('/responses'));
+    expect(request.method, 'POST');
+    expect(request.path, '/api/v1/projects/candidates/$candidateKey/responses');
+    expect(request.headers['If-Match'], isNotEmpty);
     expect(request.data, {
       'decision': 'DECLINE',
       'avatar_id': null,
@@ -275,7 +296,7 @@ void main() {
       'amount_minor': null,
       'note': '此次时间安排不合适。'
     });
-    expect(find.text('已谢绝邀请'), findsOneWidget);
+    expect(projectStatusCard('当前进度与下一步', '已谢绝邀请'), findsOneWidget);
     expect(s.projectsAccessDenied, false);
     expect(t.takeException(), isNull);
   });

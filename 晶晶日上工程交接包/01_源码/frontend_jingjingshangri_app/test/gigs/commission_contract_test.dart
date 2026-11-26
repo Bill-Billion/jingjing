@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jingjingshangri_app/account/account_api.dart';
 import 'package:jingjingshangri_app/gigs/gig_models.dart';
 import 'package:jingjingshangri_app/gigs/gig_widgets.dart';
 import 'package:jingjingshangri_app/trade/trade_models.dart';
@@ -25,10 +26,15 @@ void main() {
       final r = gigData('RELATION');
       r['data']['v5_terms'] = {'version': 'V5', 'supply_share_bps': v};
       r['content_sha256'] = gigDigest(r['data']);
-      expect(() => GigRecord.parse(r), throwsA(anything));
+      expect(
+          () => GigRecord.parse(r),
+          throwsA(isA<AccountError>()
+              .having((e) => e.code, 'code', 'INVALID_GIG_RESPONSE')));
     }
-    expect(() => gigSupplyTerms({'version': 'OTHER', 'supply_share_bps': 2000}),
-        throwsA(anything));
+    expect(
+        () => gigSupplyTerms({'version': 'OTHER', 'supply_share_bps': 2000}),
+        throwsA(isA<AccountError>()
+            .having((e) => e.code, 'code', 'INVALID_GIG_RESPONSE')));
   });
   test('实际报价和订单保留规则与双方关系快照，拒绝混入另一机构或自营模型', () {
     for (final r in fixture()['trade_records']) {
@@ -45,7 +51,10 @@ void main() {
         d['customization_finance'] = {};
       }
       r['content_sha256'] = gigDigest(d);
-      expect(() => TradeRecord.parse(r, r['buyer_party_id']), throwsA(anything));
+      expect(
+          () => TradeRecord.parse(r, r['buyer_party_id']),
+          throwsA(isA<AccountError>()
+              .having((e) => e.code, 'code', 'INVALID_TRADE_RESPONSE')));
     }
   });
   testWidgets('新商单条款展示供给收益基数，历史条款保留旧算法', (t) async {
@@ -67,7 +76,7 @@ void main() {
     expect(find.text('机构占供给收益'), findsNothing);
     expect(t.takeException(), isNull);
   });
-  testWidgets('机构表单从接口读取新规则，默认供给20%且不再输入旧平台和机构费率', (t) async {
+  testWidgets('机构表单展示20%规则但不预填，双方须明确比例且不输入旧费率', (t) async {
     late FakeAccountAdapter a;
     a = FakeAccountAdapter(
         handler: (r) => r.path.endsWith('/catalogue')
@@ -85,9 +94,27 @@ void main() {
     await nav.openApp(t, s, route: '/gigs/relations/new');
     final share = find.widgetWithText(TextField, '机构占供给收益（%，10—30）');
     await reveal(t, share);
-    expect(t.widget<TextField>(share).controller!.text, '20');
+    expect(t.widget<TextField>(share).controller!.text, isEmpty);
+    final policy = find.textContaining(
+        '新版商单平台费用22%；剩余78%为供给收益。机构默认占供给收益20%，须双方明确确认，可约定10%—30%。');
+    await reveal(t, policy);
+    expect(policy, findsOneWidget);
     expect(find.widgetWithText(TextField, '平台费用（%）'), findsNothing);
     expect(find.widgetWithText(TextField, 'MCN 分成（%）'), findsNothing);
+    final send = find.widgetWithText(FilledButton, '发送直接合作邀请');
+    await reveal(t, send);
+    expect(t.widget<FilledButton>(send).onPressed, isNull);
+    await reveal(t, share);
+    await t.enterText(share, '21.25');
+    expect(t.widget<TextField>(share).controller!.text, '21.25');
+    expect(
+        a.requests.where(
+            (r) => r.path == '/api/v1/gigs/catalogue' && r.method == 'GET'),
+        hasLength(1));
+    expect(
+        a.requests.where(
+            (r) => r.path.startsWith('/api/v1/gigs/') && r.method != 'GET'),
+        isEmpty);
     expect(t.takeException(), isNull);
   });
 }

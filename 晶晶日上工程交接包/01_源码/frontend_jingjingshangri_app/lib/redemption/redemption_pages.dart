@@ -1209,8 +1209,8 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
                       !checking &&
                       agreed &&
                       hold?['current_status'] == 'HELD' &&
-                      hd?['order_id'] == null &&
-                      DateTime.tryParse('${hd?['expires_at']}')
+                      hd['order_id'] == null &&
+                      DateTime.tryParse('${hd['expires_at']}')
                               ?.isAfter(DateTime.now()) ==
                           true
                   ? () => Navigator.pop(context, {
@@ -1226,7 +1226,7 @@ class _RedemptionState extends CommunityPageState<_Redemption> {
               enabled &&
                       !checking &&
                       hold?['current_status'] == 'HELD' &&
-                      hd?['order_id'] == null
+                      hd['order_id'] == null
                   ? () => submit(() async {
                         final out = await commandAct(
                             'holds/${hold!['id']}/release', {},

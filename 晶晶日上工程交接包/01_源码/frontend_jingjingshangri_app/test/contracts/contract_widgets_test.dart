@@ -70,9 +70,14 @@ void main() {
     expect(tester.takeException(), isNull);
   });
   testWidgets('限流按服务端秒数禁用读取按钮，不展示之前的合同', (tester) async {
+    tester.view.physicalSize = const Size(390, 844);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    var limited = false;
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(handler: (r) {
       if (r.path.contains('/content')) {
+        if (!limited) return envelope(snapshotData());
         final response =
             envelope({'code': 'RATE_LIMITED'}, status: 429, error: true);
         response.headers['retry-after'] = ['7'];
@@ -85,13 +90,30 @@ void main() {
         value: session,
         child: const MaterialApp(home: ContractPage(snapshotId: snapshotId))));
     await tester.pumpAndSettle();
-    expect(
-        tester
-            .widget<FilledButton>(find.byKey(const Key('read-contract')))
-            .onPressed,
-        isNull);
-    expect(find.textContaining('秒后可重新读取'), findsOneWidget);
-    expect(find.text('当时保存的承诺'), findsNothing);
+    final oldContent = find.text('仅供当前授权账号阅读');
+    final scroll = find.byType(Scrollable).first;
+    await tester.scrollUntilVisible(oldContent, 180, scrollable: scroll);
+    expect(oldContent, findsOneWidget);
+    tester.state<ScrollableState>(scroll).position.jumpTo(0);
+    await tester.pump();
+    final read = find.byKey(const Key('read-contract'));
+    await tester.scrollUntilVisible(read.hitTestable(), 150, scrollable: scroll);
+    limited = true;
+    await tester.tap(read.hitTestable());
+    await tester.pumpAndSettle();
+    expect(tester.widget<FilledButton>(read).onPressed, isNull);
+    final retry = find.textContaining('秒后可重新读取');
+    await tester.scrollUntilVisible(retry, 120, scrollable: scroll);
+    expect(retry, findsOneWidget);
+    expect(tester.widget<Text>(retry).data, matches(r'服务器要求稍候，[1-7] 秒后可重新读取。'));
+    expect(oldContent, findsNothing);
+    final requests = adapter.requests.where(
+        (r) => r.method == 'GET' && r.path.contains('/content')).toList();
+    expect(requests, hasLength(2), reason: '成功读取后才测试同一原件的限流');
+    expect(requests.map((r) => r.path).toSet(), hasLength(1));
+    expect(requests.first.path, contains(snapshotId));
+    expect(adapter.requests.where((r) =>
+        r.method != 'GET' && r.path.startsWith('/api/v1/contracts/')), isEmpty);
     await tester.pumpWidget(const SizedBox.shrink());
   });
   testWidgets('携带合同编号的启动路由不会被延迟开屏替换', (tester) async {
@@ -148,20 +170,30 @@ void main() {
         Theme.of(tester.element(find.byKey(const Key('contract-number'))))
             .scaffoldBackgroundColor,
         AccountTheme.canvas);
-    await tester.scrollUntilVisible(find.text('历史制作规则\n版本 2026.1'), 500,
+    final version = find.widgetWithText(OutlinedButton, '历史制作规则\n版本 2026.1');
+    await tester.scrollUntilVisible(version.hitTestable(), 160,
         scrollable: find.byType(Scrollable).first);
-    await tester.tap(find.text('历史制作规则\n版本 2026.1'));
+    await tester.tap(version.hitTestable());
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.textContaining('alert'), 400,
         scrollable: find.byType(Scrollable).first);
     expect(find.textContaining('alert'), findsOneWidget);
-    await tester.scrollUntilVisible(find.text('检查服务条件'), 500,
+    final readiness = find.widgetWithText(OutlinedButton, '检查服务条件');
+    await tester.scrollUntilVisible(readiness.hitTestable(), 160,
         scrollable: find.byType(Scrollable).first);
-    await tester.tap(find.text('检查服务条件'));
+    await tester.tap(readiness.hitTestable());
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.text('服务条件已具备'), 250,
         scrollable: find.byType(Scrollable).first);
     expect(find.text('服务条件已具备'), findsOneWidget);
+    final ruleRead = adapter.requests.singleWhere(
+        (r) => r.method == 'GET' && r.path.contains('/rule-versions/'));
+    expect(ruleRead.path, contains(ruleId));
+    expect(ruleRead.queryParameters['snapshot_id'], snapshotId);
+    expect(adapter.requests.where((r) =>
+        r.method == 'GET' && r.path.contains('/business-readiness')), hasLength(1));
+    expect(adapter.requests.where((r) =>
+        r.method != 'GET' && !r.path.startsWith('/api/v1/auth/')), isEmpty);
     expect(find.text('立即付款'), findsNothing);
     expect(find.text('签署合同'), findsNothing);
     expect(tester.takeException(), isNull);

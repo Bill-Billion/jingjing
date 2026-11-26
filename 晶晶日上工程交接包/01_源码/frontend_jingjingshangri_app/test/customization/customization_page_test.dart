@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:jingjingshangri_app/account/account_session.dart';
-import 'package:jingjingshangri_app/account/account_theme.dart';
 import 'package:jingjingshangri_app/customization/customization_api.dart';
 import 'package:jingjingshangri_app/customization/customization_page.dart';
 
@@ -37,16 +36,25 @@ Future<void> host(
   await tester.pumpAndSettle();
 }
 
-Future<void> tapKey(WidgetTester tester, String key) async {
-  final finder = find.byKey(ValueKey(key));
+Future<void> exposeStoryControl(WidgetTester tester, Finder finder) async {
   if (finder.evaluate().isEmpty) {
-    await tester.scrollUntilVisible(finder, 180,
-        scrollable: find.byType(Scrollable).first);
+    final editor = find
+        .descendant(of: find.byType(Scaffold), matching: find.byType(ListView))
+        .first;
+    final scroll =
+        find.descendant(of: editor, matching: find.byType(Scrollable)).first;
+    tester.state<ScrollableState>(scroll).position.jumpTo(0);
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(finder, 180, scrollable: scroll);
   }
   await tester.ensureVisible(finder);
   await tester.pumpAndSettle();
-  expect(finder.hitTestable(), findsOneWidget);
-  await tester.tap(finder);
+}
+
+Future<void> tapKey(WidgetTester tester, String key) async {
+  final finder = find.byKey(ValueKey(key));
+  await exposeStoryControl(tester, finder);
+  await tester.tap(finder.hitTestable());
   await tester.pumpAndSettle();
 }
 
@@ -139,12 +147,13 @@ void main() {
     await host(tester, (await tester.runAsync(() => storySession(adapter)))!,
         id: requestId);
     final field = find.byKey(const ValueKey('story-field-story'));
+    await exposeStoryControl(tester, field);
     expect(tester.widget<TextField>(field).controller!.text, '保存过的文字');
     expect(
       adapter.requests.any((r) => r.path == '/api/v1/customization-categories'),
       false,
     );
-    await tester.ensureVisible(field);
+    await exposeStoryControl(tester, field);
     await tester.enterText(field, '');
     await tapKey(tester, 'story-save');
     expect(adapter.requests.last.data, {
@@ -188,9 +197,10 @@ void main() {
     await host(tester, (await tester.runAsync(() => storySession(adapter)))!,
         id: requestId);
     final field = find.byKey(const ValueKey('story-field-story'));
-    await tester.ensureVisible(field);
+    await exposeStoryControl(tester, field);
     await tester.enterText(field, '本页未丢失的内容');
     await tapKey(tester, 'story-save');
+    await exposeStoryControl(tester, field);
     expect(tester.widget<TextField>(field).controller!.text, '本页未丢失的内容');
     expect(
       tester
@@ -200,6 +210,7 @@ void main() {
     );
     await tapKey(tester, 'story-read-current');
     expect(find.textContaining('服务器新内容'), findsOneWidget);
+    await exposeStoryControl(tester, field);
     expect(tester.widget<TextField>(field).controller!.text, '本页未丢失的内容');
     await tapKey(tester, 'story-keep-local');
     await tapKey(tester, 'story-save');
@@ -262,7 +273,7 @@ void main() {
     await host(tester, (await tester.runAsync(() => storySession(adapter)))!,
         id: requestId);
     final field = find.byKey(const ValueKey('story-field-story'));
-    await tester.ensureVisible(field);
+    await exposeStoryControl(tester, field);
     await tester.enterText(field, '保留这段输入');
     await tapKey(tester, 'story-save');
     expect(find.text('内容超过该项字数上限，请精简后保存。'), findsOneWidget);
@@ -293,17 +304,26 @@ void main() {
     await host(tester, (await tester.runAsync(() => storySession(adapter)))!,
         id: requestId);
     final field = find.byKey(const ValueKey('story-field-story'));
-    await tester.ensureVisible(field);
+    await exposeStoryControl(tester, field);
     await tester.enterText(field, '等待确认的内容');
     await tapKey(tester, 'story-save');
     final original = adapter.requests.last;
+    await exposeStoryControl(tester, field);
     expect(tester.widget<TextField>(field).enabled, false);
     await tapKey(tester, 'story-retry-original');
     expect(
       adapter.requests.last.headers['Idempotency-Key'],
       original.headers['Idempotency-Key'],
     );
-    expect(adapter.requests.last.data, original.data);
+    final commands = adapter.requests
+        .where((r) =>
+            r.method == 'PATCH' && r.path == '$storyCollection/$requestId')
+        .toList();
+    expect(commands, hasLength(2));
+    expect(commands.last.data, original.data);
+    expect(commands.last.headers['If-Match'], original.headers['If-Match']);
+    expect(commands.first.headers['Idempotency-Key'], isNotEmpty);
+    await exposeStoryControl(tester, field);
     expect(tester.widget<TextField>(field).enabled, true);
     expect(tester.takeException(), null);
   });
@@ -332,7 +352,7 @@ void main() {
     await host(tester, (await tester.runAsync(() => storySession(adapter)))!,
         id: requestId);
     final field = find.byKey(const ValueKey('story-field-story'));
-    await tester.ensureVisible(field);
+    await exposeStoryControl(tester, field);
     await tester.enterText(field, '保存并正式提交');
     await tapKey(tester, 'story-submit');
     expect(find.text('正式把故事交给平台？'), findsOneWidget);
@@ -348,14 +368,16 @@ void main() {
     expect(writes.map((r) => r.method), ['PATCH', 'POST']);
     expect(writes.last.headers['If-Match'], '"2"');
     expect(writes.last.data, {});
-    expect(find.text('平台待查看'), findsOneWidget);
+    final submitted = find.widgetWithText(Chip, '平台待查看');
+    await exposeStoryControl(tester, submitted);
+    expect(submitted, findsOneWidget);
     expect(find.byKey(const ValueKey('story-submit')), findsNothing);
     final answer = find.byKey(const ValueKey('story-answer-story'));
-    await tester.ensureVisible(answer);
+    await exposeStoryControl(tester, answer);
     await tester.pumpAndSettle();
     expect(tester.widget<SelectableText>(answer).data, '保存并正式提交');
-    expect(
-        tester.widget<SelectableText>(answer).style?.color, AccountTheme.text);
+    expect(tester.widget<SelectableText>(answer).style?.color,
+        const Color(0xFFF2F5EF));
     expect(
         tester
             .widget<SelectableText>(
@@ -414,7 +436,10 @@ void main() {
     );
     final session = (await tester.runAsync(() => storySession(adapter)))!;
     await host(tester, session, id: requestId);
-    expect(find.byKey(const ValueKey('story-field-story')), findsOneWidget);
+    final private = find.byKey(const ValueKey('story-field-story'));
+    await exposeStoryControl(tester, private);
+    expect(private.hitTestable(), findsOneWidget);
+    expect(tester.widget<TextField>(private).controller!.text, '保存过的文字');
     final logout = session.logout();
     await tester.pump();
     expect(find.byKey(const ValueKey('story-field-story')), findsNothing);

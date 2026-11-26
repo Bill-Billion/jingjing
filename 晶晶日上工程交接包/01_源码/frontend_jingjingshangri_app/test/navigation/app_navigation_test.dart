@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,6 +51,43 @@ ScrollableState sectionScroll(WidgetTester tester) =>
         of: find.byType(ListView), matching: find.byType(Scrollable)));
 
 void main() {
+  testWidgets('五个底栏图标切换选中图，保留 2x 与 3x 原图', (tester) async {
+    final adapter = FakeAccountAdapter();
+    await openApp(tester, AccountSession(api: adapter.createApi()));
+    const names = ['square', 'audition', 'notices', 'messages', 'my'];
+    final manifest = await tester.runAsync(
+      () => AssetManifest.loadFromAssetBundle(rootBundle),
+    );
+    for (var selected = 0; selected < names.length; selected++) {
+      await tester.tap(find.byKey(Key('app-tab-$selected')));
+      await frames(tester);
+      for (var i = 0; i < names.length; i++) {
+        final tab = find.byKey(Key('app-tab-$i'));
+        final icon = tester.widget<Image>(
+          find.descendant(of: tab, matching: find.byType(Image)),
+        );
+        final suffix = i == selected ? '_selected' : '';
+        expect(
+          (icon.image as AssetImage).assetName,
+          'assets/navigation/${names[i]}$suffix.png',
+        );
+        expect(tester.getSize(find.descendant(of: tab, matching: find.byType(Image))),
+            const Size(44, 44));
+      }
+    }
+    for (final name in names) {
+      for (final suffix in ['', '_selected']) {
+        final key = 'assets/navigation/$name$suffix.png';
+        expect(
+          manifest!.getAssetVariants(key)!.map((variant) => variant.targetDevicePixelRatio),
+          unorderedEquals([2.0, 3.0]),
+        );
+      }
+    }
+    expect(tester.takeException(), isNull);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('快速切换只更新栏目，主壳、底栏和路由不重建也不播放页面动画', (tester) async {
     final adapter = FakeAccountAdapter();
     await openApp(tester, AccountSession(api: adapter.createApi()));
@@ -171,25 +209,25 @@ void main() {
     final adapter = FakeAccountAdapter();
     final session = (await tester.runAsync(() => contractSession(adapter)))!;
     await openApp(tester, session, route: '/my');
-    expect(find.text('测试机构'), findsOneWidget);
+    expect(find.text('当前身份 · 测试机构'), findsOneWidget);
     await tester.tap(find.byKey(const Key('app-tab-0')));
     await frames(tester);
     session.select(identity(personId));
     await frames(tester);
-    expect(find.text('测试机构', skipOffstage: false), findsNothing);
+    expect(find.text('当前身份 · 测试机构', skipOffstage: false), findsNothing);
     await tester.tap(find.byKey(const Key('app-tab-4')));
     await frames(tester);
-    expect(find.text('我的个人身份'), findsOneWidget);
+    expect(find.text('当前身份 · 我的个人身份'), findsOneWidget);
     await tester.runAsync(session.logout);
     await frames(tester);
-    expect(find.text('我的个人身份', skipOffstage: false), findsNothing);
+    expect(find.text('当前身份 · 我的个人身份', skipOffstage: false), findsNothing);
     expect(find.text('手机号登录'), findsOneWidget);
-    final before = adapter.requests.length;
+    final afterLogout = adapter.requests.length;
     await tester.tap(find.byKey(const Key('app-tab-3')));
     await frames(tester);
-    expect(adapter.requests.length, before);
+    expect(adapter.requests.length, afterLogout);
     expect(find.text('核对账号与身份'), findsOneWidget);
-    expect(adapter.requests.length, before);
+    expect(adapter.requests.length, afterLogout);
     expect(find.textContaining('请先登录并核对当前有效'), findsOneWidget);
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox.shrink());

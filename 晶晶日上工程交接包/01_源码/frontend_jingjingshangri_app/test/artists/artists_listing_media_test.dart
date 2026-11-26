@@ -9,7 +9,7 @@ import 'artists_widgets_test.dart' as forms;
 Finder field(String label) => find.byWidgetPredicate((w) =>
     w is DropdownButtonFormField<String> &&
     w.key is ValueKey<String> &&
-    (w.key as ValueKey<String>).value.startsWith('artist-select-$label-'));
+    (w.key as ValueKey<String>).value.startsWith('artist-select-$label:'));
 DropdownButton<String> dropdown(WidgetTester t, String label) =>
     t.widget<DropdownButton<String>>(find.descendant(
         of: field(label), matching: find.byType(DropdownButton<String>)));
@@ -18,7 +18,9 @@ Future<void> choose(WidgetTester t, String label, String value) async {
   final option = dropdown(t, label).items!.firstWhere((o) => o.value == value);
   final text = ((option.child as Padding).child as Text).data!;
   await forms.press(t, field(label));
-  await t.tap(find.text(text).last);
+  final visibleOption = find.text(text).hitTestable();
+  expect(visibleOption, findsOneWidget);
+  await t.tap(visibleOption);
   await t.pumpAndSettle();
 }
 
@@ -111,8 +113,15 @@ void main() {
       expect(dropdown(t, portraitLabel).value, '');
       await choose(t, portraitLabel, assetKey);
       await forms.press(t, find.byKey(const ValueKey('artist-submit')));
+      expect(
+          a.requests
+              .where((r) => r.method == 'POST' && r.path.endsWith('/listings')),
+          isEmpty);
       await forms.press(t, find.text('确认办理'));
-      final first = a.requests.lastWhere((r) => r.path.endsWith('/listings'));
+      final first = a.requests.singleWhere(
+          (r) => r.method == 'POST' && r.path.endsWith('/listings'));
+      expect(first.data['listing']['consent_id'], recordKey);
+      expect(first.data['listing']['look_version_id'], recordKey);
       expect(first.data['listing']['primary_portrait_asset_id'], assetKey);
       expect(first.data['listing']['preview_asset_ids'], [assetKey, specKey]);
       expect(first.headers['X-Acting-Party'], delegated ? orgId : personId);
@@ -124,7 +133,13 @@ void main() {
       await t.pumpAndSettle();
       await forms.press(t, find.text('恢复原艺人操作'));
       await forms.press(t, find.text('确认办理'));
-      final last = a.requests.lastWhere((r) => r.path.endsWith('/listings'));
+      final listingRequests = a.requests
+          .where((r) => r.method == 'POST' && r.path.endsWith('/listings'))
+          .toList();
+      expect(listingRequests, hasLength(2));
+      final last = listingRequests.last;
+      expect(last.path, first.path);
+      expect(last.headers['X-Acting-Party'], first.headers['X-Acting-Party']);
       expect(last.data, first.data);
       expect(last.headers['Idempotency-Key'], first.headers['Idempotency-Key']);
       expect(s.artistsPending, isEmpty);

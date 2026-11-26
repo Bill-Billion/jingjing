@@ -47,7 +47,7 @@ class NoticesApi extends V5Api {
             original.containsKey('notice_sha256')) {
           v5Require(v5Int(original['notice_version'], min: 1) &&
               v5Hash(original['notice_sha256']) && snapshot != null &&
-              snapshot!.raw['object_version'] == original['notice_version'] &&
+              snapshot.raw['object_version'] == original['notice_version'] &&
               snapshot.raw['notice_sha256'] == original['notice_sha256']);
         }
         return parse(value);
@@ -245,7 +245,7 @@ class NoticesApi extends V5Api {
         record.version == submissionVersion! + 1);
     final ack = record.acknowledgedNoticeSnapshot;
     v5Require(ack != null &&
-        ack!.raw['object_version'] == noticeVersion &&
+        ack.raw['object_version'] == noticeVersion &&
         ack.raw['notice_sha256'] == noticeSha256);
     return record;
   }

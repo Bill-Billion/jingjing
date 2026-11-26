@@ -24,10 +24,31 @@ Future<void> open(WidgetTester tester, AccountSession s, String view) async {
   await frames(tester);
 }
 
-void select(WidgetTester tester, String label, String value) {
-  final f = find.byWidgetPredicate((w) =>
-      w is DropdownButtonFormField<String> && w.decoration.labelText == label);
-  tester.widget<DropdownButtonFormField<String>>(f).onChanged!(value);
+Future<void> selectOrder(WidgetTester tester, String value) async {
+  final field = find.byWidgetPredicate((w) =>
+      w is DropdownButtonFormField<String> &&
+      w.decoration.labelText == '本人已付款原订单');
+  final dropdown = tester.widget<DropdownButton<String>>(find.descendant(
+      of: field, matching: find.byType(DropdownButton<String>)));
+  final item = dropdown.items!.singleWhere((item) => item.value == value);
+  await tester.ensureVisible(field);
+  await tester.pumpAndSettle();
+  expect(field.hitTestable(), findsOneWidget);
+  await tester.tap(field);
+  await tester.pumpAndSettle();
+  final option = find.text((item.child as Text).data!).hitTestable();
+  expect(option, findsOneWidget);
+  await tester.tap(option);
+  await tester.pumpAndSettle();
+}
+
+Future<void> rate(WidgetTester tester, String label, int score) async {
+  final star = find.byTooltip('$label $score 分');
+  await tester.ensureVisible(star);
+  await tester.pumpAndSettle();
+  expect(star.hitTestable(), findsOneWidget);
+  await tester.tap(star);
+  await tester.pumpAndSettle();
 }
 
 Map<String, dynamic> buyers() => {
@@ -125,22 +146,33 @@ void main() {
     final s = (await tester.runAsync(() => communitySession(a)))!;
     await open(tester, s, 'reviews');
     expect(find.textContaining('评价奖励尚未开放'), findsOneWidget);
-    select(tester, '本人已付款原订单', trade.orderId);
-    await tester.pump();
-    select(tester, '真实感', '1');
-    await tester.pump();
-    select(tester, '契合度', '2');
-    await tester.pump();
-    select(tester, '完整度', '3');
-    await tester.pump();
+    await selectOrder(tester, trade.orderId);
+    await rate(tester, '真实感', 1);
+    await rate(tester, '契合度', 2);
+    await rate(tester, '完整度', 4);
     await tester.enterText(find.byType(TextField), '这次的真实感、契合度和完整度分别评价。');
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(CheckboxListTile));
-    await tester.pump();
-    await tester.ensureVisible(find.text('发布本次订单评价'));
+    final agreement =
+        find.widgetWithText(CheckboxListTile, '我已完成本订单的实际验收，以上评分和内容反映这次真实体验');
+    final publish = find.widgetWithText(FilledButton, '发布本次订单评价');
+    expect(tester.widget<CheckboxListTile>(agreement).value, isFalse);
+    expect(tester.widget<FilledButton>(publish).onPressed, isNull);
+    await tester.ensureVisible(agreement);
+    await tester.tap(agreement);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('发布本次订单评价'));
+    expect(tester.widget<FilledButton>(publish).onPressed, isNotNull);
+    await rate(tester, '完整度', 3);
+    await tester.ensureVisible(agreement);
+    await tester.pumpAndSettle();
+    expect(tester.widget<CheckboxListTile>(agreement).value, isFalse);
+    expect(tester.widget<FilledButton>(publish).onPressed, isNull);
+    expect(a.requests.where((r) => r.path == '/api/v1/engagement/reviews'),
+        isEmpty);
+    await tester.tap(agreement);
+    await tester.pumpAndSettle();
+    expect(publish.hitTestable(), findsOneWidget);
+    await tester.tap(publish);
     await frames(tester);
     final r =
         a.requests.singleWhere((r) => r.path == '/api/v1/engagement/reviews');

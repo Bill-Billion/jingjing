@@ -31,14 +31,10 @@ void main() {
               builder: (_) => const Scaffold(body: Text('订单目录')));
         }));
     expect(find.byType(TextField), findsOneWidget);
-    await v5.reveal(t, find.text('提交反馈或举报'));
-    expect(
-        t
-            .widget<FilledButton>(find.widgetWithText(FilledButton, '提交反馈或举报'))
-            .onPressed,
-        isNotNull);
-    t.state<ScrollableState>(find.byType(Scrollable).first).position.jumpTo(0);
-    await t.pump();
+    final feedback = find.widgetWithText(FilledButton, '向平台提交问题');
+    expect(feedback.hitTestable(), findsOneWidget);
+    expect(t.widget<FilledButton>(feedback).onPressed, isNotNull);
+    expect(opened, isNull);
     await t.enterText(find.byType(TextField), '付款后还没');
     await t.pump();
     expect(find.text('付款后还没显示成功'), findsOneWidget);
@@ -49,6 +45,12 @@ void main() {
     await t.tap(find.text('查看订单与付款'));
     await t.pumpAndSettle();
     expect(opened, '/orders');
+    Navigator.of(t.element(find.text('订单目录'))).pop();
+    await t.pumpAndSettle();
+    expect(feedback.hitTestable(), findsOneWidget);
+    await t.tap(feedback);
+    await t.pumpAndSettle();
+    expect(opened, '/support/new');
     expect(t.takeException(), isNull);
   });
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jingjingshangri_app/account/account_api.dart';
+import 'package:jingjingshangri_app/account/account_theme.dart';
 import 'package:jingjingshangri_app/account/phone_change.dart';
 import '../trade/trade_api_test.dart' show buyerSession;
 import '../stock/v5_test_host.dart';
@@ -172,7 +173,12 @@ void main() {
         find.byType(TextField), List.generate(6, (i) => '$i').join());
     await press(t, '验证原手机号');
     expect(s.isLoggedIn, isTrue);
-    expect(find.textContaining('验证码不正确'), findsOneWidget);
+    final notice = find.byWidgetPredicate((w) =>
+        w is Text &&
+        (w.data?.startsWith('验证码不正确。') ?? false) &&
+        w.style?.color == AccountTheme.danger);
+    await reveal(t, notice);
+    expect(notice.hitTestable(), findsOneWidget);
     final request =
         a.requests.singleWhere((r) => r.path.endsWith('/verifications'));
     expect(request.data['side'], 'OLD');

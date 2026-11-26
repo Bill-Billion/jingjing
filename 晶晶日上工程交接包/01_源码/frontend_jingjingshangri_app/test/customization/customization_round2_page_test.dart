@@ -41,12 +41,20 @@ void main() {
     expect(find.byKey(const ValueKey('story-field-story')), findsNothing);
     await tester.drag(find.byType(ListView).first, const Offset(0, 1800));
     await tester.pumpAndSettle();
-    expect(find.text('平台待查看'), findsOneWidget);
+    expect(find.widgetWithText(Chip, '平台待查看'), findsOneWidget);
+    final writes = adapter.requests.where((r) =>
+        r.method == 'POST' &&
+        r.path == '$storyCollection/$requestId/supplement-submissions');
+    expect(writes, hasLength(1));
+    expect(writes.single.headers['If-Match'], '"4"');
+    expect(writes.single.headers['Idempotency-Key'], isNotEmpty);
     expect(
         adapter.requests
-            .where((r) => r.path.endsWith('/supplement-submissions'))
-            .length,
-        1);
+            .skip(adapter.requests.indexOf(writes.single) + 1)
+            .where((r) =>
+                r.method == 'GET' &&
+                r.path == '$storyCollection/$requestId/supplement'),
+        isNotEmpty);
     expect(tester.takeException(), null);
   });
   testWidgets('受理中开放补充可编辑原故事与逐项回复，保存完整内容但不正式重提', (tester) async {

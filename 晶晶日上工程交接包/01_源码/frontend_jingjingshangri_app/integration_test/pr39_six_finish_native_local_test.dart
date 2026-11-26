@@ -77,12 +77,6 @@ void main() {
     await frames(t, 2);
   }
 
-  Future<void> press(WidgetTester t, Finder f) async {
-    await reveal(t, f);
-    await t.tap(f.first.hitTestable());
-    await frames(t);
-  }
-
   Future<void> shot(WidgetTester t, String name) async {
     await frames(t);
     await control('capture', {'name': name});
@@ -165,30 +159,6 @@ void main() {
       await frames(t, 1);
     }
   }
-
-  Future<void> select(WidgetTester t, String label, String option) async {
-    final f = find.byWidgetPredicate((w) =>
-        w is DropdownButtonFormField<String> &&
-        w.decoration.labelText == label);
-    await press(t, f);
-    await press(t, find.text(option).last);
-  }
-
-  Future<void> fill(WidgetTester t, String label, String value) async {
-    final f = find.byWidgetPredicate(
-        (w) => w is TextField && w.decoration?.labelText == label);
-    await reveal(t, f);
-    await t.enterText(f.first, value);
-    FocusManager.instance.primaryFocus?.unfocus();
-    await frames(t);
-  }
-
-  Future<void> submit(WidgetTester t) async {
-    await press(t, find.text('提交本次明确办理'));
-    await frames(t, 15);
-  }
-
-  Future<void> choose(WidgetTester t, String v) => select(t, '本次办理事项', v);
 
   testWidgets(
       'Native same modern audition and actually completed closure clock',

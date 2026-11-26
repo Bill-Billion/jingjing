@@ -29,27 +29,44 @@ Future<void> type(WidgetTester t, String label, String value) async {
 }
 
 void main() {
-  testWidgets('header通知接真实列表，未读/全部和本人已读分开且保留五栏目返回', (t) async {
+  testWidgets('消息页接真实通知，未读/全部和本人已读分开且保留五栏目', (t) async {
     final a = operationsAdapter(),
         s = (await t.runAsync(() => buyerSession(a)))!;
     await nav.openApp(t, s, route: '/messages');
     expect(find.text('项目通知与留言暂未开放。'), findsNothing);
     nav.expectFiveTabs();
-    await t.tap(find.byTooltip('通知'));
-    await nav.frames(t);
     expect(find.text('消息'), findsWidgets);
-    expect(find.byType(NavigationBar), findsNothing);
-    expect(find.text('全部已读'), findsNothing);
+    final feed = '/api/v1/operations/notifications/feed';
+    final initial =
+        a.requests.where((r) => r.method == 'GET' && r.path == feed);
+    expect(initial, hasLength(1));
+    expect(initial.single.queryParameters['unread_only'], 'false');
+    expect(initial.single.headers['X-Acting-Party'], personId);
     expect(find.text('有新的对象留言'), findsOneWidget);
-    await t.tap(find.byType(SwitchListTile));
+    await reveal(t, find.widgetWithText(SwitchListTile, '只看未读'));
+    await t.tap(find.widgetWithText(SwitchListTile, '只看未读').hitTestable());
     await nav.frames(t);
-    await press(t, '标记这条已读', outline: true);
+    expect(
+        a.requests
+            .lastWhere((r) => r.path == feed)
+            .queryParameters['unread_only'],
+        'true');
+    await press(t, '标记已读', text: true);
+    final writes = a.requests.where((r) =>
+        r.method == 'POST' &&
+        r.path.startsWith('/api/v1/operations/notifications/'));
+    expect(writes, hasLength(1));
+    expect(writes.single.path, '/api/v1/operations/notifications/7/read');
+    expect(writes.single.headers['X-Acting-Party'], personId);
     expect(find.text('有新的对象留言'), findsNothing);
-    await t.tap(find.byType(SwitchListTile));
+    await t.tap(find.widgetWithText(SwitchListTile, '只看未读').hitTestable());
     await nav.frames(t);
-    expect(find.text('已读'), findsOneWidget);
-    await t.tap(find.byType(BackButton));
-    await nav.frames(t);
+    expect(find.text('有新的对象留言'), findsOneWidget);
+    expect(find.text('标记已读'), findsNothing);
+    expect(
+        find.byWidgetPredicate(
+            (w) => w is Semantics && w.properties.label == '已读'),
+        findsOneWidget);
     nav.expectFiveTabs();
     expect(t.takeException(), isNull);
   });
@@ -69,13 +86,21 @@ void main() {
     final before = a.requests
         .where((r) => r.path == '/api/v1/projects/records/$projectKey')
         .length;
-    await press(t, '查看对应业务');
+    final persistedCursor = a.requests.lastWhere((r) =>
+        r.method == 'GET' && r.path == '/api/v1/operations/notifications/feed');
+    expect(persistedCursor.queryParameters['cursor'], 8);
+    expect(persistedCursor.headers['X-Acting-Party'], personId);
+    await press(t, '查看对应业务', text: true);
     expect(
         a.requests
             .where((r) => r.path == '/api/v1/projects/records/$projectKey')
             .length,
         greaterThan(before));
     expect(find.text('项目工作区'), findsOneWidget);
+    expect(
+        a.requests.where((r) =>
+            r.method == 'POST' && r.path.startsWith('/api/v1/operations')),
+        isEmpty);
     expect(t.takeException(), isNull);
   });
   testWidgets('同一对象纯文本回复，不提供附件或运营隐藏；自己的撤回需原因且原文消失', (t) async {

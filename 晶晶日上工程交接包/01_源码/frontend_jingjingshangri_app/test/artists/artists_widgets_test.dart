@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:file_picker/src/platform/file_picker_platform_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show RenderParagraph;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 import 'package:jingjingshangri_app/account/account_session.dart';
@@ -198,9 +199,16 @@ void main() {
   });
 
   testWidgets('窄屏完整显示授权对象长名称，展开选项也不省略或溢出', (t) async {
-    const name = '这是一份用于核对本人授权对象的较长数字人名称，保留结尾以区分不同授权对象';
+    const shared = '这是一份用于核对本人授权对象的较长数字人名称，保持原名以免误选相似授权对象，尾部编号为';
+    const name = '${shared}甲一号';
+    const alternative = '${shared}乙二号';
+    const alternativeId = 'a2222222-2222-4222-8222-222222222223';
     final detail = detailData();
     (detail['avatars'][0]['data'] as Map)['display_name'] = name;
+    final other = avatarData();
+    other['id'] = alternativeId;
+    other['data']['display_name'] = alternative;
+    detail['avatars'].add(other);
     final a = artistAdapter(
             override: (r) => r.path == '$artistRoot/people/$personKey'
                 ? envelope(detail)
@@ -213,13 +221,42 @@ void main() {
             mode: 'CONSENT', personId: personKey, avatarId: avatarKey));
     t.view.physicalSize = const Size(320, 844);
     await t.pumpAndSettle();
-    final selected = find.text(name);
-    await show(t, selected);
-    expect(t.widget<Text>(selected).overflow, isNot(TextOverflow.ellipsis));
-    expect(t.getSize(selected).height, greaterThan(48));
+    final dropdown = find.byWidgetPredicate((w) =>
+        w is DropdownButtonFormField<String> &&
+        w.decoration.labelText == '具体数字人');
+    Finder selected(String name) =>
+        find.descendant(of: dropdown, matching: find.text(name));
+    void expectFullyWrapped(Finder f) {
+      expect(f, findsOneWidget);
+      final text = t.widget<Text>(f);
+      expect(text.overflow, isNot(TextOverflow.ellipsis));
+      expect(text.maxLines, isNull);
+      final paragraph = t.renderObject<RenderParagraph>(f);
+      expect(paragraph.didExceedMaxLines, isFalse);
+      expect(paragraph.size.height, greaterThan(48));
+      final name = text.data!;
+      final tail = paragraph.getBoxesForSelection(TextSelection(
+          baseOffset: name.length - 3, extentOffset: name.length));
+      expect(tail, isNotEmpty);
+      for (final box in tail) {
+        expect(box.left, greaterThanOrEqualTo(-1));
+        expect(box.right, lessThanOrEqualTo(paragraph.size.width + 1));
+        expect(box.bottom, lessThanOrEqualTo(paragraph.size.height + 1));
+      }
+    }
+
+    await show(t, dropdown);
+    expect(t.state<FormFieldState<String>>(dropdown).value, avatarKey);
+    expectFullyWrapped(selected(name));
     expect(t.takeException(), isNull);
-    await press(t, find.byKey(ValueKey('artist-select-具体数字人-$avatarKey')));
-    expect(find.text(name), findsWidgets);
+    await press(t, dropdown);
+    expectFullyWrapped(find.text(name).hitTestable());
+    final otherOption = find.text(alternative).hitTestable();
+    expectFullyWrapped(otherOption);
+    await t.tap(otherOption);
+    await t.pumpAndSettle();
+    expect(t.state<FormFieldState<String>>(dropdown).value, alternativeId);
+    expectFullyWrapped(selected(alternative));
     expect(t.takeException(), isNull);
     expect(
         a.requests.where(
@@ -468,25 +505,74 @@ void main() {
     expect(t.takeException(), isNull);
   });
   testWidgets('记录重新读取失权后立即清理私有正文与原因', (t) async {
+    const path = '$artistRoot/people/$personKey/records/$recordKey';
+    const originalTerms = '本人私有同意原约定';
+    const originalReason = '这条私有审核原因不能在失权后保留';
+    const currentTerms = '重新授权后读取的新约定';
+    const currentReason = '重新授权后读取的新审核原因';
+    final denial = Completer<ResponseBody>();
     var reads = 0;
-    final a = artistAdapter(
-            override: (r) => r.path ==
-                    '$artistRoot/people/$personKey/records/$recordKey'
-                ? ++reads == 1
-                    ? envelope(artistRecord())
-                    : envelope({'code': 'FORBIDDEN'}, status: 403, error: true)
-                : null),
-        s = (await t.runAsync(() => artistSession(a)))!;
+    Map<String, dynamic> record(String terms, String reason) {
+      final result = artistRecord();
+      result['data']['terms'] = terms;
+      result['data']['review'] = {
+        'reason': reason,
+        'reviewed_at': '2026-10-21T00:00:00.000Z',
+      };
+      return result;
+    }
+
+    final a = artistAdapter(override: (r) {
+      if (r.path != path || r.method != 'GET') return null;
+      reads++;
+      if (reads == 2) return denial.future;
+      return envelope(reads == 1
+          ? record(originalTerms, originalReason)
+          : record(currentTerms, currentReason));
+    });
+    final s = (await t.runAsync(() => artistSession(a)))!;
     await host(
         t, s, const ArtistRecordPage(personId: personKey, recordId: recordKey));
-    expect(find.text('本人私有同意原约定'), findsOneWidget);
-    await press(t, find.text('重新读取当前记录'));
-    expect(s.artistsAccessDenied, true);
-    expect(find.text('本人私有同意原约定'), findsNothing);
+    await show(t, find.text(originalTerms));
+    expect(find.text(originalTerms), findsOneWidget);
+    await show(t, find.text(originalReason));
+    expect(find.text(originalReason), findsOneWidget);
+    final refresh = find.widgetWithText(OutlinedButton, '重新读取当前记录');
+    await show(t, refresh);
+    await t.tap(refresh.hitTestable());
+    await nav.frames(t);
+    expect(reads, 2);
+    expect(find.text(originalTerms), findsNothing);
+    expect(find.text(originalReason), findsNothing);
+    denial.complete(envelope({'code': 'FORBIDDEN'}, status: 403, error: true));
+    await t.pumpAndSettle();
+    expect(s.artistsAccessDenied, isTrue);
+    expect(find.text(originalTerms), findsNothing);
+    expect(find.text(originalReason), findsNothing);
+    final denied = find.byType(ReadAccessDeniedPage);
+    expect(find.descendant(of: denied, matching: find.text('当前无法查看')),
+        findsOneWidget);
+    expect(find.descendant(of: denied, matching: find.text('当前无法读取')),
+        findsOneWidget);
     expect(find.textContaining('私有内容已清空'), findsOneWidget);
-    expect(find.byType(ReadAccessDeniedPage), findsOneWidget);
-    expect(find.text('当前无法\n读取这页'), findsOneWidget);
-    expect(find.byKey(const ValueKey('read-denied-retry')), findsOneWidget);
+    await press(t, find.byKey(const ValueKey('read-denied-retry')));
+    expect(s.artistsAccessDenied, isFalse);
+    expect(denied, findsNothing);
+    expect(reads, 3);
+    await show(t, find.text(currentTerms));
+    expect(find.text(currentTerms), findsOneWidget);
+    await show(t, find.text(currentReason));
+    expect(find.text(currentReason), findsOneWidget);
+    expect(find.text(originalTerms), findsNothing);
+    expect(find.text(originalReason), findsNothing);
+    expect(
+        a.requests.where((r) => r.path == path).every((r) =>
+            r.method == 'GET' && r.headers['X-Acting-Party'] == personId),
+        isTrue);
+    expect(
+        a.requests.where(
+            (r) => r.path.startsWith('$artistRoot/') && r.method != 'GET'),
+        isEmpty);
     expect(t.takeException(), isNull);
   });
   testWidgets('未知提交锁定输入和返回，只恢复原body与请求key', (t) async {

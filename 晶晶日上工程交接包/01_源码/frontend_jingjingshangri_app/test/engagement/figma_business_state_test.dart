@@ -31,13 +31,12 @@ void main() {
       if (failed) {
         expect(find.textContaining('服务暂时不可用'), findsOneWidget);
       } else {
-        await reveal(t, find.widgetWithText(FilledButton, '暂无开放活动'));
-        expect(
-            t
-                .widget<FilledButton>(
-                    find.widgetWithText(FilledButton, '暂无开放活动'))
-                .onPressed,
-            isNull);
+        final closed = find.widgetWithText(FilledButton, '尚未开放');
+        expect(t.widget<FilledButton>(closed).onPressed, isNull);
+        await reveal(t, find.text('当前不接受抽取，不扣用晶钻'));
+        expect(find.text('当前不接受抽取，不扣用晶钻'), findsOneWidget);
+        final priorResult = find.widgetWithText(OutlinedButton, '查询原次结果');
+        expect(t.widget<OutlinedButton>(priorResult).onPressed, isNotNull);
       }
       expect(
           a.requests
@@ -92,13 +91,18 @@ void main() {
       expect(find.text(mode == 'points' ? '91' : '290'), findsOneWidget);
       expect(find.text('可消费余额'), findsNothing);
       if (mode == 'scout') {
-        final progress = t
-            .widgetList<LinearProgressIndicator>(
-                find.byType(LinearProgressIndicator))
-            .toList();
-        expect(progress, hasLength(2));
-        expect(progress.first.value, closeTo(290 / 10000, .00001));
-        expect(progress.last.value, 0);
+        Finder progress(double value) => find.byWidgetPredicate((w) =>
+            w is LinearProgressIndicator &&
+            w.value != null &&
+            (w.value! - value).abs() < .00001);
+        await reveal(t, find.text('下一成长等级'));
+        await reveal(t, progress(290 / 10000));
+        expect(progress(290 / 10000).hitTestable(), findsOneWidget);
+        await reveal(t, find.text('本会员年充值进度'));
+        await reveal(t, progress(0));
+        expect(progress(0).hitTestable(), findsOneWidget);
+        expect(find.text('尚未达到本版门槛'), findsOneWidget);
+        expect(find.text('可消费余额'), findsNothing);
       }
       expect(
           a.requests.where(

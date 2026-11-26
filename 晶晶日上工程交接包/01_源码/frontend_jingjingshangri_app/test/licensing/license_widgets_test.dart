@@ -105,11 +105,43 @@ void main() {
     final adapter = FakeAccountAdapter();
     final s = (await t.runAsync(() => contractSession(adapter)))!;
     await pump(t, s, const LicenseProjectForm());
-    final fields = t.widgetList<TextField>(find.byType(TextField)).toList();
-    expect(fields.every((f) => f.controller!.text.isEmpty), isTrue);
-    final button =
-        t.widget<FilledButton>(find.widgetWithText(FilledButton, '保存用途项目'));
-    expect(button.onPressed, isNull);
+    final scroll = find.byType(Scrollable).first;
+    Future<void> show(Finder target) async {
+      if (target.evaluate().isEmpty) {
+        await t.scrollUntilVisible(target, 180, scrollable: scroll);
+      }
+      await t.ensureVisible(target);
+      await t.pump();
+    }
+
+    Finder field(String label, Type type) => find.descendant(
+        of: find.byWidgetPredicate((w) =>
+            w is Column &&
+            w.children.whereType<Text>().any((text) => text.data == label)),
+        matching: find.byType(type));
+    final title = field('项目名称（必填）', TextField);
+    await show(title);
+    expect(t.widget<TextField>(title).controller!.text, isEmpty);
+    await t.enterText(title, '本次实际项目');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await t.pump();
+    for (final label in ['用途（必选）', '国家或地区（必选）', '语言（必选）']) {
+      final picker = field(label, DropdownButtonFormField<String>);
+      await show(picker);
+      expect(picker, findsOneWidget);
+      expect(t.state<FormFieldState<String>>(picker).value, isNull);
+    }
+    final episodes = field('集数（必填）', TextField);
+    await show(episodes);
+    expect(t.widget<TextField>(episodes).controller!.text, isEmpty);
+    await t.enterText(episodes, '3');
+    FocusManager.instance.primaryFocus?.unfocus();
+    await t.pump();
+    final save = find.widgetWithText(FilledButton, '保存用途项目');
+    await show(save);
+    expect(t.widget<FilledButton>(save).onPressed, isNull,
+        reason: '填了项目名和集数也不可借用默认用途、地区或语言');
+
     expect(
         adapter.requests.where((r) => r.path.contains('/licensing/')), isEmpty);
     expect(t.takeException(), isNull);
@@ -293,12 +325,37 @@ void main() {
     await t.enterText(find.byType(TextField).last, '123456');
     FocusManager.instance.primaryFocus?.unfocus();
     await frames(t);
-    await t.scrollUntilVisible(find.byType(Checkbox), 200,
-        scrollable: find.byType(Scrollable).first);
-    await t.tap(find.byType(Checkbox));
+    final login = find.byType(LoginPage);
+    final checkbox =
+        find.descendant(of: login, matching: find.byType(Checkbox));
+    final form = find.descendant(of: login, matching: find.byType(ListView));
+    await t.dragUntilVisible(
+        checkbox.hitTestable(), form, const Offset(0, -140),
+        maxIteration: 7);
+    expect(t.widget<Checkbox>(checkbox).value, isFalse);
+    await t.tap(checkbox.hitTestable());
     await frames(t);
-    await t.tap(find.text('登录并继续'));
+    expect(t.widget<Checkbox>(checkbox).value, isTrue);
+    final submit = find.widgetWithText(FilledButton, '登录并继续');
+    expect(t.widget<FilledButton>(submit).onPressed, isNotNull);
+    const original = '/api/v1/licensing/records/$productId';
+    expect(adapter.requests.where((r) => r.path == original), isEmpty);
+    await t.tap(submit.hitTestable());
     await frames(t);
+    final loginRequest = adapter.requests.singleWhere(
+        (r) => r.method == 'POST' && r.path == '/api/v1/auth/sessions');
+    final recoveredReads = adapter.requests
+        .where(
+            (r) => r.method == 'GET' && r.path.startsWith('/api/v1/licensing/'))
+        .toList();
+    expect(recoveredReads, isNotEmpty);
+    expect(
+        recoveredReads.every((r) =>
+            r.path == original &&
+            adapter.requests.indexOf(r) >
+                adapter.requests.indexOf(loginRequest)),
+        isTrue,
+        reason: '只在实际登录成功后读取原许可，不访问其他记录');
     expect(destination, '/licensing/record?recordId=$productId');
     expect(find.byType(LoginPage), findsNothing);
     expect(find.text('回到那年夏天'), findsOneWidget);

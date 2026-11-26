@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/material.dart' show OutlinedButton;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jingjingshangri_app/operations/identity_notifications.dart';
 import '../account/fake_account_api.dart';
@@ -88,7 +89,7 @@ void main() {
     expect(find.textContaining('未读数量读取失败'), findsOneWidget);
   });
   for (final bulk in [false, true]) {
-    testWidgets('已读结果未知，刷新后仍恢复原身份、原请求和原键：批量=$bulk', (t) async {
+    testWidgets('已读结果未知，先禁止另行刷新，恢复原身份、原请求和原键：批量=$bulk', (t) async {
       late FakeAccountAdapter a;
       var writes = 0, snapshots = 0;
       final path =
@@ -119,20 +120,29 @@ void main() {
       });
       final s = (await t.runAsync(() => buyerSession(a)))!;
       await host(t, s, const IdentityNotificationsPage());
-      final button = find.text(bulk ? '全部标为已读' : '标记这条已读');
+      final button = find.text(bulk ? '全部标为已读' : '标记已读');
       await reveal(t, button);
-      await t.tap(button);
+      await t.tap(button.hitTestable());
       await frames(t);
       expect(s.operationsPending, hasLength(1));
-      await reveal(t, find.text('刷新消息与未读'));
-      await t.tap(find.text('刷新消息与未读'));
+      final refresh = find.widgetWithText(OutlinedButton, '刷新消息与未读');
+      await reveal(t, refresh);
+      expect(t.widget<OutlinedButton>(refresh).onPressed, isNull);
+      expect(snapshots, 1);
+      expect(writes, 1);
+      final restore = find.text('恢复原已读操作');
+      await reveal(t, restore);
+      await t.tap(restore.hitTestable());
       await frames(t);
-      expect(snapshots, 2);
-      await reveal(t, find.text('恢复原已读操作'));
-      await t.tap(find.text('恢复原已读操作'));
-      await frames(t);
-      final commands = a.requests.where((r) => r.path == path).toList();
+      final commands = a.requests
+          .where((r) => r.method == 'POST' && r.path == path).toList();
       expect(commands, hasLength(2));
+      expect(commands.first.headers['Idempotency-Key'], isNotEmpty);
+      final completed = a.requests.indexOf(commands.last);
+      final unreadAfterReplay = a.requests.skip(completed + 1).where(
+          (r) => r.method == 'GET' && r.path.endsWith('/notifications/unread'));
+      expect(unreadAfterReplay, hasLength(1));
+      expect(snapshots, 2);
       expect(commands.last.data, commands.first.data);
       expect(commands.last.headers['Idempotency-Key'],
           commands.first.headers['Idempotency-Key']);
