@@ -63,11 +63,30 @@ test('contract championship: actual HTTP votes, same-event appeal and earned rew
    const before=(await legacy.read(reviewer.ctx,{record_id:stock.id})).data.reserved;
    await assert.rejects(rev('reviewCompetition',pending),{code:'CHAMPIONSHIP_CONTRACT_RATE_MISMATCH'});assert.equal((await legacy.read(reviewer.ctx,{record_id:stock.id})).data.reserved,before);
   });
-  let nominationInput;
-  await t.test('two independently approved events share the same account daily allowance',async()=>{
+  let nominationInput,voteRecoveryInput;
+  await t.test('independent current events and nominations establish the original voting targets',async()=>{
    event=await invoke('competition',outsider,input);await assert.rejects(rev('reviewCompetition',event,outsider),{code:'SELF_REVIEW_FORBIDDEN'});event=await rev('reviewCompetition',event);second=await rev('reviewCompetition',await invoke('competition',outsider,{...input,title:'Synthetic second event'}));
    nominationInput={party_id:seller.personal_party_id,event_id:event.id,profile_id:profile.id,operation_key:key()};candidate=await rev('reviewCandidate',await invoke('nominate',seller,nominationInput));candidate2=await rev('reviewCandidate',await invoke('nominate',seller,{party_id:seller.personal_party_id,event_id:second.id,profile_id:profile.id}));
-   const v={party_id:buyer.personal_party_id,event_id:event.id,candidate_id:candidate.id,operation_key:key()};await db.withConnection(c=>c.query("CREATE TRIGGER champion_vote_fail BEFORE INSERT ON engagement_audit FOR EACH ROW BEGIN IF NEW.event_code='VOTE_POINTS_COMMITTED' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic audit failure'; END IF; END"));
+  });
+  await t.test('pending refund reversal rejects actual vote without debit, quota, audit or command changes',async()=>{
+   // This disposable negative-state fixture isolates the routed voting guard.
+   // Real refund creation and debt clearing remain covered by the wallet journey.
+   const [[row]]=await db.execute("SELECT * FROM wallet_records WHERE owner_party_id=? AND kind='EARNING' LIMIT 1",[buyer.personal_party_id]);assert(row);
+   const original=typeof row.data_json==='string'?JSON.parse(row.data_json):row.data_json,changed={...original,pending_shortfall:4};
+   const counts=async()=>Object.fromEntries(await Promise.all(['engagement_records','engagement_commands','engagement_audit','wallet_records','wallet_audit'].map(async table=>[table,Number((await db.execute('SELECT COUNT(*) n FROM '+table))[0][0].n)])));
+   const before=await counts();voteRecoveryInput={party_id:buyer.personal_party_id,event_id:event.id,candidate_id:candidate.id,operation_key:key()};
+   await db.execute("UPDATE wallet_records SET current_status='REVERSAL_PENDING',data_json=?,data_sha256=? WHERE id=?",[JSON.stringify(changed),digest(changed),row.id]);
+   try{
+    await assert.rejects(invoke('vote',buyer,voteRecoveryInput),{code:'POINTS_REVERSAL_PENDING',status:409});
+    await assert.rejects(invoke('vote',buyer,voteRecoveryInput),{code:'POINTS_REVERSAL_PENDING',status:409});
+    assert.equal(await balance(),2000);assert.deepEqual(await counts(),before);
+    const own=await invoke('myVotes',buyer,{party_id:buyer.personal_party_id,event_id:event.id});assert.equal(own.used_today,0);assert.equal(own.remaining_today,10);
+    records.pending_reversal_gate={event_id:event.id,earning_id:row.id,pending_shortfall:4,available_points:2000,used_today:0,unchanged_counts:true};
+   }finally{await db.execute('UPDATE wallet_records SET current_status=?,data_json=?,data_sha256=? WHERE id=?',[row.current_status,JSON.stringify(original),row.data_sha256,row.id]);}
+   assert.equal((await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).points_pending_reversal,0);
+  });
+  await t.test('two independently approved events share the same account daily allowance',async()=>{
+   const v=voteRecoveryInput;await db.withConnection(c=>c.query("CREATE TRIGGER champion_vote_fail BEFORE INSERT ON engagement_audit FOR EACH ROW BEGIN IF NEW.event_code='VOTE_POINTS_COMMITTED' THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic audit failure'; END IF; END"));
    try{await assert.rejects(invoke('vote',buyer,v),e=>e.status===503);assert.equal(await balance(),2000);assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM engagement_records WHERE kind='VOTE'"))[0][0].n),0);}finally{await db.withConnection(c=>c.query('DROP TRIGGER champion_vote_fail'));}
    firstVote=await invoke('vote',buyer,v);assert.equal(firstVote.data.points,100);assert.equal((await invoke('vote',buyer,v)).id,firstVote.id);assert.equal(await balance(),1900);
    const attempts=await Promise.allSettled(Array.from({length:12},(_,i)=>invoke('vote',buyer,{party_id:buyer.personal_party_id,event_id:i%2?second.id:event.id,candidate_id:i%2?candidate2.id:candidate.id})));
