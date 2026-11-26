@@ -63,7 +63,12 @@ async function arm(mode){
    await p.locator('flt-semantics-placeholder').waitFor({state:'attached'});const semantics_ms=Date.now()-start;
    await p.locator('flt-semantics-placeholder').evaluate(e=>e.click());await p.waitForLoadState('networkidle');
    await p.setViewportSize({width:390,height:6000});await p.getByRole('button',{name:'查看会员年与实际资格',exact:true}).click();await p.waitForLoadState('networkidle');
-   const aria=await p.locator('body').ariaSnapshot(),m=result.before.membership;
+   // Expansion is a Flutter animation, not a network operation. Wait for its
+   // exact semantic fact instead of treating networkidle as layout completion.
+   const m=result.before.membership;
+   await p.locator('[aria-label='+JSON.stringify('当前有效等级: '+m.level)+']').waitFor({state:'visible'});
+   await p.locator('[aria-label='+JSON.stringify('当前有效会员: '+(m.active?'有效':'未生效或已到期'))+']').waitFor({state:'visible'});
+   const aria=await p.locator('body').ariaSnapshot();
    for(const text of ['当前有效等级: '+m.level,'已达到成长等级: '+m.attained_level,'当前有效会员: '+(m.active?'有效':'未生效或已到期'),m.active?'服务器当前会员资格有效':'会员特权当前未生效'])assert(aria.includes(text),'MEMBERSHIP_FACT_NOT_VISIBLE');
    const ps=await c.newCDPSession(p);await ps.send('Performance.enable');const metrics=await ps.send('Performance.getMetrics');
    const row={n,semantics_ms,total_ms:Date.now()-start,account_id:result.account_id,level:m.level,attained_level:m.attained_level,aria_sha256:hash(aria),metrics:metrics.metrics.filter(m=>['JSHeapUsedSize','JSHeapTotalSize','Documents','Nodes','LayoutCount'].includes(m.name))};
