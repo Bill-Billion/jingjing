@@ -56,6 +56,50 @@ test('customization referral: actual delivery, aftercare, independent settlement
    const income=ok(await call('GET','/me/business/income',referrer,undefined,null,referrer.acting_party_id,key(),'PersonalCenterResponse'));const own=income.sections.flatMap(x=>x.items).find(x=>x.record_id===agreement.id);assert.equal(own.income.verified_paid_minor,1000);assert.equal(own.income.bank_arrival_verified,false);assert.equal(own.income.pending_minor,0);
    records.push({order_id:order.id,project_id:project.id,commission_id:commission.id,agreement_id:agreement.id,settlement_id:settlement.id,payout_id:payout.id,paid_evidence_id:paidEvidence.id,referrer_party_id:referrer.personal_party_id,total_minor:10000,referral_minor:1000,platform_minor:9000,ledger_paid_minor:1000,contract_sha256:digest(order.data.contract)});
   });
+
+  let recoveryCase,refund,originalSettlement,originalPaid,returnEvidence=[];
+  const referralBalance=async()=>(await balances()).items.find(x=>x.party_id===referrer.personal_party_id);
+  const flow=()=>call('GET','/production/projects/'+project.id+'/fulfillment',producer,undefined,null,producer.acting_party_id,key(),'CustomizationFulfillmentResponse').then(ok);
+  const productionCommand=async(action,who,body)=>call('POST','/production/projects/'+project.id+'/'+action,who,body,(await get(project)).object_version,who===reviewer?null:who.acting_party_id,key(),'CustomizationFulfillmentResponse');
+  await t.test('same paid referral is reduced only after independently allowed original refund actually succeeds',async()=>{
+   originalSettlement=structuredClone((await fread(settlement)).data);originalPaid=structuredClone((await fread(paidEvidence)).data);
+   ok(await productionCommand('cases',buyer,{kind:'CANCEL',reason:'Synthetic post-delivery agreed partial refund',evidence_asset_ids:[]}));
+   const cid=(await flow()).cases.at(-1).id;
+   assert.equal((await productionCommand('case-resolution',producer,{case_id:cid,decision:'CANCEL',retained_minor:8000,change_order_id:null,reason:'Self review forbidden'})).status,403);
+   ok(await productionCommand('case-resolution',reviewer,{case_id:cid,decision:'CANCEL',retained_minor:8000,change_order_id:null,reason:'Independent valuation of confirmed original work'}));assert.equal((await flow()).cancellation.refund_minor,2000);
+   const last=(await db.execute("SELECT id FROM trade_records WHERE order_id=? AND kind='PAYMENT' AND current_status='SUCCEEDED' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.installment_key'))='last'",[order.id]))[0][0];assert.ok(last);
+   refund=await f.trade.requestRefund(buyer.ctx,{party_id:buyer.acting_party_id,payment_id:last.id,allocations:[{line_id:'film',amount_minor:2000}],reason:'Synthetic original case refund',operation_key:key()});refund=await f.reviewTrade(refund);
+   assert.equal((await referralBalance()).paid_minor,1000);assert.equal((await referralBalance()).recovery_due_minor,0);
+   await f.trade.claim(reviewer.ctx,refund.id,null,'REFUND');await f.trade.applyRefund(refund.id,{...config,refund_id:refund.id,payment_id:last.id,transaction_id:'synthetic-local:'+last.id,currency:'CNY',amount_minor:2000,status:'SUCCEEDED'});
+   ok(await productionCommand('refund-sync',buyer,{}));commission=await sync();assert.equal(commission.data.amount_minor,800);assert.equal(commission.data.attribution.referrer_party_id,referrer.personal_party_id);
+   const revised=await freview(ok(await settle()));for(const who of [producer,buyer,referrer])await confirm(revised,who);
+   const b=await referralBalance();assert.equal(b.accrued_minor,800);assert.equal(b.paid_minor,1000);assert.equal(b.recovery_due_minor,200);assert.deepEqual((await fread(settlement)).data,originalSettlement);assert.deepEqual((await fread(paidEvidence)).data,originalPaid);
+  });
+  await t.test('original referrer debt is independently claimed; approval does not count as receipt',async()=>{
+   const url='/finance/agreements/'+agreement.id+'/recoveries',body={recipient_party_id:referrer.personal_party_id,amount_minor:200,reason:'Synthetic paid referral recovery',evidence_asset_id:f.proof.id},op=key();
+   assert.equal((await call('POST',url,producer,{...body,amount_minor:201},agreement.object_version)).body.error.code,'RECOVERY_EXCEEDS_DUE');assert.equal((await call('POST',url,buyer,body,agreement.object_version)).status,403);
+   recoveryCase=ok(await call('POST',url,producer,body,agreement.object_version,producer.acting_party_id,op));assert.equal(ok(await call('POST',url,producer,body,agreement.object_version,producer.acting_party_id,op)).id,recoveryCase.id);
+   assert.equal(recoveryCase.data.basis.source_id,order.id);assert.equal(recoveryCase.data.basis.recovery_due_minor,200);assert.equal(recoveryCase.data.received_minor,0);
+   assert.equal((await call('POST','/finance/records/'+recoveryCase.id+'/reviews',producer,{decision:'APPROVED',reason:'Cannot review own claim',verification},recoveryCase.object_version,null)).status,403);
+   assert.equal((await call('GET','/finance/records/'+recoveryCase.id,buyer)).status,404);assert.equal(ok(await call('GET','/finance/records/'+recoveryCase.id,referrer)).id,recoveryCase.id);
+   recoveryCase=await freview(recoveryCase);assert.equal(recoveryCase.current_status,'APPROVED');assert.equal((await referralBalance()).recovery_due_minor,200);
+  });
+  await t.test('partial and final verified returns recover same commission exactly once without rewriting old paid evidence',async()=>{
+   for(const amount of [80,120]){
+    const previousDue=(await referralBalance()).recovery_due_minor,oldPayout=await fread(payout),url='/finance/payouts/'+payout.id+'/evidence',body={outcome:'RETURNED',amount_minor:amount,external_reference:'synthetic-referral-return:'+key(),occurred_at:new Date().toISOString(),evidence_asset_id:f.proof.id,note:'Synthetic verified return; no external money moved'},op=key();
+    const evidence=ok(await call('POST',url,producer,body,oldPayout.object_version,producer.acting_party_id,op));assert.equal(ok(await call('POST',url,producer,body,oldPayout.object_version,producer.acting_party_id,op)).id,evidence.id);assert.equal((await referralBalance()).recovery_due_minor,previousDue);
+    const receiptUrl='/finance/recoveries/'+recoveryCase.id+'/receipts',receipt={payout_evidence_id:evidence.id,amount_minor:amount};
+    assert.equal((await call('POST',receiptUrl,producer,receipt,recoveryCase.object_version)).body.error.code,'RECOVERY_RECEIPT_NOT_VERIFIED');
+    const approved=await freview(evidence);returnEvidence.push(approved.id);assert.equal((await referralBalance()).recovery_due_minor,previousDue-amount);
+    const oldCase=recoveryCase,receiptOp=key();recoveryCase=ok(await call('POST',receiptUrl,producer,receipt,oldCase.object_version,producer.acting_party_id,receiptOp));assert.equal(ok(await call('POST',receiptUrl,producer,receipt,oldCase.object_version,producer.acting_party_id,receiptOp)).id,recoveryCase.id);
+    assert.equal((await referralBalance()).recovery_due_minor,previousDue-amount);assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM finance_entries WHERE source_id=? AND category='PAYOUT_RETURN'",[evidence.id]))[0][0].n),1);
+   }
+   assert.equal(recoveryCase.current_status,'RECOVERED');assert.equal(recoveryCase.data.received_minor,200);const b=await referralBalance();assert.equal(b.paid_minor,800);assert.equal(b.accrued_minor,800);assert.equal(b.recovery_due_minor,0);
+   assert.equal(Number((await db.execute('SELECT COUNT(*) n FROM finance_entries WHERE source_id=?',[recoveryCase.id]))[0][0].n),0);assert.deepEqual((await fread(settlement)).data,originalSettlement);assert.deepEqual((await fread(paidEvidence)).data,originalPaid);
+   const original=await f.trade.read(buyer.ctx,{record_id:order.id,party_id:buyer.acting_party_id});assert.deepEqual(original.data.contract,order.data.contract);assert.equal(original.data.financial.net_minor,8000);
+   records.push({order_id:order.id,commission_id:commission.id,refund_id:refund.id,agreement_id:agreement.id,recovery_case_id:recoveryCase.id,return_evidence_ids:returnEvidence,referrer_party_id:referrer.personal_party_id,original_paid_minor:1000,refund_minor:2000,recovery_due_before:200,received_recovery_minor:200,current_verified_paid_minor:800,recovery_due_after:0,original_contract_and_paid_evidence_unchanged:true});
+  });
+
   await fs.writeFile(path.resolve(__dirname,'../../../..','.local/referral-customization-http.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));await fs.writeFile(path.resolve(__dirname,'../../../..','.local/referral-customization-records.json'),JSON.stringify({synthetic_only:true,frontend_run:false,real_services:false,records,limits:['PRODUCTION-labelled synthetic trusted payment and bank receipts; no provider called','Only genuine delivered completion timestamp aged eight days; not real elapsed time','Order/story/quote preconditions through repositories; delivery, referral and finance actions through HTTP','No independent maintainer or real media quality acceptance; legacy referral paid_out_minor is not a bank ledger']},null,2));
  }finally{if(server)await new Promise(r=>{server.close(r);server.closeAllConnections();});if(db)await db.close();await control.query('DROP DATABASE '+mysql.escapeId(name));await control.end();}
 });
