@@ -64,7 +64,9 @@ module.exports=async({t,db,S,invoke,base,fixtures,records,second,firstVote,balan
   await invoke('voteReview',reviewer,{record_id:row.id,expected_version:row.object_version,decision:'SUSPEND',reason:'Synthetic current second-event vote review'});
   const view=await unread();assert.equal(view.channels.ACTIVITY_VOTING,2);
   const events=ok(await feed('&channel=ACTIVITY_VOTING&unread_only=true')).items;assert.equal(events.length,2);
-  const last=Math.max(...events.map(x=>x.id)),op=key();const count=async()=>Number((await db.execute('SELECT COUNT(*) n FROM ops_reads WHERE account_id=? AND party_id=?',[buyer.account_id,buyer.personal_party_id]))[0][0].n,previousCount=await count();
+  const last=Math.max(...events.map(x=>x.id)),op=key();
+  const count=async()=>Number((await db.execute('SELECT COUNT(*) n FROM ops_reads WHERE account_id=? AND party_id=?',[buyer.account_id,buyer.personal_party_id]))[0][0].n);
+  const previousCount=await count();
   await db.withConnection(c=>c.query("CREATE TRIGGER activity_read_fail BEFORE INSERT ON ops_reads FOR EACH ROW BEGIN IF NEW.event_id="+Number(last)+" THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='synthetic activity read failure'; END IF; END"));
   try{bad(await clear(view.snapshot_id,op),503);assert.equal(await count(),previousCount);assert.equal((await unread()).channels.ACTIVITY_VOTING,2);}
   finally{await db.withConnection(c=>c.query('DROP TRIGGER activity_read_fail'));}
