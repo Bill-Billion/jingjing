@@ -1,0 +1,76 @@
+{
+  "sample_id": "sample-2",
+  "source_filename": "5d670b10ce288c0dd5deeaa654f4e1c5.mp4",
+  "sha256_before": "e571557d04416d0823b3093b375a5b67dfc7f0cf0ee69dc26f91b71ce32d033b",
+  "size_bytes": 15399955,
+  "business_id": null,
+  "result": "PASS_TECHNICAL_ONLY",
+  "commands": {
+    "probe": [
+      "D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\.local\\tools\\ffmpeg\\unpacked\\ffmpeg-9.0.2-essentials_build\\bin\\ffprobe.exe",
+      "-v",
+      "error",
+      "-count_frames",
+      "-show_entries",
+      "format=format_name,duration,size:stream=index,codec_type,codec_name,width,height,pix_fmt,r_frame_rate,duration,nb_read_frames,sample_rate,channels",
+      "-of",
+      "json",
+      "D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\video\\5d670b10ce288c0dd5deeaa654f4e1c5.mp4"
+    ],
+    "full_decode": [
+      "D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\.local\\tools\\ffmpeg\\unpacked\\ffmpeg-9.0.2-essentials_build\\bin\\ffmpeg.exe",
+      "-nostdin",
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-xerror",
+      "-err_detect",
+      "explode",
+      "-i",
+      "D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\video\\5d670b10ce288c0dd5deeaa654f4e1c5.mp4",
+      "-map",
+      "0:v:0",
+      "-map",
+      "0:a?",
+      "-f",
+      "null",
+      "-"
+    ]
+  },
+  "probe_exit": 0,
+  "decode_exit": 0,
+  "technical": {
+    "programs": [],
+    "stream_groups": [],
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 720,
+        "height": 1280,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "24/1",
+        "duration": "90.000000",
+        "nb_read_frames": "2160"
+      },
+      {
+        "index": 1,
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "44100",
+        "channels": 2,
+        "r_frame_rate": "0/0",
+        "duration": "90.000000",
+        "nb_read_frames": "3876"
+      }
+    ],
+    "format": {
+      "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+      "duration": "90.000000",
+      "size": "15399955"
+    }
+  },
+  "sha256_after": "e571557d04416d0823b3093b375a5b67dfc7f0cf0ee69dc26f91b71ce32d033b",
+  "manual_quality": "NOT_AUTOMATABLE"
+}
