@@ -1237,7 +1237,7 @@
       "fix_sha": "ee1c6596b0bb0e67afe848863873892e088ce31c",
       "environment_resolution": null,
       "targeted_retest": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/EXECUTION_SUMMARY.json",
-      "limits": "局部同记录分段复测，非最终同版全量；ENV063根因未完全确认。",
+      "limits": "原同记录接续已过；本次30个只读收入页独立context启动均通过且诊断无错误。不是原会员页面失败复现，旧根因仍未完全确认，保留开放，不能当最终整链通过。",
       "group": "G17",
       "status": "RECHECK_PASS_ROOT_CAUSE_OPEN",
       "full_regression": null,
@@ -1245,7 +1245,8 @@
       "phase": "T1_DISCOVERY",
       "acceptance_ids": [
         "E2E-08"
-      ]
+      ],
+      "bounded_followup": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/startup01/RESULT.json"
     },
     {
       "id": "QA18-ENV-064",
@@ -1986,6 +1987,66 @@
       "phase": "T1_DISCOVERY",
       "acceptance_ids": [
         "E2E-12"
+      ]
+    },
+    {
+      "id": "QA18-FE-144",
+      "kind": "FRONTEND",
+      "product_bug_confirmed": true,
+      "summary": "App业务目录的收入事实未向辅助阅读暴露金额值",
+      "actual": "视觉金额正确，Flutter Web语义树中11个禁用textbox均无名称和值；修前新增语义回归真实失败。",
+      "expected": "保留原视觉/可选择文本，完整暴露每项事实名称与当前值；刷新和拒绝后清旧值。",
+      "evidence": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/before-income.aria.txt",
+      "fix_sha": "dac064f4a4a7942f059266b20fc128a2544da228",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader02/RESULT.json",
+      "limits": "13关联widget、改动文件分析、真实构建及同记录双端4项通过；旧全App结果不继承，新最终全量仍待。",
+      "group": "G11",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_CLOSEOUT",
+      "acceptance_ids": [
+        "TASK-11"
+      ]
+    },
+    {
+      "id": "QA18-TEST-145",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "隔离故障恢复helper误把MySQL JSON键排序当作数据改动",
+      "actual": "reader01正确呈现单源失败；恢复时对序列化键序列做哈希比较被拒。",
+      "expected": "仍严格检查原结构加唯一故障标记，允许数据库键排序；有其他字段改动仍拒绝覆盖。",
+      "evidence": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader01/RESULT.json",
+      "fix_sha": "f3fde85190f7d7a2f6fbdedad1fa55c209a77911",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader02/RESULT.json",
+      "limits": "仅隔离测试helper；原结构逐字段严格相等，修后原SHA一致，未改产品容错/鉴权/钱账。",
+      "group": "G11",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_CLOSEOUT",
+      "acceptance_ids": [
+        "TASK-11"
+      ]
+    },
+    {
+      "id": "QA18-TEST-146",
+      "kind": "TEST_SCRIPT",
+      "product_bug_confirmed": false,
+      "summary": "补测作品入口时脚本误用id字段代替既有order_id",
+      "actual": "App已打开正确购买许可页面，脚本读取不存在的data.id失败。",
+      "expected": "按现行StockPurchase契约核对data.order_id与原订单一致。",
+      "evidence": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/library01/RESULT.json",
+      "fix_sha": "aa3731a2479afa94cb51e2b9a00f38295e8a10e4",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/library02/RESULT.json",
+      "limits": "仅脚本，按原契约保留精确原单断言；正常新短信会话只创建一次、补测复用有效会话，旧撤销会话仍401。",
+      "group": "G11",
+      "status": "RETARGET_PASS",
+      "full_regression": null,
+      "owner": "chengcongcong222",
+      "phase": "T1_CLOSEOUT",
+      "acceptance_ids": [
+        "TASK-11"
       ]
     }
   ]

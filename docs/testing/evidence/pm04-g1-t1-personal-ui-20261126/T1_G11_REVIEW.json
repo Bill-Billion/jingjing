@@ -1,0 +1,339 @@
+{
+  "kind": "T1_ARCHIVED_EVIDENCE_REVIEW",
+  "new_business_execution": false,
+  "reviewed_at": "2026-11-26",
+  "executions": {
+    "original09": {
+      "versions": {
+        "backend": "07822585dc90d589f8e3363957b0024ff9d1f769",
+        "app": "18a8d20faa52cb8b8cf7956926a32c820a49dd86",
+        "vue": "07822585dc90d589f8e3363957b0024ff9d1f769",
+        "driver": "73693b6bd75dce5e6173ea1753263d46b4cff82d"
+      },
+      "environment": "jx_test_stock_pm03_8140e09b542eb73e9c5deae4",
+      "api": "0.31.79-rc.2",
+      "migrations": "225/0225",
+      "business_ids": {
+        "order": "62da8870-6263-4745-8f17-809e2c553494",
+        "payment": "89aed01b-ca5e-4ff0-8e81-385cf7dd9882",
+        "invoice": "cb26b918-5dcf-4fed-b3e3-c217575dbe46",
+        "refund": "d71b9002-e62b-46cb-874b-8fbced630877",
+        "income": "a9259e23-2034-4cc1-80e0-5268638bab6e",
+        "documents": {
+          "historical": "ae1afc69-0114-48e7-8324-ffaf9953b5ff",
+          "current_zero": "b6656756-5ecd-4efd-8bc5-eec09b7b7595"
+        }
+      },
+      "command": "V5_ACCESS_FILE=<original clean environment> QA18_OUTPUT_DIR=<original clean/chain> CHROME_PATH=<local browser> node scripts/qa18-personal-invoices-browser.mjs",
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/EXECUTION_SUMMARY.json",
+        "sha256": "d0efd8fae77ec97272a5a99623d2052f972cd72e5ba4d2320334bbcb00e9ce02"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/run01.log",
+          "sha256": "86ff9634d51884ee7fb0770f899d62894f0ebf767d80ddcaaa3b15b31e282202"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/run01.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/checkpoint.json",
+          "sha256": "e7845120826eb1709fcddaa8152cb2b617513c3c8b63df1ecce4b58975596c01"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/1795592230845-RESULT.json",
+          "sha256": "e6b000f6d8680d69275f0e700ba22938f34ec64b23423000bee29f95a2a98f52"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/1795592230845-vue-income-accrued-paid-pending-separated.aria.txt",
+          "sha256": "02be2f42e0a3e9b19c0801817ffc949bcdc65c7cabf4eb3399ddbd7c68caecce"
+        }
+      ],
+      "limitations": [
+        "Synthetic loopback; Flutter Web is not physical Android",
+        "Final G11/G12 browser chain ran once without resume after preparation; not final 18-group regression",
+        "First environment old invoice0910 and approved refund9297 remain unchanged; not represented by new IDs",
+        "Current payment and refund execute/reconcile are real HTTP with explicitly simulated outcome, not live channels or full refund UI E2E",
+        "Income assertions use pre-refund ledger: API exact values and Vue displays, App original-ledger navigation; do not claim every App income text was asserted",
+        "Network abort affects one source or next-page request, not a server-internal partial aggregation failure",
+        "Sealed source contents are not signed contracts, simulated invoices are not real tax invoices"
+      ],
+      "observations": [
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/checkpoint.json",
+            "sha256": "e7845120826eb1709fcddaa8152cb2b617513c3c8b63df1ecce4b58975596c01"
+          },
+          "json_path": [
+            "complete"
+          ],
+          "equals": true
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/checkpoint.json",
+            "sha256": "e7845120826eb1709fcddaa8152cb2b617513c3c8b63df1ecce4b58975596c01"
+          },
+          "json_path": [
+            "g11",
+            "income",
+            "income"
+          ],
+          "equals": {
+            "accrued_minor": 50,
+            "adjustment_minor": 0,
+            "verified_paid_minor": 20,
+            "pending_minor": 30,
+            "recovery_due_minor": 0,
+            "retained_minor": 0,
+            "currency": "CNY",
+            "environment": "SANDBOX",
+            "meaning": "PAYABLE_NOT_BANK_BALANCE",
+            "basis": "POSTED_LEDGER_ONLY",
+            "bank_arrival_verified": false
+          }
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/checkpoint.json",
+            "sha256": "e7845120826eb1709fcddaa8152cb2b617513c3c8b63df1ecce4b58975596c01"
+          },
+          "json_path": [
+            "checks"
+          ],
+          "equals": [
+            {
+              "attempt": "1795592230845",
+              "name": "personal-library-original-domain-id-and-income-three-facts-with-private-access"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "vue-21-snapshot-pagination-single-source-failure-retry-and-exact-record-navigation"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "flutter-21-snapshot-next-page-network-recovery-reuses-cursor-and-opens-original"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "app-vue-income-original-ledger-and-merchant-retained-not-extra-payment"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "unpaid-order-has-no-invoice-amount-on-app-vue-and-api"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "flutter-invoice-response-loss-recovers-original-command-without-second-create",
+              "invoice_id": "cb26b918-5dcf-4fed-b3e3-c217575dbe46",
+              "order_id": "62da8870-6263-4745-8f17-809e2c553494"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "flutter-unknown-invoice-command-lookup-no-second-post-and-before-issue-withdraw",
+              "invoice_id": "9bb752d0-f3fb-4916-8b16-e7e48ffa7dab",
+              "order_id": "b006ff23-f389-4551-bf52-246d5f6e1b7b",
+              "writes": 1
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "app-supplement-and-vue-handler-preserve-original-invoice-materials"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "pending-invoice-hidden-and-recorder-cannot-independently-verify"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "vue-independent-verifier-issues-synthetic-document-for-same-order"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "app-saves-original-and-supplement-plus-verified-synthetic-invoice"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "same-order-normal-refund-transitions-recompute-invoice-basis",
+              "order_id": "62da8870-6263-4745-8f17-809e2c553494",
+              "refund_id": "d71b9002-e62b-46cb-874b-8fbced630877",
+              "case_id": "6420e75d-0939-4e2a-ad3d-b6eaf6407903"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "app-requests-correction-after-same-order-refund"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "vue-independent-zero-correction-preserves-issued-history"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "refund-blocks-new-invoice-old-request-replays-current-corrected-state-and-history-downloads"
+            }
+          ]
+        }
+      ]
+    },
+    "income-current": {
+      "versions": {
+        "backend": "9df45f62b7430f8bcf68131ccf6fba25ec0e7188",
+        "app": "dac064f4a4a7942f059266b20fc128a2544da228",
+        "vue": "c4f12488486eb95cd19068bb84103ad46c00297f",
+        "driver": "f3fde85190f7d7a2f6fbdedad1fa55c209a77911"
+      },
+      "environment": "jx_test_stock_pm03_44b3c25a57e75c8701792dc1",
+      "business_ids": {
+        "order": "294b1acf-949f-4e40-8c57-ce77930011ad",
+        "agreement": "28036bdf-eb28-46ce-9f2c-7d4188b2776d"
+      },
+      "command": "QA18_PREPARED_DIR=<prepared> QA18_OUTPUT_DIR=<reader01 or reader02> V5_ACCESS_FILE=<same environment private ui access> CHROME_PATH=<Edge> JX_MYSQL_TEST_ENV_FILE=<private> QA18_PERSONAL_MODE=reader node scripts/qa18-t1-personal-browser.mjs",
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/EXECUTION_SUMMARY.json",
+        "sha256": "1311eaa601408ce89cc4c3fc0f68b956b084b9c257b92019b24342dbd3b4fe02"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader02/RESULT.json",
+          "sha256": "9e12e35a18535d796372ae99f3d90a05cbd90e333916c6c6698e0be703e88131"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader02/app-readable-income.aria.txt",
+          "sha256": "599b182a6ffee95cebd49a4197816c07189e210a6da83ad3dab02672c08b2f22"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader02/app-actual-source-failure.aria.txt",
+          "sha256": "c225813f20da49cf947c256093f9c4aa0b7e96988571c404fadbe7fb7904cb0a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader02/app-source-recovery.aria.txt",
+          "sha256": "599b182a6ffee95cebd49a4197816c07189e210a6da83ad3dab02672c08b2f22"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader02/app-session-revoked.aria.txt",
+          "sha256": "e3fa78e83870925c72f713e761f8485c0ed0c036f32b26355cff1740f6416653"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader02/vue-session-revoked.aria.txt",
+          "sha256": "e99db244fa8d6c11decece357985bb02a9e6b99d02f2e7ea6e586bad827a129b"
+        }
+      ],
+      "limitations": [
+        "Current stock_buyer login was revoked via normal DELETE /auth/sessions/current and stays revoked. No credential restoration.",
+        "Owned isolated-row fault marker deliberately breaks content hash; exact original JSON restored. This is server-source fault injection, not real data corruption or mocked client HTTP.",
+        "Old reader01 failure retained; reader02 is a fresh complete scoped run on the same original record, with no duplicate payment or refund.",
+        "30 startup reads prove current bounded context lifecycle only; old ENV063 root cause is not retrospectively established.",
+        "No current full App regression: old1263/0/1 is c4/533c history, not this product fix. T3 whole-version batch not started.",
+        "Different historical executions are kept separate; T1 clause coverage is not a current final PASS, physical device result or formal signoff."
+      ],
+      "observations": [
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader02/RESULT.json",
+            "sha256": "9e12e35a18535d796372ae99f3d90a05cbd90e333916c6c6698e0be703e88131"
+          },
+          "json_path": [
+            "complete"
+          ],
+          "equals": true
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/reader02/RESULT.json",
+            "sha256": "9e12e35a18535d796372ae99f3d90a05cbd90e333916c6c6698e0be703e88131"
+          },
+          "json_path": [
+            "checks",
+            0,
+            "income"
+          ],
+          "equals": {
+            "accrued_minor": 50,
+            "adjustment_minor": 0,
+            "verified_paid_minor": 20,
+            "pending_minor": 30,
+            "recovery_due_minor": 0,
+            "retained_minor": 0,
+            "currency": "CNY",
+            "environment": "SANDBOX",
+            "meaning": "PAYABLE_NOT_BANK_BALANCE",
+            "basis": "POSTED_LEDGER_ONLY",
+            "bank_arrival_verified": false
+          }
+        }
+      ]
+    },
+    "works-current": {
+      "versions": {
+        "backend": "9df45f62b7430f8bcf68131ccf6fba25ec0e7188",
+        "app": "dac064f4a4a7942f059266b20fc128a2544da228",
+        "driver": "aa3731a2479afa94cb51e2b9a00f38295e8a10e4"
+      },
+      "environment": "jx_test_stock_pm03_44b3c25a57e75c8701792dc1",
+      "business_ids": {
+        "order": "294b1acf-949f-4e40-8c57-ce77930011ad",
+        "agreement": "28036bdf-eb28-46ce-9f2c-7d4188b2776d"
+      },
+      "command": "Same environment; QA18_PERSONAL_MODE=library QA18_OUTPUT_DIR=<new library01/library02> node scripts/qa18-t1-personal-browser.mjs",
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/EXECUTION_SUMMARY.json",
+        "sha256": "1311eaa601408ce89cc4c3fc0f68b956b084b9c257b92019b24342dbd3b4fe02"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/library02/RESULT.json",
+          "sha256": "fa23e3fe5affabf32dfd40943891acf72e4ea38b43488c1a6a9e693587a3a3bd"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/library02/app-owned-work-original-order.aria.txt",
+          "sha256": "8b0621e2f6dddee796bf9741ad824ec5912f0fe766cceda0d1fc0937077de9b1"
+        }
+      ],
+      "limitations": [
+        "Read-only App works to exact original order; new normal SMS login, original token remains revoked.",
+        "Separate execution from reader02; no repeated money operation, not a full regression or native device."
+      ],
+      "observations": [
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/library02/RESULT.json",
+            "sha256": "fa23e3fe5affabf32dfd40943891acf72e4ea38b43488c1a6a9e693587a3a3bd"
+          },
+          "json_path": [
+            "checks",
+            0,
+            "order_id"
+          ],
+          "equals": "294b1acf-949f-4e40-8c57-ce77930011ad"
+        }
+      ]
+    }
+  },
+  "slots": [
+    {
+      "key": "TASK-11|app|normal",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "合同/作品/收入以来源域+编号去重；单域失败可重试；应计/待付/已付分开，撤权及时清缓存。",
+      "execution_ids": [
+        "original09",
+        "income-current",
+        "works-current"
+      ],
+      "clause_assertions": [
+        {
+          "original": "合同/作品/收入按来源域+编号去重及原记录入口",
+          "proof": "original09已执行App21条合同来源下一页、游标恢复及原约定/收入导航；保留18a8旧产品/8140库。作品原订单App入口原证据不足，本次works-current用dac当前App、44b3库、同294b原单真实请求核order_id，单独补证，不冒充原09已测。"
+        },
+        {
+          "original": "应计/待付/已付分开",
+          "proof": "income-current在dac已编译App和真实44b3库，精确读取应计50/已付20/待付30分，币种与测试环境及非银行余额意义均核。"
+        },
+        {
+          "original": "normal范围及版本边界",
+          "proof": "仅T1历史条款覆盖；normal来源导航与金额补证分属上述两个执行，不拼当前最终PASS。单域失败/恢复和401清除已有本次证据，其他逆向义务单列。"
+        }
+      ]
+    }
+  ]
+}
