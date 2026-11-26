@@ -1,0 +1,156 @@
+{
+  "kind": "T1_SCOPED_BROWSER_AND_ARCHIVED_SUPPLEMENT",
+  "new_business_execution": true,
+  "complete_original_slots": 0,
+  "summary": {
+    "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/EXECUTION_SUMMARY.json",
+    "sha256": "51cfb074feeb6ab1ddbd5aa9cb348a2a0baec4545ee465cdd9601aa74f5532ba"
+  },
+  "browser_attempts": [
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/browser-01/RESULT.json",
+      "sha256": "f1a1ffa3c36ec310d7fe429ec5a781acdb8ee6358c081079d541341261fb316a"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/browser-02/RESULT.json",
+      "sha256": "0c80e4c930c3c0370c6c996c32185dfba713f277536a66c147b2f5b668c39188"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/browser-03/RESULT.json",
+      "sha256": "5b4571369977ff462b4f06aeb5b16b04cb84dc15ac97967fbbada147218a6f6a"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/browser-04/RESULT.json",
+      "sha256": "1420b20e7fcb355c0bfac1c61eb50317a44b482de163a8db62ccd089df606faa"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/browser-05/RESULT.json",
+      "sha256": "8cfbd841a351fe5ad4fc73c941172eb572e4b773ddb9e01e0c29390f16fbb882"
+    }
+  ],
+  "census": {
+    "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/POST_SETTLEMENT_CENSUS.json",
+    "sha256": "82e672d5aa2bd1c0a2b55c64425b7c4a5301865ed03ae7053701ca98becd9f14"
+  },
+  "historical_audit": {
+    "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/ORIGINAL_EVIDENCE_AUDIT.json",
+    "sha256": "77e36b914dec5369ad71f1083c60858fa04bb5892a2b76fc06fdba34e14ab781"
+  },
+  "versions": {
+    "backend": "ac24b00b4bef36bac86eb6677aaa1fd4732689a9",
+    "app": "dac064f4a4a7942f059266b20fc128a2544da228",
+    "vue": "c4f12488486eb95cd19068bb84103ad46c00297f",
+    "browser": "bc4dc9d90803f82de5e432887562b35c18d29793",
+    "census": "f82341c50f834c850d2ad990deb6c960df5a6769",
+    "clone": "7cede512f540d9d208f6ac35b7ba097c40253986"
+  },
+  "environment": "jx_test_qa18_audition_faed7daa4fababd4639d",
+  "original_environment": "jx_test_stock_pm03_d7cf52eb8ac435ce803300d9",
+  "commands": [
+    "node scripts/qa18-audition-clone.cjs <original-offline-restore> <original-expired-environment> <new-clone-directory>",
+    "node scripts/qa18-audition-test-actors.cjs <new-clone-directory>",
+    "node scripts/qa18-audition-finance-authority.cjs <new-clone-directory>",
+    "V5_ACCESS_FILE=<private> QA18_OUTPUT_DIR=<new-attempt> QA18_PRIOR_RESULT=<prior-result> CHROME_PATH=<Edge> node scripts/qa18-audition-settlement-browser.mjs",
+    "node scripts/qa18-audition-settlement-check.cjs <new-clone-directory> <attempt05> <census-output>"
+  ],
+  "slots": [
+    {
+      "key": "E2E-03|api|normal",
+      "decision": "PARTIAL",
+      "proven": "原13/16批同预约完成公开方案、付款100元、艺人接受、会话、实际7文件取样、独审、买方确认。新副本保留原订单及快照，自然T+1后Vue建约定/清分，独审及四方App/Vue确认，三笔计提2200/6240/1560分、出款0；两端读同约定。",
+      "remaining": "当前合同接受计时变体及所需端完整原预期仍须核定；原历史库到新副本的清分接续不冒充同环境/同版整链PASS。旧48h快照合法保留，不改为新规则。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|api|reverse",
+      "decision": "PARTIAL",
+      "proven": "原13批独立反向预约4fe8ef93/订单26163ac4：App付款、Vue艺人拒单、原付款自动全额退款、Vue独审执行、App核对退款成功，净收0且原合同保持；没有独立transport_fee，没有授出演权。",
+      "remaining": "按原链检查取消/超时/争议及安全拒绝等尚缺的准确端证据；艺人拒单全额退款已证实，勿重造此反向订单。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|api|unauthorized",
+      "decision": "PARTIAL",
+      "proven": "原13/16API记录含本人自审403、无关预约/退款404、审前样片拒读及未读不能签收。当前副本两端各自买卖方可读同财务约定，无关主体404且无成功回包。其他页面的权限义务尚不据此全过。",
+      "remaining": "原样片、独审和办理动作在所需端的越权边界仍不完整；财务读取404不替代样片拒读或提交自审页面证据。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|api|recovery",
+      "decision": "PARTIAL",
+      "proven": "原13批App付款UNKNOWN不开放接单/会话，按原付款核对到SUCCEEDED且只1付款；当前Vue清分成功回包被丢弃，同页按原key/body恢复同1结算。两批不同版本/环境分别保留。",
+      "remaining": "所需端离页/刷新后原请求恢复及原资格/截止变化的关键操作仍需核定；本批Vue只证实同页恢复，不把它当持久恢复。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|api|duplicate",
+      "decision": "PARTIAL",
+      "proven": "当前Vue清分200实际丢回包后原key/body再发仍200同一结算ID。全库只新增1结算、3计提和12财务命令，未重复建单/计提，原付款与流水未变。",
+      "remaining": "原预约/付款/接拒/样片确认关键动作的重复与并发义务尚未全核；本批清分重放与不重复计提已证实，不重复办理。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|app|normal",
+      "decision": "PARTIAL",
+      "proven": "原13/16批同预约完成公开方案、付款100元、艺人接受、会话、实际7文件取样、独审、买方确认。新副本保留原订单及快照，自然T+1后Vue建约定/清分，独审及四方App/Vue确认，三笔计提2200/6240/1560分、出款0；两端读同约定。",
+      "remaining": "当前合同接受计时变体及所需端完整原预期仍须核定；原历史库到新副本的清分接续不冒充同环境/同版整链PASS。旧48h快照合法保留，不改为新规则。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|app|reverse",
+      "decision": "PARTIAL",
+      "proven": "原13批独立反向预约4fe8ef93/订单26163ac4：App付款、Vue艺人拒单、原付款自动全额退款、Vue独审执行、App核对退款成功，净收0且原合同保持；没有独立transport_fee，没有授出演权。",
+      "remaining": "按原链检查取消/超时/争议及安全拒绝等尚缺的准确端证据；艺人拒单全额退款已证实，勿重造此反向订单。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|app|unauthorized",
+      "decision": "PARTIAL",
+      "proven": "原13/16API记录含本人自审403、无关预约/退款404、审前样片拒读及未读不能签收。当前副本两端各自买卖方可读同财务约定，无关主体404且无成功回包。其他页面的权限义务尚不据此全过。",
+      "remaining": "原样片、独审和办理动作在所需端的越权边界仍不完整；财务读取404不替代样片拒读或提交自审页面证据。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|app|recovery",
+      "decision": "PARTIAL",
+      "proven": "原13批App付款UNKNOWN不开放接单/会话，按原付款核对到SUCCEEDED且只1付款；当前Vue清分成功回包被丢弃，同页按原key/body恢复同1结算。两批不同版本/环境分别保留。",
+      "remaining": "所需端离页/刷新后原请求恢复及原资格/截止变化的关键操作仍需核定；本批Vue只证实同页恢复，不把它当持久恢复。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|web|normal",
+      "decision": "PARTIAL",
+      "proven": "原13/16批同预约完成公开方案、付款100元、艺人接受、会话、实际7文件取样、独审、买方确认。新副本保留原订单及快照，自然T+1后Vue建约定/清分，独审及四方App/Vue确认，三笔计提2200/6240/1560分、出款0；两端读同约定。",
+      "remaining": "当前合同接受计时变体及所需端完整原预期仍须核定；原历史库到新副本的清分接续不冒充同环境/同版整链PASS。旧48h快照合法保留，不改为新规则。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|web|reverse",
+      "decision": "PARTIAL",
+      "proven": "原13批独立反向预约4fe8ef93/订单26163ac4：App付款、Vue艺人拒单、原付款自动全额退款、Vue独审执行、App核对退款成功，净收0且原合同保持；没有独立transport_fee，没有授出演权。",
+      "remaining": "按原链检查取消/超时/争议及安全拒绝等尚缺的准确端证据；艺人拒单全额退款已证实，勿重造此反向订单。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|web|unauthorized",
+      "decision": "PARTIAL",
+      "proven": "原13/16API记录含本人自审403、无关预约/退款404、审前样片拒读及未读不能签收。当前副本两端各自买卖方可读同财务约定，无关主体404且无成功回包。其他页面的权限义务尚不据此全过。",
+      "remaining": "原样片、独审和办理动作在所需端的越权边界仍不完整；财务读取404不替代样片拒读或提交自审页面证据。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|web|recovery",
+      "decision": "PARTIAL",
+      "proven": "原13批App付款UNKNOWN不开放接单/会话，按原付款核对到SUCCEEDED且只1付款；当前Vue清分成功回包被丢弃，同页按原key/body恢复同1结算。两批不同版本/环境分别保留。",
+      "remaining": "所需端离页/刷新后原请求恢复及原资格/截止变化的关键操作仍需核定；本批Vue只证实同页恢复，不把它当持久恢复。",
+      "same_environment_whole_chain": false
+    },
+    {
+      "key": "E2E-03|web|duplicate",
+      "decision": "PARTIAL",
+      "proven": "当前Vue清分200实际丢回包后原key/body再发仍200同一结算ID。全库只新增1结算、3计提和12财务命令，未重复建单/计提，原付款与流水未变。",
+      "remaining": "原预约/付款/接拒/样片确认关键动作的重复与并发义务尚未全核；本批清分重放与不重复计提已证实，不重复办理。",
+      "same_environment_whole_chain": false
+    }
+  ]
+}

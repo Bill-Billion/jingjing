@@ -7467,11 +7467,11 @@
       "key": "E2E-03|api|normal",
       "decision": "PARTIAL",
       "condition_evidence": {
-        "path": "docs/testing/evidence/pm04-g1-t1-audition-maturity-20261126/T1_MATURITY_REVIEW.json",
-        "sha256": "8b7f379b52c2e4a830d7b324ddcd1cf9f84de41b699163b11e31535d4d6a062e"
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
       },
-      "reason": "原13/16同笔履约记录自然T+1后只读实际仓库结算门禁已放行，原付款合同文件保持。",
-      "remaining": "尚未同单API财务协议、独审与实际清分；只读门禁不冒充清算完成。历史多版本与最终回归分开。"
+      "reason": "原13/16批同预约完成公开方案、付款100元、艺人接受、会话、实际7文件取样、独审、买方确认。新副本保留原订单及快照，自然T+1后Vue建约定/清分，独审及四方App/Vue确认，三笔计提2200/6240/1560分、出款0；两端读同约定。",
+      "remaining": "当前合同接受计时变体及所需端完整原预期仍须核定；原历史库到新副本的清分接续不冒充同环境/同版整链PASS。旧48h快照合法保留，不改为新规则。"
     },
     {
       "key": "ACC-DEL-13.03|api|normal",
@@ -9102,124 +9102,260 @@
       },
       "reason": "原证据保留；同新隔离副本补证：两端真实checkout先成功200后丢弃回包，随后演员通过自己的网页实际退出，候选状态CONFIRMED→WITHDRAWN、版本3→4、内容摘要改变；App离页返回、Vue刷新均以原key/body恢复原08834e9a订单200。新的key则409/PARTICIPATION_CAST_CHANGED。",
       "remaining": "原约定/独审退款/发行收入关键动作尚未完整证明原请求恢复；资格变化后的checkout已完成，不重复补测。历史和本次环境分开，非最终回归/正式签收。"
+    },
+    {
+      "key": "E2E-03|api|reverse",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13批独立反向预约4fe8ef93/订单26163ac4：App付款、Vue艺人拒单、原付款自动全额退款、Vue独审执行、App核对退款成功，净收0且原合同保持；没有独立transport_fee，没有授出演权。",
+      "remaining": "按原链检查取消/超时/争议及安全拒绝等尚缺的准确端证据；艺人拒单全额退款已证实，勿重造此反向订单。"
+    },
+    {
+      "key": "E2E-03|api|unauthorized",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13/16API记录含本人自审403、无关预约/退款404、审前样片拒读及未读不能签收。当前副本两端各自买卖方可读同财务约定，无关主体404且无成功回包。其他页面的权限义务尚不据此全过。",
+      "remaining": "原样片、独审和办理动作在所需端的越权边界仍不完整；财务读取404不替代样片拒读或提交自审页面证据。"
+    },
+    {
+      "key": "E2E-03|api|recovery",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13批App付款UNKNOWN不开放接单/会话，按原付款核对到SUCCEEDED且只1付款；当前Vue清分成功回包被丢弃，同页按原key/body恢复同1结算。两批不同版本/环境分别保留。",
+      "remaining": "所需端离页/刷新后原请求恢复及原资格/截止变化的关键操作仍需核定；本批Vue只证实同页恢复，不把它当持久恢复。"
+    },
+    {
+      "key": "E2E-03|api|duplicate",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "当前Vue清分200实际丢回包后原key/body再发仍200同一结算ID。全库只新增1结算、3计提和12财务命令，未重复建单/计提，原付款与流水未变。",
+      "remaining": "原预约/付款/接拒/样片确认关键动作的重复与并发义务尚未全核；本批清分重放与不重复计提已证实，不重复办理。"
+    },
+    {
+      "key": "E2E-03|app|normal",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13/16批同预约完成公开方案、付款100元、艺人接受、会话、实际7文件取样、独审、买方确认。新副本保留原订单及快照，自然T+1后Vue建约定/清分，独审及四方App/Vue确认，三笔计提2200/6240/1560分、出款0；两端读同约定。",
+      "remaining": "当前合同接受计时变体及所需端完整原预期仍须核定；原历史库到新副本的清分接续不冒充同环境/同版整链PASS。旧48h快照合法保留，不改为新规则。"
+    },
+    {
+      "key": "E2E-03|app|reverse",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13批独立反向预约4fe8ef93/订单26163ac4：App付款、Vue艺人拒单、原付款自动全额退款、Vue独审执行、App核对退款成功，净收0且原合同保持；没有独立transport_fee，没有授出演权。",
+      "remaining": "按原链检查取消/超时/争议及安全拒绝等尚缺的准确端证据；艺人拒单全额退款已证实，勿重造此反向订单。"
+    },
+    {
+      "key": "E2E-03|app|unauthorized",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13/16API记录含本人自审403、无关预约/退款404、审前样片拒读及未读不能签收。当前副本两端各自买卖方可读同财务约定，无关主体404且无成功回包。其他页面的权限义务尚不据此全过。",
+      "remaining": "原样片、独审和办理动作在所需端的越权边界仍不完整；财务读取404不替代样片拒读或提交自审页面证据。"
+    },
+    {
+      "key": "E2E-03|app|recovery",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13批App付款UNKNOWN不开放接单/会话，按原付款核对到SUCCEEDED且只1付款；当前Vue清分成功回包被丢弃，同页按原key/body恢复同1结算。两批不同版本/环境分别保留。",
+      "remaining": "所需端离页/刷新后原请求恢复及原资格/截止变化的关键操作仍需核定；本批Vue只证实同页恢复，不把它当持久恢复。"
+    },
+    {
+      "key": "E2E-03|web|normal",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13/16批同预约完成公开方案、付款100元、艺人接受、会话、实际7文件取样、独审、买方确认。新副本保留原订单及快照，自然T+1后Vue建约定/清分，独审及四方App/Vue确认，三笔计提2200/6240/1560分、出款0；两端读同约定。",
+      "remaining": "当前合同接受计时变体及所需端完整原预期仍须核定；原历史库到新副本的清分接续不冒充同环境/同版整链PASS。旧48h快照合法保留，不改为新规则。"
+    },
+    {
+      "key": "E2E-03|web|reverse",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13批独立反向预约4fe8ef93/订单26163ac4：App付款、Vue艺人拒单、原付款自动全额退款、Vue独审执行、App核对退款成功，净收0且原合同保持；没有独立transport_fee，没有授出演权。",
+      "remaining": "按原链检查取消/超时/争议及安全拒绝等尚缺的准确端证据；艺人拒单全额退款已证实，勿重造此反向订单。"
+    },
+    {
+      "key": "E2E-03|web|unauthorized",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13/16API记录含本人自审403、无关预约/退款404、审前样片拒读及未读不能签收。当前副本两端各自买卖方可读同财务约定，无关主体404且无成功回包。其他页面的权限义务尚不据此全过。",
+      "remaining": "原样片、独审和办理动作在所需端的越权边界仍不完整；财务读取404不替代样片拒读或提交自审页面证据。"
+    },
+    {
+      "key": "E2E-03|web|recovery",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "原13批App付款UNKNOWN不开放接单/会话，按原付款核对到SUCCEEDED且只1付款；当前Vue清分成功回包被丢弃，同页按原key/body恢复同1结算。两批不同版本/环境分别保留。",
+      "remaining": "所需端离页/刷新后原请求恢复及原资格/截止变化的关键操作仍需核定；本批Vue只证实同页恢复，不把它当持久恢复。"
+    },
+    {
+      "key": "E2E-03|web|duplicate",
+      "decision": "PARTIAL",
+      "condition_evidence": {
+        "path": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/T1_AUDITION_SETTLEMENT_REVIEW.json",
+        "sha256": "307e778e7163c79e9d6f1f2addd5d0fb709d2c37a0b6d0a07f8b77526d6afe09"
+      },
+      "reason": "当前Vue清分200实际丢回包后原key/body再发仍200同一结算ID。全库只新增1结算、3计提和12财务命令，未重复建单/计提，原付款与流水未变。",
+      "remaining": "原预约/付款/接拒/样片确认关键动作的重复与并发义务尚未全核；本批清分重放与不重复计提已证实，不重复办理。"
     }
   ],
   "ci": {
-    "sha": "ce0163095c9a7b56e05692ede053fc63ededb735",
+    "sha": "7bc166c5a3a73a0929c3abfb9978ad62d6b6747f",
     "conclusion": "NO_RUNS_OBSERVED",
     "scope": "Exact published base, all events",
-    "evidence": "docs/testing/evidence/pm04-g1-t1-participation-boundaries-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+    "evidence": "docs/testing/evidence/pm04-g1-t1-audition-settlement-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
     "historical_terminal": {
-      "sha": "bafd783245f64b1dfc9e569065b9655f2019ce38",
+      "sha": "ce0163095c9a7b56e05692ede053fc63ededb735",
       "conclusion": "NO_RUNS_OBSERVED",
       "scope": "Exact published base, all events",
-      "evidence": "docs/testing/evidence/pm04-g1-t1-participation-recovery-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+      "evidence": "docs/testing/evidence/pm04-g1-t1-participation-boundaries-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
       "historical_terminal": {
-        "sha": "cede3ee7a5363e4776c81a2df5582291c202cc62",
+        "sha": "bafd783245f64b1dfc9e569065b9655f2019ce38",
         "conclusion": "NO_RUNS_OBSERVED",
-        "scope": "Exact published base, all workflow events",
-        "evidence": "docs/testing/evidence/pm04-g1-t1-participation-chain-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+        "scope": "Exact published base, all events",
+        "evidence": "docs/testing/evidence/pm04-g1-t1-participation-recovery-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
         "historical_terminal": {
-          "sha": "5071064776541583a8e3ae919f9d8321add9d04e",
+          "sha": "cede3ee7a5363e4776c81a2df5582291c202cc62",
           "conclusion": "NO_RUNS_OBSERVED",
           "scope": "Exact published base, all workflow events",
-          "evidence": "docs/testing/evidence/pm04-g1-t1-isolated-samples-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+          "evidence": "docs/testing/evidence/pm04-g1-t1-participation-chain-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
           "historical_terminal": {
-            "sha": "05e945bfcfb3358d1b4cf82751a53ef7e93c9d30",
+            "sha": "5071064776541583a8e3ae919f9d8321add9d04e",
             "conclusion": "NO_RUNS_OBSERVED",
             "scope": "Exact published base, all workflow events",
-            "evidence": "docs/testing/evidence/pm04-g1-t1-private-media-governance-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+            "evidence": "docs/testing/evidence/pm04-g1-t1-isolated-samples-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
             "historical_terminal": {
-              "sha": "6866bdc186822303c51a4152ed8d974ba89b09d1",
+              "sha": "05e945bfcfb3358d1b4cf82751a53ef7e93c9d30",
               "conclusion": "NO_RUNS_OBSERVED",
               "scope": "Exact published base, all workflow events",
-              "evidence": "docs/testing/evidence/pm04-g1-t1-wallet-source-separation-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+              "evidence": "docs/testing/evidence/pm04-g1-t1-private-media-governance-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
               "historical_terminal": {
-                "sha": "dc02d73706bf5d84dea1abd7b58532379a892dd5",
+                "sha": "6866bdc186822303c51a4152ed8d974ba89b09d1",
                 "conclusion": "NO_RUNS_OBSERVED",
                 "scope": "Exact published base, all workflow events",
-                "evidence": "docs/testing/evidence/pm04-g1-t1-wallet-mcn-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                "evidence": "docs/testing/evidence/pm04-g1-t1-wallet-source-separation-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                 "historical_terminal": {
-                  "sha": "d149949861954ea192f96753cda72f1fc35278eb",
+                  "sha": "dc02d73706bf5d84dea1abd7b58532379a892dd5",
                   "conclusion": "NO_RUNS_OBSERVED",
                   "scope": "Exact published base, all workflow events",
-                  "evidence": "docs/testing/evidence/pm04-g1-t1-engagement-chains-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                  "evidence": "docs/testing/evidence/pm04-g1-t1-wallet-mcn-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                   "historical_terminal": {
-                    "sha": "4f2d1279342f258ff4474f1e80c9f0e535c5614f",
+                    "sha": "d149949861954ea192f96753cda72f1fc35278eb",
                     "conclusion": "NO_RUNS_OBSERVED",
                     "scope": "Exact published base, all workflow events",
-                    "evidence": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                    "evidence": "docs/testing/evidence/pm04-g1-t1-engagement-chains-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                     "historical_terminal": {
-                      "sha": "ac5475ec220306456fac98b53cbcd970389da751",
+                      "sha": "4f2d1279342f258ff4474f1e80c9f0e535c5614f",
                       "conclusion": "NO_RUNS_OBSERVED",
-                      "scope": "All workflow events on exact published base",
-                      "evidence": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                      "scope": "Exact published base, all workflow events",
+                      "evidence": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                       "historical_terminal": {
-                        "sha": "82df1a39f95a6a6cffbc4df616c13fb47e6e1988",
+                        "sha": "ac5475ec220306456fac98b53cbcd970389da751",
                         "conclusion": "NO_RUNS_OBSERVED",
                         "scope": "All workflow events on exact published base",
-                        "evidence": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                        "evidence": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                         "historical_terminal": {
-                          "sha": "622b5d91d8b6888b2fed378a0dd8b36eabed9d4a",
+                          "sha": "82df1a39f95a6a6cffbc4df616c13fb47e6e1988",
                           "conclusion": "NO_RUNS_OBSERVED",
                           "scope": "All workflow events on exact published base",
-                          "evidence": "docs/testing/evidence/pm04-g1-t1-referral-recovery-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                          "evidence": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                           "historical_terminal": {
-                            "sha": "e3dc78e670af2f8c1b5e52235b614f7bf9564ea4",
+                            "sha": "622b5d91d8b6888b2fed378a0dd8b36eabed9d4a",
                             "conclusion": "NO_RUNS_OBSERVED",
                             "scope": "All workflow events on exact published base",
-                            "evidence": "docs/testing/evidence/pm04-g1-t1-ranking-referral-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                            "evidence": "docs/testing/evidence/pm04-g1-t1-referral-recovery-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                             "historical_terminal": {
-                              "sha": "35b03f72e4b0ff0d388381257b83cf84af40839b",
+                              "sha": "e3dc78e670af2f8c1b5e52235b614f7bf9564ea4",
                               "conclusion": "NO_RUNS_OBSERVED",
-                              "scope": "Exact published base, all events; later candidate separate",
-                              "evidence": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                              "scope": "All workflow events on exact published base",
+                              "evidence": "docs/testing/evidence/pm04-g1-t1-ranking-referral-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                               "historical_terminal": {
-                                "sha": "2b38c21fcf9fa90aea56b6797f544b6d66002476",
+                                "sha": "35b03f72e4b0ff0d388381257b83cf84af40839b",
                                 "conclusion": "NO_RUNS_OBSERVED",
-                                "scope": "Exact published head, all events; later head separate",
-                                "evidence": "docs/testing/evidence/pm04-g1-t1-trade-auditions-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                                "scope": "Exact published base, all events; later candidate separate",
+                                "evidence": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                                 "historical_terminal": {
-                                  "sha": "b235fcd804847127db2b1975d60bdaa59328ed85",
+                                  "sha": "2b38c21fcf9fa90aea56b6797f544b6d66002476",
                                   "conclusion": "NO_RUNS_OBSERVED",
                                   "scope": "Exact published head, all events; later head separate",
-                                  "evidence": "docs/testing/evidence/pm04-g1-t1-story-clients-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                                  "evidence": "docs/testing/evidence/pm04-g1-t1-trade-auditions-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                                   "historical_terminal": {
-                                    "sha": "b016fa0f8a72e76dc71aa688aeb580896577cc80",
+                                    "sha": "b235fcd804847127db2b1975d60bdaa59328ed85",
                                     "conclusion": "NO_RUNS_OBSERVED",
-                                    "scope": "Exact published head, all events, zero runs; later head separate",
-                                    "evidence": "docs/testing/evidence/pm04-g1-t1-story-production-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                                    "scope": "Exact published head, all events; later head separate",
+                                    "evidence": "docs/testing/evidence/pm04-g1-t1-story-clients-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                                     "historical_terminal": {
-                                      "sha": "f481dbe63eef7d6cbb92c7d4be906c0432bb9c90",
+                                      "sha": "b016fa0f8a72e76dc71aa688aeb580896577cc80",
                                       "conclusion": "NO_RUNS_OBSERVED",
                                       "scope": "Exact published head, all events, zero runs; later head separate",
-                                      "evidence": "docs/testing/evidence/pm04-g1-t1-privacy-chain-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                                      "evidence": "docs/testing/evidence/pm04-g1-t1-story-production-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                                       "historical_terminal": {
-                                        "sha": "d76b8794694618164c3ccd4acd6efb7c3d5302f0",
+                                        "sha": "f481dbe63eef7d6cbb92c7d4be906c0432bb9c90",
                                         "conclusion": "NO_RUNS_OBSERVED",
                                         "scope": "Exact published head, all events, zero runs; later head separate",
-                                        "evidence": "docs/testing/evidence/pm04-g1-t1-membership-privacy-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                                        "evidence": "docs/testing/evidence/pm04-g1-t1-privacy-chain-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                                         "historical_terminal": {
-                                          "sha": "d5ad0b21dd68bc8eb67a013a4efbadb006371fec",
+                                          "sha": "d76b8794694618164c3ccd4acd6efb7c3d5302f0",
                                           "conclusion": "NO_RUNS_OBSERVED",
-                                          "scope": "Exact published all-event query, later head not covered",
-                                          "evidence": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                                          "scope": "Exact published head, all events, zero runs; later head separate",
+                                          "evidence": "docs/testing/evidence/pm04-g1-t1-membership-privacy-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                                           "historical_terminal": {
-                                            "sha": "037315e9fc09a984ca1c8e99b890147a77347943",
+                                            "sha": "d5ad0b21dd68bc8eb67a013a4efbadb006371fec",
                                             "conclusion": "NO_RUNS_OBSERVED",
-                                            "scope": "Exact published 037315e9 head, all events, zero workflow runs; not inherited by later head",
-                                            "evidence": "docs/testing/evidence/pm04-g1-t1-wallet-rewards-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                                            "scope": "Exact published all-event query, later head not covered",
+                                            "evidence": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                                             "historical_terminal": {
-                                              "sha": "306eafecbc4f9be8d00a6c6010105190ac2b07ce",
+                                              "sha": "037315e9fc09a984ca1c8e99b890147a77347943",
                                               "conclusion": "NO_RUNS_OBSERVED",
-                                              "scope": "Exact published head has zero PR and all-event workflow runs; later head not covered",
-                                              "evidence": "docs/testing/evidence/pm04-g1-t1-stock-notice-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                                              "scope": "Exact published 037315e9 head, all events, zero workflow runs; not inherited by later head",
+                                              "evidence": "docs/testing/evidence/pm04-g1-t1-wallet-rewards-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                                               "historical_terminal": {
-                                                "id": 45751670895,
-                                                "sha": "938902958b2f729371b5fa73af9e1383eb76c876",
-                                                "conclusion": "SUCCESS",
-                                                "scope": "App/Web terminal; later QA HEAD not covered",
-                                                "evidence": "docs/testing/evidence/pm04-g1-purchase-recommendations-20261126-47/PRIOR_CI_TERMINAL.json"
+                                                "sha": "306eafecbc4f9be8d00a6c6010105190ac2b07ce",
+                                                "conclusion": "NO_RUNS_OBSERVED",
+                                                "scope": "Exact published head has zero PR and all-event workflow runs; later head not covered",
+                                                "evidence": "docs/testing/evidence/pm04-g1-t1-stock-notice-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                                                "historical_terminal": {
+                                                  "id": 45751670895,
+                                                  "sha": "938902958b2f729371b5fa73af9e1383eb76c876",
+                                                  "conclusion": "SUCCESS",
+                                                  "scope": "App/Web terminal; later QA HEAD not covered",
+                                                  "evidence": "docs/testing/evidence/pm04-g1-purchase-recommendations-20261126-47/PRIOR_CI_TERMINAL.json"
+                                                }
                                               }
                                             }
                                           }
