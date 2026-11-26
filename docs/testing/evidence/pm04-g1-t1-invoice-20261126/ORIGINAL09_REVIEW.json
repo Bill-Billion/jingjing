@@ -1,0 +1,348 @@
+{
+  "kind": "T1_ARCHIVED_EVIDENCE_REVIEW",
+  "new_business_execution": false,
+  "reviewed_at": "2026-11-26",
+  "executions": {
+    "personal-invoice-original09": {
+      "versions": {
+        "backend": "07822585dc90d589f8e3363957b0024ff9d1f769",
+        "app": "18a8d20faa52cb8b8cf7956926a32c820a49dd86",
+        "vue": "07822585dc90d589f8e3363957b0024ff9d1f769",
+        "driver": "73693b6bd75dce5e6173ea1753263d46b4cff82d"
+      },
+      "environment": "jx_test_stock_pm03_8140e09b542eb73e9c5deae4",
+      "api": "0.31.79-rc.2",
+      "migrations": "225/0225",
+      "business_ids": {
+        "order": "62da8870-6263-4745-8f17-809e2c553494",
+        "payment": "89aed01b-ca5e-4ff0-8e81-385cf7dd9882",
+        "invoice": "cb26b918-5dcf-4fed-b3e3-c217575dbe46",
+        "refund": "d71b9002-e62b-46cb-874b-8fbced630877",
+        "income": "a9259e23-2034-4cc1-80e0-5268638bab6e",
+        "documents": {
+          "historical": "ae1afc69-0114-48e7-8324-ffaf9953b5ff",
+          "current_zero": "b6656756-5ecd-4efd-8bc5-eec09b7b7595"
+        }
+      },
+      "command": "V5_ACCESS_FILE=<original clean environment> QA18_OUTPUT_DIR=<original clean/chain> CHROME_PATH=<local browser> node scripts/qa18-personal-invoices-browser.mjs",
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/EXECUTION_SUMMARY.json",
+        "sha256": "d0efd8fae77ec97272a5a99623d2052f972cd72e5ba4d2320334bbcb00e9ce02"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/run01.log",
+          "sha256": "86ff9634d51884ee7fb0770f899d62894f0ebf767d80ddcaaa3b15b31e282202"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/run01.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/checkpoint.json",
+          "sha256": "e7845120826eb1709fcddaa8152cb2b617513c3c8b63df1ecce4b58975596c01"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/1795592230845-RESULT.json",
+          "sha256": "e6b000f6d8680d69275f0e700ba22938f34ec64b23423000bee29f95a2a98f52"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/1795592230845-vue-income-accrued-paid-pending-separated.aria.txt",
+          "sha256": "02be2f42e0a3e9b19c0801817ffc949bcdc65c7cabf4eb3399ddbd7c68caecce"
+        }
+      ],
+      "limitations": [
+        "Synthetic loopback; Flutter Web is not physical Android",
+        "Final G11/G12 browser chain ran once without resume after preparation; not final 18-group regression",
+        "First environment old invoice0910 and approved refund9297 remain unchanged; not represented by new IDs",
+        "Current payment and refund execute/reconcile are real HTTP with explicitly simulated outcome, not live channels or full refund UI E2E",
+        "Income assertions use pre-refund ledger: API exact values and Vue displays, App original-ledger navigation; do not claim every App income text was asserted",
+        "Network abort affects one source or next-page request, not a server-internal partial aggregation failure",
+        "Sealed source contents are not signed contracts, simulated invoices are not real tax invoices"
+      ],
+      "observations": [
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/checkpoint.json",
+            "sha256": "e7845120826eb1709fcddaa8152cb2b617513c3c8b63df1ecce4b58975596c01"
+          },
+          "json_path": [
+            "complete"
+          ],
+          "equals": true
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/checkpoint.json",
+            "sha256": "e7845120826eb1709fcddaa8152cb2b617513c3c8b63df1ecce4b58975596c01"
+          },
+          "json_path": [
+            "g11",
+            "income",
+            "income"
+          ],
+          "equals": {
+            "accrued_minor": 50,
+            "adjustment_minor": 0,
+            "verified_paid_minor": 20,
+            "pending_minor": 30,
+            "recovery_due_minor": 0,
+            "retained_minor": 0,
+            "currency": "CNY",
+            "environment": "SANDBOX",
+            "meaning": "PAYABLE_NOT_BANK_BALANCE",
+            "basis": "POSTED_LEDGER_ONLY",
+            "bank_arrival_verified": false
+          }
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-personal-invoices-20261125-09/clean/chain/checkpoint.json",
+            "sha256": "e7845120826eb1709fcddaa8152cb2b617513c3c8b63df1ecce4b58975596c01"
+          },
+          "json_path": [
+            "checks"
+          ],
+          "equals": [
+            {
+              "attempt": "1795592230845",
+              "name": "personal-library-original-domain-id-and-income-three-facts-with-private-access"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "vue-21-snapshot-pagination-single-source-failure-retry-and-exact-record-navigation"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "flutter-21-snapshot-next-page-network-recovery-reuses-cursor-and-opens-original"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "app-vue-income-original-ledger-and-merchant-retained-not-extra-payment"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "unpaid-order-has-no-invoice-amount-on-app-vue-and-api"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "flutter-invoice-response-loss-recovers-original-command-without-second-create",
+              "invoice_id": "cb26b918-5dcf-4fed-b3e3-c217575dbe46",
+              "order_id": "62da8870-6263-4745-8f17-809e2c553494"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "flutter-unknown-invoice-command-lookup-no-second-post-and-before-issue-withdraw",
+              "invoice_id": "9bb752d0-f3fb-4916-8b16-e7e48ffa7dab",
+              "order_id": "b006ff23-f389-4551-bf52-246d5f6e1b7b",
+              "writes": 1
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "app-supplement-and-vue-handler-preserve-original-invoice-materials"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "pending-invoice-hidden-and-recorder-cannot-independently-verify"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "vue-independent-verifier-issues-synthetic-document-for-same-order"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "app-saves-original-and-supplement-plus-verified-synthetic-invoice"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "same-order-normal-refund-transitions-recompute-invoice-basis",
+              "order_id": "62da8870-6263-4745-8f17-809e2c553494",
+              "refund_id": "d71b9002-e62b-46cb-874b-8fbced630877",
+              "case_id": "6420e75d-0939-4e2a-ad3d-b6eaf6407903"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "app-requests-correction-after-same-order-refund"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "vue-independent-zero-correction-preserves-issued-history"
+            },
+            {
+              "attempt": "1795592230845",
+              "name": "refund-blocks-new-invoice-old-request-replays-current-corrected-state-and-history-downloads"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "slots": [
+    {
+      "key": "TASK-11|api|normal",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "合同/作品/收入以来源域+编号去重；单域失败可重试；应计/待付/已付分开，撤权及时清缓存。",
+      "execution_ids": [
+        "personal-invoice-original09"
+      ],
+      "clause_assertions": [
+        {
+          "original": "合同/作品/收入按来源域+编号去重",
+          "proof": "原21个SEALED来源、TRADE_ORDERS和FINANCE记录由真实HTTP读取；API原ID集合与准备集合相等，Vue20+1后键集合唯一，实际打开原内容与已购订单。"
+        },
+        {
+          "original": "应计/待付/已付分开",
+          "proof": "同FINANCE a9259e23记录退款前API明确50/30/20分，Vue三个独立术语与金额逐项断言；卖方留存50分且额外待付/已付均0。不是银行到账。"
+        },
+        {
+          "original": "正常场景范围",
+          "proof": "仅normal；服务内部部分失败、撤权清缓存及退款后收入变化属于逆向仍未关闭。原Vue网络中断/恢复有证据，不把它当服务内部故障。"
+        }
+      ]
+    },
+    {
+      "key": "TASK-11|web|normal",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "合同/作品/收入以来源域+编号去重；单域失败可重试；应计/待付/已付分开，撤权及时清缓存。",
+      "execution_ids": [
+        "personal-invoice-original09"
+      ],
+      "clause_assertions": [
+        {
+          "original": "合同/作品/收入按来源域+编号去重",
+          "proof": "原21个SEALED来源、TRADE_ORDERS和FINANCE记录由真实HTTP读取；API原ID集合与准备集合相等，Vue20+1后键集合唯一，实际打开原内容与已购订单。"
+        },
+        {
+          "original": "应计/待付/已付分开",
+          "proof": "同FINANCE a9259e23记录退款前API明确50/30/20分，Vue三个独立术语与金额逐项断言；卖方留存50分且额外待付/已付均0。不是银行到账。"
+        },
+        {
+          "original": "正常场景范围",
+          "proof": "仅normal；服务内部部分失败、撤权清缓存及退款后收入变化属于逆向仍未关闭。原Vue网络中断/恢复有证据，不把它当服务内部故障。"
+        }
+      ]
+    },
+    {
+      "key": "TASK-12|app|normal",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "开票申请并发不超现金实付减退款与占用额；0现金不能开现金票据；出具前撤回、出具后更正、退款后重算；测试票据明确模拟。",
+      "execution_ids": [
+        "personal-invoice-original09"
+      ],
+      "clause_assertions": [
+        {
+          "original": "原已付款订单开票申请与独审，模拟票据标签",
+          "proof": "同62da8870订单，App上传/申请/补件/保存，Vue办理者与另一独审录入核准；最终cb26b918申请及模拟字节原样可追溯。"
+        },
+        {
+          "original": "出具前撤回、出具后更正、退款后重算",
+          "proof": "App另一原请求9bb752d0在出具前撤回、额度恢复；主订单实际100分退款后App更正、Vue录入和独审零元更正，原票据历史字节不变、占用0。两订单用途分开。"
+        },
+        {
+          "original": "正常各端角色范围",
+          "proof": "本normal槽对应原参与角色实际办理；并发、部分退款/在途竞态及已打开页面撤权需端侧reverse补证，不以新API专项替代。"
+        }
+      ]
+    },
+    {
+      "key": "TASK-12|web|normal",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "开票申请并发不超现金实付减退款与占用额；0现金不能开现金票据；出具前撤回、出具后更正、退款后重算；测试票据明确模拟。",
+      "execution_ids": [
+        "personal-invoice-original09"
+      ],
+      "clause_assertions": [
+        {
+          "original": "原已付款订单开票申请与独审，模拟票据标签",
+          "proof": "同62da8870订单，App上传/申请/补件/保存，Vue办理者与另一独审录入核准；最终cb26b918申请及模拟字节原样可追溯。"
+        },
+        {
+          "original": "出具前撤回、出具后更正、退款后重算",
+          "proof": "App另一原请求9bb752d0在出具前撤回、额度恢复；主订单实际100分退款后App更正、Vue录入和独审零元更正，原票据历史字节不变、占用0。两订单用途分开。"
+        },
+        {
+          "original": "正常各端角色范围",
+          "proof": "本normal槽对应原参与角色实际办理；并发、部分退款/在途竞态及已打开页面撤权需端侧reverse补证，不以新API专项替代。"
+        }
+      ]
+    },
+    {
+      "key": "TASK-11|app|normal",
+      "scope": "PARTIAL_ORIGINAL_SLOT",
+      "expected": "合同/作品/收入以来源域+编号去重；单域失败可重试；应计/待付/已付分开，撤权及时清缓存。",
+      "execution_ids": [
+        "personal-invoice-original09"
+      ],
+      "clause_assertions": [
+        {
+          "original": "已确认局部检查",
+          "proof": "原第09轮15项检查、同业务记录及端侧语义证据保留。"
+        }
+      ],
+      "remaining": "App仅核原收入记录跳转，未逐字断言应计/已付/待付读数；不能以API/Vue替代。"
+    },
+    {
+      "key": "TASK-11|app|reverse",
+      "scope": "PARTIAL_ORIGINAL_SLOT",
+      "expected": "合同/作品/收入以来源域+编号去重；单域失败可重试；应计/待付/已付分开，撤权及时清缓存。",
+      "execution_ids": [
+        "personal-invoice-original09"
+      ],
+      "clause_assertions": [
+        {
+          "original": "已确认局部检查",
+          "proof": "原第09轮15项检查、同业务记录及端侧语义证据保留。"
+        }
+      ],
+      "remaining": "已有下一页网络恢复，不代表内部聚合失败、挂载页撤权或换账号清理。"
+    },
+    {
+      "key": "TASK-11|web|reverse",
+      "scope": "PARTIAL_ORIGINAL_SLOT",
+      "expected": "合同/作品/收入以来源域+编号去重；单域失败可重试；应计/待付/已付分开，撤权及时清缓存。",
+      "execution_ids": [
+        "personal-invoice-original09"
+      ],
+      "clause_assertions": [
+        {
+          "original": "已确认局部检查",
+          "proof": "原第09轮15项检查、同业务记录及端侧语义证据保留。"
+        }
+      ],
+      "remaining": "已有单来源网络恢复，内部失败、撤权清缓存、退款后收入重算仍待。"
+    },
+    {
+      "key": "TASK-12|app|reverse",
+      "scope": "PARTIAL_ORIGINAL_SLOT",
+      "expected": "开票申请并发不超现金实付减退款与占用额；0现金不能开现金票据；出具前撤回、出具后更正、退款后重算；测试票据明确模拟。",
+      "execution_ids": [
+        "personal-invoice-original09"
+      ],
+      "clause_assertions": [
+        {
+          "original": "已确认局部检查",
+          "proof": "原第09轮15项检查、同业务记录及端侧语义证据保留。"
+        }
+      ],
+      "remaining": "已有原键恢复、零收款拒绝、撤回和更正；并发额度、退款在途竞态及挂载页撤权仍待原端证据。"
+    },
+    {
+      "key": "TASK-12|web|reverse",
+      "scope": "PARTIAL_ORIGINAL_SLOT",
+      "expected": "开票申请并发不超现金实付减退款与占用额；0现金不能开现金票据；出具前撤回、出具后更正、退款后重算；测试票据明确模拟。",
+      "execution_ids": [
+        "personal-invoice-original09"
+      ],
+      "clause_assertions": [
+        {
+          "original": "已确认局部检查",
+          "proof": "原第09轮15项检查、同业务记录及端侧语义证据保留。"
+        }
+      ],
+      "remaining": "已有独审自审拒绝和历史票据保留；并发额度、退款在途竞态及挂载页撤权仍待原端证据。"
+    }
+  ],
+  "limits": [
+    "This review reuses original09; new API execution is separate and never changes this old environment/version."
+  ]
+}

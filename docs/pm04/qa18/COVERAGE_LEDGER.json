@@ -34,7 +34,8 @@
     "docs/testing/evidence/pm04-g1-t1-closeout-20261126/pm04-g1-20261125-privacy-reg11/events.jsonl",
     "docs/testing/evidence/pm04-g1-t1-closeout-20261126/pm04-g1-20261125-rc2-reg02/events.jsonl",
     "docs/testing/evidence/pm04-g1-t1-closeout-20261126/pm04-g1-discovery-20261125-reg01/events.jsonl",
-    "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/registry/events.jsonl"
+    "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/registry/events.jsonl",
+    "docs/testing/evidence/pm04-g1-t1-invoice-20261126/events.jsonl"
   ],
   "packages": [
     {
@@ -4530,27 +4531,117 @@
     },
     {
       "key": "TASK-11|api|normal",
-      "decision": "PARTIAL",
-      "reason": "已核原测试代码与已执行日志，仍有明确未证实义务，未降为外部阻断。",
-      "remaining": "原来源枚举、去重、部分失败恢复及撤权通过；仍须关联真实应计/待付/已付的读数，不能用空收入列表证明。"
+      "decision": "HISTORICAL_COVERED",
+      "reason": "按原09实际断言、同记录和各端角色核查；新API结果不拼入原浏览器版本。",
+      "remaining": "T1本normal原端场景已有证据；逆向、T3和人工另列。",
+      "historical_review": {
+        "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/ORIGINAL09_REVIEW.json",
+        "sha256": "f9a711fd82e4b7e91d0937d309ba09e4523ff269a5084dec8339242485a5b6d7"
+      }
     },
     {
       "key": "TASK-11|api|reverse",
       "decision": "PARTIAL",
       "reason": "已核原测试代码与已执行日志，仍有明确未证实义务，未降为外部阻断。",
-      "remaining": "原来源枚举、去重、部分失败恢复及撤权通过；仍须关联真实应计/待付/已付的读数，不能用空收入列表证明。"
+      "remaining": "非空收入原09正常50/30/20已归档；API逆向仍核内部部分失败、权限撤回及退款后收入调整，不用空收入列表或不同版本拼完整。"
     },
     {
       "key": "TASK-12|api|normal",
-      "decision": "PARTIAL",
-      "reason": "已核原测试代码与已执行日志，仍有明确未证实义务，未降为外部阻断。",
-      "remaining": "原API并发/撤回/更正/退款反例有通过日志；本批尚未完成对应业务ID及完整原始HTTP追溯，先补证据，必要时仅补缺失场景。"
+      "decision": "HISTORICAL_COVERED",
+      "reason": "原开票专项补齐本次实际HTTP、业务ID、原始日志及准确源码；原15项含父项通过，113响应契约通过。",
+      "remaining": "本槽T1 API原机器断言已证明；T3最终版本需统一复验，前端与真实税务另列。",
+      "events": [
+        "pm04-g1-t1-invoice-20261126#1"
+      ]
     },
     {
       "key": "TASK-12|api|reverse",
+      "decision": "HISTORICAL_COVERED",
+      "reason": "原开票专项补齐本次实际HTTP、业务ID、原始日志及准确源码；原15项含父项通过，113响应契约通过。",
+      "remaining": "本槽T1 API原机器断言已证明；T3最终版本需统一复验，前端与真实税务另列。",
+      "events": [
+        "pm04-g1-t1-invoice-20261126#2"
+      ]
+    },
+    {
+      "key": "TASK-11|web|normal",
+      "decision": "HISTORICAL_COVERED",
+      "historical_review": {
+        "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/ORIGINAL09_REVIEW.json",
+        "sha256": "f9a711fd82e4b7e91d0937d309ba09e4523ff269a5084dec8339242485a5b6d7"
+      },
+      "reason": "按原09实际断言、同记录和各端角色核查；新API结果不拼入原浏览器版本。",
+      "remaining": "T1本normal原端场景已有证据；逆向、T3和人工另列。"
+    },
+    {
+      "key": "TASK-12|app|normal",
+      "decision": "HISTORICAL_COVERED",
+      "historical_review": {
+        "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/ORIGINAL09_REVIEW.json",
+        "sha256": "f9a711fd82e4b7e91d0937d309ba09e4523ff269a5084dec8339242485a5b6d7"
+      },
+      "reason": "按原09实际断言、同记录和各端角色核查；新API结果不拼入原浏览器版本。",
+      "remaining": "T1本normal原端场景已有证据；逆向、T3和人工另列。"
+    },
+    {
+      "key": "TASK-12|web|normal",
+      "decision": "HISTORICAL_COVERED",
+      "historical_review": {
+        "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/ORIGINAL09_REVIEW.json",
+        "sha256": "f9a711fd82e4b7e91d0937d309ba09e4523ff269a5084dec8339242485a5b6d7"
+      },
+      "reason": "按原09实际断言、同记录和各端角色核查；新API结果不拼入原浏览器版本。",
+      "remaining": "T1本normal原端场景已有证据；逆向、T3和人工另列。"
+    },
+    {
+      "key": "TASK-11|app|normal",
       "decision": "PARTIAL",
-      "reason": "已核原测试代码与已执行日志，仍有明确未证实义务，未降为外部阻断。",
-      "remaining": "原API并发/撤回/更正/退款反例有通过日志；本批尚未完成对应业务ID及完整原始HTTP追溯，先补证据，必要时仅补缺失场景。"
+      "historical_review": {
+        "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/ORIGINAL09_REVIEW.json",
+        "sha256": "f9a711fd82e4b7e91d0937d309ba09e4523ff269a5084dec8339242485a5b6d7"
+      },
+      "reason": "按原09实际断言、同记录和各端角色核查；新API结果不拼入原浏览器版本。",
+      "remaining": "App仅核原收入记录跳转，未逐字断言应计/已付/待付读数；不能以API/Vue替代。"
+    },
+    {
+      "key": "TASK-11|app|reverse",
+      "decision": "PARTIAL",
+      "historical_review": {
+        "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/ORIGINAL09_REVIEW.json",
+        "sha256": "f9a711fd82e4b7e91d0937d309ba09e4523ff269a5084dec8339242485a5b6d7"
+      },
+      "reason": "按原09实际断言、同记录和各端角色核查；新API结果不拼入原浏览器版本。",
+      "remaining": "已有下一页网络恢复，不代表内部聚合失败、挂载页撤权或换账号清理。"
+    },
+    {
+      "key": "TASK-11|web|reverse",
+      "decision": "PARTIAL",
+      "historical_review": {
+        "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/ORIGINAL09_REVIEW.json",
+        "sha256": "f9a711fd82e4b7e91d0937d309ba09e4523ff269a5084dec8339242485a5b6d7"
+      },
+      "reason": "按原09实际断言、同记录和各端角色核查；新API结果不拼入原浏览器版本。",
+      "remaining": "已有单来源网络恢复，内部失败、撤权清缓存、退款后收入重算仍待。"
+    },
+    {
+      "key": "TASK-12|app|reverse",
+      "decision": "PARTIAL",
+      "historical_review": {
+        "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/ORIGINAL09_REVIEW.json",
+        "sha256": "f9a711fd82e4b7e91d0937d309ba09e4523ff269a5084dec8339242485a5b6d7"
+      },
+      "reason": "按原09实际断言、同记录和各端角色核查；新API结果不拼入原浏览器版本。",
+      "remaining": "已有原键恢复、零收款拒绝、撤回和更正；并发额度、退款在途竞态及挂载页撤权仍待原端证据。"
+    },
+    {
+      "key": "TASK-12|web|reverse",
+      "decision": "PARTIAL",
+      "historical_review": {
+        "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/ORIGINAL09_REVIEW.json",
+        "sha256": "f9a711fd82e4b7e91d0937d309ba09e4523ff269a5084dec8339242485a5b6d7"
+      },
+      "reason": "按原09实际断言、同记录和各端角色核查；新API结果不拼入原浏览器版本。",
+      "remaining": "已有独审自审拒绝和历史票据保留；并发额度、退款在途竞态及挂载页撤权仍待原端证据。"
     }
   ],
   "ci": {
@@ -4592,15 +4683,16 @@
   "source_hash_encoding": "UTF8_LF",
   "source_git_commit": "01661461e9508c4d45c576fed8a9cdd0fd46e6fb",
   "t1_priority_goal": {
-    "objective": "尽快完成PM04 G1的T1首轮机测收口：核定唯一578槽位，优先归档现有有效证据，仅补未证实原场景、真实失败和确证缺陷复测；所有可机测场景执行或明确客观阻断，重大业务/权限/资金缺陷修复并复测，普通缺陷归因且无未处理机器失败后交付T1退出报告。T3同版18组/12链回归、授权安装包体验和151正式审阅保留后续，不作为T1退出前置。",
+    "objective": "持续值守推进并完成晶晶日上 PM04 G1 的 T1 首轮机测收口，交付真实可追溯的 T1 退出报告及 T3 冻结准备清单。沿用现有 QA 分支/PR44、已完成修复和原始失败，严格保留原151条、60REQ、23规则、18组、12条E2E及唯一578槽位，不重新规划、不扩展需求。先逐槽核定既有有效证据及准确产品源码/环境/业务ID/命令/原日志/摘要，不无理由重跑；仅补尚未证实的原场景、真实失败和确证缺陷复测，不以增加轮次或通过事件数为目标。对已复现、符合原需求且设计合理的前后端、测试及环境问题直接修复并专项复测；严重业务、权限、资金问题立即处理，普通失败不阻断独立工作。T1完成条件：全部原可机测场景已有完整执行证据或明确客观阻断及责任条件，严重确证缺陷修复复测，普通缺陷已归因且无未处理机器失败，原18组/12链/578槽位/缺陷/CI统一进度及证据归档完整。真机、真实供应商、人工材料与维护者签收单列非PASS，不据此外部条件无限延长T1；内部待核和脚本未到业务步骤不可伪装外部阻断。历史不同版本/环境不得拼为最终版本PASS，不删正常、失败、越权、重复、状态变化和恢复断言。T3最终同版18组/12链全量回归、合法隔离API独立安装包与获授权人工体验、151正式审阅保留为后续阶段，不作为本目标完成前置，不代维护者签收。每轮报告阶段、实际完成、18组/12链/578槽变化、修复与版本、缺陷与CI、阻断、下一步及用户条件，问题及时反馈；持续完成独立可推进事项，不逐组等待确认。只同步原QA草稿PR44，保护PR41/EXPERIENCE_CURRENT，不新增MCN带艺人入驻，不合并正式分支、不部署生产/公网、不启用真实收费，不动3490、旧离线APK、项目总览或自动监测。",
     "source_scope_unchanged": true,
-    "system_goal_control": "PAUSED; existing tool cannot edit objective or resume; this explicit turn is authorized",
+    "system_goal_control": "ACTIVE; new goal created after user cleared previous goal",
     "priority": [
       "清理已有候选证据，逐槽核完整原断言",
       "仅对真实缺口和确证缺陷补测/修复",
       "处理ENV-063及原链客观条件",
       "执行T1退出检查并交付待T3冻结清单"
     ],
-    "no_retest_without_reason": true
+    "no_retest_without_reason": true,
+    "created_at": 1795672194
   }
 }
