@@ -83,8 +83,8 @@ test('same account buys and supplies with distinct parties; new avatar preserves
    const sold=ok(await call('GET','/stock/purchases/'+sale.id,{user:buyer2}));assert.equal(sold.data.status,'ACTIVE');assert.equal((await storedCast(sale.id))[0].avatar_id,avatar.id);assert.equal(sold.data.listing_snapshot.participants,undefined);
    const selling=ok(await call('GET','/trade/records/'+sale.id,{party:org.party_id}));assert.equal(selling.merchant_party_id,org.party_id);assert.equal(selling.buyer_party_id,buyer2.personal_party_id);
    assert.equal(ok(await call('GET','/trade/records/'+bought.id)).buyer_party_id,buyer.personal_party_id);
-   assert.notEqual((await call('GET','/trade/records/'+bought.id,{party:org.party_id})).status,200);
-   assert.notEqual((await call('GET','/trade/records/'+sale.id)).status,200);
+   reject(await call('GET','/trade/records/'+bought.id,{party:org.party_id}),'TRADE_NOT_FOUND',404);
+   reject(await call('GET','/trade/records/'+sale.id),'TRADE_NOT_FOUND',404);
    assert.equal(ok(await call('POST','/stock/checkout',{body:buyInput,op:buyKey})).id,bought.id);
    assert.deepEqual((await db.execute('SELECT buyer_party_id,merchant_party_id,data_json FROM trade_records WHERE id=?',[bought.id]))[0][0],beforeOrder);
    assert.deepEqual(await storedCast(bought.id),beforeCast);
