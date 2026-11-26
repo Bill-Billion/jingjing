@@ -28,7 +28,9 @@ test('same account buys and supplies with distinct parties; new avatar preserves
   const bought=ok(await call('POST','/stock/checkout',{body:buyInput,op:buyKey}));await S.payment(bought);
   const purchased=ok(await call('GET','/stock/purchases/'+bought.id));assert.equal(purchased.data.status,'ACTIVE');
   const beforeOrder=(await db.execute('SELECT buyer_party_id,merchant_party_id,data_json FROM trade_records WHERE id=?',[bought.id]))[0][0];
-  const beforeCast=purchased.data.listing_snapshot.participants;assert.equal(beforeCast[0].avatar_id,S.avatar.id);
+  // Buyer DTO deliberately omits private cast/consent details; inspect the stored snapshot without expanding that API.
+  const storedCast=async id=>JSON.parse((await db.execute('SELECT data_json FROM stock_purchases WHERE order_id=?',[id]))[0][0].data_json).listing_snapshot.participants;
+  const beforeCast=await storedCast(bought.id);assert.equal(beforeCast[0].avatar_id,S.avatar.id);assert.equal(purchased.data.listing_snapshot.participants,undefined);
   const org=await parties.createOrganization(buyer.ctx,{display_name:'Synthetic buyer also operates supplier',operation_key:key()});
   await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[org.party_id]); // Pre-reviewed synthetic organization capability only.
   const proof=await S.supply.upload(buyer.ctx,{party_id:org.party_id,purpose:'REVIEW_EVIDENCE',media_type:'text/plain',body:Buffer.from('Synthetic direct artist cooperation'),operation_key:key()});
@@ -50,7 +52,8 @@ test('same account buys and supplies with distinct parties; new avatar preserves
    assert.deepEqual({people:await count('artist_people'),accounts:await count('identity_accounts'),wallets:await count('wallet_records')},counts);
    const person=ok(await call('GET','/artists/people/'+seller.person.id,{user:seller}));assert.deepEqual(new Set(person.avatars.map(a=>a.id)),new Set([S.avatar.id,avatar.id]));
    assert.deepEqual(ok(await call('GET','/wallet/summary',{user:seller})),walletBefore);
-   assert.deepEqual(ok(await call('GET','/stock/purchases/'+bought.id)).data.listing_snapshot.participants,beforeCast);
+   assert.deepEqual(await storedCast(bought.id),beforeCast);
+   assert.deepEqual(ok(await call('GET','/stock/purchases/'+bought.id)).data.listing_snapshot,purchased.data.listing_snapshot);
   });
   const consent=async purposes=>{let c=await S.artists.declareConsent(seller.ctx,{person_id:seller.person.id,party_id:seller.personal_party_id,avatar_id:avatar.id,consent:{features:['FACE','VOICE'],purposes,grantee_party_id:org.party_id,territories:['WORLDWIDE'],valid_from:'2020-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z',terms:'Synthetic separately selected exact-avatar permission',evidence_asset_ids:[S.evidence.id]},operation_key:key()});return S.artists.review(reviewer.ctx,{person_id:seller.person.id,record_id:c.id,expected_version:c.object_version,decision:'APPROVE',reason:'Independent exact purpose review',operation_key:key()});};
   const fullConsent=await consent(['STOCK_LICENSE','PUBLIC_DISPLAY']),displayOnly=await consent(['PUBLIC_DISPLAY']);
@@ -77,14 +80,15 @@ test('same account buys and supplies with distinct parties; new avatar preserves
    const config={...S.config,merchant_party_id:org.party_id};
    const payment=await S.trade.preparePayment(buyer2.ctx,{party_id:buyer2.personal_party_id,order_id:sale.id,installment_key:'stock',operation_key:key()},config);
    await S.trade.applyPayment({...config,payment_id:payment.id,currency:'CNY',amount_minor:100,transaction_id:'synthetic.'+payment.id,status:'SUCCEEDED',product_id:null,app_account_token:null});
-   const sold=ok(await call('GET','/stock/purchases/'+sale.id,{user:buyer2}));assert.equal(sold.data.status,'ACTIVE');assert.equal(sold.data.listing_snapshot.participants[0].avatar_id,avatar.id);
+   const sold=ok(await call('GET','/stock/purchases/'+sale.id,{user:buyer2}));assert.equal(sold.data.status,'ACTIVE');assert.equal((await storedCast(sale.id))[0].avatar_id,avatar.id);assert.equal(sold.data.listing_snapshot.participants,undefined);
    const selling=ok(await call('GET','/trade/records/'+sale.id,{party:org.party_id}));assert.equal(selling.merchant_party_id,org.party_id);assert.equal(selling.buyer_party_id,buyer2.personal_party_id);
    assert.equal(ok(await call('GET','/trade/records/'+bought.id)).buyer_party_id,buyer.personal_party_id);
    assert.notEqual((await call('GET','/trade/records/'+bought.id,{party:org.party_id})).status,200);
    assert.notEqual((await call('GET','/trade/records/'+sale.id)).status,200);
    assert.equal(ok(await call('POST','/stock/checkout',{body:buyInput,op:buyKey})).id,bought.id);
    assert.deepEqual((await db.execute('SELECT buyer_party_id,merchant_party_id,data_json FROM trade_records WHERE id=?',[bought.id]))[0][0],beforeOrder);
-   assert.deepEqual(ok(await call('GET','/stock/purchases/'+bought.id)).data.listing_snapshot.participants,beforeCast);
+   assert.deepEqual(await storedCast(bought.id),beforeCast);
+   assert.deepEqual(ok(await call('GET','/stock/purchases/'+bought.id)).data.listing_snapshot,purchased.data.listing_snapshot);
    assert.deepEqual(ok(await call('GET','/wallet/summary',{user:seller})),walletBefore);
    assert.equal((await db.execute("SELECT id FROM wallet_records WHERE kind='ACCOUNT' AND owner_party_id=?",[seller.personal_party_id]))[0].length,1);
    assert.equal((await db.execute("SELECT id FROM trade_records WHERE kind='ORDER'",[]))[0].length,2);
