@@ -1,4 +1,4 @@
-"""Do not promote fragments, mixed versions/environments or duplicate slot events."""
+"""Reject incomplete evidence and mixed final batches; preserve explicit historical branches."""
 import copy
 import json
 import tempfile
@@ -171,6 +171,89 @@ class CoverageTests(unittest.TestCase):
         review['executions']['historic']['observations'][0]['equals'] = False
         with self.assertRaisesRegex(ValueError, 'not present in original evidence'):
             c.reviewed_history(update(), key, 'original', self.root)
+
+    def branch_review(self):
+        expected = ('从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环；'
+                    '现金制作金首笔付款确认后核销，全额服务权益另走0现金/开工核销/开工前取消释放；'
+                    '退款不足晶钻记待冲回且不重复扣。')
+        original = self.root / c.registry.REG
+        original.parent.mkdir(parents=True, exist_ok=True)
+        original.write_bytes(c.canonical({'items': [], 'supplemental_items': [
+            {'id': 'E2E-06', 'effective_expected': expected}]}))
+        basis = {'path': c.registry.REG.as_posix(), 'sha256': c.sha(original.read_bytes())}
+        executions = {}
+        branches = []
+        clauses = {'cash_credit': [expected.split('；')[0], '现金制作金首笔付款确认后核销',
+                                   '退款不足晶钻记待冲回且不重复扣'],
+                   'full_service': ['全额服务权益另走0现金/开工核销/开工前取消释放']}
+        for i, branch in enumerate(clauses):
+            business = f'00000000-0000-0000-0000-{i:012d}'
+            environment = 'original-' + branch
+            chain = {'environment': environment, 'business_id': business}
+            executions[branch] = {'environment': {'database': environment}, 'business_ids': [business],
+                                  'chain': chain, 'command': 'synthetic-validator-test',
+                                  'versions': {'backend': str(i+1)*40}, 'limitations': ['Historical branch only'],
+                                  'summary': self.proof, 'raw_logs': [self.proof], 'observations': [
+                                      {'artifact': self.proof, 'json_path': ['synthetic_test_fixture'], 'equals': True}]}
+            branches.append({'id': branch, 'execution_ids': [branch], 'scope': 'COMPLETE_ORIGINAL_BRANCH',
+                             'source_clauses': clauses[branch], 'chain': chain,
+                             'clause_assertions': ['Actual branch facts reviewed']})
+        key = 'E2E-06|api|normal'
+        slot = {'key': key, 'scope': 'COMPLETE_ORIGINAL_SLOT', 'expected': expected,
+                'clause_assertions': ['Both original branches, separately archived'],
+                'execution_ids': list(executions), 'original_branches': branches,
+                'branch_basis': basis, 'not_one_environment_or_final_batch': True}
+        review = {'kind': 'T1_ARCHIVED_EVIDENCE_REVIEW', 'new_business_execution': False,
+                  'slots': [slot], 'executions': executions}
+        def run():
+            p = self.root / 'branch-review.json'; p.write_bytes(c.canonical(review))
+            return c.reviewed_history({'path': p.name, 'sha256': c.sha(p.read_bytes())}, key, expected, self.root)
+        return review, slot, run
+
+    def test_original_cash_and_full_service_alternatives_keep_separate_history(self):
+        review, slot, run = self.branch_review()
+        run()
+        # History still has no route into the final batch.
+        self.assertEqual(c.final_results(None, {slot['key']})[slot['key']]['outcome'], 'NOT_RUN')
+
+    def test_missing_original_branch_cannot_close_whole_slot(self):
+        review, slot, run = self.branch_review()
+        slot['original_branches'].pop()
+        with self.assertRaises(ValueError): run()
+
+    def test_partial_branch_cannot_close_whole_slot(self):
+        review, slot, run = self.branch_review()
+        slot['original_branches'][1]['scope'] = 'PARTIAL'
+        with self.assertRaises(ValueError): run()
+
+    def test_extra_unmapped_branch_execution_is_rejected(self):
+        review, slot, run = self.branch_review()
+        review['executions']['extra'] = copy.deepcopy(review['executions']['cash_credit'])
+        slot['execution_ids'].append('extra')
+        with self.assertRaises(ValueError): run()
+
+    def test_branch_cannot_borrow_another_environment_or_business(self):
+        review, slot, run = self.branch_review()
+        for field in ['environment', 'business_id']:
+            original = review['executions']['cash_credit']['chain'][field]
+            review['executions']['cash_credit']['chain'][field] = 'different'
+            with self.assertRaises(ValueError): run()
+            review['executions']['cash_credit']['chain'][field] = original
+
+    def test_branch_source_must_be_unchanged_formal_requirement(self):
+        review, slot, run = self.branch_review()
+        (self.root / c.registry.REG).write_bytes(b'{}')
+        with self.assertRaisesRegex(ValueError, 'Evidence changed'): run()
+
+    def test_branch_source_clause_cannot_be_dropped(self):
+        review, slot, run = self.branch_review()
+        slot['original_branches'][0]['source_clauses'].pop()
+        with self.assertRaises(ValueError): run()
+
+    def test_branches_cannot_hide_a_final_batch_claim(self):
+        review, slot, run = self.branch_review()
+        slot['not_one_environment_or_final_batch'] = False
+        with self.assertRaises(ValueError): run()
 
 
 if __name__ == '__main__':
