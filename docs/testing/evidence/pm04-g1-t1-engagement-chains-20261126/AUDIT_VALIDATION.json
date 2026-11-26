@@ -1,0 +1,15 @@
+{
+  "first_attempt": {
+    "result": "FAIL_BEFORE_COVERAGE_WRITE",
+    "kind": "LOCAL_REVIEW_SCRIPT_ASSERTION",
+    "failed_assertion": "c23['schedule']['id']==p23['confirmed']['id']",
+    "reason": "confirmed is the GRANT record, not the SCHEDULE record"
+  },
+  "correction": [
+    "confirmed.kind == GRANT; confirmed.id == original grant.id",
+    "confirmed.data.delivery.schedule_id == original schedule.id == schedule_approved.id"
+  ],
+  "final_result": "PASS",
+  "original_logs_unchanged": true,
+  "product_changed": false
+}
