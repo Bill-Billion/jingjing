@@ -1,0 +1,1616 @@
+{
+  "private_file": {
+    "path": ".local/qa18/t1-coupon-scope-20261126-01/http-private/redemption-original-scope-http.json",
+    "sha256": "fc66e23c5c80a807e2481413c6de57bac745e3a8d7ee1d77085b0452473a89bc"
+  },
+  "database": "jx_test_coupon_a602419ff51b47e3",
+  "source": "732fa79408e3bf49f8c0a7206ea8ec6960a8e9d2",
+  "records": [
+    {
+      "kind": "MANUAL_DRAMA",
+      "story_id": "f1aa9477-f150-4fde-9e1b-085d0e789a1f",
+      "submission_id": "14f160b4-da6d-474b-a441-5d4a240c8c8f",
+      "spec_id": "b1a228a9-6dc8-4216-8c46-e0b7486b9ccb",
+      "quote_id": "80de8bdb-5508-48f4-8c9e-cb126b7183b4",
+      "grant_id": "b64beacd-da76-4880-86ee-f5e3c8a1201c",
+      "hold_id": "bb26994a-798a-4cf2-8a9f-312abad7bb37",
+      "order_id": "b0b22a54-c7db-4eb9-bec3-ffe72317aa23",
+      "production_id": "b99e3b3d-d045-4fdb-9607-8dc8942a5046",
+      "script_version_id": "59f3b957-606e-4dcc-ad0c-808be2e79fbf",
+      "total_minor": 45000,
+      "installments": [
+        13500,
+        18000,
+        13500
+      ],
+      "received_minor": 0
+    },
+    {
+      "kind": "AVATAR_CREATION",
+      "spec_id": "db19553f-bca7-4905-b61c-125f4aae90ac",
+      "quote_id": "11fc2e46-d63c-4e0e-98a6-dd818a85bbc3",
+      "rejected_stock_id": "60ee17eb-9163-4ff7-9b79-b40c6e2c2abf",
+      "grant_id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+      "grant_status": "AVAILABLE",
+      "stock_error": "REWARD_SPEC_NOT_AVAILABLE",
+      "checkout_error": "COUPON_QUOTE_NOT_ELIGIBLE",
+      "new_hold_count": 0
+    },
+    {
+      "kind": "AVATAR_HOSTING",
+      "spec_id": "a11d09b2-22ec-4f0c-a457-b7155e77b75f",
+      "quote_id": "ff1552c2-b427-48c0-92c5-fd323f003ae9",
+      "rejected_stock_id": "71f0dbdf-de14-4be6-8a63-576db0a96a46",
+      "grant_id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+      "grant_status": "AVAILABLE",
+      "stock_error": "REWARD_SPEC_NOT_AVAILABLE",
+      "checkout_error": "COUPON_QUOTE_NOT_ELIGIBLE",
+      "new_hold_count": 0
+    }
+  ],
+  "cases": [
+    {
+      "index": 0,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "59f0b886-8356-4327-91a4-d2dec6ddb7f0",
+            "kind": "STOCK",
+            "owner_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/59f0b886-8356-4327-91a4-d2dec6ddb7f0/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "59f0b886-8356-4327-91a4-d2dec6ddb7f0",
+            "kind": "STOCK",
+            "owner_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b64beacd-da76-4880-86ee-f5e3c8a1201c",
+            "kind": "GRANT",
+            "owner_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/b64beacd-da76-4880-86ee-f5e3c8a1201c/checkout",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "bb26994a-798a-4cf2-8a9f-312abad7bb37",
+            "kind": "COUPON_HOLD",
+            "owner_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "current_status": "HELD",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "grant_id": "b64beacd-da76-4880-86ee-f5e3c8a1201c",
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote",
+          "facts": {
+            "rule_id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04",
+            "total_minor": 45000
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/lines/0",
+          "facts": {
+            "unit_minor": 45000,
+            "total_minor": 45000
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/lines/0/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/lines/0/product_profile",
+          "facts": {
+            "type": "PRIVATE_CUSTOMIZATION"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/installments/0/allocations/0",
+          "facts": {
+            "amount_minor": 13500
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/installments/1/allocations/0",
+          "facts": {
+            "amount_minor": 18000
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/installments/2/allocations/0",
+          "facts": {
+            "amount_minor": 13500
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/customization",
+          "facts": {
+            "request_id": "f1aa9477-f150-4fde-9e1b-085d0e789a1f"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/customization_finance/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/customization_finance/rule_snapshot/content",
+          "facts": {
+            "id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/customization_finance/rule_snapshot/content/terms/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/customization_finance/rule_snapshot/content/terms/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/discount",
+          "facts": {
+            "grant_id": "b64beacd-da76-4880-86ee-f5e3c8a1201c"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/discount/original_lines/0",
+          "facts": {
+            "unit_minor": 50000,
+            "total_minor": 50000
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/discount/original_lines/0/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/discount/original_lines/0/product_profile",
+          "facts": {
+            "type": "PRIVATE_CUSTOMIZATION"
+          }
+        },
+        {
+          "pointer": "data/data/adjusted_quote/discount/rule_snapshot",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "method": "POST",
+      "path": "/api/v1/trade/quotes/80de8bdb-5508-48f4-8c9e-cb126b7183b4/acceptance",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b0b22a54-c7db-4eb9-bec3-ffe72317aa23",
+            "kind": "ORDER",
+            "buyer_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "order_id": null,
+            "current_status": "OPEN",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "rule_id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04",
+            "total_minor": 45000
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "unit_minor": 45000,
+            "total_minor": 45000
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/product_profile",
+          "facts": {
+            "type": "PRIVATE_CUSTOMIZATION"
+          }
+        },
+        {
+          "pointer": "data/data/quote/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/0/allocations/0",
+          "facts": {
+            "amount_minor": 13500
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/1/allocations/0",
+          "facts": {
+            "amount_minor": 18000
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/2/allocations/0",
+          "facts": {
+            "amount_minor": 13500
+          }
+        },
+        {
+          "pointer": "data/data/quote/customization",
+          "facts": {
+            "request_id": "f1aa9477-f150-4fde-9e1b-085d0e789a1f"
+          }
+        },
+        {
+          "pointer": "data/data/quote/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/quote/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/quote/customization_finance/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/quote/customization_finance/rule_snapshot/content",
+          "facts": {
+            "id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04"
+          }
+        },
+        {
+          "pointer": "data/data/quote/customization_finance/rule_snapshot/content/terms/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/quote/customization_finance/rule_snapshot/content/terms/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/quote/discount",
+          "facts": {
+            "grant_id": "b64beacd-da76-4880-86ee-f5e3c8a1201c"
+          }
+        },
+        {
+          "pointer": "data/data/quote/discount/original_lines/0",
+          "facts": {
+            "unit_minor": 50000,
+            "total_minor": 50000
+          }
+        },
+        {
+          "pointer": "data/data/quote/discount/original_lines/0/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/quote/discount/original_lines/0/product_profile",
+          "facts": {
+            "type": "PRIVATE_CUSTOMIZATION"
+          }
+        },
+        {
+          "pointer": "data/data/quote/discount/rule_snapshot",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "current_status": "SEALED",
+            "id": "3acbeaee-85ed-4794-a689-2b43bad9a8ea",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "rule_id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04",
+            "total_minor": 45000
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/customization",
+          "facts": {
+            "request_id": "f1aa9477-f150-4fde-9e1b-085d0e789a1f"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/customization_finance/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/customization_finance/rule_snapshot/content",
+          "facts": {
+            "id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/customization_finance/rule_snapshot/content/terms/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/customization_finance/rule_snapshot/content/terms/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/discount",
+          "facts": {
+            "grant_id": "b64beacd-da76-4880-86ee-f5e3c8a1201c"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/discount/original_lines/0",
+          "facts": {
+            "total_minor": 50000,
+            "unit_minor": 50000
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/discount/original_lines/0/product_profile",
+          "facts": {
+            "type": "PRIVATE_CUSTOMIZATION"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/discount/original_lines/0/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/discount/rule_snapshot",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/0/allocations/0",
+          "facts": {
+            "amount_minor": 13500
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/1/allocations/0",
+          "facts": {
+            "amount_minor": 18000
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/2/allocations/0",
+          "facts": {
+            "amount_minor": 13500
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "total_minor": 45000,
+            "unit_minor": 45000
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/product_profile",
+          "facts": {
+            "type": "PRIVATE_CUSTOMIZATION"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0/terms/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0/terms/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "received_minor": 0,
+            "refunded_minor": 0,
+            "net_minor": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "method": "POST",
+      "path": "/api/v1/production/projects",
+      "schema": "ProductionRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b99e3b3d-d045-4fdb-9607-8dc8942a5046",
+            "kind": "PROJECT",
+            "project_id": null,
+            "order_id": "b0b22a54-c7db-4eb9-bec3-ffe72317aa23",
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "buyer_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "script_version_id": "59f3b957-606e-4dcc-ad0c-808be2e79fbf",
+            "license_project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "method": "POST",
+      "path": "/api/v1/production/records/b99e3b3d-d045-4fdb-9607-8dc8942a5046/reviews",
+      "schema": "ProductionRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b99e3b3d-d045-4fdb-9607-8dc8942a5046",
+            "kind": "PROJECT",
+            "project_id": null,
+            "order_id": "b0b22a54-c7db-4eb9-bec3-ffe72317aa23",
+            "current_status": "READY",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "buyer_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "script_version_id": "59f3b957-606e-4dcc-ad0c-808be2e79fbf",
+            "license_project_id": null
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "6a540707-f8bf-47b3-b9cf-fc1e8babefc5",
+            "kind": "STOCK",
+            "owner_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/6a540707-f8bf-47b3-b9cf-fc1e8babefc5/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "6a540707-f8bf-47b3-b9cf-fc1e8babefc5",
+            "kind": "STOCK",
+            "owner_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+            "kind": "GRANT",
+            "owner_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "method": "POST",
+      "path": "/api/v1/trade/specifications",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "db19553f-bca7-4905-b61c-125f4aae90ac",
+            "kind": "SPEC",
+            "buyer_party_id": null,
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "order_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "unit_minor": 6000
+          }
+        },
+        {
+          "pointer": "data/data/specification/service",
+          "facts": {
+            "halo_level": null,
+            "kind": "AVATAR_CREATION"
+          }
+        },
+        {
+          "pointer": "data/data/product_profile",
+          "facts": {
+            "type": "AVATAR_CREATION"
+          }
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "method": "POST",
+      "path": "/api/v1/trade/records/db19553f-bca7-4905-b61c-125f4aae90ac/reviews",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "db19553f-bca7-4905-b61c-125f4aae90ac",
+            "kind": "SPEC",
+            "buyer_party_id": null,
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "order_id": null,
+            "current_status": "PUBLISHED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "unit_minor": 6000
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/specification/service",
+          "facts": {
+            "kind": "AVATAR_CREATION",
+            "halo_level": null
+          }
+        },
+        {
+          "pointer": "data/data/product_profile",
+          "facts": {
+            "type": "AVATAR_CREATION"
+          }
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "method": "POST",
+      "path": "/api/v1/artists/people/8c013257-5b06-4b8f-81ae-06ed6784b645/services",
+      "schema": "ArtistResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "c214de16-e7b0-46de-8dc7-909ef73bb55b",
+            "person_id": "8c013257-5b06-4b8f-81ae-06ed6784b645",
+            "kind": "SERVICE",
+            "avatar_id": "6449bf22-79ce-4b57-beac-0201bd14f50c",
+            "current_status": "REQUESTED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "kind": "AVATAR_CREATION",
+            "price_minor": 6000
+          }
+        },
+        {
+          "pointer": "data/data/specification/service",
+          "facts": {
+            "kind": "AVATAR_CREATION",
+            "halo_level": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "method": "POST",
+      "path": "/api/v1/trade/quotes",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "11fc2e46-d63c-4e0e-98a6-dd818a85bbc3",
+            "kind": "QUOTE",
+            "buyer_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "order_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "total_minor": 6000,
+            "rule_id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04"
+          }
+        },
+        {
+          "pointer": "data/data/lines/0",
+          "facts": {
+            "total_minor": 6000,
+            "unit_minor": 6000
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/specification/service",
+          "facts": {
+            "kind": "AVATAR_CREATION",
+            "halo_level": null
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/product_profile",
+          "facts": {
+            "type": "AVATAR_CREATION"
+          }
+        },
+        {
+          "pointer": "data/data/installments/0/allocations/0",
+          "facts": {
+            "amount_minor": 6000
+          }
+        },
+        {
+          "pointer": "data/data/artist_service",
+          "facts": {
+            "service_id": "c214de16-e7b0-46de-8dc7-909ef73bb55b",
+            "person_id": "8c013257-5b06-4b8f-81ae-06ed6784b645",
+            "avatar_id": "6449bf22-79ce-4b57-beac-0201bd14f50c",
+            "kind": "AVATAR_CREATION",
+            "price_minor": 6000
+          }
+        },
+        {
+          "pointer": "data/data/artist_service/specification/service",
+          "facts": {
+            "kind": "AVATAR_CREATION",
+            "halo_level": null
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content",
+          "facts": {
+            "id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content/terms/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content/terms/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "method": "POST",
+      "path": "/api/v1/trade/records/11fc2e46-d63c-4e0e-98a6-dd818a85bbc3/reviews",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "11fc2e46-d63c-4e0e-98a6-dd818a85bbc3",
+            "kind": "QUOTE",
+            "buyer_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "order_id": null,
+            "current_status": "APPROVED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04",
+            "total_minor": 6000
+          }
+        },
+        {
+          "pointer": "data/data/lines/0",
+          "facts": {
+            "unit_minor": 6000,
+            "total_minor": 6000
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/specification/service",
+          "facts": {
+            "kind": "AVATAR_CREATION",
+            "halo_level": null
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/product_profile",
+          "facts": {
+            "type": "AVATAR_CREATION"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/installments/0/allocations/0",
+          "facts": {
+            "amount_minor": 6000
+          }
+        },
+        {
+          "pointer": "data/data/artist_service",
+          "facts": {
+            "kind": "AVATAR_CREATION",
+            "avatar_id": "6449bf22-79ce-4b57-beac-0201bd14f50c",
+            "person_id": "8c013257-5b06-4b8f-81ae-06ed6784b645",
+            "service_id": "c214de16-e7b0-46de-8dc7-909ef73bb55b",
+            "price_minor": 6000
+          }
+        },
+        {
+          "pointer": "data/data/artist_service/specification/service",
+          "facts": {
+            "kind": "AVATAR_CREATION",
+            "halo_level": null
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content",
+          "facts": {
+            "id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content/terms/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content/terms/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "60ee17eb-9163-4ff7-9b79-b40c6e2c2abf",
+            "kind": "STOCK",
+            "owner_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/60ee17eb-9163-4ff7-9b79-b40c6e2c2abf/review",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_SPEC_NOT_AVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 17,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/5d40544d-2987-42c1-9bc2-073fc34e329c",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+            "kind": "GRANT",
+            "owner_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/5d40544d-2987-42c1-9bc2-073fc34e329c/checkout",
+      "schema": "ErrorResponse",
+      "error_code": "COUPON_QUOTE_NOT_ELIGIBLE",
+      "facts": []
+    },
+    {
+      "index": 19,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/5d40544d-2987-42c1-9bc2-073fc34e329c",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+            "kind": "GRANT",
+            "owner_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/5d40544d-2987-42c1-9bc2-073fc34e329c",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+            "kind": "GRANT",
+            "owner_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "method": "POST",
+      "path": "/api/v1/trade/specifications",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a11d09b2-22ec-4f0c-a457-b7155e77b75f",
+            "kind": "SPEC",
+            "buyer_party_id": null,
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "order_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "unit_minor": 2900
+          }
+        },
+        {
+          "pointer": "data/data/specification/service",
+          "facts": {
+            "halo_level": null,
+            "kind": "AVATAR_HOSTING"
+          }
+        },
+        {
+          "pointer": "data/data/product_profile",
+          "facts": {
+            "type": "AVATAR_HOSTING"
+          }
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "method": "POST",
+      "path": "/api/v1/trade/records/a11d09b2-22ec-4f0c-a457-b7155e77b75f/reviews",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a11d09b2-22ec-4f0c-a457-b7155e77b75f",
+            "kind": "SPEC",
+            "buyer_party_id": null,
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "order_id": null,
+            "current_status": "PUBLISHED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "unit_minor": 2900
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/specification/service",
+          "facts": {
+            "kind": "AVATAR_HOSTING",
+            "halo_level": null
+          }
+        },
+        {
+          "pointer": "data/data/product_profile",
+          "facts": {
+            "type": "AVATAR_HOSTING"
+          }
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "method": "POST",
+      "path": "/api/v1/artists/people/8c013257-5b06-4b8f-81ae-06ed6784b645/services",
+      "schema": "ArtistResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5f7bf219-81d6-49db-9dfa-67e685aa42f9",
+            "person_id": "8c013257-5b06-4b8f-81ae-06ed6784b645",
+            "kind": "SERVICE",
+            "avatar_id": "6449bf22-79ce-4b57-beac-0201bd14f50c",
+            "current_status": "REQUESTED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "kind": "AVATAR_HOSTING",
+            "price_minor": 2900
+          }
+        },
+        {
+          "pointer": "data/data/specification/service",
+          "facts": {
+            "kind": "AVATAR_HOSTING",
+            "halo_level": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "method": "POST",
+      "path": "/api/v1/trade/quotes",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ff1552c2-b427-48c0-92c5-fd323f003ae9",
+            "kind": "QUOTE",
+            "buyer_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "order_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "total_minor": 2900,
+            "rule_id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04"
+          }
+        },
+        {
+          "pointer": "data/data/lines/0",
+          "facts": {
+            "total_minor": 2900,
+            "unit_minor": 2900
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/specification/service",
+          "facts": {
+            "kind": "AVATAR_HOSTING",
+            "halo_level": null
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/product_profile",
+          "facts": {
+            "type": "AVATAR_HOSTING"
+          }
+        },
+        {
+          "pointer": "data/data/installments/0/allocations/0",
+          "facts": {
+            "amount_minor": 2900
+          }
+        },
+        {
+          "pointer": "data/data/artist_service",
+          "facts": {
+            "service_id": "5f7bf219-81d6-49db-9dfa-67e685aa42f9",
+            "person_id": "8c013257-5b06-4b8f-81ae-06ed6784b645",
+            "avatar_id": "6449bf22-79ce-4b57-beac-0201bd14f50c",
+            "kind": "AVATAR_HOSTING",
+            "price_minor": 2900
+          }
+        },
+        {
+          "pointer": "data/data/artist_service/specification/service",
+          "facts": {
+            "kind": "AVATAR_HOSTING",
+            "halo_level": null
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content",
+          "facts": {
+            "id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content/terms/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content/terms/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "method": "POST",
+      "path": "/api/v1/trade/records/ff1552c2-b427-48c0-92c5-fd323f003ae9/reviews",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ff1552c2-b427-48c0-92c5-fd323f003ae9",
+            "kind": "QUOTE",
+            "buyer_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "merchant_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "order_id": null,
+            "current_status": "APPROVED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04",
+            "total_minor": 2900
+          }
+        },
+        {
+          "pointer": "data/data/lines/0",
+          "facts": {
+            "unit_minor": 2900,
+            "total_minor": 2900
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/specification/service",
+          "facts": {
+            "kind": "AVATAR_HOSTING",
+            "halo_level": null
+          }
+        },
+        {
+          "pointer": "data/data/lines/0/product_profile",
+          "facts": {
+            "type": "AVATAR_HOSTING"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "9f724be4-bf63-409e-9b83-cb2722d8188b"
+          }
+        },
+        {
+          "pointer": "data/data/installments/0/allocations/0",
+          "facts": {
+            "amount_minor": 2900
+          }
+        },
+        {
+          "pointer": "data/data/artist_service",
+          "facts": {
+            "kind": "AVATAR_HOSTING",
+            "avatar_id": "6449bf22-79ce-4b57-beac-0201bd14f50c",
+            "person_id": "8c013257-5b06-4b8f-81ae-06ed6784b645",
+            "service_id": "5f7bf219-81d6-49db-9dfa-67e685aa42f9",
+            "price_minor": 2900
+          }
+        },
+        {
+          "pointer": "data/data/artist_service/specification/service",
+          "facts": {
+            "kind": "AVATAR_HOSTING",
+            "halo_level": null
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content",
+          "facts": {
+            "id": "edc5cc1a-b5a0-4e44-a4a5-65eb92760d04"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content/terms/customization_finance",
+          "facts": {
+            "platform_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        },
+        {
+          "pointer": "data/data/artist_rule_snapshot/content/terms/customization_finance/rules/lines/0/shares/0",
+          "facts": {
+            "bps": 10000,
+            "party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e"
+          }
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "71f0dbdf-de14-4be6-8a63-576db0a96a46",
+            "kind": "STOCK",
+            "owner_party_id": "fe5e0477-65c6-4a41-b81d-502d459d5b0e",
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/71f0dbdf-de14-4be6-8a63-576db0a96a46/review",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_SPEC_NOT_AVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 28,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/5d40544d-2987-42c1-9bc2-073fc34e329c",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+            "kind": "GRANT",
+            "owner_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/5d40544d-2987-42c1-9bc2-073fc34e329c/checkout",
+      "schema": "ErrorResponse",
+      "error_code": "COUPON_QUOTE_NOT_ELIGIBLE",
+      "facts": []
+    },
+    {
+      "index": 30,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/5d40544d-2987-42c1-9bc2-073fc34e329c",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+            "kind": "GRANT",
+            "owner_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/5d40544d-2987-42c1-9bc2-073fc34e329c",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+            "kind": "GRANT",
+            "owner_party_id": "32bdeaa8-5422-4bef-95e2-a4075b52abc6",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT"
+          }
+        }
+      ]
+    }
+  ]
+}
