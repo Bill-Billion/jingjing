@@ -51,9 +51,10 @@ void main() {
       () async {
     var lost = true;
     final adapter = FakeAccountAdapter(handler: (r) {
-      if (r.method == 'POST' && lost)
+      if (r.method == 'POST' && lost) {
         throw DioException(
             requestOptions: r, type: DioExceptionType.connectionError);
+      }
       return envelope({'id': invitationId, 'current_status': 'SUCCEEDED'});
     });
     final store = TradeRecoveryStore('http://localhost:3000'),
