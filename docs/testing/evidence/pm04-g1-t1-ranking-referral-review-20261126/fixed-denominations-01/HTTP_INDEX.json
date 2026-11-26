@@ -1,0 +1,1407 @@
+{
+  "private_source": {
+    "path": ".local/qa18/t1-fixed-redemption-20261126-01/http-private/redemption-fixed-denominations-http.json",
+    "sha256": "ce803170fecd441f9d97ae6b9640c28e1669468a06fa64f0ae89980bdab2810a"
+  },
+  "database": "jx_test_fixed_credit_768360a646193e12",
+  "records": [
+    {
+      "stock_id": "135e58bb-f898-4abf-a172-84dc23f155ad",
+      "grant_id": "a4dd2aa0-a11b-4c48-afd0-e7ce4b36ff4a",
+      "spec_id": "c52cf82b-9311-42d9-9ffb-852933198595",
+      "face_minor": 10000,
+      "exchange_points": 12000,
+      "balance_before": 100000,
+      "balance_after": 88000
+    },
+    {
+      "stock_id": "775485e9-1456-4652-a32b-483f975c62f6",
+      "grant_id": "27dbb7b0-7a71-40d0-b61c-e16dfb370370",
+      "spec_id": "f2eca422-f5fc-4be8-b3be-f633258b4d93",
+      "face_minor": 20000,
+      "exchange_points": 24000,
+      "balance_before": 88000,
+      "balance_after": 64000
+    },
+    {
+      "stock_id": "274df22b-1841-4c99-8fd9-7317989b6dbc",
+      "grant_id": "839efce2-a22f-4fc7-a0b1-d43d458c9ad8",
+      "spec_id": "f86f0d1c-1399-4de5-a2b2-185503de1d9a",
+      "face_minor": 50000,
+      "exchange_points": 60000,
+      "balance_before": 64000,
+      "balance_after": 4000
+    }
+  ],
+  "cases": [
+    {
+      "index": 0,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 100000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "ErrorResponse",
+      "error_code": "PRODUCTION_EXCHANGE_PRICE_INVALID",
+      "facts": []
+    },
+    {
+      "index": 2,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "ErrorResponse",
+      "error_code": "PRODUCTION_EXCHANGE_PRICE_INVALID",
+      "facts": []
+    },
+    {
+      "index": 3,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 100000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "135e58bb-f898-4abf-a172-84dc23f155ad",
+            "kind": "STOCK",
+            "owner_party_id": "99bcd622-a7bc-426d-95c0-c3cf697d73d5",
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_STOCK_UNAVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 6,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/135e58bb-f898-4abf-a172-84dc23f155ad/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "135e58bb-f898-4abf-a172-84dc23f155ad",
+            "kind": "STOCK",
+            "owner_party_id": "99bcd622-a7bc-426d-95c0-c3cf697d73d5",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "method": "GET",
+      "path": "/api/v1/redemption/catalog",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "135e58bb-f898-4abf-a172-84dc23f155ad",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/0/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/items/0/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a4dd2aa0-a11b-4c48-afd0-e7ce4b36ff4a",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a4dd2aa0-a11b-4c48-afd0-e7ce4b36ff4a",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a4dd2aa0-a11b-4c48-afd0-e7ce4b36ff4a",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 88000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "method": "GET",
+      "path": "/api/v1/redemption/catalog",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "135e58bb-f898-4abf-a172-84dc23f155ad",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/items/0/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "IDEMPOTENCY_CONFLICT",
+      "facts": []
+    },
+    {
+      "index": 14,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/a4dd2aa0-a11b-4c48-afd0-e7ce4b36ff4a",
+      "schema": "ErrorResponse",
+      "error_code": "REDEMPTION_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 15,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/a4dd2aa0-a11b-4c48-afd0-e7ce4b36ff4a",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a4dd2aa0-a11b-4c48-afd0-e7ce4b36ff4a",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 88000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 88000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "ErrorResponse",
+      "error_code": "PRODUCTION_EXCHANGE_PRICE_INVALID",
+      "facts": []
+    },
+    {
+      "index": 19,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "ErrorResponse",
+      "error_code": "PRODUCTION_EXCHANGE_PRICE_INVALID",
+      "facts": []
+    },
+    {
+      "index": 20,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 88000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "775485e9-1456-4652-a32b-483f975c62f6",
+            "kind": "STOCK",
+            "owner_party_id": "99bcd622-a7bc-426d-95c0-c3cf697d73d5",
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 24000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 20000,
+            "minimum_minor": 100000
+          }
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_STOCK_UNAVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 23,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/775485e9-1456-4652-a32b-483f975c62f6/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "775485e9-1456-4652-a32b-483f975c62f6",
+            "kind": "STOCK",
+            "owner_party_id": "99bcd622-a7bc-426d-95c0-c3cf697d73d5",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 24000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 20000,
+            "minimum_minor": 100000
+          }
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "method": "GET",
+      "path": "/api/v1/redemption/catalog",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "135e58bb-f898-4abf-a172-84dc23f155ad",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/items/0/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "775485e9-1456-4652-a32b-483f975c62f6",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/1/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 24000
+          }
+        },
+        {
+          "pointer": "data/items/1/template/production",
+          "facts": {
+            "face_minor": 20000,
+            "minimum_minor": 100000
+          }
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27dbb7b0-7a71-40d0-b61c-e16dfb370370",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 24000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 20000,
+            "minimum_minor": 100000
+          }
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27dbb7b0-7a71-40d0-b61c-e16dfb370370",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 24000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 20000,
+            "minimum_minor": 100000
+          }
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27dbb7b0-7a71-40d0-b61c-e16dfb370370",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 24000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 20000,
+            "minimum_minor": 100000
+          }
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 64000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "method": "GET",
+      "path": "/api/v1/redemption/catalog",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "135e58bb-f898-4abf-a172-84dc23f155ad",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/items/0/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "775485e9-1456-4652-a32b-483f975c62f6",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/1/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 24000
+          }
+        },
+        {
+          "pointer": "data/items/1/template/production",
+          "facts": {
+            "face_minor": 20000,
+            "minimum_minor": 100000
+          }
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "IDEMPOTENCY_CONFLICT",
+      "facts": []
+    },
+    {
+      "index": 31,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/27dbb7b0-7a71-40d0-b61c-e16dfb370370",
+      "schema": "ErrorResponse",
+      "error_code": "REDEMPTION_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 32,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/27dbb7b0-7a71-40d0-b61c-e16dfb370370",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27dbb7b0-7a71-40d0-b61c-e16dfb370370",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 24000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 20000,
+            "minimum_minor": 100000
+          }
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 64000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 34,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 64000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "ErrorResponse",
+      "error_code": "PRODUCTION_EXCHANGE_PRICE_INVALID",
+      "facts": []
+    },
+    {
+      "index": 36,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "ErrorResponse",
+      "error_code": "PRODUCTION_EXCHANGE_PRICE_INVALID",
+      "facts": []
+    },
+    {
+      "index": 37,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 64000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "274df22b-1841-4c99-8fd9-7317989b6dbc",
+            "kind": "STOCK",
+            "owner_party_id": "99bcd622-a7bc-426d-95c0-c3cf697d73d5",
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 60000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 50000,
+            "minimum_minor": 200000
+          }
+        }
+      ]
+    },
+    {
+      "index": 39,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_STOCK_UNAVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 40,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/274df22b-1841-4c99-8fd9-7317989b6dbc/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "274df22b-1841-4c99-8fd9-7317989b6dbc",
+            "kind": "STOCK",
+            "owner_party_id": "99bcd622-a7bc-426d-95c0-c3cf697d73d5",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 60000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 50000,
+            "minimum_minor": 200000
+          }
+        }
+      ]
+    },
+    {
+      "index": 41,
+      "method": "GET",
+      "path": "/api/v1/redemption/catalog",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "135e58bb-f898-4abf-a172-84dc23f155ad",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/items/0/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "274df22b-1841-4c99-8fd9-7317989b6dbc",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/1/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 60000
+          }
+        },
+        {
+          "pointer": "data/items/1/template/production",
+          "facts": {
+            "face_minor": 50000,
+            "minimum_minor": 200000
+          }
+        },
+        {
+          "pointer": "data/items/2",
+          "facts": {
+            "id": "775485e9-1456-4652-a32b-483f975c62f6",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/2/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 24000
+          }
+        },
+        {
+          "pointer": "data/items/2/template/production",
+          "facts": {
+            "face_minor": 20000,
+            "minimum_minor": 100000
+          }
+        }
+      ]
+    },
+    {
+      "index": 42,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "839efce2-a22f-4fc7-a0b1-d43d458c9ad8",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 60000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 50000,
+            "minimum_minor": 200000
+          }
+        }
+      ]
+    },
+    {
+      "index": 43,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "839efce2-a22f-4fc7-a0b1-d43d458c9ad8",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 60000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 50000,
+            "minimum_minor": 200000
+          }
+        }
+      ]
+    },
+    {
+      "index": 44,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "839efce2-a22f-4fc7-a0b1-d43d458c9ad8",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 60000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 50000,
+            "minimum_minor": 200000
+          }
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 4000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "method": "GET",
+      "path": "/api/v1/redemption/catalog",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "135e58bb-f898-4abf-a172-84dc23f155ad",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 12000
+          }
+        },
+        {
+          "pointer": "data/items/0/template/production",
+          "facts": {
+            "face_minor": 10000,
+            "minimum_minor": 80000
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "274df22b-1841-4c99-8fd9-7317989b6dbc",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/1/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 60000
+          }
+        },
+        {
+          "pointer": "data/items/1/template/production",
+          "facts": {
+            "face_minor": 50000,
+            "minimum_minor": 200000
+          }
+        },
+        {
+          "pointer": "data/items/2",
+          "facts": {
+            "id": "775485e9-1456-4652-a32b-483f975c62f6",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/2/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 24000
+          }
+        },
+        {
+          "pointer": "data/items/2/template/production",
+          "facts": {
+            "face_minor": 20000,
+            "minimum_minor": 100000
+          }
+        }
+      ]
+    },
+    {
+      "index": 47,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "IDEMPOTENCY_CONFLICT",
+      "facts": []
+    },
+    {
+      "index": 48,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/839efce2-a22f-4fc7-a0b1-d43d458c9ad8",
+      "schema": "ErrorResponse",
+      "error_code": "REDEMPTION_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 49,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/839efce2-a22f-4fc7-a0b1-d43d458c9ad8",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "839efce2-a22f-4fc7-a0b1-d43d458c9ad8",
+            "kind": "GRANT",
+            "owner_party_id": "7c5f61a5-de68-450c-bd9f-cb36c0164195",
+            "current_status": "AVAILABLE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 60000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 50000,
+            "minimum_minor": 200000
+          }
+        }
+      ]
+    },
+    {
+      "index": 50,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "06af7928-a4a2-45ba-bef7-70ddc9a6aa56",
+            "available_points": 4000,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    }
+  ],
+  "limits": "Allowlisted synthetic IDs, states and amounts; raw responses protected locally and bound by SHA256."
+}
