@@ -10,6 +10,10 @@ import 'explicit_matching_test.dart' show cases, enter;
 void main() {
   testWidgets('推荐与预算条件组合保持筛选，未开启偏好仍可读取', (t) async {
     final data = Map<String, dynamic>.from(cases.firstWhere((c) => c['schema'] == 'DiscoveryRecommendedMatchesResponse')['value']['data']);
+    data['items'] = [for (final (i, row) in (data['items'] as List).indexed)
+      {...Map<String, dynamic>.from(row), 'item': {
+        ...Map<String, dynamic>.from(row['item']), 'title': 'Synthetic recommendation ${i + 1}'
+      }}];
     late FakeAccountAdapter a;
     var reads = 0;
     a = FakeAccountAdapter(handler: (r) {
@@ -36,8 +40,15 @@ void main() {
     final match = find.widgetWithText(FilledButton, '开始匹配');
     await reveal(t, match);await t.tap(match.hitTestable());await frames(t);
     expect(reads, 1);
-    expect(find.textContaining('排序依据：'), findsNWidgets(data['items'].length));
-    expect(find.textContaining('当前个性化推荐已关闭'), findsOneWidget);
+    for (final row in data['items']) {
+      final title = find.text(row['item']['title']);
+      await reveal(t, title);
+      expect(title.hitTestable(), findsOneWidget);
+      expect(find.textContaining('公开价格在预算内'), findsWidgets);
+    }
+    final fallback = find.textContaining('当前个性化推荐已关闭');
+    await reveal(t, fallback);
+    expect(fallback, findsOneWidget);
     expect(t.takeException(), isNull);
   });
   test('推荐回应拒绝个性化定价与未知依据', () {
