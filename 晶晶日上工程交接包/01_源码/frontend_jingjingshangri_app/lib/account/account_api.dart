@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'trade_recovery.dart';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
@@ -72,8 +73,18 @@ bool _privateRequestPath(String path) => [
 
 /// The account API deliberately has no connection to legacy JWT or demo data.
 class AccountApi {
-  AccountApi({Dio? dio, String? baseUrl})
-      : _dio = dio ??
+  AccountApi(
+      {Dio? dio,
+      String? baseUrl,
+      bool persistTrade = false,
+      TradeRecoveryStore? recoveryStore})
+      : _tradeRecovery = recoveryStore ??
+            (persistTrade
+                ? TradeRecoveryStore(dio?.options.baseUrl ??
+                    baseUrl ??
+                    const String.fromEnvironment('JX_ACCOUNT_API_URL'))
+                : null),
+        _dio = dio ??
             Dio(BaseOptions(
               baseUrl:
                   baseUrl ?? const String.fromEnvironment('JX_ACCOUNT_API_URL'),
@@ -84,6 +95,15 @@ class AccountApi {
             ));
 
   final Dio _dio;
+  final TradeRecoveryStore? _tradeRecovery;
+  Future<void> prepareTradeRecovery(String account) async {
+    if (_tradeRecovery != null) await _tradeRecovery.retainAccount(account);
+  }
+
+  Future<void> clearTradeRecovery() async {
+    if (_tradeRecovery != null) await _tradeRecovery.clear();
+  }
+
   ConsumptionGuard? consumptionGuard;
   int _supplyEpoch = 0;
   int _accountEpoch = 0;
@@ -213,6 +233,79 @@ class AccountApi {
   Future<Map<String, dynamic>> request(
     String method,
     String path, {
+    String? accountId,
+    String? token,
+    String? party,
+    Map<String, dynamic>? body,
+    Map<String, dynamic>? query,
+    int? version,
+    String? operationKey,
+    Uint8List? bytes,
+    void Function(int sent, int total)? onSendProgress,
+    FutureOr<void> Function(Map<String, dynamic>)? validate,
+  }) async {
+    final started = _supplyEpoch;
+    final store = _tradeRecovery;
+    final recoverable = store != null &&
+        accountId != null &&
+        token != null &&
+        party != null &&
+        path.startsWith('/api/v1/trade/');
+    if (recoverable) {
+      try {
+        final rows = await store.read(accountId, party);
+        if (started != _supplyEpoch) {
+          throw const AccountError(0, 'CONTEXT_CHANGED');
+        }
+        for (final row in rows) {
+          final scope = _scope('POST', row['path'], token, party);
+          final fp = jsonEncode([
+            token,
+            party,
+            'POST',
+            row['path'],
+            row['body'],
+            row['version'],
+            row['query'],
+            null
+          ]);
+          if (!_pending.containsKey(scope) && !_running.containsKey(fp)) {
+            _keys[fp] = row['key'];
+            _pending[scope] = {
+              'fingerprint': fp,
+              'key': row['key'],
+              'body': row['body'],
+              'version': row['version'],
+              'query': row['query'],
+              'bytes': null,
+              'resultId': row['resultId'],
+              'code': 'NETWORK_UNKNOWN'
+            };
+          }
+        }
+      } on AccountError {
+        rethrow;
+      } catch (_) {
+        throw const AccountError(0, 'TRADE_RECOVERY_STORAGE_UNAVAILABLE');
+      }
+    }
+    return _request(method, path,
+        accountId: recoverable ? accountId : null,
+        token: token,
+        party: party,
+        body: body,
+        query: query,
+        version: version,
+        operationKey: operationKey,
+        bytes: bytes,
+        onSendProgress: onSendProgress,
+        validate: validate);
+  }
+
+  Future<Map<String, dynamic>> _request(
+    String method,
+    String path, {
+    String? accountId,
     String? token,
     String? party,
     Map<String, dynamic>? body,
@@ -333,13 +426,53 @@ class AccountApi {
           key: key);
     }
 
-    final future = (consume && consumptionGuard != null
-            ? consumptionGuard!(path, body, key!, party, send, transport)
-            : send())
+    final durable = writing && accountId != null && _tradeRecovery != null;
+    Map<String, dynamic> recoveryRow() => {
+          'account': accountId,
+          'party': party,
+          'method': method,
+          'path': path,
+          'key': key,
+          'body': body,
+          'query': query,
+          'version': version,
+          'resultId': resultId
+        };
+    Future<void> persist() async {
+      if (!durable) return;
+      if (method != 'POST' || bytes != null) {
+        throw const AccountError(400, 'TRADE_RECOVERY_COMMAND_UNSUPPORTED');
+      }
+      try {
+        await _tradeRecovery.save(recoveryRow());
+      } catch (_) {
+        throw const AccountError(0, 'TRADE_RECOVERY_STORAGE_UNAVAILABLE',
+            uncertain: true);
+      }
+    }
+
+    final future = (() async {
+      await persist();
+      if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
+      return consume && consumptionGuard != null
+          ? consumptionGuard!(path, body, key!, party, send, transport)
+          : send();
+    })()
         .then((data) async {
       if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (data['id'] is String) resultId = data['id'];
+      await persist();
+      if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       await validate?.call(data);
+      if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
+      if (durable) {
+        try {
+          await _tradeRecovery.remove(accountId, key!);
+        } catch (_) {
+          throw const AccountError(0, 'TRADE_RECOVERY_STORAGE_UNAVAILABLE',
+              uncertain: true);
+        }
+      }
       if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       return data;
     }).then((data) {
@@ -348,13 +481,14 @@ class AccountApi {
         _pending.remove(scope);
       }
       return data;
-    }, onError: (Object error, StackTrace stack) {
+    }, onError: (Object error, StackTrace stack) async {
       if (!current()) throw const AccountError(0, 'CONTEXT_CHANGED');
       if (writing && error is AccountError) {
         if (error.uncertain ||
             unresolved != null &&
                 method == 'POST' &&
-                originalOperationKinds.containsKey(path)) {
+                (originalOperationKinds.containsKey(path) ||
+                    path.startsWith('/api/v1/trade/'))) {
           _pending[scope] = {
             'fingerprint': fingerprint,
             'key': key,
@@ -366,6 +500,14 @@ class AccountApi {
             'resultId': error.resultId ?? resultId,
           };
         } else {
+          if (durable) {
+            try {
+              await _tradeRecovery.remove(accountId, key!);
+            } catch (_) {
+              throw const AccountError(0, 'TRADE_RECOVERY_STORAGE_UNAVAILABLE',
+                  uncertain: true);
+            }
+          }
           _keys.remove(fingerprint);
           _pending.remove(scope);
         }
@@ -531,6 +673,8 @@ class AccountError implements Exception {
         return '账号服务地址尚未配置，请联系开发者配置后再登录。';
       case 'IDEMPOTENCY_IN_PROGRESS':
         return '上次操作还在处理中，请稍后重试原操作核对结果。';
+      case 'TRADE_RECOVERY_STORAGE_UNAVAILABLE':
+        return '无法读取或保存原交易请求，请恢复本机存储后继续核对；不会另建同一笔操作。';
       case 'PENDING_OPERATION_CHANGED':
         return '上次操作的结果尚未确认，请先重试原内容核对结果，再发起新的操作。';
       case 'CONSUMER_POLICY_NOT_CONFIGURED':

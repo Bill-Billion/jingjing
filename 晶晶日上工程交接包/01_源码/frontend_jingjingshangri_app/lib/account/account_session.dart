@@ -34,7 +34,8 @@ bool _scopedContractDenial(String path, AccountError error) =>
 /// New account state stays in memory. No tokens or private account lists are
 /// written to the legacy preferences; app restart requires phone verification.
 class AccountSession extends ChangeNotifier {
-  AccountSession({AccountApi? api}) : api = api ?? AccountApi();
+  AccountSession({AccountApi? api})
+      : api = api ?? AccountApi(persistTrade: true);
   final AccountApi api;
   String? _token;
   String? authNotice;
@@ -331,6 +332,8 @@ class AccountSession extends ChangeNotifier {
     final result = await api.request('POST', '/api/v1/auth/sessions',
         body: {'phone': phone, 'challenge_id': challengeId, 'code': code});
     _check(started);
+    await api.prepareTradeRecovery(result['account']['id'] as String);
+    _check(started);
     _clear();
     authNotice = null;
     _token = result['access_token'] as String;
@@ -345,6 +348,7 @@ class AccountSession extends ChangeNotifier {
     _clear(); // Hide all private data immediately, even while offline.
     authNotice = '已退出本机，正在通知服务器结束会话。';
     notifyListeners();
+    await api.clearTradeRecovery();
     await retryLogout();
   }
 
@@ -441,6 +445,7 @@ class AccountSession extends ChangeNotifier {
     }
     try {
       final result = await api.request(method, path,
+          accountId: account?['id'] as String?,
           token: _token,
           party: actingParty,
           body: body,
