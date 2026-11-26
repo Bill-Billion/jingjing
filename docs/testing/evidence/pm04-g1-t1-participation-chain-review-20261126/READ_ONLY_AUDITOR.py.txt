@@ -1,0 +1,52 @@
+import hashlib,json,re,subprocess
+from pathlib import Path
+r=Path(__file__).resolve().parents[2];ev=r/'docs/testing/evidence/pm04-g1-t1-participation-chain-review-20261126';ev.mkdir(exist_ok=True)
+def load(p):return json.loads(p.read_text('utf-8-sig'))
+def dump(p,v):p.write_text(json.dumps(v,ensure_ascii=False,indent=2)+'\n','utf-8',newline='\n')
+def proof(p):return dict(path=p.relative_to(r).as_posix(),sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+db='jx_test_qa18_participation_85498a20867423501465';project='7700df91-5cb6-4135-b180-949ee9031da8'
+dirs={n:next((r/'docs/testing/evidence').glob('*-'+n))for n in ['29','30','31','32','33','34','35','36']}
+verified={};rounds={};sources=[];requests=[];checks=[]
+drivers={'29':'qa18-participation-browser.mjs','30':'qa18-participation-delivery-browser.mjs','31':'qa18-participation-release-browser.mjs','32':'qa18-participation-amendment-browser.mjs','33':'qa18-participation-decrease-browser.mjs','34':'qa18-participation-recast-browser.mjs','35':'qa18-participation-recast-context-browser.mjs','36':'qa18-recast-production-browser.mjs'}
+for number,d in dirs.items():
+ summary=load(d/'EXECUTION_SUMMARY.json');census=load(d/'RECORD_CHECK.json');manifest=load(d/'MANIFEST.json');assert census['database']==db and census['project_id']==project
+ for item in manifest['files']:
+  p=d/item['path'];actual=proof(p);assert actual['sha256']==item['sha256'],p;verified[actual['path']]=actual
+ checkpoint_paths=[d/'browser/checkpoint.json']+([d/'revision/checkpoint.json']if number=='36'else[])
+ executions=[]
+ for p in checkpoint_paths:
+  cp=load(p);assert cp['environment']==db;driver='qa18-recast-revision-browser.mjs'if p.parent.name=='revision'else drivers[number]
+  completion_field='first_payment_complete'if number=='29'else'complete'
+  if number!='34':assert cp[completion_field] and cp['attempts'][-1]['result'].startswith('PASS'),p
+  for attempt in cp['attempts']:
+   sha=attempt['source'];assert re.fullmatch('[0-9a-f]{40}',sha)
+   blob=subprocess.check_output(['git','show',sha+':scripts/'+driver],cwd=r)
+   sources.append(dict(round=number,attempt=attempt['attempt'],source=sha,path='scripts/'+driver,sha256=hashlib.sha256(blob).hexdigest(),result=attempt['result']))
+  for index,x in enumerate(cp['checks']):checks.append(dict(round=number,checkpoint=proof(p),index=index,**x))
+  for index,x in enumerate(cp['requests']):
+   # Preserve method, role, path, response status/hash, no credentials or payloads.
+   requests.append(dict(round=number,checkpoint=proof(p),index=index,**{k:v for k,v in x.items()if k in {'attempt','role','path','method','status','sha256','code'}}))
+  executions.append(dict(checkpoint=proof(p),completion_field=completion_field,original_phase_complete=bool(cp.get(completion_field)),attempts=[{k:v for k,v in a.items()if k in {'attempt','source','started_at','finished_at','result'}}for a in cp['attempts']],checks=len(cp['checks']),requests=len(cp['requests'])))
+ product={k:summary[k+'_source']for k in ['backend','app','vue']};product['app']=summary.get('browser_app_source',product['app'])
+ for sha in product.values():assert re.fullmatch('[0-9a-f]{40}',sha)
+ rounds[number]=dict(summary=proof(d/'EXECUTION_SUMMARY.json'),census=proof(d/'RECORD_CHECK.json'),original_manifest=proof(d/'MANIFEST.json'),products=product,api=summary.get('api_version'),migration=summary.get('migration',summary.get('migrations')),browser=executions,census_result=census.get('result'),limits=summary.get('limits',[]))
+# Exact continuity and independent money facts, not just matching project titles.
+c={n:load(d/'RECORD_CHECK.json')for n,d in dirs.items()}
+assert c['29']['agreement_id']=='fc368a30-7cc3-4a16-8363-508c9d562fbb'
+assert c['29']['order_id']=='4cf746af-9d27-4b5c-b839-2e2bc9e38a95'
+assert c['29']['film_order_id']=='3f6fcc43-a2fe-41a2-a020-d205a36ff7ed'
+assert c['31']['participation_id']==c['29']['agreement_id'] and c['31']['original_participation_hash']==c['29']['agreement_hash']
+assert c['31']['received_minor']==80000 and c['31']['receivable_minor']==0 and c['31']['payout_records']==0
+assert c['31']['old_fee_orders_unchanged'] and c['31']['old_payments']==5
+assert c['35']['original_agreement_id']==c['29']['agreement_id'] and c['35']['prior125_agreement_id']=='deda37c3-3370-4d87-aa53-fc1c069a5cda' and c['35']['prior90_agreement_id']=='4cc810db-4d4a-484a-9523-8bc06242f774'
+assert c['35']['old_performer_net_minor']==3000 and c['35']['new_performer_net_minor']==5000 and c['35']['original_contracts_and_release_finance_unchanged']
+assert c['36']['original_release_and_income_unchanged'] and not c['36']['new_release_created'] and c['36']['new_plan_and_edition_confirmations']==8
+for n in ['35','36']:
+ prefix='income_'if n=='35'else'old_'
+ assert c[n][prefix+'artist_accrual_minor']==16000 and c[n][prefix+'buyer_accrual_minor']==64000 and c[n]['payout_minor']==0
+assert len({json.dumps(rounds[n]['products'],sort_keys=True)for n in ['29','30','31','32','33']})==1
+for name,rows in [('BROWSER_CHECK_INDEX.jsonl',checks),('REQUEST_INDEX.jsonl',requests)]:
+ (ev/name).write_text(''.join(json.dumps(x,ensure_ascii=False,separators=(',',':'))+'\n'for x in rows),'utf-8',newline='\n')
+guards=load(dirs['31']/'GUARDS.json');assert [(x['status'],x['code'])for x in guards['checks']]==[(409,'PARTICIPATION_REVENUE_CONTRACT_MISMATCH'),(409,'FINANCE_SOURCE_ALREADY_REGISTERED'),(403,'FINANCE_EVIDENCE_FORBIDDEN'),(404,'PROJECT_NOT_FOUND')]
+dump(ev/'SAME_PROJECT_AUDIT.json',dict(kind='READ_ONLY_HISTORY_AUDIT',new_business_execution=False,database=db,project_id=project,original_agreement=c['29']['agreement_id'],original_role_order=c['29']['order_id'],original_production_order=c['29']['film_order_id'],original_release=c['31']['release_id'],original_finance=c['31']['finance_id'],original_settlement=c['31']['settlement_id'],same_original_contract_hash=c['29']['agreement_hash'],rounds=rounds,verified_original_files=list(verified.values()),sources=sources,check_index=proof(ev/'BROWSER_CHECK_INDEX.jsonl'),request_index=proof(ev/'REQUEST_INDEX.jsonl'),financial_continuity_assertions_passed=True,normal29_33_product_versions_equal=True,version_timeline_not_final_regression=True,limits=['Historical same-business continuity only: no current same-version full run or formal approval.','Negative direct API calls and browser actions are distinct; step names alone do not identify the surface.','Historical34 actual integration failure kept;35 resolved it on same project after explicit code upgrade.35 browser Appc3a52516 differs from later widget recovery App9d899149.','Original first release and income remain historical; revised edition has no new release/income and is not represented as externally published.','All provider/payment/channel/identity/materials synthetic; viewport600x9000 is not physical mobile visual experience.']))
+print(json.dumps(dict(original_files=len(verified),source_versions=len(sources),browser_observations=len(checks),request_records=len(requests),database=db,same_project=True)))
