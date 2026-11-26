@@ -1,6 +1,7 @@
 'use strict';
 // Controlled corruption/restoration of this new synthetic finance record only.
 const fs=require('node:fs/promises'),path=require('node:path'),assert=require('node:assert/strict'),{createHash}=require('node:crypto');
+const {isDeepStrictEqual}=require('node:util');
 const root=path.resolve(__dirname,'..'),load=p=>require(path.join(root,'晶晶日上工程交接包/01_源码/backend_server',p));load('scripts/test-network-guard.cjs');
 async function main(){
  const [operation,directory]=process.argv.slice(2);assert.equal(process.argv.length,4);assert(['damage','restore'].includes(operation));
@@ -21,7 +22,10 @@ async function main(){
    console.log(JSON.stringify({operation,environment:p.environment,id:row.id,original_sha256:hash(current),modified_sha256:hash(modified)}));
   }else{
    let saved;try{saved=JSON.parse(await fs.readFile(file,'utf8'));}catch(e){if(e.code==='ENOENT'){console.log(JSON.stringify({operation,status:'NO_ACTIVE_FAULT'}));return;}throw e;}
-   assert.equal(saved.environment,p.environment);assert.equal(saved.id,row.id);assert.equal(hash(saved.original),saved.original_sha256);assert.equal(hash(current),saved.modified_sha256,'Do not overwrite any other concurrent change');
+   assert.equal(saved.environment,p.environment);assert.equal(saved.id,row.id);assert.equal(hash(saved.original),saved.original_sha256);
+   // MySQL JSON storage normalizes object-key order. Compare the exact saved
+   // structure plus our one marker; any additional change still blocks restore.
+   assert(isDeepStrictEqual(current,{...saved.original,synthetic_fault:'QA18_T1_SOURCE_FAILURE_ONLY'}),'Do not overwrite any other concurrent change');
    await db.execute('UPDATE finance_records SET data_json=? WHERE id=?',[JSON.stringify(saved.original),row.id]);
    const [[restored]]=await db.execute('SELECT data_json FROM finance_records WHERE id=?',[row.id]);assert.equal(hash(parse(restored.data_json)),saved.original_sha256);
    await fs.rename(file,path.join(dir,'finance-fault-restored-'+Date.now()+'.private.json'));
