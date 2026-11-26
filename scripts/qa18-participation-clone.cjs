@@ -74,7 +74,7 @@ async function main() {
   const saveStatus = () => fsp.writeFile(path.join(out, 'STATUS.json'), JSON.stringify(status, null, 2));
   const mysql = load('node_modules/mysql2/promise');
   const connect = name => mysql.createConnection({ host: env.MYSQL_HOST, port: Number(env.MYSQL_PORT), user: env.MYSQL_USER, password: env.MYSQL_PASSWORD, database: name });
-  let original, restored, control, db, server, timer, stopWatch, stopping = false;
+  let original, restored, control, cloneReader, db, server, timer, stopWatch, stopping = false;
   async function cli(exe, args, input) {
     const cfg = path.join(out, 'client-' + randomUUID() + '.cnf');
     assert(typeof env.MYSQL_PASSWORD === 'string' && !/[\r\n\0]/.test(env.MYSQL_PASSWORD));
@@ -99,7 +99,7 @@ async function main() {
     clearTimeout(timer); clearInterval(stopWatch);
     if (server) { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
     await db?.close();
-    for (const c of [original, restored, control]) await c?.end();
+    for (const c of [original, restored, control, cloneReader]) await c?.end();
     status.status = 'STOPPED'; status.stopped_at = new Date().toISOString(); await saveStatus();
   }
   process.once('SIGINT', stop); process.once('SIGTERM', stop);
@@ -112,10 +112,13 @@ async function main() {
     assert.equal(hash(Buffer.from(canonicalDump(sql))), marker.canonical_sql_sha256, 'OFFLINE_SNAPSHOT_DRIFT');
     await control.query('CREATE DATABASE ' + mysql.escapeId(database) + ' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');
     await cli(process.env.JX_MYSQL_EXE, ['--binary-mode', '--default-character-set=utf8mb4', database], sql);
+    cloneReader = await connect(database);
     db = await load('src/infrastructure/database').openDatabase({ ...env, MYSQL_DATABASE: database });
     const copiedDump = await cli(process.env.JX_MYSQLDUMP_EXE, [...dumpArgs, database]);
     assert.equal(canonicalDump(copiedDump), canonicalDump(sql), 'NEW_CLONE_SCHEMA_OR_DATA_DIFFERENT');
-    assert.deepEqual(await fingerprint(db), offlineBefore);
+    // Compare with identical read semantics: runtime DB deliberately returns DATE
+    // columns as strings; mysql2 defaults return Date objects. SQL also stays exact.
+    assert.deepEqual(await fingerprint(cloneReader), offlineBefore);
     const migrations = await load('src/infrastructure/database/migrator').status(db);
     assert.equal(migrations.migrations.length, 225);
     assert(migrations.migrations.every(x => x.status === 'APPLIED'));
@@ -149,7 +152,7 @@ async function main() {
     }
     const principal = async req => ({ subject_ref: (await auth.resolve((req.headers.authorization || '').replace(/^Bearer /, ''))).subject_ref });
     const sim = await load('src/testing/multi-merchant-payment-simulator').createMultiMerchantSimulator(db, { ...env, MYSQL_DATABASE: database, JX_PAYMENT_SIMULATOR_ENABLED: 'true' }, { merchant_party_ids: Object.values(accounts).map(x => x.party_id), resolvePrincipal: principal });
-    const after = await fingerprint(db);
+    const after = await fingerprint(cloneReader);
     for (const [name, entry] of Object.entries(offlineBefore)) if (name !== 'auth_sessions') assert.deepEqual(after[name], entry, 'NON_SESSION_ROWS_CHANGED_' + name);
     assert.deepEqual(await fingerprint(original), sourceBefore, 'ORIGINAL_MODIFIED');
     assert.deepEqual(await fingerprint(restored), offlineBefore, 'OFFLINE_RESTORE_MODIFIED');
