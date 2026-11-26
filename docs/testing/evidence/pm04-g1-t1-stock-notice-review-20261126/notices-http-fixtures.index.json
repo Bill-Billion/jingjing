@@ -1,0 +1,4329 @@
+{
+  "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+  "run_id": "backend-acceptance-2026-11-25T21-08-15-701Z-f6296e",
+  "new_execution": false,
+  "original_collection": {
+    "path": "docs/testing/evidence/pm04-g1-current-media-20261126-42/HTTP_COLLECTION_COMPLETE.json",
+    "sha256": "20260ab634189405e8466a9f4aec0ebd12b063f4c4687e3b2d780f5d33dfc57b"
+  },
+  "private_original_sha256": "f52963d9b5db107cba3e4140eea6f1035545b235798fb7263c4a1b76d91403ce",
+  "case_count": 120,
+  "cases": [
+    {
+      "index": 0,
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_PUBLISHER_NOT_ELIGIBLE",
+      "facts": []
+    },
+    {
+      "index": 1,
+      "method": "GET",
+      "path": "/api/v1/notices/rules",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "content_sha256": "e9a35144e7f908d73d47e43b1463ccd6f222b6ed03c3be909326965c0478bc92"
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "method": "GET",
+      "path": "/api/v1/notices/eligibility",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "active": true,
+            "level": 1,
+            "types": [
+              "DRAMA",
+              "PERFORMANCE",
+              "COMMERCIAL",
+              "RECRUITMENT"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "error_code": "INVALID_INPUT",
+      "facts": []
+    },
+    {
+      "index": 4,
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "kind": "NOTICE",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "93d957f0b581929f30a5276ddba82ec3200863eb1b8bab755a6ae2d0dcbe210b"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/notice",
+          "facts": {
+            "project_id": null,
+            "type": "RECRUITMENT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/9855c6a5-4560-4076-a812-cecc906faffb",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_NOT_OPEN",
+      "facts": []
+    },
+    {
+      "index": 6,
+      "method": "POST",
+      "path": "/api/v1/notices/records/9855c6a5-4560-4076-a812-cecc906faffb/reviews",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_OPERATOR_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 7,
+      "method": "POST",
+      "path": "/api/v1/notices/records/9855c6a5-4560-4076-a812-cecc906faffb/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "kind": "NOTICE",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "PUBLISHED",
+            "object_version": 2,
+            "content_sha256": "336de4a8e230d5b437e5169a262f8d245e97b63b7edd2c6cea8e06de521efd05"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/9855c6a5-4560-4076-a812-cecc906faffb",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "object_version": 2,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "official": false,
+            "chat_enabled": false
+          }
+        },
+        {
+          "pointer": "data/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "method": "GET",
+      "path": "/api/v1/notices/catalog",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "object_version": 2,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "official": false,
+            "chat_enabled": false
+          }
+        },
+        {
+          "pointer": "data/items/0/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_OPERATOR_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 11,
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a716da12-9b72-440d-927e-f7e2f16a0fb1",
+            "kind": "NOTICE",
+            "owner_party_id": null,
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "a53e809ac3e84fefccf2cf681e60fd04f77d743be2f13f292f6728c8ef9b4cf6"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/notice",
+          "facts": {
+            "project_id": null,
+            "type": "OFFICIAL"
+          }
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "method": "POST",
+      "path": "/api/v1/notices/records/a716da12-9b72-440d-927e-f7e2f16a0fb1/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a716da12-9b72-440d-927e-f7e2f16a0fb1",
+            "kind": "NOTICE",
+            "owner_party_id": null,
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "PUBLISHED",
+            "object_version": 2,
+            "content_sha256": "3d3e954b099043e5f01761fc2a1bc08bdeddfc2eb09ad2a684a4356856c7ccd2"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/notice",
+          "facts": {
+            "type": "OFFICIAL",
+            "project_id": null
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/a716da12-9b72-440d-927e-f7e2f16a0fb1",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a716da12-9b72-440d-927e-f7e2f16a0fb1",
+            "owner_party_id": null,
+            "object_version": 2,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "notice_sha256": "80ab7d610d7096a2aac8567fda5c1109999b683bd2091feb9486ecae2191fdca",
+            "official": true,
+            "chat_enabled": false
+          }
+        },
+        {
+          "pointer": "data/notice",
+          "facts": {
+            "type": "OFFICIAL",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "aabf7041c91906850b3a4b5fbc67d154bfd798fd9057be75562873c078d0f019"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "PROFILE",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "object_version": 2,
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "method": "POST",
+      "path": "/api/v1/notices/records/27d6d8e5-c765-4967-819f-bfb4e6098851/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "10828827f431fc62dd46afd0b030392f14467458c70029f7337cea67613b363d"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "eb4f6e00-0136-4991-9bb2-59a1c9d6e6fb",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "9e4567434a419b6e877393806d61bb65badbd29e52f76edf02142e5c738e45ef"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "ROLE",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "object_version": 2,
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "method": "POST",
+      "path": "/api/v1/notices/records/eb4f6e00-0136-4991-9bb2-59a1c9d6e6fb/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "eb4f6e00-0136-4991-9bb2-59a1c9d6e6fb",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "ff4d9cb28bedf20dea6f93bea3318e91f466440e1a8e70f9f5e32164e38f7b0c"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "ROLE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "7544b20b-9c19-4226-a954-a039650bf285",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "7baa73fafed2b9cf412cc1cd829d4106231c209d00c1861f39db9edd717a1482"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "CREATE_DRAMA",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "object_version": 2,
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "method": "POST",
+      "path": "/api/v1/notices/records/7544b20b-9c19-4226-a954-a039650bf285/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "7544b20b-9c19-4226-a954-a039650bf285",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "581c7e9d9dca6a8e240fb32c5ddcb8cb9f57fba4914ea44faa28781969ad0cbb"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "CREATE_DRAMA",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "9b2c72c9-dd2c-427b-9bf9-d91b24a101cb",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "aec276cb7e8a83830b4dba96e50fd10f3271ffcee839e1bade85f5c9adc7f4ca"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64",
+            "kind": "INVITATION",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "method": "POST",
+      "path": "/api/v1/notices/records/9b2c72c9-dd2c-427b-9bf9-d91b24a101cb/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "9b2c72c9-dd2c-427b-9bf9-d91b24a101cb",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "d3b0c380419ab3def41820949e2ede9a086045d8ec64b6b3553e6999d3ccdc96"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64"
+          }
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "method": "GET",
+      "path": "/api/v1/notices/records/9b2c72c9-dd2c-427b-9bf9-d91b24a101cb",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "9b2c72c9-dd2c-427b-9bf9-d91b24a101cb",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "d3b0c380419ab3def41820949e2ede9a086045d8ec64b6b3553e6999d3ccdc96",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64"
+          }
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8256aa25-6f74-407c-9221-7b3a5dc67a75",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "a9421dd14bfe91059eff23cd30054172d1f3a4bfdddab4a09ed7e5726cfb768c"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64",
+            "kind": "INVITATION",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "method": "GET",
+      "path": "/api/v1/notices/records/8256aa25-6f74-407c-9221-7b3a5dc67a75",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8256aa25-6f74-407c-9221-7b3a5dc67a75",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "a9421dd14bfe91059eff23cd30054172d1f3a4bfdddab4a09ed7e5726cfb768c",
+            "next_action": "WAIT_REVIEW",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64"
+          }
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8256aa25-6f74-407c-9221-7b3a5dc67a75",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "a9421dd14bfe91059eff23cd30054172d1f3a4bfdddab4a09ed7e5726cfb768c"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64",
+            "kind": "INVITATION",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "ARTIST_PARTY_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 27,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_TARGET_MISMATCH",
+      "facts": []
+    },
+    {
+      "index": 28,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "e628264b-5f8a-4f2b-a74e-1eaf335d6f1e",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "992e6dc2c142825b9ff9d6d9b884a8355b3383dec1819ba56a37154f246a78a8"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64",
+            "kind": "INVITATION",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "14a2cb0f-146b-49bc-b5f8-410108b3e6b0",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "7e5f6f2c9c162100eba08b11ae715e9a9a126b1d6c9c06b8396b12bf50685a5f"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64",
+            "kind": "INVITATION",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "method": "POST",
+      "path": "/api/v1/notices/records/14a2cb0f-146b-49bc-b5f8-410108b3e6b0/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "14a2cb0f-146b-49bc-b5f8-410108b3e6b0",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "7e9be60eae4feffb1fedbd784035e2b97256d860d4417b3fcdf8fa9db76da52f"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64"
+          }
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_ARTIST_NOT_PUBLIC",
+      "facts": []
+    },
+    {
+      "index": 32,
+      "method": "POST",
+      "path": "/api/v1/notices/records/e628264b-5f8a-4f2b-a74e-1eaf335d6f1e/reviews",
+      "schema": "ErrorResponse",
+      "error_code": "ARTIST_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 33,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/14a2cb0f-146b-49bc-b5f8-410108b3e6b0/decision",
+      "schema": "ErrorResponse",
+      "error_code": "ARTIST_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 34,
+      "method": "GET",
+      "path": "/api/v1/notices/records/e628264b-5f8a-4f2b-a74e-1eaf335d6f1e",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "e628264b-5f8a-4f2b-a74e-1eaf335d6f1e",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "992e6dc2c142825b9ff9d6d9b884a8355b3383dec1819ba56a37154f246a78a8",
+            "next_action": "WAIT_REVIEW",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64"
+          }
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "method": "GET",
+      "path": "/api/v1/notices/records/14a2cb0f-146b-49bc-b5f8-410108b3e6b0",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "14a2cb0f-146b-49bc-b5f8-410108b3e6b0",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "7e9be60eae4feffb1fedbd784035e2b97256d860d4417b3fcdf8fa9db76da52f",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64"
+          }
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_ARTIST_NOT_PUBLIC",
+      "facts": []
+    },
+    {
+      "index": 37,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_ARTIST_NOT_PUBLIC",
+      "facts": []
+    },
+    {
+      "index": 38,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_ARTIST_NOT_PUBLIC",
+      "facts": []
+    },
+    {
+      "index": 39,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_ARTIST_NOT_PUBLIC",
+      "facts": []
+    },
+    {
+      "index": 40,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_ARTIST_NOT_PUBLIC",
+      "facts": []
+    },
+    {
+      "index": 41,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_PUBLIC_SOURCE_AMBIGUOUS",
+      "facts": []
+    },
+    {
+      "index": 42,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b9833144-b51b-4871-b008-2b4705450a49",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "ef4a6c26b1796a8a8c633dce951023dd1564bc80e771deed7292767b2d5e52e3"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64",
+            "kind": "INVITATION",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 43,
+      "method": "POST",
+      "path": "/api/v1/notices/records/5da97006-5e15-4223-9c4a-a20a16e2dda6/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5da97006-5e15-4223-9c4a-a20a16e2dda6",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "4bf8dcedfeba550be01bf0420915e70d4763159716136f27c539a46e739143e9"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 44,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/5da97006-5e15-4223-9c4a-a20a16e2dda6/decision",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5da97006-5e15-4223-9c4a-a20a16e2dda6",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "94a3b372dc9c3fcd3c8c8a5356d3f0a0cad1cc36e69623a5a65b4547361b3bac"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "c3fc10e9-feb5-40b5-8eba-997505f7cb28",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "6da8b342-98b2-4211-a533-1914f3d4293d",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "cfc213523e65d478d7eceb2deb3ca3e610f289b943549e45a98fbfc5f1c8ce66"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "PROFILE",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "method": "GET",
+      "path": "/api/v1/notices/records/6da8b342-98b2-4211-a533-1914f3d4293d",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 47,
+      "method": "GET",
+      "path": "/api/v1/notices/records/27d6d8e5-c765-4967-819f-bfb4e6098851",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 48,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/27d6d8e5-c765-4967-819f-bfb4e6098851/decision",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "7c0982e106138aef7cdf67ddf3d2a29131dcc48f9c4ed6cbde5fc308018f4b52"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 49,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/27d6d8e5-c765-4967-819f-bfb4e6098851/decision",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "7c0982e106138aef7cdf67ddf3d2a29131dcc48f9c4ed6cbde5fc308018f4b52"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 50,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/27d6d8e5-c765-4967-819f-bfb4e6098851/decision",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "7c0982e106138aef7cdf67ddf3d2a29131dcc48f9c4ed6cbde5fc308018f4b52"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 51,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/27d6d8e5-c765-4967-819f-bfb4e6098851/decision",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "7c0982e106138aef7cdf67ddf3d2a29131dcc48f9c4ed6cbde5fc308018f4b52"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 52,
+      "method": "GET",
+      "path": "/api/v1/notices/records/5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "current_status": "WAITING_SUPPORT",
+            "object_version": 1,
+            "content_sha256": "13e2d1ab44a5514a207b264f785dd2f3e0b9dacab2ccfb28d8c6bd5cca8ebcbe",
+            "next_action": "WAIT_SUPPORT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "submission_id": "27d6d8e5-c765-4967-819f-bfb4e6098851"
+          }
+        }
+      ]
+    },
+    {
+      "index": 53,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a705f275-5044-4e59-aa95-400f602d29c8",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "89cea70a4a0b611280dee82f6b46f0779f049b4cace1633b491738425104a05d"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "PROFILE",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 54,
+      "method": "POST",
+      "path": "/api/v1/notices/records/a705f275-5044-4e59-aa95-400f602d29c8/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a705f275-5044-4e59-aa95-400f602d29c8",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "96132285d3b810db1a755a1c0cd592d6e539998fc62a00046e200c17388fdbb4"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 55,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/a705f275-5044-4e59-aa95-400f602d29c8/decision",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a705f275-5044-4e59-aa95-400f602d29c8",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "1e5d5d6953a06878b5976bbd827067eae4324d737ed5aa1bb72d3eae9d41ee9a"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "317e7b65-194d-4db6-b0dd-bfc083841168",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 56,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/a705f275-5044-4e59-aa95-400f602d29c8/decision",
+      "schema": "ErrorResponse",
+      "error_code": "VERSION_CONFLICT",
+      "facts": []
+    },
+    {
+      "index": 57,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ef63155d-ef6d-4457-8432-d6ffcbf90ba5",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "acbb15dc4374d024058c8475497b08f07a514e8d89c7229a856207f3aec9792f"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "PROFILE",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 58,
+      "method": "POST",
+      "path": "/api/v1/notices/records/ef63155d-ef6d-4457-8432-d6ffcbf90ba5/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ef63155d-ef6d-4457-8432-d6ffcbf90ba5",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "b34d554246fe2f0d21e7f4996979f47ee866546a723f868fc5db60b7a8fa8197"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 59,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/ef63155d-ef6d-4457-8432-d6ffcbf90ba5/decision",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_SUBMISSION_EXPIRED",
+      "facts": []
+    },
+    {
+      "index": 60,
+      "method": "GET",
+      "path": "/api/v1/notices/records/ef63155d-ef6d-4457-8432-d6ffcbf90ba5",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ef63155d-ef6d-4457-8432-d6ffcbf90ba5",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "56b10e346887959c243fec9aa4fdabb5b9769a658d0a3ea9a65415ed99143126",
+            "next_action": "EXPIRED",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 61,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "345a4577-c8fb-4d23-bfd7-c1092366b809",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "c5ba6dd8280208bee23c55448de85f8efd3284b5f7a577a18eaa5b2cd7204d00"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "PROFILE",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 62,
+      "method": "POST",
+      "path": "/api/v1/notices/records/345a4577-c8fb-4d23-bfd7-c1092366b809/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "345a4577-c8fb-4d23-bfd7-c1092366b809",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "c7040f8755d0e66b3fc4ab5bdb1e141b9af0009d1c82a5553e62162b48e2670e"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 63,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/345a4577-c8fb-4d23-bfd7-c1092366b809/decision",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "345a4577-c8fb-4d23-bfd7-c1092366b809",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "3445278ad93e70dac8c9b2fce302f775b1bbc9e25408ebde301a0eed878c513b"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "04927aa3-2808-48ad-a59e-b4389c585095",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 64,
+      "method": "POST",
+      "path": "/api/v1/notices/records/345a4577-c8fb-4d23-bfd7-c1092366b809/close",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "345a4577-c8fb-4d23-bfd7-c1092366b809",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "WITHDRAWN",
+            "object_version": 4,
+            "content_sha256": "9a4d0ce39b6a941311db6bccc7ecd5817cd4c1b6959996fc47394a03c2c1564b"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "04927aa3-2808-48ad-a59e-b4389c585095",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 65,
+      "method": "POST",
+      "path": "/api/v1/notices/records/345a4577-c8fb-4d23-bfd7-c1092366b809/close",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "345a4577-c8fb-4d23-bfd7-c1092366b809",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "WITHDRAWN",
+            "object_version": 4,
+            "content_sha256": "9a4d0ce39b6a941311db6bccc7ecd5817cd4c1b6959996fc47394a03c2c1564b"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "04927aa3-2808-48ad-a59e-b4389c585095",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 66,
+      "method": "GET",
+      "path": "/api/v1/notices/records/04927aa3-2808-48ad-a59e-b4389c585095",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "04927aa3-2808-48ad-a59e-b4389c585095",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "345a4577-c8fb-4d23-bfd7-c1092366b809",
+            "current_status": "CLOSED",
+            "object_version": 2,
+            "content_sha256": "ec75bf25a789d67b0e3ec2aad7be73bac930d9a31322f3595453fa4ff7990d21",
+            "next_action": "CLOSED",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "submission_id": "345a4577-c8fb-4d23-bfd7-c1092366b809"
+          }
+        }
+      ]
+    },
+    {
+      "index": 67,
+      "method": "GET",
+      "path": "/api/v1/notices/cases/04927aa3-2808-48ad-a59e-b4389c585095/quote-options",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_CASE_NOT_OPEN",
+      "facts": []
+    },
+    {
+      "index": 68,
+      "method": "POST",
+      "path": "/api/v1/notices/qualifications",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "9a2bb31f-3796-44bc-a633-dcc07bc824ea",
+            "kind": "QUALIFICATION",
+            "owner_party_id": "ec14ede0-620a-4f57-b342-c659e943a867",
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "1710467ab89c5b263bcb140371e324d8a250b3cf6f0f6a0455dba49803b3bb8e"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "types": [
+              "RECRUITMENT"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "index": 69,
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_PUBLISHER_NOT_ELIGIBLE",
+      "facts": []
+    },
+    {
+      "index": 70,
+      "method": "POST",
+      "path": "/api/v1/notices/records/9a2bb31f-3796-44bc-a633-dcc07bc824ea/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "9a2bb31f-3796-44bc-a633-dcc07bc824ea",
+            "kind": "QUALIFICATION",
+            "owner_party_id": "ec14ede0-620a-4f57-b342-c659e943a867",
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "APPROVED",
+            "object_version": 2,
+            "content_sha256": "f7065924bd1d209f947d2c0172bb5b47c3de6f6a78c779a4e7f669adfd87fc73"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "types": [
+              "RECRUITMENT"
+            ]
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 71,
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "7af5d3c0-6eb4-4c4b-b98e-8ad5f2d2e5e7",
+            "kind": "NOTICE",
+            "owner_party_id": "ec14ede0-620a-4f57-b342-c659e943a867",
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "93d957f0b581929f30a5276ddba82ec3200863eb1b8bab755a6ae2d0dcbe210b"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/notice",
+          "facts": {
+            "project_id": null,
+            "type": "RECRUITMENT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 72,
+      "method": "POST",
+      "path": "/api/v1/notices/records/7af5d3c0-6eb4-4c4b-b98e-8ad5f2d2e5e7/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "7af5d3c0-6eb4-4c4b-b98e-8ad5f2d2e5e7",
+            "kind": "NOTICE",
+            "owner_party_id": "ec14ede0-620a-4f57-b342-c659e943a867",
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "PUBLISHED",
+            "object_version": 2,
+            "content_sha256": "336de4a8e230d5b437e5169a262f8d245e97b63b7edd2c6cea8e06de521efd05"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 73,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "3aa2ceba-f58a-43ae-a27d-cc2eda209cf5",
+            "kind": "SUBMISSION",
+            "owner_party_id": "ec14ede0-620a-4f57-b342-c659e943a867",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "4e9ecbcc4044ae29d201a62a4e1a3695bbadf5331d10904f0910b7b868e16b26"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64",
+            "kind": "INVITATION",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 74,
+      "method": "POST",
+      "path": "/api/v1/notices/records/3aa2ceba-f58a-43ae-a27d-cc2eda209cf5/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "3aa2ceba-f58a-43ae-a27d-cc2eda209cf5",
+            "kind": "SUBMISSION",
+            "owner_party_id": "ec14ede0-620a-4f57-b342-c659e943a867",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "da4585c47453cc2be4601d11e75c5d9cc78bb4ca8aa5885223699896e5036f40"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64"
+          }
+        }
+      ]
+    },
+    {
+      "index": 75,
+      "method": "POST",
+      "path": "/api/v1/notices/facts",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "f077c6c9-dd9e-4edf-9138-1783444f2e34",
+            "kind": "FACT",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "9be518bf6330354d47bdc34dcbcc512d0d0ff9472e6f0c3ece22af91eb1cbeb2"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "kind": "TOPUP"
+          }
+        }
+      ]
+    },
+    {
+      "index": 76,
+      "method": "POST",
+      "path": "/api/v1/notices/records/f077c6c9-dd9e-4edf-9138-1783444f2e34/reviews",
+      "schema": "ErrorResponse",
+      "error_code": "SELF_REVIEW_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 77,
+      "method": "POST",
+      "path": "/api/v1/notices/facts",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_FACT_SOURCE_REUSED",
+      "facts": []
+    },
+    {
+      "index": 78,
+      "method": "GET",
+      "path": "/api/v1/notices/records/5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "current_status": "WAITING_SUPPORT",
+            "object_version": 1,
+            "content_sha256": "13e2d1ab44a5514a207b264f785dd2f3e0b9dacab2ccfb28d8c6bd5cca8ebcbe",
+            "next_action": "WAIT_SUPPORT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "submission_id": "27d6d8e5-c765-4967-819f-bfb4e6098851"
+          }
+        }
+      ]
+    },
+    {
+      "index": 79,
+      "method": "POST",
+      "path": "/api/v1/notices/cases/5c7239e9-ab83-4c3e-a999-77a5f28bd697/quote",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_QUOTE_MISMATCH",
+      "facts": []
+    },
+    {
+      "index": 80,
+      "method": "GET",
+      "path": "/api/v1/notices/records/27d6d8e5-c765-4967-819f-bfb4e6098851",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "7c0982e106138aef7cdf67ddf3d2a29131dcc48f9c4ed6cbde5fc308018f4b52",
+            "next_action": "WAIT_SUPPORT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 81,
+      "method": "POST",
+      "path": "/api/v1/notices/cases/5c7239e9-ab83-4c3e-a999-77a5f28bd697/quote",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "current_status": "LINKED",
+            "object_version": 2,
+            "content_sha256": "6c781ffb793fde3196443c9a89dddb38249182b51c046b5980c54643555f7860"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "submission_id": "27d6d8e5-c765-4967-819f-bfb4e6098851"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "id": "fb22fea3-4d37-4bb8-b739-c35f1337dcc3",
+            "content_sha256": "776e15fa686290e965c26f465fde59512104a1859373db13057be56ff6cbfc45",
+            "buyer_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f"
+          }
+        },
+        {
+          "pointer": "data/data/support_assignment",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 82,
+      "method": "POST",
+      "path": "/api/v1/notices/cases/5c7239e9-ab83-4c3e-a999-77a5f28bd697/quote",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "current_status": "LINKED",
+            "object_version": 2,
+            "content_sha256": "6c781ffb793fde3196443c9a89dddb38249182b51c046b5980c54643555f7860"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "submission_id": "27d6d8e5-c765-4967-819f-bfb4e6098851"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "id": "fb22fea3-4d37-4bb8-b739-c35f1337dcc3",
+            "content_sha256": "776e15fa686290e965c26f465fde59512104a1859373db13057be56ff6cbfc45",
+            "buyer_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f"
+          }
+        },
+        {
+          "pointer": "data/data/support_assignment",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 83,
+      "method": "POST",
+      "path": "/api/v1/notices/cases/5c7239e9-ab83-4c3e-a999-77a5f28bd697/quote",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "current_status": "LINKED",
+            "object_version": 2,
+            "content_sha256": "6c781ffb793fde3196443c9a89dddb38249182b51c046b5980c54643555f7860"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "submission_id": "27d6d8e5-c765-4967-819f-bfb4e6098851"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "id": "fb22fea3-4d37-4bb8-b739-c35f1337dcc3",
+            "content_sha256": "776e15fa686290e965c26f465fde59512104a1859373db13057be56ff6cbfc45",
+            "buyer_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f"
+          }
+        },
+        {
+          "pointer": "data/data/support_assignment",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 84,
+      "method": "GET",
+      "path": "/api/v1/notices/records/5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "current_status": "LINKED",
+            "object_version": 2,
+            "content_sha256": "6c781ffb793fde3196443c9a89dddb38249182b51c046b5980c54643555f7860",
+            "next_action": "CONFIRM_QUOTE",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "submission_id": "27d6d8e5-c765-4967-819f-bfb4e6098851"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "id": "fb22fea3-4d37-4bb8-b739-c35f1337dcc3",
+            "buyer_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "content_sha256": "776e15fa686290e965c26f465fde59512104a1859373db13057be56ff6cbfc45"
+          }
+        },
+        {
+          "pointer": "data/data/support_assignment",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 85,
+      "method": "GET",
+      "path": "/api/v1/notices/records/5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "current_status": "LINKED",
+            "object_version": 2,
+            "content_sha256": "6c781ffb793fde3196443c9a89dddb38249182b51c046b5980c54643555f7860",
+            "next_action": "VIEW_ORDER",
+            "chat_enabled": false,
+            "order_id": "4ffdc8cc-a96f-4fc1-a6da-ed0d24bf4015"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "submission_id": "27d6d8e5-c765-4967-819f-bfb4e6098851"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "id": "fb22fea3-4d37-4bb8-b739-c35f1337dcc3",
+            "buyer_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "content_sha256": "776e15fa686290e965c26f465fde59512104a1859373db13057be56ff6cbfc45"
+          }
+        },
+        {
+          "pointer": "data/data/support_assignment",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 86,
+      "method": "GET",
+      "path": "/api/v1/notices/records/27d6d8e5-c765-4967-819f-bfb4e6098851",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "7c0982e106138aef7cdf67ddf3d2a29131dcc48f9c4ed6cbde5fc308018f4b52",
+            "next_action": "WAIT_SUPPORT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 87,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "17dacd90-e5fc-46ae-932d-b8ac2fd3b36a",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "9ff45ffe08e68d8204c387f1748018dcbd581debe103a52ab84b764998b6fc21"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "PROFILE",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 88,
+      "method": "POST",
+      "path": "/api/v1/notices/records/17dacd90-e5fc-46ae-932d-b8ac2fd3b36a/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "17dacd90-e5fc-46ae-932d-b8ac2fd3b36a",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "baa1278616e01f4fe8dda3636ee368077425263510eeda9d3bff552e9abfd928"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 89,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/17dacd90-e5fc-46ae-932d-b8ac2fd3b36a/decision",
+      "schema": "ErrorResponse",
+      "error_code": "SERVICE_UNAVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 90,
+      "method": "GET",
+      "path": "/api/v1/notices/records/17dacd90-e5fc-46ae-932d-b8ac2fd3b36a",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "17dacd90-e5fc-46ae-932d-b8ac2fd3b36a",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "baa1278616e01f4fe8dda3636ee368077425263510eeda9d3bff552e9abfd928",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 91,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "f753c7ed-4e31-4fb7-9098-a37f1cf392ca",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "1f5eecc2c8712affb33a92930136f29f2ffd3073bace3eabd0e10064aad03afb"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "PROFILE",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 92,
+      "method": "POST",
+      "path": "/api/v1/notices/records/f753c7ed-4e31-4fb7-9098-a37f1cf392ca/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "f753c7ed-4e31-4fb7-9098-a37f1cf392ca",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "191c6ae55b14996e19de8223ecd6b2a316a8f12dc3bbf4c6bd8e5a223ce182f6"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 93,
+      "method": "GET",
+      "path": "/api/v1/notices/records/f753c7ed-4e31-4fb7-9098-a37f1cf392ca/materials/3fd0ffef-12ba-4660-bfad-258f4c644b10",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 94,
+      "method": "GET",
+      "path": "/api/v1/notices/records/f753c7ed-4e31-4fb7-9098-a37f1cf392ca/materials/3fd0ffef-12ba-4660-bfad-258f4c644b10",
+      "schema": "ErrorResponse",
+      "error_code": "SERVICE_UNAVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 95,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "MINOR_OPERATION_RESTRICTED",
+      "facts": []
+    },
+    {
+      "index": 96,
+      "method": "GET",
+      "path": "/api/v1/notices/records/27d6d8e5-c765-4967-819f-bfb4e6098851",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 97,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "ErrorResponse",
+      "error_code": "ARTIST_DELEGATION_REQUIRED",
+      "facts": []
+    },
+    {
+      "index": 98,
+      "method": "GET",
+      "path": "/api/v1/notices/submission-options",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 99,
+      "method": "GET",
+      "path": "/api/v1/notices/submission-options",
+      "schema": "ErrorResponse",
+      "error_code": "ARTIST_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 100,
+      "method": "GET",
+      "path": "/api/v1/notices/submission-options",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        }
+      ]
+    },
+    {
+      "index": 101,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "35c74af8-1ca0-4053-ab86-1d3f156f498e",
+            "kind": "SUBMISSION",
+            "owner_party_id": "6b6736eb-ccb4-418b-aff5-86b57557313d",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "90de0e19ffb8540de55b0c05b3e48dba47388db4c68618e8fcae786d3cb874ff"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "PROFILE",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 102,
+      "method": "POST",
+      "path": "/api/v1/notices/records/35c74af8-1ca0-4053-ab86-1d3f156f498e/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "35c74af8-1ca0-4053-ab86-1d3f156f498e",
+            "kind": "SUBMISSION",
+            "owner_party_id": "6b6736eb-ccb4-418b-aff5-86b57557313d",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "8966f14d7b5af1f3f46b5f819c08c3eac0de1052604217eafa0b5b57ed798478"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 103,
+      "method": "GET",
+      "path": "/api/v1/notices/records/35c74af8-1ca0-4053-ab86-1d3f156f498e",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "35c74af8-1ca0-4053-ab86-1d3f156f498e",
+            "kind": "SUBMISSION",
+            "owner_party_id": "6b6736eb-ccb4-418b-aff5-86b57557313d",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "8966f14d7b5af1f3f46b5f819c08c3eac0de1052604217eafa0b5b57ed798478",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 104,
+      "method": "GET",
+      "path": "/api/v1/notices/records/35c74af8-1ca0-4053-ab86-1d3f156f498e",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 105,
+      "method": "GET",
+      "path": "/api/v1/notices/submission-options",
+      "schema": "ErrorResponse",
+      "error_code": "ARTIST_DELEGATION_REQUIRED",
+      "facts": []
+    },
+    {
+      "index": 106,
+      "method": "POST",
+      "path": "/api/v1/notices/rules",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "809ab9c9-8410-4fa1-97bd-bbc380b7a858",
+            "kind": "RULE",
+            "owner_party_id": null,
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "4823e559523a5d2732b0a5379decc07cade210ff7f7530a4cbe90df6abeb286d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 107,
+      "method": "POST",
+      "path": "/api/v1/notices/records/809ab9c9-8410-4fa1-97bd-bbc380b7a858/reviews",
+      "schema": "ErrorResponse",
+      "error_code": "SELF_REVIEW_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 108,
+      "method": "POST",
+      "path": "/api/v1/notices/records/809ab9c9-8410-4fa1-97bd-bbc380b7a858/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "809ab9c9-8410-4fa1-97bd-bbc380b7a858",
+            "kind": "RULE",
+            "owner_party_id": null,
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "REJECTED",
+            "object_version": 2,
+            "content_sha256": "1cdee20163497db5a5f6c84e3cee922d2e6a7b1ab13a2eea0413da5529fc952b"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 109,
+      "method": "POST",
+      "path": "/api/v1/notices/announcements",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "2d60dcbb-c0e3-44c2-881a-09efc4d6f9f5",
+            "kind": "NOTICE",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "93d957f0b581929f30a5276ddba82ec3200863eb1b8bab755a6ae2d0dcbe210b"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/notice",
+          "facts": {
+            "project_id": null,
+            "type": "RECRUITMENT"
+          }
+        }
+      ]
+    },
+    {
+      "index": 110,
+      "method": "POST",
+      "path": "/api/v1/notices/records/2d60dcbb-c0e3-44c2-881a-09efc4d6f9f5/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "2d60dcbb-c0e3-44c2-881a-09efc4d6f9f5",
+            "kind": "NOTICE",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "PUBLISHED",
+            "object_version": 2,
+            "content_sha256": "336de4a8e230d5b437e5169a262f8d245e97b63b7edd2c6cea8e06de521efd05"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 111,
+      "method": "POST",
+      "path": "/api/v1/notices/records/2d60dcbb-c0e3-44c2-881a-09efc4d6f9f5/close",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "2d60dcbb-c0e3-44c2-881a-09efc4d6f9f5",
+            "kind": "NOTICE",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": null,
+            "parent_id": null,
+            "current_status": "WITHDRAWN",
+            "object_version": 3,
+            "content_sha256": "6d3448ec07b08456f27c46ffc45f577b2d6e6354693b398f0c40eb5cde9864a3"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 112,
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/2d60dcbb-c0e3-44c2-881a-09efc4d6f9f5",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_NOT_OPEN",
+      "facts": []
+    },
+    {
+      "index": 113,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "05a37fd4-98f0-45a6-a318-8a1a523cb950",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "d372e5785adf40fded205c50265d70fb840d56016b424a069518bd5cb5428b63"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb",
+            "case_id": null
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248",
+            "kind": "PROFILE",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17"
+          }
+        }
+      ]
+    },
+    {
+      "index": 114,
+      "method": "POST",
+      "path": "/api/v1/notices/records/05a37fd4-98f0-45a6-a318-8a1a523cb950/reviews",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "05a37fd4-98f0-45a6-a318-8a1a523cb950",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "3675d657c0bb61c51d827b39864f944c6f92ce68f1a460e3cc381b97263b3946"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 115,
+      "method": "POST",
+      "path": "/api/v1/notices/submissions/05a37fd4-98f0-45a6-a318-8a1a523cb950/decision",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_RECEIVER_NOT_ELIGIBLE",
+      "facts": []
+    },
+    {
+      "index": 116,
+      "method": "GET",
+      "path": "/api/v1/notices/catalog/9855c6a5-4560-4076-a812-cecc906faffb",
+      "schema": "ErrorResponse",
+      "error_code": "NOTICE_PUBLISHER_NOT_ELIGIBLE",
+      "facts": []
+    },
+    {
+      "index": 117,
+      "method": "GET",
+      "path": "/api/v1/notices/records",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "05a37fd4-98f0-45a6-a318-8a1a523cb950",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "3675d657c0bb61c51d827b39864f944c6f92ce68f1a460e3cc381b97263b3946",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "14a2cb0f-146b-49bc-b5f8-410108b3e6b0",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "7e9be60eae4feffb1fedbd784035e2b97256d860d4417b3fcdf8fa9db76da52f",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64"
+          }
+        },
+        {
+          "pointer": "data/items/2",
+          "facts": {
+            "id": "17dacd90-e5fc-46ae-932d-b8ac2fd3b36a",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "baa1278616e01f4fe8dda3636ee368077425263510eeda9d3bff552e9abfd928",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/2/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/2/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/2/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/items/3",
+          "facts": {
+            "id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "7c0982e106138aef7cdf67ddf3d2a29131dcc48f9c4ed6cbde5fc308018f4b52",
+            "next_action": "WAIT_SUPPORT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/3/data",
+          "facts": {
+            "case_id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/3/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/3/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/items/3/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/3/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        },
+        {
+          "pointer": "data/items/4",
+          "facts": {
+            "id": "345a4577-c8fb-4d23-bfd7-c1092366b809",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "WITHDRAWN",
+            "object_version": 4,
+            "content_sha256": "9a4d0ce39b6a941311db6bccc7ecd5817cd4c1b6959996fc47394a03c2c1564b",
+            "next_action": "CLOSED",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/4/data",
+          "facts": {
+            "case_id": "04927aa3-2808-48ad-a59e-b4389c585095",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/4/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/4/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/items/5",
+          "facts": {
+            "id": "3aa2ceba-f58a-43ae-a27d-cc2eda209cf5",
+            "kind": "SUBMISSION",
+            "owner_party_id": "ec14ede0-620a-4f57-b342-c659e943a867",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "da4585c47453cc2be4601d11e75c5d9cc78bb4ca8aa5885223699896e5036f40",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/5/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/5/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/5/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64"
+          }
+        },
+        {
+          "pointer": "data/items/6",
+          "facts": {
+            "id": "5da97006-5e15-4223-9c4a-a20a16e2dda6",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "94a3b372dc9c3fcd3c8c8a5356d3f0a0cad1cc36e69623a5a65b4547361b3bac",
+            "next_action": "WAIT_SUPPORT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/6/data",
+          "facts": {
+            "case_id": "c3fc10e9-feb5-40b5-8eba-997505f7cb28",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/6/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/6/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/items/7",
+          "facts": {
+            "id": "6da8b342-98b2-4211-a533-1914f3d4293d",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "cfc213523e65d478d7eceb2deb3ca3e610f289b943549e45a98fbfc5f1c8ce66",
+            "next_action": "WAIT_REVIEW",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/7/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/7/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/items/8",
+          "facts": {
+            "id": "7544b20b-9c19-4226-a954-a039650bf285",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "581c7e9d9dca6a8e240fb32c5ddcb8cb9f57fba4914ea44faa28781969ad0cbb",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/8/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/8/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/8/data/submission",
+          "facts": {
+            "kind": "CREATE_DRAMA",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/items/8/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/8/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        },
+        {
+          "pointer": "data/items/9",
+          "facts": {
+            "id": "9b2c72c9-dd2c-427b-9bf9-d91b24a101cb",
+            "kind": "SUBMISSION",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "d3b0c380419ab3def41820949e2ede9a086045d8ec64b6b3553e6999d3ccdc96",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/9/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/9/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/9/data/submission",
+          "facts": {
+            "kind": "INVITATION",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "7ba4dba7-657b-48a7-8b3b-9b17db764c64"
+          }
+        },
+        {
+          "pointer": "data/items/10",
+          "facts": {
+            "id": "a705f275-5044-4e59-aa95-400f602d29c8",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "INTERESTED",
+            "object_version": 3,
+            "content_sha256": "1e5d5d6953a06878b5976bbd827067eae4324d737ed5aa1bb72d3eae9d41ee9a",
+            "next_action": "WAIT_SUPPORT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/10/data",
+          "facts": {
+            "case_id": "317e7b65-194d-4db6-b0dd-bfc083841168",
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/10/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/10/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/items/11",
+          "facts": {
+            "id": "eb4f6e00-0136-4991-9bb2-59a1c9d6e6fb",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "ff4d9cb28bedf20dea6f93bea3318e91f466440e1a8e70f9f5e32164e38f7b0c",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/11/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/11/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/11/data/submission",
+          "facts": {
+            "kind": "ROLE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/items/11/data/notice_snapshot",
+          "facts": {
+            "notice_id": "9855c6a5-4560-4076-a812-cecc906faffb",
+            "notice_sha256": "7c75333bb1ea5b40d9b7382817bb6a2e7d890580469b2cd5edc41477e3a837a9",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/11/data/notice_snapshot/notice",
+          "facts": {
+            "type": "RECRUITMENT",
+            "project_id": null
+          }
+        },
+        {
+          "pointer": "data/items/12",
+          "facts": {
+            "id": "ef63155d-ef6d-4457-8432-d6ffcbf90ba5",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "56b10e346887959c243fec9aa4fdabb5b9769a658d0a3ea9a65415ed99143126",
+            "next_action": "EXPIRED",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/12/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/12/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/12/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        },
+        {
+          "pointer": "data/items/13",
+          "facts": {
+            "id": "f753c7ed-4e31-4fb7-9098-a37f1cf392ca",
+            "kind": "SUBMISSION",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": null,
+            "current_status": "SENT",
+            "object_version": 2,
+            "content_sha256": "191c6ae55b14996e19de8223ecd6b2a316a8f12dc3bbf4c6bd8e5a223ce182f6",
+            "next_action": "WAIT_RECIPIENT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/13/data",
+          "facts": {
+            "case_id": null,
+            "rule_id": "b3916e61-d920-4adf-9576-01dc3731f3cb"
+          }
+        },
+        {
+          "pointer": "data/items/13/data/review",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/13/data/submission",
+          "facts": {
+            "kind": "PROFILE",
+            "avatar_id": "73286447-65fd-44f3-b595-030bec71c901",
+            "notice_id": null,
+            "person_id": "5324e342-faaf-4568-baf1-cd6a26de6f17",
+            "consent_id": "d844fde8-cea3-44e3-a9fc-cfc47f123248"
+          }
+        }
+      ]
+    },
+    {
+      "index": 118,
+      "method": "GET",
+      "path": "/api/v1/notices/records",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "04927aa3-2808-48ad-a59e-b4389c585095",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "345a4577-c8fb-4d23-bfd7-c1092366b809",
+            "current_status": "CLOSED",
+            "object_version": 2,
+            "content_sha256": "ec75bf25a789d67b0e3ec2aad7be73bac930d9a31322f3595453fa4ff7990d21",
+            "next_action": "CLOSED",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "submission_id": "345a4577-c8fb-4d23-bfd7-c1092366b809"
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "317e7b65-194d-4db6-b0dd-bfc083841168",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "a705f275-5044-4e59-aa95-400f602d29c8",
+            "current_status": "WAITING_SUPPORT",
+            "object_version": 1,
+            "content_sha256": "2d430b4443c229f9f5e4ae67eb0e72ead088b32be98919bb41a84c03d4285475",
+            "next_action": "WAIT_SUPPORT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "submission_id": "a705f275-5044-4e59-aa95-400f602d29c8"
+          }
+        },
+        {
+          "pointer": "data/items/2",
+          "facts": {
+            "id": "5c7239e9-ab83-4c3e-a999-77a5f28bd697",
+            "kind": "CASE",
+            "owner_party_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "counterparty_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "parent_id": "27d6d8e5-c765-4967-819f-bfb4e6098851",
+            "current_status": "LINKED",
+            "object_version": 2,
+            "content_sha256": "6c781ffb793fde3196443c9a89dddb38249182b51c046b5980c54643555f7860",
+            "next_action": "VIEW_ORDER",
+            "chat_enabled": false,
+            "order_id": "4ffdc8cc-a96f-4fc1-a6da-ed0d24bf4015"
+          }
+        },
+        {
+          "pointer": "data/items/2/data",
+          "facts": {
+            "submission_id": "27d6d8e5-c765-4967-819f-bfb4e6098851"
+          }
+        },
+        {
+          "pointer": "data/items/2/data/quote",
+          "facts": {
+            "id": "fb22fea3-4d37-4bb8-b739-c35f1337dcc3",
+            "buyer_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "content_sha256": "776e15fa686290e965c26f465fde59512104a1859373db13057be56ff6cbfc45"
+          }
+        },
+        {
+          "pointer": "data/items/2/data/support_assignment",
+          "facts": {
+            "account_id": "91402c37-71c6-4218-af7f-63975407648f"
+          }
+        },
+        {
+          "pointer": "data/items/3",
+          "facts": {
+            "id": "c3fc10e9-feb5-40b5-8eba-997505f7cb28",
+            "kind": "CASE",
+            "owner_party_id": "53456505-a3f8-43b6-9c2a-3288da90fe3f",
+            "counterparty_id": "203c13a0-bfa5-4a82-a6fc-5af293c7bc40",
+            "parent_id": "5da97006-5e15-4223-9c4a-a20a16e2dda6",
+            "current_status": "WAITING_SUPPORT",
+            "object_version": 1,
+            "content_sha256": "9ac5bec12fc4dc285f07d6ee710182c73d14d4b5d0afabf2ad1af79a4f61b093",
+            "next_action": "WAIT_SUPPORT",
+            "chat_enabled": false,
+            "order_id": null
+          }
+        },
+        {
+          "pointer": "data/items/3/data",
+          "facts": {
+            "submission_id": "5da97006-5e15-4223-9c4a-a20a16e2dda6"
+          }
+        }
+      ]
+    },
+    {
+      "index": 119,
+      "method": "GET",
+      "path": "/api/v1/notices/records",
+      "schema": "NoticeResponse",
+      "error_code": null,
+      "facts": []
+    }
+  ],
+  "limits": "Safe projection of original HTTP fixtures. No tokens, headers, phones, contacts, narrative bodies, coordinates or storage paths exported. Old collector did not store HTTP status; exact status assertions remain in pinned source and original PASS log. Binary downloads are proven by original assertions, not invented JSON responses."
+}

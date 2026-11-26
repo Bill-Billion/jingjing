@@ -1,0 +1,56 @@
+{
+  "chain": {
+    "id": "E2E-04",
+    "business_id": "98cdf054-9f25-4a5a-8d62-484fa2e1efc1",
+    "environment": "backend-acceptance-2026-11-25T21-08-15-701Z-f6296e/test/notices-ordinary.integration.test.cjs",
+    "notice_id": "fa4b07ab-7716-4245-8a6b-095303c93061",
+    "submission_id": "7afbd046-a583-46eb-869f-67eef5ffd20f",
+    "case_id": "72cf1616-4f36-4756-af46-0b03b5d6ea8b",
+    "quote_id": "c87a4860-02bf-4707-8e3e-ffb90eba75f2",
+    "project_id": "91212894-466a-4a37-8fb1-9f8f8f904f39",
+    "versions": {
+      "SCRIPT": "5833d0be-e113-4258-8c79-e2ea1c93cbcd",
+      "SAMPLE": "0a8c7348-c509-4f0f-b054-b2f2b7849d15",
+      "ROUGH_CUT": "93e2af75-52dd-411e-8b5f-7e9a91251fb5",
+      "FINAL": "689c0769-9c1d-4e03-9389-28a2a763d76e"
+    },
+    "refund_id": "ce87b3c0-2085-4692-a3f4-0689e5f48487"
+  },
+  "original": {
+    "path": "docs/testing/evidence/pm04-g1-t1-stock-notice-review-20261126/notices-ordinary-http-fixtures.index.json",
+    "sha256": "e3454cf467e3ea379b9e12ce87f3286cd3274ecb98dd00960ac86451c773941e"
+  },
+  "checks": {
+    "same_notice_submission_case_order": true,
+    "all_four_stages_same_order": true,
+    "same_order_refund": true,
+    "approval_did_not_change_refunded_amount": true,
+    "final_financial": {
+      "net_minor": 0,
+      "received_minor": 10001,
+      "refunded_minor": 10001
+    },
+    "original_contract_unchanged": true
+  },
+  "source_lines": {
+    "test/notices-ordinary.integration.test.cjs": [
+      [
+        54,
+        67
+      ],
+      [
+        115,
+        130
+      ],
+      [
+        142,
+        249
+      ]
+    ]
+  },
+  "limits": [
+    "No new business execution. Original isolated HTTP and repository actions with synthetic identity, approvals, bytes and trusted receipt fixtures.",
+    "Original source separately asserts one receipt/refund journal entry, unauthorized access, exact-byte download, atomic archive retry and no post-refund access.",
+    "Same-record API chain only; no App/Vue/native or real-provider acceptance."
+  ]
+}
