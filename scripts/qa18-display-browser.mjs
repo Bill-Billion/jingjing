@@ -11,6 +11,7 @@ assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1'&&Date.parse(
 const out=resolve(process.env.QA18_OUTPUT_DIR);assert(out.startsWith(join(root,'.local')+sep));await mkdir(out,{recursive:true});
 const checkpoint=join(out,'checkpoint.json'),sha=b=>createHash('sha256').update(b).digest('hex');
 const typedMedia=process.env.QA18_TYPED_MEDIA==='1';
+const checkCollections=process.env.QA18_CHECK_COLLECTIONS==='1';
 const groupSelection=process.env.QA18_GROUPS||'G05,G06';assert(['G05','G06','G05,G06'].includes(groupSelection),'Only original G05/G06 may be selected');const selectedGroups=groupSelection.split(',');
 let s;try{s=JSON.parse(await readFile(checkpoint,'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;s={environment:dirname(accessFile).split(/[\\/]/).at(-1),person_id:f.scenarios.first_audition.person_id,avatar_id:f.scenarios.first_audition.avatar_id,period:{valid_from:new Date(Date.now()-3600000).toISOString(),valid_until:new Date(Date.now()+86400000).toISOString()},ops:{},checks:[],requests:[],attempts:[],g05:{},g06:{}};}
 assert.equal(s.person_id,f.scenarios.first_audition.person_id);assert(!s.complete,'Completed batch must not be repeated');
@@ -19,6 +20,7 @@ else {assert(!s.g05.consent||!typedMedia,'Typed media requires a fresh consent')
 if(s.groups)assert.deepEqual(s.groups,selectedGroups,'Keep the original group scope on resume');else {assert(!s.attempts.length||groupSelection==='G05,G06','Historical runs used both groups');s.groups=selectedGroups;}
 const attempt=Date.now().toString(),source=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();s.attempts.push({attempt,source,started_at:new Date().toISOString()});
 const save=()=>writeFile(checkpoint,JSON.stringify(s,null,2));
+if(s.collection_audit!==undefined)assert.equal(s.collection_audit,checkCollections,'Keep original collection coverage');else s.collection_audit=checkCollections;
 async function done(name,detail={}){s.checks.push({name,attempt,...detail});await save();}
 const person='/artists/people/'+s.person_id,artist='first_auditions_seller',artReviewer='first_auditions_reviewer';
 const photo=await readFile(join(dirname(accessFile),'samples/test-portrait.jpg'));
@@ -78,15 +80,33 @@ async function g05(){
   if(!d.featureApproved){const reviewer=await web('reviewer','/directory/reviews/FEATURED_ARTIST/'+d.feature);await reviewer.getByLabel('本次处理说明',{exact:true}).fill('独立核对合成公开来源及推荐，非明星认证。');for(const cb of await reviewer.getByRole('checkbox').all())await cb.check();await post(reviewer,'/directory/records/'+d.feature+'/reviews',()=>reviewer.getByRole('button',{name:'通过独立审核',exact:true}).click());d.featureApproved=true;await save();await snap(reviewer,'feature-independent-review');await reviewer.close();}
   const webFeatures=await web('buyer','/directory/featured'),appFeatures=await app('buyer','/directory/featured');assert((await webFeatures.locator('body').innerText()).includes('QA18合成公开艺人'));await snap(webFeatures,'vue-same-feature');await snap(appFeatures,'flutter-same-feature');await done('vue-curation-independent-review-and-cross-surface-feature');
   if(typedMedia){const before=await mediaUrlState(mobile);assert.equal(before.filter(x=>!x.revoked).length,2);await done('loaded-flutter-audio-and-video-before-withdrawal',{media:before});}
+  const collectionPages=checkCollections?await prepareSavedArtist(d):null;
   await go(owner,person+'/records/'+d.consent);await owner.getByTestId('artists-withdraw-action').click();await fields(owner,{reason:'本人撤回本次公开展示同意，旧目录和精选不可继续展示。'});const revoked=await artistSubmit(owner,person+'/records/'+d.consent+'/withdrawals');assert.equal(revoked.current_status,'WITHDRAWN');d.withdrawn=true;await save();
   const denied=viewer.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/artists/catalog/'+d.listing);await viewer.getByRole('button',{name:'重新读取主肖像与公开资料',exact:true}).click();assert([403,404,409].includes((await denied).status()));await viewer.waitForLoadState('networkidle');assert.equal(await viewer.getByTestId('artists-public-detail').count(),0);assert.equal(await viewer.locator('img[src^="blob:"]').count(),0);await snap(viewer,'vue-public-revoked');
   const [appDenied]=await Promise.all([mobile.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/artists/catalog/'+d.listing,{timeout:60000}),appClick(mobile,'重新核对公开资料',mobile,typedMedia)]);assert([403,404,409].includes(appDenied.status()));await mobile.waitForLoadState('networkidle');await snap(mobile,'flutter-public-revoked');assert(!(await mobile.locator('body').ariaSnapshot()).includes('QA18合成公开艺人'));
   if(typedMedia){await mobile.waitForFunction(()=>[...window.__qa18MediaUrls.values()].every(x=>x.revoked));assert.equal(await mobile.locator('video').count(),0);const appMedia=await mediaUrlState(mobile),webMedia=await mediaUrlState(viewer);assert.equal(appMedia.length,2);assert.equal(webMedia.length,2);assert(webMedia.every(x=>x.revoked));await done('actual-media-object-urls-revoked-and-player-removed',{app_media:appMedia,web_media:webMedia});}
   await webFeatures.getByRole('button',{name:'刷新当前资料',exact:true}).click();await webFeatures.waitForLoadState('networkidle');assert(!(await webFeatures.locator('body').innerText()).includes('QA18合成公开艺人'));await appClick(appFeatures,'刷新当前公开资料',appFeatures,typedMedia);await appFeatures.waitForLoadState('networkidle');assert(!(await appFeatures.locator('body').ariaSnapshot()).includes('QA18合成公开艺人'));await snap(appFeatures,'flutter-feature-hidden');await snap(webFeatures,'vue-feature-hidden');d.cachedRevocation=true;await done('withdrawn-consent-clears-loaded-public-pages-and-feature-lists');
+  if(collectionPages)await verifySavedArtist(d,collectionPages);
  }
  await api('buyer','/artists/catalog/'+d.listing+'/assets/'+d.material+'/content',{account:true,allowed:[403,404,409]});assert(!(await api('buyer','/directory/featured-artists',{account:true})).data.items.some(x=>x.record_id===d.feature));assert.equal(sha((await api(artist,'/artists/assets/'+d.material+'/content')).bytes),sha(photo));
  if(typedMedia){assert(d.typedPlayed);for(const item of [d.audio,d.video])await api('buyer','/artists/catalog/'+d.listing+'/assets/'+item.id+'/content',{account:true,allowed:[403,404,409]});await done('withdrawal-denies-original-audio-video-bytes');}
- assert(d.cachedRevocation,'Loaded page revocation remains unproven after interrupted attempt');d.complete=true;await done('g05-scoped-public-display-chain-complete-not-full-criterion');
+ assert(d.cachedRevocation,'Loaded page revocation remains unproven after interrupted attempt');if(checkCollections)assert(d.collectionAuditComplete,'Original loaded artist collection audit remains unproven');d.complete=true;await done('g05-scoped-public-display-chain-complete-not-full-criterion');
+}
+async function prepareSavedArtist(d){
+ assert.equal((await api('buyer','/me/collections/preferences',{account:true})).data.history_enabled,true);
+ await api('buyer','/me/collections/favorites',{account:true,body:{kind:'ARTIST',target_id:d.listing,saved:true}});
+ const history=(await api('buyer','/me/collections/history?limit=100',{account:true})).data.items;assert(history.some(x=>x.target_id===d.listing),'Existing actual public detail opening must record this artist');
+ const w=await web('buyer','/me/collections/favorites'),a=await app('buyer','/saved');assert((await w.locator('body').innerText()).includes('QA18合成公开艺人'));assert((await a.locator('body').ariaSnapshot()).includes('QA18合成公开艺人'));
+ await snap(w,'vue-artist-favorite-before-revocation');await snap(a,'flutter-artist-favorite-before-revocation');await done('same-public-artist-saved-and-actually-visited-before-personal-revocation',{listing_id:d.listing});return {w,a};
+}
+async function verifySavedArtist(d,{w,a}){
+ for(const kind of ['favorites','history']){const list=(await api('buyer','/me/collections/'+kind+'?limit=100',{account:true})).data.items,item=list.find(x=>x.target_id===d.listing);assert(item);assert.equal(item.availability,'UNAVAILABLE');assert.equal(item.title,null);assert.equal(item.city,null)}
+ await w.getByRole('button',{name:'刷新当前清单',exact:true}).click();await w.waitForLoadState('networkidle');await appClick(a,'刷新清单',a,true);await a.waitForLoadState('networkidle');
+ for(const p of [w,a]){for(let i=0;i<60&&(await p.locator('body').ariaSnapshot()).includes('QA18合成公开艺人');i++)await p.waitForTimeout(100);assert(!(await p.locator('body').ariaSnapshot()).includes('QA18合成公开艺人'))}
+ assert.equal(await w.locator('a[href="/artists/catalog/'+d.listing+'"]').count(),0);await snap(w,'vue-artist-favorite-revoked');await snap(a,'flutter-artist-favorite-revoked');await done('artist-consent-revocation-redacts-both-previously-loaded-private-lists');
+ const list=(await api('buyer','/me/collections/favorites?limit=20',{account:true})).data.items,index=list.findIndex(x=>x.target_id===d.listing);assert(index>=0);const row=w.locator('article.service-result').nth(index);assert((await row.innerText()).includes('内容已不可用'));
+ await Promise.all([w.waitForRequest(r=>r.method()==='POST'&&new URL(r.url()).pathname==='/api/v1/me/collections/favorites'&&r.postDataJSON().target_id===d.listing&&r.postDataJSON().saved===false),post(w,'/me/collections/favorites',()=>row.getByRole('button',{name:'取消收藏',exact:true}).click())]);
+ assert(!(await api('buyer','/me/collections/favorites?limit=100',{account:true})).data.items.some(x=>x.target_id===d.listing));d.collectionAuditComplete=true;await done('revoked-artist-favorite-removable-with-original-consent-still-withdrawn');await w.close();await a.close();
 }
 async function prepareTypedMedia(owner,d){
  for(const [kind,type,name]of [['audio','audio/wav','synthetic-tone.wav'],['video','video/mp4','sample-1-full.mp4']]){
