@@ -23,6 +23,15 @@ Object.assign(s,{agreement_id:agreementId,order_id:orderId,project_id:projectId}
 async function api(role,path){const u=access.accounts[role],r=await fetch(access.base_url+path,{headers:{Authorization:'Bearer '+u.bearer_token,'X-Acting-Party':u.party_id}}),b=Buffer.from(await r.arrayBuffer()),j=JSON.parse(b);s.requests.push({surface:'api-prerequisite',role,path,status:r.status,sha256:sha(b)});assert.equal(r.status,200,path+' '+j.error?.code);return j.data;}
 const agreement=await api('buyer','/projects/records/'+agreementId);assert.equal(agreement.data.fee_minor,5000);assert.equal(agreement.current_status,'APPROVED');
 const order=await api('buyer','/trade/records/'+orderId);assert.equal(order.data.financial.net_minor,5000);
+const completed=new Set();
+if(process.env.QA18_PRIOR_RESULT){
+ const file=resolve(process.env.QA18_PRIOR_RESULT);assert(file.startsWith(join(root,'.local/qa18')+sep));const bytes=await readFile(file),prior=JSON.parse(bytes);
+ assert.equal(prior.environment,s.environment);assert.equal(prior.agreement_id,agreementId);assert.equal(prior.order_id,orderId);
+ for(const surface of ['app','web'])assert.deepEqual(prior[surface+'_build'],s[surface+'_build']);
+ assert.equal(execFileSync('git',['diff','--name-only',prior.source,source,'--','晶晶日上工程交接包/01_源码'],{encoding:'utf8'}).trim(),'','PRODUCT_CHANGED_REQUIRES_REASSESSMENT');
+ for(const x of [...(prior.previously_completed||[]),...prior.checks.map(x=>x.name)])completed.add(x);
+ s.previous_attempt={path:file.slice(root.length+1).replaceAll('\\','/'),sha256:sha(bytes),source:prior.source,result:prior.result};s.previously_completed=[...completed];
+}
 const {chromium}=createRequire(join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core');
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,headless:true}),pages=[];
 let phase='start';
@@ -55,10 +64,12 @@ async function actor(surface,role,routePath,{drop=false}={}){
 }
 const appPath=hash=>'/trade/participation-checkout?agreementId='+agreementId+'&agreementSha256='+hash;
 const webPath='/participation/agreements/'+agreementId+'?action=checkout&project_id='+projectId;
-async function fillCheckout(p,hash){await p.locator('#checkout-agreement_id').fill(agreementId);await p.locator('#checkout-agreement_sha256').fill(hash);await p.locator('#checkout-channel').selectOption('ALIPAY');await p.getByLabel('已阅读当前记录与本次约定，明确提交上述办理事项。',{exact:true}).check();}
+async function fillCheckout(p,hash){assert.equal(await p.locator('#checkout-agreement_id').inputValue(),agreementId);assert.equal(await p.locator('#checkout-agreement_sha256').inputValue(),hash);await p.locator('#checkout-channel').selectOption('ALIPAY');await p.getByLabel('已阅读当前记录与本次约定，明确提交上述办理事项。',{exact:true}).check();}
 try{
+ let p;
+ if(!completed.has('app-lost-response-leave-return-restores-original-key-body-and-order')){
  phase='app-original-checkout-recovery';
- let p=await actor('app','buyer',appPath(agreement.content_sha256),{drop:true});
+ p=await actor('app','buyer',appPath(agreement.content_sha256),{drop:true});
  await p.getByRole('button',{name:'按原约定建立付款订单',exact:true}).click();await p.getByRole('button',{name:'确认办理',exact:true}).click();
  await p.getByRole('button',{name:'恢复原订单请求',exact:true}).waitFor();await idle(p);await snapshot(p,'app-unknown-original-order');
  const start=s.requests.filter(x=>x.surface==='app'&&x.method==='POST'&&x.path==='/api/v1/trade/participation-checkout');assert.equal(start.length,1);
@@ -68,6 +79,8 @@ try{
  await p.waitForURL('**/*recordId='+orderId);await idle(p);await snapshot(p,'app-recovered-same-order');
  const appWrites=s.requests.filter(x=>x.surface==='app'&&x.method==='POST'&&x.path==='/api/v1/trade/participation-checkout');assert.equal(appWrites.length,2);assert(appWrites.every(x=>x.status===200&&x.record_id===orderId));assert.equal(appWrites[0].key_sha256,appWrites[1].key_sha256);assert.equal(appWrites[0].body_sha256,appWrites[1].body_sha256);
  await done('app-lost-response-leave-return-restores-original-key-body-and-order',{requests:2,order_id:orderId});await p.context().close();
+ }
+ if(!completed.has('vue-double-click-lost-response-reload-restores-original-key-body-order')){
  phase='web-original-checkout-recovery';p=await actor('web','buyer',webPath,{drop:true});await fillCheckout(p,agreement.content_sha256);
  await p.getByTestId('business-checkout').dblclick();await p.getByRole('heading',{name:'原请求结果待核对',exact:true}).waitFor();await idle(p);await snapshot(p,'web-unknown-original-order');
  assert.equal(s.requests.filter(x=>x.surface==='web'&&x.method==='POST'&&x.path==='/api/v1/trade/participation-checkout').length,1);
@@ -76,9 +89,15 @@ try{
  await p.getByText('出品方按原参演约定建立付款订单已由服务器记录。',{exact:true}).waitFor();await snapshot(p,'web-recovered-same-order');
  const webWrites=s.requests.filter(x=>x.surface==='web'&&x.method==='POST'&&x.path==='/api/v1/trade/participation-checkout');assert.equal(webWrites.length,2);assert(webWrites.every(x=>x.status===200&&x.record_id===orderId));assert.equal(webWrites[0].key_sha256,webWrites[1].key_sha256);assert.equal(webWrites[0].body_sha256,webWrites[1].body_sha256);
  await done('vue-double-click-lost-response-reload-restores-original-key-body-order',{requests:2,order_id:orderId});await p.context().close();
+ }
+ if(!completed.has('app-stale-contract-hash-refuses-checkout-before-send')){
  phase='app-stale-contract-hash';p=await actor('app','buyer',appPath('0'.repeat(64)));assert(await p.getByRole('button',{name:'按原约定建立付款订单',exact:true}).isDisabled());await snapshot(p,'app-stale-hash-blocked');await done('app-stale-contract-hash-refuses-checkout-before-send');await p.context().close();
- phase='web-stale-contract-hash';p=await actor('web','buyer',webPath);await fillCheckout(p,'0'.repeat(64));const n=s.requests.length;await p.getByTestId('business-checkout').click();await idle(p);const denial=s.requests.slice(n).find(x=>x.method==='POST'&&x.path==='/api/v1/trade/participation-checkout');assert(denial&&denial.status===409&&denial.code==='PARTICIPATION_VERSION_MISMATCH');await snapshot(p,'web-stale-hash-blocked');await done('vue-stale-contract-hash-rejected-and-shown',{status:denial.status,code:denial.code});await p.context().close();
+ }
+ if(!completed.has('vue-paid-agreement-withdrawal-refused-until-independent-amendment')){
+ phase='web-paid-withdrawal';p=await actor('web','buyer',webPath.replace('action=checkout','action=withdraw'));await p.locator('#withdraw-reason').fill('机测原已付款参演约定不得直接撤回，须独立审查改价或退款，原合同与款项保留。');await p.getByLabel('已阅读当前记录与本次约定，明确提交上述办理事项。',{exact:true}).check();const n=s.requests.length;await p.getByTestId('business-withdraw').click();await idle(p);const denial=s.requests.slice(n).find(x=>x.method==='POST'&&x.path==='/api/v1/projects/participations/'+agreementId+'/withdrawal');assert(denial&&denial.status===409&&denial.code==='PARTICIPATION_AMENDMENT_REVIEW_REQUIRED');await snapshot(p,'web-paid-withdrawal-blocked');await done('vue-paid-agreement-withdrawal-refused-until-independent-amendment',{status:denial.status,code:denial.code});await p.context().close();
+ }
  for(const surface of ['app','web']){
+  if(completed.has(surface+'-unrelated-account-private-contract-denied'))continue;
   phase=surface+'-unrelated-private-contract';const n=s.requests.length;
   p=await actor(surface,'outsider',surface==='app'?'/projects/participation?view=agreement&recordId='+agreementId:webPath);
   const denied=s.requests.slice(n).find(x=>x.path==='/api/v1/projects/records/'+agreementId&&x.status===404);assert(denied);
