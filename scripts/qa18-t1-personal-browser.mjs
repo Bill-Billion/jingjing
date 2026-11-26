@@ -10,7 +10,7 @@ await fs.mkdir(out,{recursive:false});
 const prepared=JSON.parse(await fs.readFile(path.join(dir,'prepared.json'),'utf8'));
 const access=JSON.parse(await fs.readFile(process.env.V5_ACCESS_FILE,'utf8'));
 assert(prepared.complete&&access.synthetic_only&&Date.parse(access.expires_at)>Date.now());
-const mode=process.env.QA18_PERSONAL_MODE||'reader';assert(['reader','startup'].includes(mode));
+const mode=process.env.QA18_PERSONAL_MODE||'reader';assert(['reader','startup','library'].includes(mode));
 const source=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),hash=b=>createHash('sha256').update(b).digest('hex');
 const result={source,mode,environment:prepared.environment,order_id:prepared.order_id,agreement_id:prepared.agreement.id,checks:[],requests:[],diagnostics:[],complete:false};
 const save=()=>fs.writeFile(path.join(out,'RESULT.json'),JSON.stringify(result,null,2));
@@ -26,6 +26,7 @@ function observe(p,surface){
 async function context(){const c=await browser.newContext({viewport:{width:390,height:1800},locale:'zh-CN',timezoneId:'Asia/Shanghai'});await c.route('**/*',route=>['127.0.0.1','localhost'].includes(new URL(route.request().url()).hostname)?route.continue():route.abort('blockedbyclient'));return c;}
 async function app(role='stock_buyer',section='income'){
  const c=await context(),p=await c.newPage();pages.push(p);p.setDefaultTimeout(18000);observe(p,'app-'+role);
+ if(mode==='library')await p.route('**/synthetic-access.json',r=>r.fulfill({json:access}));
  const at=Date.now();await p.goto(access.app_url+'/?fixtureRole='+role+'#/library?section='+section);await p.locator('flt-semantics-placeholder').waitFor({state:'attached'});await p.locator('flt-semantics-placeholder').evaluate(e=>e.click());await p.waitForLoadState('networkidle');
  await p.getByRole('heading',{name:'我的业务目录',exact:true}).waitFor();await p.waitForTimeout(200);return {p,c,elapsed_ms:Date.now()-at};
 }
@@ -45,7 +46,20 @@ async function record(name,detail={}){result.checks.push({name,...detail});await
 const fault=operation=>JSON.parse(execFileSync(process.execPath,['scripts/qa18-t1-personal-fault.cjs',operation,dir],{encoding:'utf8',cwd:root}));
 let damaged=false;
 try{
- if(mode==='startup'){
+ if(mode==='library'){
+  // New normal SMS login; the previously revoked login remains revoked.
+  const base=path.dirname(process.env.V5_ACCESS_FILE),original=JSON.parse(await fs.readFile(path.join(base,'access.json'),'utf8')),u=access.accounts.stock_buyer;
+  const old=await fetch(access.base_url+'/me',{headers:{Authorization:'Bearer '+u.bearer_token}});assert.equal(old.status,401);
+  async function post(route,body){const r=await fetch(access.base_url+route,{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':randomUUID()},body:JSON.stringify(body)}),j=await r.json();assert.equal(r.status,200,j.error?.code);return j.data;}
+  const phone=original.accounts.stock_buyer.phone,ch=await post('/auth/sms-challenges',{phone,purpose:'LOGIN'}),sms=JSON.parse(await fs.readFile(path.join(base,'sms',ch.challenge_id+'.json'),'utf8'));
+  const fresh=await post('/auth/sessions',{phone,challenge_id:ch.challenge_id,code:sms.code});assert.equal(fresh.account.id,u.account_id);
+  const privateFile=path.join(dir,'library-session.private.json');await fs.writeFile(privateFile,'',{flag:'wx',mode:0o600});await createRequire(import.meta.url)('./test-fixtures/private-state.cjs').protectPrivateState(privateFile);await fs.writeFile(privateFile,JSON.stringify({environment:prepared.environment,token:fresh.access_token}));u.bearer_token=fresh.access_token;
+  const a=await app('stock_buyer','works'),wanted='/api/v1/stock/purchases/'+prepared.order_id;
+  const response=a.p.waitForResponse(r=>new URL(r.url()).pathname===wanted&&r.request().method()==='GET');
+  await action(a.p,a.p.getByRole('button',{name:'回到原业务',exact:true}));const rr=await response;assert.equal(rr.status(),200);const body=await rr.json();assert.equal(body.data.id,prepared.order_id);await snap(a.p,'app-owned-work-original-order');
+  await record('app-works-navigates-exact-owned-original-order',{order_id:prepared.order_id,status:200});
+  result.limits=['Read-only owned-work navigation after a new normal synthetic SMS login; no restoration of revoked token.','Only initial test entry receives the actual new token; all business requests real. No new order/payment/refund.','This supplements a missing App works assertion, not a full G11 or native-device run.'];
+ }else if(mode==='startup'){
   for(let n=1;n<=30;n++){
    assert.equal(browser.contexts().length,0);const {p,c,elapsed_ms}=await app('stock_seller');
    const aria=await p.locator('body').ariaSnapshot();assert(aria.includes('商家留存: ¥0.50'));assert(aria.includes('核验净支付: ¥0.00'));
