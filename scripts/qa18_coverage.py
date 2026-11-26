@@ -213,10 +213,72 @@ def reviewed_history(reference, key, expected, root=ROOT):
             if data != observation['equals']:
                 fail('Historical observation not present in original evidence')
     if key.startswith('E2E-'):
-        chains = [executions[e].get('chain') for e in slot['execution_ids']]
-        if not all(chains) or any(c != chains[0] for c in chains):
-            fail('Historical whole chain cannot splice distinct records or environments')
+        if slot.get('original_branches') is not None:
+            original_branch_history(slot, executions, key, expected, root)
+        else:
+            chains = [executions[e].get('chain') for e in slot['execution_ids']]
+            if not all(chains) or any(c != chains[0] for c in chains):
+                fail('Historical whole chain cannot splice distinct records or environments')
     return review
+
+
+def original_branch_history(slot, executions, key, expected, root=ROOT):
+    """E2E06 explicitly says full service takes another branch (另走).
+
+    Keep each branch's actual chain identity; a fixed cash-credit exchange must
+    never be invented for the separately specified zero-cash service. This is
+    historical T1 evidence only. final_results keeps its existing frozen-batch
+    checks and cannot inherit this review.
+    """
+    if key.split('|')[0] != 'E2E-06' or key.split('|')[-1] not in {'normal', 'reverse'}:
+        fail('Original branch review is only defined for E2E06 normal/reverse')
+    if slot.get('not_one_environment_or_final_batch') is not True:
+        fail('Historical branches must explicitly deny one-environment/final-batch equivalence')
+    basis = slot.get('branch_basis', {})
+    if basis.get('path') != registry.REG.as_posix():
+        fail('Original branches require the formal acceptance source')
+    require_proof(basis, root)
+    formal = read(root / registry.REG)
+    originals = [x for x in formal.get('items', []) + formal.get('supplemental_items', [])
+                 if x['id'] == 'E2E-06']
+    if len(originals) != 1 or originals[0].get('effective_expected') != expected:
+        fail('Original branch requirement changed or absent')
+    required = {
+        'cash_credit': ['从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环',
+                        '现金制作金首笔付款确认后核销', '退款不足晶钻记待冲回且不重复扣'],
+        'full_service': ['全额服务权益另走0现金/开工核销/开工前取消释放']}
+    if not all(clause in expected for clauses in required.values() for clause in clauses):
+        fail('Formal source does not specify these original branches')
+    branches = slot['original_branches']
+    if len(branches) != len(required) or {x.get('id') for x in branches} != set(required):
+        fail('Every original branch must be present exactly once')
+    assigned = []
+    for b in branches:
+        if b.get('scope') != 'COMPLETE_ORIGINAL_BRANCH' or not b.get('clause_assertions'):
+            fail('Partial branch cannot establish complete original coverage')
+        if b.get('source_clauses') != required[b['id']]:
+            fail('Original branch clauses omitted or changed')
+        chain = b.get('chain', {})
+        if not chain.get('environment') or not UUID.fullmatch(chain.get('business_id', '')):
+            fail('Historical branch requires its real environment and business anchor')
+        if not b.get('execution_ids'):
+            fail('Historical branch has no actual execution')
+        for eid in b['execution_ids']:
+            if eid not in slot['execution_ids'] or eid in assigned:
+                fail('Missing or reused branch execution')
+            assigned.append(eid)
+            e = executions[eid]
+            env = e['environment'].get('database') if isinstance(e['environment'], dict) else e['environment']
+            if e.get('chain') != chain or env != chain['environment']:
+                fail('One historical branch cannot splice other records or environments')
+            def contains(value):
+                if isinstance(value, dict): return any(contains(v) for v in value.values())
+                if isinstance(value, list): return any(contains(v) for v in value)
+                return value == chain['business_id']
+            if not contains(e['business_ids']) or not e.get('observations'):
+                fail('Historical branch needs recorded business identity and observed facts')
+    if sorted(assigned) != sorted(slot['execution_ids']):
+        fail('Unmapped historical branch execution')
 
 
 def t1_gate(slots, bugs):
