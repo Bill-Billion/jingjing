@@ -1,0 +1,782 @@
+{
+  "source": "455fa92c3fe6826e7fa1176d664461eb720ce431",
+  "private_original": {
+    "path": ".local/qa18/t1-image-moderation-20261126-01/http-private/moderation-coverage-http-fixtures.json",
+    "sha256": "182497021eadcce7ffe1e64fe511bc60039b289b59678afb129aab96aec9fae8"
+  },
+  "cases": [
+    {
+      "index": 0,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/71b834cf-317b-41c1-b549-2b557993cbcc",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "71b834cf-317b-41c1-b549-2b557993cbcc",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "f647093f-6396-435d-abc0-837ba4a5e0bd",
+            "current_status": "EXECUTED",
+            "result_sha256": "ade569f6d420c10c7ea12442e85996d1e095d962baeaaa441cf7c6ef2550a130"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "f647093f-6396-435d-abc0-837ba4a5e0bd",
+            "decision": "PASS",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "4a296b193a4498bb84d7e8d1720584818904a203a7b2205fa33d4dd1594600fc"
+          }
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/71b834cf-317b-41c1-b549-2b557993cbcc",
+      "schema": "ErrorResponse",
+      "error_code": "MEDIA_TASK_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 2,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/7dcab57d-1c59-493e-99f0-47a5a1180b44",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "7dcab57d-1c59-493e-99f0-47a5a1180b44",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "f042de7d-773b-4369-95da-bec74fc3ee0b",
+            "current_status": "EXECUTED",
+            "result_sha256": "acf8d705157a1250c50217eeaa39895cb57ef55ca32b096a0928f38c8c741b7d"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "f042de7d-773b-4369-95da-bec74fc3ee0b",
+            "decision": "REVIEW",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "4a296b193a4498bb84d7e8d1720584818904a203a7b2205fa33d4dd1594600fc"
+          }
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/7dcab57d-1c59-493e-99f0-47a5a1180b44",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "7dcab57d-1c59-493e-99f0-47a5a1180b44",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "f042de7d-773b-4369-95da-bec74fc3ee0b",
+            "current_status": "EXECUTED",
+            "result_sha256": "d2093228f5559b148d54e2599d2d223bf58fb7a85d84c18d9abcb55ebe21fa53"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "f042de7d-773b-4369-95da-bec74fc3ee0b",
+            "decision": "PASS",
+            "output_sha256": "4a296b193a4498bb84d7e8d1720584818904a203a7b2205fa33d4dd1594600fc",
+            "automated_decision": "REVIEW"
+          }
+        },
+        {
+          "pointer": "data/result/manual_review",
+          "facts": {
+            "decision": "APPROVE",
+            "account_id": "ad83ee9f-4dec-41d1-86ad-7082585f755e"
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/9f7bac9e-a7cf-4219-bd93-4cb46f69fca7",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "9f7bac9e-a7cf-4219-bd93-4cb46f69fca7",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "8545557b-069f-405e-8c61-6f69fa13dedd",
+            "current_status": "EXECUTED",
+            "result_sha256": "df8718b6ac0251a247f2080f09a2630581e60864406adf9896b472b6d95c4422"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "8545557b-069f-405e-8c61-6f69fa13dedd",
+            "decision": "REJECT",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "4a296b193a4498bb84d7e8d1720584818904a203a7b2205fa33d4dd1594600fc"
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/21fef92a-3edf-4d9b-9ce6-f0021f790c96",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "21fef92a-3edf-4d9b-9ce6-f0021f790c96",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "1380135c-0aaf-4157-9f65-649dd194b00d",
+            "current_status": "EXECUTED",
+            "result_sha256": "006160f5ca01a0a74d3c7f7dff6897463597c648e1b2a69871953efc32399210"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "1380135c-0aaf-4157-9f65-649dd194b00d",
+            "decision": "REVIEW",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "4a296b193a4498bb84d7e8d1720584818904a203a7b2205fa33d4dd1594600fc"
+          }
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/986900f2-7c6e-4b93-bafc-d3e0f590204c",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "986900f2-7c6e-4b93-bafc-d3e0f590204c",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "017a3a7b-85a3-42d9-bca6-5af603d01c68",
+            "current_status": "EXECUTED",
+            "result_sha256": "b0e97587ce3469d0f6c8c6decfcba3acc7434004a3f3aa582f9d71bec22da350"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "017a3a7b-85a3-42d9-bca6-5af603d01c68",
+            "decision": "PASS",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "3f47b407445f4e6a904b7509ef52f607c5aa3c957e0eca9802e8128a9635ff68"
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "method": "POST",
+      "path": "/api/v1/media/tasks",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "739970aa-1ab1-4ece-8535-5ba83df5fab0",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "8ba43aa6-0555-4c3a-8236-9d83d62ed607",
+            "current_status": "QUEUED",
+            "result_sha256": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "method": "POST",
+      "path": "/api/v1/media/tasks",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "739970aa-1ab1-4ece-8535-5ba83df5fab0",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "8ba43aa6-0555-4c3a-8236-9d83d62ed607",
+            "current_status": "QUEUED",
+            "result_sha256": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/739970aa-1ab1-4ece-8535-5ba83df5fab0",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "739970aa-1ab1-4ece-8535-5ba83df5fab0",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "8ba43aa6-0555-4c3a-8236-9d83d62ed607",
+            "current_status": "EXECUTED",
+            "result_sha256": "9c985655dbaac139526ce9028c7847ceadf4b3e543e87b47b04bb067a79047b4"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "8ba43aa6-0555-4c3a-8236-9d83d62ed607",
+            "decision": "PASS",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "9d79e7ed103fc2f1dd212e55c2a3fe39b282022cdd50955db7086447af672a24"
+          }
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/739970aa-1ab1-4ece-8535-5ba83df5fab0",
+      "schema": "ErrorResponse",
+      "error_code": "MEDIA_TASK_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 11,
+      "method": "POST",
+      "path": "/api/v1/media/tasks",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "398d2510-c84b-46a8-8d1b-f8d92d5f170e",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "87ab0b0f-34d8-45be-ab14-bb14960fc6e4",
+            "current_status": "QUEUED",
+            "result_sha256": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/398d2510-c84b-46a8-8d1b-f8d92d5f170e",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "398d2510-c84b-46a8-8d1b-f8d92d5f170e",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "87ab0b0f-34d8-45be-ab14-bb14960fc6e4",
+            "current_status": "EXECUTED",
+            "result_sha256": "76f953d9a3ac2e2a83af56d38e1300ddc12057563eac398947ca04bbb5b56089"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "87ab0b0f-34d8-45be-ab14-bb14960fc6e4",
+            "decision": "REVIEW",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "9d79e7ed103fc2f1dd212e55c2a3fe39b282022cdd50955db7086447af672a24"
+          }
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "method": "GET",
+      "path": "/api/v1/media/operations/tasks/398d2510-c84b-46a8-8d1b-f8d92d5f170e",
+      "schema": "ErrorResponse",
+      "error_code": "MEDIA_REVIEW_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 14,
+      "method": "POST",
+      "path": "/api/v1/media/operations/tasks/398d2510-c84b-46a8-8d1b-f8d92d5f170e/review",
+      "schema": "ErrorResponse",
+      "error_code": "SELF_REVIEW_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 15,
+      "method": "GET",
+      "path": "/api/v1/media/operations/tasks/398d2510-c84b-46a8-8d1b-f8d92d5f170e",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "398d2510-c84b-46a8-8d1b-f8d92d5f170e",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "87ab0b0f-34d8-45be-ab14-bb14960fc6e4",
+            "current_status": "EXECUTED",
+            "result_sha256": "76f953d9a3ac2e2a83af56d38e1300ddc12057563eac398947ca04bbb5b56089"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "87ab0b0f-34d8-45be-ab14-bb14960fc6e4",
+            "decision": "REVIEW",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "9d79e7ed103fc2f1dd212e55c2a3fe39b282022cdd50955db7086447af672a24"
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "method": "POST",
+      "path": "/api/v1/media/operations/tasks/398d2510-c84b-46a8-8d1b-f8d92d5f170e/review",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "398d2510-c84b-46a8-8d1b-f8d92d5f170e",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "87ab0b0f-34d8-45be-ab14-bb14960fc6e4",
+            "current_status": "EXECUTED",
+            "result_sha256": "709e27fd54f1774c0b48038de3835a2d8e2af7debcc76ffd695abb35146d1e9b"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "87ab0b0f-34d8-45be-ab14-bb14960fc6e4",
+            "decision": "PASS",
+            "output_sha256": "9d79e7ed103fc2f1dd212e55c2a3fe39b282022cdd50955db7086447af672a24",
+            "automated_decision": "REVIEW"
+          }
+        },
+        {
+          "pointer": "data/result/manual_review",
+          "facts": {
+            "account_id": "ad83ee9f-4dec-41d1-86ad-7082585f755e",
+            "decision": "APPROVE"
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "method": "POST",
+      "path": "/api/v1/media/operations/tasks/398d2510-c84b-46a8-8d1b-f8d92d5f170e/review",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "398d2510-c84b-46a8-8d1b-f8d92d5f170e",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "87ab0b0f-34d8-45be-ab14-bb14960fc6e4",
+            "current_status": "EXECUTED",
+            "result_sha256": "709e27fd54f1774c0b48038de3835a2d8e2af7debcc76ffd695abb35146d1e9b"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "87ab0b0f-34d8-45be-ab14-bb14960fc6e4",
+            "decision": "PASS",
+            "output_sha256": "9d79e7ed103fc2f1dd212e55c2a3fe39b282022cdd50955db7086447af672a24",
+            "automated_decision": "REVIEW"
+          }
+        },
+        {
+          "pointer": "data/result/manual_review",
+          "facts": {
+            "decision": "APPROVE",
+            "account_id": "ad83ee9f-4dec-41d1-86ad-7082585f755e"
+          }
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "method": "POST",
+      "path": "/api/v1/media/tasks",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a3087d4f-dbab-4419-8c5f-e31c4424e547",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "5a46338e-ef36-4ed3-9969-8e8767ba23f5",
+            "current_status": "QUEUED",
+            "result_sha256": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "method": "POST",
+      "path": "/api/v1/media/tasks",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a3087d4f-dbab-4419-8c5f-e31c4424e547",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "5a46338e-ef36-4ed3-9969-8e8767ba23f5",
+            "current_status": "QUEUED",
+            "result_sha256": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/a3087d4f-dbab-4419-8c5f-e31c4424e547",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a3087d4f-dbab-4419-8c5f-e31c4424e547",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "5a46338e-ef36-4ed3-9969-8e8767ba23f5",
+            "current_status": "EXECUTED",
+            "result_sha256": "3a8dcc7be786d8bb67ead9d2ad88f08543a27a4a607cc071d9fc64726dac8473"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "5a46338e-ef36-4ed3-9969-8e8767ba23f5",
+            "decision": "PASS",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "1393e5a53402d79a217357ddbbb8f1e5c42f6ee67fe822e6c9b67b3a1da7789f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/a3087d4f-dbab-4419-8c5f-e31c4424e547",
+      "schema": "ErrorResponse",
+      "error_code": "MEDIA_TASK_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 22,
+      "method": "POST",
+      "path": "/api/v1/media/tasks",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a02b6bb1-2354-4387-8ad1-97d94afe1840",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "4cdcdb2e-f12e-4907-9770-659bb5e0a31a",
+            "current_status": "QUEUED",
+            "result_sha256": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/a02b6bb1-2354-4387-8ad1-97d94afe1840",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a02b6bb1-2354-4387-8ad1-97d94afe1840",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "4cdcdb2e-f12e-4907-9770-659bb5e0a31a",
+            "current_status": "EXECUTED",
+            "result_sha256": "b15c6c3c5b0f10547f27d82665655af2a07b1dc03cb6399a33bd7d6cf2c2e943"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "4cdcdb2e-f12e-4907-9770-659bb5e0a31a",
+            "decision": "REVIEW",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "1393e5a53402d79a217357ddbbb8f1e5c42f6ee67fe822e6c9b67b3a1da7789f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "method": "GET",
+      "path": "/api/v1/media/operations/tasks/a02b6bb1-2354-4387-8ad1-97d94afe1840",
+      "schema": "ErrorResponse",
+      "error_code": "MEDIA_REVIEW_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 25,
+      "method": "POST",
+      "path": "/api/v1/media/operations/tasks/a02b6bb1-2354-4387-8ad1-97d94afe1840/review",
+      "schema": "ErrorResponse",
+      "error_code": "SELF_REVIEW_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 26,
+      "method": "GET",
+      "path": "/api/v1/media/operations/tasks/a02b6bb1-2354-4387-8ad1-97d94afe1840",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a02b6bb1-2354-4387-8ad1-97d94afe1840",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "4cdcdb2e-f12e-4907-9770-659bb5e0a31a",
+            "current_status": "EXECUTED",
+            "result_sha256": "b15c6c3c5b0f10547f27d82665655af2a07b1dc03cb6399a33bd7d6cf2c2e943"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "4cdcdb2e-f12e-4907-9770-659bb5e0a31a",
+            "decision": "REVIEW",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "1393e5a53402d79a217357ddbbb8f1e5c42f6ee67fe822e6c9b67b3a1da7789f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "method": "POST",
+      "path": "/api/v1/media/operations/tasks/a02b6bb1-2354-4387-8ad1-97d94afe1840/review",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a02b6bb1-2354-4387-8ad1-97d94afe1840",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "4cdcdb2e-f12e-4907-9770-659bb5e0a31a",
+            "current_status": "EXECUTED",
+            "result_sha256": "664f3f577908634940c8c3d9e11fe9b84b731b976c7ba44cd154d80bbbff80a6"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "4cdcdb2e-f12e-4907-9770-659bb5e0a31a",
+            "decision": "PASS",
+            "output_sha256": "1393e5a53402d79a217357ddbbb8f1e5c42f6ee67fe822e6c9b67b3a1da7789f",
+            "automated_decision": "REVIEW"
+          }
+        },
+        {
+          "pointer": "data/result/manual_review",
+          "facts": {
+            "account_id": "ad83ee9f-4dec-41d1-86ad-7082585f755e",
+            "decision": "APPROVE"
+          }
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "method": "POST",
+      "path": "/api/v1/media/operations/tasks/a02b6bb1-2354-4387-8ad1-97d94afe1840/review",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a02b6bb1-2354-4387-8ad1-97d94afe1840",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "4cdcdb2e-f12e-4907-9770-659bb5e0a31a",
+            "current_status": "EXECUTED",
+            "result_sha256": "664f3f577908634940c8c3d9e11fe9b84b731b976c7ba44cd154d80bbbff80a6"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "4cdcdb2e-f12e-4907-9770-659bb5e0a31a",
+            "decision": "PASS",
+            "output_sha256": "1393e5a53402d79a217357ddbbb8f1e5c42f6ee67fe822e6c9b67b3a1da7789f",
+            "automated_decision": "REVIEW"
+          }
+        },
+        {
+          "pointer": "data/result/manual_review",
+          "facts": {
+            "decision": "APPROVE",
+            "account_id": "ad83ee9f-4dec-41d1-86ad-7082585f755e"
+          }
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "method": "POST",
+      "path": "/api/v1/media/tasks",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "88bf8500-49ed-42ef-9b33-ecd77b7bc2ab",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "83d5120d-303c-4284-8d4f-320aab5c07ba",
+            "current_status": "QUEUED",
+            "result_sha256": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/88bf8500-49ed-42ef-9b33-ecd77b7bc2ab",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "88bf8500-49ed-42ef-9b33-ecd77b7bc2ab",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "83d5120d-303c-4284-8d4f-320aab5c07ba",
+            "current_status": "EXECUTED",
+            "result_sha256": "6cf8cb34657300a9ec4c6cb8824df1dbc0359bbf30bb3c796bb91e2045d04728"
+          }
+        },
+        {
+          "pointer": "data/result",
+          "facts": {
+            "file_id": "83d5120d-303c-4284-8d4f-320aab5c07ba",
+            "decision": "REJECT",
+            "manual_review": "STILL_REQUIRED",
+            "output_sha256": "9d79e7ed103fc2f1dd212e55c2a3fe39b282022cdd50955db7086447af672a24"
+          }
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "method": "POST",
+      "path": "/api/v1/media/operations/tasks/88bf8500-49ed-42ef-9b33-ecd77b7bc2ab/review",
+      "schema": "ErrorResponse",
+      "error_code": "MEDIA_REVIEW_NOT_PENDING",
+      "facts": []
+    },
+    {
+      "index": 32,
+      "method": "POST",
+      "path": "/api/v1/media/tasks",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "d0e30d25-29fc-4016-9880-d4b1964f84de",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "6534ef21-8582-43f4-b94a-9600f211b64e",
+            "current_status": "QUEUED",
+            "result_sha256": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "method": "GET",
+      "path": "/api/v1/media/tasks/d0e30d25-29fc-4016-9880-d4b1964f84de",
+      "schema": "MediaTaskResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "d0e30d25-29fc-4016-9880-d4b1964f84de",
+            "task_kind": "MODERATE_FILE",
+            "source_kind": "SUPPLY_ASSET",
+            "source_id": "6534ef21-8582-43f4-b94a-9600f211b64e",
+            "current_status": "QUEUED",
+            "result_sha256": null
+          }
+        }
+      ]
+    }
+  ],
+  "limit": "Allowlisted synthetic fields; raw HTTP remains local; actual API responses were contract validated."
+}
