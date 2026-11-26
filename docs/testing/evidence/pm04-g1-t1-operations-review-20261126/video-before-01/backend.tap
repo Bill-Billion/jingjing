@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: actual private conversation video and original business notification sources
+    # Subtest: real MP4 remains private; unpaid and unowned media cannot become conversation messages
+    ok 1 - real MP4 remains private; unpaid and unowned media cannot become conversation messages
+      ---
+      duration_ms: 193.3204
+      type: 'test'
+      ...
+    # Subtest: same video request creates one message and event; original card and exact bytes are recoverable
+    ok 2 - same video request creates one message and event; original card and exact bytes are recoverable
+      ---
+      duration_ms: 270.4864
+      type: 'test'
+      ...
+    # Subtest: real submission notifications stay separate from message cutoff and conversation read receipt
+    not ok 3 - real submission notifications stay separate from message cutoff and conversation read receipt
+      ---
+      duration_ms: 282.4023
+      type: 'test'
+      location: 'J:\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\conversation-video.integration.test.cjs:50:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        The expression evaluated to a falsy value:
+        
+          assert(current.some(x=>x.target.record_id===later.id&&x.channel==='ORDER_CONVERSATIONS'&&!x.read))
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: true
+      actual: false
+      operator: '=='
+      stack: |-
+        TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\conversation-video.integration.test.cjs:58:134)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\conversation-video.integration.test.cjs:50:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: lost membership refuses video deep links; independent hiding cannot fall back to public bytes
+    ok 4 - lost membership refuses video deep links; independent hiding cannot fall back to public bytes
+      ---
+      duration_ms: 100.3799
+      type: 'test'
+      ...
+    1..4
+not ok 1 - actual private conversation video and original business notification sources
+  ---
+  duration_ms: 10404.4386
+  type: 'test'
+  location: 'J:\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\conversation-video.integration.test.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 5
+# suites 0
+# pass 3
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10638.3058

@@ -55,16 +55,16 @@ test('actual private conversation video and original business notification sourc
    let before=await unread();assert.equal(before.channels.ORDER_CONVERSATIONS,3);assert(before.channels.SUBMISSION_INTENTS>0);
    const cleared=ok(await clear(initialSnapshot.snapshot_id,'ORDER_CONVERSATIONS'));assert.equal(cleared.marked_count,2);
    const after=await unread();assert.equal(after.channels.ORDER_CONVERSATIONS,1);assert.equal(after.channels.SUBMISSION_INTENTS,before.channels.SUBMISSION_INTENTS);
-   const current=await feed();assert(current.some(x=>x.target.record_id===submission.id&&x.channel==='SUBMISSION_INTENTS'&&!x.read));assert(current.some(x=>x.target.record_id===later.id&&x.channel==='ORDER_CONVERSATIONS'&&!x.read));
+   const current=await feed();assert(current.some(x=>x.record_id===submission.id&&x.target.record_id===submission.id&&x.channel==='SUBMISSION_INTENTS'&&!x.read));assert(current.some(x=>x.record_id===later.id&&x.domain==='GIG_MESSAGE'&&x.target.domain==='GIG_ORDER'&&x.target.record_id===order.id&&x.channel==='ORDER_CONVERSATIONS'&&!x.read));
    const read=ok(await call('POST',thread+'/read',{body:{message_id:later.id}}));assert.equal(read.read_until,later.id);assert.equal((await unread()).channels.ORDER_CONVERSATIONS,0);assert.equal((await unread()).channels.SUBMISSION_INTENTS,before.channels.SUBMISSION_INTENTS);
-   assert.equal((await feed(buyer2)).some(x=>[submission.id,video.id,later.id].includes(x.target.record_id)),false);
+   assert.equal((await feed(buyer2)).some(x=>[submission.id,video.id,later.id].includes(x.record_id)||x.target.record_id===order.id),false);
   });
   await t.test('lost membership refuses video deep links; independent hiding cannot fall back to public bytes',async()=>{
    const url=thread+'/messages/'+video.id+'/file';await db.execute("UPDATE party_memberships SET current_status='REVOKED' WHERE account_id=? AND party_id=?",[buyer.account_id,buyer.personal_party_id]);
    try{bad(await call('GET',url),403,'GIG_PARTY_FORBIDDEN');assert.equal((await call('GET','/operations/notifications/unread',{schema:'NotificationUnreadResponse'})).status,403);}finally{await db.execute("UPDATE party_memberships SET current_status='ACTIVE' WHERE account_id=? AND party_id=?",[buyer.account_id,buyer.personal_party_id]);}
    ok(await call('POST',thread+'/moderation',{u:reviewer,party:null,body:{message_id:video.id,reason:'Synthetic independent private-message hiding'}}));
    bad(await call('GET',url),404,'GIG_NOT_FOUND');const hidden=ok(await call('GET',thread+'/messages')).items.find(x=>x.id===video.id);assert.equal(hidden.data.hidden,true);assert.equal(hidden.data.asset,undefined);assert.equal(hidden.data.body,null);
-   assert.equal((await feed()).some(x=>x.target.record_id===video.id),false);
+   assert.equal((await feed()).some(x=>x.record_id===video.id),false);
   });
  }finally{
   await fs.mkdir(path.resolve(__dirname,'../../../../.local'),{recursive:true});await fs.writeFile(path.resolve(__dirname,'../../../../.local/conversation-video-http.json'),JSON.stringify({synthetic_only:true,records,binary,cases},null,2)+'\n');
