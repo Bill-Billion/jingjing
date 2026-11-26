@@ -29,7 +29,7 @@ test('same account buys and supplies with distinct parties; new avatar preserves
   const purchased=ok(await call('GET','/stock/purchases/'+bought.id));assert.equal(purchased.data.status,'ACTIVE');
   const beforeOrder=(await db.execute('SELECT buyer_party_id,merchant_party_id,data_json FROM trade_records WHERE id=?',[bought.id]))[0][0];
   // Buyer DTO deliberately omits private cast/consent details; inspect the stored snapshot without expanding that API.
-  const storedCast=async id=>JSON.parse((await db.execute('SELECT data_json FROM stock_purchases WHERE order_id=?',[id]))[0][0].data_json).listing_snapshot.participants;
+  const storedCast=async id=>require('../src/modules/artists/context').parse((await db.execute('SELECT data_json FROM stock_purchases WHERE order_id=?',[id]))[0][0].data_json).listing_snapshot.participants;
   const beforeCast=await storedCast(bought.id);assert.equal(beforeCast[0].avatar_id,S.avatar.id);assert.equal(purchased.data.listing_snapshot.participants,undefined);
   const org=await parties.createOrganization(buyer.ctx,{display_name:'Synthetic buyer also operates supplier',operation_key:key()});
   await db.execute("INSERT INTO party_capabilities(party_id,code,current_status) VALUES (?,'MCN','ACTIVE')",[org.party_id]); // Pre-reviewed synthetic organization capability only.
