@@ -1235,18 +1235,18 @@
       "expected": "保留空页及原请求；释放已结束context后从原记录接续通过，根因仍待最终全量观察，未重发退款。",
       "evidence": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds04.log",
       "fix_sha": "ee1c6596b0bb0e67afe848863873892e088ce31c",
-      "environment_resolution": null,
-      "targeted_retest": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/EXECUTION_SUMMARY.json",
-      "limits": "原同记录接续已过；本次30个只读收入页独立context启动均通过且诊断无错误。不是原会员页面失败复现，旧根因仍未完全确认，保留开放，不能当最终整链通过。",
+      "environment_resolution": "Current original membership page passed bounded52 reads; historical root cause remains unknown, no current reproducible failure.",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/ENV063_DISPOSITION.json",
+      "limits": "旧失败及原单恢复保留；当前同页面26+26实际通过，无新退款，不能逆推旧原因。T3继续同版整批及诊断，不视作正式关闭。",
       "group": "G17",
-      "status": "RECHECK_PASS_ROOT_CAUSE_OPEN",
+      "status": "RETARGET_PASS",
       "full_regression": null,
       "owner": "chengcongcong222",
       "phase": "T1_DISCOVERY",
       "acceptance_ids": [
         "E2E-08"
       ],
-      "bounded_followup": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/startup01/RESULT.json"
+      "bounded_followup": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/attempt4/RESULT.json"
     },
     {
       "id": "QA18-ENV-064",
@@ -2047,6 +2047,42 @@
       "phase": "T1_CLOSEOUT",
       "acceptance_ids": [
         "TASK-11"
+      ]
+    },
+    {
+      "id": "QA18-TEST-147",
+      "kind": "TEST_SCRIPT",
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "product_bug_confirmed": false,
+      "summary": "读取原摘要时把PNG解码为UTF8，替换无效字节而误报源漂移，浏览器尚未启动。",
+      "expected": "与原manifest相同按字节做CRLF规范化，不改变PNG或预期摘要。",
+      "evidence": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/attempt1/execution.log",
+      "fix_sha": "6fba95d672c3bc2aa653492b48d8eb463e712bed",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/attempt4/RESULT.json",
+      "full_regression": null,
+      "group": "G17",
+      "phase": "T1_CLOSEOUT",
+      "acceptance_ids": [
+        "E2E-08"
+      ]
+    },
+    {
+      "id": "QA18-TEST-148",
+      "kind": "TEST_SCRIPT",
+      "status": "RETARGET_PASS",
+      "owner": "chengcongcong222",
+      "product_bug_confirmed": false,
+      "summary": "networkidle早于Flutter展开完成；首次等待修正又误假设每项事实有独立aria-label，实际树合并在group。",
+      "expected": "按完整可访问性树等待原四项业务事实，保留原18秒期限和全部断言；attempt2/3失败保留。",
+      "evidence": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/attempt2/RESULT.json",
+      "fix_sha": "edd178f094b8ba412e6886991d14b2dc60008c1f",
+      "targeted_retest": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/attempt4/RESULT.json",
+      "full_regression": null,
+      "group": "G17",
+      "phase": "T1_CLOSEOUT",
+      "acceptance_ids": [
+        "E2E-08"
       ]
     }
   ]
