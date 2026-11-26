@@ -151,7 +151,7 @@ async function main() {
       await assert.rejects(auth.resolve(previous.accounts[role].bearer_token), { status: 401 });
     }
     const principal = async req => ({ subject_ref: (await auth.resolve((req.headers.authorization || '').replace(/^Bearer /, ''))).subject_ref });
-    const sim = await load('src/testing/multi-merchant-payment-simulator').createMultiMerchantSimulator(db, { ...env, MYSQL_DATABASE: database, JX_PAYMENT_SIMULATOR_ENABLED: 'true' }, { merchant_party_ids: Object.values(accounts).map(x => x.party_id), resolvePrincipal: principal });
+    const sim = await load('src/testing/multi-merchant-payment-simulator').createMultiMerchantSimulator(db, { ...env, MYSQL_DATABASE: database, JX_PAYMENT_SIMULATOR_ENABLED: 'true' }, { merchant_party_ids: [...Object.values(accounts).map(x => x.party_id), descriptor.prepared.listing.seller_party_id], resolvePrincipal: principal });
     const after = await fingerprint(cloneReader);
     for (const [name, entry] of Object.entries(offlineBefore)) if (name !== 'auth_sessions') assert.deepEqual(after[name], entry, 'NON_SESSION_ROWS_CHANGED_' + name);
     assert.deepEqual(await fingerprint(original), sourceBefore, 'ORIGINAL_MODIFIED');
