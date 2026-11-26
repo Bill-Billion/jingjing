@@ -35,14 +35,13 @@ test('one wallet separates supplier payables, original cash lots, points and use
   }
   const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;};
   const post=async(url,u,body,version=null,party=u.acting_party_id)=>ok(await call(url,u,{body,version,party}));
-  const finance=require('../src/modules/settlement/repository').createSettlementRepository(db,{resolvePrincipal:S.resolvePrincipal});
   const custody=require('../src/modules/wallet/custody').createCustodyLedger(db),R=require('../src/modules/wallet/recharge-refunds').createRechargeRefunds(db,{resolvePrincipal:S.resolvePrincipal});
   const A=require('../src/modules/artists/context');
   async function offer(options={}){let saved;const stop=new Error('synthetic quote preparation only');await assert.rejects(S.newOrder({...options,beforeAccept:async x=>{saved=x;throw stop;}}),e=>e===stop);return saved;}
   async function quote(a,customer,ruleId,channel){return S.reviewTrade(await S.trade.quote(producer.ctx,{party_id:S.org.party_id,buyer_party_id:customer.personal_party_id,lines:[{line_id:'film',spec_id:a.spec.id,quantity:1}],installments:a.quote.data.installments,channel,transaction_model:'PLATFORM_PRINCIPAL',rule_id:ruleId,expires_at:'2099-01-01T00:00:00.000Z',payment_window_minutes:30,license_reservation_id:null,customization_source:{request_id:a.story.id,submission_id:a.story.submission.id,content_sha256:a.story.submission.content_sha256},operation_key:key()}));}
   let agreement,coupon,held,order,payment,spend,wr;
   const binding={provider:'synthetic-custodian',environment:'SANDBOX',merchant_id:'synthetic-merchant',revision:'v1'},topups=[];
-  const config={...S.config,provider:'CUSTODY',merchant_id:binding.merchant_id,config_revision:binding.revision,custody_binding:binding};
+  const config={provider:'CUSTODY',environment:'SANDBOX',app_id:'synthetic.app',merchant_party_id:S.org.party_id,merchant_id:binding.merchant_id,config_revision:binding.revision,custody_binding:binding};
   async function topup(amount){const r=await db.withTransaction(tx=>custody.prepare(tx,{id:buyer.account_id},{party_id:buyer.personal_party_id,amount_minor:amount,operation_key:key()},binding));const proof={record_id:r.id,...binding,currency:'CNY',amount_minor:amount,transaction_id:'synthetic:'+r.id,occurred_at:await A.now(db),status:'SUCCEEDED'};const done=await custody.applyVerifiedReceipt(proof);assert.equal((await custody.applyVerifiedReceipt(proof)).object_version,done.object_version);topups.push(done);return done;}
   async function snapshot(label,cash,reserved=0,grantStatus='AVAILABLE'){
    const wallet=ok(await call('/wallet/summary')),income=ok(await call('/finance/agreements/'+agreement.id+'/balances')),grant=ok(await call('/redemption/grants/'+coupon.id));
