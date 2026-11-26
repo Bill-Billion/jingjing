@@ -32,7 +32,10 @@ test('original coupon scope: manual drama eligible, samples and avatar services 
   });
   for(const type of ['MANUAL_SAMPLE','AVATAR_CREATION','AVATAR_HOSTING'])await t.test(type+' cannot be approved as coupon stock or consume an otherwise valid coupon',async()=>{
    let spec,quote;
-   if(type==='MANUAL_SAMPLE')({spec,quote}=await offer({productType:type}));
+   if(type==='MANUAL_SAMPLE')({spec,quote}=await offer({productType:type,beforeQuote:async({story})=>{
+    const bound=await S.stories.bindManualSample(buyer.ctx,{request_id:story.id,party_id:buyer.acting_party_id,expected_version:story.object_version,cast:artist.roster,merchant_party_id:S.org.party_id,territory:'CN',terms:'Synthetic artist confirms this manual sample separately',operation_key:key()});
+    await S.stories.confirmManualSample(buyer.ctx,{request_id:story.id,party_id:buyer.acting_party_id,expected_version:bound.object_version,content_sha256:bound.content_sha256,operation_key:key()});
+   }}));
    else{
     // Explicit legacy charged service fixture tests rejection; no new charged
     // creation/hosting offer is enabled by this test or in the modern policy.

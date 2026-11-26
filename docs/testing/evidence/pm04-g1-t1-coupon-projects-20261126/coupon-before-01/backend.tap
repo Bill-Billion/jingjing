@@ -1,0 +1,63 @@
+TAP version 13
+# Subtest: original coupon scope: manual drama eligible, samples and avatar services excluded
+    # Subtest: manual drama outline is frozen in actual coupon quote/order and a separately reviewed original script project
+    ok 1 - manual drama outline is frozen in actual coupon quote/order and a separately reviewed original script project
+      ---
+      duration_ms: 384.9087
+      type: 'test'
+      ...
+    # Subtest: MANUAL_SAMPLE cannot be approved as coupon stock or consume an otherwise valid coupon
+    not ok 2 - MANUAL_SAMPLE cannot be approved as coupon stock or consume an otherwise valid coupon
+      ---
+      duration_ms: 35.6191
+      type: 'test'
+      location: 'J:\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\redemption-original-scope.integration.test.cjs:33:82'
+      failureType: 'testCodeFailure'
+      error: |-
+        The validation function is expected to return "true". Received false
+        
+        Caught error:
+        
+        Error: MANUAL_SAMPLE_CONFIRMATION_REQUIRED
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async offer (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\redemption-original-scope.integration.test.cjs:14:91)
+        async TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\redemption-original-scope.integration.test.cjs:35:44)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\redemption-original-scope.integration.test.cjs:33:74)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: AVATAR_CREATION cannot be approved as coupon stock or consume an otherwise valid coupon
+    ok 3 - AVATAR_CREATION cannot be approved as coupon stock or consume an otherwise valid coupon
+      ---
+      duration_ms: 137.6564
+      type: 'test'
+      ...
+    # Subtest: AVATAR_HOSTING cannot be approved as coupon stock or consume an otherwise valid coupon
+    ok 4 - AVATAR_HOSTING cannot be approved as coupon stock or consume an otherwise valid coupon
+      ---
+      duration_ms: 120.7595
+      type: 'test'
+      ...
+    1..4
+not ok 1 - original coupon scope: manual drama eligible, samples and avatar services excluded
+  ---
+  duration_ms: 8486.9857
+  type: 'test'
+  location: 'J:\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\redemption-original-scope.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 5
+# suites 0
+# pass 3
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8711.6747
