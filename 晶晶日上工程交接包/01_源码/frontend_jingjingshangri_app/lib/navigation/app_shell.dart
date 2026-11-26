@@ -12,7 +12,6 @@ import '../auditions/auditions_pages.dart';
 import '../notices/notices_pages.dart';
 import '../operations/identity_notifications.dart';
 import '../plaza/plaza_pages.dart';
-import '../widgets/editorial_icons.dart';
 import 'package:flutter/services.dart';
 
 // Local 05 palette from Figma 4016:6960; shared navigation stays unchanged.
@@ -73,13 +72,17 @@ class _AppShellState extends State<AppShell> {
     '/messages',
     '/my'
   ];
-  static const _icons = [
-    EditorialIcons.house,
-    EditorialIcons.film,
-    EditorialIcons.document,
-    EditorialIcons.chatDotRound,
-    EditorialIcons.user,
-  ];
+  static const _iconNames = ['square', 'audition', 'notices', 'messages', 'my'];
+
+  Widget _tabIcon(int index, {bool selected = false}) {
+    final suffix = selected ? '_selected' : '';
+    return Image.asset(
+      'assets/navigation/${_iconNames[index]}$suffix.png',
+      width: 44,
+      height: 44,
+      excludeFromSemantics: true,
+    );
+  }
 
   void _select(int index) {
     if (index != _selected) {
@@ -488,9 +491,6 @@ class _AppShellState extends State<AppShell> {
                 border: Border(top: BorderSide(color: AccountTheme.border))),
             child: NavigationBarTheme(
                 data: NavigationBarThemeData(
-                    iconTheme: WidgetStateProperty.resolveWith((states) =>
-                        IconThemeData(size: 22, color: states.contains(WidgetState.selected)
-                            ? AccountTheme.accent : AccountTheme.muted)),
                     labelTextStyle: WidgetStateProperty.resolveWith((states) =>
                         TextStyle(
                             fontFamily: AccountTheme.sans,
@@ -515,21 +515,8 @@ class _AppShellState extends State<AppShell> {
                         5,
                         (i) => NavigationDestination(
                             key: Key('app-tab-$i'),
-                            icon: Icon(_icons[i]),
-                            selectedIcon:
-                                Stack(clipBehavior: Clip.none, children: [
-                              Icon(_icons[i]),
-                              const Positioned(
-                                  top: -3,
-                                  right: -3,
-                                  child: SizedBox(
-                                      width: 5,
-                                      height: 5,
-                                      child: DecoratedBox(
-                                          decoration: BoxDecoration(
-                                              color: AccountTheme.vermilion,
-                                              shape: BoxShape.circle)))),
-                            ]),
+                            icon: _tabIcon(i),
+                            selectedIcon: _tabIcon(i, selected: true),
                             label: _labels[i]))))),
       ]),
     ));
