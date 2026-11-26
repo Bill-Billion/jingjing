@@ -19,7 +19,9 @@ test('audition fixed total rejects separate fee inputs and booking visibility pr
   await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1';
   async function call(method,url,{user=buyer,party=null,body,op=key(),version}={}){
    const response=await fetch(base+url,{method,headers:{Authorization:'Bearer '+user.token,...(party?{'X-Acting-Party':party}:{}),...(body!==undefined?{'Content-Type':'application/json','Idempotency-Key':op}:{}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
-   const value=await response.json();cases.push({method,path:url,status:response.status,schema:response.ok?(url==='/auditions/checkout'?'TradeRecordResponse':url.startsWith('/artists/')?'ArtistResponse':'AuditionResponse'):'ErrorResponse',value});return {status:response.status,...value};
+   const value=await response.json();
+   const schema=!response.ok?'ErrorResponse':url==='/auditions/checkout'||url.startsWith('/trade/')?'TradeRecordResponse':/^\/artists\/catalog\/[0-9a-f-]{36}$/.test(url)?'ArtistCatalogueItemResponse':url.startsWith('/artists/')?'ArtistResponse':'AuditionResponse';
+   cases.push({method,path:new URL(base+url).pathname,status:response.status,schema,value});return {status:response.status,...value};
   }
   const ok=r=>{assert.equal(r.status,200,JSON.stringify(r));return r.data;};
   const invalid=r=>{assert.equal(r.status,400,JSON.stringify(r));assert.equal(r.error.code,'INVALID_INPUT');};
