@@ -319,7 +319,8 @@ def generate(root=ROOT):
             'decision': 'NEEDS_EVIDENCE_REVIEW',
             'reason': 'Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.',
             'remaining': 'Review attached candidate/source evidence first; execute only unsupported original assertions.'})
-        slots.append({**slot, 'expected': criteria[cid]['effective_expected'],
+        slots.append({**slot, 'original_work': criteria[cid]['work'],
+                      'expected': criteria[cid]['effective_expected'],
                       'original_chain_scope': routes.get(cid),
                       'historical_events': [uid for uid, e in history.items() if e['event']['key'] == key],
                       'original_partial_evidence': source_refs[cid],
@@ -355,12 +356,15 @@ def generate(root=ROOT):
               'slots': slots, 'summary': summary}
     csv_text = io.StringIO(newline='')
     writer = csv.writer(csv_text, lineterminator='\n')
-    writer.writerow(['slot', 'groups', 'expected', 'discovery', 'remaining', 'historical_events', 'candidate_packages', 'original_partial_evidence', 'final_result'])
+    writer.writerow(['slot', 'groups', 'original_work', 'dashboard_chain_scope', 'expected', 'discovery', 'remaining', 'historical_events', 'candidate_packages', 'original_partial_evidence', 'final_result'])
     for s in slots:
-        writer.writerow([s['key'], ','.join(s['groups']), s['expected'], s['discovery']['decision'], s['discovery']['remaining'],
+        writer.writerow([s['key'], ','.join(s['groups']), s['original_work'],
+                         (s['original_chain_scope'] or {}).get('original_scope', ''),
+                         s['expected'], s['discovery']['decision'], s['discovery']['remaining'],
                          ';'.join(s['historical_events']), ';'.join(s['candidate_packages']), ';'.join(s['original_partial_evidence']), s['final_regression']['outcome']])
     lines = ['# 统一机测覆盖摘要', '', '由 `scripts/qa18_coverage.py` 从原正式登记源和 `COVERAGE_LEDGER.json` 生成；不能手改本文件。', '',
              '阶段：T1 首轮收口。原151条、60REQ、23规则，唯一578槽位。跨组引用不相加；候选证据不等于完整场景通过。', '',
+             '每槽并列保留正式登记源 original_work、原完整预期及驾驶舱 original_chain_scope；流程摘要不能替代正式原文，审定须检查两者的原义务。', '',
              f"首轮证据审定：历史完整已核 {summary['discovery'].get('HISTORICAL_COVERED',0)}，局部已核 {summary['discovery'].get('PARTIAL',0)}，待逐槽核对 {summary['discovery'].get('NEEDS_EVIDENCE_REVIEW',0)}。有历史/局部候选入口 {summary['with_candidates']}/578；候选入口数量不是通过数。", '',
              f"最终同版回归：PASS {summary['final_regression'].get('PASS',0)}，NOT_RUN {summary['final_regression'].get('NOT_RUN',0)}；批次：{summary['final_batch'] or '尚未冻结/未启动'}。正式151状态不变，18组正式关闭0。", '',
              '|组|唯一槽位|历史完整已核|局部已核|待核证据|外部/阻断|最终PASS|', '|---|---:|---:|---:|---:|---:|---:|']
