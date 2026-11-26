@@ -1,0 +1,97 @@
+{
+  "phase": "T1_CLOSEOUT",
+  "goal": "ACTIVE",
+  "t1_exit": "NOT_READY",
+  "new_business_execution": true,
+  "product_changed": true,
+  "versions": {
+    "backend": "ac24b00b4bef36bac86eb6677aaa1fd4732689a9",
+    "app": "dac064f4a4a7942f059266b20fc128a2544da228",
+    "vue_before": "c4f12488486eb95cd19068bb84103ad46c00297f",
+    "vue_fixed": "bd36ef95556962a1def6e082278da76243b609a2",
+    "component_test_before": "2df56a8cbd5f70253f392f8546ba5449a7e379c5",
+    "browser_initial": "13db94db3e188bb3ca6faf07276318b19aa6817a",
+    "browser_input_fix": "6c0064d1268630cda5de810ba74c40e771622d5b",
+    "browser_utf8_fix": "bfcf688ba9e45993a84a4d2c83299c130d99bb41",
+    "browser_retest": "d8e35d680b749146ee35bc426f34f19f066a11b0",
+    "census": "6f3dd7761b41376d7e869274db0b1736bbe89d20",
+    "environment": "3f2886a7c41c5e49fbdb198fa8e602240590674e"
+  },
+  "api": "0.31.82-rc.1",
+  "migrations": 225,
+  "last_migration": "0225",
+  "environment": "jx_test_qa18_member_970322be364b775b8403",
+  "original_environment": "jx_test_qa18_membership_f17d6da8ba2e69fd6c86",
+  "wallet_id": "0712db88-54c2-4a38-b933-ff3573877aac",
+  "original_refund_id": "09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+  "new_refund_id": "6ce65914-4ee1-4f0e-8b9f-de70e9efb492",
+  "attempts": [
+    {
+      "result": "FAIL",
+      "checks": 7,
+      "requests": 29,
+      "source": "13db94db3e188bb3ca6faf07276318b19aa6817a"
+    },
+    {
+      "result": "FAIL",
+      "checks": 0,
+      "requests": 8,
+      "source": "6c0064d1268630cda5de810ba74c40e771622d5b"
+    },
+    {
+      "result": "FAIL",
+      "checks": 1,
+      "requests": 15,
+      "source": "bfcf688ba9e45993a84a4d2c83299c130d99bb41"
+    },
+    {
+      "result": "PASS_TARGETED",
+      "checks": 6,
+      "requests": 35,
+      "source": "d8e35d680b749146ee35bc426f34f19f066a11b0"
+    }
+  ],
+  "distinct_checks": 11,
+  "requests": 87,
+  "component_tests": {
+    "passed": 5,
+    "failed": 0
+  },
+  "vue_full_test_exit": 0,
+  "vue_build_exit": 0,
+  "census": {
+    "path": "docs/testing/evidence/pm04-g1-t1-member-boundaries-20261126/POST_BOUNDARIES_CENSUS.json",
+    "sha256": "a002fe1a016fdfbe9fd77f980e8d5c05594328405d6bcf8f04eb44bdf9f99617"
+  },
+  "no_real_channel_dispatch": true,
+  "new_defects": [
+    "QA18-TEST-179",
+    "QA18-TEST-180",
+    "QA18-FE-181",
+    "QA18-TEST-182"
+  ],
+  "new_complete_slots": 3,
+  "coverage": {
+    "HISTORICAL_COVERED": 308,
+    "PARTIAL": 190,
+    "NEEDS_EVIDENCE_REVIEW": 80
+  },
+  "unresolved_slots": 270,
+  "defects": {
+    "total": 182,
+    "RETARGET_PASS": 180,
+    "NOT_A_BUG": 2
+  },
+  "formal_updated": false,
+  "final_batch": null,
+  "expires_at": "2026-11-26T19:50:50.436Z",
+  "limitations": [
+    "Four attempts are an explicit continuation, not one clean run. Vue changed only after the real cold-reload failure; old observations remain at their old version.",
+    "The old approval was actually committed. Its unbound pre-fix pending context was not silently rebound by the product. The exact private old command was replayed through API, then a new scheduling action on the same case tested the fixed UI.",
+    "No channel worker ran. The cancelled refund has one PENDING task with0attempts; do not describe the task as cancelled or funds as returned.",
+    "Three uploaded synthetic proof files remain, two from failed drivers unused. No original row was removed or rewritten.",
+    "Explicit clone-only sessions and two bounded operator fixtures do not prove production login or live staffing approval.",
+    "Flutter Web is App browser evidence, not Android-device evidence. T3 final same-version results remain NOT_RUN.",
+    "Original complete membership lifecycle stays in original22 with its original version, synthetic clock and separate environment. This review closes only the specific unauthorized/duplicate slots using the clone continuation and invariant checks; it does not rerun or splice the normal chain."
+  ]
+}

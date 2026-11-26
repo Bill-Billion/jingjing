@@ -1,0 +1,410 @@
+{
+  "source": "13db94db3e188bb3ca6faf07276318b19aa6817a",
+  "environment": "jx_test_qa18_member_970322be364b775b8403",
+  "original_environment": "jx_test_qa18_membership_f17d6da8ba2e69fd6c86",
+  "started_at": "2026-11-26T15:54:01.603Z",
+  "checks": [
+    {
+      "name": "app-original-owner-refund-detail",
+      "record_id": "09a8bddc-9442-4ad6-9c13-ab605dc7656b"
+    },
+    {
+      "name": "app-unrelated-refunds-own-party",
+      "status": 200,
+      "transport_actor_mismatch": false
+    },
+    {
+      "name": "app-unrelated-refunds-forged-party",
+      "status": 403,
+      "transport_actor_mismatch": true
+    },
+    {
+      "name": "web-original-operation-reviewer",
+      "record_id": "09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+      "status": 200
+    },
+    {
+      "name": "web-original-operation-artist",
+      "record_id": "09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+      "status": 403
+    },
+    {
+      "name": "web-original-operation-buyer",
+      "record_id": "09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+      "status": 403
+    },
+    {
+      "name": "web-unrelated-wallet-forged-party"
+    }
+  ],
+  "requests": [
+    {
+      "surface": "api",
+      "role": "buyer",
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "cf9319ded45b88002e5a0babe8210f90f4ae2cccbc8a60951fadf18e568471a2",
+      "forged_other_party": false
+    },
+    {
+      "surface": "api",
+      "role": "buyer",
+      "path": "/wallet/recharge-refunds",
+      "method": "GET",
+      "status": 200,
+      "sha256": "a5ff866d2f0504b7eb6ed22f150e64d963bba72cd609ded0e13260702978b560",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-owner",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "ea80b293-d960-4e86-855f-93875580bbed",
+      "sha256": "21c832a26b99f5204053ffc2906faf6441dfb3291c8f2e2deb71402f39ad469a",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-owner",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "ce47b6f8d44f0a12822676412d9c4001070264d14bc28a717673a9c013325bd7",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-owner",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "9beac0a4a11b4ab20f9eb8d6f4aee934176afc30031b6acf5ca401d8251c9af6",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-owner",
+      "path": "/api/v1/wallet/recharge-refunds",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1dc59010c866618b1f726600329a77763939f9970625479a3f0a79d96a51fda1",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-owner",
+      "path": "/api/v1/wallet/recharge-refunds/09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+      "method": "GET",
+      "status": 200,
+      "record_id": "09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+      "sha256": "516868b7961ec9ae3c561f6c79b11af1a40ff2fbd390186f084af68545cbc97d",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "artist",
+      "tag": "app-unrelated-refunds-own-party",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "5f7941cc-4372-4a09-ab83-1a2aee2fae71",
+      "sha256": "f805fa16b0815553f2a009422227829ecd07aa2ac91139feeb921da4cfd9e105",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "artist",
+      "tag": "app-unrelated-refunds-own-party",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "4a0b8237c73e09e5b41ebe3b39617c62aa1fd627335aa73ebe317dc96ec73721",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "artist",
+      "tag": "app-unrelated-refunds-own-party",
+      "path": "/api/v1/wallet/recharge-refunds",
+      "method": "GET",
+      "status": 200,
+      "sha256": "30dd4bf4c3b3895b26b689a5cc452b1d10e826b2b061689d91363ee76b5b6af2",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "artist",
+      "tag": "app-unrelated-refunds-own-party",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "334e0183dcbb1634616e39448f0a3fe2b8dd98f138b8cdc1feff4f2e4defb99c",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "artist",
+      "tag": "app-unrelated-refunds-forged-party",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "5f7941cc-4372-4a09-ab83-1a2aee2fae71",
+      "sha256": "f4e02fc7f5ed5ab609e96c7a5366b241a97ff0dec13f6733efec9a9a193bdfcb",
+      "forged_other_party": true
+    },
+    {
+      "surface": "app",
+      "role": "artist",
+      "tag": "app-unrelated-refunds-forged-party",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "7031ac315afdf383a12f08059108b9403e2cc0f78adf11c41b06c866d158a67e",
+      "forged_other_party": true
+    },
+    {
+      "surface": "app",
+      "role": "artist",
+      "tag": "app-unrelated-refunds-forged-party",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "f3d7c40fa1c69da116bc590626a1cc065d6a971690bd5e4b41da08a93c060e6d",
+      "forged_other_party": true
+    },
+    {
+      "surface": "app",
+      "role": "artist",
+      "tag": "app-unrelated-refunds-forged-party",
+      "path": "/api/v1/wallet/recharge-refunds",
+      "method": "GET",
+      "status": 403,
+      "code": "ARTIST_PARTY_FORBIDDEN",
+      "sha256": "75b80d684f893d605c1f824f013f16f2ca53fee646730e0c0e823785d7c7b05b",
+      "forged_other_party": true
+    },
+    {
+      "surface": "web",
+      "role": "reviewer",
+      "tag": "web-original-operation-reviewer",
+      "path": "/api/v1/wallet/operations/recharge-refunds/09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+      "method": "GET",
+      "status": 200,
+      "record_id": "09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+      "sha256": "b80872c4c166ca369ac5b623059fee487bbbe8c7267aa389b900ffbcc460da85",
+      "forged_other_party": false
+    },
+    {
+      "surface": "web",
+      "role": "reviewer",
+      "tag": "web-original-operation-reviewer",
+      "path": "/api/v1/wallet/operations/recharge-refunds/09a8bddc-9442-4ad6-9c13-ab605dc7656b/evidence/7a5a2899-b857-42a2-b39e-a3cfb7d255d3",
+      "method": "GET",
+      "status": 200,
+      "sha256": "e6ca5d494e262877ef8d46752be28437122838abb70c3fafa0facd28c46848aa",
+      "forged_other_party": false
+    },
+    {
+      "surface": "web",
+      "role": "artist",
+      "tag": "web-original-operation-artist",
+      "path": "/api/v1/wallet/operations/recharge-refunds/09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+      "method": "GET",
+      "status": 403,
+      "code": "WALLET_OPERATOR_FORBIDDEN",
+      "sha256": "0c22e1abd15e5dfa7797099b05d0387c137ae7ceff7d38b1342a3ef918f6fdda",
+      "forged_other_party": false
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-original-operation-buyer",
+      "path": "/api/v1/wallet/operations/recharge-refunds/09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+      "method": "GET",
+      "status": 403,
+      "code": "SELF_REVIEW_FORBIDDEN",
+      "sha256": "93b7db5f1b6c13de7f1f87518c33207fb072ef0720cb53db707a8f15a1b7a33a",
+      "forged_other_party": false
+    },
+    {
+      "surface": "web",
+      "role": "artist",
+      "tag": "web-forged-wallet",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "5f7941cc-4372-4a09-ab83-1a2aee2fae71",
+      "sha256": "142204f877a172938499401f4c612b1af05fdea8ee91e3889f0cd9425b319c16",
+      "forged_other_party": true
+    },
+    {
+      "surface": "web",
+      "role": "artist",
+      "tag": "web-forged-wallet",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "49f96f4663d7ffcae795a4ad336ecdcdade6caf48345aa6f52e4f865744fce71",
+      "forged_other_party": true
+    },
+    {
+      "surface": "web",
+      "role": "artist",
+      "tag": "web-forged-wallet",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "105fdbb1b51c2d5c6fccea290dd86b49bc51cacd1ea46f9560e3872a1209fd32",
+      "forged_other_party": true
+    },
+    {
+      "surface": "web",
+      "role": "artist",
+      "tag": "web-forged-wallet",
+      "path": "/api/v1/wallet/summary",
+      "method": "GET",
+      "status": 403,
+      "code": "ARTIST_PARTY_FORBIDDEN",
+      "sha256": "e4ac68caaea60d8f7624d5a91e16c0353f4cbf717e32118ec3611fa02b887c7a",
+      "forged_other_party": true
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-new-case",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "ea80b293-d960-4e86-855f-93875580bbed",
+      "sha256": "f008b6d26351743789b6b36d72652d6f674361043fb0e8dff22366f292cf3d4c",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-new-case",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "c47647512ddf5ced7ef5e1479e9817b02fa30ae7c146d73d4ab489c11c817c0b",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-new-case",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "fed8b03e21b502b942b3337438af7060260936452227fedbfd5ea7a3fe59b472",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-new-case",
+      "path": "/api/v1/wallet/recharge-refunds",
+      "method": "GET",
+      "status": 200,
+      "sha256": "4cde15fc31cfa7a72e64f0a75aae13b4f5fe18242c98c7345660ed820166ca03",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-new-case",
+      "path": "/api/v1/wallet/records",
+      "method": "GET",
+      "status": 200,
+      "sha256": "5987eea1b9bf3517a309dfcd87626ec9e40cc0f69d1ee1e6f25ba1e86aa8ed13",
+      "forged_other_party": false
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-new-case",
+      "path": "/api/v1/supply/assets",
+      "method": "POST",
+      "status": 200,
+      "record_id": "450ba93e-711e-4e3f-876e-bd0f44dc76f5",
+      "sha256": "83c85ded83675102adfffa73e8b2be9eb48d8797391003dfc5c7d1cc3f10df7f",
+      "forged_other_party": false,
+      "key_sha256": "c2bae2e8df45a977e69d1adb9ef3e210ff884549665544ee0a23f0c2a9420f02",
+      "body_sha256": "f8418b0f1680621bce4d6e2e8f8fc634d6047de995b2ceb0c8bc80b515d46456"
+    }
+  ],
+  "wallet_id": "0712db88-54c2-4a38-b933-ff3573877aac",
+  "source_order_id": "505e5b5c-7197-4fe8-8ff7-119d823dd099",
+  "source_recharge_id": "0b0e51d8-9424-48fd-91a4-94140b0a3487",
+  "original_refund_id": "09a8bddc-9442-4ad6-9c13-ab605dc7656b",
+  "scope": "Original E2E08 client authority and bounded duplicate/refund-recovery supplement; no real funds or full final regression.",
+  "app_build": {
+    "manifest": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/APP_BROWSER_BUILD_MANIFEST.json",
+    "source": "dac064f4a4a7942f059266b20fc128a2544da228",
+    "files": 74,
+    "all_bytes_verified": true
+  },
+  "web_build": {
+    "manifest": "docs/testing/evidence/pm04-g1-recommendations-20261126-46/VUE_BUILD_MANIFEST.json",
+    "source": "533c77c3088d409690ef2147baa14d8a123b2a54",
+    "files": 93,
+    "all_bytes_verified": true
+  },
+  "before": {
+    "account_id": "0712db88-54c2-4a38-b933-ff3573877aac",
+    "rule_id": "25091dac-46ea-4908-bd0b-0386f13954fc",
+    "currency": "CNY",
+    "recorded_balance_minor": 160000,
+    "available_balance_minor": 160000,
+    "reserved_balance_minor": 0,
+    "available_points": 0,
+    "cumulative_points": {
+      "version": "NET_ISSUED_V1",
+      "issued": 10000,
+      "withdrawn": 10000,
+      "net_issued": 0
+    },
+    "points_pending_reversal": 0,
+    "points_actions_enabled": false,
+    "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+    "point_uses": {
+      "vote_enabled": false,
+      "redemption_enabled": false,
+      "lottery_enabled": false
+    },
+    "qualifying_growth": 0,
+    "membership": {
+      "active": true,
+      "level": 1,
+      "attained_level": 1,
+      "qualifying_growth": 0,
+      "valid_until": "2027-11-15T13:04:42.796Z",
+      "renewal_credit_minor": 0,
+      "level_six_review_required": false,
+      "reason": null
+    },
+    "custody": {
+      "enabled": false,
+      "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+    },
+    "spending": {
+      "enabled": false,
+      "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+    },
+    "withdrawal_enabled": false,
+    "transfer_enabled": false
+  },
+  "evidence_sha256": "f8418b0f1680621bce4d6e2e8f8fc634d6047de995b2ceb0c8bc80b515d46456",
+  "result": "FAIL",
+  "phase": "new-case-from-original-wallet-recharge",
+  "failure": "page.waitForResponse: Timeout 25000ms exceeded while waiting for event \"response\"\n    at request (J:\\worktrees\\pm04-qa18\\scripts\\qa18-membership-boundaries-browser.mjs:39:70)\n    at J:\\worktrees\\pm04-qa18\\scripts\\qa18-membership-boundaries-browser.mjs:55:748",
+  "finished_at": "2026-11-26T15:54:50.368Z"
+}
