@@ -48,10 +48,10 @@
 |E2E-09 曝光权益与月冠军|18|1|13|4|0|
 |E2E-12 参演、发行与收入结算|18|9|9|0|0|
 
-缺陷登记共182项：专项复测通过180项，排除为缺陷2项，仍保留：无。专项复测仍待最终回归，不等于正式关闭。
+缺陷登记共186项：专项复测通过183项，排除为缺陷2项，仍保留：QA18-ENV-186。专项复测仍待最终回归，不等于正式关闭。
 
-CI：准确提交 `f8b23436ec89a7e87b17880f570fbeeb3155cd2b`，NO_RUNS_OBSERVED；见 `docs/testing/evidence/pm04-g1-t1-member-boundaries-20261126/PUBLISHED_BASE_CI_OBSERVED.json`。不继承给后续HEAD。
+CI：准确提交 `1e292ba023b98cf95c8584a073d7136d930ad9c4`，NO_RUNS_OBSERVED；见 `docs/testing/evidence/pm04-g1-quality-baseline-20261127/PREVIOUS_PUBLISHED_CI.json`。不继承给后续HEAD。
 
-T1退出检查：NOT_READY；剩余270槽须核定完整机器范围或客观条件，未结缺陷0项。T3全量、安装包人工体验和维护者签收不是T1退出的前置。
+T1退出检查：NOT_READY；剩余270槽须核定完整机器范围或客观条件，未结缺陷1项。T3全量、安装包人工体验和维护者签收不是T1退出的前置。
 
 使用 [总表JSON](COVERAGE_MATRIX.json) 追溯版本、环境、业务ID及原始证据；[CSV](COVERAGE_MATRIX.csv)用于逐槽审查。历史原结果保持原样；首轮判定和最终批次是两列。
