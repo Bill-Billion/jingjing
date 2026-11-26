@@ -15,7 +15,9 @@ const appRoot='晶晶日上工程交接包/01_源码/frontend_jingjingshangri_ap
 const appSource=JSON.parse(await fs.readFile(path.join(old,'APP_SOURCE_MANIFEST.json'),'utf8'));
 const appBuild=JSON.parse(await fs.readFile(path.join(old,'APP_BROWSER_BUILD_MANIFEST.json'),'utf8'));
 async function verify(){
- for(const f of appSource.files){const b=await fs.readFile(path.join(root,f.path));assert.equal(hash(b.toString('utf8').replace(/\r\n/g,'\n')),f.sha256_utf8_lf,f.path);}
+ // Match the archived byte-level CRLF normalization, including tracked binary assets.
+ // Decoding PNG bytes as UTF-8 would replace invalid sequences and falsely report drift.
+ for(const f of appSource.files){const b=await fs.readFile(path.join(root,f.path));assert.equal(hash(Buffer.from(b.toString('latin1').replace(/\r\n/g,'\n'),'latin1')),f.sha256_utf8_lf,f.path);}
  for(const f of appBuild.files)assert.equal(hash(await fs.readFile(path.join(root,appRoot,'build/web',f.path))),f.sha256,f.path);
 }
 await verify();
