@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed,ref,watch} from 'vue'
+import {computed,onMounted,onUnmounted,ref,watch} from 'vue'
 import {onBeforeRouteLeave,onBeforeRouteUpdate,useRoute} from 'vue-router'
 import {useSessionStore} from '@/stores/session'
 import {useBusiness} from '@/composables/useBusiness'
@@ -17,15 +17,16 @@ const record=ref<RechargeRefund|null>(null),items=ref<RechargeRefund[]>([]),curs
 const action=ref(''),decision=ref('REJECT'),amount=ref(''),reason=ref(''),agreed=ref(false)
 const checks=ref({identity_verified:false,source_verified:false,refund_basis_verified:false,relationship_verified:false})
 const readEvidence=ref<string[]>([]),fileUrl=ref(''),fileId=ref('')
-let generation=0
-const locked=computed(()=>ui.busy.value||!!ui.pending.value)
+let generation=0,disposed=false
+const initializing=ref(true)
+const locked=computed(()=>initializing.value||!session.account?.id||ui.busy.value||!!ui.pending.value)
 const dirty=computed(()=>!!action.value&&(!!reason.value||!!amount.value||agreed.value||Object.values(checks.value).some(Boolean)))
 const currentId=()=>typeof route.params.recordId==='string'?route.params.recordId:''
 function resetForm(){action.value='';decision.value='REJECT';amount.value='';reason.value='';agreed.value=false;checks.value={identity_verified:false,source_verified:false,refund_basis_verified:false,relationship_verified:false}}
 function clearFiles(){ui.revoke();readEvidence.value=[];fileUrl.value=fileId.value=''}
 function acceptDetail(data:Parameters<typeof refundRecord>[0],id:string){const r=refundRecord(data,true);if(r.id!==id)throw new ApiError({status:200,code:'UNEXPECTED_RESPONSE_SHAPE',message:'返回的退款不是当前原记录。'});record.value=r;return r}
 async function load(next=''){
- if(ui.busy.value)return
+ if(initializing.value||!session.account?.id||ui.busy.value)return
  const g=++generation,s=session.capture(),id=currentId();record.value=null;items.value=[];resetForm();clearFiles()
  try{
   if(id&&!uuid(id))throw new ApiError({status:400,code:'INVALID_REFERENCE',message:'退款记录编号不正确。'})
@@ -75,7 +76,7 @@ async function submit(){
  }catch(e){ui.error.value=asApiError(e)}
 }
 async function checkOriginal(){
- const p=ui.pending.value;if(!p||ui.busy.value)return
+ const p=ui.pending.value;if(initializing.value||!session.account?.id||!p||ui.busy.value)return
  const match=new RegExp(`^${refundBase}/([a-f0-9-]{36})/(review|scheduling|retry)$`).exec(p.path)
  if(!match||!uuid(match[1])||p.party!=='none'||p.method!=='POST'||p.readPath!==`${refundBase}/${match[1]}`){ui.notice.value='无法确认原请求范围，请保留记录交工作人员核对。';return}
  const g=generation,s=session.capture();record.value=null;resetForm();clearFiles()
@@ -84,11 +85,24 @@ async function checkOriginal(){
  try{acceptDetail(data,match[1]!)}catch(e){if(ui.pending.value)ui.pending.value={...ui.pending.value,checked:false};ui.error.value=asApiError(e)}
 }
 async function recover(){
- const p=ui.pending.value,r=record.value;if(!p?.checked||!r||ui.busy.value||p.readPath!==`${refundBase}/${r.id}`)return
+ const p=ui.pending.value,r=record.value;if(initializing.value||!session.account?.id||!p?.checked||!r||ui.busy.value||p.readPath!==`${refundBase}/${r.id}`)return
  const g=generation,s=session.capture(),id=r.id
  const data=await ui.execute(undefined,d=>{const result=refundRecord(d,true);if(result.id!==id)throw new ApiError({status:200,code:'UNEXPECTED_RESPONSE_SHAPE',message:'恢复结果记录不一致。'})})
  if(data&&g===generation&&session.current(s,true)){acceptDetail(data,id);resetForm();clearFiles()}
 }
+onMounted(async()=>{
+ const captured=session.capture()
+ try{
+  await session.loadAccount()
+  if(disposed||!session.current(captured))return
+  await session.loadParties()
+  if(disposed||!session.current(captured))return
+  initializing.value=false
+  await load()
+ }catch(e){if(!disposed&&session.current(captured))ui.error.value=asApiError(e)}
+ finally{if(!disposed)initializing.value=false}
+})
+onUnmounted(()=>{disposed=true;generation++;clearFiles()})
 </script>
 
 <template>
