@@ -1,0 +1,911 @@
+{
+  "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+  "original_manifest": {
+    "path": "docs/testing/evidence/pm04-g1-current-media-20261126-42/backend/source-manifest.json",
+    "sha256": "9adebc91fddae7e7efbb6175485ccd02594e69531478058304d342f37346c9e0"
+  },
+  "groups": {
+    "recharge": [
+      {
+        "path": "晶晶日上工程交接包/01_源码/backend_server/test/recharge-refunds.integration.test.cjs",
+        "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+        "sha256_lf": "0c78bfd29014ec1d161c44be6d9a99c9cf39b27469d3b0e9730389f504bdd02a",
+        "checks": [
+          {
+            "original_line": 1764,
+            "name": "same request key returns one case; foreign account and changed request are denied",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 30,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 43.0726,
+            "error_code": null
+          },
+          {
+            "original_line": 1765,
+            "name": "only a separately granted independent reviewer can approve; approval atomically reserves the original lot",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 36,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 59.93,
+            "error_code": null
+          },
+          {
+            "original_line": 1766,
+            "name": "reserved refund blocks actual payment; insufficient available funds leave a new case open rather than rejecting its basis",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 45,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 418.6505,
+            "error_code": null
+          },
+          {
+            "original_line": 1767,
+            "name": "one dispatch claim and unknown recovery keep funds reserved; wrong proofs cannot change the original recharge",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 50,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 99.4765,
+            "error_code": null
+          },
+          {
+            "original_line": 1768,
+            "name": "trusted partial receipt and duplicate queries reduce recharge net once; membership recalculates without adding consumption growth",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 59,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 37.059,
+            "error_code": null
+          },
+          {
+            "original_line": 1769,
+            "name": "partial independent decision can reserve remaining funds and unsent cancellation releases exactly that reservation",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 66,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 50.0387,
+            "error_code": null
+          },
+          {
+            "original_line": 1770,
+            "name": "two refund approvals and actual payment versus refund cannot reserve the same remaining money twice",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 72,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 244.9997,
+            "error_code": null
+          },
+          {
+            "original_line": 1771,
+            "name": "verified close releases an unknown refund, terminal contradictions require review and revoked operators cannot dispatch",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 80,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 64.0263,
+            "error_code": null
+          },
+          {
+            "original_line": 1772,
+            "name": "receipt replay across cases and failed audit cannot mutate money; final remainder receipt closes the original recharge net",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 85,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 95.7831,
+            "error_code": null
+          },
+          {
+            "original_line": 1773,
+            "name": "owner wallet and requested personal copy expose refund facts without channel credentials or independent review notes",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 97,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 124.6878,
+            "error_code": null
+          },
+          {
+            "original_line": 1774,
+            "name": "original recharge refund cases, reservations, trusted recovery and private copies in isolated MySQL",
+            "file": "test/recharge-refunds.integration.test.cjs",
+            "line": 6,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 35029.7328,
+            "error_code": null
+          }
+        ],
+        "support_source_only": false
+      },
+      {
+        "path": "晶晶日上工程交接包/01_源码/backend_server/test/recharge-refund-api.integration.test.cjs",
+        "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+        "sha256_lf": "25c5b39efd51d17f4b4ec75ec034af6969b23aa6d0ee7aaca0632833b4137dc4",
+        "checks": [
+          {
+            "original_line": 1744,
+            "name": "authenticated personal request is idempotent and cannot forge source, party, receipt or guardian",
+            "file": "test/recharge-refund-api.integration.test.cjs",
+            "line": 45,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 234.9093,
+            "error_code": null
+          },
+          {
+            "original_line": 1745,
+            "name": "own lists, cursor and cancellation respect identity, current version and command replay",
+            "file": "test/recharge-refund-api.integration.test.cjs",
+            "line": 56,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 118.6201,
+            "error_code": null
+          },
+          {
+            "original_line": 1746,
+            "name": "independent queue and actual evidence bytes never expose own case or unrelated files",
+            "file": "test/recharge-refund-api.integration.test.cjs",
+            "line": 70,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 112.1612,
+            "error_code": null
+          },
+          {
+            "original_line": 1747,
+            "name": "HTTP independent approval, scheduling and retry join the real worker without public dispatch or receipt input",
+            "file": "test/recharge-refund-api.integration.test.cjs",
+            "line": 83,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 276.3559,
+            "error_code": null
+          },
+          {
+            "original_line": 1748,
+            "name": "guardian refund choices derive child party and recharge only from a currently active link",
+            "file": "test/recharge-refund-api.integration.test.cjs",
+            "line": 118,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 54.6489,
+            "error_code": null
+          },
+          {
+            "original_line": 1749,
+            "name": "guardian HTTP uses own identity and evidence, separate child source, no self-review",
+            "file": "test/recharge-refund-api.integration.test.cjs",
+            "line": 133,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 177.5982,
+            "error_code": null
+          },
+          {
+            "original_line": 1750,
+            "name": "own wallet and guardian copies redact task, channel, identity and review evidence",
+            "file": "test/recharge-refund-api.integration.test.cjs",
+            "line": 154,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 86.2685,
+            "error_code": null
+          },
+          {
+            "original_line": 1751,
+            "name": "revoked guardian loses live case details and new requests but own child retains financial copy",
+            "file": "test/recharge-refund-api.integration.test.cjs",
+            "line": 164,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 118.1914,
+            "error_code": null
+          },
+          {
+            "original_line": 1752,
+            "name": "queued original refund refuses manual retry with a stable business conflict and no extra task",
+            "file": "test/recharge-refund-api.integration.test.cjs",
+            "line": 176,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 111.846,
+            "error_code": null
+          },
+          {
+            "original_line": 1753,
+            "name": "recharge refund role-separated HTTP and personal guardian copies",
+            "file": "test/recharge-refund-api.integration.test.cjs",
+            "line": 6,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 33033.9185,
+            "error_code": null
+          }
+        ],
+        "support_source_only": false
+      },
+      {
+        "path": "晶晶日上工程交接包/01_源码/backend_server/test/recharge-refund-recovery.integration.test.cjs",
+        "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+        "sha256_lf": "2b7b958603491c94e067817443de86fa3b36c17f9b75c0bb7873acbce609140f",
+        "checks": [
+          {
+            "original_line": 1754,
+            "name": "task insert and case link are atomic; same case scheduling keeps one durable task",
+            "file": "test/recharge-refund-recovery.integration.test.cjs",
+            "line": 60,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 239.8975,
+            "error_code": null
+          },
+          {
+            "original_line": 1755,
+            "name": "lost provider response persists UNKNOWN and worker restart only queries the original refund",
+            "file": "test/recharge-refund-recovery.integration.test.cjs",
+            "line": 73,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 133.4571,
+            "error_code": null
+          },
+          {
+            "original_line": 1756,
+            "name": "expired lease cannot settle money or finish a job; a new lease queries and settles once",
+            "file": "test/recharge-refund-recovery.integration.test.cjs",
+            "line": 82,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 106.0646,
+            "error_code": null
+          },
+          {
+            "original_line": 1757,
+            "name": "bad receipt blocks, never releases funds; current independent permission is required to resume",
+            "file": "test/recharge-refund-recovery.integration.test.cjs",
+            "line": 92,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 151.1811,
+            "error_code": null
+          },
+          {
+            "original_line": 1758,
+            "name": "missing adapter and changed merchant fail closed; cancelled queued cases never send",
+            "file": "test/recharge-refund-recovery.integration.test.cjs",
+            "line": 103,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 389.7111,
+            "error_code": null
+          },
+          {
+            "original_line": 1759,
+            "name": "a manually sent old case is scheduled for query only; completed money survives a lost job-completion write",
+            "file": "test/recharge-refund-recovery.integration.test.cjs",
+            "line": 112,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 91.7628,
+            "error_code": null
+          },
+          {
+            "original_line": 1760,
+            "name": "consumed recharge case remains open; actual order refund restores its original lot then original-route refund completes",
+            "file": "test/recharge-refund-recovery.integration.test.cjs",
+            "line": 124,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 457.5727,
+            "error_code": null
+          },
+          {
+            "original_line": 1761,
+            "name": "guardian must be active and owns evidence; no child impersonation, foreign source or self-review",
+            "file": "test/recharge-refund-recovery.integration.test.cjs",
+            "line": 152,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 228.45,
+            "error_code": null
+          },
+          {
+            "original_line": 1762,
+            "name": "revoked guardian cannot submit, read or dispatch an unsent approval; trusted in-flight result may still settle",
+            "file": "test/recharge-refund-recovery.integration.test.cjs",
+            "line": 168,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 232.9489,
+            "error_code": null
+          },
+          {
+            "original_line": 1763,
+            "name": "durable recharge refund recovery and guardian delegation in isolated MySQL",
+            "file": "test/recharge-refund-recovery.integration.test.cjs",
+            "line": 6,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 35089.133,
+            "error_code": null
+          }
+        ],
+        "support_source_only": false
+      }
+    ],
+    "limits": [
+      {
+        "path": "晶晶日上工程交接包/01_源码/backend_server/test/consumer-controls.integration.test.cjs",
+        "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+        "sha256_lf": "342f6844ec98c21e93bde7e001033acf4e79caf7e9999188c730e1b06aa93a5a",
+        "checks": [
+          {
+            "original_line": 396,
+            "name": "settings work before wallet opening; private and versioned, duplicate retry changes once",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 21,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 193.2249,
+            "error_code": null
+          },
+          {
+            "original_line": 397,
+            "name": "concurrent purchases cannot exceed cap; failure rolls back payment and request key",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 31,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 210.5958,
+            "error_code": null
+          },
+          {
+            "original_line": 398,
+            "name": "lowering takes effect before unsent dispatch; unknown provider result stays reserved",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 37,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 410.5324,
+            "error_code": null
+          },
+          {
+            "original_line": 399,
+            "name": "raise/removal need cooling, cancellation preserves active limit and history is immutable",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 48,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 126.2258,
+            "error_code": null
+          },
+          {
+            "original_line": 400,
+            "name": "refund returns money by existing rules, but does not reset gross spending budget",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 57,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 107.7253,
+            "error_code": null
+          },
+          {
+            "original_line": 401,
+            "name": "closed unpaid attempt releases budget; cancelled order and idempotent retries never mint money",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 64,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 176.327,
+            "error_code": null
+          },
+          {
+            "original_line": 402,
+            "name": "custody topups obey separate personal cap and existing platform rule; actual service stays disabled",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 70,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 107.6664,
+            "error_code": null
+          },
+          {
+            "original_line": 403,
+            "name": "cancelling an unsent custody payment releases reserved cash atomically; cap denial leaves no cash hold",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 82,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 417.5351,
+            "error_code": null
+          },
+          {
+            "original_line": 404,
+            "name": "month boundary retains older unknown attempts and late receipts without double counting",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 94,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 220.974,
+            "error_code": null
+          },
+          {
+            "original_line": 405,
+            "name": "old orders count when user first sets a limit; suspension and tampering cannot bypass privacy",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 104,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 61.0251,
+            "error_code": null
+          },
+          {
+            "original_line": 406,
+            "name": "self-service monthly limits constrain actual orders and custody attempts without changing financial facts",
+            "file": "test/consumer-controls.integration.test.cjs",
+            "line": 5,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 36260.8305,
+            "error_code": null
+          }
+        ],
+        "support_source_only": false
+      }
+    ],
+    "wallet": [
+      {
+        "path": "晶晶日上工程交接包/01_源码/backend_server/test/wallet.integration.test.cjs",
+        "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+        "sha256_lf": "afec5ed6b9e6e59754c86cefabefa9e9766526ffabbba4f4848011f7438a85f3",
+        "checks": [
+          {
+            "original_line": 2309,
+            "name": "independent rule review, stale rule hash and client balance forgery rejected",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 22,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 192.4273,
+            "error_code": null
+          },
+          {
+            "original_line": 2310,
+            "name": "other accounts, organizations, revoked identity and unopened custody are blocked",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 31,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 49.2531,
+            "error_code": null
+          },
+          {
+            "original_line": 2311,
+            "name": "only matching verified custody receipt credits balance once; topup yields zero growth",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 38,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 38.1748,
+            "error_code": null
+          },
+          {
+            "original_line": 2312,
+            "name": "original recharge refund assessment is read-only, personal and bound to the credited channel",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 48,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 46.2945,
+            "error_code": null
+          },
+          {
+            "original_line": 2313,
+            "name": "new order captures original rule and payment without fulfillment earns nothing",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 62,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 198.0046,
+            "error_code": null
+          },
+          {
+            "original_line": 2314,
+            "name": "aftercare deadline and unresolved case block points; mature order credits exactly once",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 68,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 87.1773,
+            "error_code": null
+          },
+          {
+            "original_line": 2315,
+            "name": "concurrent point reservations cannot overspend; exact replay and release are safe",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 77,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 67.8134,
+            "error_code": null
+          },
+          {
+            "original_line": 2316,
+            "name": "verified refund continues even when points spent; growth reversed and shortage explicit",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 83,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 299.7916,
+            "error_code": null
+          },
+          {
+            "original_line": 2317,
+            "name": "future points first recover refund shortfall; recovered debt does not erase new consumption growth",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 93,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 223.9834,
+            "error_code": null
+          },
+          {
+            "original_line": 2318,
+            "name": "expired batches cannot be used; materialized expiry preserves earned growth",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 99,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 37.1151,
+            "error_code": null
+          },
+          {
+            "original_line": 2319,
+            "name": "expired adult verification preserves balance history but disables displayed membership",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 107,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 27.0359,
+            "error_code": null
+          },
+          {
+            "original_line": 2320,
+            "name": "sixth level requires private evidence and separate current operator review",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 113,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 62.5127,
+            "error_code": null
+          },
+          {
+            "original_line": 2321,
+            "name": "custody order reservation is atomic, unknown payments retain funds, refund restores original lots",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 121,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 628.928,
+            "error_code": null
+          },
+          {
+            "original_line": 2322,
+            "name": "refund assessment never treats imported refunds, unknown allocations or another lot as spendable money",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 160,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 59.9409,
+            "error_code": null
+          },
+          {
+            "original_line": 2323,
+            "name": "wallet qualifies notices without adding duplicated legacy facts; old rights and reversal freeze remain",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 179,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 12.1363,
+            "error_code": null
+          },
+          {
+            "original_line": 2324,
+            "name": "automatic maintenance grants mature earnings; a lost lease cannot mutate points",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 186,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 204.1873,
+            "error_code": null
+          },
+          {
+            "original_line": 2325,
+            "name": "each fulfillment adapter requires its own actual completion source, not a paid flag",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 198,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 130.353,
+            "error_code": null
+          },
+          {
+            "original_line": 2326,
+            "name": "free awards require published amounts and real events; concurrent check-in awards once without growth",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 212,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 68.0816,
+            "error_code": null
+          },
+          {
+            "original_line": 2327,
+            "name": "audit failure rolls back rule creation; stored digest corruption fails closed",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 221,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 36.1642,
+            "error_code": null
+          },
+          {
+            "original_line": 2328,
+            "name": "wallet ledger, custody boundary and order points in isolated MySQL",
+            "file": "test/wallet.integration.test.cjs",
+            "line": 6,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 28529.905,
+            "error_code": null
+          }
+        ],
+        "support_source_only": false
+      },
+      {
+        "path": "晶晶日上工程交接包/01_源码/backend_server/test/wallet-policy.test.cjs",
+        "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+        "sha256_lf": "cb7e0239e4aadb2002d176ae0a6e96cda05ceb3d24ceddb21d6cea66b83c45d6",
+        "checks": [
+          {
+            "original_line": 2283,
+            "name": "wallet rule rejects guessed/missing limits, aftercare and changed 365-day commitment",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 8,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 1.9395,
+            "error_code": null
+          },
+          {
+            "original_line": 2284,
+            "name": "integer money conversion, rounding and cumulative proportional refund never use floating point",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 9,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.3113,
+            "error_code": null
+          },
+          {
+            "original_line": 2285,
+            "name": "payment alone, pending aftercare and unspecified periods never earn points",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 10,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 1.1505,
+            "error_code": null
+          },
+          {
+            "original_line": 2286,
+            "name": "cumulative 300 yuan unlocks one year and contributes zero growth",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 11,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 9.0999,
+            "error_code": null
+          },
+          {
+            "original_line": 2287,
+            "name": "large one-time topup cannot buy several membership years",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 12,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.3745,
+            "error_code": null
+          },
+          {
+            "original_line": 2288,
+            "name": "renewal counted once per membership year, expiration retains growth and topup restores",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 13,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.2936,
+            "error_code": null
+          },
+          {
+            "original_line": 2289,
+            "name": "sixth level requires independent current qualification in addition to growth",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 14,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.1542,
+            "error_code": null
+          },
+          {
+            "original_line": 2290,
+            "name": "refunded topups and future receipts do not falsely qualify",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 15,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.1629,
+            "error_code": null
+          },
+          {
+            "original_line": 2291,
+            "name": "pending topup counts against limits and cooldown to prevent concurrent overspend",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 16,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.7787,
+            "error_code": null
+          },
+          {
+            "original_line": 2292,
+            "name": "earliest-expiring points first; holds and expired batches are excluded",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 17,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.8335,
+            "error_code": null
+          },
+          {
+            "original_line": 2293,
+            "name": "spending, expiry and free points do not change qualified consumption growth",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 18,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.3178,
+            "error_code": null
+          },
+          {
+            "original_line": 2294,
+            "name": "refund plan accounts for already spent and expired points without negative balances or cash debt",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 19,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.1829,
+            "error_code": null
+          },
+          {
+            "original_line": 2295,
+            "name": "partial refund points equal the historical rate applied to cumulative net paid, regardless of timing",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 21,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.2758,
+            "error_code": null
+          },
+          {
+            "original_line": 2296,
+            "name": "daily recharge caps use the China business day, including the UTC date boundary",
+            "file": "test/wallet-policy.test.cjs",
+            "line": 22,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 0.1317,
+            "error_code": null
+          }
+        ],
+        "support_source_only": false
+      },
+      {
+        "path": "晶晶日上工程交接包/01_源码/backend_server/test/wallet-cross-period.integration.test.cjs",
+        "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+        "sha256_lf": "4e9c14cb22fe7b3284e8f4bc8175b7a7266ba7460d20eb1a4b0d2c040360614a",
+        "checks": [
+          {
+            "original_line": 2275,
+            "name": "two actual recharge receipts reach the first threshold without creating consumption growth",
+            "file": "test/wallet-cross-period.integration.test.cjs",
+            "line": 9,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 235.0726,
+            "error_code": null
+          },
+          {
+            "original_line": 2276,
+            "name": "renewal extends the same account once and expiry preserves every original balance lot",
+            "file": "test/wallet-cross-period.integration.test.cjs",
+            "line": 9,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 107.4582,
+            "error_code": null
+          },
+          {
+            "original_line": 2277,
+            "name": "expired membership still spends existing funds and actual stock acceptance establishes the original earning",
+            "file": "test/wallet-cross-period.integration.test.cjs",
+            "line": 9,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 345.0407,
+            "error_code": null
+          },
+          {
+            "original_line": 2278,
+            "name": "actual accepted consumption matures and a later recharge restores membership without buying growth",
+            "file": "test/wallet-cross-period.integration.test.cjs",
+            "line": 9,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 85.5182,
+            "error_code": null
+          },
+          {
+            "original_line": 2279,
+            "name": "unsent refund cancellation releases its hold; unknown result keeps it until original-route receipt settles once",
+            "file": "test/wallet-cross-period.integration.test.cjs",
+            "line": 9,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 214.9004,
+            "error_code": null
+          },
+          {
+            "original_line": 2280,
+            "name": "refund of the same accepted purchase restores its original recharge lot and reverses only its consumption growth",
+            "file": "test/wallet-cross-period.integration.test.cjs",
+            "line": 9,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 307.2855,
+            "error_code": null
+          },
+          {
+            "original_line": 2281,
+            "name": "a later recharge restores one year from its own receipt while original rules and settled refunds stay unchanged",
+            "file": "test/wallet-cross-period.integration.test.cjs",
+            "line": 9,
+            "nesting": 1,
+            "status": "PASS",
+            "duration_ms": 62.0809,
+            "error_code": null
+          },
+          {
+            "original_line": 2282,
+            "name": "one wallet keeps original recharge lots through renewal, expiry, spending and original-route refunds",
+            "file": "test/wallet-cross-period.integration.test.cjs",
+            "line": 5,
+            "nesting": 0,
+            "status": "PASS",
+            "duration_ms": 40649.106,
+            "error_code": null
+          }
+        ],
+        "support_source_only": false
+      }
+    ]
+  }
+}

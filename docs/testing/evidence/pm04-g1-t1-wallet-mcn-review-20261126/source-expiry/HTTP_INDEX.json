@@ -1,0 +1,1327 @@
+{
+  "source": "59f5e1b79e4a49bf314c47d59927f6ba1ed51f9b",
+  "private_original": {
+    "path": ".local/qa18/t1-wallet-source-expiry-20261126-01/http-private/wallet-source-expiry-http-fixtures.json",
+    "sha256": "55f3d87347d61219de12edefdc565476e42c7f65bc523bb2c37a72bb378178b0"
+  },
+  "cases": [
+    {
+      "index": 0,
+      "method": "POST",
+      "path": "/api/v1/wallet/rules",
+      "schema": "ErrorResponse",
+      "error_code": "WALLET_RULE_INVALID",
+      "facts": []
+    },
+    {
+      "index": 1,
+      "method": "POST",
+      "path": "/api/v1/wallet/rules",
+      "schema": "ErrorResponse",
+      "error_code": "WALLET_RULE_INVALID",
+      "facts": []
+    },
+    {
+      "index": 2,
+      "method": "POST",
+      "path": "/api/v1/wallet/rules",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "kind": "RULE",
+            "owner_party_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "method": "POST",
+      "path": "/api/v1/wallet/rules/0d5e92f1-3707-4a97-a7e7-7c2985c45f8f/review",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "kind": "RULE",
+            "owner_party_id": null,
+            "current_status": "EFFECTIVE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "reason": "Independent synthetic 365-day rule"
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "kind": "ACCOUNT",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ACTIVE",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "PENDING",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "points": 0,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": null,
+            "expires_at": null,
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "PENDING",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "points": 0,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": null,
+            "expires_at": null,
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": "2025-08-21T12:22:53.989Z",
+            "expires_at": "2026-08-21T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "recorded_balance_minor": 0,
+            "available_points": 20,
+            "qualifying_growth": 20,
+            "withdrawal_enabled": false,
+            "transfer_enabled": false
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 20,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": "2025-08-21T12:22:53.989Z",
+            "expires_at": "2026-08-21T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "recorded_balance_minor": 0,
+            "available_points": 20,
+            "qualifying_growth": 20,
+            "withdrawal_enabled": false,
+            "transfer_enabled": false
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 20,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": "2025-08-21T12:22:53.989Z",
+            "expires_at": "2026-08-21T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "recorded_balance_minor": 0,
+            "available_points": 10,
+            "qualifying_growth": 20,
+            "withdrawal_enabled": false,
+            "transfer_enabled": false
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 20,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": "2025-08-21T12:22:53.989Z",
+            "expires_at": "2026-08-21T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "recorded_balance_minor": 0,
+            "available_points": 10,
+            "qualifying_growth": 20,
+            "withdrawal_enabled": false,
+            "transfer_enabled": false
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 20,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "points": 10,
+            "expired": 10,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": "2025-08-21T12:22:53.989Z",
+            "expires_at": "2026-08-21T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "recorded_balance_minor": 0,
+            "available_points": 5,
+            "qualifying_growth": 20,
+            "withdrawal_enabled": false,
+            "transfer_enabled": false
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 20,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "points": 10,
+            "expired": 10,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": "2025-08-21T12:22:53.989Z",
+            "expires_at": "2026-08-21T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "recorded_balance_minor": 0,
+            "available_points": 10,
+            "qualifying_growth": 20,
+            "withdrawal_enabled": false,
+            "transfer_enabled": false
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 20,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "points": 10,
+            "expired": 10,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": "2025-08-21T12:22:53.989Z",
+            "expires_at": "2026-08-21T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "recorded_balance_minor": 0,
+            "available_points": 10,
+            "qualifying_growth": 20,
+            "withdrawal_enabled": false,
+            "transfer_enabled": false
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 20,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "points": 10,
+            "expired": 10,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": "2025-08-21T12:22:53.989Z",
+            "expires_at": "2026-08-21T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "recorded_balance_minor": 0,
+            "available_points": 0,
+            "qualifying_growth": 20,
+            "withdrawal_enabled": false,
+            "transfer_enabled": false
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 20,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "points": 10,
+            "expired": 10,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "points": 10,
+            "expired": 0,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": "2025-08-21T12:22:53.989Z",
+            "expires_at": "2026-08-21T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "recorded_balance_minor": 0,
+            "available_points": 0,
+            "qualifying_growth": 20,
+            "withdrawal_enabled": false,
+            "transfer_enabled": false
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 20,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "021885c8-fc00-48b9-815d-c88f172d66da",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "points": 10,
+            "expired": 10,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "553a88a7-ca60-4695-8fa3-7541590f7fe8",
+            "issued_at": "2025-07-22T12:22:53.989Z",
+            "expires_at": "2026-07-22T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/0/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "ecf61cda-ebf7-4116-9ba0-2e510884dacc",
+            "kind": "EARNING",
+            "owner_party_id": "c1120c13-c31b-435e-a7ca-42770d3704f3",
+            "current_status": "ISSUED",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "points": 10,
+            "expired": 10,
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "order_id": "44698f55-2b77-43f4-a2fa-41bcb32c506a",
+            "issued_at": "2025-08-21T12:22:53.989Z",
+            "expires_at": "2026-08-21T12:22:53.989Z",
+            "source_kind": "CONSUMPTION"
+          }
+        },
+        {
+          "pointer": "data/items/1/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "ErrorResponse",
+      "error_code": "ARTIST_PARTY_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 29,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "ErrorResponse",
+      "error_code": "INVALID_INPUT",
+      "facts": []
+    },
+    {
+      "index": 30,
+      "method": "POST",
+      "path": "/api/v1/wallet/recharges",
+      "schema": "ErrorResponse",
+      "error_code": "CUSTODY_PROVIDER_NOT_CONNECTED",
+      "facts": []
+    },
+    {
+      "index": 31,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "6b020a68-8a93-4547-ba77-f45471a93295",
+            "rule_id": "0d5e92f1-3707-4a97-a7e7-7c2985c45f8f",
+            "recorded_balance_minor": 0,
+            "available_points": 0,
+            "qualifying_growth": 20,
+            "withdrawal_enabled": false,
+            "transfer_enabled": false
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 20,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "enabled": false,
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    }
+  ],
+  "limit": "Allowlisted synthetic records only; complete raw HTTP remains local; actual HTTP assertions and contract32 are pinned."
+}
