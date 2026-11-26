@@ -51,7 +51,7 @@ module.exports=async({t,db,S,invoke,base,fixtures,records,second,firstVote,balan
  });
  await t.test('activity pagination and single-read use the same source and receipt without cross-account access',async()=>{
   let before=null;const ids=[];
-  do{const page=ok(await call('GET','/operations/notifications/feed?limit=3'+(before?'&before='+before:''),{schema:'NotificationFeedResponse'}));ids.push(...page.items.map(x=>x.id));before=page.next_cursor;assert(ids.length<300,'Bounded original fixture pagination');}while(before);
+  do{const page=ok(await call('GET','/operations/notifications/feed?limit=3'+(before?'&cursor='+before:''),{schema:'NotificationFeedResponse'}));ids.push(...page.items.map(x=>x.id));before=page.next_cursor;assert(ids.length<300,'Bounded original fixture pagination');}while(before);
   assert.equal(new Set(ids).size,ids.length);assert(result.original_vote_event_ids.every(id=>ids.includes(id)));
   const item=ok(await feed('&channel=ACTIVITY_VOTING&unread_only=true')).items.find(x=>x.record_id===later.id);assert(item);
   const url='/operations/notifications/'+item.id+'/read';bad(await call('POST',url,{person:buyer2,body:{},schema:'OpsReadResponse'}),404,'NOTIFICATION_NOT_FOUND');
