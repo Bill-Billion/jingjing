@@ -14,7 +14,7 @@ try{
  assert.equal(current.trade_commands.rows-proof.copied_snapshot.trade_commands.rows,2,'ONLY_TWO_NEW_ORIGINAL_CHECKOUT_KEYS');
  for(const table of ['trade_records','trade_journal','trade_installments','trade_transactions','finance_records','finance_entries','finance_sources','project_records','project_participation_orders','test_payment_simulator'])assert.deepEqual(current[table],proof.copied_snapshot[table]);
  const[kinds]=await db.execute('SELECT kind,COUNT(*) AS n FROM trade_records GROUP BY kind ORDER BY kind');const counts=Object.fromEntries(kinds.map(x=>[x.kind,Number(x.n)]));assert.equal(counts.ORDER,5);assert.equal(counts.PAYMENT,10);assert.equal(counts.REFUND,3);assert.equal(current.trade_journal.rows,13);
- const[orders]=await db.execute("SELECT id,data_json FROM trade_records WHERE kind='ORDER' ORDER BY id");const money=orders.map(x=>({id:x.id,financial:JSON.parse(x.data_json).financial}));
+ const[orders]=await db.execute("SELECT id,data_json FROM trade_records WHERE kind='ORDER' ORDER BY id");const money=orders.map(x=>({id:x.id,financial:(typeof x.data_json==='string'?JSON.parse(x.data_json):x.data_json).financial}));
  assert.deepEqual(money.find(x=>x.id==='08834e9a-d780-4bbe-8994-c503b8077f6f').financial,{received_minor:5000,refunded_minor:0,net_minor:5000});
  assert.deepEqual(money.find(x=>x.id==='4cf746af-9d27-4b5c-b839-2e2bc9e38a95').financial,{received_minor:10000,refunded_minor:7000,net_minor:3000});
  const[entries]=await db.execute('SELECT party_id,category,amount_minor FROM finance_entries ORDER BY party_id');assert.equal(entries.length,2);assert(entries.every(x=>x.category==='ACCRUAL'));assert.deepEqual(entries.map(x=>Number(x.amount_minor)).sort((a,b)=>a-b),[16000,64000]);
