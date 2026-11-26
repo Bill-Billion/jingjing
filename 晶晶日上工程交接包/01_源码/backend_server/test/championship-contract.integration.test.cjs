@@ -137,6 +137,7 @@ test('contract championship: actual HTTP votes, same-event appeal and earned rew
    fixtures.push({method:'GET',path:new URL(url).pathname,schema:'OperationReceiptResponse',value});
    await assert.rejects(invoke('nominate',seller,nominationInput),{code:'COMPETITION_CANDIDATE_NOT_ELIGIBLE'});
   });
+  await require('./support/activity-notifications.cjs')({t,db,S,invoke,base,fixtures,records,second,firstVote,balance});
   const out=path.resolve(__dirname,'../../../..','.local');await fs.mkdir(out,{recursive:true});await fs.writeFile(path.join(out,'championship-contract-http-fixtures.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));await fs.writeFile(path.join(out,'championship-contract-records.json'),JSON.stringify(records,null,2));
  }finally{if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();if(prior===undefined)delete process.env.RANKING_CONTRACT_POLICY;else process.env.RANKING_CONTRACT_POLICY=prior;}
 });
