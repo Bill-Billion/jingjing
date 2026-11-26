@@ -14,7 +14,8 @@ test('audition fixed total rejects separate fee inputs and booking visibility pr
   await control.query('CREATE DATABASE '+mysql.escapeId(name)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_bin');db=await openDatabase({...env,MYSQL_DATABASE:name});await migrate(db);
   // Existing explicitly synthetic adult/manual-certification fixture; no real provider or certification claim.
   const S=await require('./helpers/auditions-seed.cjs').seedAuditions(db),{seller,buyer,reviewer}=S;
-  server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyEnv:{ARTIST_CONTRACT_POLICY:'CONTRACT_20261029'},supplyStorageFactory:S.storageFactory}).listen(0,'127.0.0.1');
+  const merchant=await S.parties.createOrganization(S.outsider.ctx,{display_name:'Synthetic free hosting platform',operation_key:key()});
+  server=require('../src/http/account-api').createAccountApi({db,secret:S.secret,supplyEnv:{ARTIST_CONTRACT_POLICY:'CONTRACT_20261029',ARTIST_PLATFORM_MERCHANT_PARTY_ID:merchant.party_id},supplyStorageFactory:S.storageFactory}).listen(0,'127.0.0.1');
   await new Promise(r=>server.once('listening',r));const base='http://127.0.0.1:'+server.address().port+'/api/v1';
   async function call(method,url,{user=buyer,party=null,body,op=key(),version}={}){
    const response=await fetch(base+url,{method,headers:{Authorization:'Bearer '+user.token,...(party?{'X-Acting-Party':party}:{}),...(body!==undefined?{'Content-Type':'application/json','Idempotency-Key':op}:{}),...(version?{'If-Match':'"'+version+'"'}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
