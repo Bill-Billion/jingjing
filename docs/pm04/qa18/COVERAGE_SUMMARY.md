@@ -48,9 +48,9 @@
 |E2E-09 曝光权益与月冠军|18|1|13|4|0|
 |E2E-12 参演、发行与收入结算|18|9|9|0|0|
 
-缺陷登记共165项：专项复测通过163项，排除为缺陷2项，仍保留：无。专项复测仍待最终回归，不等于正式关闭。
+缺陷登记共168项：专项复测通过166项，排除为缺陷2项，仍保留：无。专项复测仍待最终回归，不等于正式关闭。
 
-CI：准确提交 `bafd783245f64b1dfc9e569065b9655f2019ce38`，NO_RUNS_OBSERVED；见 `docs/testing/evidence/pm04-g1-t1-participation-recovery-20261126/PUBLISHED_BASE_CI_OBSERVED.json`。不继承给后续HEAD。
+CI：准确提交 `ce0163095c9a7b56e05692ede053fc63ededb735`，NO_RUNS_OBSERVED；见 `docs/testing/evidence/pm04-g1-t1-participation-boundaries-20261126/PUBLISHED_BASE_CI_OBSERVED.json`。不继承给后续HEAD。
 
 T1退出检查：NOT_READY；剩余279槽须核定完整机器范围或客观条件，未结缺陷0项。T3全量、安装包人工体验和维护者签收不是T1退出的前置。
 
