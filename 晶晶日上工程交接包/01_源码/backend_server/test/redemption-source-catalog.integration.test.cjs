@@ -31,7 +31,11 @@ test('contract pool retains disabled source item and historical snapshots',{skip
    const P=require('../src/modules/redemption/lottery-policy'),data={...pool.data,publication_notice:P.publicationNotice(new Date(Date.now()-8*86400000).toISOString(),pool.data.ends_at)};data.rules_sha256=P.rulesHash(data);
    const modified={...data,source_catalog:structuredClone(data.source_catalog)};modified.source_catalog.items[0].enabled=true;assert.notEqual(P.rulesHash(modified),data.rules_sha256);
    await db.execute('UPDATE redemption_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),digest(data),pool.id]);
-   const op=key(),body={pool_id:pool.id,rules_sha256:data.rules_sha256,count:10},before=(await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points,draw=await request('/redemption/draws',buyer,{body,operation:op});records.draw_id=draw.id;
+   const op=key(),body={pool_id:pool.id,rules_sha256:data.rules_sha256,count:10},before=(await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points;
+   await assert.rejects(request('/redemption/draws',buyer,{body,operation:op}),{code:'CONSUMER_RISK_CONFIRMATION_REQUIRED'});assert.equal((await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points,before);
+   const risk=require('../src/modules/wallet/risk').createConsumerRisk(db,{resolvePrincipal:S.resolvePrincipal}),target={kind:'LOTTERY',pool_id:pool.id,count:10,request_key:op},preview=await risk.preview(buyer.ctx,{party_id:buyer.personal_party_id,target});
+   await risk.confirm(buyer.ctx,{party_id:buyer.personal_party_id,target,preview_sha256:preview.preview_sha256,read_confirmed:true,operation_key:key()});
+   const draw=await request('/redemption/draws',buyer,{body,operation:op});records.draw_id=draw.id;
    catalog(draw.data.rule_snapshot.source_catalog);assert(draw.data.results.every(x=>x.kind!=='INTERVIEW_FINAL'));const balance=(await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points;assert.equal(balance,before-2700+draw.data.results.reduce((n,x)=>n+x.point_back,0));
    pool=await request('/redemption/pools/'+pool.id,buyer,{party:false});await request('/redemption/pools/'+pool.id+'/retirement',reviewer,{party:false,version:pool.object_version,body:{reason:'Synthetic retirement preserves history'}});
    const retired=await request('/redemption/pools/'+pool.id,buyer,{party:false});assert.equal(retired.current_status,'RETIRED');catalog(retired.source_catalog);assert.equal(retired.rules_sha256,data.rules_sha256);
