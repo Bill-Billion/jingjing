@@ -1,0 +1,122 @@
+TAP version 13
+# Subtest: customization referral: actual delivery, aftercare, independent settlement and original payout
+    # Subtest: original referral is frozen in accepted customization order; unpaid commission is pending
+    ok 1 - original referral is frozen in accepted customization order; unpaid commission is pending
+      ---
+      duration_ms: 407.0921
+      type: 'test'
+      ...
+    # Subtest: actual four-stage manual delivery and full receipt still wait for aftercare
+    ok 2 - actual four-stage manual delivery and full receipt still wait for aftercare
+      ---
+      duration_ms: 891.6418
+      type: 'test'
+      ...
+    # Subtest: matured original delivery accrues commission once from platform budget before settlement exists
+    ok 3 - matured original delivery accrues commission once from platform budget before settlement exists
+      ---
+      duration_ms: 38.6146
+      type: 'test'
+      ...
+    # Subtest: original parties approve exact settlement and only verified evidence records paid referral
+    ok 4 - original parties approve exact settlement and only verified evidence records paid referral
+      ---
+      duration_ms: 284.9302
+      type: 'test'
+      ...
+    # Subtest: later referral clicks do not rewrite old payout or original contract; own income uses ledger
+    ok 5 - later referral clicks do not rewrite old payout or original contract; own income uses ledger
+      ---
+      duration_ms: 75.6862
+      type: 'test'
+      ...
+    # Subtest: same paid referral is reduced only after independently allowed original refund actually succeeds
+    not ok 6 - same paid referral is reduced only after independently allowed original refund actually succeeds
+      ---
+      duration_ms: 228.4584
+      type: 'test'
+      location: 'J:\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-customization-fulfillment.integration.test.cjs:64:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        0 !== 800
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 800
+      actual: 0
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\referral-customization-fulfillment.integration.test.cjs:74:87)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\referral-customization-fulfillment.integration.test.cjs:64:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: original referrer debt is independently claimed; approval does not count as receipt
+    not ok 7 - original referrer debt is independently claimed; approval does not count as receipt
+      ---
+      duration_ms: 15.7281
+      type: 'test'
+      location: 'J:\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-customization-fulfillment.integration.test.cjs:78:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        + actual - expected
+        
+        + 'RECOVERY_SETTLEMENT_REQUIRED'
+        - 'RECOVERY_EXCEEDS_DUE'
+                    ^
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 'RECOVERY_EXCEEDS_DUE'
+      actual: 'RECOVERY_SETTLEMENT_REQUIRED'
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\referral-customization-fulfillment.integration.test.cjs:80:11)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\referral-customization-fulfillment.integration.test.cjs:78:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: partial and final verified returns recover same commission exactly once without rewriting old paid evidence
+    not ok 8 - partial and final verified returns recover same commission exactly once without rewriting old paid evidence
+      ---
+      duration_ms: 85.2715
+      type: 'test'
+      location: 'J:\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-customization-fulfillment.integration.test.cjs:87:11'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\referral-customization-fulfillment.integration.test.cjs:91:58)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\referral-customization-fulfillment.integration.test.cjs:87:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..8
+not ok 1 - customization referral: actual delivery, aftercare, independent settlement and original payout
+  ---
+  duration_ms: 9303.5897
+  type: 'test'
+  location: 'J:\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\referral-customization-fulfillment.integration.test.cjs:4:1'
+  failureType: 'subtestsFailed'
+  error: '3 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 9
+# suites 0
+# pass 5
+# fail 4
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9726.5189

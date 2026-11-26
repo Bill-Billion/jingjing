@@ -66,11 +66,12 @@ test('customization referral: actual delivery, aftercare, independent settlement
    ok(await productionCommand('cases',buyer,{kind:'CANCEL',reason:'Synthetic post-delivery agreed partial refund',evidence_asset_ids:[]}));
    const cid=(await flow()).cases.at(-1).id;
    assert.equal((await productionCommand('case-resolution',producer,{case_id:cid,decision:'CANCEL',retained_minor:8000,change_order_id:null,reason:'Self review forbidden'})).status,403);
-   ok(await productionCommand('case-resolution',reviewer,{case_id:cid,decision:'CANCEL',retained_minor:8000,change_order_id:null,reason:'Independent valuation of confirmed original work'}));assert.equal((await flow()).cancellation.refund_minor,2000);
+   ok(await productionCommand('case-resolution',reviewer,{case_id:cid,decision:'CANCEL',retained_minor:8000,change_order_id:null,reason:'Independent valuation of confirmed original work'}));assert.equal((await flow()).cancellation.refund_minor,2000);assert.equal((await sync()).current_status,'PENDING');assert.equal((await settle()).body.error.code,'REFERRAL_AFTERCARE_NOT_READY');
    const last=(await db.execute("SELECT id FROM trade_records WHERE order_id=? AND kind='PAYMENT' AND current_status='SUCCEEDED' AND JSON_UNQUOTE(JSON_EXTRACT(data_json,'$.installment_key'))='last'",[order.id]))[0][0];assert.ok(last);
    refund=await f.trade.requestRefund(buyer.ctx,{party_id:buyer.acting_party_id,payment_id:last.id,allocations:[{line_id:'film',amount_minor:2000}],reason:'Synthetic original case refund',operation_key:key()});refund=await f.reviewTrade(refund);
-   assert.equal((await referralBalance()).paid_minor,1000);assert.equal((await referralBalance()).recovery_due_minor,0);
+   assert.equal((await referralBalance()).paid_minor,1000);assert.equal((await referralBalance()).recovery_due_minor,0);assert.equal((await sync()).current_status,'PENDING');assert.equal((await settle()).body.error.code,'REFERRAL_AFTERCARE_NOT_READY');
    await f.trade.claim(reviewer.ctx,refund.id,null,'REFUND');await f.trade.applyRefund(refund.id,{...config,refund_id:refund.id,payment_id:last.id,transaction_id:'synthetic-local:'+last.id,currency:'CNY',amount_minor:2000,status:'SUCCEEDED'});
+   assert.equal((await sync()).current_status,'PENDING');assert.equal((await settle()).body.error.code,'REFERRAL_AFTERCARE_NOT_READY');
    ok(await productionCommand('refund-sync',buyer,{}));commission=await sync();assert.equal(commission.data.amount_minor,800);assert.equal(commission.data.attribution.referrer_party_id,referrer.personal_party_id);
    const revised=await freview(ok(await settle()));for(const who of [producer,buyer,referrer])await confirm(revised,who);
    const b=await referralBalance();assert.equal(b.accrued_minor,800);assert.equal(b.paid_minor,1000);assert.equal(b.recovery_due_minor,200);assert.deepEqual((await fread(settlement)).data,originalSettlement);assert.deepEqual((await fread(paidEvidence)).data,originalPaid);
