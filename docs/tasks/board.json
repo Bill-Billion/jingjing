@@ -18829,14 +18829,14 @@
         "final_full_regression_complete": false,
         "app_full_source": "533c77c3088d409690ef2147baa14d8a123b2a54",
         "frontend_received": "2eeaeee16ad55d7894a159535707ceeb6438c095",
-        "latest_run": "pm04-g1-t1-membership-startup-20261126",
+        "latest_run": "pm04-g1-t1-membership-privacy-review-20261126",
         "app_full_result": {
           "passed": 1263,
           "failed": 0,
           "skipped": 1
         },
         "same_stock_order": "d3c6439d-1427-4fda-bc81-d69099becee8",
-        "next": "Current original membership startup diagnostic passed; do not repeat. Historical ENV063 cause unknown but no unhandled failure. Continue unique490-slot evidence review and only unsupported original assertions.",
+        "next": "Review original G04/E2E11 client same-request scope, G11 refund/revocation, G12 race and original minor clusters. E2E08 lacks App unauthorized and Vue unauthorized/duplicate. No unsupported history becomes final PASS; do not repeat proven business runs.",
         "backend_runtime_source": "9df45f62b7430f8bcf68131ccf6fba25ec0e7188",
         "api_version": "0.31.81-rc.1",
         "full_app_result_is_previous_source": true,
@@ -18936,64 +18936,59 @@
         "latest_archive_test_source": "edd178f094b8ba412e6886991d14b2dc60008c1f",
         "latest_archive_result": {
           "stage": "T1_CLOSEOUT",
-          "goal": "ACTIVE",
-          "result": "PASS_SCOPED_READONLY_DIAGNOSTIC",
-          "source": "edd178f094b8ba412e6886991d14b2dc60008c1f",
-          "app_source": "dac064f4a4a7942f059266b20fc128a2544da228",
-          "backend_source": "9df45f62b7430f8bcf68131ccf6fba25ec0e7188",
-          "vue_source": "c4f12488486eb95cd19068bb84103ad46c00297f",
-          "api": "0.31.81-rc.1",
-          "migrations": "225/0225",
-          "environment": "jx_test_stock_pm03_44b3c25a57e75c8701792dc1",
-          "account_id": "ef464188-5d6e-433b-a795-6c9f67307194",
-          "business_checks": 52,
-          "requests": 260,
-          "mutation_requests": 0,
+          "new_business_execution": false,
           "product_changed": false,
-          "new_complete_slots": 0,
-          "coverage": {
-            "historical_covered": 88,
-            "partial": 33,
-            "pending": 457
+          "new_defects": 0,
+          "review": {
+            "path": "docs/testing/evidence/pm04-g1-t1-membership-privacy-review-20261126/T1_MEMBERSHIP_PRIVACY_REVIEW.json",
+            "sha256": "3c62a219a8c770906c656b4772cd09f79797dd675ce9e2b131ac85d8951f1bba"
           },
-          "command": "QA18_OUTPUT_DIR=<new .local QA output> V5_ACCESS_FILE=<valid current private ui access> CHROME_PATH=<Edge> node scripts/qa18-membership-startup-diagnostic.mjs",
-          "attempts": [
-            {
-              "number": 1,
-              "source": "fa05719d463e6a56df8d769257d8bf98765b36eb",
-              "result": "FAIL_BEFORE_BROWSER",
-              "cause": "UTF8 decoding changed binary PNG bytes before hash"
-            },
-            {
-              "number": 2,
-              "source": "6fba95d672c3bc2aa653492b48d8eb463e712bed",
-              "result": "FAIL_ASSERTION",
-              "cause": "networkidle not Flutter expansion completion"
-            },
-            {
-              "number": 3,
-              "source": "6c75f64c2fbd853c264269cb1efbffe4575bf65a",
-              "result": "FAIL_LOCATOR",
-              "cause": "facts merged into group, individual aria-label locator absent"
-            },
-            {
-              "number": 4,
-              "source": "edd178f094b8ba412e6886991d14b2dc60008c1f",
-              "result": "PASS",
-              "checks": 52
-            }
+          "new_complete_slots": [
+            "E2E-08|api|normal",
+            "E2E-08|api|reverse",
+            "E2E-08|api|unauthorized",
+            "E2E-08|api|duplicate",
+            "E2E-08|api|state_change",
+            "E2E-08|api|recovery",
+            "E2E-08|app|normal",
+            "E2E-08|app|reverse",
+            "E2E-08|app|duplicate",
+            "E2E-08|app|state_change",
+            "E2E-08|app|recovery",
+            "E2E-08|web|normal",
+            "E2E-08|web|reverse",
+            "E2E-08|web|state_change",
+            "E2E-08|web|recovery",
+            "ACC-DEL-23.01|api|normal",
+            "ACC-DEL-23.01|api|reverse",
+            "ACC-DEL-23.02|api|normal",
+            "ACC-DEL-23.02|api|reverse",
+            "TASK-04|api|normal",
+            "TASK-04|api|reverse",
+            "ACC-DEL-25.01|api|normal",
+            "ACC-DEL-25.01|api|reverse",
+            "ACC-DEL-25.02|api|normal",
+            "ACC-DEL-25.02|api|reverse",
+            "ACC-DEL-25.03|api|normal",
+            "ACC-DEL-25.03|api|reverse",
+            "ACC-DEL-25.04|api|normal",
+            "ACC-DEL-25.04|api|reverse"
           ],
-          "defects": {
-            "total": 148,
-            "retarget_pass": 146,
-            "not_a_bug": 2,
-            "unhandled_machine_failures": 0,
-            "historical_ENV063_cause": "UNKNOWN_RETAINED"
-          },
-          "limits": [
-            "Historical cause proven",
-            "Original22 environment reproduced",
-            "Whole E2E08/current full App/native/151 accepted"
+          "membership_stages": 13,
+          "membership_e2e_slots": 15,
+          "privacy_api_slots": 6,
+          "agency_api_slots": 8,
+          "privacy_sources_verified": 22,
+          "agency_sources_verified": 12,
+          "agency_http_responses": 635,
+          "privacy_pass_rows": 214,
+          "privacy_http_responses": 813,
+          "remaining": [
+            "E2E08 App unauthorized; Vue unauthorized/duplicate require actual client actions, not copied API results.",
+            "E2E11 same-record full cross-end scope still unreviewed; 23.01/23.02/TASK04 API review does not close that chain.",
+            "ACC25.01-04 existing API scope covered; no new MCN onboarding, no full E2E10 or client inheritance.",
+            "ACC24.01 all original private content classes and 26.03 operations visibility still to audit.",
+            "All current-final-version578 slots NOT_RUN; no formal151 or18 group promotion."
           ]
         }
       },
@@ -19028,9 +19023,9 @@
       "coverage_tool": "scripts/qa18_coverage.py",
       "unified_coverage_snapshot": {
         "slots": 578,
-        "historical_covered": 88,
+        "historical_covered": 117,
         "partial_reviewed": 33,
-        "evidence_review_pending": 457,
+        "evidence_review_pending": 428,
         "candidate_links_not_pass": 575,
         "final_not_run": 578,
         "formal_status_unchanged": true,
@@ -19039,7 +19034,7 @@
       },
       "t1_goal": "持续值守推进并完成晶晶日上 PM04 G1 的 T1 首轮机测收口，交付真实可追溯的 T1 退出报告及 T3 冻结准备清单。沿用现有 QA 分支/PR44、已完成修复和原始失败，严格保留原151条、60REQ、23规则、18组、12条E2E及唯一578槽位，不重新规划、不扩展需求。先逐槽核定既有有效证据及准确产品源码/环境/业务ID/命令/原日志/摘要，不无理由重跑；仅补尚未证实的原场景、真实失败和确证缺陷复测，不以增加轮次或通过事件数为目标。对已复现、符合原需求且设计合理的前后端、测试及环境问题直接修复并专项复测；严重业务、权限、资金问题立即处理，普通失败不阻断独立工作。T1完成条件：全部原可机测场景已有完整执行证据或明确客观阻断及责任条件，严重确证缺陷修复复测，普通缺陷已归因且无未处理机器失败，原18组/12链/578槽位/缺陷/CI统一进度及证据归档完整。真机、真实供应商、人工材料与维护者签收单列非PASS，不据此外部条件无限延长T1；内部待核和脚本未到业务步骤不可伪装外部阻断。历史不同版本/环境不得拼为最终版本PASS，不删正常、失败、越权、重复、状态变化和恢复断言。T3最终同版18组/12链全量回归、合法隔离API独立安装包与获授权人工体验、151正式审阅保留为后续阶段，不作为本目标完成前置，不代维护者签收。每轮报告阶段、实际完成、18组/12链/578槽变化、修复与版本、缺陷与CI、阻断、下一步及用户条件，问题及时反馈；持续完成独立可推进事项，不逐组等待确认。只同步原QA草稿PR44，保护PR41/EXPERIENCE_CURRENT，不新增MCN带艺人入驻，不合并正式分支、不部署生产/公网、不启用真实收费，不动3490、旧离线APK、项目总览或自动监测。",
       "t1_exit_report_pending": true,
-      "latest_t1_execution": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/EXECUTION_SUMMARY.json"
+      "latest_t1_execution": "docs/testing/evidence/pm04-g1-t1-membership-privacy-review-20261126/EXECUTION_SUMMARY.json"
     }
   }
 }
