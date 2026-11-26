@@ -1,0 +1,45 @@
+{
+  "defects": [
+    {
+      "bug_id": "QA18-TEST-160",
+      "discovered_at": "2026-11-26T12:50:11.971Z",
+      "group_ids": "G14/G16/G17",
+      "acceptance_ids": "ACC-DEL-17.01/ACC-DEL-17.04",
+      "e2e_ids": "",
+      "severity": "P2",
+      "kind": "TEST_FIXTURE",
+      "owner": "chengcongcong222",
+      "status": "RETARGET_PASS",
+      "version": "9a48e2c3034868f0f996de078aec7e7e0e179b0c",
+      "environment": "jx_test_qa18_sources_618e8b335860b8932287",
+      "actual_record_id": "",
+      "role": "Synthetic buyer/supplier",
+      "original_key_sha256": "",
+      "expected": "现金不足必须到WALLET_BALANCE_INSUFFICIENT及后续原来源退款断言，不缺正常商户配置。",
+      "observed": "测试误以为customization fixture导出config；实际缺merchant_party_id/environment/app_id，付款先被PAYMENT_MERCHANT_MISMATCH拒绝。首项通过、其余五项连带失败，含父项共1PASS/6FAIL；35真实HTTP保留。",
+      "request_endpoint": "TradeRepository.preparePayment",
+      "response_code": "409/PAYMENT_MERCHANT_MISMATCH",
+      "reproduction": "node --test --test-concurrency=1 --test-reporter=tap --test-reporter=../../../scripts/backend-evidence-reporter.cjs --test-reporter-destination=stdout --test-reporter-destination=<isolated-output>/checks.jsonl test/wallet-source-separation.integration.test.cjs",
+      "before_proof_path": "docs/testing/evidence/pm04-g1-t1-wallet-source-separation-20261126/before-01/backend.tap",
+      "before_sha256": "a1cda3b636db66e19bdcee103e47e120f1e76fa70939a91806ce87b9274c1513",
+      "root_cause": "仅测试配置缺失；显式提供SANDBOX商户主体和应用配置。不改产品门禁、金额、来源、未知/重复/权限断言。",
+      "fix_commit": "6a340ce6f13ce63a05a2f81b8f6064e177ce7e96",
+      "target_retest_path": "docs/testing/evidence/pm04-g1-t1-wallet-source-separation-20261126/fixed-02/summary.json",
+      "target_retest_result": "6业务子项+父项7PASS/0FAIL，91同次HTTP契约通过。两次库均销毁、冻结968输入各自提交一致。",
+      "regression_run_id": "",
+      "reviewer": ""
+    }
+  ],
+  "attempts": [
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-wallet-source-separation-20261126/before-01/summary.json",
+      "sha256": "6d8368e45261f54701dddd8a0ad181f61f5ecdd85ea7197a1bbb8699bfa55e22"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-wallet-source-separation-20261126/fixed-02/summary.json",
+      "sha256": "04696fb56c754fa907120d1a2112b710d660f696c67a7e43f138589ba150f12a"
+    }
+  ],
+  "product_changed": false,
+  "new_business_defects": 0
+}
