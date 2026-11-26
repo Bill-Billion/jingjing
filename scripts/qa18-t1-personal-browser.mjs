@@ -51,12 +51,17 @@ try{
   const base=path.dirname(process.env.V5_ACCESS_FILE),original=JSON.parse(await fs.readFile(path.join(base,'access.json'),'utf8')),u=access.accounts.stock_buyer;
   const old=await fetch(access.base_url+'/me',{headers:{Authorization:'Bearer '+u.bearer_token}});assert.equal(old.status,401);
   async function post(route,body){const r=await fetch(access.base_url+route,{method:'POST',headers:{'Content-Type':'application/json','Idempotency-Key':randomUUID()},body:JSON.stringify(body)}),j=await r.json();assert.equal(r.status,200,j.error?.code);return j.data;}
-  const phone=original.accounts.stock_buyer.phone,ch=await post('/auth/sms-challenges',{phone,purpose:'LOGIN'}),sms=JSON.parse(await fs.readFile(path.join(base,'sms',ch.challenge_id+'.json'),'utf8'));
-  const fresh=await post('/auth/sessions',{phone,challenge_id:ch.challenge_id,code:sms.code});assert.equal(fresh.account.id,u.account_id);
-  const privateFile=path.join(dir,'library-session.private.json');await fs.writeFile(privateFile,'',{flag:'wx',mode:0o600});await createRequire(import.meta.url)('./test-fixtures/private-state.cjs').protectPrivateState(privateFile);await fs.writeFile(privateFile,JSON.stringify({environment:prepared.environment,token:fresh.access_token}));u.bearer_token=fresh.access_token;
+  const privateFile=path.join(dir,'library-session.private.json');let cached;
+  try{cached=JSON.parse(await fs.readFile(privateFile,'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;}
+  if(cached){assert.equal(cached.environment,prepared.environment);const r=await fetch(access.base_url+'/me',{headers:{Authorization:'Bearer '+cached.token}});assert.equal(r.status,200);assert.equal((await r.json()).data.id,u.account_id);u.bearer_token=cached.token;}
+  else{
+   const phone=original.accounts.stock_buyer.phone,ch=await post('/auth/sms-challenges',{phone,purpose:'LOGIN'}),sms=JSON.parse(await fs.readFile(path.join(base,'sms',ch.challenge_id+'.json'),'utf8'));
+   const fresh=await post('/auth/sessions',{phone,challenge_id:ch.challenge_id,code:sms.code});assert.equal(fresh.account.id,u.account_id);
+   await fs.writeFile(privateFile,'',{flag:'wx',mode:0o600});await createRequire(import.meta.url)('./test-fixtures/private-state.cjs').protectPrivateState(privateFile);await fs.writeFile(privateFile,JSON.stringify({environment:prepared.environment,token:fresh.access_token}));u.bearer_token=fresh.access_token;
+  }
   const a=await app('stock_buyer','works'),wanted='/api/v1/stock/purchases/'+prepared.order_id;
   const response=a.p.waitForResponse(r=>new URL(r.url()).pathname===wanted&&r.request().method()==='GET');
-  await action(a.p,a.p.getByRole('button',{name:'回到原业务',exact:true}));const rr=await response;assert.equal(rr.status(),200);const body=await rr.json();assert.equal(body.data.id,prepared.order_id);await snap(a.p,'app-owned-work-original-order');
+  await action(a.p,a.p.getByRole('button',{name:'回到原业务',exact:true}));const rr=await response;assert.equal(rr.status(),200);const body=await rr.json();assert.equal(body.data.order_id,prepared.order_id);await snap(a.p,'app-owned-work-original-order');
   await record('app-works-navigates-exact-owned-original-order',{order_id:prepared.order_id,status:200});
   result.limits=['Read-only owned-work navigation after a new normal synthetic SMS login; no restoration of revoked token.','Only initial test entry receives the actual new token; all business requests real. No new order/payment/refund.','This supplements a missing App works assertion, not a full G11 or native-device run.'];
  }else if(mode==='startup'){
