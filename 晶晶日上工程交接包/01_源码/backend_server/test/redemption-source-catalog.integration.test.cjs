@@ -33,7 +33,7 @@ test('contract pool retains disabled source item and historical snapshots',{skip
    await db.execute('UPDATE redemption_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),digest(data),pool.id]);
    const op=key(),body={pool_id:pool.id,rules_sha256:data.rules_sha256,count:10},before=(await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points,draw=await request('/redemption/draws',buyer,{body,operation:op});records.draw_id=draw.id;
    catalog(draw.data.rule_snapshot.source_catalog);assert(draw.data.results.every(x=>x.kind!=='INTERVIEW_FINAL'));const balance=(await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points;assert.equal(balance,before-2700+draw.data.results.reduce((n,x)=>n+x.point_back,0));
-   pool=await request('/redemption/pools/'+pool.id,buyer,{party:false});await request('/redemption/pools/'+pool.id+'/retire',reviewer,{party:false,version:pool.object_version,body:{reason:'Synthetic retirement preserves history'}});
+   pool=await request('/redemption/pools/'+pool.id,buyer,{party:false});await request('/redemption/pools/'+pool.id+'/retirement',reviewer,{party:false,version:pool.object_version,body:{reason:'Synthetic retirement preserves history'}});
    const retired=await request('/redemption/pools/'+pool.id,buyer,{party:false});assert.equal(retired.current_status,'RETIRED');catalog(retired.source_catalog);assert.equal(retired.rules_sha256,data.rules_sha256);
    const replay=await request('/redemption/draws',buyer,{body,operation:op});assert.equal(replay.id,draw.id);assert.deepEqual(replay.data.rule_snapshot,draw.data.rule_snapshot);assert.equal((await W.summary(buyer.ctx,{party_id:buyer.personal_party_id})).available_points,balance);
   });
@@ -43,7 +43,7 @@ test('contract pool retains disabled source item and historical snapshots',{skip
    await db.execute('UPDATE redemption_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),digest(data),legacy.id]);records.legacy_pool_id=legacy.id;
    const snapshot=(await db.execute('SELECT data_sha256 FROM redemption_records WHERE id=?',[legacy.id]))[0][0].data_sha256;
    const read=await request('/redemption/pools/'+legacy.id,buyer,{party:false});assert.equal(read.source_catalog,undefined);assert.equal(read.rules_sha256,data.rules_sha256);assert.deepEqual(read.config,data.config);assert.equal((await db.execute('SELECT data_sha256 FROM redemption_records WHERE id=?',[legacy.id]))[0][0].data_sha256,snapshot);
-   legacy=await request('/redemption/pools/'+legacy.id+'/retire',reviewer,{party:false,version:legacy.object_version,body:{reason:'Synthetic legacy retirement'}});assert.equal(legacy.data.source_catalog,undefined);assert.equal(legacy.data.rules_sha256,data.rules_sha256);assert.deepEqual(legacy.data.config,data.config);
+   legacy=await request('/redemption/pools/'+legacy.id+'/retirement',reviewer,{party:false,version:legacy.object_version,body:{reason:'Synthetic legacy retirement'}});assert.equal(legacy.data.source_catalog,undefined);assert.equal(legacy.data.rules_sha256,data.rules_sha256);assert.deepEqual(legacy.data.config,data.config);
   });
  }finally{
   await fs.writeFile(path.resolve(__dirname,'../../../../.local/redemption-source-catalog-http.json'),JSON.stringify({synthetic_only:true,database:name,records,cases:fixtures},null,2));

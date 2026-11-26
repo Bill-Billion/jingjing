@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.81-rc.1
+  version: 0.31.82-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -66874,10 +66874,53 @@ components:
       - reason
 
 
+    RedemptionSourceCatalog:
+      type: object
+      additionalProperties: false
+      description: Server-owned original contract category snapshot. Optional for historical pools; never inferred into an old record. Disabled categories are not drawable prizes or inventory promises.
+      properties:
+        version:
+          const: CONTRACT_20261029_FIRST_PHASE
+        items:
+          type: array
+          minItems: 12
+          maxItems: 12
+          uniqueItems: true
+          items:
+            oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                key:
+                  const: final
+                kind:
+                  const: INTERVIEW_FINAL
+                enabled:
+                  const: false
+                weight:
+                  const: 0
+              required: [key, kind, enabled, weight]
+            - type: object
+              additionalProperties: false
+              properties:
+                key:
+                  enum: [priority, open, free, credit1000, credit500, credit200, credit100, credit50, exposure, points, none]
+                kind:
+                  enum: [INTERVIEW_PRIORITY, INTERVIEW_OPEN, PRODUCTION_FREE, PRODUCTION_CREDIT, EXPOSURE, POINT_BACK, NONE]
+                enabled:
+                  const: true
+                weight:
+                  type: integer
+                  minimum: 1
+                  maximum: 10000
+              required: [key, kind, enabled, weight]
+      required: [version, items]
     RedemptionPoolView:
       type: object
       additionalProperties: false
       properties:
+        source_catalog:
+          $ref: '#/components/schemas/RedemptionSourceCatalog'
         publication_notice:
           $ref: '#/components/schemas/LotteryPublicationNotice'
         id: &RedemptionPoolView_001
@@ -67186,6 +67229,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        source_catalog:
+          $ref: '#/components/schemas/RedemptionSourceCatalog'
         publication_notice:
           $ref: '#/components/schemas/LotteryPublicationNotice'
         config:

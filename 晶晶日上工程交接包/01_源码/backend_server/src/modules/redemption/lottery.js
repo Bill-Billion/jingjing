@@ -22,15 +22,15 @@ async function inventory(tx,r,count=1){
  require('./contract-pool').checkBindings(r.data.config,r.data.bindings,stocks);
  return stocks;
 }
-function publicPool(r){return {id:r.id,object_version:r.object_version,current_status:r.current_status,config:r.data.config,distribution:r.data.distribution,bindings:r.data.bindings,starts_at:r.data.starts_at,ends_at:r.data.ends_at,rules_sha256:r.data.rules_sha256,terms:r.data.terms,inventory_policy:'PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE',prize_promises:r.data.prize_promises||[],...(r.data.publication_notice?{publication_notice:r.data.publication_notice}:{})};}
+function publicPool(r){return {id:r.id,object_version:r.object_version,current_status:r.current_status,config:r.data.config,distribution:r.data.distribution,bindings:r.data.bindings,starts_at:r.data.starts_at,ends_at:r.data.ends_at,rules_sha256:r.data.rules_sha256,terms:r.data.terms,inventory_policy:'PAUSE_IF_ANY_PRIZE_STOCK_BELOW_BATCH_SIZE',prize_promises:r.data.prize_promises||[],...(r.data.source_catalog?{source_catalog:r.data.source_catalog}:{}),...(r.data.publication_notice?{publication_notice:r.data.publication_notice}:{})};}
 function methods({db,actor}){return {
  async createPool(ctx,i){
   shape(i,['party_id','config','bindings','starts_at','ends_at','terms','cost_limit_single_minor','cost_limit_ten_minor','evidence_asset_ids','operation_key']);
-  const config=P.pool(i.config),links=bindings(config,i.bindings),distribution=P.publishedDistribution(config);label(i.terms,8000);
+  const config=P.pool(i.config),links=bindings(config,i.bindings),distribution=P.publishedDistribution(config),source_catalog=require('./contract-pool').sourceCatalog(config);label(i.terms,8000);
   for(const k of ['starts_at','ends_at'])require('../trade/policy').instant(i[k]);for(const k of ['cost_limit_single_minor','cost_limit_ten_minor'])require('./policy').integer(i[k],1);
   if(i.starts_at>=i.ends_at||distribution.expected_single_cost_minor>i.cost_limit_single_minor||distribution.expected_ten_cost_minor>i.cost_limit_ten_minor)throw error('LOTTERY_COST_OR_PERIOD_INVALID',400);
   return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await A.owner(tx,a,i.party_id);await C.operator(tx,a,'REDEMPTION_REVIEW');if(!Array.isArray(i.evidence_asset_ids)||!i.evidence_asset_ids.length)throw error('REWARD_EVIDENCE_REQUIRED',400);await A.assets(tx,i.evidence_asset_ids,i.party_id,['REVIEW_EVIDENCE']);
-   return C.command(tx,a,'POOL_CREATE',i,()=>C.insert(tx,a,'POOL',i.party_id,null,'IN_REVIEW',{config,bindings:links,distribution,starts_at:i.starts_at,ends_at:i.ends_at,terms:i.terms,cost_limit_single_minor:i.cost_limit_single_minor,cost_limit_ten_minor:i.cost_limit_ten_minor,evidence_asset_ids:i.evidence_asset_ids,rules_sha256:null,prize_promises:[],reviews:{}}));});
+   return C.command(tx,a,'POOL_CREATE',i,()=>C.insert(tx,a,'POOL',i.party_id,null,'IN_REVIEW',{config,...(source_catalog?{source_catalog}:{}),bindings:links,distribution,starts_at:i.starts_at,ends_at:i.ends_at,terms:i.terms,cost_limit_single_minor:i.cost_limit_single_minor,cost_limit_ten_minor:i.cost_limit_ten_minor,evidence_asset_ids:i.evidence_asset_ids,rules_sha256:null,prize_promises:[],reviews:{}}));});
  },
  async reviewPool(ctx,i){
   shape(i,['record_id','expected_version','channel','decision','reason','evidence_asset_id','operation_key']);label(i.reason,2000);
