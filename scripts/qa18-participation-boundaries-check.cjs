@@ -28,7 +28,7 @@ try{
  const project=now.get(projectId),candidate=now.get(candidateId),proposal=now.get(proposalId),decode=x=>typeof x.data_json==='string'?JSON.parse(x.data_json):x.data_json;
  const pd=decode(project),cd=decode(candidate),nd=decode(proposal),oldpd=decode(old.get(projectId));
  assert.equal(project.current_status,'PREPARING');assert.equal(project.object_version,old.get(projectId).object_version+1);assert.equal(pd.current_plan_id,null);assert.equal(pd.current_edition_id,null);assert.equal(pd.revision.previous_plan_id,oldpd.current_plan_id);assert.equal(pd.revision.previous_edition_id,oldpd.current_edition_id);
- assert.equal(candidate.current_status,'WITHDRAWN');assert.equal(candidate.object_version,old.get(candidateId).object_version+1);assert.notEqual(candidate.content_sha256,old.get(candidateId).content_sha256);assert.equal(cd.amount_minor,5000);
+ assert.equal(candidate.current_status,'WITHDRAWN');assert.equal(candidate.object_version,old.get(candidateId).object_version+1);assert.equal(typeof candidate.data_sha256,'string');assert.notEqual(candidate.data_sha256,old.get(candidateId).data_sha256);assert.equal(cd.amount_minor,5000);
  assert.equal(proposal.current_status,'REJECTED');assert.equal(proposal.object_version,2);assert.equal(nd.fee_minor,5500);assert.equal(nd.order_id,null);assert.equal(nd.review.decision,'REJECTED');assert.equal(nd.review.reviewer_account_id,'ade5cdd1-ba41-4471-bcab-6dae7f745a20');assert.equal(nd.amendment.previous_agreement_id,'59afd06a-d038-4802-88a2-29e9bf200dcd');assert.equal(nd.amendment.cash_required_minor,500);
  const delta={};
  for(const table of ['project_commands','project_audit','ops_events','ops_recipients']){
