@@ -3,7 +3,7 @@
   "generated_from": "docs/pm04/qa18/COVERAGE_LEDGER.json",
   "source": {
     "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json": "663ae4cee1896723d9ceafa073b93ec03fb58b6e9bf76874af20b1efdc6fe7d2",
-    "docs/tasks/board.json": "63fd781dc0e55695e3722161c35569b6475990d7e8c635b106621f35c2f124e4",
+    "docs/tasks/board.json": "afc77536a0a30a617d95f9d9f622e56a1e5a042ee898abb3d5e3fb9aa7a746ab",
     "docs/sources/pm03-20261115/dashboard-data.json": "361b9ec0816ce09fa5c1a3ed6ac156063a370ad8702ec5650253f8f433dcd6c9",
     "docs/requirements/baseline.json": "3c5400908206b755c69b7a146c95481fdb0af1197f1aba6d54079369f822d747"
   },
@@ -5892,7 +5892,8 @@
     "backend_tests": "ac24b00b4bef36bac86eb6677aaa1fd4732689a9",
     "backend_test_scope": "Product BE ac24 unchanged. Coupon8b6f5events38responses; conversation-video aed544d8 5events31responses; historical original42 and08 separately retained. Not final current full run.",
     "coupon_scope_tests": "8b6fce2269d96482ac692029c8d332e1c4a0a722",
-    "conversation_video_tests": "aed544d8b13cce6d2a236b7606bfc1f322cc76ce"
+    "conversation_video_tests": "aed544d8b13cce6d2a236b7606bfc1f322cc76ce",
+    "activity_notification_tests": "c3ce0bdd4cd0da0f7cf8cabaa3b92132b206aa00"
   },
   "historical_runs": {
     "pm04-g1-20261126-app-quality-reg16": {
@@ -68143,9 +68144,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|api|normal",
+        "decision": "HISTORICAL_COVERED",
+        "historical_review": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "实际原活动通知补测和原现货同单证据按端/场景逐槽核定；原不同版本/环境分别保留，不当最终同版。",
+        "remaining": "最终同版全量、原生实体机和维护者实际签收另阶段；其他未证实原场景保留对应部分槽。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68196,9 +68202,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|api|reverse",
+        "decision": "HISTORICAL_COVERED",
+        "historical_review": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "实际原活动通知补测和原现货同单证据按端/场景逐槽核定；原不同版本/环境分别保留，不当最终同版。",
+        "remaining": "最终同版全量、原生实体机和维护者实际签收另阶段；其他未证实原场景保留对应部分槽。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68249,9 +68260,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|api|unauthorized",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "原同单跨买家文件404、本人自审403已证；本链尚无过期登录拒绝及重新认证恢复证据，不将其他订单或环境拼入。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68302,9 +68318,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|api|duplicate",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "原UNKNOWN后同付款同key/body核对且只一付款已证；重复成功渠道回调后同单不重复发权尚未执行。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68355,9 +68376,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|api|state_change",
+        "decision": "HISTORICAL_COVERED",
+        "historical_review": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "实际原活动通知补测和原现货同单证据按端/场景逐槽核定；原不同版本/环境分别保留，不当最终同版。",
+        "remaining": "最终同版全量、原生实体机和维护者实际签收另阶段；其他未证实原场景保留对应部分槽。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68408,9 +68434,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|api|recovery",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "原UNKNOWN付款恢复及退款核对已证；同单文件下载中断/存储失败后恢复、过期登录重新认证未证。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68461,9 +68492,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|app|normal",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "App许可/下单/受控读取/实际浏览器保存已证；本轮付款和退款由Vue办理，App本身的相应买方提交仍待核，不能拿Vue动作代替。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68514,9 +68550,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|app|reverse",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "App显示同单KEEP/REVOKE结果已证；App实际发起售后及相应错误/恢复交互尚未由该原批证明。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68567,9 +68608,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|app|unauthorized",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "原跨买家文件拒绝是API调用；其他账号App页面/过期登录及已加载私有内容清理未证。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68620,9 +68666,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|app|duplicate",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "没有App付款/退款重复提交和原成功回执恢复证据；当前原单唯一付款由Vue办理。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68673,9 +68724,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|app|state_change",
+        "decision": "HISTORICAL_COVERED",
+        "historical_review": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "实际原活动通知补测和原现货同单证据按端/场景逐槽核定；原不同版本/环境分别保留，不当最终同版。",
+        "remaining": "最终同版全量、原生实体机和维护者实际签收另阶段；其他未证实原场景保留对应部分槽。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68726,9 +68782,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|app|recovery",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "原驱动控件定位失败后续测不是App网络/文件下载失败恢复；同单原请求及过期登录恢复仍待。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68779,9 +68840,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|web|normal",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "Vue付款/独审/退款/受控文件读取已证；本轮许可确认与下单由App完成，Vue自身买方这段待核。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68832,9 +68898,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|web|reverse",
+        "decision": "HISTORICAL_COVERED",
+        "historical_review": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "实际原活动通知补测和原现货同单证据按端/场景逐槽核定；原不同版本/环境分别保留，不当最终同版。",
+        "remaining": "最终同版全量、原生实体机和维护者实际签收另阶段；其他未证实原场景保留对应部分槽。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68885,9 +68956,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|web|unauthorized",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "原跨买家及自审拒绝是API调用；Vue其他账号页面/过期登录及已加载私有内容清理未证。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68938,9 +69014,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|web|duplicate",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "VueUNKNOWN后同key/body核对且原一付款已证；重复成功付款或退款回执/重复成功回调不重复发权仍待核。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -68991,9 +69072,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|web|state_change",
+        "decision": "HISTORICAL_COVERED",
+        "historical_review": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "实际原活动通知补测和原现货同单证据按端/场景逐槽核定；原不同版本/环境分别保留，不当最终同版。",
+        "remaining": "最终同版全量、原生实体机和维护者实际签收另阶段；其他未证实原场景保留对应部分槽。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -69044,9 +69130,14 @@
         "PKG-03"
       ],
       "discovery": {
-        "decision": "NEEDS_EVIDENCE_REVIEW",
-        "reason": "Existing evidence must be checked against this exact surface and whole original scenario; not a missing-function count.",
-        "remaining": "Review attached candidate/source evidence first; execute only unsupported original assertions."
+        "key": "E2E-01|web|recovery",
+        "decision": "PARTIAL",
+        "condition_evidence": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "原同订单/付款贯通许可、受控文件及两次独审退款，端侧实际动作与API观察分开。",
+        "remaining": "Vue原UNKNOWN付款同key/body恢复已证；同单文件失败或过期登录后恢复未证，不能把驱动定位错误当业务异常。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -80766,13 +80857,13 @@
       ],
       "discovery": {
         "key": "TASK-10|api|normal",
-        "decision": "PARTIAL",
-        "reason": "当前API使用真实商单消息和独审SENT投稿，ORDER_CONVERSATIONS快照3条清原2条后余1，SUBMISSION_INTENTS保持；随后原会话read只清消息不清投稿；无关账户看不到原单/消息/投稿，失权拒。原08SYSTEM及App/Vue同页面切组织/个人、截止点后新消息和原请求恢复分别已证。",
-        "remaining": "API还缺真实活动/投票来源及其原权限、已读和恢复核证；不同原执行与最终回归分开。",
-        "condition_evidence": {
-          "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/T1_OPERATIONS_REVIEW.json",
-          "sha256": "13dfddddc17f0365ef054b0db5422d1cdc4f491df6476600f0adf06dab676fcb"
-        }
+        "decision": "HISTORICAL_COVERED",
+        "historical_review": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
+        },
+        "reason": "实际原活动通知补测和原现货同单证据按端/场景逐槽核定；原不同版本/环境分别保留，不当最终同版。",
+        "remaining": "最终同版全量、原生实体机和维护者实际签收另阶段；其他未证实原场景保留对应部分槽。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -80801,13 +80892,13 @@
       ],
       "discovery": {
         "key": "TASK-10|api|reverse",
-        "decision": "PARTIAL",
-        "condition_evidence": {
-          "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/T1_OPERATIONS_REVIEW.json",
-          "sha256": "13dfddddc17f0365ef054b0db5422d1cdc4f491df6476600f0adf06dab676fcb"
+        "decision": "HISTORICAL_COVERED",
+        "historical_review": {
+          "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/T1_ACTIVITY_STOCK_REVIEW.json",
+          "sha256": "aafeaf872b87c07d329b64f75e2b755c2313c02636eaf0ab089552f8ad40c3da"
         },
-        "reason": "当前API使用真实商单消息和独审SENT投稿，ORDER_CONVERSATIONS快照3条清原2条后余1，SUBMISSION_INTENTS保持；随后原会话read只清消息不清投稿；无关账户看不到原单/消息/投稿，失权拒。原08SYSTEM及App/Vue同页面切组织/个人、截止点后新消息和原请求恢复分别已证。",
-        "remaining": "API还缺真实活动/投票来源及其原权限、已读和恢复核证；不同原执行与最终回归分开。"
+        "reason": "实际原活动通知补测和原现货同单证据按端/场景逐槽核定；原不同版本/环境分别保留，不当最终同版。",
+        "remaining": "最终同版全量、原生实体机和维护者实际签收另阶段；其他未证实原场景保留对应部分槽。"
       },
       "final_regression": {
         "outcome": "NOT_RUN",
@@ -82857,9 +82948,9 @@
     "rules": 23,
     "slots": 578,
     "discovery": {
-      "PARTIAL": 100,
-      "HISTORICAL_COVERED": 270,
-      "NEEDS_EVIDENCE_REVIEW": 208
+      "PARTIAL": 110,
+      "HISTORICAL_COVERED": 278,
+      "NEEDS_EVIDENCE_REVIEW": 190
     },
     "with_candidates": 575,
     "final_regression": {
@@ -82880,9 +82971,9 @@
         "exit": "新上架、退回重提、试镜方案及相关价格/资格均按实际状态展示。",
         "slots": 56,
         "discovery": {
-          "HISTORICAL_COVERED": 12,
-          "PARTIAL": 5,
-          "NEEDS_EVIDENCE_REVIEW": 39
+          "HISTORICAL_COVERED": 18,
+          "PARTIAL": 17,
+          "NEEDS_EVIDENCE_REVIEW": 21
         },
         "with_candidates": 56,
         "final_regression": {
@@ -82895,9 +82986,9 @@
         "exit": "每位艺人授权与机构员工动作可追踪，失权后立即停止新操作。",
         "slots": 82,
         "discovery": {
-          "HISTORICAL_COVERED": 30,
-          "NEEDS_EVIDENCE_REVIEW": 50,
-          "PARTIAL": 2
+          "HISTORICAL_COVERED": 36,
+          "PARTIAL": 14,
+          "NEEDS_EVIDENCE_REVIEW": 32
         },
         "with_candidates": 82,
         "final_regression": {
@@ -82910,8 +83001,9 @@
         "exit": "修改生成新版本，重新审核不覆盖旧订单许可及已购交付。",
         "slots": 34,
         "discovery": {
-          "HISTORICAL_COVERED": 12,
-          "NEEDS_EVIDENCE_REVIEW": 22
+          "HISTORICAL_COVERED": 18,
+          "PARTIAL": 12,
+          "NEEDS_EVIDENCE_REVIEW": 4
         },
         "with_candidates": 34,
         "final_regression": {
@@ -82939,9 +83031,9 @@
         "exit": "封面、时长、造型与声音版本有合法来源，撤权后停止公开。",
         "slots": 58,
         "discovery": {
-          "HISTORICAL_COVERED": 22,
-          "NEEDS_EVIDENCE_REVIEW": 24,
-          "PARTIAL": 12
+          "HISTORICAL_COVERED": 28,
+          "NEEDS_EVIDENCE_REVIEW": 6,
+          "PARTIAL": 24
         },
         "with_candidates": 58,
         "final_regression": {
@@ -83012,8 +83104,8 @@
         "exit": "未读/全读/跳转与身份变化一致；真实推送独立验证。",
         "slots": 48,
         "discovery": {
-          "HISTORICAL_COVERED": 12,
-          "PARTIAL": 9,
+          "HISTORICAL_COVERED": 14,
+          "PARTIAL": 7,
           "NEEDS_EVIDENCE_REVIEW": 27
         },
         "with_candidates": 48,
@@ -83027,9 +83119,9 @@
         "exit": "本人/机构合同、作品和应收入口准确；收款和约定金额不混淆。",
         "slots": 92,
         "discovery": {
-          "HISTORICAL_COVERED": 18,
-          "NEEDS_EVIDENCE_REVIEW": 53,
-          "PARTIAL": 21
+          "HISTORICAL_COVERED": 24,
+          "PARTIAL": 33,
+          "NEEDS_EVIDENCE_REVIEW": 35
         },
         "with_candidates": 92,
         "final_regression": {
@@ -83115,9 +83207,9 @@
         "exit": "12条路线所需端与反例齐套，范围变化有依据，不以API通过代替。",
         "slots": 476,
         "discovery": {
-          "PARTIAL": 61,
-          "HISTORICAL_COVERED": 226,
-          "NEEDS_EVIDENCE_REVIEW": 189
+          "PARTIAL": 73,
+          "HISTORICAL_COVERED": 232,
+          "NEEDS_EVIDENCE_REVIEW": 171
         },
         "with_candidates": 473,
         "final_regression": {
@@ -83154,7 +83246,8 @@
         ],
         "slots": 18,
         "discovery": {
-          "NEEDS_EVIDENCE_REVIEW": 18
+          "HISTORICAL_COVERED": 6,
+          "PARTIAL": 12
         },
         "with_candidates": 18,
         "final_regression": {
@@ -83390,84 +83483,90 @@
       }
     ],
     "defects": {
-      "total": 157,
+      "total": 159,
       "status": {
-        "RETARGET_PASS": 155,
+        "RETARGET_PASS": 157,
         "NOT_A_BUG": 2
       },
       "not_closed": []
     },
     "ci": {
-      "sha": "ac5475ec220306456fac98b53cbcd970389da751",
+      "sha": "4f2d1279342f258ff4474f1e80c9f0e535c5614f",
       "conclusion": "NO_RUNS_OBSERVED",
-      "scope": "All workflow events on exact published base",
-      "evidence": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+      "scope": "Exact published base, all workflow events",
+      "evidence": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
       "historical_terminal": {
-        "sha": "82df1a39f95a6a6cffbc4df616c13fb47e6e1988",
+        "sha": "ac5475ec220306456fac98b53cbcd970389da751",
         "conclusion": "NO_RUNS_OBSERVED",
         "scope": "All workflow events on exact published base",
-        "evidence": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+        "evidence": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
         "historical_terminal": {
-          "sha": "622b5d91d8b6888b2fed378a0dd8b36eabed9d4a",
+          "sha": "82df1a39f95a6a6cffbc4df616c13fb47e6e1988",
           "conclusion": "NO_RUNS_OBSERVED",
           "scope": "All workflow events on exact published base",
-          "evidence": "docs/testing/evidence/pm04-g1-t1-referral-recovery-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+          "evidence": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
           "historical_terminal": {
-            "sha": "e3dc78e670af2f8c1b5e52235b614f7bf9564ea4",
+            "sha": "622b5d91d8b6888b2fed378a0dd8b36eabed9d4a",
             "conclusion": "NO_RUNS_OBSERVED",
             "scope": "All workflow events on exact published base",
-            "evidence": "docs/testing/evidence/pm04-g1-t1-ranking-referral-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+            "evidence": "docs/testing/evidence/pm04-g1-t1-referral-recovery-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
             "historical_terminal": {
-              "sha": "35b03f72e4b0ff0d388381257b83cf84af40839b",
+              "sha": "e3dc78e670af2f8c1b5e52235b614f7bf9564ea4",
               "conclusion": "NO_RUNS_OBSERVED",
-              "scope": "Exact published base, all events; later candidate separate",
-              "evidence": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+              "scope": "All workflow events on exact published base",
+              "evidence": "docs/testing/evidence/pm04-g1-t1-ranking-referral-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
               "historical_terminal": {
-                "sha": "2b38c21fcf9fa90aea56b6797f544b6d66002476",
+                "sha": "35b03f72e4b0ff0d388381257b83cf84af40839b",
                 "conclusion": "NO_RUNS_OBSERVED",
-                "scope": "Exact published head, all events; later head separate",
-                "evidence": "docs/testing/evidence/pm04-g1-t1-trade-auditions-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                "scope": "Exact published base, all events; later candidate separate",
+                "evidence": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                 "historical_terminal": {
-                  "sha": "b235fcd804847127db2b1975d60bdaa59328ed85",
+                  "sha": "2b38c21fcf9fa90aea56b6797f544b6d66002476",
                   "conclusion": "NO_RUNS_OBSERVED",
                   "scope": "Exact published head, all events; later head separate",
-                  "evidence": "docs/testing/evidence/pm04-g1-t1-story-clients-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                  "evidence": "docs/testing/evidence/pm04-g1-t1-trade-auditions-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                   "historical_terminal": {
-                    "sha": "b016fa0f8a72e76dc71aa688aeb580896577cc80",
+                    "sha": "b235fcd804847127db2b1975d60bdaa59328ed85",
                     "conclusion": "NO_RUNS_OBSERVED",
-                    "scope": "Exact published head, all events, zero runs; later head separate",
-                    "evidence": "docs/testing/evidence/pm04-g1-t1-story-production-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                    "scope": "Exact published head, all events; later head separate",
+                    "evidence": "docs/testing/evidence/pm04-g1-t1-story-clients-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                     "historical_terminal": {
-                      "sha": "f481dbe63eef7d6cbb92c7d4be906c0432bb9c90",
+                      "sha": "b016fa0f8a72e76dc71aa688aeb580896577cc80",
                       "conclusion": "NO_RUNS_OBSERVED",
                       "scope": "Exact published head, all events, zero runs; later head separate",
-                      "evidence": "docs/testing/evidence/pm04-g1-t1-privacy-chain-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                      "evidence": "docs/testing/evidence/pm04-g1-t1-story-production-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                       "historical_terminal": {
-                        "sha": "d76b8794694618164c3ccd4acd6efb7c3d5302f0",
+                        "sha": "f481dbe63eef7d6cbb92c7d4be906c0432bb9c90",
                         "conclusion": "NO_RUNS_OBSERVED",
                         "scope": "Exact published head, all events, zero runs; later head separate",
-                        "evidence": "docs/testing/evidence/pm04-g1-t1-membership-privacy-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                        "evidence": "docs/testing/evidence/pm04-g1-t1-privacy-chain-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                         "historical_terminal": {
-                          "sha": "d5ad0b21dd68bc8eb67a013a4efbadb006371fec",
+                          "sha": "d76b8794694618164c3ccd4acd6efb7c3d5302f0",
                           "conclusion": "NO_RUNS_OBSERVED",
-                          "scope": "Exact published all-event query, later head not covered",
-                          "evidence": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                          "scope": "Exact published head, all events, zero runs; later head separate",
+                          "evidence": "docs/testing/evidence/pm04-g1-t1-membership-privacy-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                           "historical_terminal": {
-                            "sha": "037315e9fc09a984ca1c8e99b890147a77347943",
+                            "sha": "d5ad0b21dd68bc8eb67a013a4efbadb006371fec",
                             "conclusion": "NO_RUNS_OBSERVED",
-                            "scope": "Exact published 037315e9 head, all events, zero workflow runs; not inherited by later head",
-                            "evidence": "docs/testing/evidence/pm04-g1-t1-wallet-rewards-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                            "scope": "Exact published all-event query, later head not covered",
+                            "evidence": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                             "historical_terminal": {
-                              "sha": "306eafecbc4f9be8d00a6c6010105190ac2b07ce",
+                              "sha": "037315e9fc09a984ca1c8e99b890147a77347943",
                               "conclusion": "NO_RUNS_OBSERVED",
-                              "scope": "Exact published head has zero PR and all-event workflow runs; later head not covered",
-                              "evidence": "docs/testing/evidence/pm04-g1-t1-stock-notice-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                              "scope": "Exact published 037315e9 head, all events, zero workflow runs; not inherited by later head",
+                              "evidence": "docs/testing/evidence/pm04-g1-t1-wallet-rewards-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
                               "historical_terminal": {
-                                "id": 45751670895,
-                                "sha": "938902958b2f729371b5fa73af9e1383eb76c876",
-                                "conclusion": "SUCCESS",
-                                "scope": "App/Web terminal; later QA HEAD not covered",
-                                "evidence": "docs/testing/evidence/pm04-g1-purchase-recommendations-20261126-47/PRIOR_CI_TERMINAL.json"
+                                "sha": "306eafecbc4f9be8d00a6c6010105190ac2b07ce",
+                                "conclusion": "NO_RUNS_OBSERVED",
+                                "scope": "Exact published head has zero PR and all-event workflow runs; later head not covered",
+                                "evidence": "docs/testing/evidence/pm04-g1-t1-stock-notice-review-20261126/PUBLISHED_BASE_CI_OBSERVED.json",
+                                "historical_terminal": {
+                                  "id": 45751670895,
+                                  "sha": "938902958b2f729371b5fa73af9e1383eb76c876",
+                                  "conclusion": "SUCCESS",
+                                  "scope": "App/Web terminal; later QA HEAD not covered",
+                                  "evidence": "docs/testing/evidence/pm04-g1-purchase-recommendations-20261126-47/PRIOR_CI_TERMINAL.json"
+                                }
                               }
                             }
                           }
@@ -83572,23 +83671,17 @@
         "ACC-DEL-29.03|operations|reverse",
         "ACC-DEL-29.04|operations|normal",
         "ACC-DEL-29.04|operations|reverse",
-        "E2E-01|api|normal",
-        "E2E-01|api|reverse",
         "E2E-01|api|unauthorized",
         "E2E-01|api|duplicate",
-        "E2E-01|api|state_change",
         "E2E-01|api|recovery",
         "E2E-01|app|normal",
         "E2E-01|app|reverse",
         "E2E-01|app|unauthorized",
         "E2E-01|app|duplicate",
-        "E2E-01|app|state_change",
         "E2E-01|app|recovery",
         "E2E-01|web|normal",
-        "E2E-01|web|reverse",
         "E2E-01|web|unauthorized",
         "E2E-01|web|duplicate",
-        "E2E-01|web|state_change",
         "E2E-01|web|recovery",
         "E2E-02|api|normal",
         "E2E-02|api|reverse",
@@ -83785,8 +83878,6 @@
         "TASK-09|app|reverse",
         "TASK-09|web|normal",
         "TASK-09|web|reverse",
-        "TASK-10|api|normal",
-        "TASK-10|api|reverse",
         "TASK-10|app|normal",
         "TASK-10|app|reverse",
         "TASK-10|web|normal",

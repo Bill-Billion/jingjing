@@ -1,0 +1,78 @@
+{
+  "defects": [
+    {
+      "bug_id": "QA18-TEST-158",
+      "discovered_at": "2026-11-26T11:40:49.038Z",
+      "group_ids": "G10/G17",
+      "acceptance_ids": "TASK-10",
+      "e2e_ids": "",
+      "severity": "P2",
+      "kind": "TEST_SYNTAX",
+      "owner": "chengcongcong222",
+      "status": "RETARGET_PASS",
+      "version": "77011b3ba6329feea49082edd9b9f774e88f7af8",
+      "environment": "Disposable localhost33316 championship test database",
+      "actual_record_id": "",
+      "role": "",
+      "original_key_sha256": "",
+      "expected": "新增通知子测试应正常解析并执行原真实投票通知断言。",
+      "observed": "原11项通过后，新helper加载因计数表达式缺右括号失败；5项通知断言未开始，无本次新HTTP输出，旧fixture不得复用。",
+      "request_endpoint": "",
+      "response_code": "",
+      "reproduction": "node --test test/championship-contract.integration.test.cjs",
+      "before_proof_path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/before-01/backend.tap",
+      "before_sha256": "8814c197cb36bc49154590620f03d9eb2c458821111763a88d41fa7bd19ffbac",
+      "root_cause": "新增测试helper语法遗漏；与产品逻辑无关。保留原失败，补括号并拆开计数表达式后重跑同一受影响文件。",
+      "fix_commit": "5fe433794d563caaea5d7022b74144700fcf2413",
+      "target_retest_path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/fixed-03/summary.json",
+      "target_retest_result": "原11业务+新增5通知子项+父项17PASS；116响应契约PASS，无产品修改；两次原失败保留。",
+      "regression_run_id": "",
+      "reviewer": ""
+    },
+    {
+      "bug_id": "QA18-TEST-159",
+      "discovered_at": "2026-11-26T11:41:46.990Z",
+      "group_ids": "G10/G17",
+      "acceptance_ids": "TASK-10",
+      "e2e_ids": "",
+      "severity": "P2",
+      "kind": "TEST_REQUEST",
+      "owner": "chengcongcong222",
+      "status": "RETARGET_PASS",
+      "version": "5fe433794d563caaea5d7022b74144700fcf2413",
+      "environment": "Disposable localhost33316 championship test database",
+      "actual_record_id": "",
+      "role": "",
+      "original_key_sha256": "",
+      "expected": "分页使用原HTTP契约cursor参数，继续同一账号通知分页、单条已读与后续回滚断言。",
+      "observed": "误用repository内部before参数发HTTP被400/INVALID_INPUT拒；单条已读未执行，导致后续未读为3而非2的连带失败。原14通过/3失败及94响应保留。",
+      "request_endpoint": "",
+      "response_code": "",
+      "reproduction": "node --test test/championship-contract.integration.test.cjs",
+      "before_proof_path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/intermediate-02/backend.tap",
+      "before_sha256": "9c7c6c39507ee7504288cd62a0ec05de7c33994fe60ebd85b77c35840a61ed3e",
+      "root_cause": "测试混用HTTP与内部repository参数；当前业务路由及OpenAPI均定义cursor，不改产品接口或弱化分页/原业务断言。",
+      "fix_commit": "c3ce0bdd4cd0da0f7cf8cabaa3b92132b206aa00",
+      "target_retest_path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/fixed-03/summary.json",
+      "target_retest_result": "原11业务+新增5通知子项+父项17PASS；116响应契约PASS，无产品修改；两次原失败保留。",
+      "regression_run_id": "",
+      "reviewer": ""
+    }
+  ],
+  "attempts": [
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/before-01/summary.json",
+      "sha256": "2c7bdaa3d011a1aed8b5e8c3fae6be3dfbc5b661ba5e5d0a69c6f543b49616ac"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/intermediate-02/summary.json",
+      "sha256": "27b7b4b8faf0305e74854bdc3493567820bf5dddc0a7d90d0d463d4656c1044a"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-activity-notifications-20261126/fixed-03/summary.json",
+      "sha256": "6d9bc467032ccdb045e37fc6f7100e8a61da67102371956b68e3c4d17111e431"
+    }
+  ],
+  "product_changed": false,
+  "new_business_defects": 0
+}
