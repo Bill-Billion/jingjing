@@ -178,6 +178,65 @@ def final_results(batch, slots, root=ROOT):
     return result
 
 
+def reviewed_history(reference, key, expected, root=ROOT):
+    """Credit archived execution only after a clause/slot review; never invent a new run."""
+    require_proof(reference, root)
+    review = read(root / reference['path'])
+    if review.get('kind') != 'T1_ARCHIVED_EVIDENCE_REVIEW' or review.get('new_business_execution') is not False:
+        fail('Expected explicit historical evidence review')
+    matches = [s for s in review.get('slots', []) if s['key'] == key]
+    if len(matches) != 1:
+        fail('Historical review must identify this unique slot')
+    slot = matches[0]
+    if slot.get('scope') != 'COMPLETE_ORIGINAL_SLOT' or slot.get('expected') != expected:
+        fail('Incomplete or changed original expectation in historical review')
+    if not slot.get('clause_assertions') or not slot.get('execution_ids'):
+        fail('Historical review requires original clauses and actual execution identities')
+    executions = review['executions']
+    for eid in slot['execution_ids']:
+        e = executions[eid]
+        if not e.get('environment') or not e.get('business_ids') or not e.get('command'):
+            fail('Missing historical environment, business IDs or command')
+        if not e.get('versions') or not all(SHA.fullmatch(v) for v in e['versions'].values()):
+            fail('Historical versions must be exact')
+        if not e.get('limitations') or not e.get('raw_logs'):
+            fail('Historical scope limitations and raw logs required')
+        require_proof(e['summary'], root)
+        for p in e['raw_logs']:
+            require_proof(p, root)
+        for observation in e.get('observations', []):
+            require_proof(observation['artifact'], root)
+            p = root / observation['artifact']['path']
+            data = read(p)
+            for part in observation['json_path']:
+                data = data[part]
+            if data != observation['equals']:
+                fail('Historical observation not present in original evidence')
+    if key.startswith('E2E-'):
+        chains = [executions[e].get('chain') for e in slot['execution_ids']]
+        if not all(chains) or any(c != chains[0] for c in chains):
+            fail('Historical whole chain cannot splice distinct records or environments')
+    return review
+
+
+def t1_gate(slots, bugs):
+    pending = []
+    for s in slots:
+        d = s['discovery']
+        if d['decision'] == 'HISTORICAL_COVERED':
+            continue
+        objective_block = (d['decision'] in {'BLOCKED', 'EXTERNAL'} and d.get('objective_condition')
+                           and d.get('required_owner') and d.get('machine_remainder_complete') is True
+                           and d.get('condition_evidence'))
+        if not objective_block:
+            pending.append(s['key'])
+    unresolved = [b['bug_id'] for b in bugs if b['status'] not in {'RETARGET_PASS', 'NOT_A_BUG'}]
+    return {'status': 'READY_FOR_T1_EXIT_REVIEW' if not pending and not unresolved else 'NOT_READY',
+            'unresolved_slots': pending, 'unresolved_defects': unresolved,
+            'final_regression_required_for_T1_exit': False,
+            'formal_acceptance_granted': False}
+
+
 def generate(root=ROOT):
     ledger = read(root / LEDGER)
     source = registry.source()
@@ -238,8 +297,15 @@ def generate(root=ROOT):
         for uid in assessment.get('packages', []):
             if uid not in package_refs[key.split('|')[0]]:
                 fail('Assessment references unrelated package: ' + uid)
+        if assessment.get('historical_review'):
+            require_proof(assessment['historical_review'], root)
+        if assessment.get('condition_evidence'):
+            require_proof(assessment['condition_evidence'], root)
         if assessment['decision'] == 'HISTORICAL_COVERED':
-            if not assessment.get('events') or not any(history[e]['event']['outcome'] == 'PASS' for e in assessment['events']):
+            if assessment.get('historical_review'):
+                reviewed_history(assessment['historical_review'], key,
+                                 criteria[key.split('|')[0]]['effective_expected'], root)
+            elif not assessment.get('events') or not any(history[e]['event']['outcome'] == 'PASS' for e in assessment['events']):
                 fail('Historical covered needs explicit original PASS review')
         if assessment['decision'] == 'EXTERNAL' and not assessment.get('required_owner'):
             fail('External requires responsible human/condition')
@@ -263,6 +329,7 @@ def generate(root=ROOT):
     if len(bug_rows) != len({b['bug_id'] for b in bug_rows}):
         fail('Duplicate defect IDs')
     defects = dict(Counter(b['status'] for b in bug_rows))
+    gate = t1_gate(slots, bug_rows)
     def stats(rows):
         return {'slots': len(rows), 'discovery': dict(Counter(s['discovery']['decision'] for s in rows)),
                 'with_candidates': sum(bool(s['candidate_packages'] or s['original_partial_evidence'] or s['historical_events']) for s in rows),
@@ -278,7 +345,7 @@ def generate(root=ROOT):
                'ci': ledger['ci'], 'blockers': ledger['blockers'],
                'source_partial_hash_mismatches': [k for k, v in catalog.items() if v.get('proof', {}).get('integrity') == 'MISMATCH'],
                'unmapped_packages': ledger.get('unmapped_packages', []),
-               't1_exit': 'NOT_READY_PENDING_SLOT_REVIEW_AND_REMAINING_SCENARIOS',
+               't1_exit': gate,
                'final_batch': ledger['final_batch']['id'] if ledger['final_batch'] else None}
     matrix = {'schema': 1, 'generated_from': LEDGER.as_posix(), 'source': source['source'],
               'source_hash_encoding': 'UTF8_LF; original evidence always raw byte SHA256',
@@ -306,7 +373,7 @@ def generate(root=ROOT):
         lines.append(f"|{route['id']} {route['name']}|{route['slots']}|{d.get('HISTORICAL_COVERED',0)}|{d.get('PARTIAL',0)}|{d.get('NEEDS_EVIDENCE_REVIEW',0)}|{route['final_regression'].get('PASS',0)}|")
     lines += ['', f"缺陷登记共{summary['defects']['total']}项：专项复测通过{defects.get('RETARGET_PASS',0)}项，排除为缺陷{defects.get('NOT_A_BUG',0)}项，仍保留：{', '.join(summary['defects']['not_closed']) or '无'}。专项复测仍待最终回归，不等于正式关闭。", '',
               f"CI：准确提交 `{ledger['ci']['sha']}`，{ledger['ci']['conclusion']}；见 `{ledger['ci']['evidence']}`。不继承给后续HEAD。", '',
-              'T1 尚未退出：逐槽核对仍在进行，未证实的原断言须补测，外部条件单列。', '',
+              f"T1退出检查：{gate['status']}；剩余{len(gate['unresolved_slots'])}槽须核定完整机器范围或客观条件，未结缺陷{len(gate['unresolved_defects'])}项。T3全量、安装包人工体验和维护者签收不是T1退出的前置。", '',
               '使用 [总表JSON](COVERAGE_MATRIX.json) 追溯版本、环境、业务ID及原始证据；[CSV](COVERAGE_MATRIX.csv)用于逐槽审查。历史原结果保持原样；首轮判定和最终批次是两列。', '']
     return {BASE / 'COVERAGE_MATRIX.json': canonical(matrix), BASE / 'COVERAGE_MATRIX.csv': csv_text.getvalue().encode('utf-8'),
             BASE / 'COVERAGE_SUMMARY.json': canonical(summary), BASE / 'COVERAGE_SUMMARY.md': '\n'.join(lines).encode('utf-8')}

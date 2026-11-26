@@ -121,6 +121,57 @@ class CoverageTests(unittest.TestCase):
         p.write_bytes(b'{\n"a":2\n}\n')
         self.assertNotEqual(c.source_sha(p), text_digest)
 
+    def test_t1_can_exit_before_final_regression_or_manual_signoff(self):
+        rows = [{'key': self.key, 'discovery': {'decision': 'HISTORICAL_COVERED'},
+                 'final_regression': {'outcome': 'NOT_RUN'}}]
+        result = c.t1_gate(rows, [])
+        self.assertEqual(result['status'], 'READY_FOR_T1_EXIT_REVIEW')
+        self.assertFalse(result['formal_acceptance_granted'])
+        self.assertFalse(result['final_regression_required_for_T1_exit'])
+
+    def test_t1_pending_evidence_and_partial_scenarios_block_exit(self):
+        for decision in ['PARTIAL', 'NEEDS_EVIDENCE_REVIEW']:
+            result = c.t1_gate([{'key': self.key, 'discovery': {'decision': decision}}], [])
+            self.assertEqual(result['status'], 'NOT_READY')
+            self.assertEqual(result['unresolved_slots'], [self.key])
+
+    def test_review_label_alone_is_not_an_external_exception(self):
+        d = {'decision': 'EXTERNAL', 'required_owner': 'maintainer'}
+        self.assertEqual(c.t1_gate([{'key': self.key, 'discovery': d}], [])['status'], 'NOT_READY')
+        d.update(objective_condition='physical device not supplied', machine_remainder_complete=True,
+                 condition_evidence=self.proof)
+        self.assertEqual(c.t1_gate([{'key': self.key, 'discovery': d}], [])['status'], 'READY_FOR_T1_EXIT_REVIEW')
+
+    def test_t1_unhandled_failure_still_blocks_after_all_slots_reviewed(self):
+        result = c.t1_gate([], [{'bug_id': 'ENV-X', 'status': 'RECHECK_PASS_ROOT_CAUSE_OPEN'}])
+        self.assertEqual(result['unresolved_defects'], ['ENV-X'])
+        self.assertEqual(result['status'], 'NOT_READY')
+
+    def test_archived_review_validates_original_scope_and_observation(self):
+        key = 'TASK-14|api|normal'
+        review = {'kind': 'T1_ARCHIVED_EVIDENCE_REVIEW', 'new_business_execution': False,
+                  'slots': [{'key': key, 'scope': 'COMPLETE_ORIGINAL_SLOT', 'expected': 'original',
+                             'clause_assertions': ['original clause'], 'execution_ids': ['historic']}],
+                  'executions': {'historic': {'environment': 'isolated-original', 'business_ids': ['original-order'],
+                                             'command': 'original-command', 'versions': {'backend': '1'*40},
+                                             'limitations': ['synthetic only'], 'summary': self.proof,
+                                             'raw_logs': [self.proof], 'observations': [
+                                                 {'artifact': self.proof, 'json_path': ['synthetic_test_fixture'], 'equals': True}]}}}
+        path = self.root / 'review.json'
+        def update():
+            path.write_bytes(c.canonical(review))
+            return {'path': 'review.json', 'sha256': c.sha(path.read_bytes())}
+        c.reviewed_history(update(), key, 'original', self.root)
+        with self.assertRaisesRegex(ValueError, 'changed original expectation'):
+            c.reviewed_history(update(), key, 'changed requirement', self.root)
+        review['slots'][0]['scope'] = 'PARTIAL_ORIGINAL_SLOT'
+        with self.assertRaisesRegex(ValueError, 'Incomplete'):
+            c.reviewed_history(update(), key, 'original', self.root)
+        review['slots'][0]['scope'] = 'COMPLETE_ORIGINAL_SLOT'
+        review['executions']['historic']['observations'][0]['equals'] = False
+        with self.assertRaisesRegex(ValueError, 'not present in original evidence'):
+            c.reviewed_history(update(), key, 'original', self.root)
+
 
 if __name__ == '__main__':
     unittest.main()

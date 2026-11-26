@@ -1,0 +1,42 @@
+{
+  "issue": "QA18-ENV-063",
+  "new_execution": false,
+  "status": "RECHECK_PASS_ROOT_CAUSE_OPEN",
+  "product_bug_confirmed": false,
+  "inspected_evidence": [
+    {
+      "path": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds04.log",
+      "sha256": "d30b2117efd03cf319efbe34e097c7d1fa780171269fe440fafae6dd5fd42844"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds05.log",
+      "sha256": "869f7bf24182cb1d332812a077c17e62e7bd5d7e63dc017e1e5f2f5d7b34d05e"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds/1795613317978-failure-22.aria.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds/1795613317978-failure-22.png",
+      "sha256": "fb32313e11bc8ffbd5310a1660e630b64cedb4622f8462a5eae2d5464ac8279e"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds/1795613317978-RESULT.json",
+      "sha256": "bcfe7d9ff57a8d70aa2bbc558ef16ab05322964665e6557b5ef0ff4c010ef548"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds/1795613430056-RESULT.json",
+      "sha256": "2b54a0f6481c6e7b4b64dc6809d90aa66274ba38d66be2d8ba5b0e805eed38c0"
+    }
+  ],
+  "observed": [
+    "Original failure waits for flt-semantics-placeholder for18000ms on22ndpage; original screenshot white and aria empty.",
+    "Original driver creates independent browser contexts, closed only pages before ee1c6596; fix closes completed contexts.",
+    "Original same-record continuation passed; this establishes recovery, not an exact root cause."
+  ],
+  "missing": [
+    "No renderer console, pageerror, process resources or static asset request failures were captured at original blank page."
+  ],
+  "disposition": "Retain open triage; bounded follow-up should capture page startup diagnostics on read-only views. Do not repeat refunds, mutate original records or label missing telemetry as confirmed product defect.",
+  "historical_fix_source": "ee1c6596b0bb0e67afe848863873892e088ce31c"
+}
