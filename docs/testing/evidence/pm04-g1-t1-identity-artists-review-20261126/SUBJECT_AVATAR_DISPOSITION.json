@@ -1,0 +1,278 @@
+{
+  "bugs": [
+    {
+      "bug_id": "QA18-TEST-151",
+      "discovered_at": "2026-11-26",
+      "group_ids": "G02;G13;G17",
+      "acceptance_ids": "ACC-DEL-01.01;ACC-DEL-03.01;TASK-02",
+      "e2e_ids": "",
+      "severity": "P3",
+      "kind": "TEST_SCRIPT",
+      "owner": "chengcongcong222",
+      "status": "RETARGET_PASS",
+      "version": "43f00d64ed105e532b86ddf04546055a1e0b8d28",
+      "environment": "disposable MySQL localhost33316",
+      "actual_record_id": "",
+      "role": "synthetic personal buyer and organization supplier",
+      "original_key_sha256": "",
+      "expected": "Read the stored paid cast snapshot for persistence assertions while verifying the buyer DTO remains minimal.",
+      "observed": "Setup TypeError before child cases: purchase DTO intentionally omits private participants from listing_snapshot.",
+      "request_endpoint": "/stock/purchases/{order_id}",
+      "response_code": "200",
+      "reproduction": "Run subject-avatar-stock-boundaries.integration.test.cjs at 43f00d64 using isolated MySQL.",
+      "before_proof_path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-01/backend.tap",
+      "before_sha256": "e743f56ab222c8e324741b670e6f544e57081cf1489d5aa8526a1def278d04b9",
+      "root_cause": "新测试误从买方最小DTO读私有participants，首次修复又对MySQL已解析JSON重复parse；两次均前置脚本错误。改为用既有数据库值解析器读取实际保存快照，同时保留API不泄露断言。",
+      "fix_commit": "5f926e6a2aeabc186c84534bca2cadbf1b8952d8",
+      "target_retest_path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/summary.json",
+      "target_retest_result": "Final33b5d46c: 3 child cases plus parent PASS, 24 real HTTP contract PASS; strengthened exact404 TRADE_NOT_FOUND; no product change.",
+      "regression_run_id": "",
+      "reviewer": ""
+    }
+  ],
+  "attempts": [
+    {
+      "source": "43f00d64ed105e532b86ddf04546055a1e0b8d28",
+      "environment": "jx_test_subject_avatar_6e49c7fab96c / disposable MySQL localhost33316; dropped after test",
+      "business_ids": [
+        "1546773f-aa17-47e6-b8bf-c2a49a75708b",
+        "8f60763d-b5db-4311-a020-e31602889b23",
+        "ae59fb49-568b-4b2e-9556-a9ea9962d955",
+        "bb14b655-7e44-4b4a-aec5-bfb1af5e1df5",
+        "c1f91b6d-c146-4a18-82c0-e1dadb588706",
+        "c6a2c8f8-3ab5-4530-ab4e-355ac313232a",
+        "cc5a0a74-5444-40c6-a90c-66dd8130540f"
+      ],
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-01/summary.json",
+        "sha256": "19429c758d912dda05e417df03ac15440b3a251cc2a2a5acf6df25627d54ff1b"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-01/backend.tap",
+          "sha256": "e743f56ab222c8e324741b670e6f544e57081cf1489d5aa8526a1def278d04b9"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-01/checks.jsonl",
+          "sha256": "e7147f510c04226a3eda76967ca60b14e0cdc0e7b66d0381883ae6ef5a54cb02"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-01/source-manifest.json",
+          "sha256": "6cac859c2a96a03fb9e11f3e2b4dd65afc6217fe702db552361f28066f309992"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-01/HTTP_INDEX.json",
+          "sha256": "c11bb600b0c2516c0ae17b1b6a79a4f563208b0bc8b453c7aa57c79352e1c4c5"
+        }
+      ],
+      "counts": {
+        "PASS": 0,
+        "FAIL": 1,
+        "SKIP": 0,
+        "TODO": 0
+      }
+    },
+    {
+      "source": "26ad91a532e050b72ae9d24536b8c5b47f819d09",
+      "environment": "jx_test_subject_avatar_d98fd2963f2f / disposable MySQL localhost33316; dropped after test",
+      "business_ids": [
+        "07acecc9-92e0-4d7b-b9da-4ac2ea821c4f",
+        "1b709630-ffba-4686-afac-ce232fe05789",
+        "30cd48de-06ca-45cf-8709-83415593182f",
+        "6fa62176-96a0-4a71-97ed-0c20dfb3b66f",
+        "802bf4c4-b2f0-40cc-b455-bbdd705251e3",
+        "b45aeeed-52c1-4bef-92f0-fbb22daaf48a",
+        "bdbcc36e-b013-4c10-b4b7-982cd9b719cd"
+      ],
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-02/summary.json",
+        "sha256": "60d5a52e39e7ba6abe9396eede80f0b2fd351ba5ffa6afa4b32fe5fcc111b860"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-02/backend.tap",
+          "sha256": "f7a05b8ee07c2bec40a5b689876f3a915fb0428206629faf0734e6d39597fe5b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-02/checks.jsonl",
+          "sha256": "fc79b40645fd9d136067f43540895a5279591b5af480f578eeab7093aadbd086"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-02/source-manifest.json",
+          "sha256": "417b93b629ab8402437d8a46965d9bce43c12ba0111a7fae1752b6459d24a969"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-02/HTTP_INDEX.json",
+          "sha256": "169f13e4f3e380a14e2f3c9587f3ead4fa3efe910dafbd004ef58130000b7ace"
+        }
+      ],
+      "counts": {
+        "PASS": 0,
+        "FAIL": 1,
+        "SKIP": 0,
+        "TODO": 0
+      }
+    },
+    {
+      "source": "5f926e6a2aeabc186c84534bca2cadbf1b8952d8",
+      "environment": "jx_test_subject_avatar_122430fde8fc / disposable MySQL localhost33316; dropped after test",
+      "business_ids": [
+        "0ae9f78f-ce61-4287-95db-23d43e9ae377",
+        "146645c8-63fe-4d9a-98f4-b8b4688b25f0",
+        "196794bb-c394-4dce-b85c-aec705493401",
+        "1e4ec53e-9523-4e03-9d95-2f0ebc34ede2",
+        "307074bf-1123-4b88-9cf2-e6aa548e5764",
+        "68d9f345-9701-4a43-a8e8-7e468a3f1364",
+        "7028c3fa-2016-4b51-ac95-7dd06383898a",
+        "706dafc5-d40f-4156-99c7-29d9334515dd",
+        "9193bb71-60b8-44ff-8978-06572df288e4",
+        "93cd6764-849e-4daf-932a-191e3f16e845",
+        "97fb7eee-a4cf-4c02-9037-74fd81b4e745",
+        "985f4ea3-811a-4da5-ac7d-ab2b74adc79e",
+        "9ba68d94-0b52-404b-819e-f46f31565917",
+        "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+        "c53167e0-9d18-4905-8103-4a728f330536",
+        "c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+        "e7364d8f-ce4f-4258-9fd4-a2773353c6dc",
+        "e8eb55fe-3733-40ef-acfa-59e5b78518e9"
+      ],
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-03/summary.json",
+        "sha256": "e53e2bd7fc8f7f968bf81dfe3aa34343a5933f76057f752c89fb38dcd9b06937"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-03/backend.tap",
+          "sha256": "f43f774b50fe2033b893dd3a6ae4bc5c08ea8db976e24064c9f8c22d87525d26"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-03/checks.jsonl",
+          "sha256": "8a2743a663c08fb5f855181eff87f20db5aa894426d28365988b8097915d656a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-03/source-manifest.json",
+          "sha256": "e2a2b4a5c5503cbfa8eaf17a30adf71a2e62960057ee503e64788442ca2fe2b0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-03/HTTP_INDEX.json",
+          "sha256": "62c1e22a4e18383c11817858eeffcf9382a2b7820f57bc7a70a72c4d34f46531"
+        }
+      ],
+      "counts": {
+        "PASS": 4,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      }
+    },
+    {
+      "source": "33b5d46c5d505ea6b1645d1c3dffbe4b8e3436e0",
+      "environment": "jx_test_subject_avatar_9f9f7d421c9c / disposable MySQL localhost33316; dropped after test",
+      "business_ids": [
+        "012c68b2-89b5-40f0-ab22-825f962d7956",
+        "041dd2f5-77b2-4361-8252-37356b40afda",
+        "07960378-ff23-41ae-bf2a-13005ca28c03",
+        "13ce19bd-0a04-4757-be83-3e56cfaea20e",
+        "13f2fe89-c41c-4b1c-96c1-5f95ee6eed37",
+        "1925e480-dc2c-430a-ba0f-512417a7c096",
+        "1c50a9cc-41b4-4860-8042-98954ac8ef5f",
+        "2bcf4c19-84ac-4634-9c76-f4a6e2f90dc3",
+        "49b7ad55-814d-409b-8a31-6956bb12af85",
+        "6ce2d171-e565-4bd7-b812-93fed6eb9022",
+        "7167aceb-2205-40ed-b4ed-d57a0b5478b7",
+        "811792b1-5127-4ee8-a311-9bf9cc3281f0",
+        "a2a4de96-0fbe-46b2-a365-f20c1d2c382f",
+        "b1eabef3-76a4-4440-bbbc-b00067d03020",
+        "be0e8a64-7e96-4ff5-9624-080187edccc2",
+        "c68f38b5-7403-4839-8ed9-38b07cf5ab1e",
+        "ca40efba-dac1-445c-8c01-0b6b40970c45",
+        "fe716bc1-768d-4dfa-9830-7437bf50d284"
+      ],
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/summary.json",
+        "sha256": "e343c01750ceaee1b954c2d627dfecbe2d343ae8b4b212712c6ccf753d633d17"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/backend.tap",
+          "sha256": "09a398f7a2f016fab4c671c1779a0b5c854963c5d14469171d7fe00cf301f618"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/checks.jsonl",
+          "sha256": "0134ac7e34511a63641faff3dfab5bac2294354f2b83df9bb255bf25b62f2dce"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/source-manifest.json",
+          "sha256": "5533b1ece654f68f7cadcccb59c4b2f7d7553cfd17b75136d87b7053a4a4ad74"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/HTTP_INDEX.json",
+          "sha256": "4fd922d314f379bd939ccad8d5e006a34f7210e0705991e2735d3fbbbf633962"
+        }
+      ],
+      "counts": {
+        "PASS": 4,
+        "FAIL": 0,
+        "SKIP": 0,
+        "TODO": 0
+      }
+    }
+  ],
+  "retest": {
+    "source": "33b5d46c5d505ea6b1645d1c3dffbe4b8e3436e0",
+    "environment": "jx_test_subject_avatar_9f9f7d421c9c / disposable MySQL localhost33316; dropped after test",
+    "business_ids": [
+      "012c68b2-89b5-40f0-ab22-825f962d7956",
+      "041dd2f5-77b2-4361-8252-37356b40afda",
+      "07960378-ff23-41ae-bf2a-13005ca28c03",
+      "13ce19bd-0a04-4757-be83-3e56cfaea20e",
+      "13f2fe89-c41c-4b1c-96c1-5f95ee6eed37",
+      "1925e480-dc2c-430a-ba0f-512417a7c096",
+      "1c50a9cc-41b4-4860-8042-98954ac8ef5f",
+      "2bcf4c19-84ac-4634-9c76-f4a6e2f90dc3",
+      "49b7ad55-814d-409b-8a31-6956bb12af85",
+      "6ce2d171-e565-4bd7-b812-93fed6eb9022",
+      "7167aceb-2205-40ed-b4ed-d57a0b5478b7",
+      "811792b1-5127-4ee8-a311-9bf9cc3281f0",
+      "a2a4de96-0fbe-46b2-a365-f20c1d2c382f",
+      "b1eabef3-76a4-4440-bbbc-b00067d03020",
+      "be0e8a64-7e96-4ff5-9624-080187edccc2",
+      "c68f38b5-7403-4839-8ed9-38b07cf5ab1e",
+      "ca40efba-dac1-445c-8c01-0b6b40970c45",
+      "fe716bc1-768d-4dfa-9830-7437bf50d284"
+    ],
+    "summary": {
+      "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/summary.json",
+      "sha256": "e343c01750ceaee1b954c2d627dfecbe2d343ae8b4b212712c6ccf753d633d17"
+    },
+    "raw_logs": [
+      {
+        "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/backend.tap",
+        "sha256": "09a398f7a2f016fab4c671c1779a0b5c854963c5d14469171d7fe00cf301f618"
+      },
+      {
+        "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/checks.jsonl",
+        "sha256": "0134ac7e34511a63641faff3dfab5bac2294354f2b83df9bb255bf25b62f2dce"
+      },
+      {
+        "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/source-manifest.json",
+        "sha256": "5533b1ece654f68f7cadcccb59c4b2f7d7553cfd17b75136d87b7053a4a4ad74"
+      },
+      {
+        "path": "docs/testing/evidence/pm04-g1-t1-identity-artists-review-20261126/subject-avatar-04/HTTP_INDEX.json",
+        "sha256": "4fd922d314f379bd939ccad8d5e006a34f7210e0705991e2735d3fbbbf633962"
+      }
+    ],
+    "counts": {
+      "PASS": 4,
+      "FAIL": 0,
+      "SKIP": 0,
+      "TODO": 0
+    }
+  },
+  "product_changed": false,
+  "actual_business_cases": 3,
+  "parent_count": 1,
+  "first_failures_retained": true,
+  "third_pass_followup": "Fourth run justified by tightening cross-party denial from non200 to exact404 TRADE_NOT_FOUND; no broader repeat."
+}

@@ -1,0 +1,990 @@
+{
+  "private_source": {
+    "path": ".local/qa18/t1-subject-avatar-stock-20261126-03/http-private/subject-avatar-stock-boundaries-http.json",
+    "sha256": "7a2f016b16c661f60447f94ce4c55fb4d5f2c730fc8e2f0a7fb741b43c37366b"
+  },
+  "database": "jx_test_subject_avatar_122430fde8fc",
+  "records": {
+    "dual_role_account_id": "1e4ec53e-9523-4e03-9d95-2f0ebc34ede2",
+    "personal_buyer_party_id": "97fb7eee-a4cf-4c02-9037-74fd81b4e745",
+    "supplier_party_id": "7028c3fa-2016-4b51-ac95-7dd06383898a",
+    "person_id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+    "wallet_id": "93cd6764-849e-4daf-932a-191e3f16e845",
+    "original_avatar_id": "985f4ea3-811a-4da5-ac7d-ab2b74adc79e",
+    "new_avatar_id": "146645c8-63fe-4d9a-98f4-b8b4688b25f0",
+    "original_order_id": "c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+    "supplied_order_id": "c53167e0-9d18-4905-8103-4a728f330536"
+  },
+  "cases": [
+    {
+      "index": 0,
+      "method": "POST",
+      "path": "/api/v1/stock/checkout",
+      "status": 200,
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+            "kind": "ORDER",
+            "buyer_party_id": "97fb7eee-a4cf-4c02-9037-74fd81b4e745",
+            "merchant_party_id": "307074bf-1123-4b88-9cf2-e6aa548e5764",
+            "order_id": null,
+            "current_status": "OPEN",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/quote/stock_video",
+          "facts": {
+            "listing_id": "706dafc5-d40f-4156-99c7-29d9334515dd"
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "current_status": "SEALED",
+            "id": "9ba68d94-0b52-404b-819e-f46f31565917",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/stock_video",
+          "facts": {
+            "listing_id": "706dafc5-d40f-4156-99c7-29d9334515dd"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "e8eb55fe-3733-40ef-acfa-59e5b78518e9"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "received_minor": 0,
+            "refunded_minor": 0,
+            "net_minor": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+      "status": 200,
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+            "listing_id": "706dafc5-d40f-4156-99c7-29d9334515dd",
+            "buyer_party_id": "97fb7eee-a4cf-4c02-9037-74fd81b4e745",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "status": 200,
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "93cd6764-849e-4daf-932a-191e3f16e845",
+            "recorded_balance_minor": 0,
+            "available_points": 0,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "method": "POST",
+      "path": "/api/v1/artists/people/b5000f18-38d4-4af9-8132-c3ed48e1ea6b/avatars",
+      "status": 200,
+      "schema": "ArtistResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "146645c8-63fe-4d9a-98f4-b8b4688b25f0",
+            "person_id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+            "owner_party_id": "307074bf-1123-4b88-9cf2-e6aa548e5764",
+            "object_version": 1
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "method": "POST",
+      "path": "/api/v1/artists/people/b5000f18-38d4-4af9-8132-c3ed48e1ea6b/avatars",
+      "status": 200,
+      "schema": "ArtistResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "146645c8-63fe-4d9a-98f4-b8b4688b25f0",
+            "person_id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+            "owner_party_id": "307074bf-1123-4b88-9cf2-e6aa548e5764",
+            "object_version": 1
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "method": "GET",
+      "path": "/api/v1/artists/people/b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+      "status": 200,
+      "schema": "ArtistResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/person",
+          "facts": {
+            "id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+            "owner_party_id": "307074bf-1123-4b88-9cf2-e6aa548e5764",
+            "current_status": "ACTIVE",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/avatars/0",
+          "facts": {
+            "id": "146645c8-63fe-4d9a-98f4-b8b4688b25f0",
+            "person_id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+            "owner_party_id": "307074bf-1123-4b88-9cf2-e6aa548e5764",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/avatars/1",
+          "facts": {
+            "id": "985f4ea3-811a-4da5-ac7d-ab2b74adc79e",
+            "person_id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+            "owner_party_id": "307074bf-1123-4b88-9cf2-e6aa548e5764",
+            "object_version": 1
+          }
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "status": 200,
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "93cd6764-849e-4daf-932a-191e3f16e845",
+            "recorded_balance_minor": 0,
+            "available_points": 0,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+      "status": 200,
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+            "listing_id": "706dafc5-d40f-4156-99c7-29d9334515dd",
+            "buyer_party_id": "97fb7eee-a4cf-4c02-9037-74fd81b4e745",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "method": "GET",
+      "path": "/api/v1/stock/listings",
+      "status": 200,
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": []
+    },
+    {
+      "index": 9,
+      "method": "GET",
+      "path": "/api/v1/stock/participant-options",
+      "status": 200,
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "person_id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+            "avatar_id": "146645c8-63fe-4d9a-98f4-b8b4688b25f0",
+            "consent_id": "68d9f345-9701-4a43-a8e8-7e468a3f1364"
+          }
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "method": "POST",
+      "path": "/api/v1/stock/listings",
+      "status": 409,
+      "schema": "ErrorResponse",
+      "error_code": "STOCK_SALE_CONSENT_REQUIRED",
+      "facts": []
+    },
+    {
+      "index": 11,
+      "method": "POST",
+      "path": "/api/v1/stock/listings",
+      "status": 409,
+      "schema": "ErrorResponse",
+      "error_code": "STOCK_SALE_CONSENT_REQUIRED",
+      "facts": []
+    },
+    {
+      "index": 12,
+      "method": "POST",
+      "path": "/api/v1/stock/listings",
+      "status": 200,
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "196794bb-c394-4dce-b85c-aec705493401",
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/spec/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/content",
+          "facts": {
+            "id": "e8eb55fe-3733-40ef-acfa-59e5b78518e9"
+          }
+        },
+        {
+          "pointer": "data/data/participants/0",
+          "facts": {
+            "person_id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+            "avatar_id": "146645c8-63fe-4d9a-98f4-b8b4688b25f0",
+            "consent_id": "68d9f345-9701-4a43-a8e8-7e468a3f1364"
+          }
+        },
+        {
+          "pointer": "data/data/rights_snapshot/0",
+          "facts": {
+            "person_id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+            "avatar_id": "146645c8-63fe-4d9a-98f4-b8b4688b25f0",
+            "consent_id": "68d9f345-9701-4a43-a8e8-7e468a3f1364"
+          }
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "method": "POST",
+      "path": "/api/v1/stock/listings",
+      "status": 200,
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "196794bb-c394-4dce-b85c-aec705493401",
+            "current_status": "IN_REVIEW",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/spec/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/content",
+          "facts": {
+            "id": "e8eb55fe-3733-40ef-acfa-59e5b78518e9"
+          }
+        },
+        {
+          "pointer": "data/data/participants/0",
+          "facts": {
+            "person_id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+            "avatar_id": "146645c8-63fe-4d9a-98f4-b8b4688b25f0",
+            "consent_id": "68d9f345-9701-4a43-a8e8-7e468a3f1364"
+          }
+        },
+        {
+          "pointer": "data/data/rights_snapshot/0",
+          "facts": {
+            "person_id": "b5000f18-38d4-4af9-8132-c3ed48e1ea6b",
+            "avatar_id": "146645c8-63fe-4d9a-98f4-b8b4688b25f0",
+            "consent_id": "68d9f345-9701-4a43-a8e8-7e468a3f1364"
+          }
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "method": "POST",
+      "path": "/api/v1/stock/checkout",
+      "status": 200,
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "c53167e0-9d18-4905-8103-4a728f330536",
+            "kind": "ORDER",
+            "buyer_party_id": "e7364d8f-ce4f-4258-9fd4-a2773353c6dc",
+            "merchant_party_id": "7028c3fa-2016-4b51-ac95-7dd06383898a",
+            "order_id": null,
+            "current_status": "OPEN",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/quote/stock_video",
+          "facts": {
+            "listing_id": "196794bb-c394-4dce-b85c-aec705493401"
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "current_status": "SEALED",
+            "id": "0ae9f78f-ce61-4287-95db-23d43e9ae377",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/stock_video",
+          "facts": {
+            "listing_id": "196794bb-c394-4dce-b85c-aec705493401"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "e8eb55fe-3733-40ef-acfa-59e5b78518e9"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "received_minor": 0,
+            "refunded_minor": 0,
+            "net_minor": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "method": "POST",
+      "path": "/api/v1/stock/checkout",
+      "status": 200,
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "c53167e0-9d18-4905-8103-4a728f330536",
+            "kind": "ORDER",
+            "buyer_party_id": "e7364d8f-ce4f-4258-9fd4-a2773353c6dc",
+            "merchant_party_id": "7028c3fa-2016-4b51-ac95-7dd06383898a",
+            "order_id": null,
+            "current_status": "OPEN",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/quote/stock_video",
+          "facts": {
+            "listing_id": "196794bb-c394-4dce-b85c-aec705493401"
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "id": "0ae9f78f-ce61-4287-95db-23d43e9ae377",
+            "current_status": "SEALED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/stock_video",
+          "facts": {
+            "listing_id": "196794bb-c394-4dce-b85c-aec705493401"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "e8eb55fe-3733-40ef-acfa-59e5b78518e9"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "net_minor": 0,
+            "received_minor": 0,
+            "refunded_minor": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/c53167e0-9d18-4905-8103-4a728f330536",
+      "status": 200,
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "c53167e0-9d18-4905-8103-4a728f330536",
+            "listing_id": "196794bb-c394-4dce-b85c-aec705493401",
+            "buyer_party_id": "e7364d8f-ce4f-4258-9fd4-a2773353c6dc",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "method": "GET",
+      "path": "/api/v1/trade/records/c53167e0-9d18-4905-8103-4a728f330536",
+      "status": 200,
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "c53167e0-9d18-4905-8103-4a728f330536",
+            "kind": "ORDER",
+            "buyer_party_id": "e7364d8f-ce4f-4258-9fd4-a2773353c6dc",
+            "merchant_party_id": "7028c3fa-2016-4b51-ac95-7dd06383898a",
+            "order_id": null,
+            "current_status": "PAID",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/quote/stock_video",
+          "facts": {
+            "listing_id": "196794bb-c394-4dce-b85c-aec705493401"
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "id": "0ae9f78f-ce61-4287-95db-23d43e9ae377",
+            "current_status": "SEALED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/stock_video",
+          "facts": {
+            "listing_id": "196794bb-c394-4dce-b85c-aec705493401"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "e8eb55fe-3733-40ef-acfa-59e5b78518e9"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "net_minor": 100,
+            "received_minor": 100,
+            "refunded_minor": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "method": "GET",
+      "path": "/api/v1/trade/records/c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+      "status": 200,
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+            "kind": "ORDER",
+            "buyer_party_id": "97fb7eee-a4cf-4c02-9037-74fd81b4e745",
+            "merchant_party_id": "307074bf-1123-4b88-9cf2-e6aa548e5764",
+            "order_id": null,
+            "current_status": "PAID",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/quote/stock_video",
+          "facts": {
+            "listing_id": "706dafc5-d40f-4156-99c7-29d9334515dd"
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "id": "9ba68d94-0b52-404b-819e-f46f31565917",
+            "current_status": "SEALED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/stock_video",
+          "facts": {
+            "listing_id": "706dafc5-d40f-4156-99c7-29d9334515dd"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "e8eb55fe-3733-40ef-acfa-59e5b78518e9"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "net_minor": 100,
+            "received_minor": 100,
+            "refunded_minor": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "method": "GET",
+      "path": "/api/v1/trade/records/c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+      "status": 404,
+      "schema": "ErrorResponse",
+      "error_code": "TRADE_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 20,
+      "method": "GET",
+      "path": "/api/v1/trade/records/c53167e0-9d18-4905-8103-4a728f330536",
+      "status": 404,
+      "schema": "ErrorResponse",
+      "error_code": "TRADE_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 21,
+      "method": "POST",
+      "path": "/api/v1/stock/checkout",
+      "status": 200,
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+            "kind": "ORDER",
+            "buyer_party_id": "97fb7eee-a4cf-4c02-9037-74fd81b4e745",
+            "merchant_party_id": "307074bf-1123-4b88-9cf2-e6aa548e5764",
+            "order_id": null,
+            "current_status": "PAID",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/quote/stock_video",
+          "facts": {
+            "listing_id": "706dafc5-d40f-4156-99c7-29d9334515dd"
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "id": "9ba68d94-0b52-404b-819e-f46f31565917",
+            "current_status": "SEALED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "9193bb71-60b8-44ff-8978-06572df288e4"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/stock_video",
+          "facts": {
+            "listing_id": "706dafc5-d40f-4156-99c7-29d9334515dd"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "e8eb55fe-3733-40ef-acfa-59e5b78518e9"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "net_minor": 100,
+            "received_minor": 100,
+            "refunded_minor": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+      "status": 200,
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "c73e1a94-f5d7-4b44-ab89-f37980c1d782",
+            "listing_id": "706dafc5-d40f-4156-99c7-29d9334515dd",
+            "buyer_party_id": "97fb7eee-a4cf-4c02-9037-74fd81b4e745",
+            "object_version": 2
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "status": 200,
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "93cd6764-849e-4daf-932a-191e3f16e845",
+            "recorded_balance_minor": 0,
+            "available_points": 0,
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    }
+  ],
+  "limits": "Allowlisted synthetic identifiers/states/numbers; no tokens, contact or private proof. Raw HTTP remains protected locally; hashes bind the actual records."
+}
