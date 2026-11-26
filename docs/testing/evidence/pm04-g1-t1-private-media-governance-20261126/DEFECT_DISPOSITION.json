@@ -1,0 +1,35 @@
+{
+  "defects": [
+    {
+      "bug_id": "QA18-TEST-161",
+      "discovered_at": "2026-11-26",
+      "group_ids": "G16/G17",
+      "acceptance_ids": "ACC-DEL-24.04",
+      "e2e_ids": "",
+      "severity": "P2",
+      "kind": "EVIDENCE_METADATA",
+      "owner": "chengcongcong222",
+      "status": "RETARGET_PASS",
+      "version": "86910cc4bcbc6751a667c63540d8e9f691059e17",
+      "environment": "QA committed evidence byte verification",
+      "actual_record_id": "",
+      "role": "",
+      "original_key_sha256": "",
+      "expected": "审定引用须匹配提交内准确原始字节，不依赖工作区换行转换。",
+      "observed": "提交86910cc4字节核验失败：MATERIAL_GOVERNANCE_GAPS旧说明的工作区CRLF摘要与Git原LF不一致；不涉及实际业务测试失败。",
+      "request_endpoint": "",
+      "response_code": "",
+      "reproduction": "python .local/qa18/verify_closeout.py HEAD",
+      "before_proof_path": "docs/testing/evidence/pm04-g1-t1-private-media-governance-20261126/COMMITTED_PROOF_FAILURE.json",
+      "before_sha256": "0b616a095041c80058518f26dbaa8431e93fe7ccbbd578d3fe3185aeb5c32264",
+      "root_cause": "直接引用历史非evidence文档的工作区字节。保存准确455fa92c Git原文快照并保留原路径/版本与换行差异，不改历史原件、不放宽校验器。",
+      "fix_commit": "aad3ff65d7a954dbc91418783bd36edd78efb096",
+      "target_retest_path": "docs/testing/evidence/pm04-g1-t1-private-media-governance-20261126/RETARGET_COMMITTED_PROOFS.json",
+      "target_retest_result": "aad3ff65实际3029份提交内证据逐字匹配、578唯一槽、17历史事件，正式来源和EXPERIENCE_CURRENT未改。",
+      "regression_run_id": "",
+      "reviewer": ""
+    }
+  ],
+  "product_changed": false,
+  "new_business_defects": 0
+}

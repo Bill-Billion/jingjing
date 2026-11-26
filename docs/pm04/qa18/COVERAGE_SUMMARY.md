@@ -48,7 +48,7 @@
 |E2E-09 曝光权益与月冠军|18|1|13|4|0|
 |E2E-12 参演、发行与收入结算|18|1|0|17|0|
 
-缺陷登记共160项：专项复测通过158项，排除为缺陷2项，仍保留：无。专项复测仍待最终回归，不等于正式关闭。
+缺陷登记共161项：专项复测通过159项，排除为缺陷2项，仍保留：无。专项复测仍待最终回归，不等于正式关闭。
 
 CI：准确提交 `05e945bfcfb3358d1b4cf82751a53ef7e93c9d30`，NO_RUNS_OBSERVED；见 `docs/testing/evidence/pm04-g1-t1-private-media-governance-20261126/PUBLISHED_BASE_CI_OBSERVED.json`。不继承给后续HEAD。
 
