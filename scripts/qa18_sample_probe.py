@@ -14,8 +14,11 @@ from pathlib import Path
 
 
 def digest(path):
+    value = hashlib.sha256()
     with path.open('rb') as stream:
-        return hashlib.file_digest(stream, 'sha256').hexdigest()
+        for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+            value.update(chunk)
+    return value.hexdigest()
 
 
 def dump(path, value):
