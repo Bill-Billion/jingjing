@@ -17,7 +17,7 @@ async function sourceDigest() {
   const prefix = '晶晶日上工程交接包/01_源码/backend_server/';
   const tracked = execFileSync('git',['ls-files','-z','--',prefix+'src',prefix+'migrations/mysql-runtime',prefix+'test/helpers',prefix+'test/support',prefix+'scripts/test-network-guard.cjs',prefix+'package.json',prefix+'package-lock.json'],{cwd:root,windowsHide:true}).toString('utf8').split('\0').filter(Boolean);
   const untracked = execFileSync('git',['ls-files','--others','--exclude-standard','-z','--',prefix+'src'],{cwd:root,windowsHide:true}).toString('utf8').split('\0').filter(Boolean);
-  const files = [...new Set([...tracked,...untracked,'scripts/stock-sandbox.cjs','scripts/test-fixtures/pm03-stock.cjs','scripts/test-fixtures/pm03-batch.cjs','scripts/test-fixtures/pm03-phone-targets.cjs','scripts/v5-r05-r12-seed.cjs','scripts/test-fixtures/private-state.cjs','contracts/openapi.yaml'])].sort();
+  const files = [...new Set([...tracked,...untracked,'scripts/stock-sandbox.cjs','scripts/test-fixtures/pm03-stock.cjs','scripts/test-fixtures/pm03-media.cjs','scripts/test-fixtures/pm03-batch.cjs','scripts/test-fixtures/pm03-phone-targets.cjs','scripts/v5-r05-r12-seed.cjs','scripts/test-fixtures/private-state.cjs','contracts/openapi.yaml'])].sort();
   const hash = createHash('sha256');
   for(const file of files) hash.update(file+'\0').update(await fs.readFile(path.join(root,file))).update('\0');
   return hash.digest('hex');
@@ -174,6 +174,7 @@ async function run() {
     const authSettings={sessionMs:duration,...state.mode==='BATCH'?{ipSendsPerHour:100,totalSendsPerHour:200,ipLoginsPerMinute:100}:{}};
     const app = load('src/http/account-api').createAccountApi({db,secret:state.secret,sms,authSettings,supplyStorageFactory:storageAt(out),tradeProvidersFactory:()=>sim,
       supplyEnv:state.mode==='BATCH'?{
+        ...require('./pm03-media.cjs').mediaEnvironment(process.env),
         NODE_ENV:'test',
         INVOICE_SANDBOX_ENABLED:'true',
         MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029',
