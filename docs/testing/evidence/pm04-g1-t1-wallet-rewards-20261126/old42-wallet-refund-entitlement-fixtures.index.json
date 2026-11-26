@@ -1,0 +1,4070 @@
+{
+  "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+  "original": {
+    "path": "docs/testing/evidence/pm04-g1-current-media-20261126-42/HTTP_COLLECTION_COMPLETE.json",
+    "sha256": "20260ab634189405e8466a9f4aec0ebd12b063f4c4687e3b2d780f5d33dfc57b"
+  },
+  "private_original_sha256": "8f5a37e45ea6fbf45af7e5e6edba29ba0586b28fa1842bb21d53c3dc23fca654",
+  "case_count": 77,
+  "cases": [
+    {
+      "index": 0,
+      "method": "POST",
+      "path": "/api/v1/wallet/rules",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "kind": "RULE",
+            "owner_party_id": null,
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "49b00ad149fd336d2d376b36c4610dfdeef7d54836d424e708bb4347a050ff49"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "method": "POST",
+      "path": "/api/v1/wallet/rules/806aa896-c1bb-4296-a528-2a89ca8181ae/review",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "kind": "RULE",
+            "owner_party_id": null,
+            "parent_id": null,
+            "current_status": "EFFECTIVE",
+            "object_version": 2,
+            "content_sha256": "d6ddf0c6c0dc24c62f0dca781953d12608e4066c3f0730ac09e07a70d4c0c43b"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "kind": "ACCOUNT",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "current_status": "ACTIVE",
+            "object_version": 1,
+            "content_sha256": "f30be88bd67e934ef4184052ce63579435d7fed1021be78201911a0e71c3d79b"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 0,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "method": "POST",
+      "path": "/api/v1/stock/checkout",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "kind": "ORDER",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "order_id": null,
+            "current_status": "OPEN",
+            "object_version": 1,
+            "content_sha256": "1175712125bd8d285feccedd90b44a1a6c993a55df5d4c474865372db8e57987"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "total_minor": 100,
+            "rule_id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "expires_at": "2026-11-25T22:02:02.952Z"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "content_sha256": "78378ce97f5c4dd2719b9424127ecb090c34014ad384502ea1def45fadb8c6d9",
+            "current_status": "SEALED",
+            "id": "d1af9c05-0fab-40ce-a72c-6b0c8ce1f041",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "expires_at": "2026-11-25T22:02:02.952Z",
+            "rule_id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/0/allocations/0",
+          "facts": {
+            "amount_minor": 100,
+            "line_id": "stock"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "content_sha256": "e9996986a2071139cf4c7dc636f151b216ea8e99f914c77731eeff94dee30351",
+            "id": "df041b54-2e5d-4972-beea-b455c5e5cbfc"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "received_minor": 0,
+            "refunded_minor": 0,
+            "net_minor": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "255914a9-5431-4265-bf4e-90f096d83a60",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "current_status": "PENDING",
+            "object_version": 1,
+            "content_sha256": "aa4ac02277daa272146a2a5823757d43b71ab74db7813e27c68d2b96f030abbf",
+            "available_at": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "spent": 0,
+            "points": 0,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "reversed": 0,
+            "issued_at": null,
+            "expires_at": null,
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": null,
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/88420085-f17f-4a8c-a55d-7b10727e13f4",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/88420085-f17f-4a8c-a55d-7b10727e13f4/acceptance",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 4
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "255914a9-5431-4265-bf4e-90f096d83a60",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "current_status": "PENDING",
+            "object_version": 1,
+            "content_sha256": "aa4ac02277daa272146a2a5823757d43b71ab74db7813e27c68d2b96f030abbf",
+            "available_at": "2026-12-02T21:32:03.157Z"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "spent": 0,
+            "points": 0,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "reversed": 0,
+            "issued_at": null,
+            "expires_at": null,
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": null,
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "method": "POST",
+      "path": "/api/v1/stock/checkout",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "kind": "ORDER",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "order_id": null,
+            "current_status": "OPEN",
+            "object_version": 1,
+            "content_sha256": "4338eb6868b0604d90d0831166a527c7475ce0c725a09d7534d068f657a86098"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "total_minor": 100,
+            "rule_id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "expires_at": "2026-11-25T22:02:03.269Z"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "content_sha256": "74b34191d4904b126d36e3f3af5609b7abcd9787b9f023ebe28838e88b413fe8",
+            "current_status": "SEALED",
+            "id": "d32b91d9-7e68-4f80-996c-9fe1559784c2",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "expires_at": "2026-11-25T22:02:03.269Z",
+            "rule_id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/0/allocations/0",
+          "facts": {
+            "amount_minor": 100,
+            "line_id": "stock"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "content_sha256": "e9996986a2071139cf4c7dc636f151b216ea8e99f914c77731eeff94dee30351",
+            "id": "df041b54-2e5d-4972-beea-b455c5e5cbfc"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "received_minor": 0,
+            "refunded_minor": 0,
+            "net_minor": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a4c4c18c-5a36-43e3-9a86-0ca57738bb31",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "current_status": "PENDING",
+            "object_version": 1,
+            "content_sha256": "f007b89a05a22b2f1a1df51161373fb3ffbe66fd087173199912391b885e5436",
+            "available_at": null
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "spent": 0,
+            "points": 0,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "reversed": 0,
+            "issued_at": null,
+            "expires_at": null,
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": null,
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/0112ca91-fa27-451b-a08f-d167fe337d05",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/0112ca91-fa27-451b-a08f-d167fe337d05/acceptance",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 4
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a4c4c18c-5a36-43e3-9a86-0ca57738bb31",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "current_status": "PENDING",
+            "object_version": 1,
+            "content_sha256": "f007b89a05a22b2f1a1df51161373fb3ffbe66fd087173199912391b885e5436",
+            "available_at": "2026-12-02T21:32:03.451Z"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "spent": 0,
+            "points": 0,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "reversed": 0,
+            "issued_at": null,
+            "expires_at": null,
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": null,
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 0,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "255914a9-5431-4265-bf4e-90f096d83a60",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "current_status": "ISSUED",
+            "object_version": 2,
+            "content_sha256": "9612067a0eabc3470b7ee4f1d63b6815331808b84d9f1e7064cc1553b9d14feb"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "spent": 0,
+            "points": 10,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "reversed": 0,
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-12-03T21:32:03.501Z",
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": "2026-12-02T21:32:03.157Z",
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "255914a9-5431-4265-bf4e-90f096d83a60",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "current_status": "ISSUED",
+            "object_version": 2,
+            "content_sha256": "9612067a0eabc3470b7ee4f1d63b6815331808b84d9f1e7064cc1553b9d14feb"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "spent": 0,
+            "points": 10,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "reversed": 0,
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-12-03T21:32:03.501Z",
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": "2026-12-02T21:32:03.157Z",
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 10,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 10
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 10
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "ErrorResponse",
+      "error_code": "WALLET_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 19,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "afeebc64-ccb6-4e75-9a99-51fb6a39d070",
+            "kind": "STOCK",
+            "owner_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "5a821f9c950fcc10751af88dcbf7c3753b2c4c421dfc59b94a96b8fb45c70807"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "exchange_points": 4,
+            "capacity": 5
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/afeebc64-ccb6-4e75-9a99-51fb6a39d070/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "afeebc64-ccb6-4e75-9a99-51fb6a39d070",
+            "kind": "STOCK",
+            "owner_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "a4bb2ee0610ae457f5099a4dfd4bea01cd9b5e1667c045f5e174af6c3c9e5660"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 5,
+            "exchange_points": 4
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "538bd1e1-eb13-4bf2-9510-7234d5811420",
+            "kind": "GRANT",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "afeebc64-ccb6-4e75-9a99-51fb6a39d070",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "53a16476f1490d67fa4dd0ec1a7d7f8ae785dfee972599c620dc41ef8218f574"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-01-02T21:32:03.501Z",
+            "hold_id": "a7ae4507-306a-4542-a379-b418b497703b",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 5,
+            "exchange_points": 4
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "538bd1e1-eb13-4bf2-9510-7234d5811420",
+            "kind": "GRANT",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "afeebc64-ccb6-4e75-9a99-51fb6a39d070",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "53a16476f1490d67fa4dd0ec1a7d7f8ae785dfee972599c620dc41ef8218f574"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-01-02T21:32:03.501Z",
+            "hold_id": "a7ae4507-306a-4542-a379-b418b497703b",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 5,
+            "exchange_points": 4
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 6,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 10
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 10
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 6,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 10
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 10
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/88420085-f17f-4a8c-a55d-7b10727e13f4",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 4
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/88420085-f17f-4a8c-a55d-7b10727e13f4/cases",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 5
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "6d6aa826-3991-40d2-a79e-73dd1d650d4a",
+            "kind": "RIGHTS_DISPUTE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/88420085-f17f-4a8c-a55d-7b10727e13f4/case-resolution",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 6
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "REFUND_REQUIRED"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "6d6aa826-3991-40d2-a79e-73dd1d650d4a",
+            "kind": "RIGHTS_DISPUTE"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0/resolution",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 28,
+      "method": "POST",
+      "path": "/api/v1/trade/refunds",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "52c7713f-4b1d-4942-b79c-3f028d74640f",
+            "kind": "REFUND",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "66b92fbd-1643-4e29-b959-1441082ef654",
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "current_status": "REQUESTED",
+            "object_version": 1,
+            "content_sha256": "8d3ea0800d58e64a1d0a11863679aadc1e5daf83a11ff45f9eed0c1d6d5f3214"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "payment_id": "66b92fbd-1643-4e29-b959-1441082ef654",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/allocations/0",
+          "facts": {
+            "amount_minor": 100,
+            "line_id": "stock"
+          }
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "method": "POST",
+      "path": "/api/v1/trade/records/52c7713f-4b1d-4942-b79c-3f028d74640f/reviews",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "52c7713f-4b1d-4942-b79c-3f028d74640f",
+            "kind": "REFUND",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "66b92fbd-1643-4e29-b959-1441082ef654",
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "current_status": "APPROVED",
+            "object_version": 2,
+            "content_sha256": "d6c13d5b1ff829eef16db8ba834620cb03feebab65f50571de563bc83a43e1ba"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "payment_id": "66b92fbd-1643-4e29-b959-1441082ef654",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 0,
+            "points_pending_reversal": 4,
+            "points_block_reason": "POINTS_REVERSAL_PENDING",
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 10
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "POINTS_REVERSAL_PENDING",
+      "facts": []
+    },
+    {
+      "index": 32,
+      "method": "GET",
+      "path": "/api/v1/redemption/catalog",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "afeebc64-ccb6-4e75-9a99-51fb6a39d070",
+            "object_version": 3,
+            "remaining": 4
+          }
+        },
+        {
+          "pointer": "data/items/0/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 5,
+            "exchange_points": 4
+          }
+        },
+        {
+          "pointer": "data/items/0/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "method": "GET",
+      "path": "/api/v1/trade/records/88420085-f17f-4a8c-a55d-7b10727e13f4",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "kind": "ORDER",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "order_id": null,
+            "current_status": "REFUNDED",
+            "object_version": 3,
+            "content_sha256": "a5f7e9c8d232edeff4e08f5371941411f8cbd9aad7db97f570ae4508e46deccc"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "rule_id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "expires_at": "2026-11-25T22:02:02.952Z",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "id": "d1af9c05-0fab-40ce-a72c-6b0c8ce1f041",
+            "content_sha256": "78378ce97f5c4dd2719b9424127ecb090c34014ad384502ea1def45fadb8c6d9",
+            "current_status": "SEALED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "rule_id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "expires_at": "2026-11-25T22:02:02.952Z",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "content_sha256": "e9996986a2071139cf4c7dc636f151b216ea8e99f914c77731eeff94dee30351"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "net_minor": 0,
+            "received_minor": 100,
+            "refunded_minor": 100
+          }
+        }
+      ]
+    },
+    {
+      "index": 34,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a4c4c18c-5a36-43e3-9a86-0ca57738bb31",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "current_status": "ISSUED",
+            "object_version": 3,
+            "content_sha256": "7ac2237561ca8376dc3436a50e0627e79883cb02eac62870b6ca1c24d091533c"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "spent": 0,
+            "points": 10,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "reversed": 0,
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-12-03T21:32:03.501Z",
+            "paid_minor": 100,
+            "debt_offset": 4,
+            "source_kind": "CONSUMPTION",
+            "available_at": "2026-12-02T21:32:03.451Z",
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 6,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 10
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 20
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/0112ca91-fa27-451b-a08f-d167fe337d05",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 4
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/0112ca91-fa27-451b-a08f-d167fe337d05/cases",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 5
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "8328f13f-09f3-411f-8a17-78db2284083e",
+            "kind": "RIGHTS_DISPUTE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/0112ca91-fa27-451b-a08f-d167fe337d05/case-resolution",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 6
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "REFUND_REQUIRED"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "8328f13f-09f3-411f-8a17-78db2284083e",
+            "kind": "RIGHTS_DISPUTE"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0/resolution",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 39,
+      "method": "POST",
+      "path": "/api/v1/trade/refunds",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "7fc28294-f38b-4b14-942c-5db6a6936a62",
+            "kind": "REFUND",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "67987c3b-e27d-4cf5-ba1f-29a7789c470b",
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "current_status": "REQUESTED",
+            "object_version": 1,
+            "content_sha256": "ee2c467c771d1b4af2d707840b8c682b5f90001a89db6cb892fd586b74997668"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "payment_id": "67987c3b-e27d-4cf5-ba1f-29a7789c470b",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/allocations/0",
+          "facts": {
+            "amount_minor": 100,
+            "line_id": "stock"
+          }
+        }
+      ]
+    },
+    {
+      "index": 40,
+      "method": "POST",
+      "path": "/api/v1/trade/records/7fc28294-f38b-4b14-942c-5db6a6936a62/reviews",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "7fc28294-f38b-4b14-942c-5db6a6936a62",
+            "kind": "REFUND",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "67987c3b-e27d-4cf5-ba1f-29a7789c470b",
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "current_status": "APPROVED",
+            "object_version": 2,
+            "content_sha256": "5ea339232022460f30f8b314b1ea062953367055d672774a6048c6da01dba487"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "payment_id": "67987c3b-e27d-4cf5-ba1f-29a7789c470b",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        }
+      ]
+    },
+    {
+      "index": 41,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 0,
+            "points_pending_reversal": 4,
+            "points_block_reason": "POINTS_REVERSAL_PENDING",
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 20
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 42,
+      "method": "POST",
+      "path": "/api/v1/wallet/check-in",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "10464077-e0c6-4a09-ac4a-6bbd4a99377d",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "current_status": "ISSUED",
+            "object_version": 2,
+            "content_sha256": "0e936389cffbdff77999ddacb3fd822e2cdafd35aa1b23febda924fb45c66782"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "source_kind": "FREE",
+            "event_kind": "DAILY_CHECKIN",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "points": 3,
+            "reversed": 0,
+            "growth_reversed": 0,
+            "spent": 0,
+            "expired": 0,
+            "pending_shortfall": 0,
+            "debt_offset": 3,
+            "debt_settled": 0,
+            "paid_minor": 0,
+            "refunded_minor": 0,
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-12-03T21:32:03.501Z"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 43,
+      "method": "POST",
+      "path": "/api/v1/wallet/check-in",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "10464077-e0c6-4a09-ac4a-6bbd4a99377d",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "current_status": "ISSUED",
+            "object_version": 2,
+            "content_sha256": "0e936389cffbdff77999ddacb3fd822e2cdafd35aa1b23febda924fb45c66782"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "source_kind": "FREE",
+            "event_kind": "DAILY_CHECKIN",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "points": 3,
+            "reversed": 0,
+            "growth_reversed": 0,
+            "spent": 0,
+            "expired": 0,
+            "pending_shortfall": 0,
+            "debt_offset": 3,
+            "debt_settled": 0,
+            "paid_minor": 0,
+            "refunded_minor": 0,
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-12-03T21:32:03.501Z"
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 44,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 0,
+            "points_pending_reversal": 1,
+            "points_block_reason": "POINTS_REVERSAL_PENDING",
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 23
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/538bd1e1-eb13-4bf2-9510-7234d5811420",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "538bd1e1-eb13-4bf2-9510-7234d5811420",
+            "kind": "GRANT",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "afeebc64-ccb6-4e75-9a99-51fb6a39d070",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "53a16476f1490d67fa4dd0ec1a7d7f8ae785dfee972599c620dc41ef8218f574",
+            "effective_status": "AVAILABLE"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "a7ae4507-306a-4542-a379-b418b497703b",
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-01-02T21:32:03.501Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 5,
+            "exchange_points": 4
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/538bd1e1-eb13-4bf2-9510-7234d5811420/remedies",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "d50ecad7-d1de-40e1-b1bf-ed44f8b287fd",
+            "kind": "REMEDY",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "538bd1e1-eb13-4bf2-9510-7234d5811420",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "2187e970d4dd4938b484ba732ec832a7bf5ecebed06b9d6c02454d29276e1de5"
+          }
+        }
+      ]
+    },
+    {
+      "index": 47,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/d50ecad7-d1de-40e1-b1bf-ed44f8b287fd/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "d50ecad7-d1de-40e1-b1bf-ed44f8b287fd",
+            "kind": "REMEDY",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "538bd1e1-eb13-4bf2-9510-7234d5811420",
+            "current_status": "RESOLVED",
+            "object_version": 2,
+            "content_sha256": "2a0028742baf55cbb43c4395edf5d403a91b64dff7ef3acc4318dcc38a528322"
+          }
+        }
+      ]
+    },
+    {
+      "index": 48,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/d50ecad7-d1de-40e1-b1bf-ed44f8b287fd/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "d50ecad7-d1de-40e1-b1bf-ed44f8b287fd",
+            "kind": "REMEDY",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "538bd1e1-eb13-4bf2-9510-7234d5811420",
+            "current_status": "RESOLVED",
+            "object_version": 2,
+            "content_sha256": "2a0028742baf55cbb43c4395edf5d403a91b64dff7ef3acc4318dcc38a528322"
+          }
+        }
+      ]
+    },
+    {
+      "index": 49,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 3,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 23
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 50,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/538bd1e1-eb13-4bf2-9510-7234d5811420",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "538bd1e1-eb13-4bf2-9510-7234d5811420",
+            "kind": "GRANT",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "afeebc64-ccb6-4e75-9a99-51fb6a39d070",
+            "current_status": "POINTS_RETURNED",
+            "object_version": 4,
+            "content_sha256": "53a16476f1490d67fa4dd0ec1a7d7f8ae785dfee972599c620dc41ef8218f574",
+            "effective_status": "POINTS_RETURNED"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "a7ae4507-306a-4542-a379-b418b497703b",
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-01-02T21:32:03.501Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 5,
+            "exchange_points": 4
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 51,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "10464077-e0c6-4a09-ac4a-6bbd4a99377d",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "current_status": "ISSUED",
+            "object_version": 2,
+            "content_sha256": "0e936389cffbdff77999ddacb3fd822e2cdafd35aa1b23febda924fb45c66782"
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "spent": 0,
+            "points": 3,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "reversed": 0,
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "event_kind": "DAILY_CHECKIN",
+            "expires_at": "2027-12-03T21:32:03.501Z",
+            "paid_minor": 0,
+            "debt_offset": 3,
+            "source_kind": "FREE",
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/items/0/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "255914a9-5431-4265-bf4e-90f096d83a60",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "current_status": "ISSUED",
+            "object_version": 7,
+            "content_sha256": "0e3b67ecd743d95f3dbe063e441b1b354c9a85ae3b7ba18d5551a5a76f72ce5c"
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "spent": 0,
+            "points": 10,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "reversed": 6,
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-12-03T21:32:03.501Z",
+            "paid_minor": 100,
+            "debt_offset": 1,
+            "source_kind": "CONSUMPTION",
+            "available_at": "2026-12-02T21:32:03.157Z",
+            "debt_settled": 4,
+            "refunded_minor": 100,
+            "growth_reversed": 10,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/items/1/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        },
+        {
+          "pointer": "data/items/2",
+          "facts": {
+            "id": "a4c4c18c-5a36-43e3-9a86-0ca57738bb31",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "current_status": "ISSUED",
+            "object_version": 6,
+            "content_sha256": "c970df9a1cd54815ce7b5f2bf0f52f553f277c801efad77d570525a4c1f44c07"
+          }
+        },
+        {
+          "pointer": "data/items/2/data",
+          "facts": {
+            "spent": 0,
+            "points": 10,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "reversed": 6,
+            "issued_at": "2026-12-03T21:32:03.501Z",
+            "expires_at": "2027-12-03T21:32:03.501Z",
+            "paid_minor": 100,
+            "debt_offset": 4,
+            "source_kind": "CONSUMPTION",
+            "available_at": "2026-12-02T21:32:03.451Z",
+            "debt_settled": 4,
+            "refunded_minor": 100,
+            "growth_reversed": 10,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/items/2/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 52,
+      "method": "GET",
+      "path": "/api/v1/trade/records/88420085-f17f-4a8c-a55d-7b10727e13f4",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "88420085-f17f-4a8c-a55d-7b10727e13f4",
+            "kind": "ORDER",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "order_id": null,
+            "current_status": "REFUNDED",
+            "object_version": 3,
+            "content_sha256": "a5f7e9c8d232edeff4e08f5371941411f8cbd9aad7db97f570ae4508e46deccc"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "rule_id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "expires_at": "2026-11-25T22:02:02.952Z",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "id": "d1af9c05-0fab-40ce-a72c-6b0c8ce1f041",
+            "content_sha256": "78378ce97f5c4dd2719b9424127ecb090c34014ad384502ea1def45fadb8c6d9",
+            "current_status": "SEALED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "rule_id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "expires_at": "2026-11-25T22:02:02.952Z",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "content_sha256": "e9996986a2071139cf4c7dc636f151b216ea8e99f914c77731eeff94dee30351"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "net_minor": 0,
+            "received_minor": 100,
+            "refunded_minor": 100
+          }
+        }
+      ]
+    },
+    {
+      "index": 53,
+      "method": "GET",
+      "path": "/api/v1/trade/records/0112ca91-fa27-451b-a08f-d167fe337d05",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "0112ca91-fa27-451b-a08f-d167fe337d05",
+            "kind": "ORDER",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "order_id": null,
+            "current_status": "REFUNDED",
+            "object_version": 3,
+            "content_sha256": "0aa3debd19bbc30e4d058811315919448a812dac15413d0c0365e23a2f3de6b8"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "rule_id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "expires_at": "2026-11-25T22:02:03.269Z",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "id": "d32b91d9-7e68-4f80-996c-9fe1559784c2",
+            "content_sha256": "74b34191d4904b126d36e3f3af5609b7abcd9787b9f023ebe28838e88b413fe8",
+            "current_status": "SEALED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "rule_id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "expires_at": "2026-11-25T22:02:03.269Z",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "df041b54-2e5d-4972-beea-b455c5e5cbfc",
+            "content_sha256": "e9996986a2071139cf4c7dc636f151b216ea8e99f914c77731eeff94dee30351"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "net_minor": 0,
+            "received_minor": 100,
+            "refunded_minor": 100
+          }
+        }
+      ]
+    },
+    {
+      "index": 54,
+      "method": "POST",
+      "path": "/api/v1/stock/checkout",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "kind": "ORDER",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "order_id": null,
+            "current_status": "OPEN",
+            "object_version": 1,
+            "content_sha256": "c9c3a5892b1d40830fcafdda87cbc287222a485dabe9f9a12b826419ba59fab2"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "total_minor": 100,
+            "rule_id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "expires_at": "2026-11-25T22:02:06.260Z"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/marketplace_finance/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/quote/marketplace_finance/rule_snapshot/content",
+          "facts": {
+            "content_sha256": "56731fd1b614e724c0d655238d13d66f1099e655bb36a5b81b09658658a0f50c",
+            "id": "0c1ccf27-cb29-4858-ab78-4cca78837301"
+          }
+        },
+        {
+          "pointer": "data/data/quote/referral",
+          "facts": {
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "status": "ATTRIBUTED"
+          }
+        },
+        {
+          "pointer": "data/data/quote/referral/rule_snapshot",
+          "facts": {
+            "id": "237774b5-43e4-4bc1-be91-b71f0a848f4a",
+            "kind": "RULE",
+            "owner_party_id": null,
+            "parent_id": null,
+            "current_status": "EFFECTIVE",
+            "object_version": 2,
+            "content_sha256": "194171a0a5d9db55e364f0f8852f249e9ce50e3f1bbe03ede15ac9f9d9c07e08"
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "content_sha256": "2b230b8ef90fb0d69406d2742ffd26d668515047615c92889056be9d254ac04d",
+            "current_status": "SEALED",
+            "id": "8cce125d-8474-40cb-acd8-a55d988c3ddc",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "expires_at": "2026-11-25T22:02:06.260Z",
+            "rule_id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/0/allocations/0",
+          "facts": {
+            "amount_minor": 100,
+            "line_id": "stock"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/marketplace_finance/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/marketplace_finance/rule_snapshot/content",
+          "facts": {
+            "content_sha256": "56731fd1b614e724c0d655238d13d66f1099e655bb36a5b81b09658658a0f50c",
+            "id": "0c1ccf27-cb29-4858-ab78-4cca78837301"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/referral",
+          "facts": {
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "status": "ATTRIBUTED"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/referral/rule_snapshot",
+          "facts": {
+            "content_sha256": "194171a0a5d9db55e364f0f8852f249e9ce50e3f1bbe03ede15ac9f9d9c07e08",
+            "current_status": "EFFECTIVE",
+            "id": "237774b5-43e4-4bc1-be91-b71f0a848f4a",
+            "kind": "RULE",
+            "object_version": 2,
+            "owner_party_id": null,
+            "parent_id": null
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "content_sha256": "56731fd1b614e724c0d655238d13d66f1099e655bb36a5b81b09658658a0f50c",
+            "id": "0c1ccf27-cb29-4858-ab78-4cca78837301"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "received_minor": 0,
+            "refunded_minor": 0,
+            "net_minor": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 55,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/29b93211-3df8-4385-943c-0ce997bd3de0",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 3
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 56,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/29b93211-3df8-4385-943c-0ce997bd3de0/acceptance",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 4
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 57,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ae9a54cf-f33d-4496-a219-48870c3e2c6e",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "current_status": "PENDING",
+            "object_version": 1,
+            "content_sha256": "ff5a76ee6644d8a276a971e885968a97d4a75196a0c20bd5653021b94040bd3f",
+            "available_at": "2026-12-02T21:32:06.896Z"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "spent": 0,
+            "points": 0,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "reversed": 0,
+            "issued_at": null,
+            "expires_at": null,
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": null,
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 58,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 3,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 23
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 59,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ae9a54cf-f33d-4496-a219-48870c3e2c6e",
+            "kind": "EARNING",
+            "owner_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "current_status": "ISSUED",
+            "object_version": 2,
+            "content_sha256": "4f74361f9805199c8cede96640cc2f6c12e8b973a04260eadd6b5f41c18f435c"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "spent": 0,
+            "points": 10,
+            "expired": 0,
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "reversed": 0,
+            "issued_at": "2026-12-03T21:32:06.934Z",
+            "expires_at": "2027-12-03T21:32:06.934Z",
+            "paid_minor": 100,
+            "debt_offset": 0,
+            "source_kind": "CONSUMPTION",
+            "available_at": "2026-12-02T21:32:06.896Z",
+            "debt_settled": 0,
+            "refunded_minor": 0,
+            "growth_reversed": 0,
+            "pending_shortfall": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule",
+          "facts": {
+            "points_days": 365
+          }
+        }
+      ]
+    },
+    {
+      "index": 60,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 13,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 10
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 33
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 10,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 61,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/29b93211-3df8-4385-943c-0ce997bd3de0",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 4
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 62,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/29b93211-3df8-4385-943c-0ce997bd3de0/cases",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 5
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "603aeebc-1636-4cb8-bc74-18a5b58fff37",
+            "kind": "REFUND"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 63,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/29b93211-3df8-4385-943c-0ce997bd3de0/case-resolution",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 6
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "REFUND_REQUIRED"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "603aeebc-1636-4cb8-bc74-18a5b58fff37",
+            "kind": "REFUND"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0/resolution",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        },
+        {
+          "pointer": "data/data/refund_plan",
+          "facts": {
+            "amount_minor": 40
+          }
+        }
+      ]
+    },
+    {
+      "index": 64,
+      "method": "POST",
+      "path": "/api/v1/trade/refunds",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "97493b97-fbc2-4ef2-be32-7bc881722693",
+            "kind": "REFUND",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "a2f4d5d7-6dcb-4901-93ec-531c0a27ab99",
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "current_status": "REQUESTED",
+            "object_version": 1,
+            "content_sha256": "a5a36e4ecda22bb9ca6b27a481032ac28bbbda18f4713b052df0b0520324a84f"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "payment_id": "a2f4d5d7-6dcb-4901-93ec-531c0a27ab99",
+            "amount_minor": 40
+          }
+        },
+        {
+          "pointer": "data/data/allocations/0",
+          "facts": {
+            "amount_minor": 40,
+            "line_id": "stock"
+          }
+        }
+      ]
+    },
+    {
+      "index": 65,
+      "method": "POST",
+      "path": "/api/v1/trade/records/97493b97-fbc2-4ef2-be32-7bc881722693/reviews",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "97493b97-fbc2-4ef2-be32-7bc881722693",
+            "kind": "REFUND",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "a2f4d5d7-6dcb-4901-93ec-531c0a27ab99",
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "current_status": "APPROVED",
+            "object_version": 2,
+            "content_sha256": "dcb9b3bb0a06e6a97e04b69feb97995f9f9a985cc9714c7b46bfa85d5d3fc019"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "payment_id": "a2f4d5d7-6dcb-4901-93ec-531c0a27ab99",
+            "amount_minor": 40
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 40
+          }
+        }
+      ]
+    },
+    {
+      "index": 66,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 9,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 6
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 33
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 6,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 67,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/29b93211-3df8-4385-943c-0ce997bd3de0",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 7
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "603aeebc-1636-4cb8-bc74-18a5b58fff37",
+            "kind": "REFUND"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0/resolution",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/refund_plan",
+          "facts": {
+            "amount_minor": 40
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 68,
+      "method": "GET",
+      "path": "/api/v1/trade/records/29b93211-3df8-4385-943c-0ce997bd3de0",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "kind": "ORDER",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "order_id": null,
+            "current_status": "PARTIALLY_REFUNDED",
+            "object_version": 3,
+            "content_sha256": "51556a900e1a743fbc5522e3a5dfc56ebbf160c3d49aa35e117821a1c210879f"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "rule_id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "expires_at": "2026-11-25T22:02:06.260Z",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/quote/referral",
+          "facts": {
+            "status": "ATTRIBUTED",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016"
+          }
+        },
+        {
+          "pointer": "data/data/quote/referral/rule_snapshot",
+          "facts": {
+            "id": "237774b5-43e4-4bc1-be91-b71f0a848f4a",
+            "kind": "RULE",
+            "parent_id": null,
+            "content_sha256": "194171a0a5d9db55e364f0f8852f249e9ce50e3f1bbe03ede15ac9f9d9c07e08",
+            "current_status": "EFFECTIVE",
+            "object_version": 2,
+            "owner_party_id": null
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/marketplace_finance/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/quote/marketplace_finance/rule_snapshot/content",
+          "facts": {
+            "id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "content_sha256": "56731fd1b614e724c0d655238d13d66f1099e655bb36a5b81b09658658a0f50c"
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "id": "8cce125d-8474-40cb-acd8-a55d988c3ddc",
+            "content_sha256": "2b230b8ef90fb0d69406d2742ffd26d668515047615c92889056be9d254ac04d",
+            "current_status": "SEALED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "rule_id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "expires_at": "2026-11-25T22:02:06.260Z",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/referral",
+          "facts": {
+            "status": "ATTRIBUTED",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/referral/rule_snapshot",
+          "facts": {
+            "id": "237774b5-43e4-4bc1-be91-b71f0a848f4a",
+            "kind": "RULE",
+            "parent_id": null,
+            "content_sha256": "194171a0a5d9db55e364f0f8852f249e9ce50e3f1bbe03ede15ac9f9d9c07e08",
+            "current_status": "EFFECTIVE",
+            "object_version": 2,
+            "owner_party_id": null
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/marketplace_finance/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/marketplace_finance/rule_snapshot/content",
+          "facts": {
+            "id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "content_sha256": "56731fd1b614e724c0d655238d13d66f1099e655bb36a5b81b09658658a0f50c"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "content_sha256": "56731fd1b614e724c0d655238d13d66f1099e655bb36a5b81b09658658a0f50c"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "net_minor": 60,
+            "received_minor": 100,
+            "refunded_minor": 40
+          }
+        }
+      ]
+    },
+    {
+      "index": 69,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/29b93211-3df8-4385-943c-0ce997bd3de0",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 7
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "603aeebc-1636-4cb8-bc74-18a5b58fff37",
+            "kind": "REFUND"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0/resolution",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/refund_plan",
+          "facts": {
+            "amount_minor": 40
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 70,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/29b93211-3df8-4385-943c-0ce997bd3de0/cases",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 8
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "ACTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "603aeebc-1636-4cb8-bc74-18a5b58fff37",
+            "kind": "REFUND"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0/resolution",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/cases/1",
+          "facts": {
+            "id": "f31cb42a-911c-47fa-846b-33b253bab69a",
+            "kind": "REFUND"
+          }
+        },
+        {
+          "pointer": "data/data/refund_plan",
+          "facts": {
+            "amount_minor": 40
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 71,
+      "method": "POST",
+      "path": "/api/v1/stock/purchases/29b93211-3df8-4385-943c-0ce997bd3de0/case-resolution",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 9
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "REFUND_REQUIRED"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "603aeebc-1636-4cb8-bc74-18a5b58fff37",
+            "kind": "REFUND"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0/resolution",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/cases/1",
+          "facts": {
+            "id": "f31cb42a-911c-47fa-846b-33b253bab69a",
+            "kind": "REFUND"
+          }
+        },
+        {
+          "pointer": "data/data/cases/1/resolution",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/refund_plan",
+          "facts": {
+            "amount_minor": 60
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 72,
+      "method": "POST",
+      "path": "/api/v1/trade/refunds",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "086f7039-d0f5-4ea9-a6cf-9f3529e7c4de",
+            "kind": "REFUND",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "a2f4d5d7-6dcb-4901-93ec-531c0a27ab99",
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "current_status": "REQUESTED",
+            "object_version": 1,
+            "content_sha256": "727eff5f106da439ce37b69594d70cc347c0e5694de8d5f05fd20e8b5713a117"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "payment_id": "a2f4d5d7-6dcb-4901-93ec-531c0a27ab99",
+            "amount_minor": 60
+          }
+        },
+        {
+          "pointer": "data/data/allocations/0",
+          "facts": {
+            "amount_minor": 60,
+            "line_id": "stock"
+          }
+        }
+      ]
+    },
+    {
+      "index": 73,
+      "method": "POST",
+      "path": "/api/v1/trade/records/086f7039-d0f5-4ea9-a6cf-9f3529e7c4de/reviews",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "086f7039-d0f5-4ea9-a6cf-9f3529e7c4de",
+            "kind": "REFUND",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": "a2f4d5d7-6dcb-4901-93ec-531c0a27ab99",
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "current_status": "APPROVED",
+            "object_version": 2,
+            "content_sha256": "d6da671ac22641ce3a3b70d317c5a9cd96bde61c1be581b97ba6d61526bab745"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "payment_id": "a2f4d5d7-6dcb-4901-93ec-531c0a27ab99",
+            "amount_minor": 60
+          }
+        },
+        {
+          "pointer": "data/data/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 60
+          }
+        }
+      ]
+    },
+    {
+      "index": 74,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "60c3c460-27ea-491d-aedd-665dce8d0713",
+            "rule_id": "806aa896-c1bb-4296-a528-2a89ca8181ae",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 3,
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/cumulative_points",
+          "facts": {
+            "issued": 33
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "active": false,
+            "level": 0,
+            "attained_level": 1,
+            "qualifying_growth": 0,
+            "valid_until": null,
+            "reason": "TOPUP_THRESHOLD_NOT_MET"
+          }
+        },
+        {
+          "pointer": "data/custody",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        },
+        {
+          "pointer": "data/spending",
+          "facts": {
+            "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+          }
+        }
+      ]
+    },
+    {
+      "index": 75,
+      "method": "GET",
+      "path": "/api/v1/stock/purchases/29b93211-3df8-4385-943c-0ce997bd3de0",
+      "schema": "StockResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "order_id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "object_version": 10
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "status": "REVOKED"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0",
+          "facts": {
+            "id": "603aeebc-1636-4cb8-bc74-18a5b58fff37",
+            "kind": "REFUND"
+          }
+        },
+        {
+          "pointer": "data/data/cases/0/resolution",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/cases/1",
+          "facts": {
+            "id": "f31cb42a-911c-47fa-846b-33b253bab69a",
+            "kind": "REFUND"
+          }
+        },
+        {
+          "pointer": "data/data/cases/1/resolution",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/refund_plan",
+          "facts": {
+            "amount_minor": 60
+          }
+        },
+        {
+          "pointer": "data/data/listing_snapshot",
+          "facts": {
+            "seller_party_id": "434eb370-2d2e-4524-af65-63348f71bd5d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 76,
+      "method": "GET",
+      "path": "/api/v1/trade/records/29b93211-3df8-4385-943c-0ce997bd3de0",
+      "schema": "TradeRecordResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "29b93211-3df8-4385-943c-0ce997bd3de0",
+            "kind": "ORDER",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016",
+            "parent_id": null,
+            "order_id": null,
+            "current_status": "REFUNDED",
+            "object_version": 4,
+            "content_sha256": "471dc7cd7b56614bd7e65428c68677711f44d76464041e6c40a8b115aac878f5"
+          }
+        },
+        {
+          "pointer": "data/data/quote",
+          "facts": {
+            "rule_id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "expires_at": "2026-11-25T22:02:06.260Z",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/quote/referral",
+          "facts": {
+            "status": "ATTRIBUTED",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016"
+          }
+        },
+        {
+          "pointer": "data/data/quote/referral/rule_snapshot",
+          "facts": {
+            "id": "237774b5-43e4-4bc1-be91-b71f0a848f4a",
+            "kind": "RULE",
+            "parent_id": null,
+            "content_sha256": "194171a0a5d9db55e364f0f8852f249e9ce50e3f1bbe03ede15ac9f9d9c07e08",
+            "current_status": "EFFECTIVE",
+            "object_version": 2,
+            "owner_party_id": null
+          }
+        },
+        {
+          "pointer": "data/data/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/quote/marketplace_finance/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/quote/marketplace_finance/rule_snapshot/content",
+          "facts": {
+            "id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "content_sha256": "56731fd1b614e724c0d655238d13d66f1099e655bb36a5b81b09658658a0f50c"
+          }
+        },
+        {
+          "pointer": "data/data/contract",
+          "facts": {
+            "id": "8cce125d-8474-40cb-acd8-a55d988c3ddc",
+            "content_sha256": "2b230b8ef90fb0d69406d2742ffd26d668515047615c92889056be9d254ac04d",
+            "current_status": "SEALED",
+            "object_version": 1
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote",
+          "facts": {
+            "rule_id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "expires_at": "2026-11-25T22:02:06.260Z",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0",
+          "facts": {
+            "line_id": "stock",
+            "spec_id": "48adb4e9-1e6a-448d-9650-c6b058915573",
+            "total_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/review",
+          "facts": {
+            "account_id": "d65b86e6-0c32-44f6-8f8d-ba10b1c5b610"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/lines/0/product_profile",
+          "facts": {
+            "type": "STOCK_VIDEO"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/referral",
+          "facts": {
+            "status": "ATTRIBUTED",
+            "buyer_party_id": "bb317386-fe8f-4fdb-b436-1e94fc9ef016"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/referral/rule_snapshot",
+          "facts": {
+            "id": "237774b5-43e4-4bc1-be91-b71f0a848f4a",
+            "kind": "RULE",
+            "parent_id": null,
+            "content_sha256": "194171a0a5d9db55e364f0f8852f249e9ce50e3f1bbe03ede15ac9f9d9c07e08",
+            "current_status": "EFFECTIVE",
+            "object_version": 2,
+            "owner_party_id": null
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/installments/0/allocations/0",
+          "facts": {
+            "line_id": "stock",
+            "amount_minor": 100
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/marketplace_finance/rule_snapshot",
+          "facts": {
+            "current_status": "EFFECTIVE"
+          }
+        },
+        {
+          "pointer": "data/data/contract/commitments/quote/marketplace_finance/rule_snapshot/content",
+          "facts": {
+            "id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "content_sha256": "56731fd1b614e724c0d655238d13d66f1099e655bb36a5b81b09658658a0f50c"
+          }
+        },
+        {
+          "pointer": "data/data/contract/rule_contents/0",
+          "facts": {
+            "id": "0c1ccf27-cb29-4858-ab78-4cca78837301",
+            "content_sha256": "56731fd1b614e724c0d655238d13d66f1099e655bb36a5b81b09658658a0f50c"
+          }
+        },
+        {
+          "pointer": "data/data/financial",
+          "facts": {
+            "net_minor": 0,
+            "received_minor": 100,
+            "refunded_minor": 100
+          }
+        }
+      ]
+    }
+  ],
+  "limits": "Safe projection only; raw original byte digest verified. Original collector has no response status field; pinned test assertions prove status. Binary file reads remain in raw test log/source, not fabricated JSON."
+}

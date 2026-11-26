@@ -1,0 +1,4761 @@
+{
+  "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+  "original": {
+    "path": "docs/testing/evidence/pm04-g1-current-media-20261126-42/HTTP_COLLECTION_COMPLETE.json",
+    "sha256": "20260ab634189405e8466a9f4aec0ebd12b063f4c4687e3b2d780f5d33dfc57b"
+  },
+  "private_original_sha256": "a82abb60a8f43927487c0704f944f368eb27e68ffa7c2c28b99d9667eb8a1fd8",
+  "case_count": 117,
+  "cases": [
+    {
+      "index": 0,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "e6a7c0521cefa5bc2109e28eb114d33896b0ea70c951d91d9532227ffbe869a7"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "exchange_points": 6000,
+            "capacity": 10
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/14851554-1c6c-41b0-977f-1a88da5d016e/review",
+      "schema": "ErrorResponse",
+      "error_code": "SELF_REVIEW_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 2,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_STOCK_UNAVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 3,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/14851554-1c6c-41b0-977f-1a88da5d016e/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "3e7f9f45bb219ce6d9d77588b4cb10ddaf2de3da2dcce911c3b0a93b5464d2c9"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "method": "GET",
+      "path": "/api/v1/redemption/queue",
+      "schema": "ErrorResponse",
+      "error_code": "REDEMPTION_OPERATOR_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 5,
+      "method": "GET",
+      "path": "/api/v1/redemption/catalog",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "object_version": 2,
+            "remaining": 10
+          }
+        },
+        {
+          "pointer": "data/items/0/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/items/0/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "80025734-9a82-4747-9cc8-5caf4029aea7",
+            "kind": "GRANT",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "9b45b4749146cd8469628571ab9b7da0a0ee2161220b7f37bc00daa08b28b589"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-11-25T21:26:50.209Z",
+            "expires_at": "2026-12-25T21:26:50.209Z",
+            "hold_id": "b3c23a63-26d1-4eeb-8371-c308cb52b8eb",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "80025734-9a82-4747-9cc8-5caf4029aea7",
+            "kind": "GRANT",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "9b45b4749146cd8469628571ab9b7da0a0ee2161220b7f37bc00daa08b28b589"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-11-25T21:26:50.209Z",
+            "expires_at": "2026-12-25T21:26:50.209Z",
+            "hold_id": "b3c23a63-26d1-4eeb-8371-c308cb52b8eb",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "IDEMPOTENCY_CONFLICT",
+      "facts": []
+    },
+    {
+      "index": 9,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/80025734-9a82-4747-9cc8-5caf4029aea7",
+      "schema": "ErrorResponse",
+      "error_code": "REDEMPTION_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 10,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "80025734-9a82-4747-9cc8-5caf4029aea7",
+            "kind": "GRANT",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "9b45b4749146cd8469628571ab9b7da0a0ee2161220b7f37bc00daa08b28b589",
+            "effective_status": "AVAILABLE"
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "hold_id": "b3c23a63-26d1-4eeb-8371-c308cb52b8eb",
+            "issued_at": "2026-11-25T21:26:50.209Z",
+            "expires_at": "2026-12-25T21:26:50.209Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/items/0/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/items/0/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "01820333-102d-460b-8ad8-4c068018c7a6",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "188a1d2ef75a8a9a6b67d21d5a656d4186549cd78462d9eadf163271c77eaccd"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "exchange_points": 6000,
+            "capacity": 1
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/01820333-102d-460b-8ad8-4c068018c7a6/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "01820333-102d-460b-8ad8-4c068018c7a6",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "f0b96b53d1dc498210a6ce2ff0420de08ab163cfe87f04b3363f355dabe9e959"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 1,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8bcf7094-8f7b-4f75-841a-52d6c83ab193",
+            "kind": "GRANT",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "01820333-102d-460b-8ad8-4c068018c7a6",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "604c55a9cd6b1bbe54467f603a2c94162b13749a3897b7af94858cde6b650f38"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-11-25T21:26:50.339Z",
+            "expires_at": "2026-12-25T21:26:50.339Z",
+            "hold_id": "09124cb4-8a28-4995-865c-f2fb01851da1",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 1,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_STOCK_UNAVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 15,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "44b67d63-eda1-452b-a068-7c0d4ce032f0",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "082941360c65ae85c8520df2d33af4be903c2e47f37a6374f6def4d8ff1b9597"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "exchange_points": 1000000,
+            "capacity": 1
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/44b67d63-eda1-452b-a068-7c0d4ce032f0/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "44b67d63-eda1-452b-a068-7c0d4ce032f0",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "c3368f50070613093c0d0d717563b39bc5391147109ac8e779bf8686d41e6abd"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 1,
+            "exchange_points": 1000000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "WALLET_POINTS_INSUFFICIENT",
+      "facts": []
+    },
+    {
+      "index": 18,
+      "method": "GET",
+      "path": "/api/v1/redemption/catalog",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "01820333-102d-460b-8ad8-4c068018c7a6",
+            "object_version": 3,
+            "remaining": 0
+          }
+        },
+        {
+          "pointer": "data/items/0/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 1,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/items/0/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "object_version": 3,
+            "remaining": 9
+          }
+        },
+        {
+          "pointer": "data/items/1/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/items/1/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/items/2",
+          "facts": {
+            "id": "44b67d63-eda1-452b-a068-7c0d4ce032f0",
+            "object_version": 2,
+            "remaining": 1
+          }
+        },
+        {
+          "pointer": "data/items/2/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 1,
+            "exchange_points": 1000000
+          }
+        },
+        {
+          "pointer": "data/items/2/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "MINOR_OPERATION_RESTRICTED",
+      "facts": []
+    },
+    {
+      "index": 20,
+      "method": "GET",
+      "path": "/api/v1/redemption/queue",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "01820333-102d-460b-8ad8-4c068018c7a6",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 3,
+            "content_sha256": "3fe5270001d3e595e8d485c54cefa4cb734f3236fec13d24a0897e1c8625e4b2"
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "issued": 1
+          }
+        },
+        {
+          "pointer": "data/items/0/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 1,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/items/0/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 3,
+            "content_sha256": "63eaf25c3d98f8b926f63ca82b60cd1d7a3030b40c3ab8421c9ee40531a706cd"
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "issued": 1
+          }
+        },
+        {
+          "pointer": "data/items/1/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/items/1/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/items/2",
+          "facts": {
+            "id": "44b67d63-eda1-452b-a068-7c0d4ce032f0",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "c3368f50070613093c0d0d717563b39bc5391147109ac8e779bf8686d41e6abd"
+          }
+        },
+        {
+          "pointer": "data/items/2/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/items/2/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 1,
+            "exchange_points": 1000000
+          }
+        },
+        {
+          "pointer": "data/items/2/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/14851554-1c6c-41b0-977f-1a88da5d016e/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "RETIRED",
+            "object_version": 4,
+            "content_sha256": "63eaf25c3d98f8b926f63ca82b60cd1d7a3030b40c3ab8421c9ee40531a706cd"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 1
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_STOCK_UNAVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 23,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/80025734-9a82-4747-9cc8-5caf4029aea7",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "80025734-9a82-4747-9cc8-5caf4029aea7",
+            "kind": "GRANT",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "9b45b4749146cd8469628571ab9b7da0a0ee2161220b7f37bc00daa08b28b589",
+            "effective_status": "AVAILABLE"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "b3c23a63-26d1-4eeb-8371-c308cb52b8eb",
+            "issued_at": "2026-11-25T21:26:50.209Z",
+            "expires_at": "2026-12-25T21:26:50.209Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/80025734-9a82-4747-9cc8-5caf4029aea7/remedies",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8c7e9391-66c8-47b4-89a1-79efb4466267",
+            "kind": "REMEDY",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "80025734-9a82-4747-9cc8-5caf4029aea7",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "0a0e5126be7b7f7b64e06dea71c1de7a75e7c787ff0feb0dff62e13e246e03fa"
+          }
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/8c7e9391-66c8-47b4-89a1-79efb4466267/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8c7e9391-66c8-47b4-89a1-79efb4466267",
+            "kind": "REMEDY",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "80025734-9a82-4747-9cc8-5caf4029aea7",
+            "current_status": "RESOLVED",
+            "object_version": 2,
+            "content_sha256": "0302e810675af84991ec167aace0d3546c5871fe29b3a6c92d75df79468a4e7b"
+          }
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/80025734-9a82-4747-9cc8-5caf4029aea7",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "80025734-9a82-4747-9cc8-5caf4029aea7",
+            "kind": "GRANT",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "14851554-1c6c-41b0-977f-1a88da5d016e",
+            "current_status": "POINTS_RETURNED",
+            "object_version": 4,
+            "content_sha256": "9b45b4749146cd8469628571ab9b7da0a0ee2161220b7f37bc00daa08b28b589",
+            "effective_status": "POINTS_RETURNED"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "b3c23a63-26d1-4eeb-8371-c308cb52b8eb",
+            "issued_at": "2026-11-25T21:26:50.209Z",
+            "expires_at": "2026-12-25T21:26:50.209Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/8c7e9391-66c8-47b4-89a1-79efb4466267/review",
+      "schema": "ErrorResponse",
+      "error_code": "REVIEW_NOT_PENDING",
+      "facts": []
+    },
+    {
+      "index": 28,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "4b496749-1a4d-4edb-be5d-6eb197d856f9",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "e6a7c0521cefa5bc2109e28eb114d33896b0ea70c951d91d9532227ffbe869a7"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "exchange_points": 6000,
+            "capacity": 10
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/4b496749-1a4d-4edb-be5d-6eb197d856f9/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "4b496749-1a4d-4edb-be5d-6eb197d856f9",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "3e7f9f45bb219ce6d9d77588b4cb10ddaf2de3da2dcce911c3b0a93b5464d2c9"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 30,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b66112d0-82e2-433e-bc93-a691ef5082df",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "4b496749-1a4d-4edb-be5d-6eb197d856f9",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "2e68aa517b9aeb28efcf8f1b43787a5faafaa825cf7b5a07b1f5bae595c4d4c2"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-11-25T21:26:50.602Z",
+            "expires_at": "2026-12-25T21:26:50.602Z",
+            "hold_id": "9e4c41ff-8fb4-4c6b-8130-99015f7e40d4",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df/bind",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_OWNER_CHANGED",
+      "facts": []
+    },
+    {
+      "index": 32,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df/bind",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b66112d0-82e2-433e-bc93-a691ef5082df",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "4b496749-1a4d-4edb-be5d-6eb197d856f9",
+            "current_status": "BOUND",
+            "object_version": 3,
+            "content_sha256": "5f25e107c81660781b5530f347c6cd90a1d57acd37c6bc6fc48133178e355e45"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "9e4c41ff-8fb4-4c6b-8130-99015f7e40d4",
+            "issued_at": "2026-11-25T21:26:50.602Z",
+            "expires_at": "2026-12-25T21:26:50.602Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "profile_id": "2fe64081-8b4e-47d5-a91c-27dfddfdb784"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 33,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df/evidence-submissions",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "4f1185c8-10ab-40b4-aae0-5bd804cfb901",
+            "kind": "DELIVERY_EVIDENCE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "b66112d0-82e2-433e-bc93-a691ef5082df",
+            "current_status": "SUBMITTED",
+            "object_version": 1,
+            "content_sha256": "1481765d68e58c8fcfede09ef33f709e2e14ade66ac250294698d8bfe8a3918c"
+          }
+        }
+      ]
+    },
+    {
+      "index": 34,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df/deliveries",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ce936478-5569-4dfa-97ad-55bbbef5a83c",
+            "kind": "SCHEDULE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "b66112d0-82e2-433e-bc93-a691ef5082df",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "ea5fa560e15a449b844c6b42459f8331190cf9dd87ff43c579f82ac7444a9796"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "starts_at": "2026-11-25T21:27:50.711Z",
+            "ends_at": "2026-12-02T21:27:50.711Z",
+            "kind": "EXPOSURE",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "placement": "synthetic-slot"
+          }
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "method": "POST",
+      "path": "/api/v1/redemption/deliveries/ce936478-5569-4dfa-97ad-55bbbef5a83c/review",
+      "schema": "ErrorResponse",
+      "error_code": "SELF_REVIEW_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 36,
+      "method": "POST",
+      "path": "/api/v1/redemption/deliveries/ce936478-5569-4dfa-97ad-55bbbef5a83c/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ce936478-5569-4dfa-97ad-55bbbef5a83c",
+            "kind": "SCHEDULE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "b66112d0-82e2-433e-bc93-a691ef5082df",
+            "current_status": "APPROVED",
+            "object_version": 2,
+            "content_sha256": "3f4126cce9ec0136cc123757fa34c34c455b557a9b3b89f3183e47cbd40d6b87"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "kind": "EXPOSURE",
+            "ends_at": "2026-12-02T21:27:50.711Z",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "placement": "synthetic-slot",
+            "starts_at": "2026-11-25T21:27:50.711Z"
+          }
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b66112d0-82e2-433e-bc93-a691ef5082df",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "4b496749-1a4d-4edb-be5d-6eb197d856f9",
+            "current_status": "SCHEDULED",
+            "object_version": 4,
+            "content_sha256": "5e374bd1e5cd5ac1cb5ca8678b8bb49d889b40bdacc36543435e17542ce8c0f2",
+            "effective_status": "SCHEDULED"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "9e4c41ff-8fb4-4c6b-8130-99015f7e40d4",
+            "issued_at": "2026-11-25T21:26:50.602Z",
+            "expires_at": "2026-12-25T21:26:50.602Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": "2fe64081-8b4e-47d5-a91c-27dfddfdb784"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-12-02T21:27:50.711Z",
+            "starts_at": "2026-11-25T21:27:50.711Z",
+            "schedule_id": "ce936478-5569-4dfa-97ad-55bbbef5a83c"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "method": "GET",
+      "path": "/api/v1/redemption/exposures",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": []
+    },
+    {
+      "index": 39,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df/confirmation",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b66112d0-82e2-433e-bc93-a691ef5082df",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "4b496749-1a4d-4edb-be5d-6eb197d856f9",
+            "current_status": "CONFIRMED",
+            "object_version": 5,
+            "content_sha256": "5e27be0a8a588241ddd4fed39153a88fd6444f0cd843a90e2f1691d881e90237"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "9e4c41ff-8fb4-4c6b-8130-99015f7e40d4",
+            "issued_at": "2026-11-25T21:26:50.602Z",
+            "expires_at": "2026-12-25T21:26:50.602Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": "2fe64081-8b4e-47d5-a91c-27dfddfdb784"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-12-02T21:27:50.711Z",
+            "starts_at": "2026-11-25T21:27:50.711Z",
+            "schedule_id": "ce936478-5569-4dfa-97ad-55bbbef5a83c"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 40,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df/finish",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_DELIVERY_NOT_DUE",
+      "facts": []
+    },
+    {
+      "index": 41,
+      "method": "GET",
+      "path": "/api/v1/redemption/exposures",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "placement": "synthetic-slot",
+            "starts_at": "2026-11-25T21:25:50.802Z",
+            "ends_at": "2026-12-02T21:27:50.711Z"
+          }
+        }
+      ]
+    },
+    {
+      "index": 42,
+      "method": "GET",
+      "path": "/api/v1/redemption/exposures",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": []
+    },
+    {
+      "index": 43,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b66112d0-82e2-433e-bc93-a691ef5082df",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "4b496749-1a4d-4edb-be5d-6eb197d856f9",
+            "current_status": "CONFIRMED",
+            "object_version": 5,
+            "content_sha256": "d1770b71048620953c8842680a4421fb47e69f642176a73083e36b58504c2aec",
+            "effective_status": "CONFIRMED"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "9e4c41ff-8fb4-4c6b-8130-99015f7e40d4",
+            "issued_at": "2026-11-25T21:26:50.602Z",
+            "expires_at": "2026-12-25T21:26:50.602Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": "2fe64081-8b4e-47d5-a91c-27dfddfdb784"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-11-24T21:26:50.861Z",
+            "starts_at": "2026-11-17T21:26:50.861Z",
+            "schedule_id": "ce936478-5569-4dfa-97ad-55bbbef5a83c"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 44,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df/evidence-submissions",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "3749e9b4-b3a3-4a79-a707-7b73f56b2fc3",
+            "kind": "DELIVERY_EVIDENCE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "b66112d0-82e2-433e-bc93-a691ef5082df",
+            "current_status": "SUBMITTED",
+            "object_version": 1,
+            "content_sha256": "a17d24f3182cebbdb193940cb2e0faba6c1d972c2416149a8f33588300dd1fcc"
+          }
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df/finish",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b66112d0-82e2-433e-bc93-a691ef5082df",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "4b496749-1a4d-4edb-be5d-6eb197d856f9",
+            "current_status": "FULFILLED",
+            "object_version": 6,
+            "content_sha256": "66824ece6cc4c61c845a592b07f71c5993881f1c9bff000022ae371bf70904d9"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "9e4c41ff-8fb4-4c6b-8130-99015f7e40d4",
+            "issued_at": "2026-11-25T21:26:50.602Z",
+            "expires_at": "2026-12-25T21:26:50.602Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": "2fe64081-8b4e-47d5-a91c-27dfddfdb784"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-11-24T21:26:50.861Z",
+            "starts_at": "2026-11-17T21:26:50.861Z",
+            "schedule_id": "ce936478-5569-4dfa-97ad-55bbbef5a83c"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 46,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/b66112d0-82e2-433e-bc93-a691ef5082df/finish",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_DELIVERY_NOT_DUE",
+      "facts": []
+    },
+    {
+      "index": 47,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "b6e49e6e-5d17-4da8-8985-d7bf03a0af3e",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "18c183ee776badd3aaeb50ad22c86f0d9314c0764d397785a0bef44e0ec94a3a"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 6000,
+            "capacity": 10
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 5000,
+            "minimum_minor": 50000
+          }
+        }
+      ]
+    },
+    {
+      "index": 48,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/b6e49e6e-5d17-4da8-8985-d7bf03a0af3e/review",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_SPEC_NOT_AVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 49,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "56e6fe42-b726-4e0c-a814-677ac3f92af3",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "07a8b3b80b144ec2d3d9096e6e98204afd58a009fa769264d3dc96054d1e1468"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "exchange_points": 6000,
+            "capacity": 10
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 5000,
+            "minimum_minor": 50000
+          }
+        }
+      ]
+    },
+    {
+      "index": 50,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/56e6fe42-b726-4e0c-a814-677ac3f92af3/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "56e6fe42-b726-4e0c-a814-677ac3f92af3",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "dc484a2ec34fb1c610b9e038f55da95013141f95de0aac3b5b25b5242f4ae2a8"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 5000,
+            "minimum_minor": 50000
+          }
+        }
+      ]
+    },
+    {
+      "index": 51,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "4675f519-e519-4190-bbd2-63086f08f634",
+            "kind": "GRANT",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "56e6fe42-b726-4e0c-a814-677ac3f92af3",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "7145877a3897bcff7ef88cd7e388d492bf266e8ae5136d77b97c86c72abfea9e"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-11-25T21:26:51.020Z",
+            "expires_at": "2026-12-25T21:26:51.020Z",
+            "hold_id": "e8cf532a-7a8a-4699-96a9-642862812fe9",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 5000,
+            "minimum_minor": 50000
+          }
+        }
+      ]
+    },
+    {
+      "index": 52,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/4675f519-e519-4190-bbd2-63086f08f634",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "4675f519-e519-4190-bbd2-63086f08f634",
+            "kind": "GRANT",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "56e6fe42-b726-4e0c-a814-677ac3f92af3",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "ce87c01a24eac0c9905883f09b547ec2afea47e7c2049974fd55c0c6c1338a95",
+            "effective_status": "EXPIRED"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "e8cf532a-7a8a-4699-96a9-642862812fe9",
+            "issued_at": "2026-11-25T21:26:51.020Z",
+            "expires_at": "2020-01-01T00:00:00.000Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "PRODUCTION_CREDIT",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/production",
+          "facts": {
+            "face_minor": 5000,
+            "minimum_minor": 50000
+          }
+        }
+      ]
+    },
+    {
+      "index": 53,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "8a379eb6247f1454ee5cbdaeb7d6d1c9f37dfe9ddf57e0368087dc665a1c83dc"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "exchange_points": 6000,
+            "capacity": 10
+          }
+        }
+      ]
+    },
+    {
+      "index": 54,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/37f3f05d-a550-4a41-a3c9-e22834e369a8/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "b52155e426e4f33e26cfad91a1e8874b51bf1f346afbdab7c37fa3083046e3ac"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        }
+      ]
+    },
+    {
+      "index": 55,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "62464983d25015a5fef01bd1cf9b87fe9e363e0ae6a6f76bc942ac3aaa35a2de"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-11-25T21:26:51.345Z",
+            "expires_at": "2027-02-23T21:26:51.345Z",
+            "hold_id": "b4efe281-3935-4806-b4b2-5c9d7825006e",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        }
+      ]
+    },
+    {
+      "index": 56,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b/bind",
+      "schema": "ErrorResponse",
+      "error_code": "INVALID_CUSTOMIZATION_CAST",
+      "facts": []
+    },
+    {
+      "index": 57,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b/bind",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "current_status": "BOUND",
+            "object_version": 3,
+            "content_sha256": "9bf007b7b6471eead8fbca3069a6df744c9ce3cad5eabcad8844498ade88877a"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "b4efe281-3935-4806-b4b2-5c9d7825006e",
+            "issued_at": "2026-11-25T21:26:51.345Z",
+            "expires_at": "2027-02-23T21:26:51.345Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "profile_id": null
+          }
+        },
+        {
+          "pointer": "data/data/binding/cast",
+          "facts": {
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        }
+      ]
+    },
+    {
+      "index": 58,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b/remedies",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "12fa1f13-26e8-4136-9866-b01dab33c5fd",
+            "kind": "REMEDY",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "06b98e5188c1b7421c3aaf3565dbbda493f7b424ff40e66e6c03465f0b2c7e04"
+          }
+        }
+      ]
+    },
+    {
+      "index": 59,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/12fa1f13-26e8-4136-9866-b01dab33c5fd/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "12fa1f13-26e8-4136-9866-b01dab33c5fd",
+            "kind": "REMEDY",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "current_status": "RESOLVED",
+            "object_version": 2,
+            "content_sha256": "428f6a31b80bb2c32276d8139146dc649bc8408d0232449eeeac144ef085efdd"
+          }
+        }
+      ]
+    },
+    {
+      "index": 60,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "current_status": "BOUND",
+            "object_version": 5,
+            "content_sha256": "bc8f89b1aff0eedbef5d01ad778681d888bcf8cb01d90cc6ed3ac86d483ffa50",
+            "effective_status": "BOUND"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "b4efe281-3935-4806-b4b2-5c9d7825006e",
+            "issued_at": "2026-11-25T21:26:51.345Z",
+            "expires_at": "2027-03-25T21:26:51.345Z",
+            "extension_used": true,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": null
+          }
+        },
+        {
+          "pointer": "data/data/binding/cast",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        }
+      ]
+    },
+    {
+      "index": 61,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b/remedies",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "93b5dd7c-d809-49d6-b553-b06f27b9cdd4",
+            "kind": "REMEDY",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "35dc7ce7a97b751eb65224baa6c27990ed4b26aeb0bbd2c21564f9d5f5c0ce21"
+          }
+        }
+      ]
+    },
+    {
+      "index": 62,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/93b5dd7c-d809-49d6-b553-b06f27b9cdd4/review",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_EXTENSION_NOT_AVAILABLE",
+      "facts": []
+    },
+    {
+      "index": 63,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/93b5dd7c-d809-49d6-b553-b06f27b9cdd4/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "93b5dd7c-d809-49d6-b553-b06f27b9cdd4",
+            "kind": "REMEDY",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "current_status": "REJECTED",
+            "object_version": 2,
+            "content_sha256": "5abfa8aa81c213b905860b10456efee6506ef2317d833e1b36e2a2855ce8352c"
+          }
+        }
+      ]
+    },
+    {
+      "index": 64,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "current_status": "BOUND",
+            "object_version": 7,
+            "content_sha256": "bc8f89b1aff0eedbef5d01ad778681d888bcf8cb01d90cc6ed3ac86d483ffa50",
+            "effective_status": "BOUND"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "b4efe281-3935-4806-b4b2-5c9d7825006e",
+            "issued_at": "2026-11-25T21:26:51.345Z",
+            "expires_at": "2027-03-25T21:26:51.345Z",
+            "extension_used": true,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": null
+          }
+        },
+        {
+          "pointer": "data/data/binding/cast",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        }
+      ]
+    },
+    {
+      "index": 65,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b/evidence-submissions",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "141ef7f1-e2d2-4ef7-acc8-e1ca4be706f4",
+            "kind": "DELIVERY_EVIDENCE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "current_status": "SUBMITTED",
+            "object_version": 1,
+            "content_sha256": "1481765d68e58c8fcfede09ef33f709e2e14ade66ac250294698d8bfe8a3918c"
+          }
+        }
+      ]
+    },
+    {
+      "index": 66,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b/deliveries",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "e4554a25-5036-4f72-b83c-25c8b7bcfa32",
+            "kind": "SCHEDULE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "fbaa51372d39f512ade0ed2ba69021a7b5ffc02c19aa070477fc697c56d9656b"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "starts_at": "2026-11-25T21:27:51.505Z",
+            "ends_at": "2026-11-25T21:28:51.505Z",
+            "kind": "INTERVIEW",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "placement": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 67,
+      "method": "POST",
+      "path": "/api/v1/redemption/deliveries/e4554a25-5036-4f72-b83c-25c8b7bcfa32/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "e4554a25-5036-4f72-b83c-25c8b7bcfa32",
+            "kind": "SCHEDULE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "current_status": "APPROVED",
+            "object_version": 2,
+            "content_sha256": "9825b8350ed48aff5150d34ea7644f8973d221593c401f59a4939690c196f943"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "kind": "INTERVIEW",
+            "ends_at": "2026-11-25T21:28:51.505Z",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "placement": null,
+            "starts_at": "2026-11-25T21:27:51.505Z"
+          }
+        }
+      ]
+    },
+    {
+      "index": 68,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "current_status": "SCHEDULED",
+            "object_version": 8,
+            "content_sha256": "766cccb21a8a2f192770d255db1b2dcec94461543be4bc277e8fa7dab969210e",
+            "effective_status": "SCHEDULED"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "b4efe281-3935-4806-b4b2-5c9d7825006e",
+            "issued_at": "2026-11-25T21:26:51.345Z",
+            "expires_at": "2027-03-25T21:26:51.345Z",
+            "extension_used": true,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": null
+          }
+        },
+        {
+          "pointer": "data/data/binding/cast",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-11-25T21:28:51.505Z",
+            "starts_at": "2026-11-25T21:27:51.505Z",
+            "schedule_id": "e4554a25-5036-4f72-b83c-25c8b7bcfa32"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        }
+      ]
+    },
+    {
+      "index": 69,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b/confirmation",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "current_status": "CONFIRMED",
+            "object_version": 9,
+            "content_sha256": "0bdff2da40ee7c64fe82ee79100ed84e1998eaf8c9c753d3afef901b42ff051d"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "b4efe281-3935-4806-b4b2-5c9d7825006e",
+            "issued_at": "2026-11-25T21:26:51.345Z",
+            "expires_at": "2027-03-25T21:26:51.345Z",
+            "extension_used": true,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": null
+          }
+        },
+        {
+          "pointer": "data/data/binding/cast",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-11-25T21:28:51.505Z",
+            "starts_at": "2026-11-25T21:27:51.505Z",
+            "schedule_id": "e4554a25-5036-4f72-b83c-25c8b7bcfa32"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        }
+      ]
+    },
+    {
+      "index": 70,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "current_status": "CONFIRMED",
+            "object_version": 9,
+            "content_sha256": "e2351849481891f151bf12b787222c5374bd2c63d49bf8dfe8cf7b7ac6b3312a",
+            "effective_status": "CONFIRMED"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "b4efe281-3935-4806-b4b2-5c9d7825006e",
+            "issued_at": "2026-11-25T21:26:51.345Z",
+            "expires_at": "2027-03-25T21:26:51.345Z",
+            "extension_used": true,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": null
+          }
+        },
+        {
+          "pointer": "data/data/binding/cast",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-11-25T21:25:51.585Z",
+            "starts_at": "2026-11-25T21:24:51.585Z",
+            "schedule_id": "e4554a25-5036-4f72-b83c-25c8b7bcfa32"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        }
+      ]
+    },
+    {
+      "index": 71,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b/evidence-submissions",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "078e6c85-c721-4170-aa13-d914c7f04ae6",
+            "kind": "DELIVERY_EVIDENCE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "current_status": "SUBMITTED",
+            "object_version": 1,
+            "content_sha256": "a17d24f3182cebbdb193940cb2e0faba6c1d972c2416149a8f33588300dd1fcc"
+          }
+        }
+      ]
+    },
+    {
+      "index": 72,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/31e422e7-2a00-4be0-a06d-50667859478b/finish",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "31e422e7-2a00-4be0-a06d-50667859478b",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "current_status": "FULFILLED",
+            "object_version": 10,
+            "content_sha256": "eb6d22d5c22a64bdd7de701abf18411aa6a23a3c684d6155c066fb10afcb81cc"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": "b4efe281-3935-4806-b4b2-5c9d7825006e",
+            "issued_at": "2026-11-25T21:26:51.345Z",
+            "expires_at": "2027-03-25T21:26:51.345Z",
+            "extension_used": true,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": null
+          }
+        },
+        {
+          "pointer": "data/data/binding/cast",
+          "facts": {
+            "avatar_id": "5dff4bda-101b-4868-9ca3-e847589ed2b3",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-11-25T21:25:51.585Z",
+            "starts_at": "2026-11-25T21:24:51.585Z",
+            "schedule_id": "e4554a25-5036-4f72-b83c-25c8b7bcfa32"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        }
+      ]
+    },
+    {
+      "index": 73,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "c74d013e-476e-4ff0-939a-5d8564e960c9",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "37f3f05d-a550-4a41-a3c9-e22834e369a8",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "07d60086c8e00cd77ed5d68c237458daa99ff091ed63ea3168abd0df9fd9f615"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-11-25T21:26:51.642Z",
+            "expires_at": "2027-02-23T21:26:51.642Z",
+            "hold_id": "4a6ab739-2598-465f-b55a-d6720996b801",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        }
+      ]
+    },
+    {
+      "index": 74,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/c74d013e-476e-4ff0-939a-5d8564e960c9/bind",
+      "schema": "ErrorResponse",
+      "error_code": "ARTIST_CONSENT_REQUIRED",
+      "facts": []
+    },
+    {
+      "index": 75,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "91e302ed-40f1-464a-8373-8ddfaf53abab",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "e6a7c0521cefa5bc2109e28eb114d33896b0ea70c951d91d9532227ffbe869a7"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "exchange_points": 6000,
+            "capacity": 10
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 76,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/91e302ed-40f1-464a-8373-8ddfaf53abab/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "91e302ed-40f1-464a-8373-8ddfaf53abab",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "3e7f9f45bb219ce6d9d77588b4cb10ddaf2de3da2dcce911c3b0a93b5464d2c9"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 77,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "2e46ecf7-c4a5-4a31-b959-47ae688f9443",
+            "kind": "GRANT",
+            "owner_party_id": "7554e272-37a2-4a8b-b9a0-0fa4faf93e8c",
+            "parent_id": "91e302ed-40f1-464a-8373-8ddfaf53abab",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "9e03b5f255731c2b0c3da4eb96037f5af34f3cce65ac12237733b5d9b1994a73"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-11-25T21:26:51.722Z",
+            "expires_at": "2026-12-25T21:26:51.722Z",
+            "hold_id": "b003bf87-c050-4681-bb6a-c1423108b550",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 78,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "ErrorResponse",
+      "error_code": "POINTS_REVERSAL_PENDING",
+      "facts": []
+    },
+    {
+      "index": 79,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/2e46ecf7-c4a5-4a31-b959-47ae688f9443/remedies",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ab636617-9899-4561-aa64-86b4bf5dec38",
+            "kind": "REMEDY",
+            "owner_party_id": "7554e272-37a2-4a8b-b9a0-0fa4faf93e8c",
+            "parent_id": "2e46ecf7-c4a5-4a31-b959-47ae688f9443",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "a838b4af9c704c29fb841a841941a912593684b71571436d3ec85a3cdffcb91d"
+          }
+        }
+      ]
+    },
+    {
+      "index": 80,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/ab636617-9899-4561-aa64-86b4bf5dec38/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "ab636617-9899-4561-aa64-86b4bf5dec38",
+            "kind": "REMEDY",
+            "owner_party_id": "7554e272-37a2-4a8b-b9a0-0fa4faf93e8c",
+            "parent_id": "2e46ecf7-c4a5-4a31-b959-47ae688f9443",
+            "current_status": "RESOLVED",
+            "object_version": 2,
+            "content_sha256": "d928ac7adccec6750c19ba5dd04f37b4174e79ddaf5104653ecc41b224718193"
+          }
+        }
+      ]
+    },
+    {
+      "index": 81,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a1d758b2-b18c-4838-8075-19a221f33910",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "e6a7c0521cefa5bc2109e28eb114d33896b0ea70c951d91d9532227ffbe869a7"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "exchange_points": 6000,
+            "capacity": 10
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 82,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/a1d758b2-b18c-4838-8075-19a221f33910/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "a1d758b2-b18c-4838-8075-19a221f33910",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "3e7f9f45bb219ce6d9d77588b4cb10ddaf2de3da2dcce911c3b0a93b5464d2c9"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 83,
+      "method": "POST",
+      "path": "/api/v1/redemption/exchanges",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "28c2b6e5-a8ca-4218-8306-ae576ce6f7d3",
+            "kind": "GRANT",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "a1d758b2-b18c-4838-8075-19a221f33910",
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "5664edaa3493116520db605535a3499b388dcdd3704b4e076a389cc3ba78c462"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued_at": "2026-11-25T21:26:51.840Z",
+            "expires_at": "2026-12-25T21:26:51.840Z",
+            "hold_id": "c3fa2fd3-3187-4bf8-8a36-c6807963ff15",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 10,
+            "exchange_points": 6000
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 84,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/28c2b6e5-a8ca-4218-8306-ae576ce6f7d3/remedies",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8e871b51-a17c-4fcd-a0e5-3735745ce810",
+            "kind": "REMEDY",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "28c2b6e5-a8ca-4218-8306-ae576ce6f7d3",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "c7cd4b3122d321bf51bc5c651bd73e9d0846b2321be17bb13a0af89799fefa28"
+          }
+        }
+      ]
+    },
+    {
+      "index": 85,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/8e871b51-a17c-4fcd-a0e5-3735745ce810/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8e871b51-a17c-4fcd-a0e5-3735745ce810",
+            "kind": "REMEDY",
+            "owner_party_id": "725c4335-a4c8-4f7e-96a5-dfcd22e13223",
+            "parent_id": "28c2b6e5-a8ca-4218-8306-ae576ce6f7d3",
+            "current_status": "RESOLVED",
+            "object_version": 2,
+            "content_sha256": "5055d66d3ac139a9e58efe57698c8e3dcad1dd8432df0e75dd7e73e1237e66ba"
+          }
+        }
+      ]
+    },
+    {
+      "index": 86,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "47f05918d961cfd7109f65314dbdf4cfb52956546a74f65a837f6a1fb90c54a2"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "exchange_points": null,
+            "capacity": 20
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 87,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/6efe9b29-826c-4009-a1a2-3f10ae73c9e3/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "0a4cc0ca0010adec96d39cd1e38e38423dbf02d371f89f1960a7c598c7c815ce"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 88,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "2585e60f16456144f194c843477496dc2af0f5477569c5752e6b167be3f41a87"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "exchange_points": null,
+            "capacity": 20
+          }
+        }
+      ]
+    },
+    {
+      "index": 89,
+      "method": "POST",
+      "path": "/api/v1/redemption/stock/0b1352c0-af51-4fe7-8472-a23621f644a5/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "kind": "STOCK",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "AVAILABLE",
+            "object_version": 2,
+            "content_sha256": "be6d81a8940b59cddb5159ca11b33f47ce6bcd12b9cb8ce96c59d204ed5a42ec"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "issued": 0
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 90,
+      "method": "POST",
+      "path": "/api/v1/redemption/pools",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "kind": "POOL",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "a9379e31d32a16783e086639d3ec68b724501c093b9352137b9195f7b3dcdb06"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "rules_sha256": null
+          }
+        },
+        {
+          "pointer": "data/data/config",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/config/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/config/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/bindings/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/bindings/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/distribution",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/distribution/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/distribution/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        }
+      ]
+    },
+    {
+      "index": 91,
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/f2d47306-8f04-4ff8-8d20-9242542f69f8/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "kind": "POOL",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 2,
+            "content_sha256": "6c7f0663f8d430b092cf7337021292d09a77733d5bf5f795284046ec57be00ba"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "rules_sha256": null
+          }
+        },
+        {
+          "pointer": "data/data/config",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/config/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/config/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/bindings/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/bindings/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/distribution",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/distribution/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/distribution/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        }
+      ]
+    },
+    {
+      "index": 92,
+      "method": "POST",
+      "path": "/api/v1/redemption/pools/f2d47306-8f04-4ff8-8d20-9242542f69f8/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "kind": "POOL",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": null,
+            "current_status": "PUBLISHED",
+            "object_version": 3,
+            "content_sha256": "8b167bfadadcd031a0c3ceeed9d5a2020cea064115b59a6553fd2ec48f3ad729"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "rules_sha256": "ce0e6933d9b80d80b280362b18525e2d1013feaa7241ce7d9ae5ad39ab34ce01"
+          }
+        },
+        {
+          "pointer": "data/data/config",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/config/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/config/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/bindings/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/bindings/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/distribution",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/distribution/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/distribution/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/prize_promises/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3"
+          }
+        },
+        {
+          "pointer": "data/data/prize_promises/0/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/prize_promises/0/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/data/prize_promises/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5"
+          }
+        },
+        {
+          "pointer": "data/data/prize_promises/1/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 93,
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "f77af659-0bac-4660-b569-76ffe9cadc2c",
+            "kind": "DRAW",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "current_status": "SETTLED",
+            "object_version": 2,
+            "content_sha256": "80b0d456f974c402e0a12640acfedcfbe53b2ad1092b4281738cb262a3182029"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "pool_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211",
+            "count": 1,
+            "points": 300,
+            "hold_id": "9973c411-e80e-438d-9662-a8cc0b83f519"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot",
+          "facts": {
+            "id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "object_version": 3,
+            "current_status": "PUBLISHED",
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/results/0",
+          "facts": {
+            "kind": "EXPOSURE",
+            "guaranteed_slot": false,
+            "grant_id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "point_back": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 94,
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "f77af659-0bac-4660-b569-76ffe9cadc2c",
+            "kind": "DRAW",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "current_status": "SETTLED",
+            "object_version": 2,
+            "content_sha256": "80b0d456f974c402e0a12640acfedcfbe53b2ad1092b4281738cb262a3182029"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "pool_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211",
+            "count": 1,
+            "points": 300,
+            "hold_id": "9973c411-e80e-438d-9662-a8cc0b83f519"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot",
+          "facts": {
+            "id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "object_version": 3,
+            "current_status": "PUBLISHED",
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/results/0",
+          "facts": {
+            "kind": "EXPOSURE",
+            "guaranteed_slot": false,
+            "grant_id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "point_back": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 95,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "current_status": "AVAILABLE",
+            "object_version": 1,
+            "content_sha256": "bd8462e52b3e46af0d3a89601c356305d69a5d04c18eecb6b353131a77b7f839",
+            "effective_status": "AVAILABLE"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": null,
+            "issued_at": "2026-11-25T21:26:52.199Z",
+            "expires_at": "2026-12-25T21:26:52.199Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 96,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+      "schema": "ErrorResponse",
+      "error_code": "REDEMPTION_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 97,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1/bind",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "current_status": "BOUND",
+            "object_version": 2,
+            "content_sha256": "8227888404d7b728cc9b1376b188ffe8ed8be594680d703be1bf40c5c2cf8a44"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": null,
+            "issued_at": "2026-11-25T21:26:52.199Z",
+            "expires_at": "2026-12-25T21:26:52.199Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "profile_id": "2fe64081-8b4e-47d5-a91c-27dfddfdb784"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 98,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1/evidence-submissions",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "70e865db-6c64-4658-aef0-6d601ddb5b85",
+            "kind": "DELIVERY_EVIDENCE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "current_status": "SUBMITTED",
+            "object_version": 1,
+            "content_sha256": "1481765d68e58c8fcfede09ef33f709e2e14ade66ac250294698d8bfe8a3918c"
+          }
+        }
+      ]
+    },
+    {
+      "index": 99,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1/deliveries",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "590c5aea-26e0-4547-b175-d6036ad4faa2",
+            "kind": "SCHEDULE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "aa1b51342769582a1b2a56f3805fdabb5ba242922a4c27439d6d1fac52b27da0"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "starts_at": "2026-11-25T21:27:52.334Z",
+            "ends_at": "2026-12-02T21:27:52.334Z",
+            "kind": "EXPOSURE",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "placement": "synthetic-drawn-slot"
+          }
+        }
+      ]
+    },
+    {
+      "index": 100,
+      "method": "POST",
+      "path": "/api/v1/redemption/deliveries/590c5aea-26e0-4547-b175-d6036ad4faa2/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "590c5aea-26e0-4547-b175-d6036ad4faa2",
+            "kind": "SCHEDULE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "current_status": "APPROVED",
+            "object_version": 2,
+            "content_sha256": "352b93baef832c65777a778a0e42d110623e2acc9fd6b0b7e24d352397f6dec1"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "kind": "EXPOSURE",
+            "ends_at": "2026-12-02T21:27:52.334Z",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "placement": "synthetic-drawn-slot",
+            "starts_at": "2026-11-25T21:27:52.334Z"
+          }
+        }
+      ]
+    },
+    {
+      "index": 101,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "current_status": "SCHEDULED",
+            "object_version": 3,
+            "content_sha256": "5c7cd6338e2926cfd3e95d3953a5842139f6601193058d0d5fe2d0aacbd4a085",
+            "effective_status": "SCHEDULED"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": null,
+            "issued_at": "2026-11-25T21:26:52.199Z",
+            "expires_at": "2026-12-25T21:26:52.199Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": "2fe64081-8b4e-47d5-a91c-27dfddfdb784"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-12-02T21:27:52.334Z",
+            "starts_at": "2026-11-25T21:27:52.334Z",
+            "schedule_id": "590c5aea-26e0-4547-b175-d6036ad4faa2"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 102,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1/confirmation",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "current_status": "CONFIRMED",
+            "object_version": 4,
+            "content_sha256": "b4da94221b5f0f3ace3ac5d97bfdba318a18af7145c451fa4aebdd930de47052"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": null,
+            "issued_at": "2026-11-25T21:26:52.199Z",
+            "expires_at": "2026-12-25T21:26:52.199Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": "2fe64081-8b4e-47d5-a91c-27dfddfdb784"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-12-02T21:27:52.334Z",
+            "starts_at": "2026-11-25T21:27:52.334Z",
+            "schedule_id": "590c5aea-26e0-4547-b175-d6036ad4faa2"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 103,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1/finish",
+      "schema": "ErrorResponse",
+      "error_code": "REWARD_DELIVERY_NOT_DUE",
+      "facts": []
+    },
+    {
+      "index": 104,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "current_status": "CONFIRMED",
+            "object_version": 4,
+            "content_sha256": "c42bd49bd6a6a3db7063b77f22494e313f9ee9a29da78c331bb085d879b834ea",
+            "effective_status": "CONFIRMED"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": null,
+            "issued_at": "2026-11-25T21:26:52.199Z",
+            "expires_at": "2026-12-25T21:26:52.199Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": "2fe64081-8b4e-47d5-a91c-27dfddfdb784"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-11-24T21:26:52.418Z",
+            "starts_at": "2026-11-17T21:26:52.418Z",
+            "schedule_id": "590c5aea-26e0-4547-b175-d6036ad4faa2"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 105,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1/evidence-submissions",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "83630e18-ca8a-4fae-8d9d-6f031972fad0",
+            "kind": "DELIVERY_EVIDENCE",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "current_status": "SUBMITTED",
+            "object_version": 1,
+            "content_sha256": "a17d24f3182cebbdb193940cb2e0faba6c1d972c2416149a8f33588300dd1fcc"
+          }
+        }
+      ]
+    },
+    {
+      "index": 106,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/63f9ba6a-30dd-41ce-95c0-3099386b07b1/finish",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "current_status": "FULFILLED",
+            "object_version": 5,
+            "content_sha256": "a222e1222aadda072368d94fb32ba859293e49ff7c0b317c78570a5f9896868c"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": null,
+            "issued_at": "2026-11-25T21:26:52.199Z",
+            "expires_at": "2026-12-25T21:26:52.199Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/binding",
+          "facts": {
+            "avatar_id": "4e715572-e2a6-4707-a8d3-d2364e040300",
+            "person_id": "9a37b4e8-b8e2-4b80-ae60-cd6d99b17dd5",
+            "profile_id": "2fe64081-8b4e-47d5-a91c-27dfddfdb784"
+          }
+        },
+        {
+          "pointer": "data/data/delivery",
+          "facts": {
+            "ends_at": "2026-11-24T21:26:52.418Z",
+            "starts_at": "2026-11-17T21:26:52.418Z",
+            "schedule_id": "590c5aea-26e0-4547-b175-d6036ad4faa2"
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 107,
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "f77af659-0bac-4660-b569-76ffe9cadc2c",
+            "kind": "DRAW",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "current_status": "SETTLED",
+            "object_version": 2,
+            "content_sha256": "80b0d456f974c402e0a12640acfedcfbe53b2ad1092b4281738cb262a3182029"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "pool_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211",
+            "count": 1,
+            "points": 300,
+            "hold_id": "9973c411-e80e-438d-9662-a8cc0b83f519"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot",
+          "facts": {
+            "id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "object_version": 3,
+            "current_status": "PUBLISHED",
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/results/0",
+          "facts": {
+            "kind": "EXPOSURE",
+            "guaranteed_slot": false,
+            "grant_id": "63f9ba6a-30dd-41ce-95c0-3099386b07b1",
+            "point_back": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 108,
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8085e444-2bd2-4dc1-9b65-3f8d5bc26c93",
+            "kind": "DRAW",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "current_status": "SETTLED",
+            "object_version": 2,
+            "content_sha256": "7ca4e4ba4bb310597e8c7551aacc6cc898bd15e7269e557312e450f78f4147d3"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "pool_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211",
+            "count": 1,
+            "points": 300,
+            "hold_id": "ba2aa677-7e89-4a72-b0b0-e4482e9cb121"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot",
+          "facts": {
+            "id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "object_version": 3,
+            "current_status": "PUBLISHED",
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/results/0",
+          "facts": {
+            "kind": "EXPOSURE",
+            "guaranteed_slot": false,
+            "grant_id": "391f1884-28b5-4a6f-882d-1cf36393740d",
+            "point_back": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 109,
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8085e444-2bd2-4dc1-9b65-3f8d5bc26c93",
+            "kind": "DRAW",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "current_status": "SETTLED",
+            "object_version": 2,
+            "content_sha256": "7ca4e4ba4bb310597e8c7551aacc6cc898bd15e7269e557312e450f78f4147d3"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "pool_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211",
+            "count": 1,
+            "points": 300,
+            "hold_id": "ba2aa677-7e89-4a72-b0b0-e4482e9cb121"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot",
+          "facts": {
+            "id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "object_version": 3,
+            "current_status": "PUBLISHED",
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/results/0",
+          "facts": {
+            "kind": "EXPOSURE",
+            "guaranteed_slot": false,
+            "grant_id": "391f1884-28b5-4a6f-882d-1cf36393740d",
+            "point_back": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 110,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/391f1884-28b5-4a6f-882d-1cf36393740d",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "391f1884-28b5-4a6f-882d-1cf36393740d",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "current_status": "AVAILABLE",
+            "object_version": 1,
+            "content_sha256": "18386b8d2137b5045415a39c92d0a3b639fcf58ccb71f2e2af8254f6cae81924",
+            "effective_status": "AVAILABLE"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": null,
+            "issued_at": "2026-11-25T21:26:52.495Z",
+            "expires_at": "2026-12-25T21:26:52.495Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 111,
+      "method": "POST",
+      "path": "/api/v1/redemption/grants/391f1884-28b5-4a6f-882d-1cf36393740d/remedies",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "517d7fde-4580-480a-b87c-1a0087a633db",
+            "kind": "REMEDY",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "391f1884-28b5-4a6f-882d-1cf36393740d",
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "6ae9e3b11a9b9369dd0abbc18c11d2b2d479e7aa3b5f0866c5c6cbed02914a2f"
+          }
+        }
+      ]
+    },
+    {
+      "index": 112,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/517d7fde-4580-480a-b87c-1a0087a633db/review",
+      "schema": "ErrorResponse",
+      "error_code": "SELF_REVIEW_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 113,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/517d7fde-4580-480a-b87c-1a0087a633db/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "517d7fde-4580-480a-b87c-1a0087a633db",
+            "kind": "REMEDY",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "391f1884-28b5-4a6f-882d-1cf36393740d",
+            "current_status": "RESOLVED",
+            "object_version": 2,
+            "content_sha256": "a0e251e4ac0a9f8d4be39dab8ba80e7f119d739d691709d0f70a7f425fe5e43a"
+          }
+        }
+      ]
+    },
+    {
+      "index": 114,
+      "method": "POST",
+      "path": "/api/v1/redemption/remedies/517d7fde-4580-480a-b87c-1a0087a633db/review",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "517d7fde-4580-480a-b87c-1a0087a633db",
+            "kind": "REMEDY",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "391f1884-28b5-4a6f-882d-1cf36393740d",
+            "current_status": "RESOLVED",
+            "object_version": 2,
+            "content_sha256": "a0e251e4ac0a9f8d4be39dab8ba80e7f119d739d691709d0f70a7f425fe5e43a"
+          }
+        }
+      ]
+    },
+    {
+      "index": 115,
+      "method": "GET",
+      "path": "/api/v1/redemption/grants/391f1884-28b5-4a6f-882d-1cf36393740d",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "391f1884-28b5-4a6f-882d-1cf36393740d",
+            "kind": "GRANT",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "current_status": "POINTS_RETURNED",
+            "object_version": 3,
+            "content_sha256": "18386b8d2137b5045415a39c92d0a3b639fcf58ccb71f2e2af8254f6cae81924",
+            "effective_status": "POINTS_RETURNED"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "hold_id": null,
+            "issued_at": "2026-11-25T21:26:52.495Z",
+            "expires_at": "2026-12-25T21:26:52.495Z",
+            "extension_used": false,
+            "performance_rights_granted": false
+          }
+        },
+        {
+          "pointer": "data/data/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        }
+      ]
+    },
+    {
+      "index": 116,
+      "method": "POST",
+      "path": "/api/v1/redemption/draws",
+      "schema": "RedemptionResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "8085e444-2bd2-4dc1-9b65-3f8d5bc26c93",
+            "kind": "DRAW",
+            "owner_party_id": "5885c722-9e77-4075-b25d-74e8f3c4108a",
+            "parent_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "current_status": "SETTLED",
+            "object_version": 2,
+            "content_sha256": "7ca4e4ba4bb310597e8c7551aacc6cc898bd15e7269e557312e450f78f4147d3"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "pool_id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211",
+            "count": 1,
+            "points": 300,
+            "hold_id": "ba2aa677-7e89-4a72-b0b0-e4482e9cb121"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot",
+          "facts": {
+            "id": "f2d47306-8f04-4ff8-8d20-9242542f69f8",
+            "object_version": 3,
+            "current_status": "PUBLISHED",
+            "starts_at": "2020-01-01T00:00:00.000Z",
+            "ends_at": "2099-01-01T00:00:00.000Z",
+            "rules_sha256": "49923f0d1d8953c6b70b3d855c837adf5ff73ee34df51d30d0596a938259a211"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/config/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution",
+          "facts": {
+            "algorithm": "NINE_THEN_CONDITIONAL_TENTH_V1"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/0",
+          "facts": {
+            "kind": "EXPOSURE"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/distribution/prizes/1",
+          "facts": {
+            "kind": "INTERVIEW_OPEN"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/bindings/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5",
+            "point_back": 0
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0",
+          "facts": {
+            "stock_id": "6efe9b29-826c-4009-a1a2-3f10ae73c9e3"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template",
+          "facts": {
+            "kind": "EXPOSURE",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/0/template/exposure",
+          "facts": {
+            "placement": "synthetic-drawn-slot",
+            "duration_days": 7
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1",
+          "facts": {
+            "stock_id": "0b1352c0-af51-4fe7-8472-a23621f644a5"
+          }
+        },
+        {
+          "pointer": "data/data/rule_snapshot/prize_promises/1/template",
+          "facts": {
+            "kind": "INTERVIEW",
+            "capacity": 20,
+            "exchange_points": null
+          }
+        },
+        {
+          "pointer": "data/data/results/0",
+          "facts": {
+            "kind": "EXPOSURE",
+            "guaranteed_slot": false,
+            "grant_id": "391f1884-28b5-4a6f-882d-1cf36393740d",
+            "point_back": 0
+          }
+        }
+      ]
+    }
+  ],
+  "limits": "Safe projection only; raw original byte digest verified. Original collector has no response status field; pinned test assertions prove status. Binary file reads remain in raw test log/source, not fabricated JSON."
+}
