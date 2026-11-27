@@ -1,0 +1,230 @@
+TAP version 13
+# Subtest: production actual HTTP: private versions, explicit acceptance and payment gates
+    # Subtest: one project per order line; project approval is independent and requires evidence
+    ok 1 - one project per order line; project approval is independent and requires evidence
+      ---
+      duration_ms: 180.5005
+      type: 'test'
+      ...
+    # Subtest: no production before agreed first payment; final payment stays closed
+    ok 2 - no production before agreed first payment; final payment stays closed
+      ---
+      duration_ms: 65.7554
+      type: 'test'
+      ...
+    # Subtest: private upload retries return same file; outsiders and unassigned buyer cannot upload
+    ok 3 - private upload retries return same file; outsiders and unassigned buyer cannot upload
+      ---
+      duration_ms: 56.594
+      type: 'test'
+      ...
+    # Subtest: simultaneous upload retries do not write the same private object twice
+    ok 4 - simultaneous upload retries do not write the same private object twice
+      ---
+      duration_ms: 49.165
+      type: 'test'
+      ...
+    # Subtest: script acceptance precedes sample; customer cannot accept unpublished or old version
+    ok 5 - script acceptance precedes sample; customer cannot accept unpublished or old version
+      ---
+      duration_ms: 253.6188
+      type: 'test'
+      ...
+    # Subtest: unconfigured long-lived provider stays visibly disabled and queues no fake success
+    ok 6 - unconfigured long-lived provider stays visibly disabled and queues no fake success
+      ---
+      duration_ms: 23.5035
+      type: 'test'
+      ...
+    # Subtest: durable generation recovers by original key after lost worker lease without resubmission
+    ok 7 - durable generation recovers by original key after lost worker lease without resubmission
+      ---
+      duration_ms: 283.6149
+      type: 'test'
+      ...
+    # Subtest: withdrawal during creation preserves late assets for deletion without new creation
+        # Subtest: withdrawal during first external send still records the pending task
+        ok 1 - withdrawal during first external send still records the pending task
+          ---
+          duration_ms: 62.8352
+          type: 'test'
+          ...
+        # Subtest: a changed provider identity cannot query the old model
+        ok 2 - a changed provider identity cannot query the old model
+          ---
+          duration_ms: 25.1246
+          type: 'test'
+          ...
+        # Subtest: failed audit rolls back the late model and original result together
+        ok 3 - failed audit rolls back the late model and original result together
+          ---
+          duration_ms: 51.661
+          type: 'test'
+          ...
+        # Subtest: recovery queries once more and quarantines the late model instead of making it usable
+        ok 4 - recovery queries once more and quarantines the late model instead of making it usable
+          ---
+          duration_ms: 52.9277
+          type: 'test'
+          ...
+        # Subtest: the late model is visible to its subject and uses the existing personal deletion path
+        ok 5 - the late model is visible to its subject and uses the existing personal deletion path
+          ---
+          duration_ms: 91.4139
+          type: 'test'
+          ...
+        # Subtest: withdrawal while a result query is in flight also quarantines the resulting model
+        ok 6 - withdrawal while a result query is in flight also quarantines the resulting model
+          ---
+          duration_ms: 196.4992
+          type: 'test'
+          ...
+        # Subtest: withdrawal before first dispatch sends nothing, and ambiguous recovery never resubmits
+        ok 7 - withdrawal before first dispatch sends nothing, and ambiguous recovery never resubmits
+          ---
+          duration_ms: 89.0829
+          type: 'test'
+          ...
+        1..7
+    ok 8 - withdrawal during creation preserves late assets for deletion without new creation
+      ---
+      duration_ms: 573.2296
+      type: 'test'
+      ...
+    # Subtest: new sample invalidates previous confirmation; feedback versions are not overwritten
+    ok 9 - new sample invalidates previous confirmation; feedback versions are not overwritten
+      ---
+      duration_ms: 142.5071
+      type: 'test'
+      ...
+    # Subtest: concurrent decisions use version check; only buyer can accept
+    ok 10 - concurrent decisions use version check; only buyer can accept
+      ---
+      duration_ms: 115.2793
+      type: 'test'
+      ...
+    # Subtest: final acceptance and final delivery are separate; tail cannot unlock itself
+    ok 11 - final acceptance and final delivery are separate; tail cannot unlock itself
+      ---
+      duration_ms: 225.1027
+      type: 'test'
+      ...
+    # Subtest: completed delivery cannot be silently replaced by producer
+    ok 12 - completed delivery cannot be silently replaced by producer
+      ---
+      duration_ms: 41.8615
+      type: 'test'
+      ...
+    # Subtest: an active marking requirement blocks already accepted files without processing evidence
+    ok 13 - an active marking requirement blocks already accepted files without processing evidence
+      ---
+      duration_ms: 23.6161
+      type: 'test'
+      ...
+    # Subtest: private bytes verified and permission rechecked before download
+    ok 14 - private bytes verified and permission rechecked before download
+      ---
+      duration_ms: 23.1286
+      type: 'test'
+      ...
+    # Subtest: reassigning a producer requires current membership and project version
+    ok 15 - reassigning a producer requires current membership and project version
+      ---
+      duration_ms: 25.0683
+      type: 'test'
+      ...
+    # Subtest: audit failure rolls back a production mutation and idempotency key
+    ok 16 - audit failure rolls back a production mutation and idempotency key
+      ---
+      duration_ms: 28.2804
+      type: 'test'
+      ...
+    # Subtest: refund blocks further delivery even though historical acceptance is retained
+    ok 17 - refund blocks further delivery even though historical acceptance is retained
+      ---
+      duration_ms: 53.785
+      type: 'test'
+      ...
+    1..17
+ok 1 - production actual HTTP: private versions, explicit acceptance and payment gates
+  ---
+  duration_ms: 11509.9932
+  type: 'test'
+  ...
+# Subtest: fulfilled audition keeps original referral and MCN across aftercare and independent settlement
+    # Subtest: original referral and agency are captured by an independently reviewed paid booking
+    ok 1 - original referral and agency are captured by an independently reviewed paid booking
+      ---
+      duration_ms: 259.5929
+      type: 'test'
+      ...
+    # Subtest: agency replacement and later referral click cannot claim the original booking
+    ok 2 - agency replacement and later referral click cannot claim the original booking
+      ---
+      duration_ms: 94.8572
+      type: 'test'
+      ...
+    # Subtest: artist acceptance, arrival, reviewed six photos and one video precede actual buyer receipt
+    ok 3 - artist acceptance, arrival, reviewed six photos and one video precede actual buyer receipt
+      ---
+      duration_ms: 473.4456
+      type: 'test'
+      ...
+    # Subtest: T plus one permits audition gate but does not bypass original seven-day referral aftercare
+    ok 4 - T plus one permits audition gate but does not bypass original seven-day referral aftercare
+      ---
+      duration_ms: 202.9819
+      type: 'test'
+      ...
+    # Subtest: matured normal delivery accrues original referral and agency shares, independent settlement does not pay
+    ok 5 - matured normal delivery accrues original referral and agency shares, independent settlement does not pay
+      ---
+      duration_ms: 200.237
+      type: 'test'
+      ...
+    # Subtest: repeated reconciliation preserves original attribution, exact settlement and own-only balances
+    ok 6 - repeated reconciliation preserves original attribution, exact settlement and own-only balances
+      ---
+      duration_ms: 72.7218
+      type: 'test'
+      ...
+    # Subtest: same fulfilled audition original agency dashboard and independent partial refund
+        # Subtest: fulfilled original agency remains visible by order, artist and creation interval after agency replacement
+        ok 1 - fulfilled original agency remains visible by order, artist and creation interval after agency replacement
+          ---
+          duration_ms: 63.6194
+          type: 'test'
+          ...
+        # Subtest: approved partial refund without a successful return does not reduce old agency accounting
+        ok 2 - approved partial refund without a successful return does not reduce old agency accounting
+          ---
+          duration_ms: 93.3462
+          type: 'test'
+          ...
+        # Subtest: one verified return reverses the original agency share once, and finance reconciliation agrees with dashboard
+        ok 3 - one verified return reverses the original agency share once, and finance reconciliation agrees with dashboard
+          ---
+          duration_ms: 252.43
+          type: 'test'
+          ...
+        1..3
+    ok 7 - same fulfilled audition original agency dashboard and independent partial refund
+      ---
+      duration_ms: 417.3839
+      type: 'test'
+      ...
+    1..7
+ok 2 - fulfilled audition keeps original referral and MCN across aftercare and independent settlement
+  ---
+  duration_ms: 11655.6977
+  type: 'test'
+  ...
+1..2
+# tests 36
+# suites 0
+# pass 36
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 11982.8144
