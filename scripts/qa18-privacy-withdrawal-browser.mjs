@@ -4,7 +4,7 @@ import{readFile,writeFile,mkdir}from'node:fs/promises';import{join,resolve,dirna
 const root=process.cwd(),access=resolve(process.env.V5_ACCESS_FILE),f=JSON.parse(await readFile(access,'utf8')),prep=JSON.parse(await readFile(join(dirname(access),'prepared.json'),'utf8')),out=resolve(process.env.QA18_OUTPUT_DIR);assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1'&&Date.parse(f.expires_at)>Date.now());assert(out.startsWith(join(root,'.local')+sep));await mkdir(out,{recursive:true});
 let s;const checkpoint=join(out,'checkpoint.json');try{s=JSON.parse(await readFile(checkpoint,'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;s={environment:f.database,attempts:[],requests:[],checks:[],ops:{}};}assert(s.environment===f.database&&!s.complete);
 const hash=b=>createHash('sha256').update(b).digest('hex'),attempt=String(Date.now()),source=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();s.attempts.push({attempt,source,started_at:new Date().toISOString()});const save=()=>writeFile(checkpoint,JSON.stringify(s,null,2));async function done(name,data={}){s.checks.push({attempt,name,...data});await save();console.log('PASS '+name);}
-async function api(role,path,{body,party=path.startsWith('/privacy/')?null:f.accounts[role].party_id,version,allowed=[200],op=path}={}){const headers={Authorization:'Bearer '+f.accounts[role].bearer_token,...party?{'X-Acting-Party':party}:{},...version?{'If-Match':'"'+version+'"'}:{}};if(body!==undefined){s.ops[role+op]??=randomUUID();Object.assign(headers,{'Idempotency-Key':s.ops[role+op],'Content-Type':'application/json'});await save();}const r=await fetch(f.base_url+path,{method:body===undefined?'GET':'POST',headers,...body===undefined?{}:{body:JSON.stringify(body)}}),bytes=Buffer.from(await r.arrayBuffer());let j;try{j=JSON.parse(bytes);}catch{}s.requests.push({attempt,role,path,method:body===undefined?'GET':'POST',status:r.status,code:j?.error?.code,sha256:hash(bytes)});await save();assert(allowed.includes(r.status),path+' '+r.status+' '+j?.error?.code);return j?.data??bytes;}
+async function api(role,path,{body,party=path.startsWith('/privacy/')?null:f.accounts[role].party_id,version,allowed=[200],op=path,raw=false}={}){const headers={Authorization:'Bearer '+f.accounts[role].bearer_token,...party?{'X-Acting-Party':party}:{},...version?{'If-Match':'"'+version+'"'}:{}};if(body!==undefined){s.ops[role+op]??=randomUUID();Object.assign(headers,{'Idempotency-Key':s.ops[role+op],'Content-Type':raw?'application/octet-stream':'application/json'});await save();}const r=await fetch(f.base_url+path,{method:body===undefined?'GET':'POST',headers,...body===undefined?{}:{body:raw?body:JSON.stringify(body)}}),bytes=Buffer.from(await r.arrayBuffer());let j;try{j=JSON.parse(bytes);}catch{}s.requests.push({attempt,role,path,method:body===undefined?'GET':'POST',status:r.status,code:j?.error?.code,sha256:hash(bytes)});await save();assert(allowed.includes(r.status),path+' '+r.status+' '+j?.error?.code);return j?.data??bytes;}
 async function control(path){const r=await fetch(new URL(f.base_url).origin+path,{method:'POST',headers:{'X-QA-Control':f.control_key}});assert.equal(r.status,200);return r.json();}
 const{chromium}=createRequire(join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core'),browser=await chromium.launch({executablePath:process.env.CHROME_PATH,headless:true}),pages=[];
 function observe(p,role){p.on('response',async r=>{if(!r.url().includes('/api/v1/'))return;try{const b=await r.body(),q=r.request();s.requests.push({attempt,role,path:new URL(r.url()).pathname,method:q.method(),status:r.status(),sha256:hash(b),...['POST','PATCH'].includes(q.method())?{key_sha256:hash(q.headers()['idempotency-key']||''),body_sha256:hash(q.postDataBuffer()||Buffer.alloc(0))}:{}});}catch{}});}
@@ -20,11 +20,43 @@ async function click(p,name,role='button'){await(await seek(p,p.getByRole(role,{
 async function fill(p,name,value){const l=await seek(p,p.getByRole('textbox',{name}));await l.click();await p.keyboard.press('ControlOrMeta+A');await p.keyboard.insertText(value);await p.waitForTimeout(100);assert.equal(await l.inputValue(),value);await p.keyboard.press('Tab');}
 async function request(p,path,action,{allowed=[200],slot}={}){const wait=p.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1'+path&&r.request().method()==='POST').then(async r=>({status:r.status(),j:await r.json()}));wait.catch(()=>{});await action();const {status,j}=await wait;assert(allowed.includes(status),path+' '+status+' '+j.error?.code);if(slot){s[slot]=j.data;await save();}await idle(p);return j.data;}
 async function pollGeneration(id){for(let n=0;n<40;n++){await control('/__qa/tick');const r=await api('producer','/production/records/'+id);if(r.current_status==='SUCCEEDED')return r;await new Promise(r=>setTimeout(r,350));}throw Error('Generation has not completed within actual worker polling window');}
+const scopedWithdrawal=process.env.QA18_S3A_WITHDRAWAL==='1';
 const agree=p=>p.getByLabel('已阅读当前记录与本次约定，明确提交上述办理事项。',{exact:true}).check();
 let phase='vue-create-model';
 try{
  if(!s.creation){const p=await actor('producer','web','/production/projects/'+prep.project.id+'/generation');await p.getByTestId('production-generation-operation').selectOption('CREATE_LONG_LIVED');await p.getByTestId('production-avatar-id').fill(prep.avatar.id);await p.getByTestId('production-generation-consent').selectOption(prep.consent.id);await request(p,'/production/projects/'+prep.project.id+'/generation',()=>p.getByRole('button',{name:'建立实际生成请求',exact:true}).click(),{slot:'creation'});await snap(p,'vue-model-queued');await p.context().close();await done('vue-queues-real-generation-with-reviewed-face-voice-consent');}
  if(!s.asset){s.creation=await pollGeneration(s.creation.id);s.asset=await api('producer','/production/records/'+s.creation.data.result.asset_id);assert.equal(s.asset.current_status,'READY');await done('original-provider-key-submit-once-query-confirms-synthetic-model',{model_id:s.asset.id});}
+ if(scopedWithdrawal&&!s.protected_preview_verified){
+  phase='approved-private-preview-before-withdrawal';
+  const script=Buffer.from('S3A synthetic private production script for the approved face and voice project.');
+  const projectPath='/production/projects/'+prep.project.id;
+  if(!s.protected_file){
+   s.protected_file=await api('producer',projectPath+'/files?media_type=text%2Fplain',{body:script,raw:true});
+   await save();
+  }
+  if(!s.protected_version){
+   const current=await api('producer','/production/records/'+prep.project.id);
+   s.protected_version=await api('producer',projectPath+'/versions',{version:current.object_version,body:{stage:'SCRIPT',file_id:s.protected_file.id,preview_file_id:s.protected_file.id,note:'Synthetic private script for the S3-A withdrawal check'}});
+   await save();
+  }
+  if(s.protected_version.current_status==='IN_REVIEW'){
+   const p=await actor('reviewer','web','/production/reviews/versions/'+s.protected_version.id);
+   await p.getByTestId('production-read-preview').click();
+   await p.locator('.production-text-preview').getByText(script.toString(),{exact:true}).waitFor();
+   await p.getByTestId('production-check-script').check();
+   await p.getByTestId('production-review-decision').selectOption('APPROVED');
+   await p.getByTestId('production-review-reason').fill('Independently read the synthetic private script.');
+   await request(p,'/production/records/'+s.protected_version.id+'/reviews',()=>p.getByTestId('production-review-submit').click(),{slot:'protected_version'});
+   await p.context().close();
+  }
+  assert.equal(s.protected_version.current_status,'APPROVED');
+  const contentPath='/production/versions/'+s.protected_version.id+'/content?variant=preview';
+  const preview=await api('buyer',contentPath);
+  assert.deepEqual(preview,script);
+  await api('outsider',contentPath,{allowed:[403,404]});
+  s.protected_preview_verified={path:contentPath,sha256:hash(preview),bytes:preview.length};
+  await done('buyer-reads-one-independently-approved-private-preview-outsider-denied',s.protected_preview_verified);
+ }
  phase='app-create-deletion-request';
  if(!s.privacy){const p=await actor('buyer','app','/privacy?view=new');await click(p,'希望办理的事项 查询本人资料');await click(p,'删除资料','menuitem');await click(p,'数字人模型','checkbox');await click(p,'交易记录','checkbox');await fill(p,'具体说明','本人撤回本项目脸部和声音使用授权，停止新增任务并清理指定模型。请核对原订单处置、保留范围和供应商回执，不将提交视为全部删除。');await request(p,'/privacy/requests',()=>click(p,'提交本次申请'),{slot:'privacy'});await snap(p,'app-request-created');await p.context().close();await done('app-creates-one-personal-model-and-order-request',{request_id:s.privacy.id});}
  await api('outsider','/privacy/requests/'+s.privacy.id,{allowed:[403,404]});await api('outsider','/privacy/requests/'+s.privacy.id+'/model-assets',{allowed:[403,404]});
@@ -32,6 +64,15 @@ try{
  if(!s.withdrawal){const p=await actor('buyer','app','/privacy?view=request&recordId='+s.privacy.id);await fill(p,'撤回授权的明确原因','本人撤回该项目脸部及声音授权；停止后续使用，原订单及已发生费用需另行办理。');await request(p,'/privacy/requests/'+s.privacy.id+'/consent-withdrawals',async()=>{await click(p,'撤回这份本人授权');await click(p,'本人明确确认');},{slot:'withdrawal'});assert.equal(s.withdrawal.request_completion,'NOT_CONFIRMED');await snap(p,'app-consent-withdrawn');await p.context().close();await done('app-withdraws-original-face-and-voice-consent-without-claiming-erasure');}
  const currentProject=await api('producer','/production/records/'+prep.project.id);
  if(!s.new_work_denied){await api('producer','/production/projects/'+prep.project.id+'/generation',{version:currentProject.object_version,body:{operation:'CREATE_LONG_LIVED',avatar_id:prep.avatar.id,asset_id:null,consent_id:prep.consent.id},allowed:[409],op:'withdrawn-new-generation'});assert.equal(s.requests.at(-1).code,'PRODUCTION_CONSENT_NOT_AVAILABLE');s.new_work_denied=true;await done('same-withdrawn-consent-blocks-new-work-before-provider-send');}
+ if(scopedWithdrawal&&!s.old_preview_denied){
+  phase='same-private-preview-after-withdrawal';
+  assert(s.protected_preview_verified);
+  await api('buyer',s.protected_preview_verified.path,{allowed:[409]});
+  assert.equal(s.requests.at(-1).code,'PRODUCTION_CONSENT_NOT_AVAILABLE');
+  await api('outsider',s.protected_preview_verified.path,{allowed:[403,404]});
+  s.old_preview_denied=true;
+  await done('withdrawal-blocks-original-preview-for-buyer-and-keeps-outsider-denied',{path:s.protected_preview_verified.path});
+ }
  for(let n=0;n<8;n++){await control('/__qa/tick');s.asset=await api('producer','/production/records/'+s.asset.id);if(s.asset.current_status!=='READY')break;}
  assert(['DELETE_REQUIRED','DELETING','DELETED'].includes(s.asset.current_status));
  if(!s.old_order_preserved){const old=await api('buyer','/trade/records/'+prep.order.id);assert.equal(old.current_status,'PARTIALLY_PAID');assert.equal(old.data.financial.received_minor,3000);assert.equal(old.data.financial.refunded_minor,0);assert.deepEqual(old.data.contract,prep.order.data.contract);s.old_order_preserved=true;await done('withdrawal-preserves-original-paid-order-and-contract-pending-separate-disposition');}
@@ -50,7 +91,7 @@ try{
   const document={synthetic_only:true,request_id:s.privacy.id,model_id:s.asset.id,consent_id:prep.consent.id,features:prep.consent.data.consent.features,actions:s.deleted,order:{id:old.id,status:old.current_status,financial:old.data.financial,contract_sha256:old.data.contract.content_sha256},confirmed:'Only this synthetic provider model has a verified deletion result. New work using the withdrawn face/voice consent is blocked.',remaining:['Original 3000 minor payment disposition remains separate and unfinished.','Multi-party contract and financial retention basis still requires responsible review.','Original files, historical copies, backups and any real supplier assets are not confirmed erased.']};
   const bytes=Buffer.from(JSON.stringify(document,null,2));s.answer_sha256=hash(bytes);s.answer_bytes=bytes.length;await save();
   if(!s.answer_asset){const upload=p.locator('.business-upload');if(!await upload.getAttribute('open'))await upload.locator('summary').click();await p.locator('#business-purpose').selectOption('REVIEW_EVIDENCE');await p.locator('#business-upload-file').setInputFiles({name:'qa27-privacy-receipt.json',mimeType:'text/plain',buffer:bytes});await request(p,'/supply/assets',()=>upload.getByRole('button',{name:'上传私有材料',exact:true}).click(),{slot:'answer_asset'});}
-  await p.getByRole('button',{name:'读取可选已脱敏实际答复文件',exact:true}).click();const check=p.locator('#response-result-evidence_asset_ids-field input[type=checkbox]');assert.equal(await check.count(),1);await check.check();await p.locator('#response-result-response').fill('已核对同一脸声授权撤回和指定模型删除回执；新增任务被拒绝。此处是隔离合成供应商结果，不代表真实供应商已接入。原订单、原始文件和备份仍按附件所列事项继续办理。');await p.locator('#response-result-outcome').selectOption('DELETION_REQUESTED');await p.locator('#response-result-remaining_actions').fill('原订单首款30元的售后处置仍待单独办理。\n多方合同及钱账的正式分类留存依据待负责人核验。\n原始文件、历史副本、备份及真实供应商资料尚未确认全部清理。');await agree(p);await request(p,'/privacy/operations/requests/'+s.privacy.id+'/response',()=>p.getByTestId('business-response').click(),{slot:'answer'});assert.equal(s.answer.current_status,'AWAITING_REVIEW');await snap(p,'vue-answer-awaits-independent-review');await p.context().close();await done('vue-uploads-actual-same-request-receipt-and-records-unfinished-order-retention');
+  await p.getByRole('button',{name:'读取可选已脱敏实际答复文件',exact:true}).click();const check=p.locator('#response-result-evidence_asset_ids-field').getByRole('checkbox',{name:new RegExp(s.answer_asset.id+'$')});await check.waitFor();await check.check();await p.locator('#response-result-response').fill('已核对同一脸声授权撤回和指定模型删除回执；新增任务被拒绝。此处是隔离合成供应商结果，不代表真实供应商已接入。原订单、原始文件和备份仍按附件所列事项继续办理。');await p.locator('#response-result-outcome').selectOption('DELETION_REQUESTED');await p.locator('#response-result-remaining_actions').fill('原订单首款30元的售后处置仍待单独办理。\n多方合同及钱账的正式分类留存依据待负责人核验。\n原始文件、历史副本、备份及真实供应商资料尚未确认全部清理。');await agree(p);await request(p,'/privacy/operations/requests/'+s.privacy.id+'/response',()=>p.getByTestId('business-response').click(),{slot:'answer'});assert.equal(s.answer.current_status,'AWAITING_REVIEW');await snap(p,'vue-answer-awaits-independent-review');await p.context().close();await done('vue-uploads-actual-same-request-receipt-and-records-unfinished-order-retention');
  }
  phase='independent-answer-review';
  if(!s.answer_reviewed){
@@ -66,8 +107,8 @@ try{
  }
 
  phase='app-original-request-recovery';
- if(s.reopen_committed&&!s.reopen_recovered&&!s.reopen_readback){const r=await api('buyer','/privacy/requests/'+s.privacy.id);assert.equal(r.current_status,'REOPENED');assert.equal(r.object_version,s.reopen_committed.data.object_version);s.reopen_readback={id:r.id,version:r.object_version,status:r.current_status,ui_original_key_recovery:'NOT_COMPLETED_ORIGINAL_BROWSER_ENDED',no_second_post:true};await done('read-original-committed-reopen-after-driver-failure-without-repeating-operation');}
- if(!s.reopen_recovered&&!s.reopen_committed){
+ if(!scopedWithdrawal&&s.reopen_committed&&!s.reopen_recovered&&!s.reopen_readback){const r=await api('buyer','/privacy/requests/'+s.privacy.id);assert.equal(r.current_status,'REOPENED');assert.equal(r.object_version,s.reopen_committed.data.object_version);s.reopen_readback={id:r.id,version:r.object_version,status:r.current_status,ui_original_key_recovery:'NOT_COMPLETED_ORIGINAL_BROWSER_ENDED',no_second_post:true};await done('read-original-committed-reopen-after-driver-failure-without-repeating-operation');}
+ if(!scopedWithdrawal&&!s.reopen_recovered&&!s.reopen_committed){
   const p=await actor('buyer','app','/privacy?view=request&recordId='+s.privacy.id);let dropped=false;
   await p.context().route('**/api/v1/privacy/requests/'+s.privacy.id+'/reopen',async route=>{
    const q=route.request();if(q.method()!=='POST')return route.fallback();const wire={key_sha256:hash(q.headers()['idempotency-key']||''),body_sha256:hash(q.postDataBuffer()),version:q.headers()['if-match']};
@@ -79,7 +120,7 @@ try{
  }
  phase='final-current-build-read';
  const finalApp=await actor('buyer','app','/privacy?view=request&recordId='+s.privacy.id);await finalApp.setViewportSize({width:390,height:6000});await idle(finalApp);const finalAria=await finalApp.locator('body').ariaSnapshot();assert(finalAria.includes('该模型已确认删除')&&finalAria.includes('所用授权: 已撤回'));assert(!finalAria.includes('模型进展: DELETED')&&!finalAria.includes('所用授权: 已退出'));await snap(finalApp,'final-app-current-model-and-original-answer');await finalApp.context().close();await done('final-current-app-explains-model-and-consent-with-original-answer-retained');
- s.attempts.at(-1).result=s.reopen_recovered?'PASS_WITHDRAWAL_DELETION_AND_REVIEWED_RESPONSE':'PASS_SCOPED_READBACK_WITH_UI_RECOVERY_LIMIT';s.model_chain_complete=true;await save();
+ s.attempts.at(-1).result=scopedWithdrawal?'PASS_S3A_WITHDRAWAL_AND_REVIEWED_RESPONSE':s.reopen_recovered?'PASS_WITHDRAWAL_DELETION_AND_REVIEWED_RESPONSE':'PASS_SCOPED_READBACK_WITH_UI_RECOVERY_LIMIT';s.model_chain_complete=true;await save();
 }catch(e){s.attempts.at(-1).result='FAIL';s.attempts.at(-1).failure={phase,message:e.message,stack:e.stack};console.error(phase+': '+e.message);for(const[i,p]of pages.entries())if(!p.isClosed())await snap(p,'failure-'+i).catch(()=>{});process.exitCode=1;}
 finally{s.attempts.at(-1).finished_at=new Date().toISOString();await save();await writeFile(join(out,attempt+'-result.json'),JSON.stringify(s,null,2));await browser.close();}
 
