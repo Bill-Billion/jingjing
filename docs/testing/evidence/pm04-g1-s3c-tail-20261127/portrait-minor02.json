@@ -1,0 +1,216 @@
+{
+  "database": "jx_test_qa18_tail_supply_48bb6592eae2bb7b3008",
+  "product": "053168fb6e06b80680101702a733357309368809",
+  "started_at": "2026-11-27T10:06:12.596Z",
+  "checkout": "fb48a95df6c9489b755e1c1cdaf387f9b538d691",
+  "checks": [
+    {
+      "name": "G02/G05 own portrait version and minor protective report remain separated from trading authority",
+      "status": "FAIL",
+      "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'SERVICE_UNAVAILABLE'\n- 'PRIVATE_CONTENT_MISMATCH'\n",
+      "code": "ERR_ASSERTION"
+    }
+  ],
+  "requests": [
+    {
+      "role": "synthetic-minor",
+      "path": "/support/tickets",
+      "method": "POST",
+      "status": 200,
+      "sha256": "26fccd37cdaaf9f2068dbd93ca487c6cd13501f3af98f87c66abed7b307087f7",
+      "bytes": 553
+    },
+    {
+      "role": "synthetic-minor",
+      "path": "/support/tickets",
+      "method": "POST",
+      "status": 200,
+      "sha256": "d0c01c3a8bed79bdbc57303e4ce513824dc7eb1551419e4a75d4afeeaa0afced",
+      "bytes": 553
+    },
+    {
+      "role": "unrelated",
+      "path": "/support/tickets/d078cb73-ab53-4045-9347-5724c77ed19c",
+      "method": "GET",
+      "status": 404,
+      "code": "SUPPORT_NOT_FOUND",
+      "sha256": "998d9af04679b6217a5f4c5e4212af25324fa505b7e5ee3e7a4836138a3ddc65",
+      "bytes": 295
+    },
+    {
+      "role": "unrelated",
+      "path": "/support/operations/tickets/d078cb73-ab53-4045-9347-5724c77ed19c",
+      "method": "GET",
+      "status": 403,
+      "code": "SUPPORT_OPERATOR_FORBIDDEN",
+      "sha256": "f24aca4b18db335fc3650011c4378cdebff624192fddda212860e17e615d8658",
+      "bytes": 270
+    },
+    {
+      "role": "separate-handler",
+      "path": "/support/operations/tickets/d078cb73-ab53-4045-9347-5724c77ed19c/actions",
+      "method": "POST",
+      "status": 200,
+      "sha256": "297e4e32c5c6319e5c60206ea36aedbfe3ccc84e75e83a4b0df4b013e0fb6556",
+      "bytes": 520
+    },
+    {
+      "role": "separate-handler",
+      "path": "/support/operations/tickets/d078cb73-ab53-4045-9347-5724c77ed19c/actions",
+      "method": "POST",
+      "status": 200,
+      "sha256": "29bf35c5da935db358717769b39b42183dd24cf5bfda4da369295807ff1f1fa2",
+      "bytes": 518
+    },
+    {
+      "role": "synthetic-minor",
+      "path": "/support/tickets/d078cb73-ab53-4045-9347-5724c77ed19c",
+      "method": "GET",
+      "status": 200,
+      "sha256": "9e8d56062e20ad060b5891c828116724b462f0e329c94679a30b41ca0790d05b",
+      "bytes": 552
+    },
+    {
+      "role": "synthetic-minor",
+      "path": "/wallet/recharges",
+      "method": "POST",
+      "status": 403,
+      "code": "MINOR_OPERATION_RESTRICTED",
+      "sha256": "38c336ac1de2756882327e3dc64b2662611f04fecb589a95053d0eb7b8afb3a9",
+      "bytes": 270
+    },
+    {
+      "role": "synthetic-minor",
+      "path": "/auditions/bookings",
+      "method": "POST",
+      "status": 403,
+      "code": "MINOR_OPERATION_RESTRICTED",
+      "sha256": "e1cdd88dc5d9b8b06a16ba8276815a5b518cf69e5f4065f308f0930f790a7aed",
+      "bytes": 270
+    },
+    {
+      "role": "synthetic-minor",
+      "path": "/redemption/draws",
+      "method": "POST",
+      "status": 403,
+      "code": "MINOR_OPERATION_RESTRICTED",
+      "sha256": "218ce513f9d845fe608519d1b2b2ceccf5f60382250131c12c4ad5d797c4e3cf",
+      "bytes": 270
+    },
+    {
+      "role": "synthetic-minor",
+      "path": "/engagement/votes",
+      "method": "POST",
+      "status": 403,
+      "code": "MINOR_OPERATION_RESTRICTED",
+      "sha256": "964ab0d9ce4e08aed67e197f3f05b4a42078c3b382c24d1041abf4f9e1e90658",
+      "bytes": 270
+    },
+    {
+      "role": "synthetic-minor",
+      "path": "/support/tickets",
+      "method": "GET",
+      "status": 200,
+      "sha256": "0330e905353b4cec5ca7f0085098cf9154a988dc333828dffb6baf8496867465",
+      "bytes": 583
+    },
+    {
+      "role": "seller",
+      "path": "/artists/people/373e28a6-9eab-4bd6-9267-51147ccaa934/variants",
+      "method": "POST",
+      "status": 200,
+      "sha256": "6fd94905cd3c25c2f72e03e959b05e12b9069fb21e68dbe42f967649baaae104",
+      "bytes": 798
+    },
+    {
+      "role": "viewer",
+      "path": "/artists/catalog/0b9f36f3-c140-4056-b7da-97e45930e546/media",
+      "method": "GET",
+      "status": 200,
+      "sha256": "dcacbaf2cc48986ad8b41f7d915225ade0ffba7d533042a6e9263006c0a289d6",
+      "bytes": 445
+    },
+    {
+      "role": "seller",
+      "path": "/artists/people/373e28a6-9eab-4bd6-9267-51147ccaa934/listings",
+      "method": "POST",
+      "status": 409,
+      "code": "ARTIST_PORTRAIT_NOT_IN_PREVIEW",
+      "sha256": "3e78008a502304713943d533733bfd236c98a65e512f600ba4ffb85f28f60684",
+      "bytes": 308
+    },
+    {
+      "role": "seller",
+      "path": "/artists/people/373e28a6-9eab-4bd6-9267-51147ccaa934/listings",
+      "method": "POST",
+      "status": 200,
+      "sha256": "a3fef4bb0fcc0a1df4c67e95900b3340411eb02efbb90e3af5714c8b21a640c8",
+      "bytes": 990
+    },
+    {
+      "role": "viewer",
+      "path": "/artists/catalog/18b9b5b0-8d74-4f3c-9d54-2c9a586920ac/media",
+      "method": "GET",
+      "status": 404,
+      "code": "ARTIST_NOT_FOUND",
+      "sha256": "0a2ff82bdc371a2336a12b138a5a8ff959f3ce52ac4b6372b107a6b866f9c39f",
+      "bytes": 260
+    },
+    {
+      "role": "operator",
+      "path": "/artists/people/373e28a6-9eab-4bd6-9267-51147ccaa934/records/18b9b5b0-8d74-4f3c-9d54-2c9a586920ac/reviews",
+      "method": "POST",
+      "status": 200,
+      "sha256": "3500a45e1a7e0bfc816bdac38f22a466ce960f7dbd7f93793cd104e2d72d527a",
+      "bytes": 1130
+    },
+    {
+      "role": "viewer",
+      "path": "/artists/catalog/18b9b5b0-8d74-4f3c-9d54-2c9a586920ac/media",
+      "method": "GET",
+      "status": 200,
+      "sha256": "46e33487ac1392e137160be08512135c3dd886dac5f251fde4c0692d2a84e9bd",
+      "bytes": 479
+    },
+    {
+      "role": "viewer",
+      "path": "/artists/catalog/18b9b5b0-8d74-4f3c-9d54-2c9a586920ac/assets/6ff324c5-5ef9-4410-b29b-59ba53350144/content",
+      "method": "GET",
+      "status": 200,
+      "sha256": "ba982085304a6d1ef0eb476f7d3ca7984f03cbc5e4f7bf85c5ac97cd45cd171f",
+      "bytes": 68
+    },
+    {
+      "role": "viewer",
+      "path": "/artists/catalog/18b9b5b0-8d74-4f3c-9d54-2c9a586920ac/assets/77f56180-601b-4324-8eaa-5561cf6896f4/content",
+      "method": "GET",
+      "status": 404,
+      "code": "ARTIST_ASSET_NOT_FOUND",
+      "sha256": "42b34a65d14c4665d27c58027be4d31ccaad60ea626a580a6764efa3c61d274d",
+      "bytes": 266
+    },
+    {
+      "role": "viewer",
+      "path": "/artists/catalog/18b9b5b0-8d74-4f3c-9d54-2c9a586920ac/assets/6ff324c5-5ef9-4410-b29b-59ba53350144/content",
+      "method": "GET",
+      "status": 503,
+      "code": "SERVICE_UNAVAILABLE",
+      "sha256": "6ac6137e883e171b1b43809aba8e6302a8f6cf6e2a0179781858ccc7adaa08e8",
+      "bytes": 269
+    }
+  ],
+  "last_migration": {
+    "version": "0225",
+    "name": "0225_production_delivery_views.sql",
+    "status": "APPLIED"
+  },
+  "minor": {
+    "synthetic_person_id": "7a84ea1a-10c2-4dba-a266-37bdb2eebfa5",
+    "case_id": "d078cb73-ab53-4045-9347-5724c77ed19c",
+    "case_status": "ANSWERED",
+    "complaint_cases": 1,
+    "direct_trading_or_activities_rejected": 4,
+    "independent_handler": true
+  },
+  "finished_at": "2026-11-27T10:06:19.530Z"
+}
