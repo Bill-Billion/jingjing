@@ -1,0 +1,707 @@
+{
+  "product_candidate": "053168fb6e06b80680101702a733357309368809",
+  "execution_base": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+  "product_api": "0.31.82-rc.1",
+  "migrations": 225,
+  "coverage_promoted": false,
+  "routes": {
+    "E2E-01": {
+      "result": "PASS",
+      "scope": "Current reviewed listing, original checkout, verified payment, controlled file and two independent refunds with original license changes",
+      "checkpoints": [
+        {
+          "file": "01-stock/paid-current/checkpoint.json",
+          "sha256": "b9b4be511d7ef7a48cdb05b467dcb6d6727cbb0eb9e976a181a50c443f7c659d",
+          "environment": "http://127.0.0.1:5500/api/v1",
+          "terminal": true,
+          "records": {},
+          "order_id": "3edae015-5e9f-4d75-b386-0a3498d1aef6",
+          "payment_id": "b40cb98e-5371-4630-a225-a51c28f60ace",
+          "file_sha256": "aa5680914cf5cf08d268913a27b9eef59a665566f10ee33979e2c76520f67fb0",
+          "check_names": [
+            "app-checkout-reviewed-original-listing",
+            "web-created-one-original-payment",
+            "unknown-payment-keeps-file-locked",
+            "web-recovered-same-payment-key-and-body-no-second-payment",
+            "api-vue-flutter-web-read-same-file-and-foreign-account-denied"
+          ],
+          "http_status_counts": {
+            "200": 9,
+            "409": 2,
+            "404": 1
+          },
+          "attempts": [
+            {
+              "id": "1795744765002",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:59:25.040Z"
+            }
+          ]
+        },
+        {
+          "file": "01-stock/aftercare/checkpoint.json",
+          "sha256": "afe033252ea2724e3be6b71e73de361e6a88040b30d244eb852882cd7e7d61b0",
+          "environment": null,
+          "terminal": true,
+          "records": {},
+          "order_id": "3edae015-5e9f-4d75-b386-0a3498d1aef6",
+          "payment_id": "b40cb98e-5371-4630-a225-a51c28f60ace",
+          "check_names": [
+            "flutter-web-browser-save-matches-original-file",
+            "web-buyer-opened-original-case",
+            "web-independent-amount-and-license",
+            "same-order-refund-and-license-observed-in-api-vue-flutter-web",
+            "web-buyer-opened-original-case",
+            "web-independent-amount-and-license",
+            "same-order-refund-and-license-observed-in-api-vue-flutter-web",
+            "revocation-does-not-remotely-erase-existing-browser-copy"
+          ],
+          "http_status_counts": {
+            "200": 9,
+            "409": 5,
+            "403": 2
+          },
+          "attempts": [
+            {
+              "id": "1795744827410",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T02:00:27.436Z"
+            }
+          ],
+          "cases": [
+            {
+              "case_id": "d7fe4bbc-6853-49e3-9c40-cda559a9c06d",
+              "refund_id": "3b14a96a-459c-403e-a2ae-e0a1315012fd",
+              "license_action": "KEEP",
+              "amount_minor": 40,
+              "complete": true
+            },
+            {
+              "case_id": "21688f92-c39d-4c3e-b2c5-e77c3b2d53e2",
+              "refund_id": "b4b6015b-8fbe-4220-9121-0f50131b88a9",
+              "license_action": "REVOKE",
+              "amount_minor": 60,
+              "complete": true
+            }
+          ]
+        }
+      ]
+    },
+    "E2E-02": {
+      "result": "PASS",
+      "scope": "Original order reached delivered and same-order independently approved partial refund",
+      "checkpoints": [
+        {
+          "file": "02-manual/chain/checkpoint.json",
+          "sha256": "8af0bdffac81c309c20a8c1346b6eff33086418fec2cf2c95ba0fd6d49463eb1",
+          "environment": "jx_test_stock_pm03_bc0dc2acab3d0887a8f10285",
+          "terminal": true,
+          "records": {
+            "order": {
+              "id": "6aa319e6-5215-4e30-b031-2517c14c98f6",
+              "current_status": "OPEN",
+              "order_id": null,
+              "parent_id": "979685c5-e0d9-4647-973f-a9197f1e3a48"
+            },
+            "final_order": {
+              "id": "6aa319e6-5215-4e30-b031-2517c14c98f6",
+              "current_status": "PAID",
+              "order_id": null,
+              "parent_id": "979685c5-e0d9-4647-973f-a9197f1e3a48"
+            },
+            "project": {
+              "id": "f6c42f3d-3f13-41b3-80ad-88453021c34c",
+              "current_status": "READY",
+              "order_id": "6aa319e6-5215-4e30-b031-2517c14c98f6"
+            }
+          },
+          "check_names": [
+            "app-new-private-story-explicitly-submitted",
+            "vue-quotes-original-story-with-explicit-30-40-30",
+            "independent-vue-review-original-quote-self-review-denied",
+            "same-order-contract-freezes-modern-terms-old-30-60-10-unchanged-and-outsider-denied",
+            "vue-create-and-independently-review-same-order-project",
+            "unpaid-project-start-denied",
+            "app-original-first-payment-reconciled-synthetic",
+            "assigned-producer-starts-after-first-payment",
+            "middle-payment-denied-before-script-acceptance",
+            "vue-producer-upload-and-independent-review-SCRIPT",
+            "app-read-and-explicitly-accept-current-SCRIPT",
+            "app-middle-payment-unknown-keeps-original-record",
+            "app-lost-payment-success-recovers-same-operation-key-and-body",
+            "app-original-interim-payment-reconciled-synthetic",
+            "vue-producer-upload-and-independent-review-SAMPLE",
+            "app-read-and-explicitly-accept-current-SAMPLE",
+            "vue-producer-upload-and-independent-review-ROUGH_CUT",
+            "app-read-and-explicitly-accept-current-ROUGH_CUT",
+            "vue-producer-upload-and-independent-review-FINAL",
+            "final-original-file-denied-before-acceptance-and-last-payment",
+            "app-final-delivery-explicit-receipt-original",
+            "app-same-project-file-issue-pauses-acceptance-clock",
+            "independent-vue-resolves-original-file-issue",
+            "app-final-delivery-explicit-receipt-reissued",
+            "app-read-and-explicitly-accept-current-FINAL",
+            "app-and-api-lock-original-after-final-acceptance-until-last-payment",
+            "app-original-last-payment-reconciled-synthetic",
+            "same-final-file-actually-saved-in-app-and-vue-outsider-denied"
+          ],
+          "http_status_counts": {
+            "200": 503,
+            "403": 1,
+            "404": 2,
+            "409": 7,
+            "503": 1
+          },
+          "attempts": [
+            {
+              "attempt": "1795744564015",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:56:04.051Z",
+              "finished_at": "2026-11-27T01:57:49.429Z",
+              "result": "COMPLETE_SCOPED"
+            }
+          ]
+        },
+        {
+          "file": "02-manual/aftercare/checkpoint.json",
+          "sha256": "fa4a18c4d367d9e6dc321cc2a929f0881e514b218f76c190eb04e1ae12f8e103",
+          "environment": "jx_test_stock_pm03_bc0dc2acab3d0887a8f10285",
+          "terminal": true,
+          "records": {
+            "final_order": {
+              "id": "6aa319e6-5215-4e30-b031-2517c14c98f6",
+              "current_status": "PARTIALLY_REFUNDED",
+              "order_id": null,
+              "parent_id": "979685c5-e0d9-4647-973f-a9197f1e3a48"
+            },
+            "refund": {
+              "id": "e6571217-a4cb-4a26-9c08-042a169f41fa",
+              "current_status": "APPROVED",
+              "order_id": "6aa319e6-5215-4e30-b031-2517c14c98f6",
+              "parent_id": "637549c2-2ecc-433b-a823-a45951870eb9"
+            }
+          },
+          "order_id": "6aa319e6-5215-4e30-b031-2517c14c98f6",
+          "payment_id": "637549c2-2ecc-433b-a823-a45951870eb9",
+          "check_names": [
+            "app-opens-cancellation-on-same-delivered-project",
+            "independent-vue-cancel-retains-7000-refunds-3001-producer-denied",
+            "app-refund-original-last-payment-exact-approved-amount",
+            "independent-vue-refund-review-and-execution-is-pending",
+            "app-reads-original-refund-synthetic-success",
+            "vue-project-syncs-actual-refund-separately-from-approval",
+            "same-order-net-7000-original-contract-kept-new-download-locked-existing-copy-not-erased"
+          ],
+          "http_status_counts": {
+            "200": 57,
+            "403": 1,
+            "409": 1,
+            "404": 1
+          },
+          "attempts": [
+            {
+              "attempt": "1795744764943",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:59:24.982Z",
+              "finished_at": "2026-11-27T01:59:49.394Z",
+              "result": "COMPLETE_SCOPED"
+            }
+          ]
+        }
+      ]
+    },
+    "E2E-03": {
+      "result": "BLOCKED",
+      "scope": "Original paid and accepted appointment starts 2026-11-27 10:57 Asia/Shanghai; no arrival, delivery or maturity yet",
+      "checkpoints": [
+        {
+          "file": "03-audition/checkpoint.json",
+          "sha256": "223ca41e78d1f73f7804fdec3e3f2e1bcb1366d50a8f3631a4c16c50ae091abc",
+          "environment": "jx_test_stock_pm03_bc0dc2acab3d0887a8f10285",
+          "terminal": null,
+          "records": {
+            "order_normal": {
+              "id": "1ca81699-247e-446a-883a-0bb54441f8b9",
+              "current_status": "OPEN",
+              "order_id": null,
+              "parent_id": null
+            },
+            "refund": {
+              "id": "24646147-d277-42a9-97ea-3950021b9aac",
+              "current_status": "APPROVED",
+              "order_id": "2c07d117-3c03-4c60-8b5e-8d71905fcbba",
+              "parent_id": "5f245fa0-9161-4381-9eaa-2b4d1f19f997"
+            }
+          },
+          "awaiting_arrival_at": "2026-11-27T02:57:00.000Z",
+          "bookings": {
+            "normal": "d5c18e8c-ec4a-434c-857e-694757e95316",
+            "reverse": "1ee74ab2-aaba-4209-82d6-c81ffdb61f68"
+          },
+          "check_names": [
+            "vue-offline-offer-created-and-independently-published",
+            "app-new-offline-booking-submitted",
+            "independent-safety-review-and-self-review-denied",
+            "app-normal-original-order-frozen",
+            "unknown-payment-does-not-unlock-artist-acceptance-or-conversation",
+            "app-normal-same-payment-reconciled-synthetic",
+            "vue-seller-accept-normal",
+            "accepted-paid-same-booking-opens-conversation-without-performance-rights-outsider-denied",
+            "reverse-api-new-booking-and-vue-independent-safety",
+            "app-reverse-original-order-frozen",
+            "app-reverse-same-payment-reconciled-synthetic",
+            "vue-seller-decline-reverse",
+            "fixed-direct-conversation-page-keeps-original-booking-for-submission",
+            "decline-links-original-payment-full-10000-refund-app-reads-same-record",
+            "independent-vue-original-full-refund-approved-and-pending",
+            "app-original-refund-reconciles-synthetic-success",
+            "same-declined-booking-full-refund-net-zero-contract-kept-contact-and-outsider-denied",
+            "offline-early-arrival-denied-no-clock-or-database-advancement"
+          ],
+          "http_status_counts": {
+            "200": 135,
+            "403": 1,
+            "409": 5,
+            "503": 1,
+            "404": 2
+          },
+          "attempts": [
+            {
+              "attempt": "1795744620479",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:57:00.510Z",
+              "finished_at": "2026-11-27T01:57:32.841Z",
+              "phase": "app-booking"
+            },
+            {
+              "attempt": "1795744765034",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:59:25.075Z",
+              "finished_at": "2026-11-27T02:00:26.093Z",
+              "result": "PARTIAL_CHECKPOINT"
+            }
+          ]
+        }
+      ]
+    },
+    "E2E-04": {
+      "result": "PARTIAL",
+      "scope": "Original announcement, submission, quote, paid order and two-party conversation; supplier lacks reviewed script and same-order fulfillment/aftercare are pending",
+      "checkpoints": [
+        {
+          "file": "04-notice/checkpoint.json",
+          "sha256": "67e5170dec8c2f8fdb47cf843148a6f26b893361b220251084da782667a1f40c",
+          "environment": "jx_test_stock_pm03_bc0dc2acab3d0887a8f10285",
+          "terminal": true,
+          "records": {
+            "order": {
+              "id": "2cd35a0b-104d-44ee-8d6d-cbbd56967933",
+              "current_status": "OPEN",
+              "order_id": null,
+              "parent_id": "bebadc60-ab40-43b1-95d9-6b8e78234f43"
+            },
+            "final_order": {
+              "id": "2cd35a0b-104d-44ee-8d6d-cbbd56967933",
+              "current_status": "PAID",
+              "order_id": null,
+              "parent_id": "bebadc60-ab40-43b1-95d9-6b8e78234f43"
+            }
+          },
+          "check_names": [
+            "adult-without-scout-level-or-topup-facts-admitted-under-current-rule",
+            "vue-adult-level-zero-publishes-reviewed-nonofficial-notice",
+            "new-recipient-specific-personal-consent-independently-reviewed",
+            "app-personal-submission-bound-to-new-notice-and-recipient",
+            "vue-independent-review-delivers-one-way-submission",
+            "app-lost-interest-response-recovers-original-case-without-chat-or-order",
+            "repeat-interest-does-not-create-new-case-and-party-cannot-link-quote",
+            "new-commercial-request-from-same-recipient-independently-reviewed",
+            "vue-independent-reviewed-commercial-offer-separate-from-profile-consent",
+            "app-explicitly-accepts-exact-commercial-offer-without-payment",
+            "vue-independently-approves-exact-commercial-quote",
+            "independent-vue-links-case-scoped-exact-reviewed-quote",
+            "app-follows-original-case-quote-and-creates-exact-commercial-order",
+            "accepted-commercial-offer-and-linked-case-still-do-not-open-unpaid-chat",
+            "unknown-original-payment-keeps-commercial-chat-closed",
+            "app-same-commercial-payment-reconciles-synthetic-success",
+            "app-buyer-sends-only-after-same-order-paid",
+            "vue-supplier-replies-in-same-commercial-order",
+            "both-roles-read-identical-original-conversation-unrelated-party-denied",
+            "withdrawn-notice-denies-new-submission-but-paid-order-contract-and-order-chat-remain"
+          ],
+          "http_status_counts": {
+            "200": 143,
+            "409": 5,
+            "403": 1,
+            "503": 1,
+            "404": 1
+          },
+          "attempts": [
+            {
+              "attempt": "1795744799908",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:59:59.949Z",
+              "finished_at": "2026-11-27T02:00:56.101Z",
+              "result": "COMPLETE_SCOPED"
+            }
+          ]
+        }
+      ],
+      "production_prerequisite": {
+        "role": "notices_seller",
+        "status": 200,
+        "pages": 1,
+        "count": 0,
+        "fully_read": true,
+        "approved_script_ids": []
+      }
+    },
+    "E2E-06": {
+      "result": "PASS",
+      "scope": "Original source order, grant, failed/canceled HOLD, successful HOLD and cash refunds; original points debt recorded once",
+      "checkpoints": [
+        {
+          "file": "06-points/journey/checkpoint.json",
+          "sha256": "d64050aec50e522152a8f68428f14334ce289b673aedd96842274dfe21b98907",
+          "environment": "jx_test_qa18_points_f2bb76b929a704c47425",
+          "terminal": true,
+          "records": {
+            "source_order": {
+              "id": "55419854-1ca2-4d65-b0b3-d1f559289c0e",
+              "current_status": "OPEN",
+              "order_id": null,
+              "parent_id": null
+            },
+            "source_final": {
+              "id": "55419854-1ca2-4d65-b0b3-d1f559289c0e",
+              "current_status": "REFUNDED",
+              "order_id": null,
+              "parent_id": null
+            },
+            "grant": {
+              "id": "bf3dd77c-921f-44de-9838-43106c233ebc",
+              "current_status": "AVAILABLE",
+              "parent_id": "5b7ee1f2-1af6-476f-97f5-826e63721eef"
+            },
+            "credit_final": {
+              "id": "98acb223-7128-4f4c-b572-234143b4e0a7",
+              "current_status": "REFUNDED",
+              "order_id": null,
+              "parent_id": "bd68348d-0625-44e5-a4e7-7b075e4f846a"
+            }
+          },
+          "orders": {
+            "failed": "22886aaa-f248-47c3-ba1c-fef67dbbd411",
+            "retry": "98acb223-7128-4f4c-b572-234143b4e0a7"
+          },
+          "holds": {
+            "failed": "e4f4ad57-07df-4a96-a8da-0331ecc05657",
+            "retry": "88b1f917-6f98-4ab9-8827-6e8c483080c6"
+          },
+          "check_names": [
+            "actual-wallet-opened-no-free-points",
+            "app-source700yuan-consumption-order-after-wallet-open",
+            "app-original-source-payment-confirmed70000",
+            "app-reads-saves-and-accepts-original-source-file",
+            "actual-wallet-aftercare-pending",
+            "original-aftercare-reason-keeps-points-unspendable",
+            "actual-wallet-earned7000-once",
+            "same-consumption-earning-issued7000-once-after-original7days",
+            "app-fixed6000-earned-points-exchanged-for50yuan-credit",
+            "actual-wallet-spent6000-cumulative-unchanged",
+            "app-earned-credit-hold-and-original-discounted-order-failed",
+            "earned-credit-definitive-payment-failure-keeps-hold-until-cancel",
+            "app-original-failed-order-cancel-releases-same-earned-credit",
+            "app-new-story-vue-new-reviewed-quote-after-original-failure",
+            "app-earned-credit-hold-and-original-discounted-order-retry",
+            "unknown-earned-credit-payment-keeps-original-hold",
+            "same-earned-credit-consumed-only-after-first13500-payment",
+            "app-vue-independent-original-refund-retry",
+            "actual-wallet-credit-cash-refund-does-not-restore-points",
+            "used-production-credit-not-restored-after-original-cash-refund",
+            "vue-independent-original-source-refund70000-and-license-revoke",
+            "app-vue-independent-original-refund-source",
+            "actual-wallet-source-refund6000-points-debt",
+            "source-refund-shortfall-blocks-new-spend-and-new-file-use",
+            "original-refund-replays-do-not-repeat-debt-or-restore-used-grant"
+          ],
+          "http_status_counts": {
+            "200": 303,
+            "503": 2,
+            "409": 8,
+            "403": 1
+          },
+          "attempts": [
+            {
+              "attempt": "1795744669758",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:57:49.795Z",
+              "finished_at": "2026-11-27T01:58:31.333Z",
+              "result": "PARTIAL_CHECKPOINT"
+            },
+            {
+              "attempt": "1795744764949",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:59:24.987Z",
+              "finished_at": "2026-11-27T02:00:45.826Z",
+              "result": "COMPLETE_SCOPED"
+            }
+          ]
+        }
+      ]
+    },
+    "E2E-11": {
+      "result": "PARTIAL",
+      "scope": "App applies, Vue handles and separate reviewer opens/approves, App receives exact file; file gate passed and whole request remains FOLLOW_UP with other privacy actions pending",
+      "checkpoints": [
+        {
+          "file": "11-privacy/vue/result.json",
+          "sha256": "769aa7a61152128c86722d5c29575cfb25565b9eb3858cac730adf5b8b55a34f",
+          "environment": null,
+          "terminal": "PASS",
+          "records": {},
+          "order_id": "fe55f52f-670d-4a04-a362-3fc45dc3095e",
+          "request_id": "124e64c9-6829-4f71-b2ef-4265a223cdb0",
+          "asset_id": "d8f82eb8-e597-4438-96fd-baba8ccf039f",
+          "byte_size": 4032,
+          "check_names": [
+            "operator-starts-same-app-request",
+            "web-reads-account-and-original-order-for-same-request",
+            "uploaded-file-selectable-and-submitted-for-independent-review",
+            "applicant-cannot-download-before-review",
+            "approval-blocked-until-actual-proposal-file-read",
+            "separate-reviewer-reads-and-approves-same-attachment",
+            "unrelated-account-cannot-download"
+          ],
+          "http_status_counts": {
+            "200": 22
+          },
+          "attempts": []
+        },
+        {
+          "file": "11-privacy/app-download-result.json",
+          "sha256": "769aa7a61152128c86722d5c29575cfb25565b9eb3858cac730adf5b8b55a34f",
+          "environment": null,
+          "terminal": null,
+          "records": {},
+          "request_id": "124e64c9-6829-4f71-b2ef-4265a223cdb0",
+          "byte_size": 4032,
+          "check_names": [],
+          "http_status_counts": {
+            "200": 4
+          },
+          "attempts": []
+        }
+      ]
+    },
+    "E2E-12": {
+      "result": "PASS",
+      "scope": "Same approved agreement/order and delivered film, reviewed simulated release, verified net 80000 minor accrued 16000/64000 without payout",
+      "checkpoints": [
+        {
+          "file": "12-participation/signing/checkpoint.json",
+          "sha256": "2edecfa3697c601248e56f18359fbfc2345be11db51c8deded2392dcd8cd8e6a",
+          "environment": "jx_test_qa18_participation_bf744b2c1613c4fc757f",
+          "terminal": null,
+          "records": {
+            "order": {
+              "id": "9e22d9f4-a8d7-48c4-8af9-1e099ef6d37e",
+              "current_status": "OPEN",
+              "order_id": null,
+              "parent_id": null
+            },
+            "agreement": {
+              "id": "87b6c92c-bc3e-47d6-9c0e-ea3ba94295fd",
+              "current_status": "IN_REVIEW"
+            }
+          },
+          "check_names": [
+            "app-submits-original100-fee30-70-and-separate20-80-revenue",
+            "self-review-and-unrelated-private-agreement-denied",
+            "vue-independent-original-contract-review",
+            "cash-order-denied-before-all-named-parties-confirm",
+            "app-named-artist-confirms-original-contract-hash",
+            "app-named-buyer-confirms-original-contract-hash",
+            "app-named-producer-confirms-original-contract-hash",
+            "stale-pre-review-agreement-hash-cannot-create-order",
+            "app-creates-one-order-from-same-approved-and-confirmed-agreement",
+            "unfulfilled-role-milestone-blocks-final70-payment",
+            "app-original-participation-payment-stage_1"
+          ],
+          "http_status_counts": {
+            "200": 88,
+            "403": 1,
+            "404": 1,
+            "409": 4
+          },
+          "attempts": [
+            {
+              "attempt": "1795744435383",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:53:55.416Z",
+              "finished_at": "2026-11-27T01:54:42.554Z",
+              "result": "PASS_SCOPED_PARTICIPATION_SIGNING_AND_FIRST_PAYMENT"
+            }
+          ]
+        },
+        {
+          "file": "12-participation/delivery/checkpoint.json",
+          "sha256": "e67a93499eda6c3e1c360cd7cb0be63a5b998fbb8df09b9ade5b59822135e92e",
+          "environment": "jx_test_qa18_participation_bf744b2c1613c4fc757f",
+          "terminal": true,
+          "records": {
+            "order": {
+              "id": "8c67b90e-253d-406a-b66c-978fa7647989",
+              "current_status": "OPEN",
+              "order_id": null,
+              "parent_id": "1cc06b3f-cde0-42d9-9b36-3c5bf30c0a6b"
+            },
+            "project": {
+              "id": "c6686732-82da-48de-828d-b28c4641abb0",
+              "current_status": "READY",
+              "order_id": "8c67b90e-253d-406a-b66c-978fa7647989"
+            },
+            "agreement": {
+              "id": "87b6c92c-bc3e-47d6-9c0e-ea3ba94295fd",
+              "current_status": "APPROVED"
+            },
+            "participation_order": {
+              "id": "9e22d9f4-a8d7-48c4-8af9-1e099ef6d37e",
+              "current_status": "OPEN",
+              "order_id": null,
+              "parent_id": null
+            }
+          },
+          "check_names": [
+            "vue-named-person-original-production-contract-independent-review",
+            "app-original-order-8c67b90e-253d-406a-b66c-978fa7647989-payment-first",
+            "vue-assigned-producer-starts-same-cast-after-separate-film-first30",
+            "film-middle60-locked-before-sample-acceptance",
+            "vue-producer-upload-and-independent-review-SCRIPT",
+            "app-read-and-explicitly-accept-current-SCRIPT",
+            "vue-producer-upload-and-independent-review-SAMPLE",
+            "app-read-and-explicitly-accept-current-SAMPLE",
+            "app-original-order-8c67b90e-253d-406a-b66c-978fa7647989-payment-interim",
+            "vue-producer-upload-and-independent-review-ROUGH_CUT",
+            "app-read-and-explicitly-accept-current-ROUGH_CUT",
+            "vue-producer-upload-and-independent-review-FINAL",
+            "full-film-locked-before-original-tail-payment",
+            "app-final-delivery-explicit-receipt-original",
+            "app-read-and-explicitly-accept-current-FINAL",
+            "app-original-order-8c67b90e-253d-406a-b66c-978fa7647989-payment-last",
+            "app-downloads-exact-original-film-unrelated-account-denied",
+            "app-buyer-confirms-original-role-milestone-with-actual-delivery-proof-artist-denied",
+            "app-original-order-9e22d9f4-a8d7-48c4-8af9-1e099ef6d37e-payment-stage_2",
+            "separate-film100-and-role100-paid-original-contracts-retained-no-future-income-implied"
+          ],
+          "http_status_counts": {
+            "200": 430,
+            "409": 6,
+            "404": 1,
+            "403": 1
+          },
+          "attempts": [
+            {
+              "attempt": "1795744564062",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:56:04.093Z",
+              "finished_at": "2026-11-27T01:57:30.363Z",
+              "result": "FAIL"
+            },
+            {
+              "attempt": "1795744764921",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T01:59:24.967Z",
+              "finished_at": "2026-11-27T02:00:18.915Z",
+              "result": "PASS_SCOPED_PRODUCTION_AND_PARTICIPATION_DELIVERY"
+            }
+          ]
+        },
+        {
+          "file": "12-participation/release/checkpoint.json",
+          "sha256": "081bfcd6b3e0a9d60d1bec31bbb1fca3c39f08be8e61816336530d9fb5aa600d",
+          "environment": "jx_test_qa18_participation_bf744b2c1613c4fc757f",
+          "terminal": true,
+          "records": {
+            "project": {
+              "id": "7620a5f1-9a07-465d-944d-b26534e90d82",
+              "current_status": "PREPARING"
+            },
+            "role_order": {
+              "id": "9e22d9f4-a8d7-48c4-8af9-1e099ef6d37e",
+              "current_status": "OPEN",
+              "order_id": null,
+              "parent_id": null
+            },
+            "release": {
+              "id": "567fa608-277d-41b6-9b0e-d33d01253911",
+              "current_status": "EXTERNAL_PUBLISHED"
+            },
+            "statement": {
+              "id": "07e4d23d-d61a-4956-8f60-85cdb5f3770f",
+              "current_status": "APPROVED"
+            },
+            "receipt": {
+              "id": "8b8bde7d-91e0-4754-ba09-74322c6fda37",
+              "current_status": "APPROVED"
+            },
+            "settlement": {
+              "id": "3483cb5a-4fe5-4815-a229-03cd13fa6c0a",
+              "current_status": "APPROVED"
+            }
+          },
+          "check_names": [
+            "vue-plan-links-same-paid-role-production-and-six-separate-rights",
+            "vue-independent-reads-proof-and-reviews-PLAN",
+            "project-start-blocked-without-same-version-confirmations-private-plan-denied",
+            "app-buyer-confirms-exact-PLAN",
+            "app-artist-confirms-exact-PLAN",
+            "app-producer-confirms-exact-PLAN",
+            "vue-starts-project-after-all-plan-parties-confirm",
+            "vue-edition-uses-exact-original-accepted-final",
+            "vue-independent-reads-proof-and-reviews-EDITION",
+            "app-buyer-confirms-exact-EDITION",
+            "app-artist-confirms-exact-EDITION",
+            "app-producer-confirms-exact-EDITION",
+            "vue-independent-reads-proof-and-reviews-CHANNEL",
+            "vue-independent-reads-proof-and-reviews-RELEASE",
+            "internal-approval-only-ready-not-external-published",
+            "external-SUBMITTED-report-alone-does-not-publish",
+            "vue-independent-reads-proof-and-reviews-EXTERNAL_EVENT",
+            "external-PUBLISHED-report-alone-does-not-publish",
+            "vue-independent-reads-proof-and-reviews-EXTERNAL_EVENT",
+            "app-reads-same-release-after-independent-synthetic-evidence",
+            "vue-revenue-agreement-retains-original20-80-not-fee-distribution",
+            "vue-independent-finance-AGREEMENT",
+            "app-buyer-confirms-original-finance-AGREEMENT",
+            "app-artist-confirms-original-finance-AGREEMENT",
+            "app-producer-confirms-original-finance-AGREEMENT",
+            "vue-independent-finance-STATEMENT",
+            "reviewed1000-minus100-minus100-statement-is800-receivable-zero-cash",
+            "receipt-report-alone-cannot-book-cash",
+            "vue-independent-finance-RECEIPT",
+            "vue-independent-finance-SETTLEMENT",
+            "app-buyer-confirms-original-finance-SETTLEMENT",
+            "app-artist-confirms-original-finance-SETTLEMENT",
+            "app-producer-confirms-original-finance-SETTLEMENT",
+            "same-net800-accrues-artist160-buyer640-zero-payout-old-fees-unchanged-outsider-denied"
+          ],
+          "http_status_counts": {
+            "200": 457,
+            "409": 1,
+            "404": 2
+          },
+          "attempts": [
+            {
+              "attempt": "1795744857498",
+              "source": "e172a033ed2362ea1d00cb118b3556829d7b40e9",
+              "started_at": "2026-11-27T02:00:57.525Z",
+              "finished_at": "2026-11-27T02:03:26.278Z",
+              "result": "PASS_SCOPED_SAME_PROJECT_RELEASE_AND_RECEIVED_INCOME"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -12,8 +12,10 @@ const access=JSON.parse(await readFile(accessPath,'utf8'));
 assert(access.synthetic_only && new URL(access.base_url).hostname==='127.0.0.1');
 assert(Date.parse(access.expires_at)>Date.now());
 for(const role of ['stock_buyer','stock_seller','stock_outsider'])assert(access.accounts[role],role);
-const orderId=process.env.QA18_STOCK_ORDER_ID;
-assert.match(orderId||'',/^[a-f0-9-]{36}$/);
+let orderId=process.env.QA18_STOCK_ORDER_ID;
+const listingId=process.env.QA18_STOCK_LISTING_ID || process.env.QA18_PENDING_LISTING_ID;
+assert.match(orderId||listingId||'',/^[a-f0-9-]{36}$/);
+if(listingId){assert.match(listingId,/^[a-f0-9-]{36}$/);if(process.env.QA18_PENDING_LISTING_ID){assert.equal(listingId,access.scenarios.stock_pending.listing_id);assert(access.accounts.stock_reviewer);}}
 const out=resolve(process.env.QA18_OUTPUT_DIR);
 assert(out.startsWith(join(root,'.local')+sep));
 await mkdir(out,{recursive:true});
@@ -21,16 +23,19 @@ const statePath=join(out,'checkpoint.json');
 const sha=b=>createHash('sha256').update(b).digest('hex');
 let state;
 try{state=JSON.parse(await readFile(statePath,'utf8'));}catch(e){if(e.code!=='ENOENT')throw e;state={order_id:orderId,checks:[],requests:[],synthetic_only:true};}
-assert.equal(state.order_id,orderId);
+assert.equal(state.environment ??= access.base_url,access.base_url);
+assert.equal(state.listing_id ??= listingId,listingId);
+if (orderId) assert.equal(state.order_id,orderId);
+orderId ??= state.order_id;
 assert(!state.completed,'Completed run must not be replayed');
 const attempt=Date.now().toString();
 state.attempts??=[];
 state.attempts.push({id:attempt,source:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),started_at:new Date().toISOString()});
 const save=()=>writeFile(statePath,JSON.stringify(state,null,2));
 async function done(name,detail={}){state.checks.push({name,...detail});await save();}
-async function request(role,path,{body,version,allowed=[200]}={}){
+async function request(role,path,{body,version,allowed=[200],key,account=false}={}){
  const u=access.accounts[role];assert(u,role);
- const r=await fetch(access.base_url+path,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+u.bearer_token,'X-Acting-Party':u.party_id,...body===undefined?{}:{'Content-Type':'application/json','Idempotency-Key':randomUUID()},...version?{'If-Match':'"'+version+'"'}:{}},...body===undefined?{}:{body:JSON.stringify(body)}});
+ const r=await fetch(access.base_url+path,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+u.bearer_token,...account?{}:{'X-Acting-Party':u.party_id},...body===undefined?{}:{'Content-Type':'application/json','Idempotency-Key':key||randomUUID()},...version?{'If-Match':'"'+version+'"'}:{}},...body===undefined?{}:{body:JSON.stringify(body)}});
  const bytes=Buffer.from(await r.arrayBuffer());let value;try{value=JSON.parse(bytes);}catch{}
  state.requests.push({source:'api-observation-or-simulator',role,path,status:r.status,method:body===undefined?'GET':'POST'});await save();
  assert(allowed.includes(r.status),`${path}: ${r.status} ${value?.error?.code}`);return {status:r.status,data:value?.data,bytes};
@@ -50,6 +55,29 @@ async function seek(p,loc){for(let n=0;n<45;n++){const b=await loc.count()?await
 async function post(p,path,click,allowed=[200]){const pending=p.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname==='/api/v1'+path);await click();const r=await pending,j=await r.json();assert(allowed.includes(r.status()),`${path}: ${r.status()} ${j.error?.code}`);return {status:r.status(),data:j.data};}
 let phase='read-original';
 try{
+ if(!orderId){
+  phase='review-new-listing';
+  const reviewRoute=`/stock/listings/${listingId}/reviews`;
+  state.listing_reviews??={};
+  let listing=(await request('stock_seller',`/stock/listings/${listingId}`)).data;
+  for(const channel of process.env.QA18_PENDING_LISTING_ID?['RIGHTS','CONTENT']:[]){
+   const verification=channel==='RIGHTS'
+    ? {rights_verified:true,all_people_authorized:true,seller_qualified:true,source_sha256:listing.data.files.full_sha256}
+    : {content_verified:true,preview_watermark_verified:true,ai_labels_verified:true,source_sha256:listing.data.files.full_sha256};
+   const review=state.listing_reviews[channel]??={key:randomUUID(),version:listing.object_version,body:{channel,decision:'APPROVED',reason:'S1 synthetic independent listing review',verification}};
+   await save();
+   listing=(await request('stock_reviewer',reviewRoute,{...review,account:true})).data;
+   await done('independent-listing-review-'+channel,{listing_id:listing.id,status:listing.current_status});
+  }
+  if(!process.env.QA18_PENDING_LISTING_ID) assert.equal(listing.current_status,'LISTED');
+  phase='app-checkout-current-offer';
+  const shopper=await app('/stock/video?listingId='+listingId);
+  const consent=shopper.getByRole('checkbox',{name:'我已阅读本版价格、许可用途、地域、期间与售后约定',exact:true});
+  await seek(shopper,consent);await consent.click();
+  const buy=shopper.getByRole('button',{name:'立即购买',exact:true});await seek(shopper,buy);
+  const ordered=await post(shopper,'/stock/checkout',async()=>{await buy.click();await shopper.getByRole('button',{name:'确认办理',exact:true}).click();});
+  orderId=ordered.data.id;state.order_id=orderId;await done('app-checkout-reviewed-original-listing',{listing_id:listingId,order_id:orderId});await shopper.close();
+ }
  const order=(await request('stock_buyer','/trade/records/'+orderId)).data;assert.equal(order.id,orderId);
  if(!state.contract_sha256){state.contract_sha256=sha(JSON.stringify(order.data.contract));state.amount_minor=order.data.quote.total_minor;await save();}
  const buyer=await web('stock_buyer','/trade/orders/'+orderId);
