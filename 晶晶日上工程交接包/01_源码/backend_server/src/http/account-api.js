@@ -10,7 +10,7 @@ const {createSupplyRouter}=require('./supply-routes');
 const {createLicensingRouter}=require('./licensing-routes');
 const {createOperationsRouter,mysqlReady}=require('./operations');
 const {error,shape,ref,id,version}=require('../modules/party/policy');
-function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory,tradeEnv=supplyEnv,tradeProvidersFactory,productionProviderFactory,artistIdentityProviderFactory}) {
+function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],governanceEnvironment='SANDBOX',governanceBindings={},supplyEnv={},supplyStorageFactory,tradeEnv=supplyEnv,tradeProvidersFactory,productionProviderFactory,artistIdentityProviderFactory,sandboxSigning}) {
  const auth=createAuthRepository(db,{secret,sms,settings:authSettings});
  const principals=new WeakMap();
  const party=createPartyRepository(db,{resolvePrincipal:async req=>principals.get(req)||null});
@@ -158,6 +158,30 @@ function createAccountApi({db,secret,sms,authSettings={},allowedOrigins=[],gover
   if(!data)throw error('RULE_NOT_FOUND',404);
   contentReply(req,res,data);
  }));
+ if(governanceEnvironment==='SANDBOX' && sandboxSigning?.belongsTo(db)) {
+  const signingPath='/api/v1/testing/esign/:snapshot_id';
+  const signingScope=req=>{
+   if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress))throw error('NOT_FOUND',404);
+   return {snapshot_id:id(req.params.snapshot_id),party_id:contentParty(req)};
+  };
+  app.get(signingPath,wrap(async(req,res)=>{
+   shape(req.query,[]);
+   reply(req,res,await sandboxSigning.read(governance,req,signingScope(req)));
+  }));
+  app.post(signingPath,wrap(async(req,res)=>{
+   shape(req.query,[]);shape(req.body,['snapshot_sha256']);
+   try {
+    reply(req,res,await sandboxSigning.start(governance,req,signingScope(req),req.body.snapshot_sha256,key(req)));
+   } catch(e) {
+    if(e.code!=='PROVIDER_OUTCOME_UNKNOWN')throw e;
+    res.status(503).json({meta:meta(req),error:{code:e.code,message:'模拟回执结果未知，请读取原记录再核对',retryable:true,details:[]}});
+   }
+  }));
+  app.post(signingPath+'/reconcile',wrap(async(req,res)=>{
+   shape(req.query,[]);shape(req.body||{},[]);
+   reply(req,res,await sandboxSigning.reconcile(governance,req,signingScope(req)));
+  }));
+ }
  app.use('/api/v1',require('./customization-routes').createCustomizationRouter({db,resolvePrincipal:async req=>principals.get(req)||null,secret,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/media',require('./media-routes').createMediaRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));
  app.use('/api/v1/privacy',require('./privacy-routes').createPrivacyRouter({db,resolvePrincipal:async req=>principals.get(req)||null,env:supplyEnv,storageFactory:supplyStorageFactory}));

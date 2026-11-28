@@ -97,3 +97,44 @@ export async function readServiceReadiness(identity: ReaderIdentity, snapshotId:
   const result = await request<unknown>(`/contract-snapshots/${encodeURIComponent(snapshotId)}/business-readiness?${query}`, options(identity, signal))
   return verified(result, identity, (data): data is ServiceReadiness => readiness(data) && data.action === action)
 }
+
+export const sandboxSigningLabels = {
+  PENDING: '已受理，等待模拟回执',
+  OUTCOME_UNKNOWN: '结果待核对',
+  SIMULATED_SUCCESS: '模拟签署成功',
+  SIMULATED_FAILURE: '模拟签署失败',
+} as const
+type SigningStatus = keyof typeof sandboxSigningLabels
+type SandboxSigning = {
+  snapshot_id: string
+  snapshot_sha256: string
+  simulation: true
+  receipt: {id: string; current_status: SigningStatus; object_version: number; receipt_ref: string | null} | null
+}
+
+export function designatedSandboxSigner(snapshot: SnapshotContent, accountId: string, partyId: string) {
+  const fixture = snapshot.commitments.sandbox_signing
+  return object(fixture) && fixture.signer_account_id === accountId && fixture.signer_party_id === partyId
+}
+
+export async function sandboxSigningRequest(identity: ReaderIdentity, snapshot: SnapshotContent,
+  action: 'read' | 'start' | 'reconcile', idempotencyKey?: string, signal?: AbortSignal) {
+  const path = `/testing/esign/${encodeURIComponent(snapshot.id)}`
+  const result = await request<unknown>(path + (action === 'reconcile' ? '/reconcile' : ''), {
+    ...options(identity, signal), method: action === 'read' ? 'GET' : 'POST', idempotencyKey,
+    body: action === 'start' ? {snapshot_sha256:snapshot.content_sha256} : action === 'reconcile' ? {} : undefined,
+  })
+  return verified(result, identity, (data): data is SandboxSigning => {
+    if (!object(data) || !exact(data, ['snapshot_id','snapshot_sha256','simulation','receipt']) ||
+        data.snapshot_id !== snapshot.id || data.snapshot_sha256 !== snapshot.content_sha256 || data.simulation !== true) return false
+    if (data.receipt === null) return action === 'read'
+    const receipt = data.receipt
+    if (!object(receipt) || !exact(receipt, ['id','current_status','object_version','receipt_ref']) ||
+        typeof receipt.id !== 'string' || !isContractId(receipt.id) ||
+        typeof receipt.current_status !== 'string' || !Object.hasOwn(sandboxSigningLabels, receipt.current_status) ||
+        typeof receipt.object_version !== 'number' || !Number.isSafeInteger(receipt.object_version) ||
+        receipt.object_version < 1) return false
+    const terminal = receipt.current_status === 'SIMULATED_SUCCESS' || receipt.current_status === 'SIMULATED_FAILURE'
+    return receipt.receipt_ref === (terminal ? 'sim-esign:'+receipt.id : null)
+  })
+}

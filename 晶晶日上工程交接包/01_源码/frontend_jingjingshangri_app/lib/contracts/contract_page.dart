@@ -9,6 +9,7 @@ import 'contract_api.dart';
 import 'contract_reader.dart';
 import 'contract_text.dart';
 import 'contract_signing_boundary.dart';
+import 'sandbox_signing_panel.dart';
 
 class ContractPage extends StatefulWidget {
   const ContractPage({super.key, this.snapshotId});
@@ -305,6 +306,16 @@ class _ContractPageState extends State<ContractPage> {
                                           ],
                                         ],
                                         icon: Icons.history),
+                                    if (enableSandboxSigning &&
+                                        designatedSandboxSigner(
+                                            snapshot, reader.session))
+                                      SandboxSigningPanel(
+                                        key: ValueKey([
+                                          snapshot['id'],
+                                          reader.session.epoch
+                                        ].join(':')),
+                                        snapshot: snapshot,
+                                      ),
                                     _card(
                                         '相关服务是否可用',
                                         [
