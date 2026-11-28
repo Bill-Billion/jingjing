@@ -1,0 +1,60 @@
+{
+  "run_id": "pm04-g1-discovery-20261125-reg01",
+  "environment": "qa18-f071-local-mysql33316",
+  "owner": "chengcongcong222",
+  "events": [
+    {
+      "criterion": "TASK-01", "surface": "api", "case": "normal", "outcome": "PASS", "exit_code": 0,
+      "evidence": "docs/testing/evidence/pm04-g1-discovery-20261125-01/G01/checks.jsonl",
+      "assertion": "stock.integration:17,18,47,197; auditions.integration:27,39",
+      "command": "node scripts/qa18-backend-discovery.cjs G01 pm04-g1-discovery-20261125-01",
+      "note": "首次无旧商品/试镜方案的合法个人供给方读取已批准规则及本人同意，实际HTTP提交待审、独审后公开可售/可约。只登记normal；错域及全部反例仍未完整核查，不登记reverse或App/Web。测试前置含仓库合成准备，不代表真人认证或正式收费。"
+    },
+    {
+      "criterion": "TASK-05", "surface": "api", "case": "normal", "outcome": "FAIL", "exit_code": 1,
+      "evidence": "docs/testing/evidence/pm04-g1-discovery-20261125-01/G05/backend.tap",
+      "assertion": "stock-media.integration:45 actual duration/preview cover; :71 processed labels",
+      "command": "node scripts/qa18-backend-discovery.cjs G05 pm04-g1-discovery-20261125-01",
+      "defect": "QA18-ENV-002",
+      "note": "真实合成视频正常媒体请求应返回200，实际503/MEDIA_PROCESS_NOT_CONFIGURED；首轮漏设FFprobe和字体，记录执行失败但不归为产品业务缺陷。"
+    },
+    {
+      "criterion": "TASK-05", "surface": "api", "case": "reverse", "outcome": "FAIL", "exit_code": 1,
+      "evidence": "docs/testing/evidence/pm04-g1-discovery-20261125-01/G05/backend.tap",
+      "assertion": "stock-media.integration:61 damaged bytes cache; :67 unplayable file; :97 withdrawal",
+      "command": "node scripts/qa18-backend-discovery.cjs G05 pm04-g1-discovery-20261125-01",
+      "defect": "QA18-ENV-002",
+      "note": "缺媒体工具导致反例的有效文件前置503，不能证明缓存/撤权路径已通过；保留失败，不删弱断言。"
+    },
+    {
+      "criterion": "TASK-05", "surface": "api", "case": "normal", "outcome": "PASS", "exit_code": 0,
+      "evidence": "docs/testing/evidence/pm04-g1-discovery-20261125-01/G05-env-retest/checks.jsonl",
+      "assertion": "stock-media.integration:45,71; artists.integration:84,151,166,179,208",
+      "command": "node scripts/qa18-backend-discovery.cjs G05 pm04-g1-discovery-20261125-env-retest",
+      "resolution": "只设置JX_TEST_FFPROBE与JX_TEST_FONT，业务源码/原测试不变；独立批号46项通过。原始FAIL不覆盖，完整回归仍待后续。",
+      "note": "实际视频时长、仅预览生成的封面和标记、审核版本，艺人肖像/声音各自授权、原材料和受控读取通过。合成前置和部分仓库直接调用明列，真实HTTP媒体/文件响应留证；不代表App/Web或现实人物授权。"
+    },
+    {
+      "criterion": "TASK-05", "surface": "api", "case": "reverse", "outcome": "PASS", "exit_code": 0,
+      "evidence": "docs/testing/evidence/pm04-g1-discovery-20261125-01/G05-env-retest/checks.jsonl",
+      "assertion": "stock-media.integration:61,67,97; artists.integration:154,160,166,171,185,265",
+      "command": "node scripts/qa18-backend-discovery.cjs G05 pm04-g1-discovery-20261125-env-retest",
+      "resolution": "补FFprobe/字体后同原反例实际通过，未删除缺工具拒绝场景或修改HTTP状态预期。",
+      "note": "损坏文件不复用旧封面、无工具不虚报成功、撤回/过期阻断，换授权不复活旧版本，声音不复用脸部授权、传输中撤权阻断字节、篡改拒绝均通过。仅后端API/仓库范围。"
+    },
+    {
+      "criterion": "TASK-18", "surface": "operations", "case": "candidate_ci", "outcome": "PASS", "exit_code": 0,
+      "evidence": "docs/testing/evidence/pm04-g1-discovery-20261125-01/CI_TERMINAL.json",
+      "assertion": "PR41 f0710079 runs45537704271/45537704257 four jobs completed success",
+      "command": "GitHub fetch_commit_workflow_runs(f0710079) + fetch_workflow_run_jobs(45537704271,45537704257)",
+      "note": "准确冻结输入f071的4个候选CI作业全部成功；exit_code0表示本次只读终态核验完成，不虚构远端进程退出码。此结果不继承给后续QA工具提交或新回归候选。"
+    },
+    {
+      "criterion": "TASK-18", "surface": "operations", "case": "backup_restore", "outcome": "PASS", "exit_code": 0,
+      "evidence": "docs/testing/evidence/pm04-g1-discovery-20261125-01/G18/backup-drill.json",
+      "assertion": "9 actual isolated backup/restore checks: all191tables/131assets, original unchanged, same-order bytes/feedback, restored stopped",
+      "command": "node scripts/client-testing/business-backup-drill.cjs jx_test_explore_10468_320d9a5aa274 .local/qa18/pm04-g1-discovery-20261125-01/G18/backup-drill.json",
+      "note": "实际加密备份恢复到新隔离库，191表与131文件逐项一致；原订单可读取，反馈引用同一订单；原库保留，恢复服务停机并清除凭据。只登记backup_restore，不把同版恢复当代码回滚、到期实测或两端构建。"
+    }
+  ]
+}

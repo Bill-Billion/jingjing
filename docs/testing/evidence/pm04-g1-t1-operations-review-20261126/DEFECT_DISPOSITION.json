@@ -1,0 +1,84 @@
+{
+  "defect": {
+    "bug_id": "QA18-TEST-157",
+    "discovered_at": "2026-11-26T11:21:56.568Z",
+    "group_ids": "G10/G17",
+    "acceptance_ids": "TASK-10 / ACC-DEL-12.02",
+    "e2e_ids": "",
+    "severity": "P2",
+    "kind": "TEST_ASSERTION",
+    "owner": "chengcongcong222",
+    "status": "RETARGET_PASS",
+    "version": "93a47ae376e3f6a73c377a384563a203c5ac1840",
+    "environment": "disposable localhost33316 / jx_test_conversation_video_04859fffb64dc901",
+    "actual_record_id": "",
+    "role": "",
+    "original_key_sha256": "",
+    "expected": "消息通知record_id保存原消息；target.domain=GIG_ORDER及target.record_id保存原订单。截止点后消息保持未读。",
+    "observed": "脚本错误地拿target.record_id匹配消息ID，计数3→清2→余1及投稿来源已通过，但该字段断言失败；3子项通过、1子项与父项失败。",
+    "request_endpoint": "",
+    "response_code": "",
+    "reproduction": "node --test test/conversation-video.integration.test.cjs",
+    "before_proof_path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-before-01/backend.tap",
+    "before_sha256": "b50a5e7033870fb6683705bd7e6d6190c3d37a463e53f08a29923ad600be9174",
+    "root_cause": "测试混淆通知源记录与页面跳转目标；既有repository及真实HTTP保持消息ID和原订单ID分离。还须修正同类他人/隐藏消息过滤断言，避免以错误字段得出空结果。",
+    "fix_commit": "aed544d8b13cce6d2a236b7606bfc1f322cc76ce",
+    "target_retest_path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-fixed-02/summary.json",
+    "target_retest_result": "4业务子项+父项5PASS；31响应API0.31.82-rc.1契约PASS。并验record_id消息及target原订单，修正他人/隐藏过滤防空匹配。无产品改动。",
+    "regression_run_id": "",
+    "reviewer": ""
+  },
+  "attempts": [
+    {
+      "source": "93a47ae376e3f6a73c377a384563a203c5ac1840",
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-before-01/summary.json",
+        "sha256": "515aaa819e21ac68479ded71a5002ab5f4e118d26a4421d93b625d01fd60ab1b"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-before-01/backend.tap",
+          "sha256": "b50a5e7033870fb6683705bd7e6d6190c3d37a463e53f08a29923ad600be9174"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-before-01/checks.jsonl",
+          "sha256": "ed8465ff28230d50ae357f987cb6f33d45e13d4a21123fe970acd3a4f1f8a77e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-before-01/source-manifest.json",
+          "sha256": "3087ce36d8d08d4fe83bb9ba07aaee8e36ddaa33768b53c896075260ed108781"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-before-01/HTTP_INDEX.json",
+          "sha256": "fed221e40dac98164e66bbd117e566d151bb0f7227ba308e9d42a04d538fae72"
+        }
+      ]
+    },
+    {
+      "source": "aed544d8b13cce6d2a236b7606bfc1f322cc76ce",
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-fixed-02/summary.json",
+        "sha256": "03ab46e2edd7e78e55126cbf48dc678d4129bfeac60d0be30494e845b73844ba"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-fixed-02/backend.tap",
+          "sha256": "909155fb044b55ae23a3a51202b0325a701cff1a3afa448553db6bce1ef52531"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-fixed-02/checks.jsonl",
+          "sha256": "0225ac6bb8ccf5ce0d915ebb8cb59c8aef4b17422e926bdd13afd9696fdbbf79"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-fixed-02/source-manifest.json",
+          "sha256": "f86bc51be8273e4b1d242ebbe75906d06aa490f416ec3ce87d355a2f7a356896"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-operations-review-20261126/video-fixed-02/HTTP_INDEX.json",
+          "sha256": "51853134a3aceba1974422b50404dd1be36d63503fef5f8d8a231eb3266d0009"
+        }
+      ]
+    }
+  ],
+  "product_defects_confirmed": 0
+}

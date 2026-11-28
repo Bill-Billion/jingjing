@@ -1,0 +1,167 @@
+TAP version 13
+# Subtest: one wallet separates supplier payables, original cash lots, points and used coupons
+    # Subtest: same personal account has a reviewed supplier payable and a separately opened consumer wallet
+    ok 1 - same personal account has a reviewed supplier payable and a separately opened consumer wallet
+      ---
+      duration_ms: 535.672
+      type: 'test'
+      ...
+    # Subtest: reviewed 6000-point coupon and 12000-fen payable do not fund a 13500-fen cash payment
+    not ok 2 - reviewed 6000-point coupon and 12000-fen payable do not fund a 13500-fen cash payment
+      ---
+      duration_ms: 245.3025
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-source-separation.integration.test.cjs:18:28'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly deep-equal:
+        + actual - expected
+        
+          Comparison {
+        +   code: 'PAYMENT_MERCHANT_MISMATCH'
+        -   code: 'WALLET_BALANCE_INSUFFICIENT'
+          }
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected:
+        code: 'WALLET_BALANCE_INSUFFICIENT'
+      actual:
+      error: 'PAYMENT_MERCHANT_MISMATCH'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\src\modules\trade\repository.js:90:1605
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async command (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\src\modules\trade\repository.js:33:511)
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async waitForActual (node:assert:644:5)
+        async Function.rejects (node:assert:767:25)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:79:4
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:18:53)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      operator: 'rejects'
+      stack: |-
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:79:4
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:18:53)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:70:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: one payment consumes exactly two original recharge lots and uses its coupon only on verified receipt
+    not ok 3 - one payment consumes exactly two original recharge lots and uses its coupon only on verified receipt
+      ---
+      duration_ms: 20.7438
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-source-separation.integration.test.cjs:18:28'
+      failureType: 'testCodeFailure'
+      error: 'PAYMENT_MERCHANT_MISMATCH'
+      code: 'PAYMENT_MERCHANT_MISMATCH'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\src\modules\trade\repository.js:90:1605
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async command (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\src\modules\trade\repository.js:33:511)
+        async Object.withTransaction (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\src\infrastructure\database\index.js:52:24)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:85:45
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:18:53)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:84:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      ...
+    # Subtest: partial and remaining order refunds restore only original lots, never cash out the coupon or add supplier payable
+    not ok 4 - partial and remaining order refunds restore only original lots, never cash out the coupon or add supplier payable
+      ---
+      duration_ms: 0.7077
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-source-separation.integration.test.cjs:18:28'
+      failureType: 'testCodeFailure'
+      error: "Cannot read properties of undefined (reading 'id')"
+      code: 'ERR_TEST_FAILURE'
+      name: 'TypeError'
+      stack: |-
+        D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:94:70
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:18:59)
+        Test.runInAsyncScope (node:async_hooks:214:14)
+        Test.run (node:internal/test_runner/test:1047:25)
+        Test.start (node:internal/test_runner/test:944:17)
+        TestContext.test (node:internal/test_runner/test:373:20)
+        check (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:18:28)
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:91:9)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+      ...
+    # Subtest: withdrawal stays disabled while an independently approved mistaken recharge refunds the restored original source
+    not ok 5 - withdrawal stays disabled while an independently approved mistaken recharge refunds the restored original source
+      ---
+      duration_ms: 101.0066
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-source-separation.integration.test.cjs:18:28'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        8000 !== 17000
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 17000
+      actual: 8000
+      operator: 'strictEqual'
+      stack: |-
+        snapshot (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:49:11)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:107:303
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:18:53)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:104:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: another account cannot read any of the four private asset classes or forge balances
+    not ok 6 - another account cannot read any of the four private asset classes or forge balances
+      ---
+      duration_ms: 58.9472
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-source-separation.integration.test.cjs:18:28'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        8000 !== 17000
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 17000
+      actual: 8000
+      operator: 'strictEqual'
+      stack: |-
+        snapshot (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:49:11)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:117:4
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:18:53)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\wallet-source-separation.integration.test.cjs:111:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..6
+not ok 1 - one wallet separates supplier payables, original cash lots, points and used coupons
+  ---
+  duration_ms: 8795.149
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\wallet-source-separation.integration.test.cjs:11:1'
+  failureType: 'subtestsFailed'
+  error: '5 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 7
+# suites 0
+# pass 1
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9010.8536

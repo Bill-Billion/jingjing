@@ -105,6 +105,18 @@ try{
  test('业务返回校验账号、主体和有界数据，错误元信息不能显示为成功',async()=>{globalThis.fetch=async()=>response({id:id(3)},id(99));await assert.rejects(api.readBusiness('/stock/purchases',{token:'t',accountId:id(1),actingParty:id(2)}),e=>e.code==='UNEXPECTED_RESPONSE_SHAPE');assert.throws(()=>api.businessData(JSON.parse('{"constructor":{"x":1}}')));assert.throws(()=>api.businessData(null));assert.deepEqual(api.businessData([{id:id(1)}]).items,[{id:id(1)}])})
  test('未知请求先核对再用原键恢复，修改输入不能改变已发原请求',async()=>{storage.clear();const {ui,scope}=state(),calls=[];let n=0;globalThis.fetch=async(url,o)=>{calls.push({url,o});return o.method==='POST'?(++n===1?failure(503,'NOT_ENABLED'):response({id:id(3),object_version:2})):response({id:id(3),object_version:1})};const body={reason:'original'},command={path:'/stock/purchases/'+id(3)+'/cases',body,method:'POST',party:'required',version:1,label:'synthetic',readPath:'/stock/purchases/'+id(3),readParty:'required'};await ui.execute(command);body.reason='changed';assert(ui.pending.value);await ui.execute();assert.equal(n,1);await ui.check('/wrong','required');await ui.execute();const writes=calls.filter(c=>c.o.method==='POST');assert.equal(writes[0].o.body,writes[1].o.body);assert.equal(writes[0].o.headers['Idempotency-Key'],writes[1].o.headers['Idempotency-Key']);assert.equal(writes[1].o.headers['If-Match'],'"1"');assert(calls.some(c=>c.url==='/api/v1/stock/purchases/'+id(3)&&c.o.method==='GET'));scope.stop()})
  test('关联主体取原项目已确认候选的owner，不拿候选编号冒充主体；本人执行使用实际账号或获准副本',async()=>{const rows={items:[{id:id(9),kind:'CANDIDATE',owner_party_id:id(7),current_status:'CONFIRMED',object_version:3,data:{}}]};assert.equal(references.referenceOptions(rows,'party_id')[0].value,id(7));assert.equal(references.sourceFor('party_id',{project_id:id(4)},'participation',id(2)).path,'/projects/projects/'+id(4)+'/records?kind=CANDIDATE');assert.equal(references.sourceFor('target_id',{request_id:id(5),action:'FILE_ERASURE'},'privacy',id(2)).path,'/privacy/requests/'+id(5)+'/file-options?kind=FILE');const {vm}=await render('/privacy/requests/'+id(5),{id:id(5),object_version:1,account_id:id(1),request:{type:'CORRECT',scopes:['PROFILE'],details:'synthetic'}});vm.draft={action:'PROFILE_CORRECTION'};await vm.loadChoices({field:model.id('target_id','本人账号'),context:vm.draft,key:'execution-target'});assert(vm.refOptions['execution-target'].some(o=>o.value===id(1)&&o.label.includes('本人账号')));vm.chosenReferences=[{id:id(9),data:{private:'synthetic'}}];vm.reset();assert.equal(vm.chosenReferences.length,0)})
+ test('归档和冻结的试镜会话保持可读，只有服务端确认开启时提供发送入口',async()=>{
+  for(const state of ['OPEN','FROZEN','ARCHIVED',null]){
+   const {vm,html}=await render('/auditions/messages/'+id(10),
+    {conversation_status:state,items:[],next_cursor:null}, vm=>{vm.operationKey='message'})
+   assert.equal(vm.actions.some(operation=>operation.key==='message'),state==='OPEN')
+   assert.equal(vm.actionUnavailable,state!=='OPEN')
+   assert(vm.actions.some(operation=>operation.key==='read'))
+   assert.equal(html.includes('data-testid="business-message"'),state==='OPEN')
+   if(state==='ARCHIVED')assert.ok(html.includes('会话已归档'))
+   if(state==='FROZEN')assert.ok(html.includes('会话已冻结'))
+  }
+ })
  test('联系卡仅在自身合法读取后取同单会话版本；失权不借其他GET，冻结时不显示发送和开放联系卡动作',async()=>{storage.clear();const {vm}=await render('/conversations/contacts/'+id(10)),calls=[];vm.reset();globalThis.fetch=async(url,o)=>{calls.push(url);return response(url.endsWith('/contacts')?{order_id:id(10),status:'OPEN',contacts:{}}:{order_id:id(10),status:'OPEN',object_version:7,items:[]})};await vm.load();assert.equal(vm.currentVersion,7);assert.equal(vm.currentId,id(10));assert.deepEqual(calls,['/api/v1/gigs/orders/'+id(10)+'/conversation/contacts','/api/v1/gigs/orders/'+id(10)+'/conversation/messages']);calls.length=0;globalThis.fetch=async(url)=>{calls.push(url);return failure(403,'FORBIDDEN')};await vm.load();assert.equal(calls.length,1);assert.equal(vm.details,null);const m=await render('/conversations/messages/'+id(10),{order_id:id(10),status:'FROZEN',object_version:8,items:[]});assert(!m.vm.actions.some(a=>a.key==='message'));const c=await render('/conversations/contacts/'+id(10),{order_id:id(10),status:'FROZEN',object_version:8,contacts:{}});assert(!c.vm.actions.some(a=>a.key==='contact'));vm.ui.data.value={order_id:id(10),private_story:'old'};vm.reset();assert.equal(vm.ui.data.value,null)})
  test('原请求恢复存储绑定账号主体会话，不额外保存token',async()=>{storage.clear();const {ui,scope}=state();globalThis.fetch=async()=>failure(503,'UNAVAILABLE');await ui.execute({path:'/redemption/draws',body:{count:1},method:'POST',party:'required',label:'synthetic'});assert(![...storage.values()].join('').includes('synthetic-secret-token'));scope.stop();const next=state();assert(next.ui.pending.value);next.context.partyId=id(99);assert.equal(next.ui.pending.value,null);assert.equal(storage.size,0);next.scope.stop()})
  test('412保留输入并要求重新核对，独立岗位请求不带主体头',async()=>{storage.clear();const {ui,scope}=state(),calls=[];globalThis.fetch=async(url,o)=>{calls.push(o);return failure(412,'VERSION_MISMATCH')};const body={decision:'REJECT',reason:'original'};await ui.execute({path:'/stock/listings/'+id(3)+'/reviews',body,method:'POST',party:'none',version:1,label:'synthetic'});assert.equal(ui.conflict.value,true);assert.equal(ui.confirmed.value,false);assert.deepEqual(body,{decision:'REJECT',reason:'original'});assert.equal(calls[0].headers['X-Acting-Party'],undefined);assert.equal(ui.pending.value,null);scope.stop()})
@@ -262,6 +274,33 @@ try{
    await render(path,null,async vm=>{vm.reset();await vm.load();assert.equal(vm.filters.city,'杭州')})
    assert.equal(urls.length,1);const query=new URL(urls[0],'https://test.invalid').searchParams;assert.equal(query.get('city'),'杭州');assert.equal(query.has('q'),false)
   }}finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
+ })
+ test('试镜城市深链登录后保留原过滤，重复、过长及控制字符不进入登录回跳',async()=>{
+  const target='/auditions/catalog?city='+encodeURIComponent('上海')
+  assert.equal(loginRedirect(target),target)
+  for(const invalid of ['/auditions/catalog?city=','/auditions/catalog?city=上海&city=北京',
+   '/auditions/catalog?city='+('市'.repeat(101)),'/auditions/catalog?city=%0A上海',
+   '/auditions/catalog?city=上海&redirect=https://other.invalid','https://other.invalid'+target]){
+   assert.equal(loginRedirect(invalid),'/workspace')
+  }
+  const city=await server.ssrLoadModule('/src/business/directoryCity.ts')
+  const navigation=await server.ssrLoadModule('/src/business/navigation.ts')
+  city.setDirectoryCity('杭州')
+  navigation.clearBusinessLists()
+  const urls=[]
+  try{
+   await render(target,null,async vm=>{
+    globalThis.fetch=async url=>{urls.push(String(url));return response({items:[],next_cursor:id(7)},null)}
+    vm.reset()
+    await vm.load()
+    assert.equal(vm.filters.city,'上海')
+    assert.equal(vm.localCity,true)
+    assert.equal(city.directoryCity.value,'杭州')
+    assert.equal(new URL(urls.at(-1),'https://test.invalid').searchParams.get('city'),'上海')
+    await vm.useDefaultCity()
+    assert.equal(vm.filters.city,'杭州')
+   })
+  }finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
  })
  test('返回目录保留局部过滤与页码，默认城市改变只重置跟随目录的游标',async()=>{
   const city=await server.ssrLoadModule('/src/business/directoryCity.ts'),navigation=await server.ssrLoadModule('/src/business/navigation.ts')

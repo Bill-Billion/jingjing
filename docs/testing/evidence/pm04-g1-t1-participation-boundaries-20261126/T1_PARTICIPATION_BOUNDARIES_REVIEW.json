@@ -1,0 +1,96 @@
+{
+  "kind": "T1_SCOPED_BROWSER_SUPPLEMENT",
+  "new_business_execution": true,
+  "complete_original_slots": 0,
+  "prior_supplement": {
+    "path": "docs/testing/evidence/pm04-g1-t1-participation-recovery-20261126/T1_PARTICIPATION_RECOVERY_REVIEW.json",
+    "sha256": "65d733d2f7a39caa2c7c1c1aeaf7634d59db51df5a7b0c66acf5ecb9792635f0"
+  },
+  "summary": {
+    "path": "docs/testing/evidence/pm04-g1-t1-participation-boundaries-20261126/EXECUTION_SUMMARY.json",
+    "sha256": "f04f2fa4748cf37ca2df4a57fcdc4ca500cda9862c6d6e4d9df795cf2248982b"
+  },
+  "browser_attempts": [
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-participation-boundaries-20261126/browser-01/RESULT.json",
+      "sha256": "ee38773d74be78b7aad6494efd05999ef1932c1a296945696a48a329fe51f7c3"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-participation-boundaries-20261126/browser-02/RESULT.json",
+      "sha256": "ba6190780f0594f43603260ec963a5072d288f5fd923b9b5749fdc298bcc757c"
+    }
+  ],
+  "preparation": {
+    "path": "docs/testing/evidence/pm04-g1-t1-participation-boundaries-20261126/preparation/PREPARED.json",
+    "sha256": "fc12e75afafbecb6367e48c302981131749ef01f1b8b6be065d0e94fca1857cc"
+  },
+  "census": {
+    "path": "docs/testing/evidence/pm04-g1-t1-participation-boundaries-20261126/POST_BOUNDARIES_CENSUS.json",
+    "sha256": "69de173e564aa7e863ccbaa84e99616468515d38a37fc78601f2ed76b887d870"
+  },
+  "versions": {
+    "backend": "ac24b00b4bef36bac86eb6677aaa1fd4732689a9",
+    "app": "dac064f4a4a7942f059266b20fc128a2544da228",
+    "vue": "c4f12488486eb95cd19068bb84103ad46c00297f",
+    "browser_before": "6ee9e08ee0b62a81fe1624cda39e5067a503cac6",
+    "browser_after": "f85b0b2698c7866259694186cb36805016daca7e",
+    "preparation": "a5b270799e6ada62cb4e25cec710e01ab952cb93",
+    "census": "0491cfcfb6a714fd1a30bfda233ef6c054913217"
+  },
+  "slots": [
+    {
+      "key": "E2E-12|api|recovery",
+      "decision": "PARTIAL",
+      "proven": "两端真实checkout先成功200后丢弃回包，随后演员通过自己的网页实际退出，候选状态CONFIRMED→WITHDRAWN、版本3→4、内容摘要改变；App离页返回、Vue刷新均以原key/body恢复原08834e9a订单200。新的key则409/PARTICIPATION_CAST_CHANGED。",
+      "remaining": "原约定/独审退款/发行收入关键动作尚未完整证明原请求恢复；资格变化后的checkout已完成，不重复补测。"
+    },
+    {
+      "key": "E2E-12|app|reverse",
+      "decision": "PARTIAL",
+      "proven": "未经双方认可的新55元提案经独立审核驳回，没有激活或新建差额订单；退出后两端新key实际被409拒绝，旧约50元及历史钱账保持。",
+      "remaining": "核原退款/发行收入等其余关键拒绝场景；原退出、旧摘要和未确认涨价拒绝已证实，不从单一分支推广为整链。"
+    },
+    {
+      "key": "E2E-12|app|unauthorized",
+      "decision": "PARTIAL",
+      "proven": "两端旧/新演员各自订单200、对方订单404；旧演员原收入200、新演员读旧收入404。Vue有审核岗位但参与本约定的承制方提交真实待审55元提案自审，被403/SELF_REVIEW_FORBIDDEN拒绝；独立审核员能正常驳回。",
+      "remaining": "继续核原独审退款、发行凭据与私片等所需端边界；本批旧新演员私账及Vue自审边界已完成，不用API证据替代其余页面义务。"
+    },
+    {
+      "key": "E2E-12|app|duplicate",
+      "decision": "PARTIAL",
+      "proven": "同一原checkout在实际角色资格改变后原key/body仍返回原订单；两端均未重复创建订单。全库交易、退款、资金流水及收入数据逐表保持不变。",
+      "remaining": "核原约定、独审退款、发行收入关键动作的原重复断言；checkout在资格变化后的重复已证实，不重复创建同原单。"
+    },
+    {
+      "key": "E2E-12|app|recovery",
+      "decision": "PARTIAL",
+      "proven": "两端真实checkout先成功200后丢弃回包，随后演员通过自己的网页实际退出，候选状态CONFIRMED→WITHDRAWN、版本3→4、内容摘要改变；App离页返回、Vue刷新均以原key/body恢复原08834e9a订单200。新的key则409/PARTICIPATION_CAST_CHANGED。",
+      "remaining": "原约定/独审退款/发行收入关键动作尚未完整证明原请求恢复；资格变化后的checkout已完成，不重复补测。"
+    },
+    {
+      "key": "E2E-12|web|reverse",
+      "decision": "PARTIAL",
+      "proven": "未经双方认可的新55元提案经独立审核驳回，没有激活或新建差额订单；退出后两端新key实际被409拒绝，旧约50元及历史钱账保持。",
+      "remaining": "核原退款/发行收入等其余关键拒绝场景；原退出、旧摘要和未确认涨价拒绝已证实，不从单一分支推广为整链。"
+    },
+    {
+      "key": "E2E-12|web|unauthorized",
+      "decision": "PARTIAL",
+      "proven": "两端旧/新演员各自订单200、对方订单404；旧演员原收入200、新演员读旧收入404。Vue有审核岗位但参与本约定的承制方提交真实待审55元提案自审，被403/SELF_REVIEW_FORBIDDEN拒绝；独立审核员能正常驳回。",
+      "remaining": "继续核原独审退款、发行凭据与私片等所需端边界；本批旧新演员私账及Vue自审边界已完成，不用API证据替代其余页面义务。"
+    },
+    {
+      "key": "E2E-12|web|duplicate",
+      "decision": "PARTIAL",
+      "proven": "同一原checkout在实际角色资格改变后原key/body仍返回原订单；两端均未重复创建订单。全库交易、退款、资金流水及收入数据逐表保持不变。",
+      "remaining": "核原约定、独审退款、发行收入关键动作的原重复断言；checkout在资格变化后的重复已证实，不重复创建同原单。"
+    },
+    {
+      "key": "E2E-12|web|recovery",
+      "decision": "PARTIAL",
+      "proven": "两端真实checkout先成功200后丢弃回包，随后演员通过自己的网页实际退出，候选状态CONFIRMED→WITHDRAWN、版本3→4、内容摘要改变；App离页返回、Vue刷新均以原key/body恢复原08834e9a订单200。新的key则409/PARTICIPATION_CAST_CHANGED。",
+      "remaining": "原约定/独审退款/发行收入关键动作尚未完整证明原请求恢复；资格变化后的checkout已完成，不重复补测。"
+    }
+  ]
+}

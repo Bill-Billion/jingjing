@@ -1,0 +1,17 @@
+{
+  "browser": "V5_ACCESS_FILE=<controlled QA29 access>; QA18_OUTPUT_DIR=<QA32 browser>; CHROME_PATH=<Edge>; node scripts/qa18-participation-amendment-browser.mjs",
+  "census": "JX_MYSQL_TEST_ENV_FILE=<controlled localhost33316>; node scripts/qa18-participation-amendment-record-check.cjs <QA29 environment> <QA32 output>",
+  "contract": "validate_contract.validate([amendment-live-http.json])",
+  "backup_environment": {
+    "JX_MYSQL_TEST_ENV_FILE": "<controlled localhost33316 file>",
+    "JX_MYSQLDUMP_EXE": "<existing MySQL8.4.11 mysqldump.exe absolute path>",
+    "JX_MYSQL_EXE": "<existing MySQL8.4.11 mysql.exe absolute path>"
+  },
+  "backup_commands": [
+    "node scripts/qa18-environment-assets.cjs <QA29 environment>",
+    "node scripts/qa18-batch-backup.cjs backupEnvironment <QA29 environment>",
+    "node scripts/qa18-batch-backup.cjs verify <returned archive filename>",
+    "node scripts/qa18-batch-backup.cjs restore <same archive filename>"
+  ],
+  "continuation_note": "Completed driver rejects rerun. Current new125 agreement/difference25 already paid; continue decrease/recast from current agreement, not old superseded one."
+}

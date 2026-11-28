@@ -6,7 +6,8 @@ import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
 const root=process.cwd(),f=JSON.parse(await readFile(process.env.V5_ACCESS_FILE,'utf8'));
 assert(f.synthetic_only&&new URL(f.base_url).hostname==='127.0.0.1');
-const out=resolve('.local/client-complete-first-audition-browser');await mkdir(out,{recursive:true});
+const out=resolve(process.env.QA18_OUTPUT_DIR||'.local/client-complete-first-audition-browser');
+if(process.env.QA18_OUTPUT_DIR){assert(out.startsWith(join(root,'.local')+'/')||out.startsWith(join(root,'.local')+'\\'));await mkdir(out);}else await mkdir(out,{recursive:true});
 const {chromium}=createRequire(join(root,'晶晶日上工程交接包/01_源码/frontend_ops_workspace/package.json'))('playwright-core');
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH,headless:true});
 const checks=[],contexts=[];let phase='setup';
@@ -16,6 +17,11 @@ async function app(role,path){const c=await browser.newContext({viewport:{width:
 async function seek(p,loc){for(let n=0;n<45;n++){const box=await loc.count()?await loc.boundingBox():null;if(box&&box.y>=55&&box.y+box.height<p.viewportSize().height-8)return;await p.mouse.move(180,400);await p.mouse.wheel(0,box?.y<55?-350:350);await p.waitForTimeout(100);}throw Error('不能到达控件 '+phase);}
 try {
  const scene=f.scenarios.first_audition;
+ let offer;
+ if(process.env.QA18_AUDITION_OFFER_ID){
+  const id=process.env.QA18_AUDITION_OFFER_ID;assert.match(id,/^[a-f0-9-]{36}$/);
+  offer=await api('first_auditions_seller','/auditions/records/'+id);assert.equal(offer.id,id);assert.equal(offer.current_status,'PUBLISHED');checks.push('只读恢复同一已发布方案，不重新创建或审核');
+ }else{
  const before=await api('first_auditions_seller','/auditions/records?kind=OFFER');assert.equal(before.items.length,0);
  phase='web-first-offer';const seller=await web('first_auditions_seller','/auditions/offers');
  await seller.locator('.business-actions').getByRole('button',{name:'填写试镜方案',exact:true}).click();
@@ -32,9 +38,10 @@ try {
  const localDate=(ms)=>{const d=new Date(Date.now()+ms);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16);};
  await dates.nth(0).fill(localDate(86400000));await dates.nth(1).fill(localDate(90000000));
  await seller.getByLabel('已阅读当前记录与本次约定，明确提交上述办理事项。',{exact:true}).check();
- const sent=seller.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/auditions/offers'));await seller.getByTestId('business-offer').click();const response=await sent,json=await response.json();assert(response.ok(),json.error?.code);const offer=json.data;assert.equal(offer.current_status,'IN_REVIEW');checks.push('无历史试镜方案的艺人，从当前规则与本人授权创建首份方案');await seller.screenshot({path:join(out,'01-first-offer.png')});
+ const sent=seller.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/auditions/offers'));await seller.getByTestId('business-offer').click();const response=await sent,json=await response.json();assert(response.ok(),json.error?.code);offer=json.data;assert.equal(offer.current_status,'IN_REVIEW');checks.push('无历史试镜方案的艺人，从当前规则与本人授权创建首份方案');await seller.screenshot({path:join(out,'01-first-offer.png')});
  phase='web-independent-review';const reviewer=await web('first_auditions_reviewer','/auditions/reviews/'+offer.id);
  await reviewer.locator('.business-actions').getByRole('button',{name:'独立核验试镜方案',exact:true}).click();await reviewer.locator('#review-offer-decision').selectOption('APPROVE');await reviewer.locator('#review-offer-reason').fill('隔离测试：独立核对本次人物、授权与方案');await reviewer.getByLabel('已阅读当前记录与本次约定，明确提交上述办理事项。',{exact:true}).check();const reviewed=reviewer.waitForResponse(r=>r.request().method()==='POST'&&r.url().endsWith('/reviews'));await reviewer.getByTestId('business-review-offer').click();const checked=await reviewed,j=await checked.json();assert(checked.ok(),j.error?.code);assert.equal(j.data.current_status,'PUBLISHED');checks.push('另一位运营在网页独立审核同一方案');await reviewer.screenshot({path:join(out,'02-reviewed-offer.png')});
- phase='app-public-catalog';const buyer=await app('first_auditions_buyer','/auditions/catalog?city='+encodeURIComponent('郑州'));const book=buyer.getByRole('button',{name:'约试镜 ↗',exact:true});await seek(buyer,book);const opening=buyer.waitForResponse(r=>r.request().method()==='GET'&&new URL(r.url()).pathname.endsWith('/auditions/catalog'));await book.click();const opened=await opening,actual=(await opened.json()).data.items.find(item=>item.id===offer.id);assert(opened.ok());assert(actual);assert.equal(actual.title,'浏览器首次试镜方案');await buyer.getByRole('heading',{name:'约一次试镜',exact:true}).first().waitFor();checks.push('App买家按城市读到网页新发布的同一试镜方案');await buyer.screenshot({path:join(out,'03-app-first-offer.png')});
+ }
+ phase='app-public-catalog';const buyer=await app('first_auditions_buyer','/auditions/catalog?city='+encodeURIComponent('郑州'));const book=buyer.getByRole('group',{name:/已审试镜方案 浏览器首次试镜方案/}).getByRole('button',{name:'约试镜 ↗',exact:true});await seek(buyer,book);const opening=buyer.waitForResponse(r=>r.request().method()==='GET'&&new URL(r.url()).pathname.endsWith('/auditions/catalog'));await book.click();const opened=await opening,actual=(await opened.json()).data.items.find(item=>item.id===offer.id);assert(opened.ok());assert(actual);assert.equal(actual.title,'浏览器首次试镜方案');await buyer.getByRole('heading',{name:'约一次试镜',exact:true}).first().waitFor();checks.push('App买家按城市读到网页新发布的同一试镜方案');await buyer.screenshot({path:join(out,'03-app-first-offer.png')});
  await writeFile(join(out,'RESULTS.json'),JSON.stringify({result:'PASS',synthetic_only:true,checks,records:{offer:offer.id},limits:'浏览器从首次提交到独立审核与App可约目录；付款、履约与逆向尚须同记录续验。无真实服务。'},null,2));console.log(JSON.stringify({result:'PASS',checks}));
 }catch(e){for(let n=0;n<contexts.length;n++){const p=contexts[n].pages()[0];if(p){await p.screenshot({path:join(out,'failure-'+n+'.png')}).catch(()=>{});await writeFile(join(out,'failure-'+n+'.txt'),await p.locator('body').innerText());}}await writeFile(join(out,'FAILURE.json'),JSON.stringify({phase,error:e.message,checks},null,2));console.error(phase+': '+e.message);process.exitCode=1;}finally{for(const c of contexts)await c.close();await browser.close();}

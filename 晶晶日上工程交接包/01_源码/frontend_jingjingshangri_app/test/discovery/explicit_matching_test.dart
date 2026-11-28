@@ -9,8 +9,9 @@ import '../stock/v5_test_host.dart';
 import '../trade/trade_api_test.dart' show buyerSession;
 import 'public_discovery_test.dart' show cities;
 
-final cases = (jsonDecode(
-        File('../../../contracts/examples/platform.json').readAsStringSync())
+final cases = (jsonDecode(File.fromUri(
+        Directory(Directory.current.resolveSymbolicLinksSync()).uri.resolve(
+            '../../../contracts/examples/platform.json')).readAsStringSync())
     as Map)['cases'] as List;
 Future<void> select(WidgetTester t, String label, String option) async {
   final f = find.byWidgetPredicate((w) =>

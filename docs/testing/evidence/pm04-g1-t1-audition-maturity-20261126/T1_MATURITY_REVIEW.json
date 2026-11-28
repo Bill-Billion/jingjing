@@ -1,0 +1,56 @@
+{
+  "kind": "T1_PARTIAL_SAME_RECORD_REVIEW",
+  "new_business_execution": false,
+  "slot": "E2E-03|api|normal",
+  "result": "PARTIAL",
+  "source": "38d3be181d59475c9d4aecabf48d18ee5123f7a6",
+  "backend_product": "d303e47fbc9cd58f42f29d42a25a8b0e4922bea5",
+  "api": "0.31.82-rc.1",
+  "environment": "jx_test_stock_pm03_d7cf52eb8ac435ce803300d9",
+  "business_ids": [
+    "8dd6c894-dca0-4fb1-9aa6-3cd5eb5ceb7f",
+    "90efb0a0-511e-46e9-92bc-f181703fb4bb",
+    "df78eca8-b739-41d5-8c15-4e07f5df3471"
+  ],
+  "command": "node scripts/qa18-audition-maturity-record-check.cjs <original-sandbox> .local/qa18/audition-delivery-20261125-16 .local/qa18/t1-audition-maturity-20261126",
+  "raw_logs": [
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-audition-maturity-20261126/raw.log",
+      "sha256": "d3996cf2e3ff2fc4dafa81fe5d6738e3cfc669ce2e2c9da89dcf5fbcca8b16fd"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-audition-maturity-20261126/MATURITY_CENSUS.json",
+      "sha256": "27b9cfa395065f9e7e0719ed3bad5c0fcc93a411e308454c20ee36bcb5452082"
+    },
+    {
+      "path": "scripts/qa18-audition-maturity-record-check.cjs",
+      "sha256": "75eeca14de75584cc7d9c652cb6f787d0ee881265ea2c5ec0318f64e7b55f026"
+    }
+  ],
+  "original_evidence": [
+    {
+      "path": "docs/testing/evidence/pm04-g1-audition-delivery-20261125-16/EXECUTION_SUMMARY.json",
+      "sha256": "d134476c75dd9c4e2255d28a48163eb19e82dfb488aa72a2d64a2fd5c19c6e1f"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-audition-delivery-20261125-16/CHAIN_REFERENCES.json",
+      "sha256": "1d98f58a9eadf506fc0873faa7a2c8dcd991e99077bb6d18f9b75408fd65d5cf"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-audition-delivery-20261125-16/COVERAGE_REVIEW.json",
+      "sha256": "d3df34d13eeab977acb5e31fcab06275bf08a81ecbd9827d8a5a348c0801eab2"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-audition-delivery-20261125-16/DATABASE_CENSUS.json",
+      "sha256": "63fc66cc026d4f418e80fc2fa41b328faff6719a1ab3e1e99514713e8113db25"
+    }
+  ],
+  "assertions": [
+    "实际SQL时间10:31:16.388Z超过原fulfilled_at+24h10:28:39.967Z，原financeGate成功，无模拟时钟。",
+    "原订单双方履约状态、唯一付款10000分、0退款、合同、6图1视频/本机文件SHA均不变；无写入，无旧凭据重用或续期。"
+  ],
+  "remaining": [
+    "仍未实际创建原同单财务协议、独审和清分；不能以仓库门禁放行代替API清算。",
+    "原13/16与本次准确源码分别记录，未拼成当前最终版本PASS。端侧及其余异常场景另核。"
+  ]
+}

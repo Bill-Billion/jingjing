@@ -24,7 +24,7 @@ class ArtistsGate extends StatelessWidget {
         !s.artistsAccessDenied &&
         (accountOnly ||
             s.partyId != null &&
-                s.isOwner &&
+                (s.isOwner || s.party?['kind'] == 'ORGANIZATION') &&
                 s.selected?['membership']?['current_status'] == 'ACTIVE' &&
                 !['SUSPENDED', 'CLOSED'].contains(s.party?['current_status']));
     if (valid) {
@@ -49,7 +49,7 @@ class ArtistsGate extends StatelessWidget {
           eyebrow: '艺人档案 / 本人所有'),
       appNotice(s.artistsAccessDenied
           ? '当前账号无法查看这份资料，私有内容已清空。请核对账号、当前身份和有效委托。'
-          : '登录并选择有效负责人身份后办理。机构仅可管理本人已明确委托的事项。'),
+          : '登录并选择有效本人或机构成员身份后办理。机构员工仅可管理本人委托且分配给自己的事项。'),
       FilledButton(
           onPressed: () => Navigator.pushNamed(
               context,

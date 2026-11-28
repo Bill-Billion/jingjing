@@ -1,0 +1,130 @@
+{
+  "product": "053168fb6e06b80680101702a733357309368809",
+  "original": "jx_test_qa18_participation_bf744b2c1613c4fc757f",
+  "clone": "jx_test_qa18_s3b_3945d7cc5bba3d1ec77295e9",
+  "scenario": "existing-business-library",
+  "started_at": "2026-11-28T02:38:50.944Z",
+  "builds": {
+    "app": {
+      "manifest": "APP_BROWSER_BUILD_MANIFEST.json",
+      "sha256": "87f331e857391cbaf00aaa1da974a6954c0dfe07eabedc0b4a422b318bf44f17",
+      "files": 74
+    },
+    "web": {
+      "manifest": "VUE_BUILD_MANIFEST.json",
+      "sha256": "bab320ad70408b55984610c1c8381308debf4e2bb11fb0feb12198da1f47008d",
+      "files": 93
+    }
+  },
+  "checks": [
+    {
+      "surface": "api",
+      "name": "contracts",
+      "id": "87b6c92c-bc3e-47d6-9c0e-ea3ba94295fd",
+      "status": "APPROVED",
+      "income": null
+    },
+    {
+      "surface": "api",
+      "name": "works",
+      "id": "91dae183-c535-4e6e-afe7-c3d60f292ad3",
+      "status": "APPROVED",
+      "income": null
+    },
+    {
+      "surface": "api",
+      "name": "income",
+      "id": "4de7e4a1-6916-4b0f-a1c5-eb126eab0f1f",
+      "status": "APPROVED",
+      "income": {
+        "accrued_minor": 16000,
+        "adjustment_minor": 0,
+        "verified_paid_minor": 0,
+        "pending_minor": 16000,
+        "recovery_due_minor": 0,
+        "retained_minor": 0,
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "meaning": "PAYABLE_NOT_BANK_BALANCE",
+        "basis": "POSTED_LEDGER_ONLY",
+        "bank_arrival_verified": false
+      }
+    }
+  ],
+  "requests": [
+    {
+      "role": "artist",
+      "surface": "api",
+      "path": "/me/business/contracts?source=PARTICIPATION_CONTRACTS",
+      "status": 200,
+      "sha256": "a99bd0bd6881cfdddbc0412664d0875ec4d689db7ef5de2ac22e523b20dc6edf"
+    },
+    {
+      "role": "artist",
+      "surface": "api",
+      "path": "/projects/records/87b6c92c-bc3e-47d6-9c0e-ea3ba94295fd",
+      "status": 200,
+      "sha256": "5732de45ae2311cd9b6a4f09a4234353b8a8d3f41b700dd38aadbf6fda36ddea"
+    },
+    {
+      "role": "outsider",
+      "surface": "api",
+      "path": "/me/business/contracts?source=PARTICIPATION_CONTRACTS",
+      "status": 200,
+      "sha256": "05f2aa466846775de2ec7abd1df40627e8892e5a70d9ee13b7b07f096a00a112"
+    },
+    {
+      "role": "artist",
+      "surface": "api",
+      "path": "/me/business/works?source=PROJECT_EDITIONS",
+      "status": 200,
+      "sha256": "a63d36f9f7c4ee42da6d3df951bd6a136da1c2290028e27e7746d673a7a2fccb"
+    },
+    {
+      "role": "artist",
+      "surface": "api",
+      "path": "/projects/records/91dae183-c535-4e6e-afe7-c3d60f292ad3",
+      "status": 200,
+      "sha256": "a231c6623c0fa1a2c81d943c53f850ab33b253aa4bc0a04623ca3a0bd6bad55c"
+    },
+    {
+      "role": "outsider",
+      "surface": "api",
+      "path": "/me/business/works?source=PROJECT_EDITIONS",
+      "status": 200,
+      "sha256": "b424414eda4ddd2bf40fb1d489fa039d811fbdcaf68474b5197e9f38e5110ffd"
+    },
+    {
+      "role": "artist",
+      "surface": "api",
+      "path": "/me/business/income?source=FINANCE",
+      "status": 200,
+      "sha256": "938b2bb261a8035efcc787fcd93934e58f27edc7d65e96d36be545f40e1ae985"
+    },
+    {
+      "role": "artist",
+      "surface": "api",
+      "path": "/finance/records/4de7e4a1-6916-4b0f-a1c5-eb126eab0f1f",
+      "status": 200,
+      "sha256": "99767e189d8d9037bf45a5d15b3fbd05e933484b1aa5813332166c1206cdd141"
+    },
+    {
+      "role": "outsider",
+      "surface": "api",
+      "path": "/me/business/income?source=FINANCE",
+      "status": 200,
+      "sha256": "f4370ca84f8620ea9d7a0ea2e1405b5881746064b113d3103d667dcceef1dca9"
+    }
+  ],
+  "served_build_checkout": "e887301530c24f9751e074cd297535c3aac7cdb9",
+  "source_head": "1fdfa80e070c9a30ee9d7091a317afff9f96fcb0",
+  "original_sql_sha256": "c4598d401839b71ba8c466c485506ea8c3a53a9269c8e4c92f4a088c9c3985be",
+  "clone_initial_sql_matches": true,
+  "failure": {
+    "surface": "app",
+    "group": "contracts",
+    "message": "locator.evaluate: Timeout 12000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('flt-semantics-placeholder')\u001b[22m\n"
+  },
+  "result": "FAIL",
+  "finished_at": "2026-11-28T02:39:14.708Z"
+}

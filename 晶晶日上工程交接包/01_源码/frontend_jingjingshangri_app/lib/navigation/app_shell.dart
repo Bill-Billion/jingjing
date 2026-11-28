@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui' show FontVariation;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -739,7 +738,9 @@ class _PersonalWalletSummaryState extends State<_PersonalWalletSummary> {
       v5Require(result.raw['account_id'] == s.account?['id']);
       if (!mounted || t != ticket || s.epoch != epoch ||
           s.partyId != party || !s.isLoggedIn ||
-          !s.isOwner || s.party?['kind'] != 'PERSON') return;
+          !s.isOwner || s.party?['kind'] != 'PERSON') {
+        return;
+      }
       setState(() { summary = result; busy = false; });
     } catch (_) {
       if (!mounted || t != ticket || s.epoch != epoch || s.partyId != party) return;

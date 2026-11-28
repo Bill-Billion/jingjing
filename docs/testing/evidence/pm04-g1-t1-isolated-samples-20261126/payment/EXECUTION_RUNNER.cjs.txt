@@ -1,0 +1,27 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),{execFileSync,spawnSync}=require('node:child_process'),{createHash}=require('node:crypto');
+const root=fs.realpathSync(process.cwd()),backend=path.join(root,'晶晶日上工程交接包/01_源码/backend_server'),out=path.join(root,'.local/qa18/t1-payment-simulator-20261126-01');
+fs.mkdirSync(out,{recursive:false});
+const files=['test/payment-simulator-isolation.integration.test.cjs'];
+const configFile=path.resolve(root,'../full-flow/.local/mysql/runtime/test-env.json');
+const config=JSON.parse(fs.readFileSync(configFile,'utf8'));
+if(config.NODE_ENV!=='test'||config.MYSQL_HOST!=='127.0.0.1'||config.MYSQL_PORT!=='33316'||config.MYSQL_DATABASE!=='jx_dev')throw Error('ISOLATED_CONFIG_REQUIRED');
+const hash=p=>createHash('sha256').update(fs.readFileSync(p).toString('utf8').replace(/\r\n/g,'\n')).digest('hex');
+const paths=execFileSync('git',['ls-files','-z','--','晶晶日上工程交接包/01_源码/backend_server','contracts','scripts/backend-evidence-reporter.cjs','scripts/test-fixtures/qa18-contract-lottery.cjs'],{encoding:'utf8',maxBuffer:8*1024*1024}).split('\0').filter(Boolean);
+const manifest={source:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),started_at:new Date().toISOString(),node:process.version,files,sources:paths.map(p=>({path:p,sha256_lf:hash(path.join(root,p))})),environment:'disposable isolated MySQL localhost33316; synthetic data only',command:'node --test --test-concurrency=1 --test-reporter=tap --test-reporter=../../../scripts/backend-evidence-reporter.cjs --test-reporter-destination=stdout --test-reporter-destination=<isolated-output>/checks.jsonl '+files.join(' ')};
+const write=(name,data)=>fs.writeFileSync(path.join(out,name),JSON.stringify(data,null,2)+'\n');write('source-manifest.json',manifest);
+const env=require(path.join(backend,'scripts/test-environment.cjs')).backendOnlyEnvironment({...process.env,JX_MYSQL_TEST_ENV_FILE:configFile});
+
+Object.assign(env,{JX_TEST_FFMPEG:'J:/.local/tools/ffmpeg/unpacked/ffmpeg-9.0.2-essentials_build/bin/ffmpeg.exe',JX_TEST_FFPROBE:'J:/.local/tools/ffmpeg/unpacked/ffmpeg-9.0.2-essentials_build/bin/ffprobe.exe',JX_TEST_FONT:'C:/Windows/Fonts/arial.ttf'});
+env.NODE_OPTIONS=[process.env.NODE_OPTIONS,'--require ./scripts/test-network-guard.cjs'].filter(Boolean).join(' ');
+const fd=fs.openSync(path.join(out,'backend.tap'),'wx');let result;
+try{result=spawnSync(process.execPath,['--test','--test-concurrency=1','--test-reporter=tap','--test-reporter=../../../scripts/backend-evidence-reporter.cjs','--test-reporter-destination=stdout','--test-reporter-destination='+path.join(out,'checks.jsonl'),...files],{cwd:backend,env,stdio:['ignore',fd,fd],windowsHide:true});}finally{fs.closeSync(fd);}
+const checks=fs.readFileSync(path.join(out,'checks.jsonl'),'utf8').trim().split('\n').filter(Boolean).map(JSON.parse);
+const changed=manifest.sources.filter(s=>hash(path.join(root,s.path))!==s.sha256_lf).map(s=>s.path),counts=Object.fromEntries(['PASS','FAIL','SKIP','TODO'].map(k=>[k,checks.filter(c=>c.status===k).length]));
+fs.mkdirSync(path.join(out,'http-private'));const fixtures=[];
+for(const name of []){
+ const p=path.join(root,'.local',name);if(!fs.existsSync(p)||fs.statSync(p).mtimeMs<Date.parse(manifest.started_at)){fixtures.push({name,fresh:false});continue;}
+ const bytes=fs.readFileSync(p);fs.writeFileSync(path.join(out,'http-private',name),bytes);fixtures.push({name,fresh:true,sha256:createHash('sha256').update(bytes).digest('hex'),cases:JSON.parse(bytes).cases?.length??null});
+}
+const recordFile=path.join(root,'.local/payment-simulator-isolation-records.json');if(fs.existsSync(recordFile)&&fs.statSync(recordFile).mtimeMs>=Date.parse(manifest.started_at))fs.copyFileSync(recordFile,path.join(out,'records.json'));
+const summary={source:manifest.source,started_at:manifest.started_at,finished_at:new Date().toISOString(),exit_code:result.status,result:result.status===0&&!changed.length?'PASS':'FAIL',counts,changed_sources:changed,fixtures,product_changed:false,formal_updated:false,limits:['Targeted originalTASK16 isolated payment simulator states and guards; real MySQL/repositories, no HTTP/browser or final18/12 claim.','Disposable MySQL, explicit synthetic payment provider; current stock helper media are nonplayable fixture bytes, not sample quality.','No real moderation/storage supplier, no product changes, no final same-version or formal acceptance claim.']};write('summary.json',summary);console.log(JSON.stringify(summary));process.exitCode=result.status===0&&!changed.length?0:1;

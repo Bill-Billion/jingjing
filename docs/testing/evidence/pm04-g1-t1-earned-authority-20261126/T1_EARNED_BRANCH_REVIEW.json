@@ -1,0 +1,3230 @@
+{
+  "kind": "T1_ARCHIVED_EVIDENCE_REVIEW",
+  "new_business_execution": false,
+  "formal_status_changed": false,
+  "reviewed_at": "2026-11-26T15:27:24.740637+00:00",
+  "source_scope": {
+    "path": "docs/testing/evidence/pm04-g1-t1-earned-authority-20261126/ORIGINAL_BRANCH_SCOPE.json",
+    "sha256": "75f721d328eaf6f0c7fe37a751b991afa1d311300c3c4aa6825dbd135918b1d0"
+  },
+  "prior_review": {
+    "path": "docs/testing/evidence/pm04-g1-t1-engagement-chains-20261126/T1_ENGAGEMENT_CHAINS_REVIEW.json",
+    "sha256": "68e0b60468c5de86fb6b7479cc6422ba7ee2c4ef71bf16f5bfc19551f8adc0a7"
+  },
+  "executions": {
+    "cash_credit": {
+      "versions": {
+        "backend_product_source": "07822585dc90d589f8e3363957b0024ff9d1f769",
+        "app_product_source": "18a8d20faa52cb8b8cf7956926a32c820a49dd86",
+        "web_product_source": "893c92e7c451f3813b932aeef90384d509483225",
+        "census_source": "ba9972363768544076d509b648e44f14eee52052",
+        "final_driver": "ec9f77e11a3fc039ad04cf960b52e9806184629d",
+        "prefix_driver": "125d532e0204e2ec9a8a0a4463b726867b8f6092"
+      },
+      "api_version": "0.31.79-rc.2",
+      "migration": "0225/225",
+      "environment": {
+        "database": "jx_test_qa18_points_011e77633ef8d975c4b7",
+        "api_base": "http://127.0.0.1:65485/api/v1",
+        "expires_at": "2026-11-25T15:43:09.943Z",
+        "business_clock": [
+          {
+            "day": 0,
+            "at": "2026-11-15T11:43:09.943Z",
+            "method": "SET timestamp; dedicated single-connection database only; no business timestamp/status/balance edits"
+          },
+          {
+            "day": 8,
+            "at": "2026-11-23T11:43:09.943Z",
+            "method": "Dedicated single-connection clock; original records unchanged"
+          }
+        ],
+        "synthetic_only": true
+      },
+      "business_ids": {
+        "result": "PASS",
+        "source": "ba9972363768544076d509b648e44f14eee52052",
+        "read_only": true,
+        "database": "jx_test_qa18_points_011e77633ef8d975c4b7",
+        "orders": {
+          "source": {
+            "id": "fe37e661-23f3-49d3-acf7-e265e6cb1100",
+            "status": "REFUNDED",
+            "payment_id": "80a1d046-6ee7-4fd7-9f10-8dbba674b3c1",
+            "payment_count": 1,
+            "refund_count": 1,
+            "refund_id": "88bf32a0-3d64-4db7-bcc6-5ba67b81533a",
+            "financial": {
+              "net_minor": 0,
+              "received_minor": 70000,
+              "refunded_minor": 70000
+            },
+            "journal_count": 2,
+            "contract_unchanged": true
+          },
+          "failed": {
+            "id": "93462ff9-95f6-41af-8396-dd47f0a807f0",
+            "status": "CANCELLED",
+            "payment_id": "12ce9c51-7a57-4eeb-b8a4-3a7619a934c2",
+            "payment_count": 1,
+            "refund_count": 0,
+            "financial": {
+              "net_minor": 0,
+              "received_minor": 0,
+              "refunded_minor": 0
+            },
+            "journal_count": 0,
+            "contract_unchanged": true
+          },
+          "retry": {
+            "id": "c88e2cfc-2ca5-44e4-9a98-fd4364afc841",
+            "status": "REFUNDED",
+            "payment_id": "8407191a-0ed9-46e6-8ee5-03b707002465",
+            "payment_count": 1,
+            "refund_count": 1,
+            "refund_id": "b45cabbe-e2bd-40b8-b054-1ace4b1957c8",
+            "financial": {
+              "net_minor": 0,
+              "received_minor": 13500,
+              "refunded_minor": 13500
+            },
+            "journal_count": 2,
+            "contract_unchanged": true
+          }
+        },
+        "earning_id": "f069f6f3-42bc-4ff6-86f3-efb5b16f47fc",
+        "earning_status": "REVERSAL_PENDING",
+        "source_kind": "CONSUMPTION",
+        "original_aftercare_days": 7,
+        "points_per_yuan": 10,
+        "original_points": 7000,
+        "spent_points": 6000,
+        "reversed_points": 1000,
+        "pending_shortfall": 6000,
+        "no_free_awards": true,
+        "point_hold_count": 1,
+        "point_hold_id": "8a408a4b-283a-4ee6-bcec-0e9dc8898130",
+        "exchange_count": 1,
+        "exchange_command_id": "aaa242c7ab0f707ec7271ea402fc3458120c0fdc6605d5148f83bce028d54403",
+        "grant_count": 1,
+        "grant_id": "38d6cd7a-97f5-4c2b-a494-894a10d15c4a",
+        "grant_status": "USED",
+        "stock_issued": 1,
+        "coupon_holds": [
+          {
+            "id": "3b450dd0-84fc-4100-bda8-18fc14b9c424",
+            "status": "USED"
+          },
+          {
+            "id": "457e19ce-7b88-4671-8c46-fb7faa46a082",
+            "status": "RELEASED"
+          },
+          {
+            "id": "7e2bd15a-e62d-44bc-a003-685788005f61",
+            "status": "RELEASED"
+          }
+        ],
+        "original_earning_consumed_by_exact_exchange": true,
+        "real_money": false
+      },
+      "command": [
+        "node scripts/qa18-earned-points-browser.mjs (same original private access and checkpoint directories)",
+        "node scripts/qa18-earned-points-credit-browser.mjs (same original private access and checkpoint directories)",
+        "node scripts/qa18-earned-points-record-check.cjs (same original private access and checkpoint directories)",
+        "node scripts/qa18-earned-points-replay.mjs (same original private access and checkpoint directories)"
+      ],
+      "command_note": "Original archived command recipes where available; otherwise exact source entrypoints. Private arguments are omitted; this is not an invented original shell transcript.",
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/EXECUTION_SUMMARY.json",
+        "sha256": "398209402dc8582541e27536ecf6fbddc39f2ad354e479f9af78ba8d078c23cf"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607102289-failure-0.aria.txt",
+          "sha256": "a44f2b3d0aad1d79a412e2c975f0bb73ec480aa34c868365d6b3d0b679a0a879"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607102289-failure-0.png",
+          "sha256": "721e6657fe81548a257a592d18681d3917fa73801f3045b28e7940bbc4ef67a0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607102289-RESULT.json",
+          "sha256": "4fdb9e45be574cb531ac6be749674e28394afc2f043ded7f1469a08ae60d9fb4"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607155533-failure-0.aria.txt",
+          "sha256": "ff2d2553407ca75c901160d1f0f9e9a7cd20e8b74188180b4a14b09f0c5ad361"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607155533-failure-0.png",
+          "sha256": "28c5e76be2fc8ccd0be30af8c4d1bb92a15d043fecacd084d2628b1ff692241f"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607155533-RESULT.json",
+          "sha256": "b18330e43437bdb4dec5d186f143d6d9fc724cf4e1d0fba1321f998408f7b0e8"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607200313-app-source-order.aria.txt",
+          "sha256": "e8aa8c2c925d2462f6762b15872e799727ea425a42efb03dd7516e74c6e4df0f"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607200313-app-source-order.png",
+          "sha256": "1322e057c859cba67b899828afdbd9d925e48e37f3bcca854700efc8e3227ed0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607200313-opened-no-free-points-app-wallet.aria.txt",
+          "sha256": "2404b2bcee8510949f4efb62c073b5f8dad47ade8d03f9157ad1e68cf76f537c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607200313-opened-no-free-points-app-wallet.png",
+          "sha256": "620d5669c095762aa71e5659787401229bdea5b49d57512581f9babbe6ab958a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607200313-opened-no-free-points-vue-wallet.aria.txt",
+          "sha256": "40bc5916cd769576b74e767562c16507bae1744f8336102e2580e4ba8e5cecb6"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607200313-opened-no-free-points-vue-wallet.png",
+          "sha256": "bba5837583b17e2ce9056e7d82567be29517ccf160189dce1e24deded0c54330"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607200313-RESULT.json",
+          "sha256": "5d114f510d772c95d1f64e012a01996953e1d3f64f1d86e4477201dd05d4c561"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607200313-source-payment-created.aria.txt",
+          "sha256": "a78bf36166534ba68b540ea8fe921e3b18d4c0d0ef05e0c880b2fd4a5168dc89"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607200313-source-payment-created.png",
+          "sha256": "37ed135fd93316b35502a49806b3f24f0f1bde69bb71424c803b479231f2c0e1"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607496574-failure-0.aria.txt",
+          "sha256": "59febc8ff12658332794160fa5a3db0c1fc3027df46b1b3f7b997ee11f4e1d4a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607496574-failure-0.png",
+          "sha256": "4f65b0f8bf332d93e95707ed97135aae1396279923c58e13c168a0c07794fd35"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607496574-RESULT.json",
+          "sha256": "a47cabace76f2bfc98b035f60505397caeaf50df3273a116f9bc39237fba6097"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-aftercare-pending-app-wallet.aria.txt",
+          "sha256": "2404b2bcee8510949f4efb62c073b5f8dad47ade8d03f9157ad1e68cf76f537c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-aftercare-pending-app-wallet.png",
+          "sha256": "620d5669c095762aa71e5659787401229bdea5b49d57512581f9babbe6ab958a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-aftercare-pending-vue-wallet.aria.txt",
+          "sha256": "40bc5916cd769576b74e767562c16507bae1744f8336102e2580e4ba8e5cecb6"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-aftercare-pending-vue-wallet.png",
+          "sha256": "bba5837583b17e2ce9056e7d82567be29517ccf160189dce1e24deded0c54330"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-app-source-accepted.aria.txt",
+          "sha256": "bd35154345568135eb54e7974acabe2a9abe83df3a0814e901830875904a83a3"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-app-source-accepted.png",
+          "sha256": "c73ba7aaf9f9eeef644a96a9654993d4ee2514f6e3d4cf4cb2763b0676abfa52"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-pending-same-order-earning.aria.txt",
+          "sha256": "004c8ef41fdf5a52ea3c2aae8950c5b3461a8c4639db5b18482a2f352b5caff2"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-pending-same-order-earning.png",
+          "sha256": "55857dcc3b1897dc2af76631e015819f69d6efdb283af90134311a5c4466c0f0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-RESULT.json",
+          "sha256": "58a31c3bb4e98fd0f36ce3f07582cbecbf37f45e3c40ec710e022abed62e30d6"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-source-download.mp4",
+          "sha256": "5f29ac2f4c3a6083fdb8a596900f31fe664d0f1ee6bb30299ca62718f0508feb"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-source-SUCCEEDED.aria.txt",
+          "sha256": "54cc0a5bb97371abee89e0b755b9157208c917daf5e50337d673eca0da3052e0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607540303-source-SUCCEEDED.png",
+          "sha256": "dbc710e42a09d6b7032f839d4eccc070551aedcc701864e9c3c5881ff54edf0c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-aftercare-pending-app-wallet.aria.txt",
+          "sha256": "2404b2bcee8510949f4efb62c073b5f8dad47ade8d03f9157ad1e68cf76f537c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-aftercare-pending-app-wallet.png",
+          "sha256": "620d5669c095762aa71e5659787401229bdea5b49d57512581f9babbe6ab958a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-aftercare-pending-vue-wallet.aria.txt",
+          "sha256": "40bc5916cd769576b74e767562c16507bae1744f8336102e2580e4ba8e5cecb6"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-aftercare-pending-vue-wallet.png",
+          "sha256": "bba5837583b17e2ce9056e7d82567be29517ccf160189dce1e24deded0c54330"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-app-actual-earned-points-grant.aria.txt",
+          "sha256": "a8e7e5d9f66d5331317856a996fd94d125cc2d0e14b2afb586532d173e33a1ce"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-app-actual-earned-points-grant.png",
+          "sha256": "d2445771b3ef55940c363427d1e3a13fd096fc91eb9ba791b09c6262186839ea"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-earned7000-once-app-wallet.aria.txt",
+          "sha256": "9bac12cadc85845b33440940743d5db364deb30da0f3f0f01b4b9d03559d9a60"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-earned7000-once-app-wallet.png",
+          "sha256": "5ce507a297a4e5e1000fd0826ef45cb19350610fb6a148ea12cdf3472f6335e0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-earned7000-once-vue-wallet.aria.txt",
+          "sha256": "95d5d8623b2d04601064b8acd6627ee76fd3ee7c9df153df0509099ef0b1b1cf"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-earned7000-once-vue-wallet.png",
+          "sha256": "4beb370bafc0b402a145af9555099f11d525b1e1733a4f41c26e350bc5e75f0d"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-matured-same-order-earning.aria.txt",
+          "sha256": "efe9c704921e3e52fc13826fae9f075659692456e9a0a44096ec6e12c4c08bec"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-matured-same-order-earning.png",
+          "sha256": "693c7a006ef6a020d146f42fc4d7df86f23f8e9a2bba000ac55ba5f0b8e6dd2c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-pending-same-order-earning.aria.txt",
+          "sha256": "004c8ef41fdf5a52ea3c2aae8950c5b3461a8c4639db5b18482a2f352b5caff2"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-pending-same-order-earning.png",
+          "sha256": "55857dcc3b1897dc2af76631e015819f69d6efdb283af90134311a5c4466c0f0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-RESULT.json",
+          "sha256": "18edac7910f48906fff594c9f3b78bc561ff0b79a84cf87c8f608cc6503276b1"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-spent6000-cumulative-unchanged-app-wallet.aria.txt",
+          "sha256": "3f006a1b9026aba9c0538390937bc51e63dc5520b4dd6566665ca0682eab5d13"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-spent6000-cumulative-unchanged-app-wallet.png",
+          "sha256": "a6daae0d6928207eb97be6fb164f94a1104414e7be7854056bdca5ed52f2f6a3"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-spent6000-cumulative-unchanged-vue-wallet.aria.txt",
+          "sha256": "89187f161e2541260ba2ec87aede7dced9b9753dbe00b01a0ba7104eb8984c68"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607614776-spent6000-cumulative-unchanged-vue-wallet.png",
+          "sha256": "6c7c3eefe41fc050efebb64a84895545e21ef8671f0b867f8e99998c48c2da3a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607753105-failure-0.aria.txt",
+          "sha256": "5416665f7afbc4c2fe470722d2d0493651b3c5a64c4f5bb770902eb74eab0d49"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607753105-failure-0.png",
+          "sha256": "49eb328f7be30699338e62ee52c492ed60bc6d1d8ed351689b437a32c9b33cc1"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607753105-RESULT.json",
+          "sha256": "42c16fd3f4bb5943f3bba2c6b91b647302bf2bd611faf84992052dcc7ce1bf1c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-app-earned-credit-failure-cancelled.aria.txt",
+          "sha256": "5437b110c10885ab7d1943477e87076fbbf72a1c747b8c29941eda591fdca03e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-app-earned-credit-failure-cancelled.png",
+          "sha256": "c85e9d2ff62bfa352b61d36ee7941a3fa573dd362ee6f7d378f8721de3f76814"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-credit-cash-refund-does-not-restore-points-app-wallet.aria.txt",
+          "sha256": "3f006a1b9026aba9c0538390937bc51e63dc5520b4dd6566665ca0682eab5d13"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-credit-cash-refund-does-not-restore-points-app-wallet.png",
+          "sha256": "a6daae0d6928207eb97be6fb164f94a1104414e7be7854056bdca5ed52f2f6a3"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-credit-cash-refund-does-not-restore-points-vue-wallet.aria.txt",
+          "sha256": "89187f161e2541260ba2ec87aede7dced9b9753dbe00b01a0ba7104eb8984c68"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-credit-cash-refund-does-not-restore-points-vue-wallet.png",
+          "sha256": "6c7c3eefe41fc050efebb64a84895545e21ef8671f0b867f8e99998c48c2da3a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-earned-credit-order-failed.aria.txt",
+          "sha256": "0a46dcdb81eb02c7fa436242bd93e106e31e6f9d3a09d441a5d8ff99d36009f0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-earned-credit-order-failed.png",
+          "sha256": "e9e642ca405d54c28fbd78d5a66a6e8d4560554607fa237dee803998323541de"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-earned-credit-order-retry.aria.txt",
+          "sha256": "76d58d120e390127ad1780509ff216130e2237dbb8663c4985c681e328aa4955"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-earned-credit-order-retry.png",
+          "sha256": "e9e642ca405d54c28fbd78d5a66a6e8d4560554607fa237dee803998323541de"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-failed-FAILED.aria.txt",
+          "sha256": "4ce8280e2e7803c6b6faf33e391ab5df4ff3aaa44bcd0c8c225687ef60e18400"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-failed-FAILED.png",
+          "sha256": "ff92d1f7a118b1789de701b126508b6cc7f2d8f3080dac7ceac46acdb25096f3"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-failed-payment-created.aria.txt",
+          "sha256": "3a5d095443e54db2f0dfcd916dd2bfdc2d2933405555e00f004a75bbdb0e6428"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-failed-payment-created.png",
+          "sha256": "7593b68513f0e2a66bb5603486724e47471ddf1f51d53ee0d3e70bd2526a742a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-original-preorder-hold-released.aria.txt",
+          "sha256": "03ac52211ed5b586af71c4d6df4dd7ee022c621ebfa0452621e8c8a025d4df8a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-original-preorder-hold-released.png",
+          "sha256": "8a548efc8e2cf08066298c3431864aba9667ba42c1d7884b6cc44afe16552883"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-RESULT.json",
+          "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-payment-created.aria.txt",
+          "sha256": "03ddfe46a77855f4acec8368155279dad033c100b49fecbed3f432c691d19388"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-payment-created.png",
+          "sha256": "b0e13b812efcb6641ad469d2c0b30e910d7d80b03418545638c2c4baefae2898"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-refund-pending.aria.txt",
+          "sha256": "32e93ef29004a9ee8e5f268fa167aa3c3e50769eab0aacd5328424f45fb99b08"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-refund-pending.png",
+          "sha256": "ceeb6bd4dfd84a3ce85108a640935e48b42ed7c4c7d8756aabcbfc8b33f8e50a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-refund-requested.aria.txt",
+          "sha256": "924dfdf79eb8ec76d63addbf49215b2925554fa378fd8289737e00df63234d94"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-refund-requested.png",
+          "sha256": "0d24880726b1d719d493fec07a24b81197434c8e9a9ff961be7a515f2cdc70f4"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-refund-succeeded.aria.txt",
+          "sha256": "f2560a55365ed94a90f62edb9e56b8c66fc8207e3a4754843a3418f6bbc40ef3"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-refund-succeeded.png",
+          "sha256": "1744af0dcd00e58f1f127dd963e7782747b50d5f7b411b539bf7c718e9617162"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-SUCCEEDED.aria.txt",
+          "sha256": "3c8fa6ec61c2adc07fa2d3844d4c3d06ecde368847f743737ec7fe4ac614bbac"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-SUCCEEDED.png",
+          "sha256": "0f0178d782ff013f0bbe9c4448f1c1a7a9721913fd3b419eaff7e2465d35b38c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-UNKNOWN.aria.txt",
+          "sha256": "03610e6f4ba86a99519c1ad172be39c0e00dd7c1862ce24c6c2cf7c4b7c1c35e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-retry-UNKNOWN.png",
+          "sha256": "51b9c584f8c4007c3e0fea7fea067e50c38f24a090ce5749917513248ddeb02b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-source-refund-pending.aria.txt",
+          "sha256": "4b11c0007708e84c9b68f2260af99e9d9d88783f4669c2142dc21c6d45a949a3"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-source-refund-pending.png",
+          "sha256": "cbba0374d0c442bfaff2678ae2c46ca560e25c2ae4cdc35457608273eb5c5424"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-source-refund-requested.aria.txt",
+          "sha256": "f1488a7a6fe431340a8ef5fd65d5206eb2601dbdb029033044cd9b5cac156c66"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-source-refund-requested.png",
+          "sha256": "a974ddabb17014bc2eea9711821d2c5536a352c66ebae61b4b6cfcec9238c21f"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-source-refund-succeeded.aria.txt",
+          "sha256": "c293c7f34e8b567a53d255e677cdace0f119396115df11bb2093154fa4aac52b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-source-refund-succeeded.png",
+          "sha256": "dbde03cd65026794740e2ff1f0790f6406f9ebe4c46a29f31c9f9a0c3135bca1"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-source-refund6000-points-debt-app-wallet.aria.txt",
+          "sha256": "2404b2bcee8510949f4efb62c073b5f8dad47ade8d03f9157ad1e68cf76f537c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-source-refund6000-points-debt-app-wallet.png",
+          "sha256": "620d5669c095762aa71e5659787401229bdea5b49d57512581f9babbe6ab958a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-source-refund6000-points-debt-vue-wallet.aria.txt",
+          "sha256": "1e35b850a15fa26be0fc328a5bb3043a43804657e520e1b2fe74a86a5af8f286"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-source-refund6000-points-debt-vue-wallet.png",
+          "sha256": "0b7981b7a37df360303e6cc6bf777a99313e6f53524d5f7e8694e71fcc9cbfe6"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-vue-new-retry-quote-approved.aria.txt",
+          "sha256": "6e424cfe107b22587297ba939c37d031694e1edf60f66f4f40049ed3c6a991c7"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-vue-new-retry-quote-approved.png",
+          "sha256": "28193fa9bfdd3870b0ea772e042f45ac66deb82cea2f35c3223b7e79d114a3e0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-vue-original-source-case.aria.txt",
+          "sha256": "f13d39b2639abbfee1d67ef474fa64bf5f5efd4789bdda43f38456abf6ef1dc9"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-vue-original-source-case.png",
+          "sha256": "150c63f04f0cf20a04bf991e0cf2ba9935a6f4c695262e3b8448a1329e324926"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-vue-source-refund-and-license-decision.aria.txt",
+          "sha256": "4ede210afb14cbadb4f583493dafe9c2abc5487bd58c305c206d53042ccb6f5c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/1795607859306-vue-source-refund-and-license-decision.png",
+          "sha256": "7dedaf92ae3d51d573dcd3500266fcb02455a2fdd147512108f849173e7b2f7c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+          "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser01.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser01.log",
+          "sha256": "b691f5a4c9144fab836571cee72eeae31d34ce26dc0bafd29752fa52ca3cdfcb"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser02.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser02.log",
+          "sha256": "6611bae75751c784692b2c6b0ac27d79e2b665db225a3feee403f719d8226077"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser03.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser03.log",
+          "sha256": "3802d51e510cf7602e697bcb2dbbe460f8b171e71992d20d19cca1ca039f6371"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser04.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser04.log",
+          "sha256": "950e570699aef609bc8293c18725acf809e7290302d8b64cfc52b8a79736e4a3"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser05.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser05.log",
+          "sha256": "898a05872d93b44cf92cf810ab61cbc50f6dd15c95fb82add42c78428153f73d"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser06.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser06.log",
+          "sha256": "4abc90ad16d75f40a14f9c9713c8471beb66c9df42dcbcaafd56ef8e931061cc"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census.log",
+          "sha256": "2780b4e88ef4b7defbbd2358c27ff0aeaf15d2ce16616cf8b1d989a1f313fb8e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census01.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census01.log",
+          "sha256": "2780b4e88ef4b7defbbd2358c27ff0aeaf15d2ce16616cf8b1d989a1f313fb8e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census02.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census02.log",
+          "sha256": "5c3a39a830df3614d2885f40dfbd066d95c1e5f2e3c7a984e5c0ed6eab0f664e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census03.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census03.log",
+          "sha256": "1954e66e2073dadc57c648ff462315aa723284e1bc219877ee8787fe88d81890"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census04.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census04.log",
+          "sha256": "127915669ddf28dd184ece1bf3a8efcbf1889a04b71c83c4633c575c6e2dfba5"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census05.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/census05.log",
+          "sha256": "1eaeaa457775d344b0be318672f9f027f8f63e037c6b89586fba0459bd208ac5"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/credit01.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/credit01.log",
+          "sha256": "c2e66bd3934572d6086cd17fe0bc712834ceba62e22ed677583dac966f10e87c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/credit02.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/credit02.log",
+          "sha256": "ba9b2e2a5feee1145eeb1829fffec6644b013ab84b7369c4844b5e57f099298f"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+          "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/environment/STATUS.json",
+          "sha256": "2009f77547e007785317b6e1030a8280e93e79c9db5cc889853ebf45a46551fd"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/environment.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/environment.log",
+          "sha256": "df462e680dca476bde21b233ef62e82b1465138accf93bb5350be29d27efbe11"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/environment02/1795607472114-PRIOR_STATUS.json",
+          "sha256": "74f7186f53e52e6978fe74677c91cdcdccbe3e0ae7cbf50db1afb76be52be7d5"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/environment02/1795607520710-PRIOR_STATUS.json",
+          "sha256": "da1a15544cef0156de794626e4aceb212d77ad9ffd83af7fd071008fb494709a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/environment02/prepared.json",
+          "sha256": "9bd925c46b49b94bd06d421f906df80e6d4cb21479b93b2773006d3227e7e90e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/environment02/STATUS.json",
+          "sha256": "fe1ac9b97dc472ebcc515060abbe46c31c0a3b615ffdabe6e43c2691c1ccf5d0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/environment02.exit",
+          "sha256": "186a919b8c7cb84aebf4e53c70cd1cc028a93a1d183ee29dd6e10cd18a714577"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/environment02.log",
+          "sha256": "9b56a2b9ff25852c17dff667d9e52c928b6eb8d66b7599a321841373bdd2d5ad"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/ORIGINAL_EXCHANGE_REPLAY.json",
+          "sha256": "6c744e53e30623f4a3984009c7ee8895d694d16d4f54fbbe3e4c97f5d51efa4a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/preview-synthetic.mp4",
+          "sha256": "43a19600abbbe7bd2648be6b28120053a3ba8f3d9857445611cec39541eb0781"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/replay.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/replay.log",
+          "sha256": "0b34dd4b43b648c888e37170b1077776dd917931e5bb28bc2f68f15621177fbe"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/resume01.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/resume01.log",
+          "sha256": "32614bb90428fde8606860499ac5c20c93338c32f896f4e38fcb079d558128af"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/resume02.log",
+          "sha256": "7f42c103a1c3d94b28111b0d284e36ad40ed95b09ae2af1d4b7e333ac74f49dc"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/BUILD_MANIFEST.json",
+          "sha256": "7f8a8f90685b739631f275307e313f6dbd64b8271d749173e54003b8f21649f0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/EXECUTION_SUMMARY.json",
+          "sha256": "398209402dc8582541e27536ecf6fbddc39f2ad354e479f9af78ba8d078c23cf"
+        }
+      ],
+      "limitations": [
+        "Original consumption and original source earning, no FREE awards or manual balance edits. Dedicated isolated DB clock moved from day0 to day8; browser business clock aligned. Wall expiry unchanged. This is not eight days of wall-clock observation.",
+        "Actual App Flutter Web and Vue pages plus isolated API/DB; synthetic verified identities, files and payment outcomes. Not Android or real providers.",
+        "Eight browser attempts retained. Some assertions first observed through responses/screenshots then strengthened; not a single clean full-chain run. One aftercare observation duplicated and counted only once.",
+        "Only cash PRODUCTION_CREDIT branch: first installment then full pre-production refund. Fully funded zero-cash/start-consumes/pre-start-cancel-release and other original E2E06 variants remain.",
+        "API original-key replay after debt is historical receipt recovery; current GRANT GET is still USED. Does not prove App unknown-request recovery UI for this original exchange.",
+        "Dedicated pool-one nested authentication deadlock and unregistered stock merchant fixed in test harness only; resumed original DB with business fingerprints unchanged, new bounded auth sessions, same expiry. No product deadlock asserted.",
+        "Database census script failures and missing-shell-env invocation retained. Order REFUNDED and stock license REVOKED are separate valid facts.",
+        "Prior round backend29/HTTP267/Vue100 not new executions; no product builds or backend suite repeated this round.",
+        "Round17 backup predates round18/19. Original audition T+1 next day still outstanding.",
+        "All18groups12chains/final same-version regression/manual151 review remain incomplete.",
+        "Retained failed attempts and resumed records are discovery evidence, not a fresh full regression. Exact browser product versions changed in some attempts; build manifests retain released artifacts; checkout trees alone do not prove loaded browser bytes.",
+        "The actual final prefix was125d532e: source wallet values were asserted via API and screenshots captured; stronger explicit UI wallet-text assertions and browser clock alignment arrived later in the credit driver. Do not backdate later assertions."
+      ],
+      "observations": [
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "result"
+          ],
+          "equals": "PASS"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "complete"
+          ],
+          "equals": true
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "checks",
+            1,
+            "name"
+          ],
+          "equals": "app-source700yuan-consumption-order-after-wallet-open"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "checks",
+            8,
+            "name"
+          ],
+          "equals": "same-consumption-earning-issued7000-once-after-original7days"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "checks",
+            9,
+            "name"
+          ],
+          "equals": "app-fixed6000-earned-points-exchanged-for50yuan-credit"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "checks",
+            14,
+            "name"
+          ],
+          "equals": "app-original-failed-order-cancel-releases-same-earned-credit"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "checks",
+            18,
+            "name"
+          ],
+          "equals": "same-earned-credit-consumed-only-after-first13500-payment"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "checks",
+            21,
+            "name"
+          ],
+          "equals": "used-production-credit-not-restored-after-original-cash-refund"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "checks",
+            25,
+            "name"
+          ],
+          "equals": "source-refund-shortfall-blocks-new-spend-and-new-file-use"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "checks",
+            26,
+            "name"
+          ],
+          "equals": "original-refund-replays-do-not-repeat-debt-or-restore-used-grant"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "orders",
+            "source",
+            "id"
+          ],
+          "equals": "fe37e661-23f3-49d3-acf7-e265e6cb1100"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "orders",
+            "failed",
+            "status"
+          ],
+          "equals": "CANCELLED"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "orders",
+            "failed",
+            "financial"
+          ],
+          "equals": {
+            "received_minor": 0,
+            "refunded_minor": 0,
+            "net_minor": 0
+          }
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "orders",
+            "retry",
+            "financial"
+          ],
+          "equals": {
+            "received_minor": 13500,
+            "refunded_minor": 13500,
+            "net_minor": 0
+          }
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "orders",
+            "source",
+            "financial"
+          ],
+          "equals": {
+            "received_minor": 70000,
+            "refunded_minor": 70000,
+            "net_minor": 0
+          }
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "original_earning_consumed_by_exact_exchange"
+          ],
+          "equals": true
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "original_points"
+          ],
+          "equals": 7000
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "spent_points"
+          ],
+          "equals": 6000
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "reversed_points"
+          ],
+          "equals": 1000
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "pending_shortfall"
+          ],
+          "equals": 6000
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "grant_status"
+          ],
+          "equals": "USED"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "grant_count"
+          ],
+          "equals": 1
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/DATABASE_CENSUS.json",
+            "sha256": "82246594a97538c1589a8032680af0fe8de4bc3f92d3300c9667a81908b17da7"
+          },
+          "json_path": [
+            "exchange_count"
+          ],
+          "equals": 1
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            124,
+            "role"
+          ],
+          "equals": "buyer-app"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            124,
+            "path"
+          ],
+          "equals": "/api/v1/redemption/exchanges"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            124,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            124,
+            "method"
+          ],
+          "equals": "POST"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            193,
+            "role"
+          ],
+          "equals": "buyer-app"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            193,
+            "path"
+          ],
+          "equals": "/api/v1/trade/orders/93462ff9-95f6-41af-8396-dd47f0a807f0/cancellation"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            193,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            193,
+            "method"
+          ],
+          "equals": "POST"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            287,
+            "role"
+          ],
+          "equals": "reviewer-vue"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            287,
+            "path"
+          ],
+          "equals": "/api/v1/trade/records/b45cabbe-e2bd-40b8-b054-1ace4b1957c8/reviews"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            287,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            287,
+            "method"
+          ],
+          "equals": "POST"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            289,
+            "role"
+          ],
+          "equals": "reviewer-vue"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            289,
+            "path"
+          ],
+          "equals": "/api/v1/trade/refunds/b45cabbe-e2bd-40b8-b054-1ace4b1957c8/execution"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            289,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            289,
+            "method"
+          ],
+          "equals": "POST"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            296,
+            "role"
+          ],
+          "equals": "buyer-app"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            296,
+            "path"
+          ],
+          "equals": "/api/v1/trade/refunds/b45cabbe-e2bd-40b8-b054-1ace4b1957c8/reconciliation"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            296,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            296,
+            "method"
+          ],
+          "equals": "POST"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            332,
+            "role"
+          ],
+          "equals": "reviewer-vue"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            332,
+            "path"
+          ],
+          "equals": "/api/v1/trade/records/88bf32a0-3d64-4db7-bcc6-5ba67b81533a/reviews"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            332,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            332,
+            "method"
+          ],
+          "equals": "POST"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            334,
+            "role"
+          ],
+          "equals": "reviewer-vue"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            334,
+            "path"
+          ],
+          "equals": "/api/v1/trade/refunds/88bf32a0-3d64-4db7-bcc6-5ba67b81533a/execution"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            334,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            334,
+            "method"
+          ],
+          "equals": "POST"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            341,
+            "role"
+          ],
+          "equals": "buyer-app"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            341,
+            "path"
+          ],
+          "equals": "/api/v1/trade/refunds/88bf32a0-3d64-4db7-bcc6-5ba67b81533a/reconciliation"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            341,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-earned-points-20261125-19/browser/checkpoint.json",
+            "sha256": "a7b43281a5220325f663e96e2257008d27190d41aa560aa4070aee72ea485044"
+          },
+          "json_path": [
+            "requests",
+            341,
+            "method"
+          ],
+          "equals": "POST"
+        }
+      ],
+      "chain": {
+        "environment": "jx_test_qa18_points_011e77633ef8d975c4b7",
+        "business_id": "fe37e661-23f3-49d3-acf7-e265e6cb1100"
+      }
+    },
+    "full_service": {
+      "versions": {
+        "backend_product_source": "07822585dc90d589f8e3363957b0024ff9d1f769",
+        "app_product_source": "18a8d20faa52cb8b8cf7956926a32c820a49dd86",
+        "web_product_source": "be52ac1e7716cf66ff207282224ca586ed1b244e",
+        "census_source": "6087bac231cfb813cbce95adeb7555e9f73c24a5",
+        "final_driver": "e09f6525c5c7749baa10d7df05c4907c59240980"
+      },
+      "api_version": "0.31.79-rc.2",
+      "migration": "0225/225",
+      "environment": {
+        "database": "jx_test_qa18_points_60898647dc3b28d20c84",
+        "api_base": "http://127.0.0.1:54265/api/v1",
+        "expires_at": "2026-11-25T15:48:20.352Z",
+        "business_clock": [
+          {
+            "day": 0,
+            "at": "2026-11-15T12:13:04.799Z",
+            "method": "SET timestamp; dedicated single-connection database only; no business timestamp/status/balance edits"
+          },
+          {
+            "day": 8,
+            "at": "2026-11-23T12:13:04.799Z",
+            "method": "SET timestamp; dedicated single-connection database only; no business timestamp/status/balance edits"
+          }
+        ],
+        "synthetic_only": true
+      },
+      "business_ids": {
+        "result": "PASS",
+        "source": "6087bac231cfb813cbce95adeb7555e9f73c24a5",
+        "read_only": true,
+        "environment": "jx_test_qa18_points_60898647dc3b28d20c84",
+        "orders": {
+          "cancel": {
+            "id": "176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+            "status": "CANCELLED",
+            "financial": {
+              "net_minor": 0,
+              "received_minor": 0,
+              "refunded_minor": 0
+            },
+            "payments": 0,
+            "refunds": 0,
+            "journal_count": 0,
+            "contract_unchanged": true
+          },
+          "retry": {
+            "id": "13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+            "status": "REWARD_FUNDED",
+            "financial": {
+              "net_minor": 0,
+              "received_minor": 0,
+              "refunded_minor": 0
+            },
+            "payments": 0,
+            "refunds": 0,
+            "journal_count": 0,
+            "contract_unchanged": true
+          }
+        },
+        "source_order_id": "114da9f7-5401-4394-b678-a02bbc04744a",
+        "source_financial": {
+          "net_minor": 70000,
+          "received_minor": 70000,
+          "refunded_minor": 0
+        },
+        "source_payments": 1,
+        "source_refunds": 0,
+        "earning_id": "812d4420-fce5-4b51-9281-8ca336d338da",
+        "source_kind": "CONSUMPTION",
+        "points_issued": 7000,
+        "points_spent": 2700,
+        "points_remaining": 4300,
+        "positive_earning_count": 1,
+        "zero_cash_pending_earnings": [
+          {
+            "id": "2b487d0c-7220-4eb9-ab16-32961d56ca70",
+            "order_id": "13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+            "points": 0,
+            "paid_minor": 0
+          },
+          {
+            "id": "840b35f2-d78a-43ef-86c8-c5449687e714",
+            "order_id": "176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+            "points": 0,
+            "paid_minor": 0
+          }
+        ],
+        "no_free_awards": true,
+        "point_hold_id": "8d39c8bb-c2c5-4134-8274-735bff844348",
+        "point_hold_count": 1,
+        "pool_id": "4345aac7-1a9a-4fe2-b6d7-c300cad88e65",
+        "pool_status": "RETIRED",
+        "notice_unchanged": true,
+        "draw_id": "3ae453dc-2b2f-4f38-ab59-48dc7cd68143",
+        "draw_count": 1,
+        "fixed_original_results": true,
+        "stock_id": "e5069812-5970-4269-b6a0-454243a7efd6",
+        "stock_issued": 10,
+        "grant_count": 10,
+        "used_grant_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+        "used_grants": 1,
+        "available_grants": 9,
+        "grant_original_expiry_unchanged": true,
+        "coupon_holds": [
+          {
+            "id": "160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+            "status": "USED"
+          },
+          {
+            "id": "4923ea19-f974-4d49-a637-87508e7540cd",
+            "status": "RELEASED"
+          },
+          {
+            "id": "5556818a-ea34-4df0-9139-819d59d59f08",
+            "status": "RELEASED"
+          },
+          {
+            "id": "d889b316-aa3c-4f46-84ab-f63b46367daa",
+            "status": "RELEASED"
+          },
+          {
+            "id": "e496ba06-d2e2-42ff-ad97-12fef216d52e",
+            "status": "RELEASED"
+          }
+        ],
+        "project_id": "f08cc136-f8cc-47ae-b143-dada4b51a15e",
+        "project_status": "ACCEPTED",
+        "fulfillment": "DELIVERED",
+        "approved_versions": 4,
+        "explicit_feedback": 4,
+        "final_file": {
+          "sha256": "a79ceadd19e965c87d3a999fa071cadfc179e0ffb0be29f19fe41da3f7dbb950",
+          "bytes": 23600,
+          "app_file": "D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\.local\\qa18\\free-production-20261125-20\\browser\\1795609952736-app-free-final.mp4",
+          "web_file": "D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\.local\\qa18\\free-production-20261125-20\\browser\\1795609952736-vue-free-final.mp4"
+        },
+        "real_money": false,
+        "limits": [
+          "Synthetic guaranteed prize branch, not original contract odds.",
+          "Original-key API replay and App saved-result read passed; interrupted pending-request UI recovery was not completed after driver hard reload.",
+          "Dedicated isolated business clock advanced8days; original receipt168hours not substituted with newer5workingdays."
+        ]
+      },
+      "command": [
+        "node scripts/qa18-free-production-browser.mjs (same original private access and checkpoint directories)",
+        "node scripts/qa18-free-production-record-check.cjs (same original private access and checkpoint directories)"
+      ],
+      "command_note": "Original archived command recipes where available; otherwise exact source entrypoints. Private arguments are omitted; this is not an invented original shell transcript.",
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/EXECUTION_SUMMARY.json",
+        "sha256": "8688141ec5c98bdaaff81c179b85ba81535a8c850abd10129e886e3f2121d271"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/backend.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/backend.log",
+          "sha256": "c9ade33e8dab124520dda1d7070820edae118ec5686f36d6ebcb9eaf0761ca71"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609374535-app-lost-draw-success.aria.txt",
+          "sha256": "0d99e25344295f02ce15f434fa356667412a10f560e84de81e02d11963f4556e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609374535-app-lost-draw-success.png",
+          "sha256": "f259352c34da5e4d1203e9424a4e6f9ca316f9b01635cbb449e8ec32f79091cc"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609374535-failure-0.aria.txt",
+          "sha256": "df880ca4b29647b286af89c7fe2150d73dc8b40c607d8787feb76d2d697a157c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609374535-failure-0.png",
+          "sha256": "bc53054f3131cfdd63df1b9c7ebac1dcf3525e33c577e80d5a3f3b4dcaef10fa"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609374535-RESULT.json",
+          "sha256": "c06eb0080ded1c0ff8f6ff5b5800adea94bb6ea36209878c9b45474063fe3921"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609374535-vue-pool-retired-after-original-draw.aria.txt",
+          "sha256": "59acaef59d7404c674f962cc40efea4153447c6c7ecb6e16fe917434a554a526"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609374535-vue-pool-retired-after-original-draw.png",
+          "sha256": "587c7ee86c95a798605ee8352b552fe2aadbe000983e467837b945b05aa81172"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609511417-app-rereads-original-saved-draw-after-driver-reload.aria.txt",
+          "sha256": "5f3460035030ea4a7d12ef3bbb3bf57f29398fa2fe97cc6711ee29e5883ff132"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609511417-app-rereads-original-saved-draw-after-driver-reload.png",
+          "sha256": "67d4a06e053709baf8dfc2a778e8a2bede36c6e9132cb5738eb82695a48bbcba"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609511417-failure-2.aria.txt",
+          "sha256": "1561dce7dcad4de1b70e97e8d62d9431d688135177bd93770c1e9f556033b91a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609511417-failure-2.png",
+          "sha256": "df6b8dc044dd6afe7eb44b798fa0e41971dcd985be48d33b42743a1b99ddaf63"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609511417-RESULT.json",
+          "sha256": "39f20130e9b7fca444acef98c7e8e2feb1b1a48c8f70e2ba699a847e158f936a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609511417-vue-same-original-ten-results.aria.txt",
+          "sha256": "f9bf1fe9ae53e143a929ea7cc5b9dac3f9588e0375263f8742e7e0f9fa05854a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609511417-vue-same-original-ten-results.png",
+          "sha256": "c23aafbf18667e078d43d196255c59af109c285a6820bbcf7883b134d80d558b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609579209-app-driver-unaccepted-hold-released.aria.txt",
+          "sha256": "8f0d3bbaebfbad6f720c1c3b3030ed5ee8689a422efff6a5093ad172a92bc3f7"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609579209-app-driver-unaccepted-hold-released.png",
+          "sha256": "0e48e8438a9065464d5bf7221f7eb4383406dee011e6a94e7e5d846ce3872418"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609579209-failure-2.aria.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609579209-failure-2.png",
+          "sha256": "fb32313e11bc8ffbd5310a1660e630b64cedb4622f8462a5eae2d5464ac8279e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609579209-RESULT.json",
+          "sha256": "a67c4c0ab2076908211a490e00c6c5370c3272a018196de7018c9ec4e38fb565"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609579209-vue-same-original-ten-results.aria.txt",
+          "sha256": "f9bf1fe9ae53e143a929ea7cc5b9dac3f9588e0375263f8742e7e0f9fa05854a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609579209-vue-same-original-ten-results.png",
+          "sha256": "c23aafbf18667e078d43d196255c59af109c285a6820bbcf7883b134d80d558b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609677895-app-driver-unaccepted-hold-released.aria.txt",
+          "sha256": "8f0d3bbaebfbad6f720c1c3b3030ed5ee8689a422efff6a5093ad172a92bc3f7"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609677895-app-driver-unaccepted-hold-released.png",
+          "sha256": "08ebedd021eb52bc59af456fbfdd2500380a76e63a12c66e0d43d8fa296e3090"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609677895-failure-2.aria.txt",
+          "sha256": "057410b856f0158183c6f680f6313ed4417e38a7810664b6e33fc4db6c2288ff"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609677895-failure-2.png",
+          "sha256": "599cde2846fa02441fa2edc505e0e39c5e5784a8e6a6b71f39685ba972a04dcd"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609677895-RESULT.json",
+          "sha256": "7494fbbe87d04210bd7814ae1f3f630e24c71ac95385abcc98d0086006a09b5c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609677895-vue-same-original-ten-results.aria.txt",
+          "sha256": "f9bf1fe9ae53e143a929ea7cc5b9dac3f9588e0375263f8742e7e0f9fa05854a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609677895-vue-same-original-ten-results.png",
+          "sha256": "c23aafbf18667e078d43d196255c59af109c285a6820bbcf7883b134d80d558b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609752073-app-driver-unaccepted-hold-released.aria.txt",
+          "sha256": "8f0d3bbaebfbad6f720c1c3b3030ed5ee8689a422efff6a5093ad172a92bc3f7"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609752073-app-driver-unaccepted-hold-released.png",
+          "sha256": "0e48e8438a9065464d5bf7221f7eb4383406dee011e6a94e7e5d846ce3872418"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609752073-failure-3.aria.txt",
+          "sha256": "dad5e261000f23913c509d312d456d76ac4871fc467dd3aa2dbccf40e84b5829"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609752073-failure-3.png",
+          "sha256": "17a174152ddb1baa56e94c409465b7c7a975baf09c525733d6753240a14b7f26"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609752073-free-order-cancel.aria.txt",
+          "sha256": "a6868b3159784ab09587f33c8ca8ac95c1900109feeed50f33bd0e5106e20087"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609752073-free-order-cancel.png",
+          "sha256": "f9424cf21ed645cfef4a8c598103d3b41fd37380bb12f012eefdeae86bd562c7"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609752073-RESULT.json",
+          "sha256": "697fc302c3c79738b9ee6da2ed910eb2ce73f2e0626cfc0b83a5a7d77272d0d2"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609752073-vue-same-original-ten-results.aria.txt",
+          "sha256": "f9bf1fe9ae53e143a929ea7cc5b9dac3f9588e0375263f8742e7e0f9fa05854a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609752073-vue-same-original-ten-results.png",
+          "sha256": "c23aafbf18667e078d43d196255c59af109c285a6820bbcf7883b134d80d558b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609807332-RESULT.json",
+          "sha256": "095e47bbe57fb6d9d0f0458644016a26643d14674f3a24d992abcbd4b0a24ba8"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609807332-vue-same-original-ten-results.aria.txt",
+          "sha256": "f9bf1fe9ae53e143a929ea7cc5b9dac3f9588e0375263f8742e7e0f9fa05854a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609807332-vue-same-original-ten-results.png",
+          "sha256": "c23aafbf18667e078d43d196255c59af109c285a6820bbcf7883b134d80d558b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-app-accepted-ROUGH_CUT.aria.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-app-accepted-ROUGH_CUT.png",
+          "sha256": "b858fac8522a9755d8e2e92eb8453897930fbd6adaece01bd148cf1919a3caa2"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-app-accepted-SAMPLE.aria.txt",
+          "sha256": "6f0e4a45efa2139fcebfee681bd5ee63227eaac510e3bc36222df959cde5fbff"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-app-accepted-SAMPLE.png",
+          "sha256": "96cd5fc42c431d9a11b6966e406832f87875260aa56216cfebac440e01295a4d"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-app-accepted-SCRIPT.aria.txt",
+          "sha256": "6f0e4a45efa2139fcebfee681bd5ee63227eaac510e3bc36222df959cde5fbff"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-app-accepted-SCRIPT.png",
+          "sha256": "c1a34942b0d372e0aed9e20ac6504686eac0b36db0ca52d2535f94fcf3812365"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-app-free-cancelled.aria.txt",
+          "sha256": "89ea3b734034d25ec913e31de9e105c494edae6238a668161c2a8fd259138d8c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-app-free-cancelled.png",
+          "sha256": "8d6b30fe73082a9602ec11d28d11123dbc2dc39e936af74cc43f175347a65897"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-failure-22.aria.txt",
+          "sha256": "1a7b57c87c32c95f72e90ff3cec438ca75db87d831e6bad198d196f6722a8362"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-failure-22.png",
+          "sha256": "f48bc1cc60aa0f8b066d8300200227af97d53128982b510f1add3d8fbdff791f"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-free-order-retry.aria.txt",
+          "sha256": "a6868b3159784ab09587f33c8ca8ac95c1900109feeed50f33bd0e5106e20087"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-free-order-retry.png",
+          "sha256": "f9424cf21ed645cfef4a8c598103d3b41fd37380bb12f012eefdeae86bd562c7"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-RESULT.json",
+          "sha256": "6e6fd2859c5ce3acb248844d99e9b2502128fc10f3875c574415df02bfc2218c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-free-production-started.aria.txt",
+          "sha256": "9fcde614182788603f189b35c9ebec622f1f8f578f3e65cdb0207edd7ad817ea"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-free-production-started.png",
+          "sha256": "fbc2f6023c9e5f610347d240568918d46df3c5d8339f6fb41297ad55ddc6d6b2"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-new-retry-quote-approved.aria.txt",
+          "sha256": "6a2b41666e5d4d44cbd7de59c0996ed179c84244afd8ff4cd998bacbcdcf69ef"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-new-retry-quote-approved.png",
+          "sha256": "3390bbf19e80868771068a49487468fb62afce76ff455f993deaee4141e8cb9e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-review-PROJECT-project.aria.txt",
+          "sha256": "d26d1e4263b090f4eaf032c8828f4d3d66d71df53b89ee956d00494497b6c738"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-review-PROJECT-project.png",
+          "sha256": "a4fdaa368b8024617444b6c1a8477643b8589f5d5ca9b3bc0484d430dcf7a714"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-review-VERSION-FINAL.aria.txt",
+          "sha256": "f4d7f43667d20af77f803952a1eb9943027e35557a2b3c71a4b007eaac3ec47b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-review-VERSION-FINAL.png",
+          "sha256": "72ff943c91b9d3865ce8d868dceb685e74330400e94b4ae4b2d89aabc3406bd5"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-review-VERSION-ROUGH_CUT.aria.txt",
+          "sha256": "c5cf2f6ca5c93cbc14ead93dcdb59d5274ae84f502bbcf594836aa6cfabfde51"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-review-VERSION-ROUGH_CUT.png",
+          "sha256": "136b4813ab73878f224300c4919d7c4c15e39a22d0e4b581e4ad4ebd9449c66d"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-review-VERSION-SAMPLE.aria.txt",
+          "sha256": "b1202f26ed0f153359436cc86e7eaefa8500b6ec0832ec0041e18653214a5167"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-review-VERSION-SAMPLE.png",
+          "sha256": "93340b7b2760fc45e8dbd3a6589a9fb99dcfd2edf448b1580316b172cb5365c0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-review-VERSION-SCRIPT.aria.txt",
+          "sha256": "cab6be5686bbf62a694d82df2bd8591165b4c959b4d7920f9b5073c1d713b64c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-review-VERSION-SCRIPT.png",
+          "sha256": "edd3f9d0b50aeae0ab9f28a827b91b12e9a9c9b424286efa4295b9d48fc0e9ee"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-same-original-ten-results.aria.txt",
+          "sha256": "f9bf1fe9ae53e143a929ea7cc5b9dac3f9588e0375263f8742e7e0f9fa05854a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-same-original-ten-results.png",
+          "sha256": "c23aafbf18667e078d43d196255c59af109c285a6820bbcf7883b134d80d558b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-submitted-FINAL.aria.txt",
+          "sha256": "ef8aefdf615a8387d7fab796ec77f4620b1c3bef2a79181b5fa33488132fbcc5"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-submitted-FINAL.png",
+          "sha256": "4e8afbeb69c23bf764c7579e7b2c9a95cec14dc8e5fe3c0c16c6745dc44090e3"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-submitted-ROUGH_CUT.aria.txt",
+          "sha256": "5ae00029e35989f50bf0dae9bff4b1574105a43d3e307033ae042848015ce594"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-submitted-ROUGH_CUT.png",
+          "sha256": "b336f7c62b169adaba3dd0880f41db2398e7bfba27caa79f13739ee5d82f9e17"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-submitted-SAMPLE.aria.txt",
+          "sha256": "b2a83396aac354998b56f7b1b2c402ef3a84611082a6bd244b3674567028c8ca"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-submitted-SAMPLE.png",
+          "sha256": "32a955bbebac786de79f85f57d2268a8ad9ebbcaec50ec0dcc50e0712999ab8c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-submitted-SCRIPT.aria.txt",
+          "sha256": "8f22e8a52cbba10ac560aac8753996a9fedefeb733b0371f3a561c992b49f1a1"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609825676-vue-submitted-SCRIPT.png",
+          "sha256": "f5c3f990938904ecd11ac016abcb99cdef311e5ca776a8c2246aaade341c5f71"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-app-accepted-FINAL.aria.txt",
+          "sha256": "6f0e4a45efa2139fcebfee681bd5ee63227eaac510e3bc36222df959cde5fbff"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-app-accepted-FINAL.png",
+          "sha256": "1ddaac28141b89283fa924c110a332bcdeddc545a4cbf2db314d3a3b457c1357"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-app-free-final-saved.aria.txt",
+          "sha256": "2e7ba59b881f9619e93a061093441b81c1c06b8b92a54f810e712b8fba731e7a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-app-free-final-saved.png",
+          "sha256": "6eb0d373f01b63095e8c344d133a75497372b348f58711f7605dd2f999574687"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-app-free-final.mp4",
+          "sha256": "a79ceadd19e965c87d3a999fa071cadfc179e0ffb0be29f19fe41da3f7dbb950"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-app-original-free-receipt.aria.txt",
+          "sha256": "acd52bdbb4ab942faaaca2c49b66147a6d14292c48b7ced9766bf5c7be552b32"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-app-original-free-receipt.png",
+          "sha256": "f748efc650c214ff2e0751ede8f388a19c092df21b1344a614995748bb3be58e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-RESULT.json",
+          "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-vue-free-final-saved.aria.txt",
+          "sha256": "98501ea3d29d81a7b74f958fc667a869bb2f12f875101843edd2da8f84c16222"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-vue-free-final-saved.png",
+          "sha256": "4cd511f4261429d01b071ff77553300401f6eb03cc59a3d9572cc0713ad22aaa"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-vue-free-final.mp4",
+          "sha256": "a79ceadd19e965c87d3a999fa071cadfc179e0ffb0be29f19fe41da3f7dbb950"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-vue-same-original-ten-results.aria.txt",
+          "sha256": "f9bf1fe9ae53e143a929ea7cc5b9dac3f9588e0375263f8742e7e0f9fa05854a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/1795609952736-vue-same-original-ten-results.png",
+          "sha256": "c23aafbf18667e078d43d196255c59af109c285a6820bbcf7883b134d80d558b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+          "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser01.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser01.log",
+          "sha256": "11dcd011f3419331fb63e552eb4ca9acc14df888146729f11fd92e737f23eadb"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser02.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser02.log",
+          "sha256": "8a18dd1d4fd54d647814eb6ee2d6444e8655419913d1a11c28e2fd6576518c16"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser03.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser03.log",
+          "sha256": "077ddb99355ee6e294ff664ae75223613fa7089597610b69825147ec19bfd1cb"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser04.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser04.log",
+          "sha256": "0dd3cffb48d6fd1195b9965ae87be74463d846cf7e023cdd78f484eb21fc927e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser05.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser05.log",
+          "sha256": "8a136d23eec15cee6808774ab6bf4693ebb850de1931fea551730068140a98bf"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser06.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser06.log",
+          "sha256": "73bd10ee201ec4c7f2183d658f8ccd6a4958eff8aa8d3d214bfebc157035af30"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser07.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser07.log",
+          "sha256": "e364db5dadeb4f5782e76db443ff56743f3f841065a753dbe8299ff79962474a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser08.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser08.log",
+          "sha256": "3ed55666752bd3c7828a154f417c4a06f57c9b6f74812ec57afc812019ce18ad"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/census.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/census.log",
+          "sha256": "4985eac36bda73b4de1e01a573231a99d56801aa743843701e9b93c4383cf1a5"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/census02.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/census02.log",
+          "sha256": "56d36c687410588aab630403093026404c795f00549d4c874b8c0d2217961713"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/contract-report.json",
+          "sha256": "03e0df9868d04f8da7cb21d66632b4acb16d25237d4ad98a120d7b898d19b83f"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/contract.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/contract.log",
+          "sha256": "4501f644e98208f3eb54045c8359391615c5a99ca913774bf25fc14ac7acddcf"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+          "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/environment/STATUS.json",
+          "sha256": "27377c933f302da73983cc5633ee33b3e22e6aa20af217195ca9684b2bfdc4d2"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/environment.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/environment.log",
+          "sha256": "acfb910b28244c67664af40962c08583592ba309ab94c0cea2aa4f079566b1ea"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/environment02/prepared.json",
+          "sha256": "ba8f38f2067d44da58b0ce320edcdac8c338edf2cebae5391a78aca19a3c8673"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/environment02/STATUS.json",
+          "sha256": "7d5b5b21d3718ae1e09c630887ca1732c9eb68d3a0d993748a3ec533a7f41ece"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/environment02.log",
+          "sha256": "d39dfd0aa014ac3c22e86bf906e85644f3919a6466d86e7a737a8be01f37fef6"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-aftercare-pending-app-wallet.aria.txt",
+          "sha256": "2404b2bcee8510949f4efb62c073b5f8dad47ade8d03f9157ad1e68cf76f537c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-aftercare-pending-app-wallet.png",
+          "sha256": "620d5669c095762aa71e5659787401229bdea5b49d57512581f9babbe6ab958a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-aftercare-pending-vue-wallet.aria.txt",
+          "sha256": "40bc5916cd769576b74e767562c16507bae1744f8336102e2580e4ba8e5cecb6"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-aftercare-pending-vue-wallet.png",
+          "sha256": "bba5837583b17e2ce9056e7d82567be29517ccf160189dce1e24deded0c54330"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-app-source-accepted.aria.txt",
+          "sha256": "bd35154345568135eb54e7974acabe2a9abe83df3a0814e901830875904a83a3"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-app-source-accepted.png",
+          "sha256": "6a6a161b0842cec97802a20e8fff258133f560555c23937b8b7c9b2c8d376f85"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-app-source-order.aria.txt",
+          "sha256": "a6868b3159784ab09587f33c8ca8ac95c1900109feeed50f33bd0e5106e20087"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-app-source-order.png",
+          "sha256": "5ecba855296bc093d5f3264d80980f23cfe493e6092a1ad2b4f69f7d9d7fad9f"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-earned7000-once-app-wallet.aria.txt",
+          "sha256": "9bac12cadc85845b33440940743d5db364deb30da0f3f0f01b4b9d03559d9a60"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-earned7000-once-app-wallet.png",
+          "sha256": "5ce507a297a4e5e1000fd0826ef45cb19350610fb6a148ea12cdf3472f6335e0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-earned7000-once-vue-wallet.aria.txt",
+          "sha256": "95d5d8623b2d04601064b8acd6627ee76fd3ee7c9df153df0509099ef0b1b1cf"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-earned7000-once-vue-wallet.png",
+          "sha256": "4beb370bafc0b402a145af9555099f11d525b1e1733a4f41c26e350bc5e75f0d"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-matured-same-order-earning.aria.txt",
+          "sha256": "efe9c704921e3e52fc13826fae9f075659692456e9a0a44096ec6e12c4c08bec"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-matured-same-order-earning.png",
+          "sha256": "693c7a006ef6a020d146f42fc4d7df86f23f8e9a2bba000ac55ba5f0b8e6dd2c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-opened-no-free-points-app-wallet.aria.txt",
+          "sha256": "2404b2bcee8510949f4efb62c073b5f8dad47ade8d03f9157ad1e68cf76f537c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-opened-no-free-points-app-wallet.png",
+          "sha256": "620d5669c095762aa71e5659787401229bdea5b49d57512581f9babbe6ab958a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-opened-no-free-points-vue-wallet.aria.txt",
+          "sha256": "40bc5916cd769576b74e767562c16507bae1744f8336102e2580e4ba8e5cecb6"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-opened-no-free-points-vue-wallet.png",
+          "sha256": "bba5837583b17e2ce9056e7d82567be29517ccf160189dce1e24deded0c54330"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-pending-same-order-earning.aria.txt",
+          "sha256": "004c8ef41fdf5a52ea3c2aae8950c5b3461a8c4639db5b18482a2f352b5caff2"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-pending-same-order-earning.png",
+          "sha256": "55857dcc3b1897dc2af76631e015819f69d6efdb283af90134311a5c4466c0f0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-RESULT.json",
+          "sha256": "b3f9286ad13f8fc2b48692ceebc3090b71b60a4971d1afa39f19a6e18b8640ae"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-source-download.mp4",
+          "sha256": "5f29ac2f4c3a6083fdb8a596900f31fe664d0f1ee6bb30299ca62718f0508feb"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-source-payment-created.aria.txt",
+          "sha256": "ed2985dd24e381ea57bfcfeb3b0c5a308cfb53a4c7ee2644ead026d880e48aeb"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-source-payment-created.png",
+          "sha256": "a9e372ed50376fb7b1be1bd3bc5c1da49ef82404ad0203d1d662513e5c973b14"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-source-SUCCEEDED.aria.txt",
+          "sha256": "a12d604cfba7af20d8eedd42b459a7122211b3a63a26d12a976be4dfde278b74"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/1795609251214-source-SUCCEEDED.png",
+          "sha256": "16db6caa1f2ca5da5e81c883ed23640e99842124bec8eba5604b4c33045929e8"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix/checkpoint.json",
+          "sha256": "b3f9286ad13f8fc2b48692ceebc3090b71b60a4971d1afa39f19a6e18b8640ae"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix01.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/prefix01.log",
+          "sha256": "bc32d97854283374d02a54c5477ee02f052da7c1ff814aa25bdd6fa2b289e487"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/redemption-checkout-http-fixtures.json",
+          "sha256": "3e98b2d5442e6ccc5bf4f193fe510f6d62a7456c9a73664ffd8bb4cee7cb90a8"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/redemption-lottery-http-fixtures.json",
+          "sha256": "002fb4377bd881bedc6c4a9c20d06ab54f854de711ee2f9c2391a0475dbbd220"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795608931886-failure-0.aria.txt",
+          "sha256": "fcf5df391de55897df45b267ebfff97a41655f4f21f9abf4c161ae83784ffdcc"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795608931886-failure-0.png",
+          "sha256": "5b57f2765b2de835a009bad8370398df11ed9a39b750cef5356f808efc34f2bf"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795608931886-RESULT.json",
+          "sha256": "c3e22c2c1dc39dc22193160d363dd886e1a4852e24b7f1ba8a39203fb4f6d0ed"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609015298-failure-2.aria.txt",
+          "sha256": "80f76d765fb718b2dc355dc5f0c291df575f5ce522da1d0fb8c6688d4d48118f"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609015298-failure-2.png",
+          "sha256": "eb7ec696e838516225a1966feaf981a0b540c2ab5d5cb21339ff0a0337e668a5"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609015298-pool-stock-choices.aria.txt",
+          "sha256": "80f76d765fb718b2dc355dc5f0c291df575f5ce522da1d0fb8c6688d4d48118f"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609015298-pool-stock-choices.png",
+          "sha256": "eb7ec696e838516225a1966feaf981a0b540c2ab5d5cb21339ff0a0337e668a5"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609015298-RESULT.json",
+          "sha256": "5093f3d38b106647817b51d28737e608b9bf0f0f9e98b89098c51c253f9d5694"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609015298-stock-created.aria.txt",
+          "sha256": "3fa96ee33213d85df741367d70c44c735b840f5c4e76b8c179aebcabd015e141"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609015298-stock-created.png",
+          "sha256": "4841bddd1d4f8260652f80e492812836e4472034e43510fe30a45e186d2a1dbb"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609015298-stock-reviewed.aria.txt",
+          "sha256": "8969697006843a378d556e40eb06439240d09293537031388ad11e7c30dd8019"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609015298-stock-reviewed.png",
+          "sha256": "ad7215ab02327303dd688694aef9d8765b258b11e12aaa4f78961ad3be57b817"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609110247-failure-1.aria.txt",
+          "sha256": "8b5eaa0ea6dc98f5355ae9df8da48a0a5e89c971cd1b2843fe48306eade53c3b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609110247-failure-1.png",
+          "sha256": "43c6568008898843eda37c2e557db8229fddfaf20e187d6a5b3235ea4d2f58ff"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609110247-pool-created.aria.txt",
+          "sha256": "bbca625525c91c1e9ad88dadee0e389e437c7f14c6ed98030008d046b14158da"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609110247-pool-created.png",
+          "sha256": "561f8fdfc36210042dd5d93af73773824ee62319d702870876ac39c83f0af947"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609110247-pool-stock-choices.aria.txt",
+          "sha256": "0f1e934f2f162393ac579de3210db2a91c351c3dc2fc901d8fb2e1bb154523ce"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609110247-pool-stock-choices.png",
+          "sha256": "505e10bb6ca89292afceb5ca20851440ed4a1c1a84a75aca3d8d3f2f0be7f0dd"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609110247-RESULT.json",
+          "sha256": "edd3640d50310dcf570e00792bb9ab2afcc2125dafa6499568447759ced83b0b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609220483-pool-review-FINANCE.aria.txt",
+          "sha256": "2f02d4ed12986010d51d00833960b58fa2e55bf3409dd5135f646711fe58a454"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609220483-pool-review-FINANCE.png",
+          "sha256": "5f4046bca623281989dd834531a7ed3f878a5fecb637f14536cbdc1f78a6ded5"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609220483-pool-review-RULES.aria.txt",
+          "sha256": "d452fe855efef54ab93857935c34b18a7846991d0a3658c71d25291f4546f880"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609220483-pool-review-RULES.png",
+          "sha256": "b33afe6949b15c9e55d02f828cb04b1edd0fa18076ccabd25fa24683d54cb4d1"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/1795609220483-RESULT.json",
+          "sha256": "2655bf4872d1986d49cc652f9811f8f1c0f28e6f37a7a6b73437c07ba67aa95c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup/checkpoint.json",
+          "sha256": "2655bf4872d1986d49cc652f9811f8f1c0f28e6f37a7a6b73437c07ba67aa95c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup01.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup01.log",
+          "sha256": "b29eea6ccca57593c2054cbf0ff608f6fa75aea5406dd10432fc2f499cfde643"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup02.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup02.log",
+          "sha256": "54906a9ec7a26995cd6d7c981ab74a147782947ddea0b542a7c027adbbd3f870"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup03.exit",
+          "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup03.log",
+          "sha256": "34c12e616e34dd6feefa09cd015654806e0efff4b673d811fcb4438fa0647054"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup04.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/setup04.log",
+          "sha256": "c6da93aff61e694dd65a30daf787681ca25d0a3fca89495809f4259b673ff4f1"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-build.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-build.log",
+          "sha256": "d80a17183b0522b2fa18783e8e840ed41a8c0c873d449d5e0491af7f073e8d8e"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-build02.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-build02.log",
+          "sha256": "eebaa3cf4c91f55268f506b437bbf7dc5a953f76079fc00de79b18957969c8ce"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-business-test.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-business-test.log",
+          "sha256": "17c4976b956f043ebead55e249409411e4cc2de40b2c223121de6f81c34353e0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-business-test02.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-business-test02.log",
+          "sha256": "c9c3193bc42db0263c632bf9caebf722b092a4a4372eb6e618e7a6f2d47aaf28"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-pool-test.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-pool-test.log",
+          "sha256": "b223d4e4ca6f9fde120ee566fe5f3f7824579b3d6f8520489c3ce4b6e1f81783"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-pool-test02.exit",
+          "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/vue-pool-test02.log",
+          "sha256": "2e67fe3fb2092e99d31bc4b542eb02d391384706be92878b139c2e0cdb13f0c0"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/BUILD_MANIFEST.json",
+          "sha256": "40bd1159dd9c7439d004af9247008d0f69738921f49c33e6b01aa4415e49476a"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/EXECUTION_SUMMARY.json",
+          "sha256": "8688141ec5c98bdaaff81c179b85ba81535a8c850abd10129e886e3f2121d271"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/registry/config.json",
+          "sha256": "6249d56c044cb68ebf62a4bab875adc75345bdf3b89dc2e682c1653d6beaf995"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/registry/events.jsonl",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/registry/manifest.json",
+          "sha256": "ccd0ddca483e130c5e2a5a2193898618caea7de74931dcc712b36107534d617e"
+        }
+      ],
+      "limitations": [
+        "Synthetic guaranteed100percent full-production pool deliberately exercises prize fulfillment, NOT original CONTRACT_20261029 probabilities or cost basis. Original E2E07 normal-rule pool remains.",
+        "Actual stock700yuan consumption generates7000points after original7day aftercare using isolated day0->day8 clock. No FREE awards/manual balance edits. Zero-cash orders have two pending zero-point rows, not additional positive earnings.",
+        "Original App draw succeeded then network response lost; driver hard reload erased in-memory pending state. Original-key API replay and App saved-draw read pass, but original pending-request UI recovery remains NOT_RUN. Do not relabel it PASS.",
+        "Flutter long-list selection used10000px viewport to materialize10 identical prizes. Unaccepted holds explicitly released in App; not a phone visual check.",
+        "Original grant/order/production delivery contract retains168hour acceptance. Prior driver incorrectly assumed modern5workingdays; old failure retained, original receipt recovered by read.",
+        "13 browser attempts include10 failures,1prefix partial,2scoped completions; not a single clean final full-chain run. Two product fixes in Vue; BE/App unchanged.",
+        "Actual synthetic file saved in App Flutter Web and Vue, not Android. Real persons/payments/costs/production not accepted.",
+        "Prior backup predates rounds18/19/20; original audition next-day T+1 and other chains/G18/final same-version18/12/manual151 remain.",
+        "Retained failed attempts and resumed records are discovery evidence, not a fresh full regression. Exact browser product versions changed in some attempts; build manifests retain released artifacts; checkout trees alone do not prove loaded browser bytes."
+      ],
+      "observations": [
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "result"
+          ],
+          "equals": "PASS"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "complete"
+          ],
+          "equals": true
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "checks",
+            8,
+            "name"
+          ],
+          "equals": "app-zero-cash-original-free-order-cancel"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "checks",
+            11,
+            "name"
+          ],
+          "equals": "app-prestart-zero-cash-cancel-releases-original-free-grant"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "checks",
+            13,
+            "name"
+          ],
+          "equals": "app-zero-cash-original-free-order-retry"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "checks",
+            14,
+            "name"
+          ],
+          "equals": "vue-reviews-free-project-before-grant-consumption"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "checks",
+            15,
+            "name"
+          ],
+          "equals": "vue-start-consumes-same-free-grant-without-cash"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "checks",
+            25,
+            "name"
+          ],
+          "equals": "started-free-grant-cannot-be-restored-by-unpaid-cancel"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "checks",
+            29,
+            "name"
+          ],
+          "equals": "free-delivery-complete-with-original-zero-cash-contract-and-no-extra-points-charge"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "source_order_id"
+          ],
+          "equals": "114da9f7-5401-4394-b678-a02bbc04744a"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "orders",
+            "cancel",
+            "status"
+          ],
+          "equals": "CANCELLED"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "orders",
+            "retry",
+            "status"
+          ],
+          "equals": "REWARD_FUNDED"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "used_grant_id"
+          ],
+          "equals": "70aee25c-cbe2-4809-92b3-164a75e9dcfa"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "used_grants"
+          ],
+          "equals": 1
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "grant_original_expiry_unchanged"
+          ],
+          "equals": true
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "project_status"
+          ],
+          "equals": "ACCEPTED"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "fulfillment"
+          ],
+          "equals": "DELIVERED"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "positive_earning_count"
+          ],
+          "equals": 1
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "orders",
+            "cancel",
+            "payments"
+          ],
+          "equals": 0
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "orders",
+            "cancel",
+            "refunds"
+          ],
+          "equals": 0
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "orders",
+            "cancel",
+            "journal_count"
+          ],
+          "equals": 0
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "orders",
+            "cancel",
+            "financial"
+          ],
+          "equals": {
+            "received_minor": 0,
+            "refunded_minor": 0,
+            "net_minor": 0
+          }
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "orders",
+            "retry",
+            "payments"
+          ],
+          "equals": 0
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "orders",
+            "retry",
+            "refunds"
+          ],
+          "equals": 0
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "orders",
+            "retry",
+            "journal_count"
+          ],
+          "equals": 0
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/DATABASE_CENSUS.json",
+            "sha256": "5e0c621a00d37ddd86e6c6dc888448060807d93f19c5e19726f6bb9c4dada481"
+          },
+          "json_path": [
+            "orders",
+            "retry",
+            "financial"
+          ],
+          "equals": {
+            "received_minor": 0,
+            "refunded_minor": 0,
+            "net_minor": 0
+          }
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            167,
+            "role"
+          ],
+          "equals": "buyer-app"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            167,
+            "path"
+          ],
+          "equals": "/api/v1/trade/orders/176c0b8c-f1fa-4f51-92f6-2801fc3a08a1/cancellation"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            167,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            167,
+            "method"
+          ],
+          "equals": "POST"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            244,
+            "role"
+          ],
+          "equals": "producer-vue"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            244,
+            "path"
+          ],
+          "equals": "/api/v1/production/projects/f08cc136-f8cc-47ae-b143-dada4b51a15e/start"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            244,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            244,
+            "method"
+          ],
+          "equals": "POST"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            235,
+            "role"
+          ],
+          "equals": "reviewer-vue"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            235,
+            "path"
+          ],
+          "equals": "/api/v1/production/records/f08cc136-f8cc-47ae-b143-dada4b51a15e/reviews"
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            235,
+            "status"
+          ],
+          "equals": 200
+        },
+        {
+          "artifact": {
+            "path": "docs/testing/evidence/pm04-g1-free-production-20261125-20/browser/checkpoint.json",
+            "sha256": "249565015b0adfece7a5c54edfa46d6772da026f764f50bfbb28bb83da429a7e"
+          },
+          "json_path": [
+            "requests",
+            235,
+            "method"
+          ],
+          "equals": "POST"
+        }
+      ],
+      "chain": {
+        "environment": "jx_test_qa18_points_60898647dc3b28d20c84",
+        "business_id": "114da9f7-5401-4394-b678-a02bbc04744a"
+      }
+    }
+  },
+  "slots": [
+    {
+      "key": "E2E-06|api|normal",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环；现金制作金首笔付款确认后核销，全额服务权益另走0现金/开工核销/开工前取消释放；退款不足晶钻记待冲回且不重复扣。",
+      "execution_ids": [
+        "cash_credit",
+        "full_service"
+      ],
+      "clause_assertions": [
+        "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+        "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+        "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。",
+        "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+        "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+        "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+      ],
+      "branch_basis": {
+        "path": "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+        "sha256": "31536c6806c4451b226d33b31cd1e8b8a1b7a72881e36eb59624b0a2bca499d9"
+      },
+      "not_one_environment_or_final_batch": true,
+      "original_branches": [
+        {
+          "id": "cash_credit",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环",
+            "现金制作金首笔付款确认后核销",
+            "退款不足晶钻记待冲回且不重复扣"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_011e77633ef8d975c4b7",
+            "business_id": "fe37e661-23f3-49d3-acf7-e265e6cb1100"
+          },
+          "execution_ids": [
+            "cash_credit"
+          ],
+          "clause_assertions": [
+            "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+            "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+            "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。"
+          ]
+        },
+        {
+          "id": "full_service",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "全额服务权益另走0现金/开工核销/开工前取消释放"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_60898647dc3b28d20c84",
+            "business_id": "114da9f7-5401-4394-b678-a02bbc04744a"
+          },
+          "execution_ids": [
+            "full_service"
+          ],
+          "clause_assertions": [
+            "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+            "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+            "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+          ]
+        }
+      ],
+      "surface_scope": "同笔真实API请求及只读核数，不能用另一环境替换任一支的中段。"
+    },
+    {
+      "key": "E2E-06|api|reverse",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环；现金制作金首笔付款确认后核销，全额服务权益另走0现金/开工核销/开工前取消释放；退款不足晶钻记待冲回且不重复扣。",
+      "execution_ids": [
+        "cash_credit",
+        "full_service"
+      ],
+      "clause_assertions": [
+        "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+        "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+        "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。",
+        "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+        "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+        "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+      ],
+      "branch_basis": {
+        "path": "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+        "sha256": "31536c6806c4451b226d33b31cd1e8b8a1b7a72881e36eb59624b0a2bca499d9"
+      },
+      "not_one_environment_or_final_batch": true,
+      "original_branches": [
+        {
+          "id": "cash_credit",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环",
+            "现金制作金首笔付款确认后核销",
+            "退款不足晶钻记待冲回且不重复扣"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_011e77633ef8d975c4b7",
+            "business_id": "fe37e661-23f3-49d3-acf7-e265e6cb1100"
+          },
+          "execution_ids": [
+            "cash_credit"
+          ],
+          "clause_assertions": [
+            "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+            "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+            "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。"
+          ]
+        },
+        {
+          "id": "full_service",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "全额服务权益另走0现金/开工核销/开工前取消释放"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_60898647dc3b28d20c84",
+            "business_id": "114da9f7-5401-4394-b678-a02bbc04744a"
+          },
+          "execution_ids": [
+            "full_service"
+          ],
+          "clause_assertions": [
+            "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+            "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+            "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+          ]
+        }
+      ],
+      "surface_scope": "同笔真实API请求及只读核数，不能用另一环境替换任一支的中段。"
+    },
+    {
+      "key": "E2E-06|app|normal",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环；现金制作金首笔付款确认后核销，全额服务权益另走0现金/开工核销/开工前取消释放；退款不足晶钻记待冲回且不重复扣。",
+      "execution_ids": [
+        "cash_credit",
+        "full_service"
+      ],
+      "clause_assertions": [
+        "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+        "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+        "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。",
+        "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+        "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+        "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+      ],
+      "branch_basis": {
+        "path": "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+        "sha256": "31536c6806c4451b226d33b31cd1e8b8a1b7a72881e36eb59624b0a2bca499d9"
+      },
+      "not_one_environment_or_final_batch": true,
+      "original_branches": [
+        {
+          "id": "cash_credit",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环",
+            "现金制作金首笔付款确认后核销",
+            "退款不足晶钻记待冲回且不重复扣"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_011e77633ef8d975c4b7",
+            "business_id": "fe37e661-23f3-49d3-acf7-e265e6cb1100"
+          },
+          "execution_ids": [
+            "cash_credit"
+          ],
+          "clause_assertions": [
+            "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+            "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+            "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。"
+          ]
+        },
+        {
+          "id": "full_service",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "全额服务权益另走0现金/开工核销/开工前取消释放"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_60898647dc3b28d20c84",
+            "business_id": "114da9f7-5401-4394-b678-a02bbc04744a"
+          },
+          "execution_ids": [
+            "full_service"
+          ],
+          "clause_assertions": [
+            "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+            "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+            "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+          ]
+        }
+      ],
+      "surface_scope": "买方App实际消费、兑换/用券、取消重付、退款核对及零现金确认/验收；其他角色在Vue接续同支业务。"
+    },
+    {
+      "key": "E2E-06|app|reverse",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环；现金制作金首笔付款确认后核销，全额服务权益另走0现金/开工核销/开工前取消释放；退款不足晶钻记待冲回且不重复扣。",
+      "execution_ids": [
+        "cash_credit",
+        "full_service"
+      ],
+      "clause_assertions": [
+        "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+        "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+        "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。",
+        "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+        "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+        "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+      ],
+      "branch_basis": {
+        "path": "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+        "sha256": "31536c6806c4451b226d33b31cd1e8b8a1b7a72881e36eb59624b0a2bca499d9"
+      },
+      "not_one_environment_or_final_batch": true,
+      "original_branches": [
+        {
+          "id": "cash_credit",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环",
+            "现金制作金首笔付款确认后核销",
+            "退款不足晶钻记待冲回且不重复扣"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_011e77633ef8d975c4b7",
+            "business_id": "fe37e661-23f3-49d3-acf7-e265e6cb1100"
+          },
+          "execution_ids": [
+            "cash_credit"
+          ],
+          "clause_assertions": [
+            "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+            "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+            "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。"
+          ]
+        },
+        {
+          "id": "full_service",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "全额服务权益另走0现金/开工核销/开工前取消释放"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_60898647dc3b28d20c84",
+            "business_id": "114da9f7-5401-4394-b678-a02bbc04744a"
+          },
+          "execution_ids": [
+            "full_service"
+          ],
+          "clause_assertions": [
+            "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+            "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+            "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+          ]
+        }
+      ],
+      "surface_scope": "买方App实际消费、兑换/用券、取消重付、退款核对及零现金确认/验收；其他角色在Vue接续同支业务。"
+    },
+    {
+      "key": "E2E-06|web|normal",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环；现金制作金首笔付款确认后核销，全额服务权益另走0现金/开工核销/开工前取消释放；退款不足晶钻记待冲回且不重复扣。",
+      "execution_ids": [
+        "cash_credit",
+        "full_service"
+      ],
+      "clause_assertions": [
+        "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+        "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+        "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。",
+        "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+        "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+        "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+      ],
+      "branch_basis": {
+        "path": "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+        "sha256": "31536c6806c4451b226d33b31cd1e8b8a1b7a72881e36eb59624b0a2bca499d9"
+      },
+      "not_one_environment_or_final_batch": true,
+      "original_branches": [
+        {
+          "id": "cash_credit",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环",
+            "现金制作金首笔付款确认后核销",
+            "退款不足晶钻记待冲回且不重复扣"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_011e77633ef8d975c4b7",
+            "business_id": "fe37e661-23f3-49d3-acf7-e265e6cb1100"
+          },
+          "execution_ids": [
+            "cash_credit"
+          ],
+          "clause_assertions": [
+            "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+            "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+            "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。"
+          ]
+        },
+        {
+          "id": "full_service",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "全额服务权益另走0现金/开工核销/开工前取消释放"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_60898647dc3b28d20c84",
+            "business_id": "114da9f7-5401-4394-b678-a02bbc04744a"
+          },
+          "execution_ids": [
+            "full_service"
+          ],
+          "clause_assertions": [
+            "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+            "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+            "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+          ]
+        }
+      ],
+      "surface_scope": "买方/供给方Vue按同支报价及订单读取，独审退款；零现金同项目独审、开工及各版审核。不同端按实际角色接续，不声称每个角色的所有动作都在两端重复执行。"
+    },
+    {
+      "key": "E2E-06|web|reverse",
+      "scope": "COMPLETE_ORIGINAL_SLOT",
+      "expected": "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环；现金制作金首笔付款确认后核销，全额服务权益另走0现金/开工核销/开工前取消释放；退款不足晶钻记待冲回且不重复扣。",
+      "execution_ids": [
+        "cash_credit",
+        "full_service"
+      ],
+      "clause_assertions": [
+        "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+        "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+        "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。",
+        "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+        "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+        "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+      ],
+      "branch_basis": {
+        "path": "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+        "sha256": "31536c6806c4451b226d33b31cd1e8b8a1b7a72881e36eb59624b0a2bca499d9"
+      },
+      "not_one_environment_or_final_batch": true,
+      "original_branches": [
+        {
+          "id": "cash_credit",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环",
+            "现金制作金首笔付款确认后核销",
+            "退款不足晶钻记待冲回且不重复扣"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_011e77633ef8d975c4b7",
+            "business_id": "fe37e661-23f3-49d3-acf7-e265e6cb1100"
+          },
+          "execution_ids": [
+            "cash_credit"
+          ],
+          "clause_assertions": [
+            "原消费fe37e661实际付款70000分；原7日售后前不可花、隔离业务时钟day8后同来源仅发7000晶钻。",
+            "App固定6000兑换原38d6cd7a，50元券；先失败93462ff9订单关闭取消释放，同券重付c88e2cfc首款13500确认后核销。",
+            "Vue独审两笔原退款、App核对：制作订单仅退实付13500且券不返；来源消费退70000，不足6000待冲回，原退款重放未再扣。"
+          ]
+        },
+        {
+          "id": "full_service",
+          "scope": "COMPLETE_ORIGINAL_BRANCH",
+          "source_clauses": [
+            "全额服务权益另走0现金/开工核销/开工前取消释放"
+          ],
+          "chain": {
+            "environment": "jx_test_qa18_points_60898647dc3b28d20c84",
+            "business_id": "114da9f7-5401-4394-b678-a02bbc04744a"
+          },
+          "execution_ids": [
+            "full_service"
+          ],
+          "clause_assertions": [
+            "独立原消费114da9f7发分，合成奖池依法定机测配置产生原70aee25c免费制作权益；不是固定兑换或原奖池概率验收。",
+            "App明确0现金服务及免付额下单，原176c0b8c开工前取消释放；同权益13f50e81重新下单，经Vue项目独审后开工核销。",
+            "开工后取消被拒绝，未恢复已用权益；原两个0现金订单均无付款、退款或钱账流水，四版审核/本人验收及双端文件保存保持。"
+          ]
+        }
+      ],
+      "surface_scope": "买方/供给方Vue按同支报价及订单读取，独审退款；零现金同项目独审、开工及各版审核。不同端按实际角色接续，不声称每个角色的所有动作都在两端重复执行。"
+    }
+  ],
+  "limits": [
+    "Historical original branches, not one environment or version and not final PASS.",
+    "Synthetic files, actors, dedicated business clock and payment channel; not provider, physical device, real cost/signature or formal signoff.",
+    "Full-service guaranteed test pool is fulfillment evidence, never original lottery odds acceptance; E2E07 pending draw UI recovery remains."
+  ]
+}

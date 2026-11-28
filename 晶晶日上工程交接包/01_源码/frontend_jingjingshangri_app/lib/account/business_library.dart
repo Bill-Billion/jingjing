@@ -232,6 +232,14 @@ class _BusinessLibraryState extends State<_BusinessLibrary> {
             child: const Text('查看原约定', textAlign: TextAlign.center))),
       ]));
 
+  // Keep values selectable while exposing each fact as a complete spoken label.
+  // Flutter Web may otherwise expose SelectableText as an empty disabled field.
+  Widget _recordFact(String label, Object? value) => Semantics(
+      container: true,
+      excludeSemantics: true,
+      label: '$label: ${value ?? '—'}',
+      child: tradeFact(label, value));
+
   Widget record(String source, Map<String, dynamic> item) =>
       widget.category == 'contracts' ? _contractRecord(source, item) : Padding(
       key: ValueKey(item['key']),
@@ -243,18 +251,18 @@ class _BusinessLibraryState extends State<_BusinessLibrary> {
                 fontSize: 20,
                 fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
-        tradeFact('原业务状态', personalBusinessStatus(item)),
-        tradeFact('记录版本', '${item['object_version']}'),
-        tradeFact('创建时间', communityDate(item['created_at'])),
+        _recordFact('原业务状态', personalBusinessStatus(item)),
+        _recordFact('记录版本', '${item['object_version']}'),
+        _recordFact('创建时间', communityDate(item['created_at'])),
         if (source == 'FINANCE') ...[
-          tradeFact('币种', item['income']['currency']),
-          tradeFact('核算环境',
+          _recordFact('币种', item['income']['currency']),
+          _recordFact('核算环境',
               item['income']['environment'] == 'SANDBOX' ? '测试环境' : '正式环境'),
           Text(item['income']['meaning'] == 'MERCHANT_RETAINED_NOT_TRANSFER'
               ? '商家留存，不是应向商家转账的待付款。'
               : '账面待付不代表已满足付款条件，也不是银行余额。'),
           for (final field in businessIncomeFields.entries)
-            tradeFact(field.value,
+            _recordFact(field.value,
                 personalIncomeMoney(field.key, item['income'][field.key])),
           const Text('仅含已登记台账。净支付已扣除支付退回；本汇总不作银行到账核验。'),
         ],

@@ -236,10 +236,11 @@ class ArtistAvatar {
 }
 
 class ArtistDetail {
-  ArtistDetail(this.person, this.avatars, this.halo);
+  ArtistDetail(this.person, this.avatars, this.halo, {this.allowedActions});
   final ArtistPerson person;
   final List<ArtistAvatar> avatars;
   final int halo;
+  final Set<String>? allowedActions;
   static ArtistDetail parse(dynamic v, String id) {
     final d = artistMap(v), person = ArtistPerson.parse(d['person']);
     artistRequire(person.id == id &&
@@ -250,7 +251,15 @@ class ArtistDetail {
         .map((x) => ArtistAvatar.parse(x, person))
         .toList();
     artistRequire(rows.map((x) => x.id).toSet().length == rows.length);
-    return ArtistDetail(person, rows, d['halo_level']);
+    Set<String>? actions;
+    if (d.containsKey('allowed_actions')) {
+      final values = artistList(d['allowed_actions']);
+      artistRequire(values.length <= artistActions.length &&
+          values.every((v) => v is String && artistActions.containsKey(v)) &&
+          values.toSet().length == values.length);
+      actions = Set<String>.unmodifiable(values.cast<String>());
+    }
+    return ArtistDetail(person, rows, d['halo_level'], allowedActions: actions);
   }
 }
 

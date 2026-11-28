@@ -1,0 +1,294 @@
+TAP version 13
+# Subtest: cash and lottery rules use reviewed thresholds, Beijing time and separate units
+ok 1 - cash and lottery rules use reviewed thresholds, Beijing time and separate units
+  ---
+  duration_ms: 1.7129
+  type: 'test'
+  ...
+# Subtest: quiet hours cross midnight, explicit opt-in and daily marketing restraint
+ok 2 - quiet hours cross midnight, explicit opt-in and daily marketing restraint
+  ---
+  duration_ms: 1.365
+  type: 'test'
+  ...
+# Subtest: reviewed consumer protection binds real operations, preserves recovery and controls queued notifications
+    # Subtest: no policy is explicitly unconfigured; self-review and foreign identities denied
+    ok 1 - no policy is explicitly unconfigured; self-review and foreign identities denied
+      ---
+      duration_ms: 142.6476
+      type: 'test'
+      ...
+    # Subtest: second real payment requires reviewed message; denial rolls back payment and operation key
+    ok 2 - second real payment requires reviewed message; denial rolls back payment and operation key
+      ---
+      duration_ms: 347.7479
+      type: 'test'
+      ...
+    # Subtest: two confirmed operations cannot reuse a stale activity snapshot concurrently
+    ok 3 - two confirmed operations cannot reuse a stale activity snapshot concurrently
+      ---
+      duration_ms: 182.2614
+      type: 'test'
+      ...
+    # Subtest: policy replacement and expiry require fresh explicit confirmation; unknown provider result is not resent
+    ok 4 - policy replacement and expiry require fresh explicit confirmation; unknown provider result is not resent
+      ---
+      duration_ms: 211.8499
+      type: 'test'
+      ...
+    # Subtest: prepared payment can recover by record id after policy changed, without a second payment
+    ok 5 - prepared payment can recover by record id after policy changed, without a second payment
+      ---
+      duration_ms: 158.6732
+      type: 'test'
+      ...
+    # Subtest: late verified payment and approved refund remain executable after consumer rule changes
+    ok 6 - late verified payment and approved refund remain executable after consumer rule changes
+      ---
+      duration_ms: 92.9993
+      type: 'test'
+      ...
+    # Subtest: recharge guard rolls back cash attempt, original request resumes after confirmation
+    ok 7 - recharge guard rolls back cash attempt, original request resumes after confirmation
+      ---
+      duration_ms: 35.0706
+      type: 'test'
+      ...
+    # Subtest: preference HTTP and old clients preserve new settings; night reminders do not require usage tracking
+    ok 8 - preference HTTP and old clients preserve new settings; night reminders do not require usage tracking
+      ---
+      duration_ms: 34.0806
+      type: 'test'
+      ...
+    # Subtest: unconfigured sender reports unavailable; opt-out after enqueue suppresses send
+    ok 9 - unconfigured sender reports unavailable; opt-out after enqueue suppresses send
+      ---
+      duration_ms: 14.2633
+      type: 'test'
+      ...
+    # Subtest: queue respects current quiet hours and does not revive a deferred item after opt-out
+    ok 10 - queue respects current quiet hours and does not revive a deferred item after opt-out
+      ---
+      duration_ms: 16.3155
+      type: 'test'
+      ...
+    # Subtest: concurrent workers send once; marketing daily restraint also serializes separate messages
+    ok 11 - concurrent workers send once; marketing daily restraint also serializes separate messages
+      ---
+      duration_ms: 16.8242
+      type: 'test'
+      ...
+    # Subtest: business notifications enter real outbox, recheck permissions and retain station inbox when push closes
+    ok 12 - business notifications enter real outbox, recheck permissions and retain station inbox when push closes
+      ---
+      duration_ms: 128.3074
+      type: 'test'
+      ...
+    # Subtest: unknown push response is queried using original key, never automatically resent
+    ok 13 - unknown push response is queried using original key, never automatically resent
+      ---
+      duration_ms: 13.6973
+      type: 'test'
+      ...
+    # Subtest: late unknown send result returns the accepted status already established by reconciliation
+    ok 14 - late unknown send result returns the accepted status already established by reconciliation
+      ---
+      duration_ms: 12.674
+      type: 'test'
+      ...
+    1..14
+ok 3 - reviewed consumer protection binds real operations, preserves recovery and controls queued notifications
+  ---
+  duration_ms: 9009.7488
+  type: 'test'
+  ...
+# Subtest: contract candidate preserves all stated probabilities and requires explicit cost basis
+ok 4 - contract candidate preserves all stated probabilities and requires explicit cost basis
+  ---
+  duration_ms: 3.1895
+  type: 'test'
+  ...
+# Subtest: binding rejects substituted coupon faces and no-price free film, retains legacy snapshots
+ok 5 - binding rejects substituted coupon faces and no-price free film, retains legacy snapshots
+  ---
+  duration_ms: 0.4338
+  type: 'test'
+  ...
+# Subtest: V2 distribution includes ten-draw guarantee rather than advertising independent odds
+ok 6 - V2 distribution includes ten-draw guarantee rather than advertising independent odds
+  ---
+  duration_ms: 1.9658
+  type: 'test'
+  ...
+# Subtest: nine misses force only last draw, 2700 charged as one batch; single costs 300
+ok 7 - nine misses force only last draw, 2700 charged as one batch; single costs 300
+  ---
+  duration_ms: 0.5535
+  type: 'test'
+  ...
+# Subtest: an earlier qualifying prize leaves tenth unchanged; exact random boundaries and invalid entropy
+ok 8 - an earlier qualifying prize leaves tenth unchanged; exact random boundaries and invalid entropy
+  ---
+  duration_ms: 0.6463
+  type: 'test'
+  ...
+# Subtest: incorrect sum, duplicate prize, disabled final interview, missing guarantee and fractional price reject
+ok 9 - incorrect sum, duplicate prize, disabled final interview, missing guarantee and fractional price reject
+  ---
+  duration_ms: 0.3792
+  type: 'test'
+  ...
+# Subtest: contract publication has a full seven-day waiting period and cannot outlive the pool
+ok 10 - contract publication has a full seven-day waiting period and cannot outlive the pool
+  ---
+  duration_ms: 1.5288
+  type: 'test'
+  ...
+# Subtest: lottery actual HTTP: immutable odds, independent review, stock and atomic points
+    # Subtest: creator cannot approve; rules and finance require separate reviewers; unpublished draw denied
+    ok 1 - creator cannot approve; rules and finance require separate reviewers; unpublished draw denied
+      ---
+      duration_ms: 262.7302
+      type: 'test'
+      ...
+    # Subtest: newly reviewed pools publish seven-day notice before drawing; no points or stock deducted
+    ok 2 - newly reviewed pools publish seven-day notice before drawing; no points or stock deducted
+      ---
+      duration_ms: 69.7228
+      type: 'test'
+      ...
+    # Subtest: reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected
+    ok 3 - reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected
+      ---
+      duration_ms: 61.512
+      type: 'test'
+      ...
+    # Subtest: retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge
+    ok 4 - retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge
+      ---
+      duration_ms: 135.8485
+      type: 'test'
+      ...
+    # Subtest: insufficient points rolls back draw, stock and command; retired version preserves old results
+    ok 5 - insufficient points rolls back draw, stock and command; retired version preserves old results
+      ---
+      duration_ms: 262.6207
+      type: 'test'
+      ...
+    # Subtest: ten guarantee survives mostly no-win pool and records actual conditional draws
+    ok 6 - ten guarantee survives mostly no-win pool and records actual conditional draws
+      ---
+      duration_ms: 150.3282
+      type: 'test'
+      ...
+    # Subtest: new-contract pool cannot draw before a consumer policy is independently reviewed
+    ok 7 - new-contract pool cannot draw before a consumer policy is independently reviewed
+      ---
+      duration_ms: 117.0779
+      type: 'test'
+      ...
+    # Subtest: rational confirmation and participation limits precede point deduction; recovery returns original winners
+    ok 8 - rational confirmation and participation limits precede point deduction; recovery returns original winners
+      ---
+      duration_ms: 225.7916
+      type: 'test'
+      ...
+    # Subtest: same actual winning interview cancels pending schedule on extension and fallback without redrawing
+    ok 9 - same actual winning interview cancels pending schedule on extension and fallback without redrawing
+      ---
+      duration_ms: 355.0458
+      type: 'test'
+      ...
+    # Subtest: same drawn interview expires then receives one reviewed fallback; retired-pool replay preserves original winners and stake
+    ok 10 - same drawn interview expires then receives one reviewed fallback; retired-pool replay preserves original winners and stake
+      ---
+      duration_ms: 305.7283
+      type: 'test'
+      ...
+    # Subtest: actual winning interview not selected can receive one reviewed fallback without redrawing or cancelling the completed appointment
+    ok 11 - actual winning interview not selected can receive one reviewed fallback without redrawing or cancelling the completed appointment
+      ---
+      duration_ms: 388.5468
+      type: 'test'
+      ...
+    # Subtest: not-selected interview can extend once, preserve the first attempt, and resolve a second unsuccessful attempt on the same grant
+    ok 12 - not-selected interview can extend once, preserve the first attempt, and resolve a second unsuccessful attempt on the same grant
+      ---
+      duration_ms: 444.6685
+      type: 'test'
+      ...
+    # Subtest: completed interview without an explicit not-selected result stays ineligible for this remedy
+    ok 13 - completed interview without an explicit not-selected result stays ineligible for this remedy
+      ---
+      duration_ms: 326.4475
+      type: 'test'
+      ...
+    # Subtest: verified winner without any avatar cannot bind invented material but can extend and receive the original fallback on the same draw
+    ok 14 - verified winner without any avatar cannot bind invented material but can extend and receive the original fallback on the same draw
+      ---
+      duration_ms: 202.8706
+      type: 'test'
+      ...
+    # Subtest: unbound winning remedy can finish after prize expiry but revoked reviewer cannot execute or replay its result
+    ok 15 - unbound winning remedy can finish after prize expiry but revoked reviewer cannot execute or replay its result
+      ---
+      duration_ms: 201.5376
+      type: 'test'
+      ...
+    # Subtest: same drawn interview with withdrawn production consent blocks use but keeps the independently reviewed remedy available
+    ok 16 - same drawn interview with withdrawn production consent blocks use but keeps the independently reviewed remedy available
+      ---
+      duration_ms: 280.1687
+      type: 'test'
+      ...
+    1..16
+ok 11 - lottery actual HTTP: immutable odds, independent review, stock and atomic points
+  ---
+  duration_ms: 11441.5133
+  type: 'test'
+  ...
+# Subtest: original source profile retains exact eleven weights, prices and published decimal probabilities
+ok 12 - original source profile retains exact eleven weights, prices and published decimal probabilities
+  ---
+  duration_ms: 3.2868
+  type: 'test'
+  ...
+# Subtest: nine misses force tenth into original qualifying inventory, including exact rare-free boundary
+ok 13 - nine misses force tenth into original qualifying inventory, including exact rare-free boundary
+  ---
+  duration_ms: 0.6748
+  type: 'test'
+  ...
+# Subtest: earlier original priority prize keeps ordinary tenth and does not manufacture another guarantee
+ok 14 - earlier original priority prize keeps ordinary tenth and does not manufacture another guarantee
+  ---
+  duration_ms: 0.8864
+  type: 'test'
+  ...
+# Subtest: original single-draw boundaries distinguish points and none without guaranteed replacement
+ok 15 - original single-draw boundaries distinguish points and none without guaranteed replacement
+  ---
+  duration_ms: 0.4256
+  type: 'test'
+  ...
+# Subtest: balanced but changed original odds and unaffordable approved costs cannot masquerade as original contract
+ok 16 - balanced but changed original odds and unaffordable approved costs cannot masquerade as original contract
+  ---
+  duration_ms: 0.6255
+  type: 'test'
+  ...
+# Subtest: original bindings require exact credit faces and one hundred point-back
+ok 17 - original bindings require exact credit faces and one hundred point-back
+  ---
+  duration_ms: 0.6052
+  type: 'test'
+  ...
+1..17
+# tests 47
+# suites 0
+# pass 47
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 21165.877

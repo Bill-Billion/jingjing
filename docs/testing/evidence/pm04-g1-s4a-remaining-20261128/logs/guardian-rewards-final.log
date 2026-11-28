@@ -1,0 +1,157 @@
+TAP version 13
+# Subtest: guardian rules have no implicit amount or time default
+ok 1 - guardian rules have no implicit amount or time default
+  ---
+  duration_ms: 1.942
+  type: 'test'
+  ...
+# Subtest: guardian night restrictions use China local time and cannot be disabled by a child
+ok 2 - guardian night restrictions use China local time and cannot be disabled by a child
+  ---
+  duration_ms: 0.6645
+  type: 'test'
+  ...
+# Subtest: new acceptance contract requires exactly 48 hours while retaining legacy shapes
+ok 3 - new acceptance contract requires exactly 48 hours while retaining legacy shapes
+  ---
+  duration_ms: 0.2231
+  type: 'test'
+  ...
+# Subtest: all four new referral rates must be configured in range, not just one field
+ok 4 - all four new referral rates must be configured in range, not just one field
+  ---
+  duration_ms: 0.4184
+  type: 'test'
+  ...
+# Subtest: 20261029 contract rights tools use real isolated transactions and authenticated HTTP
+    # Subtest: 48h policy starts at original order creation, paid files only; old 72h snapshots remain
+    ok 1 - 48h policy starts at original order creation, paid files only; old 72h snapshots remain
+      ---
+      duration_ms: 412.8886
+      type: 'test'
+      ...
+    # Subtest: notice/counter-notice protects evidence, freezes access and independently restores only this hold
+    ok 2 - notice/counter-notice protects evidence, freezes access and independently restores only this hold
+      ---
+      duration_ms: 641.3324
+      type: 'test'
+      ...
+    # Subtest: closure reply deadline and verified execution deadline remain distinct; extensions need independent evidence
+    ok 3 - closure reply deadline and verified execution deadline remain distinct; extensions need independent evidence
+      ---
+      duration_ms: 198.5119
+      type: 'test'
+      ...
+    # Subtest: new referral rates enforce 10-15 percent without rewriting historical five-percent rules
+    ok 4 - new referral rates enforce 10-15 percent without rewriting historical five-percent rules
+      ---
+      duration_ms: 73.9665
+      type: 'test'
+      ...
+    # Subtest: new audition clock starts on reviewed delivery; actual material availability still gates timeout
+    ok 5 - new audition clock starts on reviewed delivery; actual material availability still gates timeout
+      ---
+      duration_ms: 645.4844
+      type: 'test'
+      ...
+    # Subtest: guardian controls verify three parties, block actual minor transactions, isolate private data and run reviewed refunds
+    ok 6 - guardian controls verify three parties, block actual minor transactions, isolate private data and run reviewed refunds
+      ---
+      duration_ms: 767.5775
+      type: 'test'
+      ...
+    1..6
+ok 5 - 20261029 contract rights tools use real isolated transactions and authenticated HTTP
+  ---
+  duration_ms: 16316.1701
+  type: 'test'
+  ...
+# Subtest: reward remedy preserves one grant and all pending schedules across invalid binding
+    # Subtest: return original points cancels the still-pending schedule atomically; rejection and replay cannot resurrect it
+    ok 1 - return original points cancels the still-pending schedule atomically; rejection and replay cannot resurrect it
+      ---
+      duration_ms: 282.539
+      type: 'test'
+      ...
+    # Subtest: one-time interview extension cancels old pending slot and permits a fresh schedule
+    ok 2 - one-time interview extension cancels old pending slot and permits a fresh schedule
+      ---
+      duration_ms: 174.1507
+      type: 'test'
+      ...
+    # Subtest: rejected remedy preserves pending slot; stale and changed commands cannot change the outcome
+    ok 3 - rejected remedy preserves pending slot; stale and changed commands cannot change the outcome
+      ---
+      duration_ms: 141.5727
+      type: 'test'
+      ...
+    # Subtest: withdrawn public participation blocks acceptance but permits declining the original future slot
+    ok 4 - withdrawn public participation blocks acceptance but permits declining the original future slot
+      ---
+      duration_ms: 176.1302
+      type: 'test'
+      ...
+    # Subtest: confirmed but no longer public award cannot finish; remedy cancels its approved slot once
+    ok 5 - confirmed but no longer public award cannot finish; remedy cancels its approved slot once
+      ---
+      duration_ms: 168.4855
+      type: 'test'
+      ...
+    # Subtest: withdrawn interview production consent still permits refusal and remedy with a private own-record copy
+    ok 6 - withdrawn interview production consent still permits refusal and remedy with a private own-record copy
+      ---
+      duration_ms: 207.1032
+      type: 'test'
+      ...
+    1..6
+ok 6 - reward remedy preserves one grant and all pending schedules across invalid binding
+  ---
+  duration_ms: 9176.1623
+  type: 'test'
+  ...
+# Subtest: wallet source batches expire independently at their own 365-day boundary
+    # Subtest: 364-day and 366-day rules are rejected; only an independently approved 365-day rule opens the wallet
+    ok 1 - 364-day and 366-day rules are rejected; only an independently approved 365-day rule opens the wallet
+      ---
+      duration_ms: 130.047
+      type: 'test'
+      ...
+    # Subtest: two legitimate accepted orders issue on different dates with immutable source and rule snapshots
+    ok 2 - two legitimate accepted orders issue on different dates with immutable source and rule snapshots
+      ---
+      duration_ms: 406.5811
+      type: 'test'
+      ...
+    # Subtest: the first exact expiry excludes only its old batch; processing is idempotent and newer points remain spendable
+    ok 3 - the first exact expiry excludes only its old batch; processing is idempotent and newer points remain spendable
+      ---
+      duration_ms: 102.1109
+      type: 'test'
+      ...
+    # Subtest: the second batch keeps its own deadline and history survives expiry without erasing cumulative earnings
+    ok 4 - the second batch keeps its own deadline and history survives expiry without erasing cumulative earnings
+      ---
+      duration_ms: 60.2231
+      type: 'test'
+      ...
+    # Subtest: ownership, server-controlled dates and unavailable recharge channels remain enforced
+    ok 5 - ownership, server-controlled dates and unavailable recharge channels remain enforced
+      ---
+      duration_ms: 24.8078
+      type: 'test'
+      ...
+    1..5
+ok 7 - wallet source batches expire independently at their own 365-day boundary
+  ---
+  duration_ms: 15017.8123
+  type: 'test'
+  ...
+1..7
+# tests 24
+# suites 0
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 41214.4926

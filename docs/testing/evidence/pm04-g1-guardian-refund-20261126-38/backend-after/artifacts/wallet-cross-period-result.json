@@ -1,0 +1,99 @@
+{
+  "result": "PASS",
+  "checks": [
+    {
+      "name": "two actual recharge receipts reach the first threshold without creating consumption growth",
+      "result": "PASS",
+      "records": {
+        "account_id": "b4a20443-9589-4b5e-bad9-d705126f9ba6",
+        "recharge_ids": [
+          "a1f9b0c0-135f-42fd-bebb-dcce30b8a394",
+          "aebcec4d-3490-4072-ad0d-dd2cab324daa"
+        ],
+        "balance_minor": 30000,
+        "valid_until": "2027-11-26T19:15:04.000Z"
+      }
+    },
+    {
+      "name": "renewal extends the same account once and expiry preserves every original balance lot",
+      "result": "PASS",
+      "records": {
+        "account_id": "b4a20443-9589-4b5e-bad9-d705126f9ba6",
+        "recharge_ids": [
+          "a1f9b0c0-135f-42fd-bebb-dcce30b8a394",
+          "aebcec4d-3490-4072-ad0d-dd2cab324daa",
+          "254e6b04-1ae0-4d98-b12d-89f11d10d300"
+        ],
+        "expiry": "2028-11-25T19:15:04.000Z",
+        "balance_minor": 60000
+      }
+    },
+    {
+      "name": "expired membership still spends existing funds and actual stock acceptance establishes the original earning",
+      "result": "PASS",
+      "records": {
+        "account_id": "b4a20443-9589-4b5e-bad9-d705126f9ba6",
+        "order_id": "e726ab8c-41a5-48d8-94f0-0c93410e6310",
+        "payment_id": "0b2cecb4-2358-44fc-8d80-29f55f106f46",
+        "spent_minor": 100,
+        "accepted_at": "2028-11-26T19:15:04.000Z",
+        "membership_active": false
+      }
+    },
+    {
+      "name": "actual accepted consumption matures and a later recharge restores membership without buying growth",
+      "result": "PASS",
+      "records": {
+        "account_id": "b4a20443-9589-4b5e-bad9-d705126f9ba6",
+        "earning_id": "e5120e7e-631d-44e9-bcf6-51358ac6a7d5",
+        "order_id": "e726ab8c-41a5-48d8-94f0-0c93410e6310",
+        "recharge_id": "9514ab20-638c-4ab4-8b3a-e548aba74e84",
+        "valid_until": "2029-12-04T19:15:04.000Z",
+        "growth": 10
+      }
+    },
+    {
+      "name": "unsent refund cancellation releases its hold; unknown result keeps it until original-route receipt settles once",
+      "result": "PASS",
+      "records": {
+        "account_id": "b4a20443-9589-4b5e-bad9-d705126f9ba6",
+        "recharge_id": "9514ab20-638c-4ab4-8b3a-e548aba74e84",
+        "refund_case_id": "83a06cea-9eb2-4290-b53b-ec833aa12814",
+        "refunded_minor": 30000,
+        "balance_minor": 59900,
+        "membership_active": false,
+        "growth_preserved": 10
+      }
+    },
+    {
+      "name": "refund of the same accepted purchase restores its original recharge lot and reverses only its consumption growth",
+      "result": "PASS",
+      "records": {
+        "account_id": "b4a20443-9589-4b5e-bad9-d705126f9ba6",
+        "order_id": "e726ab8c-41a5-48d8-94f0-0c93410e6310",
+        "refund_id": "9167d34c-5488-4beb-b269-74c994629831",
+        "restored_recharge_id": "a1f9b0c0-135f-42fd-bebb-dcce30b8a394",
+        "restored_minor": 100,
+        "growth": 0,
+        "balance_minor": 60000
+      }
+    },
+    {
+      "name": "a later recharge restores one year from its own receipt while original rules and settled refunds stay unchanged",
+      "result": "PASS",
+      "records": {
+        "account_id": "b4a20443-9589-4b5e-bad9-d705126f9ba6",
+        "recharge_id": "315e46b9-5d53-4bad-8074-ace9b30a77e0",
+        "valid_until": "2029-12-14T19:15:04.000Z",
+        "balance_minor": 90000,
+        "original_rule_unchanged": true
+      }
+    }
+  ],
+  "limits": [
+    "One isolated connection clock advances monotonically; new synthetic login sessions replace expired sessions",
+    "Identity and provider receipt prerequisites are synthetic; no real channel",
+    "Business records are created by repositories; no inserted balances, membership dates or earning statuses",
+    "HTTP summaries plus repository financial operations; no frontend"
+  ]
+}

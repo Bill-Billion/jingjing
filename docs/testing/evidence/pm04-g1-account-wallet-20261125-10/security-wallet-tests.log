@@ -1,0 +1,161 @@
+TAP version 13
+# Subtest: phone replacement preserves account and requires separate original/new proofs
+    # Subtest: recent login and real phone binding required; no identity delegation or arbitrary fields
+    ok 1 - recent login and real phone binding required; no identity delegation or arbitrary fields
+      ---
+      duration_ms: 245.3478
+      type: 'test'
+      ...
+    # Subtest: create and SMS retry are idempotent, bound to original session and account
+    ok 2 - create and SMS retry are idempotent, bound to original session and account
+      ---
+      duration_ms: 858.6926
+      type: 'test'
+      ...
+    # Subtest: ordinary login proof cannot change phone, wrong proofs commit capped attempts without double counting retries
+    ok 3 - ordinary login proof cannot change phone, wrong proofs commit capped attempts without double counting retries
+      ---
+      duration_ms: 177.3868
+      type: 'test'
+      ...
+    # Subtest: manual resend near request expiry returns the active challenge, not an older code with the same deadline
+    ok 4 - manual resend near request expiry returns the active challenge, not an older code with the same deadline
+      ---
+      duration_ms: 98.215
+      type: 'test'
+      ...
+    # Subtest: unknown delivery does not resend automatically; cancellation and expiry retire codes and encrypted phones
+    ok 5 - unknown delivery does not resend automatically; cancellation and expiry retire codes and encrypted phones
+      ---
+      duration_ms: 90.8471
+      type: 'test'
+      ...
+    # Subtest: both proofs required; complete change preserves account and parties, revokes all old sessions and old pending login codes
+    ok 6 - both proofs required; complete change preserves account and parties, revokes all old sessions and old pending login codes
+      ---
+      duration_ms: 275.4782
+      type: 'test'
+      ...
+    # Subtest: claimed target never merges accounts and concurrent claim cannot overwrite another user
+    ok 7 - claimed target never merges accounts and concurrent claim cannot overwrite another user
+      ---
+      duration_ms: 307.1495
+      type: 'test'
+      ...
+    # Subtest: failed audit rolls back phone mapping, sessions and result so original confirmation can recover
+    ok 8 - failed audit rolls back phone mapping, sessions and result so original confirmation can recover
+      ---
+      duration_ms: 147.4603
+      type: 'test'
+      ...
+    1..8
+ok 1 - phone replacement preserves account and requires separate original/new proofs
+  ---
+  duration_ms: 9820.229
+  type: 'test'
+  ...
+# Subtest: wallet rule rejects guessed/missing limits, aftercare and changed 365-day commitment
+ok 2 - wallet rule rejects guessed/missing limits, aftercare and changed 365-day commitment
+  ---
+  duration_ms: 1.9652
+  type: 'test'
+  ...
+# Subtest: integer money conversion, rounding and cumulative proportional refund never use floating point
+ok 3 - integer money conversion, rounding and cumulative proportional refund never use floating point
+  ---
+  duration_ms: 0.3721
+  type: 'test'
+  ...
+# Subtest: payment alone, pending aftercare and unspecified periods never earn points
+ok 4 - payment alone, pending aftercare and unspecified periods never earn points
+  ---
+  duration_ms: 0.993
+  type: 'test'
+  ...
+# Subtest: cumulative 300 yuan unlocks one year and contributes zero growth
+ok 5 - cumulative 300 yuan unlocks one year and contributes zero growth
+  ---
+  duration_ms: 8.4271
+  type: 'test'
+  ...
+# Subtest: large one-time topup cannot buy several membership years
+ok 6 - large one-time topup cannot buy several membership years
+  ---
+  duration_ms: 0.174
+  type: 'test'
+  ...
+# Subtest: renewal counted once per membership year, expiration retains growth and topup restores
+ok 7 - renewal counted once per membership year, expiration retains growth and topup restores
+  ---
+  duration_ms: 0.9772
+  type: 'test'
+  ...
+# Subtest: sixth level requires independent current qualification in addition to growth
+ok 8 - sixth level requires independent current qualification in addition to growth
+  ---
+  duration_ms: 0.1812
+  type: 'test'
+  ...
+# Subtest: refunded topups and future receipts do not falsely qualify
+ok 9 - refunded topups and future receipts do not falsely qualify
+  ---
+  duration_ms: 0.1069
+  type: 'test'
+  ...
+# Subtest: pending topup counts against limits and cooldown to prevent concurrent overspend
+ok 10 - pending topup counts against limits and cooldown to prevent concurrent overspend
+  ---
+  duration_ms: 0.7036
+  type: 'test'
+  ...
+# Subtest: earliest-expiring points first; holds and expired batches are excluded
+ok 11 - earliest-expiring points first; holds and expired batches are excluded
+  ---
+  duration_ms: 0.7116
+  type: 'test'
+  ...
+# Subtest: spending, expiry and free points do not change qualified consumption growth
+ok 12 - spending, expiry and free points do not change qualified consumption growth
+  ---
+  duration_ms: 0.2359
+  type: 'test'
+  ...
+# Subtest: refund plan accounts for already spent and expired points without negative balances or cash debt
+ok 13 - refund plan accounts for already spent and expired points without negative balances or cash debt
+  ---
+  duration_ms: 0.1495
+  type: 'test'
+  ...
+# Subtest: partial refund points equal the historical rate applied to cumulative net paid, regardless of timing
+ok 14 - partial refund points equal the historical rate applied to cumulative net paid, regardless of timing
+  ---
+  duration_ms: 0.2725
+  type: 'test'
+  ...
+# Subtest: daily recharge caps use the China business day, including the UTC date boundary
+ok 15 - daily recharge caps use the China business day, including the UTC date boundary
+  ---
+  duration_ms: 0.1272
+  type: 'test'
+  ...
+# Subtest: 累计只计已发放净额，消费、过期和偿还旧欠额不能重复扣减
+ok 16 - 累计只计已发放净额，消费、过期和偿还旧欠额不能重复扣减
+  ---
+  duration_ms: 1.4503
+  type: 'test'
+  ...
+# Subtest: 无法核对或整数溢出的金额拒绝伪造累计
+ok 17 - 无法核对或整数溢出的金额拒绝伪造累计
+  ---
+  duration_ms: 0.4798
+  type: 'test'
+  ...
+1..17
+# tests 25
+# suites 0
+# pass 25
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 10033.4604

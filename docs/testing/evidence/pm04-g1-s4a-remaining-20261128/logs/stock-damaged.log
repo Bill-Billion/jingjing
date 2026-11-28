@@ -1,0 +1,118 @@
+TAP version 13
+# Subtest: actual stock cover and full/preview durations with isolated authorization
+    # Subtest: review is required and request identity is explicit
+    ok 1 - review is required and request identity is explicit
+      ---
+      duration_ms: 182.0562
+      type: 'test'
+      ...
+    # Subtest: durations come from distinct actual files and cover pixels come only from preview
+    ok 2 - durations come from distinct actual files and cover pixels come only from preview
+      ---
+      duration_ms: 401.3326
+      type: 'test'
+      ...
+    # Subtest: unlisting blocks metadata and cover despite a warmed cache
+    ok 3 - unlisting blocks metadata and cover despite a warmed cache
+      ---
+      duration_ms: 28.7971
+      type: 'test'
+      ...
+    # Subtest: damaged stored bytes do not reuse a cached cover; missing tools never claim success
+    ok 4 - damaged stored bytes do not reuse a cached cover; missing tools never claim success
+      ---
+      duration_ms: 357.0946
+      type: 'test'
+      ...
+    # Subtest: unplayable approved fixture is rejected instead of invented duration
+    ok 5 - unplayable approved fixture is rejected instead of invented duration
+      ---
+      duration_ms: 173.6047
+      type: 'test'
+      ...
+    # Subtest: actual processed preview labels survive JPEG HTTP delivery and cached policy checks
+    not ok 6 - actual processed preview labels survive JPEG HTTP delivery and cached policy checks
+      ---
+      duration_ms: 15.5067
+      type: 'test'
+      location: 'R:\\backend_server\\test\\stock-media.integration.test.cjs:71:13'
+      failureType: 'testCodeFailure'
+      error: 'MEDIA_PROCESS_NOT_CONFIGURED'
+      code: 'MEDIA_PROCESS_NOT_CONFIGURED'
+      stack: |-
+        error (R:\backend_server\src\modules\party\policy.js:4:46)
+        Object.create (R:\backend_server\src\modules\media\service.js:28:189)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (R:\backend_server\test\stock-media.integration.test.cjs:80:22)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (R:\backend_server\test\stock-media.integration.test.cjs:71:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: withdrawn person authorization blocks both media routes
+    ok 7 - withdrawn person authorization blocks both media routes
+      ---
+      duration_ms: 354.2107
+      type: 'test'
+      ...
+    1..7
+not ok 1 - actual stock cover and full/preview durations with isolated authorization
+  ---
+  duration_ms: 12567.5821
+  type: 'test'
+  location: 'R:\\backend_server\\test\\stock-media.integration.test.cjs:7:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+# Subtest: preview cache still rechecks current permission and storage bytes
+ok 2 - preview cache still rechecks current permission and storage bytes
+  ---
+  duration_ms: 3.1091
+  type: 'test'
+  ...
+# Subtest: withdrawal during storage access blocks a newly generated cover
+ok 3 - withdrawal during storage access blocks a newly generated cover
+  ---
+  duration_ms: 0.3487
+  type: 'test'
+  ...
+# Subtest: same source shares processing and concurrent request count is bounded
+ok 4 - same source shares processing and concurrent request count is bounded
+  ---
+  duration_ms: 0.9112
+  type: 'test'
+  ...
+# Subtest: changed listing version cannot reuse a previous rendering
+ok 5 - changed listing version cannot reuse a previous rendering
+  ---
+  duration_ms: 0.4859
+  type: 'test'
+  ...
+# Subtest: invalid video claims do not create duration or image metadata
+ok 6 - invalid video claims do not create duration or image metadata
+  ---
+  duration_ms: 0.7823
+  type: 'test'
+  ...
+# Subtest: missing tools cannot return fabricated cover or duration
+ok 7 - missing tools cannot return fabricated cover or duration
+  ---
+  duration_ms: 0.6308
+  type: 'test'
+  ...
+# Subtest: thumbnail dimensions preserve non-square pixels and quarter-turn orientation
+ok 8 - thumbnail dimensions preserve non-square pixels and quarter-turn orientation
+  ---
+  duration_ms: 0.3509
+  type: 'test'
+  ...
+1..8
+# tests 15
+# suites 0
+# pass 13
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12892.1237

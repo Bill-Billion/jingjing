@@ -60,8 +60,9 @@ Future<void> tapKey(WidgetTester tester, String key) async {
 
 void main() {
   testWidgets('人工视频入口读取已发布采集表且不自动生成或创建订单', (tester) async {
-    final manual = jsonDecode(File(
-            '../backend_server/src/modules/customization/blessing-template.json')
+    final manual = jsonDecode(File.fromUri(
+            Directory(Directory.current.resolveSymbolicLinksSync()).uri.resolve(
+                '../backend_server/src/modules/customization/blessing-template.json'))
         .readAsStringSync());
     late FakeAccountAdapter adapter;
     adapter = FakeAccountAdapter(handler: (r) {

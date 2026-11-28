@@ -1,0 +1,120 @@
+{
+  "source": "f32da0d10fab35d22447a4b9194004074be06a29",
+  "database": "jx_test_qa18_participation_85498a20867423501465",
+  "synthetic_only": true,
+  "started_at": "2026-11-25T16:57:40.954Z",
+  "checks": [
+    {
+      "role": "buyer",
+      "url": "/finance/agreements",
+      "status": 409,
+      "code": "PARTICIPATION_REVENUE_CONTRACT_MISMATCH",
+      "operation_key_sha256": "52065bd1b20887fa8e65e6000b8af8b737c3c94bebb9e37674c1cc7a32033b1f",
+      "body_sha256": "0bacac86a8b2d16ebf8ff13ce9250ac2726140abbb7fa7edcf815ce341283959"
+    },
+    {
+      "role": "buyer",
+      "url": "/finance/agreements",
+      "status": 409,
+      "code": "FINANCE_SOURCE_ALREADY_REGISTERED",
+      "operation_key_sha256": "85cea8f3f49eb7b102d7df81e310dc7a84ddf463092cef6d3c86dff5c92240fc",
+      "body_sha256": "c2fae292dfaf53ba216cd7beb262195c2cba90ab2636dbc3bb9c575294f143e5"
+    },
+    {
+      "role": "artist",
+      "url": "/finance/records/b949ddd7-972e-4943-ab51-78600c0fa0d9/evidence/1f1db0f5-3c1b-4a2d-8993-bd5ea362cde1",
+      "status": 403,
+      "code": "FINANCE_EVIDENCE_FORBIDDEN"
+    },
+    {
+      "role": "outsider",
+      "url": "/projects/records/507b0858-8b82-43a5-876f-5151f558e71c",
+      "status": 404,
+      "code": "PROJECT_NOT_FOUND"
+    }
+  ],
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/finance/agreements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "c38189f2-0c9a-402b-bdf0-510cef9597e8",
+          "actor": {
+            "account_id": "2596d31f-1f47-4526-a197-e87b6cded668"
+          },
+          "acting_party": "64571eec-7dc5-416b-91a0-e9ae05d8639d"
+        },
+        "error": {
+          "code": "PARTICIPATION_REVENUE_CONTRACT_MISMATCH",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/finance/agreements",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "c2edeb77-461d-4b85-9d73-d9040b5cfbb0",
+          "actor": {
+            "account_id": "2596d31f-1f47-4526-a197-e87b6cded668"
+          },
+          "acting_party": "64571eec-7dc5-416b-91a0-e9ae05d8639d"
+        },
+        "error": {
+          "code": "FINANCE_SOURCE_ALREADY_REGISTERED",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/finance/records/b949ddd7-972e-4943-ab51-78600c0fa0d9/evidence/1f1db0f5-3c1b-4a2d-8993-bd5ea362cde1",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "d749c1d8-de44-4922-8c5e-fcaea46b9d5e",
+          "actor": {
+            "account_id": "53ae608a-3877-4852-bf0b-31ac0a5b4a7c"
+          },
+          "acting_party": "a6ef3609-6ca3-4dd6-891e-7fd8aac3685e"
+        },
+        "error": {
+          "code": "FINANCE_EVIDENCE_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/records/507b0858-8b82-43a5-876f-5151f558e71c",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "a3da3faa-765e-463f-ac40-2cd4540187d4",
+          "actor": {
+            "account_id": "de0ed600-f35e-4ab7-8db4-ce084db0c2ed"
+          },
+          "acting_party": "57a1ccc6-edf3-4cc7-b672-fee78cf94331"
+        },
+        "error": {
+          "code": "PROJECT_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    }
+  ],
+  "result": "PASS",
+  "finished_at": "2026-11-25T16:57:41.021Z"
+}

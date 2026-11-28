@@ -1,0 +1,382 @@
+TAP version 13
+# Subtest: artist rights and delegated access in isolated MySQL
+    # Subtest: real person creation is personal only, idempotent, and never verified by client flags
+    ok 1 - real person creation is personal only, idempotent, and never verified by client flags
+      ---
+      duration_ms: 133.4061
+      type: 'test'
+      ...
+    # Subtest: provider not enabled is visible and creates no fake identity result
+    ok 2 - provider not enabled is visible and creates no fake identity result
+      ---
+      duration_ms: 28.5858
+      type: 'test'
+      ...
+    # Subtest: trusted verification binds a real person; duplicate identity does not transfer ownership
+    ok 3 - trusted verification binds a real person; duplicate identity does not transfer ownership
+      ---
+      duration_ms: 45.8795
+      type: 'test'
+      ...
+    # Subtest: service purchase rejects a personal party mistakenly configured as platform merchant
+    ok 4 - service purchase rejects a personal party mistakenly configured as platform merchant
+      ---
+      duration_ms: 4.6784
+      type: 'test'
+      ...
+    # Subtest: minor actual materials and avatar creation are blocked without guardian policy
+    ok 5 - minor actual materials and avatar creation are blocked without guardian policy
+      ---
+      duration_ms: 27.937
+      type: 'test'
+      ...
+    # Subtest: one person can own multiple avatars; neither claims a long-lived model exists
+    ok 6 - one person can own multiple avatars; neither claims a long-lived model exists
+      ---
+      duration_ms: 43.8239
+      type: 'test'
+      ...
+    # Subtest: private materials belong to person and cannot be fetched by another account
+    ok 7 - private materials belong to person and cannot be fetched by another account
+      ---
+      duration_ms: 48.8279
+      type: 'test'
+      ...
+    # Subtest: consent needs independent review; rejected and withdrawn rights cannot create versions
+    ok 8 - consent needs independent review; rejected and withdrawn rights cannot create versions
+      ---
+      duration_ms: 69.0776
+      type: 'test'
+      ...
+    # Subtest: paid hosting is linked to one avatar; duplicate sync never extends the paid term
+    ok 9 - paid hosting is linked to one avatar; duplicate sync never extends the paid term
+      ---
+      duration_ms: 203.5687
+      type: 'test'
+      ...
+    # Subtest: unpaid creation cannot be delivered and a second avatar cannot double-charge first creation
+    ok 10 - unpaid creation cannot be delivered and a second avatar cannot double-charge first creation
+      ---
+      duration_ms: 167.2636
+      type: 'test'
+      ...
+    # Subtest: creation retries use the purchased limit; failure leaves a refund obligation, never a fake refund
+    ok 11 - creation retries use the purchased limit; failure leaves a refund obligation, never a fake refund
+      ---
+      duration_ms: 88.6204
+      type: 'test'
+      ...
+    # Subtest: L1 and public directory need identity and reviewed independent public consent
+    ok 12 - L1 and public directory need identity and reviewed independent public consent
+      ---
+      duration_ms: 91.4209
+      type: 'test'
+      ...
+    # Subtest: approved media manifest preserves privacy, explicit portrait choice and withdrawal
+    ok 13 - approved media manifest preserves privacy, explicit portrait choice and withdrawal
+      ---
+      duration_ms: 144.4608
+      type: 'test'
+      ...
+    # Subtest: public detail and new invitation use a live approved listing; withdrawn context cannot be submitted
+    ok 14 - public detail and new invitation use a live approved listing; withdrawn context cannot be submitted
+      ---
+      duration_ms: 149.8027
+      type: 'test'
+      ...
+    # Subtest: L2 fee binds one application; supplemental review is same case and does not sell another fee
+    ok 15 - L2 fee binds one application; supplemental review is same case and does not sell another fee
+      ---
+      duration_ms: 195.0286
+      type: 'test'
+      ...
+    # Subtest: review inbox and owner record list restore actual work; stranger has no review access
+    ok 16 - review inbox and owner record list restore actual work; stranger has no review access
+      ---
+      duration_ms: 18.473
+      type: 'test'
+      ...
+    # Subtest: archive material consent stays tied to the exact latest submitted versions
+        # Subtest: operator can read an authorized current material before withdrawal
+        ok 1 - operator can read an authorized current material before withdrawal
+          ---
+          duration_ms: 27.366
+          type: 'test'
+          ...
+        # Subtest: withdrawal blocks reads and delivery despite another valid consent
+        ok 2 - withdrawal blocks reads and delivery despite another valid consent
+          ---
+          duration_ms: 39.6273
+          type: 'test'
+          ...
+        # Subtest: new consent alone cannot reauthorize the old version; explicit replacement can
+        ok 3 - new consent alone cannot reauthorize the old version; explicit replacement can
+          ---
+          duration_ms: 107.1334
+          type: 'test'
+          ...
+        # Subtest: voice uses its own original authorization, not the face consent
+        ok 4 - voice uses its own original authorization, not the face consent
+          ---
+          duration_ms: 81.3354
+          type: 'test'
+          ...
+        # Subtest: expiry or missing material fails closed without falling back to history
+        ok 5 - expiry or missing material fails closed without falling back to history
+          ---
+          duration_ms: 32.7717
+          type: 'test'
+          ...
+        # Subtest: delivery contains only current explicitly authorized versions and keeps the old record
+        ok 6 - delivery contains only current explicitly authorized versions and keeps the old record
+          ---
+          duration_ms: 30.4693
+          type: 'test'
+          ...
+        # Subtest: withdrawal during file transfer prevents response bytes from reaching the operator
+        ok 7 - withdrawal during file transfer prevents response bytes from reaching the operator
+          ---
+          duration_ms: 43.9171
+          type: 'test'
+          ...
+        1..7
+    ok 17 - archive material consent stays tied to the exact latest submitted versions
+      ---
+      duration_ms: 534.1999
+      type: 'test'
+      ...
+    # Subtest: versioned updates reject stale changes and audit failure rolls back both data and request key
+    ok 18 - versioned updates reject stale changes and audit failure rolls back both data and request key
+      ---
+      duration_ms: 103.6149
+      type: 'test'
+      ...
+    # Subtest: creator identity is not agency identity; verified service result is tied to the request and recovery uses same key
+    ok 19 - creator identity is not agency identity; verified service result is tied to the request and recovery uses same key
+      ---
+      duration_ms: 73.6153
+      type: 'test'
+      ...
+    # Subtest: concurrent duplicate avatar commands create one archive identifier
+    ok 20 - concurrent duplicate avatar commands create one archive identifier
+      ---
+      duration_ms: 36.7036
+      type: 'test'
+      ...
+    # Subtest: only selected public preview bytes and attached reviewer evidence are downloadable
+    ok 21 - only selected public preview bytes and attached reviewer evidence are downloadable
+      ---
+      duration_ms: 85.1323
+      type: 'test'
+      ...
+    # Subtest: ranking listen reads authorized audio bytes before counting and deduplicates
+    ok 22 - ranking listen reads authorized audio bytes before counting and deduplicates
+      ---
+      duration_ms: 318.6228
+      type: 'test'
+      ...
+    # Subtest: renewal reminder can be cancelled; unpaid service cancellation requires cancelling its real order
+    ok 23 - renewal reminder can be cancelled; unpaid service cancellation requires cancelling its real order
+      ---
+      duration_ms: 156.2072
+      type: 'test'
+      ...
+    # Subtest: appeal records a challenge without silently reversing original decision or granting rights
+    ok 24 - appeal records a challenge without silently reversing original decision or granting rights
+      ---
+      duration_ms: 38.2028
+      type: 'test'
+      ...
+    # Subtest: agency cannot claim person and only artist can authorize finite actions
+    ok 25 - agency cannot claim person and only artist can authorize finite actions
+      ---
+      duration_ms: 56.9353
+      type: 'test'
+      ...
+    # Subtest: agency upload stays artist-owned; withdrawal denies new and replayed agency operations
+    ok 26 - agency upload stays artist-owned; withdrawal denies new and replayed agency operations
+      ---
+      duration_ms: 67.8542
+      type: 'test'
+      ...
+    # Subtest: expired hosting removes new listing eligibility but retains delivered archive and owned files
+    ok 27 - expired hosting removes new listing eligibility but retains delivered archive and owned files
+      ---
+      duration_ms: 94.292
+      type: 'test'
+      ...
+    # Subtest: withdrawing public consent hides directory immediately but keeps historical records and files
+    ok 28 - withdrawing public consent hides directory immediately but keeps historical records and files
+      ---
+      duration_ms: 46.0625
+      type: 'test'
+      ...
+    # Subtest: registered artist cannot bypass new identity/material rules through old supply entry
+    ok 29 - registered artist cannot bypass new identity/material rules through old supply entry
+      ---
+      duration_ms: 8.3369
+      type: 'test'
+      ...
+    # Subtest: stored content tampering is rejected, not silently returned
+    ok 30 - stored content tampering is rejected, not silently returned
+      ---
+      duration_ms: 10.2573
+      type: 'test'
+      ...
+    1..30
+ok 1 - artist rights and delegated access in isolated MySQL
+  ---
+  duration_ms: 12183.8989
+  type: 'test'
+  ...
+# Subtest: actual stock cover and full/preview durations with isolated authorization
+    # Subtest: review is required and request identity is explicit
+    ok 1 - review is required and request identity is explicit
+      ---
+      duration_ms: 148.3658
+      type: 'test'
+      ...
+    # Subtest: durations come from distinct actual files and cover pixels come only from preview
+    not ok 2 - durations come from distinct actual files and cover pixels come only from preview
+      ---
+      duration_ms: 24.6056
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\stock-media.integration.test.cjs:45:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"meta":{"request_id":"ea7065dd-22af-4f66-bd37-89b2023e43da","actor":{"account_id":"fb8bdb5b-d65a-4a62-85fb-5a558690cb71"},"acting_party":null},"error":{"code":"SERVICE_UNAVAILABLE","message":"服务暂不可用，请稍后核对状态","retryable":false,"details":[]}}
+        
+        503 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 503
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\stock-media.integration.test.cjs:46:41)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\stock-media.integration.test.cjs:45:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unlisting blocks metadata and cover despite a warmed cache
+    ok 3 - unlisting blocks metadata and cover despite a warmed cache
+      ---
+      duration_ms: 32.1547
+      type: 'test'
+      ...
+    # Subtest: damaged stored bytes do not reuse a cached cover; missing tools never claim success
+    not ok 4 - damaged stored bytes do not reuse a cached cover; missing tools never claim success
+      ---
+      duration_ms: 65.8864
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\stock-media.integration.test.cjs:61:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        503 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 503
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\stock-media.integration.test.cjs:62:38)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\stock-media.integration.test.cjs:61:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: unplayable approved fixture is rejected instead of invented duration
+    not ok 5 - unplayable approved fixture is rejected instead of invented duration
+      ---
+      duration_ms: 83.9086
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\stock-media.integration.test.cjs:67:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        503 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 503
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\stock-media.integration.test.cjs:68:127)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\stock-media.integration.test.cjs:67:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: actual processed preview labels survive JPEG HTTP delivery and cached policy checks
+    not ok 6 - actual processed preview labels survive JPEG HTTP delivery and cached policy checks
+      ---
+      duration_ms: 14.1649
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\stock-media.integration.test.cjs:71:13'
+      failureType: 'testCodeFailure'
+      error: 'MEDIA_PROCESS_NOT_CONFIGURED'
+      code: 'MEDIA_PROCESS_NOT_CONFIGURED'
+      stack: |-
+        error (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\src\modules\party\policy.js:4:46)
+        Object.create (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\src\modules\media\service.js:28:189)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\stock-media.integration.test.cjs:80:22)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\stock-media.integration.test.cjs:71:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    # Subtest: withdrawn person authorization blocks both media routes
+    not ok 7 - withdrawn person authorization blocks both media routes
+      ---
+      duration_ms: 66.3468
+      type: 'test'
+      location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\stock-media.integration.test.cjs:97:13'
+      failureType: 'testCodeFailure'
+      error: |-
+        Expected values to be strictly equal:
+        
+        503 !== 200
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 200
+      actual: 503
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\stock-media.integration.test.cjs:98:38)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\stock-media.integration.test.cjs:97:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..7
+not ok 2 - actual stock cover and full/preview durations with isolated authorization
+  ---
+  duration_ms: 10269.4826
+  type: 'test'
+  location: 'D:\\ccc\\博士资料\\7.项目\\2026-晶晶日上\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\stock-media.integration.test.cjs:7:1'
+  failureType: 'subtestsFailed'
+  error: '5 subtests failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..2
+# tests 46
+# suites 0
+# pass 40
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12604.1958

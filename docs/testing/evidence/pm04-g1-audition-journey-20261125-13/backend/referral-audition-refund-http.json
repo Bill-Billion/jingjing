@@ -1,0 +1,3572 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "method": "POST",
+      "path": "/api/v1/gigs/relations",
+      "schema": "GigRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "8b54919b-b483-45cb-b471-dc7d23da00f8",
+          "actor": {
+            "account_id": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f"
+          },
+          "acting_party": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a"
+        },
+        "data": {
+          "id": "7d1aee02-3f27-46a9-a3ee-26db1d2daa77",
+          "kind": "RELATION",
+          "owner_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+          "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": null,
+          "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+          "current_status": "INVITED",
+          "object_version": 1,
+          "content_sha256": "f88979ff1bcf0e4938c17440d7d1906ecf51c62309359090f21bfd69e23e7e0a",
+          "data": {
+            "scope": "COMMERCIAL",
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "exclusive": false,
+            "terms": "Synthetic agreed agency",
+            "commission": {
+              "mcn_bps": 0,
+              "platform_bps": 2200
+            },
+            "v5_terms": {
+              "version": "V5",
+              "supply_share_bps": 2000
+            },
+            "evidence_asset_ids": [
+              "0ea195ba-aa28-4004-9b7f-4f8e76001427"
+            ],
+            "accepted_by": null,
+            "ended_reason": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/gigs/relations/7d1aee02-3f27-46a9-a3ee-26db1d2daa77/decision",
+      "schema": "GigRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "96ca66d5-8252-46dc-add7-c0e786fbf274",
+          "actor": {
+            "account_id": "5f913bc5-9547-4649-9a3f-5ab0d80ac859"
+          },
+          "acting_party": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+        },
+        "data": {
+          "id": "7d1aee02-3f27-46a9-a3ee-26db1d2daa77",
+          "kind": "RELATION",
+          "owner_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+          "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": null,
+          "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+          "current_status": "ACTIVE",
+          "object_version": 2,
+          "content_sha256": "b04dbcad5aa07113b6abc1e89cee2a8e18e1b53e7ffbb33723e07653511d4215",
+          "data": {
+            "scope": "COMMERCIAL",
+            "terms": "Synthetic agreed agency",
+            "v5_terms": {
+              "version": "V5",
+              "supply_share_bps": 2000
+            },
+            "exclusive": false,
+            "commission": {
+              "mcn_bps": 0,
+              "platform_bps": 2200
+            },
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "accepted_by": "5f913bc5-9547-4649-9a3f-5ab0d80ac859",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "ended_reason": null,
+            "evidence_asset_ids": [
+              "0ea195ba-aa28-4004-9b7f-4f8e76001427"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rules",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "198bdb2f-1e28-4fff-a86c-afd29635c7cc",
+          "actor": {
+            "account_id": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "12f0a1cdb084cf3c55357950c7c7111623b15161935ec0d971fe61fb28756a03",
+          "data": {
+            "rule": {
+              "version": "synthetic-audition-referral",
+              "terms": "Isolated fixture, not approved production rules",
+              "gp": {
+                "STOCK": 1,
+                "AUDITION": 3,
+                "CUSTOMIZATION": 5,
+                "COMMERCIAL": 5,
+                "five_star": 1,
+                "media": 2,
+                "repeat": 2,
+                "refund_penalty": 5
+              },
+              "thresholds": [
+                0,
+                30,
+                120,
+                400,
+                1000
+              ],
+              "retention_days": 90,
+              "retention_bps": 5000,
+              "rank": {
+                "window_days": 30,
+                "popularity_days": 7,
+                "newcomer_days": 30,
+                "cold_start_days": 7,
+                "review_min": 10,
+                "repeat_buyers_min": 20,
+                "bayes_n": 10,
+                "bayes_mean": 4,
+                "weights": [
+                  3000,
+                  2500,
+                  2000,
+                  1000,
+                  1500
+                ],
+                "halo_bps": [
+                  0,
+                  10000,
+                  11500,
+                  13000
+                ]
+              },
+              "starlight": null,
+              "risk_first_penalty": 25,
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": 7,
+                "CUSTOMIZATION": 7,
+                "COMMERCIAL": 7
+              },
+              "referral_bps": {
+                "STOCK": 1000,
+                "AUDITION": 1000,
+                "CUSTOMIZATION": 1000,
+                "COMMERCIAL": 1000
+              },
+              "referral_contract_policy": "CONTRACT_20261029"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/rules/7c6a7eca-c9c2-4af6-acad-0fcc6b753345/review",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "3d0c2c78-c4af-4e5d-919d-582cdc630c80",
+          "actor": {
+            "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+          "kind": "RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+          "current_status": "EFFECTIVE",
+          "object_version": 2,
+          "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+          "data": {
+            "rule": {
+              "gp": {
+                "STOCK": 1,
+                "media": 2,
+                "repeat": 2,
+                "AUDITION": 3,
+                "five_star": 1,
+                "COMMERCIAL": 5,
+                "CUSTOMIZATION": 5,
+                "refund_penalty": 5
+              },
+              "rank": {
+                "bayes_n": 10,
+                "weights": [
+                  3000,
+                  2500,
+                  2000,
+                  1000,
+                  1500
+                ],
+                "halo_bps": [
+                  0,
+                  10000,
+                  11500,
+                  13000
+                ],
+                "bayes_mean": 4,
+                "review_min": 10,
+                "window_days": 30,
+                "newcomer_days": 30,
+                "cold_start_days": 7,
+                "popularity_days": 7,
+                "repeat_buyers_min": 20
+              },
+              "terms": "Isolated fixture, not approved production rules",
+              "version": "synthetic-audition-referral",
+              "starlight": null,
+              "thresholds": [
+                0,
+                30,
+                120,
+                400,
+                1000
+              ],
+              "referral_bps": {
+                "STOCK": 1000,
+                "AUDITION": 1000,
+                "COMMERCIAL": 1000,
+                "CUSTOMIZATION": 1000
+              },
+              "retention_bps": 5000,
+              "aftercare_days": {
+                "STOCK": 7,
+                "AUDITION": 7,
+                "COMMERCIAL": 7,
+                "CUSTOMIZATION": 7
+              },
+              "retention_days": 90,
+              "risk_first_penalty": 25,
+              "referral_contract_policy": "CONTRACT_20261029"
+            },
+            "review": {
+              "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+              "reason": "Independent synthetic rule"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/links",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "347a66e9-fa2d-462e-9db1-7420403265c2",
+          "actor": {
+            "account_id": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f"
+          },
+          "acting_party": "39dc1f16-e2e9-4940-8786-16fffea01524"
+        },
+        "data": {
+          "id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+          "kind": "REFERRAL_LINK",
+          "owner_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+          "parent_id": null,
+          "created_by": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "content_sha256": "72be4272e20e7e35776b52f3574ccc9a10d1e637bf84980e826c1e944ec77ad6",
+          "data": {
+            "target_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+            "category": "AUDITION",
+            "rule_id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/clicks",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "c6952a8f-b56f-4704-afdf-71f8ad4e9fcf",
+          "actor": {
+            "account_id": "3f9836f0-007d-4e29-bfe4-512f94580546"
+          },
+          "acting_party": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d"
+        },
+        "data": {
+          "id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+          "kind": "REFERRAL_CLICK",
+          "owner_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "parent_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "VALID",
+          "object_version": 1,
+          "content_sha256": "d1fc2f17197b48344ccd82e504a7d2a11e54db9bd010112f48c47addb658b38e",
+          "data": {
+            "at": "2026-11-25T09:26:33.258Z",
+            "source": "AUTHENTICATED_LINK_VISIT",
+            "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auditions/offers",
+      "schema": "AuditionResponse",
+      "value": {
+        "meta": {
+          "request_id": "7d908426-05b0-4054-9518-e500f3988e61",
+          "actor": {
+            "account_id": "5f913bc5-9547-4649-9a3f-5ab0d80ac859"
+          },
+          "acting_party": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+        },
+        "data": {
+          "id": "12683d33-2dc7-464b-8ef4-900383eba51c",
+          "kind": "OFFER",
+          "owner_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "5f913bc5-9547-4649-9a3f-5ab0d80ac859",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "9553d42e222ff75241ac9791c20c08fec4923c8f1ffdd3bfccd3c105319e4818",
+          "data": {
+            "offer": {
+              "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a",
+              "public_booking": true,
+              "public_consent_id": "0fa07552-eaff-4136-979f-be20f21cf895",
+              "public_price": true,
+              "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+              "service_area": "synthetic district",
+              "slots": [
+                {
+                  "ends_at": "2026-12-05T09:26:32.246Z",
+                  "starts_at": "2026-11-24T09:26:32.246Z"
+                }
+              ],
+              "terms": "synthetic test only",
+              "title": "Synthetic audition",
+              "unit_minor": 10000
+            },
+            "rules": {
+              "accept_hours": 24,
+              "acceptance_hours": 48,
+              "payment_window_minutes": 30,
+              "photo_count": 6,
+              "terms": "synthetic test only; transport included; no performance rights",
+              "version": "synthetic-v1",
+              "video_count": 1
+            },
+            "rule_snapshot": {
+              "content": {
+                "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                "format_version": "rule-content-v1",
+                "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                "rule_key": "audition.referral.modern.synthetic",
+                "terms": {
+                  "audition": {
+                    "accept_hours": 24,
+                    "acceptance_hours": 48,
+                    "payment_window_minutes": 30,
+                    "photo_count": 6,
+                    "terms": "synthetic test only; transport included; no performance rights",
+                    "version": "synthetic-v1",
+                    "video_count": 1
+                  },
+                  "marketplace_finance": {
+                    "fee_base": "NET_PAID",
+                    "model": "V5_TWO_LAYER",
+                    "platform_bps": 2200,
+                    "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4",
+                    "product_type": "AUDITION",
+                    "referral_bps": 1000,
+                    "rounding": "HALF_UP_PLATFORM_REMAINDER"
+                  }
+                },
+                "version": "1"
+              },
+              "current_status": "EFFECTIVE",
+              "effective_at": "2020-01-01T00:00:00.000Z"
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auditions/offers/12683d33-2dc7-464b-8ef4-900383eba51c/reviews",
+      "schema": "AuditionResponse",
+      "value": {
+        "meta": {
+          "request_id": "98f817a6-1fef-4bf0-941c-c924538f09d8",
+          "actor": {
+            "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "12683d33-2dc7-464b-8ef4-900383eba51c",
+          "kind": "OFFER",
+          "owner_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "counterparty_id": null,
+          "parent_id": null,
+          "created_by": "5f913bc5-9547-4649-9a3f-5ab0d80ac859",
+          "current_status": "PUBLISHED",
+          "object_version": 2,
+          "content_sha256": "5fe246ab2c368073512965b6babc6ea388b76a80a8574293796b10f64d101d8b",
+          "data": {
+            "offer": {
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "slots": [
+                {
+                  "ends_at": "2026-12-05T09:26:32.246Z",
+                  "starts_at": "2026-11-24T09:26:32.246Z"
+                }
+              ],
+              "terms": "synthetic test only",
+              "title": "Synthetic audition",
+              "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+              "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+              "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a",
+              "unit_minor": 10000,
+              "public_price": true,
+              "service_area": "synthetic district",
+              "public_booking": true,
+              "public_consent_id": "0fa07552-eaff-4136-979f-be20f21cf895"
+            },
+            "rules": {
+              "terms": "synthetic test only; transport included; no performance rights",
+              "version": "synthetic-v1",
+              "photo_count": 6,
+              "video_count": 1,
+              "accept_hours": 24,
+              "acceptance_hours": 48,
+              "payment_window_minutes": 30
+            },
+            "review": {
+              "decision": "APPROVE",
+              "reason": "Synthetic reviewed offer",
+              "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+            },
+            "rule_snapshot": {
+              "content": {
+                "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                "terms": {
+                  "audition": {
+                    "terms": "synthetic test only; transport included; no performance rights",
+                    "version": "synthetic-v1",
+                    "photo_count": 6,
+                    "video_count": 1,
+                    "accept_hours": 24,
+                    "acceptance_hours": 48,
+                    "payment_window_minutes": 30
+                  },
+                  "marketplace_finance": {
+                    "model": "V5_TWO_LAYER",
+                    "fee_base": "NET_PAID",
+                    "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                    "platform_bps": 2200,
+                    "product_type": "AUDITION",
+                    "referral_bps": 1000,
+                    "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4"
+                  }
+                },
+                "version": "1",
+                "rule_key": "audition.referral.modern.synthetic",
+                "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                "format_version": "rule-content-v1"
+              },
+              "effective_at": "2020-01-01T00:00:00.000Z",
+              "current_status": "EFFECTIVE"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auditions/bookings",
+      "schema": "AuditionResponse",
+      "value": {
+        "meta": {
+          "request_id": "77e0c9aa-c009-49a3-ac17-c8ecf12daff5",
+          "actor": {
+            "account_id": "3f9836f0-007d-4e29-bfe4-512f94580546"
+          },
+          "acting_party": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d"
+        },
+        "data": {
+          "id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+          "kind": "BOOKING",
+          "owner_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": "12683d33-2dc7-464b-8ef4-900383eba51c",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "SAFETY_REVIEW",
+          "object_version": 1,
+          "content_sha256": "3d8318ee1fb8aa82ad89d84c27c0756387450985d42bee294341a21503b936f3",
+          "data": {
+            "status": "SAFETY_REVIEW",
+            "offer": {
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "slots": [
+                {
+                  "ends_at": "2026-12-05T09:26:32.246Z",
+                  "starts_at": "2026-11-24T09:26:32.246Z"
+                }
+              ],
+              "terms": "synthetic test only",
+              "title": "Synthetic audition",
+              "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+              "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+              "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a",
+              "unit_minor": 10000,
+              "public_price": true,
+              "service_area": "synthetic district",
+              "public_booking": true,
+              "public_consent_id": "0fa07552-eaff-4136-979f-be20f21cf895"
+            },
+            "offer_sha256": "5fe246ab2c368073512965b6babc6ea388b76a80a8574293796b10f64d101d8b",
+            "rules": {
+              "terms": "synthetic test only; transport included; no performance rights",
+              "version": "synthetic-v1",
+              "photo_count": 6,
+              "video_count": 1,
+              "accept_hours": 24,
+              "acceptance_hours": 48,
+              "payment_window_minutes": 30
+            },
+            "rule_snapshot": {
+              "content": {
+                "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                "terms": {
+                  "audition": {
+                    "terms": "synthetic test only; transport included; no performance rights",
+                    "version": "synthetic-v1",
+                    "photo_count": 6,
+                    "video_count": 1,
+                    "accept_hours": 24,
+                    "acceptance_hours": 48,
+                    "payment_window_minutes": 30
+                  },
+                  "marketplace_finance": {
+                    "model": "V5_TWO_LAYER",
+                    "fee_base": "NET_PAID",
+                    "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                    "platform_bps": 2200,
+                    "product_type": "AUDITION",
+                    "referral_bps": 1000,
+                    "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4"
+                  }
+                },
+                "version": "1",
+                "rule_key": "audition.referral.modern.synthetic",
+                "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                "format_version": "rule-content-v1"
+              },
+              "effective_at": "2020-01-01T00:00:00.000Z",
+              "current_status": "EFFECTIVE"
+            },
+            "appointment": {
+              "address": "Synthetic studio 1",
+              "city": "synthetic-city",
+              "ends_at": "2026-11-27T10:26:32.246Z",
+              "mode": "OFFLINE",
+              "purpose": "Synthetic film casting sample",
+              "starts_at": "2026-11-27T09:26:32.246Z",
+              "venue": "Public studio"
+            },
+            "safety_review": null,
+            "order_id": null,
+            "paid_at": null,
+            "accepted_at": null,
+            "accept_by": null,
+            "departed_at": null,
+            "arrived_at": null,
+            "arrival_evidence_ids": [],
+            "delivery": null,
+            "fulfilled_at": null,
+            "deadline_at": null,
+            "job_id": null,
+            "dispute": null,
+            "cases": [],
+            "refund_minor": 0
+          },
+          "conversation_status": "AWAITING_VERIFIED_PAYMENT",
+          "refund_is_verified": false,
+          "performance_rights_granted": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auditions/bookings/ed30656a-d9d6-4c70-8908-5e1b57549b4d/reviews",
+      "schema": "AuditionResponse",
+      "value": {
+        "meta": {
+          "request_id": "d13e6d42-1fa9-403b-b76a-655258457305",
+          "actor": {
+            "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+          "kind": "BOOKING",
+          "owner_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": "12683d33-2dc7-464b-8ef4-900383eba51c",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "READY_TO_PAY",
+          "object_version": 2,
+          "content_sha256": "12db8390d0d4574ae4c722874e00c9f152e845f49960d1ea72d9aa172e334a08",
+          "data": {
+            "cases": [],
+            "offer": {
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "slots": [
+                {
+                  "ends_at": "2026-12-05T09:26:32.246Z",
+                  "starts_at": "2026-11-24T09:26:32.246Z"
+                }
+              ],
+              "terms": "synthetic test only",
+              "title": "Synthetic audition",
+              "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+              "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+              "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a",
+              "unit_minor": 10000,
+              "public_price": true,
+              "service_area": "synthetic district",
+              "public_booking": true,
+              "public_consent_id": "0fa07552-eaff-4136-979f-be20f21cf895"
+            },
+            "rules": {
+              "terms": "synthetic test only; transport included; no performance rights",
+              "version": "synthetic-v1",
+              "photo_count": 6,
+              "video_count": 1,
+              "accept_hours": 24,
+              "acceptance_hours": 48,
+              "payment_window_minutes": 30
+            },
+            "job_id": null,
+            "status": "READY_TO_PAY",
+            "dispute": null,
+            "paid_at": null,
+            "delivery": null,
+            "order_id": null,
+            "accept_by": null,
+            "arrived_at": null,
+            "accepted_at": null,
+            "appointment": {
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "venue": "Public studio",
+              "address": "Synthetic studio 1",
+              "ends_at": "2026-11-27T10:26:32.246Z",
+              "purpose": "Synthetic film casting sample",
+              "starts_at": "2026-11-27T09:26:32.246Z"
+            },
+            "deadline_at": null,
+            "departed_at": null,
+            "fulfilled_at": null,
+            "offer_sha256": "5fe246ab2c368073512965b6babc6ea388b76a80a8574293796b10f64d101d8b",
+            "refund_minor": 0,
+            "rule_snapshot": {
+              "content": {
+                "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                "terms": {
+                  "audition": {
+                    "terms": "synthetic test only; transport included; no performance rights",
+                    "version": "synthetic-v1",
+                    "photo_count": 6,
+                    "video_count": 1,
+                    "accept_hours": 24,
+                    "acceptance_hours": 48,
+                    "payment_window_minutes": 30
+                  },
+                  "marketplace_finance": {
+                    "model": "V5_TWO_LAYER",
+                    "fee_base": "NET_PAID",
+                    "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                    "platform_bps": 2200,
+                    "product_type": "AUDITION",
+                    "referral_bps": 1000,
+                    "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4"
+                  }
+                },
+                "version": "1",
+                "rule_key": "audition.referral.modern.synthetic",
+                "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                "format_version": "rule-content-v1"
+              },
+              "effective_at": "2020-01-01T00:00:00.000Z",
+              "current_status": "EFFECTIVE"
+            },
+            "safety_review": {
+              "decision": "APPROVE",
+              "checks": {
+                "purpose_verified": true,
+                "venue_verified": true,
+                "adult_parties_verified": true
+              },
+              "reason": "Independent synthetic safety review",
+              "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+            },
+            "arrival_evidence_ids": []
+          },
+          "conversation_status": "AWAITING_VERIFIED_PAYMENT",
+          "refund_is_verified": false,
+          "performance_rights_granted": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auditions/checkout",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "26227f08-a548-4588-b363-d152a769b3f7",
+          "actor": {
+            "account_id": "3f9836f0-007d-4e29-bfe4-512f94580546"
+          },
+          "acting_party": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d"
+        },
+        "data": {
+          "id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "kind": "ORDER",
+          "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "merchant_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": null,
+          "order_id": null,
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "OPEN",
+          "object_version": 1,
+          "content_sha256": "aab0a090ab6547085ff3d8f0ed72d11324bd55dd42e496baac7c33bba85c4798",
+          "data": {
+            "quote": {
+              "lines": [
+                {
+                  "line_id": "audition",
+                  "title": "Synthetic audition",
+                  "provider_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+                  "line_kind": "OTHER",
+                  "unit_minor": 10000,
+                  "total_minor": 10000,
+                  "currency": "CNY",
+                  "quantity": 1,
+                  "product_profile": {
+                    "version": "V5",
+                    "type": "AUDITION"
+                  },
+                  "specification": {
+                    "version": "synthetic-v1",
+                    "terms": "synthetic test only; transport included; no performance rights",
+                    "audition": {
+                      "terms": "synthetic test only; transport included; no performance rights",
+                      "version": "synthetic-v1",
+                      "photo_count": 6,
+                      "video_count": 1,
+                      "accept_hours": 24,
+                      "acceptance_hours": 48,
+                      "payment_window_minutes": 30
+                    }
+                  }
+                }
+              ],
+              "installments": [
+                {
+                  "key": "audition",
+                  "trigger": "ORDER_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "audition",
+                      "amount_minor": 10000
+                    }
+                  ],
+                  "apple_product_id": null
+                }
+              ],
+              "total_minor": 10000,
+              "currency": "CNY",
+              "channel": "ALIPAY",
+              "transaction_model": "DIRECT_SUPPLIER",
+              "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+              "expires_at": "2026-11-25T09:56:33.378Z",
+              "payment_window_minutes": 30,
+              "license_reservation_id": null,
+              "review": null,
+              "marketplace_finance": {
+                "allocation": {
+                  "fee_base": "NET_PAID",
+                  "mcn_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+                  "mcn_supply_bps": 2000,
+                  "model": "V5_TWO_LAYER",
+                  "platform_bps": 2200,
+                  "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4",
+                  "product_type": "AUDITION",
+                  "referral_bps": 1000,
+                  "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+                  "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                  "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+                },
+                "rule_snapshot": {
+                  "content": {
+                    "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                    "format_version": "rule-content-v1",
+                    "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                    "rule_key": "audition.referral.modern.synthetic",
+                    "terms": {
+                      "audition": {
+                        "accept_hours": 24,
+                        "acceptance_hours": 48,
+                        "payment_window_minutes": 30,
+                        "photo_count": 6,
+                        "terms": "synthetic test only; transport included; no performance rights",
+                        "version": "synthetic-v1",
+                        "video_count": 1
+                      },
+                      "marketplace_finance": {
+                        "fee_base": "NET_PAID",
+                        "model": "V5_TWO_LAYER",
+                        "platform_bps": 2200,
+                        "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4",
+                        "product_type": "AUDITION",
+                        "referral_bps": 1000,
+                        "rounding": "HALF_UP_PLATFORM_REMAINDER"
+                      }
+                    },
+                    "version": "1"
+                  },
+                  "current_status": "EFFECTIVE",
+                  "effective_at": "2020-01-01T00:00:00.000Z"
+                },
+                "relation_snapshot": {
+                  "id": "7d1aee02-3f27-46a9-a3ee-26db1d2daa77",
+                  "kind": "RELATION",
+                  "owner_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+                  "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+                  "parent_id": null,
+                  "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                  "current_status": "ACTIVE",
+                  "object_version": 2,
+                  "content_sha256": "b04dbcad5aa07113b6abc1e89cee2a8e18e1b53e7ffbb33723e07653511d4215",
+                  "data": {
+                    "scope": "COMMERCIAL",
+                    "terms": "Synthetic agreed agency",
+                    "v5_terms": {
+                      "version": "V5",
+                      "supply_share_bps": 2000
+                    },
+                    "exclusive": false,
+                    "commission": {
+                      "mcn_bps": 0,
+                      "platform_bps": 2200
+                    },
+                    "valid_from": "2020-01-01T00:00:00.000Z",
+                    "accepted_by": "5f913bc5-9547-4649-9a3f-5ab0d80ac859",
+                    "valid_until": "2099-01-01T00:00:00.000Z",
+                    "ended_reason": null,
+                    "evidence_asset_ids": [
+                      "0ea195ba-aa28-4004-9b7f-4f8e76001427"
+                    ]
+                  }
+                },
+                "captured_at": "2026-11-25T09:26:33.373Z"
+              },
+              "audition": {
+                "booking_id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+                "offer_sha256": "5fe246ab2c368073512965b6babc6ea388b76a80a8574293796b10f64d101d8b",
+                "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a",
+                "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+                "appointment": {
+                  "city": "synthetic-city",
+                  "mode": "OFFLINE",
+                  "venue": "Public studio",
+                  "address": "Synthetic studio 1",
+                  "ends_at": "2026-11-27T10:26:32.246Z",
+                  "purpose": "Synthetic film casting sample",
+                  "starts_at": "2026-11-27T09:26:32.246Z"
+                },
+                "performance_rights_granted": false
+              },
+              "referral": {
+                "version": "V5_R09",
+                "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+                "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+                "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+                "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+                "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+                "category": "AUDITION",
+                "clicked_at": "2026-11-25T09:26:33.258Z",
+                "captured_at": "2026-11-25T09:26:33.379Z",
+                "rule_snapshot": {
+                  "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                  "kind": "RULE",
+                  "owner_party_id": null,
+                  "parent_id": null,
+                  "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                  "current_status": "EFFECTIVE",
+                  "object_version": 2,
+                  "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                  "data": {
+                    "rule": {
+                      "gp": {
+                        "STOCK": 1,
+                        "media": 2,
+                        "repeat": 2,
+                        "AUDITION": 3,
+                        "five_star": 1,
+                        "COMMERCIAL": 5,
+                        "CUSTOMIZATION": 5,
+                        "refund_penalty": 5
+                      },
+                      "rank": {
+                        "bayes_n": 10,
+                        "weights": [
+                          3000,
+                          2500,
+                          2000,
+                          1000,
+                          1500
+                        ],
+                        "halo_bps": [
+                          0,
+                          10000,
+                          11500,
+                          13000
+                        ],
+                        "bayes_mean": 4,
+                        "review_min": 10,
+                        "window_days": 30,
+                        "newcomer_days": 30,
+                        "cold_start_days": 7,
+                        "popularity_days": 7,
+                        "repeat_buyers_min": 20
+                      },
+                      "terms": "Isolated fixture, not approved production rules",
+                      "version": "synthetic-audition-referral",
+                      "starlight": null,
+                      "thresholds": [
+                        0,
+                        30,
+                        120,
+                        400,
+                        1000
+                      ],
+                      "referral_bps": {
+                        "STOCK": 1000,
+                        "AUDITION": 1000,
+                        "COMMERCIAL": 1000,
+                        "CUSTOMIZATION": 1000
+                      },
+                      "retention_bps": 5000,
+                      "aftercare_days": {
+                        "STOCK": 7,
+                        "AUDITION": 7,
+                        "COMMERCIAL": 7,
+                        "CUSTOMIZATION": 7
+                      },
+                      "retention_days": 90,
+                      "risk_first_penalty": 25,
+                      "referral_contract_policy": "CONTRACT_20261029"
+                    },
+                    "review": {
+                      "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                      "reason": "Independent synthetic rule"
+                    }
+                  }
+                },
+                "rate_bps": 1000,
+                "status": "ATTRIBUTED",
+                "one_level_only": true,
+                "free_points_reward_enabled": false
+              }
+            },
+            "contract": {
+              "commitments": {
+                "booking_id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+                "booking_sha256": "12db8390d0d4574ae4c722874e00c9f152e845f49960d1ea72d9aa172e334a08",
+                "quote": {
+                  "audition": {
+                    "appointment": {
+                      "address": "Synthetic studio 1",
+                      "city": "synthetic-city",
+                      "ends_at": "2026-11-27T10:26:32.246Z",
+                      "mode": "OFFLINE",
+                      "purpose": "Synthetic film casting sample",
+                      "starts_at": "2026-11-27T09:26:32.246Z",
+                      "venue": "Public studio"
+                    },
+                    "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+                    "booking_id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+                    "offer_sha256": "5fe246ab2c368073512965b6babc6ea388b76a80a8574293796b10f64d101d8b",
+                    "performance_rights_granted": false,
+                    "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a"
+                  },
+                  "channel": "ALIPAY",
+                  "currency": "CNY",
+                  "expires_at": "2026-11-25T09:56:33.378Z",
+                  "installments": [
+                    {
+                      "allocations": [
+                        {
+                          "amount_minor": 10000,
+                          "line_id": "audition"
+                        }
+                      ],
+                      "apple_product_id": null,
+                      "key": "audition",
+                      "trigger": "ORDER_ACCEPTED"
+                    }
+                  ],
+                  "license_reservation_id": null,
+                  "lines": [
+                    {
+                      "currency": "CNY",
+                      "line_id": "audition",
+                      "line_kind": "OTHER",
+                      "product_profile": {
+                        "type": "AUDITION",
+                        "version": "V5"
+                      },
+                      "provider_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+                      "quantity": 1,
+                      "specification": {
+                        "audition": {
+                          "accept_hours": 24,
+                          "acceptance_hours": 48,
+                          "payment_window_minutes": 30,
+                          "photo_count": 6,
+                          "terms": "synthetic test only; transport included; no performance rights",
+                          "version": "synthetic-v1",
+                          "video_count": 1
+                        },
+                        "terms": "synthetic test only; transport included; no performance rights",
+                        "version": "synthetic-v1"
+                      },
+                      "title": "Synthetic audition",
+                      "total_minor": 10000,
+                      "unit_minor": 10000
+                    }
+                  ],
+                  "marketplace_finance": {
+                    "allocation": {
+                      "fee_base": "NET_PAID",
+                      "mcn_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+                      "mcn_supply_bps": 2000,
+                      "model": "V5_TWO_LAYER",
+                      "platform_bps": 2200,
+                      "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4",
+                      "product_type": "AUDITION",
+                      "referral_bps": 1000,
+                      "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+                      "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                      "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+                    },
+                    "captured_at": "2026-11-25T09:26:33.373Z",
+                    "relation_snapshot": {
+                      "content_sha256": "b04dbcad5aa07113b6abc1e89cee2a8e18e1b53e7ffbb33723e07653511d4215",
+                      "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+                      "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                      "current_status": "ACTIVE",
+                      "data": {
+                        "accepted_by": "5f913bc5-9547-4649-9a3f-5ab0d80ac859",
+                        "commission": {
+                          "mcn_bps": 0,
+                          "platform_bps": 2200
+                        },
+                        "ended_reason": null,
+                        "evidence_asset_ids": [
+                          "0ea195ba-aa28-4004-9b7f-4f8e76001427"
+                        ],
+                        "exclusive": false,
+                        "scope": "COMMERCIAL",
+                        "terms": "Synthetic agreed agency",
+                        "v5_terms": {
+                          "supply_share_bps": 2000,
+                          "version": "V5"
+                        },
+                        "valid_from": "2020-01-01T00:00:00.000Z",
+                        "valid_until": "2099-01-01T00:00:00.000Z"
+                      },
+                      "id": "7d1aee02-3f27-46a9-a3ee-26db1d2daa77",
+                      "kind": "RELATION",
+                      "object_version": 2,
+                      "owner_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+                      "parent_id": null
+                    },
+                    "rule_snapshot": {
+                      "content": {
+                        "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                        "format_version": "rule-content-v1",
+                        "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                        "rule_key": "audition.referral.modern.synthetic",
+                        "terms": {
+                          "audition": {
+                            "accept_hours": 24,
+                            "acceptance_hours": 48,
+                            "payment_window_minutes": 30,
+                            "photo_count": 6,
+                            "terms": "synthetic test only; transport included; no performance rights",
+                            "version": "synthetic-v1",
+                            "video_count": 1
+                          },
+                          "marketplace_finance": {
+                            "fee_base": "NET_PAID",
+                            "model": "V5_TWO_LAYER",
+                            "platform_bps": 2200,
+                            "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4",
+                            "product_type": "AUDITION",
+                            "referral_bps": 1000,
+                            "rounding": "HALF_UP_PLATFORM_REMAINDER"
+                          }
+                        },
+                        "version": "1"
+                      },
+                      "current_status": "EFFECTIVE",
+                      "effective_at": "2020-01-01T00:00:00.000Z"
+                    }
+                  },
+                  "payment_window_minutes": 30,
+                  "referral": {
+                    "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+                    "captured_at": "2026-11-25T09:26:33.379Z",
+                    "category": "AUDITION",
+                    "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+                    "clicked_at": "2026-11-25T09:26:33.258Z",
+                    "free_points_reward_enabled": false,
+                    "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+                    "one_level_only": true,
+                    "rate_bps": 1000,
+                    "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+                    "rule_snapshot": {
+                      "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                      "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                      "current_status": "EFFECTIVE",
+                      "data": {
+                        "review": {
+                          "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                          "reason": "Independent synthetic rule"
+                        },
+                        "rule": {
+                          "aftercare_days": {
+                            "AUDITION": 7,
+                            "COMMERCIAL": 7,
+                            "CUSTOMIZATION": 7,
+                            "STOCK": 7
+                          },
+                          "gp": {
+                            "AUDITION": 3,
+                            "COMMERCIAL": 5,
+                            "CUSTOMIZATION": 5,
+                            "STOCK": 1,
+                            "five_star": 1,
+                            "media": 2,
+                            "refund_penalty": 5,
+                            "repeat": 2
+                          },
+                          "rank": {
+                            "bayes_mean": 4,
+                            "bayes_n": 10,
+                            "cold_start_days": 7,
+                            "halo_bps": [
+                              0,
+                              10000,
+                              11500,
+                              13000
+                            ],
+                            "newcomer_days": 30,
+                            "popularity_days": 7,
+                            "repeat_buyers_min": 20,
+                            "review_min": 10,
+                            "weights": [
+                              3000,
+                              2500,
+                              2000,
+                              1000,
+                              1500
+                            ],
+                            "window_days": 30
+                          },
+                          "referral_bps": {
+                            "AUDITION": 1000,
+                            "COMMERCIAL": 1000,
+                            "CUSTOMIZATION": 1000,
+                            "STOCK": 1000
+                          },
+                          "referral_contract_policy": "CONTRACT_20261029",
+                          "retention_bps": 5000,
+                          "retention_days": 90,
+                          "risk_first_penalty": 25,
+                          "starlight": null,
+                          "terms": "Isolated fixture, not approved production rules",
+                          "thresholds": [
+                            0,
+                            30,
+                            120,
+                            400,
+                            1000
+                          ],
+                          "version": "synthetic-audition-referral"
+                        }
+                      },
+                      "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                      "kind": "RULE",
+                      "object_version": 2,
+                      "owner_party_id": null,
+                      "parent_id": null
+                    },
+                    "status": "ATTRIBUTED",
+                    "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+                    "version": "V5_R09"
+                  },
+                  "review": null,
+                  "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                  "total_minor": 10000,
+                  "transaction_model": "DIRECT_SUPPLIER"
+                }
+              },
+              "content_sha256": "2843e469679aacbd663730663b96a0ccaa47334718b901a46aa234092bebf273",
+              "contract_version_id": "04c5724b-619e-4b12-919c-78d32f0a2b42",
+              "created_at": "2026-11-25T09:26:33.385Z",
+              "current_status": "SEALED",
+              "format_version": "contract-content-v1",
+              "id": "f0db742f-a035-4359-8562-22fc9704969d",
+              "object_version": 1,
+              "party_ids": [
+                "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+                "09cd9456-378a-47b0-9c5d-60503fdb38de"
+              ],
+              "rule_contents": [
+                {
+                  "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                  "format_version": "rule-content-v1",
+                  "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                  "rule_key": "audition.referral.modern.synthetic",
+                  "terms": {
+                    "audition": {
+                      "accept_hours": 24,
+                      "acceptance_hours": 48,
+                      "payment_window_minutes": 30,
+                      "photo_count": 6,
+                      "terms": "synthetic test only; transport included; no performance rights",
+                      "version": "synthetic-v1",
+                      "video_count": 1
+                    },
+                    "marketplace_finance": {
+                      "fee_base": "NET_PAID",
+                      "model": "V5_TWO_LAYER",
+                      "platform_bps": 2200,
+                      "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4",
+                      "product_type": "AUDITION",
+                      "referral_bps": 1000,
+                      "rounding": "HALF_UP_PLATFORM_REMAINDER"
+                    }
+                  },
+                  "version": "1"
+                }
+              ],
+              "signing_method": "NOT_SIGNED"
+            },
+            "buyer_acknowledged_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+            "financial": {
+              "received_minor": 0,
+              "refunded_minor": 0,
+              "net_minor": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/sync",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "73e0aff7-5aad-4915-bb44-5fad8585ac81",
+          "actor": {
+            "account_id": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f"
+          },
+          "acting_party": "39dc1f16-e2e9-4940-8786-16fffea01524"
+        },
+        "data": {
+          "id": "f00a678c-859e-4a90-b73c-1fee9e94929a",
+          "kind": "REFERRAL_COMMISSION",
+          "owner_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+          "parent_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "PENDING",
+          "object_version": 2,
+          "content_sha256": "d0062dfbffe5e78ea7443d3e4258c250c317da2de3aba797ef96e23e4face6d5",
+          "data": {
+            "meaning": "PLATFORM_BUDGET_OBLIGATION_NOT_TRANSFERRED",
+            "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+            "attribution": {
+              "status": "ATTRIBUTED",
+              "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+              "version": "V5_R09",
+              "category": "AUDITION",
+              "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+              "rate_bps": 1000,
+              "clicked_at": "2026-11-25T09:26:33.258Z",
+              "captured_at": "2026-11-25T09:26:33.379Z",
+              "rule_snapshot": {
+                "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                "data": {
+                  "rule": {
+                    "gp": {
+                      "STOCK": 1,
+                      "media": 2,
+                      "repeat": 2,
+                      "AUDITION": 3,
+                      "five_star": 1,
+                      "COMMERCIAL": 5,
+                      "CUSTOMIZATION": 5,
+                      "refund_penalty": 5
+                    },
+                    "rank": {
+                      "bayes_n": 10,
+                      "weights": [
+                        3000,
+                        2500,
+                        2000,
+                        1000,
+                        1500
+                      ],
+                      "halo_bps": [
+                        0,
+                        10000,
+                        11500,
+                        13000
+                      ],
+                      "bayes_mean": 4,
+                      "review_min": 10,
+                      "window_days": 30,
+                      "newcomer_days": 30,
+                      "cold_start_days": 7,
+                      "popularity_days": 7,
+                      "repeat_buyers_min": 20
+                    },
+                    "terms": "Isolated fixture, not approved production rules",
+                    "version": "synthetic-audition-referral",
+                    "starlight": null,
+                    "thresholds": [
+                      0,
+                      30,
+                      120,
+                      400,
+                      1000
+                    ],
+                    "referral_bps": {
+                      "STOCK": 1000,
+                      "AUDITION": 1000,
+                      "COMMERCIAL": 1000,
+                      "CUSTOMIZATION": 1000
+                    },
+                    "retention_bps": 5000,
+                    "aftercare_days": {
+                      "STOCK": 7,
+                      "AUDITION": 7,
+                      "COMMERCIAL": 7,
+                      "CUSTOMIZATION": 7
+                    },
+                    "retention_days": 90,
+                    "risk_first_penalty": 25,
+                    "referral_contract_policy": "CONTRACT_20261029"
+                  },
+                  "review": {
+                    "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                    "reason": "Independent synthetic rule"
+                  }
+                },
+                "kind": "RULE",
+                "parent_id": null,
+                "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                "current_status": "EFFECTIVE",
+                "object_version": 2,
+                "owner_party_id": null
+              },
+              "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+              "one_level_only": true,
+              "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+              "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+              "free_points_reward_enabled": false
+            },
+            "amount_minor": 0,
+            "paid_out_minor": 0,
+            "delta_minor": 0,
+            "financial": {
+              "received_minor": 0,
+              "refunded_minor": 0,
+              "net_minor": 0,
+              "environment": null,
+              "first_at": null,
+              "journal_ids": []
+            },
+            "as_of": "2026-11-25T09:26:33.437Z"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/sync",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "c138daa9-bc4d-4a11-bbf2-98fe643e4071",
+          "actor": {
+            "account_id": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f"
+          },
+          "acting_party": "39dc1f16-e2e9-4940-8786-16fffea01524"
+        },
+        "data": {
+          "id": "f00a678c-859e-4a90-b73c-1fee9e94929a",
+          "kind": "REFERRAL_COMMISSION",
+          "owner_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+          "parent_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "PENDING",
+          "object_version": 3,
+          "content_sha256": "cf37816962ffe986bfda2b2f3042565c31bf74d57c887dd04d2e8d08ece75597",
+          "data": {
+            "as_of": "2026-11-25T09:26:33.508Z",
+            "meaning": "PLATFORM_BUDGET_OBLIGATION_NOT_TRANSFERRED",
+            "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+            "financial": {
+              "first_at": 1795598793485,
+              "net_minor": 10000,
+              "environment": "PRODUCTION",
+              "journal_ids": [
+                "fd424e44-05ec-465e-8c56-0b657a176960"
+              ],
+              "received_minor": 10000,
+              "refunded_minor": 0
+            },
+            "attribution": {
+              "status": "ATTRIBUTED",
+              "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+              "version": "V5_R09",
+              "category": "AUDITION",
+              "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+              "rate_bps": 1000,
+              "clicked_at": "2026-11-25T09:26:33.258Z",
+              "captured_at": "2026-11-25T09:26:33.379Z",
+              "rule_snapshot": {
+                "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                "data": {
+                  "rule": {
+                    "gp": {
+                      "STOCK": 1,
+                      "media": 2,
+                      "repeat": 2,
+                      "AUDITION": 3,
+                      "five_star": 1,
+                      "COMMERCIAL": 5,
+                      "CUSTOMIZATION": 5,
+                      "refund_penalty": 5
+                    },
+                    "rank": {
+                      "bayes_n": 10,
+                      "weights": [
+                        3000,
+                        2500,
+                        2000,
+                        1000,
+                        1500
+                      ],
+                      "halo_bps": [
+                        0,
+                        10000,
+                        11500,
+                        13000
+                      ],
+                      "bayes_mean": 4,
+                      "review_min": 10,
+                      "window_days": 30,
+                      "newcomer_days": 30,
+                      "cold_start_days": 7,
+                      "popularity_days": 7,
+                      "repeat_buyers_min": 20
+                    },
+                    "terms": "Isolated fixture, not approved production rules",
+                    "version": "synthetic-audition-referral",
+                    "starlight": null,
+                    "thresholds": [
+                      0,
+                      30,
+                      120,
+                      400,
+                      1000
+                    ],
+                    "referral_bps": {
+                      "STOCK": 1000,
+                      "AUDITION": 1000,
+                      "COMMERCIAL": 1000,
+                      "CUSTOMIZATION": 1000
+                    },
+                    "retention_bps": 5000,
+                    "aftercare_days": {
+                      "STOCK": 7,
+                      "AUDITION": 7,
+                      "COMMERCIAL": 7,
+                      "CUSTOMIZATION": 7
+                    },
+                    "retention_days": 90,
+                    "risk_first_penalty": 25,
+                    "referral_contract_policy": "CONTRACT_20261029"
+                  },
+                  "review": {
+                    "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                    "reason": "Independent synthetic rule"
+                  }
+                },
+                "kind": "RULE",
+                "parent_id": null,
+                "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                "current_status": "EFFECTIVE",
+                "object_version": 2,
+                "owner_party_id": null
+              },
+              "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+              "one_level_only": true,
+              "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+              "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+              "free_points_reward_enabled": false
+            },
+            "delta_minor": 0,
+            "amount_minor": 0,
+            "paid_out_minor": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/gigs/relations/7d1aee02-3f27-46a9-a3ee-26db1d2daa77/decision",
+      "schema": "GigRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "3c46920d-92c1-4152-a2a8-9605555cbc66",
+          "actor": {
+            "account_id": "5f913bc5-9547-4649-9a3f-5ab0d80ac859"
+          },
+          "acting_party": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+        },
+        "data": {
+          "id": "7d1aee02-3f27-46a9-a3ee-26db1d2daa77",
+          "kind": "RELATION",
+          "owner_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+          "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": null,
+          "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+          "current_status": "ENDED",
+          "object_version": 3,
+          "content_sha256": "8e7adf1e5875f53c7a1f2e8d7173f0589dce30a05dbcc00c2caa9bd1fbb38fa5",
+          "data": {
+            "scope": "COMMERCIAL",
+            "terms": "Synthetic agreed agency",
+            "v5_terms": {
+              "version": "V5",
+              "supply_share_bps": 2000
+            },
+            "exclusive": false,
+            "commission": {
+              "mcn_bps": 0,
+              "platform_bps": 2200
+            },
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "accepted_by": "5f913bc5-9547-4649-9a3f-5ab0d80ac859",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "ended_reason": "Synthetic agency replacement",
+            "evidence_asset_ids": [
+              "0ea195ba-aa28-4004-9b7f-4f8e76001427"
+            ],
+            "handover": {
+              "policy": "CONTRACT_20261029",
+              "started_at": "2026-11-25T09:26:33.544Z",
+              "deadline_at": "2026-12-02T09:26:33.544Z",
+              "order_count": 0,
+              "new_business_allowed": false
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/gigs/relations",
+      "schema": "GigRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "299b411e-95d6-43fb-aca6-96ccf7cf07f3",
+          "actor": {
+            "account_id": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f"
+          },
+          "acting_party": "9da2eb9d-7a77-47d6-92df-7e96dcd9a0be"
+        },
+        "data": {
+          "id": "b3c5133e-7063-4ed8-bf58-be0a2e7a2fd6",
+          "kind": "RELATION",
+          "owner_party_id": "9da2eb9d-7a77-47d6-92df-7e96dcd9a0be",
+          "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": null,
+          "created_by": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f",
+          "current_status": "INVITED",
+          "object_version": 1,
+          "content_sha256": "4f7f62b061a1595322a4735fa10c79d97f449149c6bf9084c658ab3144e9c978",
+          "data": {
+            "scope": "COMMERCIAL",
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "exclusive": false,
+            "terms": "Synthetic agreed agency",
+            "commission": {
+              "mcn_bps": 0,
+              "platform_bps": 2200
+            },
+            "v5_terms": {
+              "version": "V5",
+              "supply_share_bps": 2000
+            },
+            "evidence_asset_ids": [
+              "94448436-c1e1-4da3-b053-7d9689f01796"
+            ],
+            "accepted_by": null,
+            "ended_reason": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/gigs/relations/b3c5133e-7063-4ed8-bf58-be0a2e7a2fd6/decision",
+      "schema": "GigRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "047850b0-3f5d-46b3-b2f7-d0f76f9fa3e1",
+          "actor": {
+            "account_id": "5f913bc5-9547-4649-9a3f-5ab0d80ac859"
+          },
+          "acting_party": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+        },
+        "data": {
+          "id": "b3c5133e-7063-4ed8-bf58-be0a2e7a2fd6",
+          "kind": "RELATION",
+          "owner_party_id": "9da2eb9d-7a77-47d6-92df-7e96dcd9a0be",
+          "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": null,
+          "created_by": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f",
+          "current_status": "ACTIVE",
+          "object_version": 2,
+          "content_sha256": "cf475c21d3f3bd61e7ca7151d7fd0d4cd5802d04991cf71000390c48d51beff5",
+          "data": {
+            "scope": "COMMERCIAL",
+            "terms": "Synthetic agreed agency",
+            "v5_terms": {
+              "version": "V5",
+              "supply_share_bps": 2000
+            },
+            "exclusive": false,
+            "commission": {
+              "mcn_bps": 0,
+              "platform_bps": 2200
+            },
+            "valid_from": "2020-01-01T00:00:00.000Z",
+            "accepted_by": "5f913bc5-9547-4649-9a3f-5ab0d80ac859",
+            "valid_until": "2099-01-01T00:00:00.000Z",
+            "ended_reason": null,
+            "evidence_asset_ids": [
+              "94448436-c1e1-4da3-b053-7d9689f01796"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/links",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "d24be2fd-7606-4a13-846a-ce878cecc84d",
+          "actor": {
+            "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+          },
+          "acting_party": "51318b0a-914d-4fc5-9f1d-2cf536a3c94a"
+        },
+        "data": {
+          "id": "fadca823-d471-4aa5-bd48-ee2c8ba4e3b6",
+          "kind": "REFERRAL_LINK",
+          "owner_party_id": "51318b0a-914d-4fc5-9f1d-2cf536a3c94a",
+          "parent_id": null,
+          "created_by": "32959a61-656b-4a26-a517-6ef3d5373034",
+          "current_status": "ACTIVE",
+          "object_version": 1,
+          "content_sha256": "72be4272e20e7e35776b52f3574ccc9a10d1e637bf84980e826c1e944ec77ad6",
+          "data": {
+            "target_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+            "category": "AUDITION",
+            "rule_id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/clicks",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "5a44147e-bfe8-49b1-910d-6ee31117ba32",
+          "actor": {
+            "account_id": "3f9836f0-007d-4e29-bfe4-512f94580546"
+          },
+          "acting_party": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d"
+        },
+        "data": {
+          "id": "4340dd46-06b9-439c-9a5d-101796fd6724",
+          "kind": "REFERRAL_CLICK",
+          "owner_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "parent_id": "fadca823-d471-4aa5-bd48-ee2c8ba4e3b6",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "VALID",
+          "object_version": 1,
+          "content_sha256": "4ec47886e29c7130de397d35f5a3b87458bbd44b20da3014fb872dfee9ed50e8",
+          "data": {
+            "at": "2026-11-25T09:26:33.611Z",
+            "source": "AUTHENTICATED_LINK_VISIT",
+            "referrer_party_id": "51318b0a-914d-4fc5-9f1d-2cf536a3c94a"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/trade/records/030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "8ae8d8e1-a97e-4ace-928d-520077b26d0b",
+          "actor": {
+            "account_id": "3f9836f0-007d-4e29-bfe4-512f94580546"
+          },
+          "acting_party": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d"
+        },
+        "data": {
+          "id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "kind": "ORDER",
+          "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "merchant_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": null,
+          "order_id": null,
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "PAID",
+          "object_version": 2,
+          "content_sha256": "059fcc67686119958f5a75dcc438ca61403d5ebac407f9128ac4f0aa046ab5be",
+          "data": {
+            "quote": {
+              "lines": [
+                {
+                  "title": "Synthetic audition",
+                  "line_id": "audition",
+                  "currency": "CNY",
+                  "quantity": 1,
+                  "line_kind": "OTHER",
+                  "unit_minor": 10000,
+                  "total_minor": 10000,
+                  "specification": {
+                    "terms": "synthetic test only; transport included; no performance rights",
+                    "version": "synthetic-v1",
+                    "audition": {
+                      "terms": "synthetic test only; transport included; no performance rights",
+                      "version": "synthetic-v1",
+                      "photo_count": 6,
+                      "video_count": 1,
+                      "accept_hours": 24,
+                      "acceptance_hours": 48,
+                      "payment_window_minutes": 30
+                    }
+                  },
+                  "product_profile": {
+                    "type": "AUDITION",
+                    "version": "V5"
+                  },
+                  "provider_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+                }
+              ],
+              "review": null,
+              "channel": "ALIPAY",
+              "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+              "audition": {
+                "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+                "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a",
+                "booking_id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+                "appointment": {
+                  "city": "synthetic-city",
+                  "mode": "OFFLINE",
+                  "venue": "Public studio",
+                  "address": "Synthetic studio 1",
+                  "ends_at": "2026-11-27T10:26:32.246Z",
+                  "purpose": "Synthetic film casting sample",
+                  "starts_at": "2026-11-27T09:26:32.246Z"
+                },
+                "offer_sha256": "5fe246ab2c368073512965b6babc6ea388b76a80a8574293796b10f64d101d8b",
+                "performance_rights_granted": false
+              },
+              "currency": "CNY",
+              "referral": {
+                "status": "ATTRIBUTED",
+                "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+                "version": "V5_R09",
+                "category": "AUDITION",
+                "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+                "rate_bps": 1000,
+                "clicked_at": "2026-11-25T09:26:33.258Z",
+                "captured_at": "2026-11-25T09:26:33.379Z",
+                "rule_snapshot": {
+                  "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                  "data": {
+                    "rule": {
+                      "gp": {
+                        "STOCK": 1,
+                        "media": 2,
+                        "repeat": 2,
+                        "AUDITION": 3,
+                        "five_star": 1,
+                        "COMMERCIAL": 5,
+                        "CUSTOMIZATION": 5,
+                        "refund_penalty": 5
+                      },
+                      "rank": {
+                        "bayes_n": 10,
+                        "weights": [
+                          3000,
+                          2500,
+                          2000,
+                          1000,
+                          1500
+                        ],
+                        "halo_bps": [
+                          0,
+                          10000,
+                          11500,
+                          13000
+                        ],
+                        "bayes_mean": 4,
+                        "review_min": 10,
+                        "window_days": 30,
+                        "newcomer_days": 30,
+                        "cold_start_days": 7,
+                        "popularity_days": 7,
+                        "repeat_buyers_min": 20
+                      },
+                      "terms": "Isolated fixture, not approved production rules",
+                      "version": "synthetic-audition-referral",
+                      "starlight": null,
+                      "thresholds": [
+                        0,
+                        30,
+                        120,
+                        400,
+                        1000
+                      ],
+                      "referral_bps": {
+                        "STOCK": 1000,
+                        "AUDITION": 1000,
+                        "COMMERCIAL": 1000,
+                        "CUSTOMIZATION": 1000
+                      },
+                      "retention_bps": 5000,
+                      "aftercare_days": {
+                        "STOCK": 7,
+                        "AUDITION": 7,
+                        "COMMERCIAL": 7,
+                        "CUSTOMIZATION": 7
+                      },
+                      "retention_days": 90,
+                      "risk_first_penalty": 25,
+                      "referral_contract_policy": "CONTRACT_20261029"
+                    },
+                    "review": {
+                      "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                      "reason": "Independent synthetic rule"
+                    }
+                  },
+                  "kind": "RULE",
+                  "parent_id": null,
+                  "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                  "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                  "current_status": "EFFECTIVE",
+                  "object_version": 2,
+                  "owner_party_id": null
+                },
+                "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+                "one_level_only": true,
+                "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+                "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+                "free_points_reward_enabled": false
+              },
+              "expires_at": "2026-11-25T09:56:33.378Z",
+              "total_minor": 10000,
+              "installments": [
+                {
+                  "key": "audition",
+                  "trigger": "ORDER_ACCEPTED",
+                  "allocations": [
+                    {
+                      "line_id": "audition",
+                      "amount_minor": 10000
+                    }
+                  ],
+                  "apple_product_id": null
+                }
+              ],
+              "transaction_model": "DIRECT_SUPPLIER",
+              "marketplace_finance": {
+                "allocation": {
+                  "model": "V5_TWO_LAYER",
+                  "fee_base": "NET_PAID",
+                  "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                  "mcn_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+                  "platform_bps": 2200,
+                  "product_type": "AUDITION",
+                  "referral_bps": 1000,
+                  "mcn_supply_bps": 2000,
+                  "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4",
+                  "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+                  "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+                },
+                "captured_at": "2026-11-25T09:26:33.373Z",
+                "rule_snapshot": {
+                  "content": {
+                    "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                    "terms": {
+                      "audition": {
+                        "terms": "synthetic test only; transport included; no performance rights",
+                        "version": "synthetic-v1",
+                        "photo_count": 6,
+                        "video_count": 1,
+                        "accept_hours": 24,
+                        "acceptance_hours": 48,
+                        "payment_window_minutes": 30
+                      },
+                      "marketplace_finance": {
+                        "model": "V5_TWO_LAYER",
+                        "fee_base": "NET_PAID",
+                        "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                        "platform_bps": 2200,
+                        "product_type": "AUDITION",
+                        "referral_bps": 1000,
+                        "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4"
+                      }
+                    },
+                    "version": "1",
+                    "rule_key": "audition.referral.modern.synthetic",
+                    "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                    "format_version": "rule-content-v1"
+                  },
+                  "effective_at": "2020-01-01T00:00:00.000Z",
+                  "current_status": "EFFECTIVE"
+                },
+                "relation_snapshot": {
+                  "id": "7d1aee02-3f27-46a9-a3ee-26db1d2daa77",
+                  "data": {
+                    "scope": "COMMERCIAL",
+                    "terms": "Synthetic agreed agency",
+                    "v5_terms": {
+                      "version": "V5",
+                      "supply_share_bps": 2000
+                    },
+                    "exclusive": false,
+                    "commission": {
+                      "mcn_bps": 0,
+                      "platform_bps": 2200
+                    },
+                    "valid_from": "2020-01-01T00:00:00.000Z",
+                    "accepted_by": "5f913bc5-9547-4649-9a3f-5ab0d80ac859",
+                    "valid_until": "2099-01-01T00:00:00.000Z",
+                    "ended_reason": null,
+                    "evidence_asset_ids": [
+                      "0ea195ba-aa28-4004-9b7f-4f8e76001427"
+                    ]
+                  },
+                  "kind": "RELATION",
+                  "parent_id": null,
+                  "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                  "content_sha256": "b04dbcad5aa07113b6abc1e89cee2a8e18e1b53e7ffbb33723e07653511d4215",
+                  "current_status": "ACTIVE",
+                  "object_version": 2,
+                  "owner_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+                  "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+                }
+              },
+              "license_reservation_id": null,
+              "payment_window_minutes": 30
+            },
+            "contract": {
+              "id": "f0db742f-a035-4359-8562-22fc9704969d",
+              "party_ids": [
+                "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+                "09cd9456-378a-47b0-9c5d-60503fdb38de"
+              ],
+              "created_at": "2026-11-25T09:26:33.385Z",
+              "commitments": {
+                "quote": {
+                  "lines": [
+                    {
+                      "title": "Synthetic audition",
+                      "line_id": "audition",
+                      "currency": "CNY",
+                      "quantity": 1,
+                      "line_kind": "OTHER",
+                      "unit_minor": 10000,
+                      "total_minor": 10000,
+                      "specification": {
+                        "terms": "synthetic test only; transport included; no performance rights",
+                        "version": "synthetic-v1",
+                        "audition": {
+                          "terms": "synthetic test only; transport included; no performance rights",
+                          "version": "synthetic-v1",
+                          "photo_count": 6,
+                          "video_count": 1,
+                          "accept_hours": 24,
+                          "acceptance_hours": 48,
+                          "payment_window_minutes": 30
+                        }
+                      },
+                      "product_profile": {
+                        "type": "AUDITION",
+                        "version": "V5"
+                      },
+                      "provider_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+                    }
+                  ],
+                  "review": null,
+                  "channel": "ALIPAY",
+                  "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                  "audition": {
+                    "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+                    "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a",
+                    "booking_id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+                    "appointment": {
+                      "city": "synthetic-city",
+                      "mode": "OFFLINE",
+                      "venue": "Public studio",
+                      "address": "Synthetic studio 1",
+                      "ends_at": "2026-11-27T10:26:32.246Z",
+                      "purpose": "Synthetic film casting sample",
+                      "starts_at": "2026-11-27T09:26:32.246Z"
+                    },
+                    "offer_sha256": "5fe246ab2c368073512965b6babc6ea388b76a80a8574293796b10f64d101d8b",
+                    "performance_rights_granted": false
+                  },
+                  "currency": "CNY",
+                  "referral": {
+                    "status": "ATTRIBUTED",
+                    "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+                    "version": "V5_R09",
+                    "category": "AUDITION",
+                    "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+                    "rate_bps": 1000,
+                    "clicked_at": "2026-11-25T09:26:33.258Z",
+                    "captured_at": "2026-11-25T09:26:33.379Z",
+                    "rule_snapshot": {
+                      "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                      "data": {
+                        "rule": {
+                          "gp": {
+                            "STOCK": 1,
+                            "media": 2,
+                            "repeat": 2,
+                            "AUDITION": 3,
+                            "five_star": 1,
+                            "COMMERCIAL": 5,
+                            "CUSTOMIZATION": 5,
+                            "refund_penalty": 5
+                          },
+                          "rank": {
+                            "bayes_n": 10,
+                            "weights": [
+                              3000,
+                              2500,
+                              2000,
+                              1000,
+                              1500
+                            ],
+                            "halo_bps": [
+                              0,
+                              10000,
+                              11500,
+                              13000
+                            ],
+                            "bayes_mean": 4,
+                            "review_min": 10,
+                            "window_days": 30,
+                            "newcomer_days": 30,
+                            "cold_start_days": 7,
+                            "popularity_days": 7,
+                            "repeat_buyers_min": 20
+                          },
+                          "terms": "Isolated fixture, not approved production rules",
+                          "version": "synthetic-audition-referral",
+                          "starlight": null,
+                          "thresholds": [
+                            0,
+                            30,
+                            120,
+                            400,
+                            1000
+                          ],
+                          "referral_bps": {
+                            "STOCK": 1000,
+                            "AUDITION": 1000,
+                            "COMMERCIAL": 1000,
+                            "CUSTOMIZATION": 1000
+                          },
+                          "retention_bps": 5000,
+                          "aftercare_days": {
+                            "STOCK": 7,
+                            "AUDITION": 7,
+                            "COMMERCIAL": 7,
+                            "CUSTOMIZATION": 7
+                          },
+                          "retention_days": 90,
+                          "risk_first_penalty": 25,
+                          "referral_contract_policy": "CONTRACT_20261029"
+                        },
+                        "review": {
+                          "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                          "reason": "Independent synthetic rule"
+                        }
+                      },
+                      "kind": "RULE",
+                      "parent_id": null,
+                      "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                      "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                      "current_status": "EFFECTIVE",
+                      "object_version": 2,
+                      "owner_party_id": null
+                    },
+                    "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+                    "one_level_only": true,
+                    "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+                    "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+                    "free_points_reward_enabled": false
+                  },
+                  "expires_at": "2026-11-25T09:56:33.378Z",
+                  "total_minor": 10000,
+                  "installments": [
+                    {
+                      "key": "audition",
+                      "trigger": "ORDER_ACCEPTED",
+                      "allocations": [
+                        {
+                          "line_id": "audition",
+                          "amount_minor": 10000
+                        }
+                      ],
+                      "apple_product_id": null
+                    }
+                  ],
+                  "transaction_model": "DIRECT_SUPPLIER",
+                  "marketplace_finance": {
+                    "allocation": {
+                      "model": "V5_TWO_LAYER",
+                      "fee_base": "NET_PAID",
+                      "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                      "mcn_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+                      "platform_bps": 2200,
+                      "product_type": "AUDITION",
+                      "referral_bps": 1000,
+                      "mcn_supply_bps": 2000,
+                      "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4",
+                      "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+                      "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+                    },
+                    "captured_at": "2026-11-25T09:26:33.373Z",
+                    "rule_snapshot": {
+                      "content": {
+                        "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                        "terms": {
+                          "audition": {
+                            "terms": "synthetic test only; transport included; no performance rights",
+                            "version": "synthetic-v1",
+                            "photo_count": 6,
+                            "video_count": 1,
+                            "accept_hours": 24,
+                            "acceptance_hours": 48,
+                            "payment_window_minutes": 30
+                          },
+                          "marketplace_finance": {
+                            "model": "V5_TWO_LAYER",
+                            "fee_base": "NET_PAID",
+                            "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                            "platform_bps": 2200,
+                            "product_type": "AUDITION",
+                            "referral_bps": 1000,
+                            "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4"
+                          }
+                        },
+                        "version": "1",
+                        "rule_key": "audition.referral.modern.synthetic",
+                        "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                        "format_version": "rule-content-v1"
+                      },
+                      "effective_at": "2020-01-01T00:00:00.000Z",
+                      "current_status": "EFFECTIVE"
+                    },
+                    "relation_snapshot": {
+                      "id": "7d1aee02-3f27-46a9-a3ee-26db1d2daa77",
+                      "data": {
+                        "scope": "COMMERCIAL",
+                        "terms": "Synthetic agreed agency",
+                        "v5_terms": {
+                          "version": "V5",
+                          "supply_share_bps": 2000
+                        },
+                        "exclusive": false,
+                        "commission": {
+                          "mcn_bps": 0,
+                          "platform_bps": 2200
+                        },
+                        "valid_from": "2020-01-01T00:00:00.000Z",
+                        "accepted_by": "5f913bc5-9547-4649-9a3f-5ab0d80ac859",
+                        "valid_until": "2099-01-01T00:00:00.000Z",
+                        "ended_reason": null,
+                        "evidence_asset_ids": [
+                          "0ea195ba-aa28-4004-9b7f-4f8e76001427"
+                        ]
+                      },
+                      "kind": "RELATION",
+                      "parent_id": null,
+                      "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                      "content_sha256": "b04dbcad5aa07113b6abc1e89cee2a8e18e1b53e7ffbb33723e07653511d4215",
+                      "current_status": "ACTIVE",
+                      "object_version": 2,
+                      "owner_party_id": "fbf8fbea-8e60-427f-b2f2-4d09aaaf142a",
+                      "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+                    }
+                  },
+                  "license_reservation_id": null,
+                  "payment_window_minutes": 30
+                },
+                "booking_id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+                "booking_sha256": "12db8390d0d4574ae4c722874e00c9f152e845f49960d1ea72d9aa172e334a08"
+              },
+              "rule_contents": [
+                {
+                  "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                  "terms": {
+                    "audition": {
+                      "terms": "synthetic test only; transport included; no performance rights",
+                      "version": "synthetic-v1",
+                      "photo_count": 6,
+                      "video_count": 1,
+                      "accept_hours": 24,
+                      "acceptance_hours": 48,
+                      "payment_window_minutes": 30
+                    },
+                    "marketplace_finance": {
+                      "model": "V5_TWO_LAYER",
+                      "fee_base": "NET_PAID",
+                      "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                      "platform_bps": 2200,
+                      "product_type": "AUDITION",
+                      "referral_bps": 1000,
+                      "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4"
+                    }
+                  },
+                  "version": "1",
+                  "rule_key": "audition.referral.modern.synthetic",
+                  "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                  "format_version": "rule-content-v1"
+                }
+              ],
+              "content_sha256": "2843e469679aacbd663730663b96a0ccaa47334718b901a46aa234092bebf273",
+              "current_status": "SEALED",
+              "format_version": "contract-content-v1",
+              "object_version": 1,
+              "signing_method": "NOT_SIGNED",
+              "contract_version_id": "04c5724b-619e-4b12-919c-78d32f0a2b42"
+            },
+            "financial": {
+              "net_minor": 10000,
+              "received_minor": 10000,
+              "refunded_minor": 0
+            },
+            "buyer_acknowledged_by": "3f9836f0-007d-4e29-bfe4-512f94580546"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/sync",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "16952979-899d-42a1-b21c-768d3d70ad1f",
+          "actor": {
+            "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+          },
+          "acting_party": "51318b0a-914d-4fc5-9f1d-2cf536a3c94a"
+        },
+        "error": {
+          "code": "ENGAGEMENT_NOT_FOUND",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/engagement/mcn/dashboard",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "4b4b6e6c-8550-41d5-9bbc-ce72b1d469d9",
+          "actor": {
+            "account_id": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f"
+          },
+          "acting_party": "9da2eb9d-7a77-47d6-92df-7e96dcd9a0be"
+        },
+        "data": {
+          "relations": [
+            {
+              "id": "b3c5133e-7063-4ed8-bf58-be0a2e7a2fd6",
+              "kind": "RELATION",
+              "owner_party_id": "9da2eb9d-7a77-47d6-92df-7e96dcd9a0be",
+              "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+              "parent_id": null,
+              "created_by": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f",
+              "current_status": "ACTIVE",
+              "object_version": 2,
+              "content_sha256": "cf475c21d3f3bd61e7ca7151d7fd0d4cd5802d04991cf71000390c48d51beff5",
+              "data": {
+                "scope": "COMMERCIAL",
+                "terms": "Synthetic agreed agency",
+                "v5_terms": {
+                  "version": "V5",
+                  "supply_share_bps": 2000
+                },
+                "exclusive": false,
+                "commission": {
+                  "mcn_bps": 0,
+                  "platform_bps": 2200
+                },
+                "valid_from": "2020-01-01T00:00:00.000Z",
+                "accepted_by": "5f913bc5-9547-4649-9a3f-5ab0d80ac859",
+                "valid_until": "2099-01-01T00:00:00.000Z",
+                "ended_reason": null,
+                "evidence_asset_ids": [
+                  "94448436-c1e1-4da3-b053-7d9689f01796"
+                ]
+              }
+            }
+          ],
+          "assignments": [],
+          "orders": [],
+          "total_accrual_minor": 0,
+          "total_mcn_expected_minor": 0,
+          "total_supplier_expected_minor": 0,
+          "total_supplier_accrual_minor": 0,
+          "total_organization_expected_minor": 0,
+          "total_organization_accrual_minor": 0,
+          "total_order_quoted_minor": 0,
+          "total_order_received_minor": 0,
+          "total_order_refunded_minor": 0,
+          "total_order_net_minor": 0,
+          "period_basis": "ORDER_CREATED_AT_UTC",
+          "amount_basis": "ORDER_LIFETIME_AT_QUERY",
+          "total_basis": "VERIFIED_PRODUCTION_ORDERS",
+          "history_preserved": true,
+          "truncated": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auditions/records/ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+      "schema": "AuditionResponse",
+      "value": {
+        "meta": {
+          "request_id": "a33f2eba-f2f4-49f0-9fa5-04d42483afb4",
+          "actor": {
+            "account_id": "5f913bc5-9547-4649-9a3f-5ab0d80ac859"
+          },
+          "acting_party": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+        },
+        "data": {
+          "id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+          "kind": "BOOKING",
+          "owner_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": "12683d33-2dc7-464b-8ef4-900383eba51c",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "AWAITING_ACCEPTANCE",
+          "object_version": 4,
+          "content_sha256": "0ccd57d5a3005ddb92654b319345bac121239cfab42d1a37bff73ee72f29b8b5",
+          "data": {
+            "cases": [],
+            "offer": {
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "slots": [
+                {
+                  "ends_at": "2026-12-05T09:26:32.246Z",
+                  "starts_at": "2026-11-24T09:26:32.246Z"
+                }
+              ],
+              "terms": "synthetic test only",
+              "title": "Synthetic audition",
+              "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+              "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+              "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a",
+              "unit_minor": 10000,
+              "public_price": true,
+              "service_area": "synthetic district",
+              "public_booking": true,
+              "public_consent_id": "0fa07552-eaff-4136-979f-be20f21cf895"
+            },
+            "rules": {
+              "terms": "synthetic test only; transport included; no performance rights",
+              "version": "synthetic-v1",
+              "photo_count": 6,
+              "video_count": 1,
+              "accept_hours": 24,
+              "acceptance_hours": 48,
+              "payment_window_minutes": 30
+            },
+            "job_id": null,
+            "status": "AWAITING_ACCEPTANCE",
+            "dispute": null,
+            "paid_at": "2026-11-25T09:26:33.501Z",
+            "delivery": null,
+            "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+            "accept_by": "2026-11-26T09:26:33.501Z",
+            "arrived_at": null,
+            "accepted_at": null,
+            "appointment": {
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "venue": "Public studio",
+              "address": "Synthetic studio 1",
+              "ends_at": "2026-11-27T10:26:32.246Z",
+              "purpose": "Synthetic film casting sample",
+              "starts_at": "2026-11-27T09:26:32.246Z"
+            },
+            "deadline_at": null,
+            "departed_at": null,
+            "fulfilled_at": null,
+            "offer_sha256": "5fe246ab2c368073512965b6babc6ea388b76a80a8574293796b10f64d101d8b",
+            "refund_minor": 0,
+            "expiry_job_id": "403e0a59-ce12-459b-bb77-5ced2cd0c8ca",
+            "rule_snapshot": {
+              "content": {
+                "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                "terms": {
+                  "audition": {
+                    "terms": "synthetic test only; transport included; no performance rights",
+                    "version": "synthetic-v1",
+                    "photo_count": 6,
+                    "video_count": 1,
+                    "accept_hours": 24,
+                    "acceptance_hours": 48,
+                    "payment_window_minutes": 30
+                  },
+                  "marketplace_finance": {
+                    "model": "V5_TWO_LAYER",
+                    "fee_base": "NET_PAID",
+                    "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                    "platform_bps": 2200,
+                    "product_type": "AUDITION",
+                    "referral_bps": 1000,
+                    "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4"
+                  }
+                },
+                "version": "1",
+                "rule_key": "audition.referral.modern.synthetic",
+                "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                "format_version": "rule-content-v1"
+              },
+              "effective_at": "2020-01-01T00:00:00.000Z",
+              "current_status": "EFFECTIVE"
+            },
+            "safety_review": {
+              "checks": {
+                "venue_verified": true,
+                "purpose_verified": true,
+                "adult_parties_verified": true
+              },
+              "reason": "Independent synthetic safety review",
+              "decision": "APPROVE",
+              "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+            },
+            "arrival_evidence_ids": []
+          },
+          "conversation_status": "AWAITING_ACCEPTANCE",
+          "refund_is_verified": false,
+          "performance_rights_granted": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auditions/bookings/ed30656a-d9d6-4c70-8908-5e1b57549b4d/decision",
+      "schema": "AuditionResponse",
+      "value": {
+        "meta": {
+          "request_id": "8a1ef8bf-ab97-4e2a-8539-3c81f95857f4",
+          "actor": {
+            "account_id": "5f913bc5-9547-4649-9a3f-5ab0d80ac859"
+          },
+          "acting_party": "09cd9456-378a-47b0-9c5d-60503fdb38de"
+        },
+        "data": {
+          "id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+          "kind": "BOOKING",
+          "owner_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": "12683d33-2dc7-464b-8ef4-900383eba51c",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "REFUND_REQUIRED",
+          "object_version": 6,
+          "content_sha256": "e06cbe1f3f119457245706e2e2943bdefea1ccf3c75fe6b23f1b1478d122d635",
+          "data": {
+            "cases": [],
+            "offer": {
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "slots": [
+                {
+                  "ends_at": "2026-12-05T09:26:32.246Z",
+                  "starts_at": "2026-11-24T09:26:32.246Z"
+                }
+              ],
+              "terms": "synthetic test only",
+              "title": "Synthetic audition",
+              "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+              "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+              "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a",
+              "unit_minor": 10000,
+              "public_price": true,
+              "service_area": "synthetic district",
+              "public_booking": true,
+              "public_consent_id": "0fa07552-eaff-4136-979f-be20f21cf895"
+            },
+            "rules": {
+              "terms": "synthetic test only; transport included; no performance rights",
+              "version": "synthetic-v1",
+              "photo_count": 6,
+              "video_count": 1,
+              "accept_hours": 24,
+              "acceptance_hours": 48,
+              "payment_window_minutes": 30
+            },
+            "job_id": null,
+            "status": "REFUND_REQUIRED",
+            "dispute": null,
+            "paid_at": "2026-11-25T09:26:33.501Z",
+            "delivery": null,
+            "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+            "accept_by": "2026-11-26T09:26:33.501Z",
+            "arrived_at": null,
+            "accepted_at": null,
+            "appointment": {
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "venue": "Public studio",
+              "address": "Synthetic studio 1",
+              "ends_at": "2026-11-27T10:26:32.246Z",
+              "purpose": "Synthetic film casting sample",
+              "starts_at": "2026-11-27T09:26:32.246Z"
+            },
+            "deadline_at": null,
+            "departed_at": null,
+            "fulfilled_at": null,
+            "offer_sha256": "5fe246ab2c368073512965b6babc6ea388b76a80a8574293796b10f64d101d8b",
+            "refund_minor": 10000,
+            "expiry_job_id": "403e0a59-ce12-459b-bb77-5ced2cd0c8ca",
+            "rule_snapshot": {
+              "content": {
+                "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                "terms": {
+                  "audition": {
+                    "terms": "synthetic test only; transport included; no performance rights",
+                    "version": "synthetic-v1",
+                    "photo_count": 6,
+                    "video_count": 1,
+                    "accept_hours": 24,
+                    "acceptance_hours": 48,
+                    "payment_window_minutes": 30
+                  },
+                  "marketplace_finance": {
+                    "model": "V5_TWO_LAYER",
+                    "fee_base": "NET_PAID",
+                    "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                    "platform_bps": 2200,
+                    "product_type": "AUDITION",
+                    "referral_bps": 1000,
+                    "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4"
+                  }
+                },
+                "version": "1",
+                "rule_key": "audition.referral.modern.synthetic",
+                "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                "format_version": "rule-content-v1"
+              },
+              "effective_at": "2020-01-01T00:00:00.000Z",
+              "current_status": "EFFECTIVE"
+            },
+            "safety_review": {
+              "checks": {
+                "venue_verified": true,
+                "purpose_verified": true,
+                "adult_parties_verified": true
+              },
+              "reason": "Independent synthetic safety review",
+              "decision": "APPROVE",
+              "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+            },
+            "arrival_evidence_ids": [],
+            "cancel_reason": "Synthetic performer cannot accept",
+            "refund_id": "98078142-bef3-4f7e-a331-5d41107e910b"
+          },
+          "conversation_status": "ARCHIVED",
+          "refund_is_verified": false,
+          "performance_rights_granted": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/trade/records/98078142-bef3-4f7e-a331-5d41107e910b",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "c266767b-9e63-4ada-9848-a99d6f828dde",
+          "actor": {
+            "account_id": "3f9836f0-007d-4e29-bfe4-512f94580546"
+          },
+          "acting_party": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d"
+        },
+        "data": {
+          "id": "98078142-bef3-4f7e-a331-5d41107e910b",
+          "kind": "REFUND",
+          "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "merchant_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": "429eb32a-f982-4f41-ad6c-6f735091c0b6",
+          "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "REQUESTED",
+          "object_version": 1,
+          "content_sha256": "e1ce073bb6b01bdcf8c22f96ffce7e69d71c125dd75797756e6a67830bfaf4d1",
+          "data": {
+            "app_id": "synthetic.app",
+            "reason": "Synthetic performer cannot accept",
+            "review": null,
+            "currency": "CNY",
+            "provider": "ALIPAY",
+            "payment_id": "429eb32a-f982-4f41-ad6c-6f735091c0b6",
+            "allocations": [
+              {
+                "line_id": "audition",
+                "amount_minor": 10000
+              }
+            ],
+            "environment": "PRODUCTION",
+            "merchant_id": "synthetic.merchant",
+            "amount_minor": 10000,
+            "transaction_id": "synthetic-local:429eb32a-f982-4f41-ad6c-6f735091c0b6",
+            "apple_product_id": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/trade/records/98078142-bef3-4f7e-a331-5d41107e910b/reviews",
+      "schema": "TradeRecordResponse",
+      "value": {
+        "meta": {
+          "request_id": "c6c89841-4fed-4a22-8422-3b905d26822a",
+          "actor": {
+            "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "98078142-bef3-4f7e-a331-5d41107e910b",
+          "kind": "REFUND",
+          "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "merchant_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": "429eb32a-f982-4f41-ad6c-6f735091c0b6",
+          "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "APPROVED",
+          "object_version": 2,
+          "content_sha256": "2ce4069087df6b8a5d9744314712d5f8c5da100819ee4a2a680260cd420cf344",
+          "data": {
+            "app_id": "synthetic.app",
+            "reason": "Synthetic performer cannot accept",
+            "review": {
+              "decision": "APPROVED",
+              "reason": "Independent full refund approval",
+              "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+            },
+            "currency": "CNY",
+            "provider": "ALIPAY",
+            "payment_id": "429eb32a-f982-4f41-ad6c-6f735091c0b6",
+            "allocations": [
+              {
+                "line_id": "audition",
+                "amount_minor": 10000
+              }
+            ],
+            "environment": "PRODUCTION",
+            "merchant_id": "synthetic.merchant",
+            "amount_minor": 10000,
+            "transaction_id": "synthetic-local:429eb32a-f982-4f41-ad6c-6f735091c0b6",
+            "apple_product_id": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/sync",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "58290862-270c-48fa-8d79-0d16895b1e31",
+          "actor": {
+            "account_id": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f"
+          },
+          "acting_party": "39dc1f16-e2e9-4940-8786-16fffea01524"
+        },
+        "data": {
+          "id": "f00a678c-859e-4a90-b73c-1fee9e94929a",
+          "kind": "REFERRAL_COMMISSION",
+          "owner_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+          "parent_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "PENDING",
+          "object_version": 3,
+          "content_sha256": "cf37816962ffe986bfda2b2f3042565c31bf74d57c887dd04d2e8d08ece75597",
+          "data": {
+            "as_of": "2026-11-25T09:26:33.508Z",
+            "meaning": "PLATFORM_BUDGET_OBLIGATION_NOT_TRANSFERRED",
+            "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+            "financial": {
+              "first_at": 1795598793485,
+              "net_minor": 10000,
+              "environment": "PRODUCTION",
+              "journal_ids": [
+                "fd424e44-05ec-465e-8c56-0b657a176960"
+              ],
+              "received_minor": 10000,
+              "refunded_minor": 0
+            },
+            "attribution": {
+              "status": "ATTRIBUTED",
+              "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+              "version": "V5_R09",
+              "category": "AUDITION",
+              "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+              "rate_bps": 1000,
+              "clicked_at": "2026-11-25T09:26:33.258Z",
+              "captured_at": "2026-11-25T09:26:33.379Z",
+              "rule_snapshot": {
+                "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                "data": {
+                  "rule": {
+                    "gp": {
+                      "STOCK": 1,
+                      "media": 2,
+                      "repeat": 2,
+                      "AUDITION": 3,
+                      "five_star": 1,
+                      "COMMERCIAL": 5,
+                      "CUSTOMIZATION": 5,
+                      "refund_penalty": 5
+                    },
+                    "rank": {
+                      "bayes_n": 10,
+                      "weights": [
+                        3000,
+                        2500,
+                        2000,
+                        1000,
+                        1500
+                      ],
+                      "halo_bps": [
+                        0,
+                        10000,
+                        11500,
+                        13000
+                      ],
+                      "bayes_mean": 4,
+                      "review_min": 10,
+                      "window_days": 30,
+                      "newcomer_days": 30,
+                      "cold_start_days": 7,
+                      "popularity_days": 7,
+                      "repeat_buyers_min": 20
+                    },
+                    "terms": "Isolated fixture, not approved production rules",
+                    "version": "synthetic-audition-referral",
+                    "starlight": null,
+                    "thresholds": [
+                      0,
+                      30,
+                      120,
+                      400,
+                      1000
+                    ],
+                    "referral_bps": {
+                      "STOCK": 1000,
+                      "AUDITION": 1000,
+                      "COMMERCIAL": 1000,
+                      "CUSTOMIZATION": 1000
+                    },
+                    "retention_bps": 5000,
+                    "aftercare_days": {
+                      "STOCK": 7,
+                      "AUDITION": 7,
+                      "COMMERCIAL": 7,
+                      "CUSTOMIZATION": 7
+                    },
+                    "retention_days": 90,
+                    "risk_first_penalty": 25,
+                    "referral_contract_policy": "CONTRACT_20261029"
+                  },
+                  "review": {
+                    "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                    "reason": "Independent synthetic rule"
+                  }
+                },
+                "kind": "RULE",
+                "parent_id": null,
+                "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                "current_status": "EFFECTIVE",
+                "object_version": 2,
+                "owner_party_id": null
+              },
+              "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+              "one_level_only": true,
+              "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+              "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+              "free_points_reward_enabled": false
+            },
+            "delta_minor": 0,
+            "amount_minor": 0,
+            "paid_out_minor": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/sync",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "035222c3-c583-41b4-a5fc-223a24ab4d87",
+          "actor": {
+            "account_id": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f"
+          },
+          "acting_party": "39dc1f16-e2e9-4940-8786-16fffea01524"
+        },
+        "data": {
+          "id": "f00a678c-859e-4a90-b73c-1fee9e94929a",
+          "kind": "REFERRAL_COMMISSION",
+          "owner_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+          "parent_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "PENDING",
+          "object_version": 3,
+          "content_sha256": "cf37816962ffe986bfda2b2f3042565c31bf74d57c887dd04d2e8d08ece75597",
+          "data": {
+            "as_of": "2026-11-25T09:26:33.508Z",
+            "meaning": "PLATFORM_BUDGET_OBLIGATION_NOT_TRANSFERRED",
+            "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+            "financial": {
+              "first_at": 1795598793485,
+              "net_minor": 10000,
+              "environment": "PRODUCTION",
+              "journal_ids": [
+                "fd424e44-05ec-465e-8c56-0b657a176960"
+              ],
+              "received_minor": 10000,
+              "refunded_minor": 0
+            },
+            "attribution": {
+              "status": "ATTRIBUTED",
+              "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+              "version": "V5_R09",
+              "category": "AUDITION",
+              "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+              "rate_bps": 1000,
+              "clicked_at": "2026-11-25T09:26:33.258Z",
+              "captured_at": "2026-11-25T09:26:33.379Z",
+              "rule_snapshot": {
+                "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                "data": {
+                  "rule": {
+                    "gp": {
+                      "STOCK": 1,
+                      "media": 2,
+                      "repeat": 2,
+                      "AUDITION": 3,
+                      "five_star": 1,
+                      "COMMERCIAL": 5,
+                      "CUSTOMIZATION": 5,
+                      "refund_penalty": 5
+                    },
+                    "rank": {
+                      "bayes_n": 10,
+                      "weights": [
+                        3000,
+                        2500,
+                        2000,
+                        1000,
+                        1500
+                      ],
+                      "halo_bps": [
+                        0,
+                        10000,
+                        11500,
+                        13000
+                      ],
+                      "bayes_mean": 4,
+                      "review_min": 10,
+                      "window_days": 30,
+                      "newcomer_days": 30,
+                      "cold_start_days": 7,
+                      "popularity_days": 7,
+                      "repeat_buyers_min": 20
+                    },
+                    "terms": "Isolated fixture, not approved production rules",
+                    "version": "synthetic-audition-referral",
+                    "starlight": null,
+                    "thresholds": [
+                      0,
+                      30,
+                      120,
+                      400,
+                      1000
+                    ],
+                    "referral_bps": {
+                      "STOCK": 1000,
+                      "AUDITION": 1000,
+                      "COMMERCIAL": 1000,
+                      "CUSTOMIZATION": 1000
+                    },
+                    "retention_bps": 5000,
+                    "aftercare_days": {
+                      "STOCK": 7,
+                      "AUDITION": 7,
+                      "COMMERCIAL": 7,
+                      "CUSTOMIZATION": 7
+                    },
+                    "retention_days": 90,
+                    "risk_first_penalty": 25,
+                    "referral_contract_policy": "CONTRACT_20261029"
+                  },
+                  "review": {
+                    "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                    "reason": "Independent synthetic rule"
+                  }
+                },
+                "kind": "RULE",
+                "parent_id": null,
+                "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                "current_status": "EFFECTIVE",
+                "object_version": 2,
+                "owner_party_id": null
+              },
+              "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+              "one_level_only": true,
+              "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+              "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+              "free_points_reward_enabled": false
+            },
+            "delta_minor": 0,
+            "amount_minor": 0,
+            "paid_out_minor": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auditions/records/ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+      "schema": "AuditionResponse",
+      "value": {
+        "meta": {
+          "request_id": "0bda6dfe-74df-43ac-a8bb-5da4a42e72d4",
+          "actor": {
+            "account_id": "3f9836f0-007d-4e29-bfe4-512f94580546"
+          },
+          "acting_party": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d"
+        },
+        "data": {
+          "id": "ed30656a-d9d6-4c70-8908-5e1b57549b4d",
+          "kind": "BOOKING",
+          "owner_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+          "counterparty_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+          "parent_id": "12683d33-2dc7-464b-8ef4-900383eba51c",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "REFUNDED",
+          "object_version": 7,
+          "content_sha256": "d2772965d60f02eb3b44cc086eeceaec9f6d78c25347dc52af710e5f7e537644",
+          "data": {
+            "cases": [],
+            "offer": {
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "slots": [
+                {
+                  "ends_at": "2026-12-05T09:26:32.246Z",
+                  "starts_at": "2026-11-24T09:26:32.246Z"
+                }
+              ],
+              "terms": "synthetic test only",
+              "title": "Synthetic audition",
+              "rule_id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+              "avatar_id": "e3c37eac-9940-4b7e-ab81-5eec020ef590",
+              "person_id": "798578f8-a087-4e85-9aa0-99d45d92552a",
+              "unit_minor": 10000,
+              "public_price": true,
+              "service_area": "synthetic district",
+              "public_booking": true,
+              "public_consent_id": "0fa07552-eaff-4136-979f-be20f21cf895"
+            },
+            "rules": {
+              "terms": "synthetic test only; transport included; no performance rights",
+              "version": "synthetic-v1",
+              "photo_count": 6,
+              "video_count": 1,
+              "accept_hours": 24,
+              "acceptance_hours": 48,
+              "payment_window_minutes": 30
+            },
+            "job_id": null,
+            "status": "REFUNDED",
+            "dispute": null,
+            "paid_at": "2026-11-25T09:26:33.501Z",
+            "delivery": null,
+            "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+            "accept_by": "2026-11-26T09:26:33.501Z",
+            "refund_id": "98078142-bef3-4f7e-a331-5d41107e910b",
+            "arrived_at": null,
+            "accepted_at": null,
+            "appointment": {
+              "city": "synthetic-city",
+              "mode": "OFFLINE",
+              "venue": "Public studio",
+              "address": "Synthetic studio 1",
+              "ends_at": "2026-11-27T10:26:32.246Z",
+              "purpose": "Synthetic film casting sample",
+              "starts_at": "2026-11-27T09:26:32.246Z"
+            },
+            "deadline_at": null,
+            "departed_at": null,
+            "fulfilled_at": null,
+            "offer_sha256": "5fe246ab2c368073512965b6babc6ea388b76a80a8574293796b10f64d101d8b",
+            "refund_minor": 10000,
+            "cancel_reason": "Synthetic performer cannot accept",
+            "expiry_job_id": "403e0a59-ce12-459b-bb77-5ced2cd0c8ca",
+            "rule_snapshot": {
+              "content": {
+                "id": "c002b854-5875-438b-a942-7fa4b28df7eb",
+                "terms": {
+                  "audition": {
+                    "terms": "synthetic test only; transport included; no performance rights",
+                    "version": "synthetic-v1",
+                    "photo_count": 6,
+                    "video_count": 1,
+                    "accept_hours": 24,
+                    "acceptance_hours": 48,
+                    "payment_window_minutes": 30
+                  },
+                  "marketplace_finance": {
+                    "model": "V5_TWO_LAYER",
+                    "fee_base": "NET_PAID",
+                    "rounding": "HALF_UP_PLATFORM_REMAINDER",
+                    "platform_bps": 2200,
+                    "product_type": "AUDITION",
+                    "referral_bps": 1000,
+                    "platform_party_id": "ac690608-03b2-4ab1-8b6f-98aec246a0f4"
+                  }
+                },
+                "version": "1",
+                "rule_key": "audition.referral.modern.synthetic",
+                "content_sha256": "b67474d9ed03b3c584cbf27abd969e88e451ba265340c6b8b10d96bbd39886f0",
+                "format_version": "rule-content-v1"
+              },
+              "effective_at": "2020-01-01T00:00:00.000Z",
+              "current_status": "EFFECTIVE"
+            },
+            "safety_review": {
+              "checks": {
+                "venue_verified": true,
+                "purpose_verified": true,
+                "adult_parties_verified": true
+              },
+              "reason": "Independent synthetic safety review",
+              "decision": "APPROVE",
+              "account_id": "32959a61-656b-4a26-a517-6ef3d5373034"
+            },
+            "refund_verified_at": "2026-11-25T09:26:33.804Z",
+            "arrival_evidence_ids": []
+          },
+          "conversation_status": "ARCHIVED",
+          "refund_is_verified": true,
+          "performance_rights_granted": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/sync",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "ba162c1c-d4e0-4b13-a347-699423d24a1a",
+          "actor": {
+            "account_id": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f"
+          },
+          "acting_party": "39dc1f16-e2e9-4940-8786-16fffea01524"
+        },
+        "data": {
+          "id": "f00a678c-859e-4a90-b73c-1fee9e94929a",
+          "kind": "REFERRAL_COMMISSION",
+          "owner_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+          "parent_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "REVERSED",
+          "object_version": 4,
+          "content_sha256": "ce660d78dc99c3eed0507226fd8a0526bb7233163d06df996daab114d17024a7",
+          "data": {
+            "as_of": "2026-11-25T09:26:33.810Z",
+            "meaning": "PLATFORM_BUDGET_OBLIGATION_NOT_TRANSFERRED",
+            "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+            "financial": {
+              "first_at": 1795598793485,
+              "net_minor": 0,
+              "environment": "PRODUCTION",
+              "journal_ids": [
+                "f3080c65-a745-45bf-b916-05dfac397f6f",
+                "fd424e44-05ec-465e-8c56-0b657a176960"
+              ],
+              "received_minor": 10000,
+              "refunded_minor": 10000
+            },
+            "attribution": {
+              "status": "ATTRIBUTED",
+              "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+              "version": "V5_R09",
+              "category": "AUDITION",
+              "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+              "rate_bps": 1000,
+              "clicked_at": "2026-11-25T09:26:33.258Z",
+              "captured_at": "2026-11-25T09:26:33.379Z",
+              "rule_snapshot": {
+                "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                "data": {
+                  "rule": {
+                    "gp": {
+                      "STOCK": 1,
+                      "media": 2,
+                      "repeat": 2,
+                      "AUDITION": 3,
+                      "five_star": 1,
+                      "COMMERCIAL": 5,
+                      "CUSTOMIZATION": 5,
+                      "refund_penalty": 5
+                    },
+                    "rank": {
+                      "bayes_n": 10,
+                      "weights": [
+                        3000,
+                        2500,
+                        2000,
+                        1000,
+                        1500
+                      ],
+                      "halo_bps": [
+                        0,
+                        10000,
+                        11500,
+                        13000
+                      ],
+                      "bayes_mean": 4,
+                      "review_min": 10,
+                      "window_days": 30,
+                      "newcomer_days": 30,
+                      "cold_start_days": 7,
+                      "popularity_days": 7,
+                      "repeat_buyers_min": 20
+                    },
+                    "terms": "Isolated fixture, not approved production rules",
+                    "version": "synthetic-audition-referral",
+                    "starlight": null,
+                    "thresholds": [
+                      0,
+                      30,
+                      120,
+                      400,
+                      1000
+                    ],
+                    "referral_bps": {
+                      "STOCK": 1000,
+                      "AUDITION": 1000,
+                      "COMMERCIAL": 1000,
+                      "CUSTOMIZATION": 1000
+                    },
+                    "retention_bps": 5000,
+                    "aftercare_days": {
+                      "STOCK": 7,
+                      "AUDITION": 7,
+                      "COMMERCIAL": 7,
+                      "CUSTOMIZATION": 7
+                    },
+                    "retention_days": 90,
+                    "risk_first_penalty": 25,
+                    "referral_contract_policy": "CONTRACT_20261029"
+                  },
+                  "review": {
+                    "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                    "reason": "Independent synthetic rule"
+                  }
+                },
+                "kind": "RULE",
+                "parent_id": null,
+                "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                "current_status": "EFFECTIVE",
+                "object_version": 2,
+                "owner_party_id": null
+              },
+              "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+              "one_level_only": true,
+              "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+              "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+              "free_points_reward_enabled": false
+            },
+            "delta_minor": 0,
+            "amount_minor": 0,
+            "paid_out_minor": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/sync",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "3db75060-65df-4f8f-a31f-8f404fb09594",
+          "actor": {
+            "account_id": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f"
+          },
+          "acting_party": "39dc1f16-e2e9-4940-8786-16fffea01524"
+        },
+        "data": {
+          "id": "f00a678c-859e-4a90-b73c-1fee9e94929a",
+          "kind": "REFERRAL_COMMISSION",
+          "owner_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+          "parent_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "PENDING",
+          "object_version": 5,
+          "content_sha256": "5425221c1bd3178c5d3a176d25fcda982b6a84a766afa6e7088fd628b7a80762",
+          "data": {
+            "as_of": "2026-11-25T09:26:33.872Z",
+            "meaning": "PLATFORM_BUDGET_OBLIGATION_NOT_TRANSFERRED",
+            "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+            "financial": {
+              "received_minor": 10000,
+              "refunded_minor": 10000,
+              "net_minor": 0,
+              "environment": "PRODUCTION",
+              "first_at": 1795598793485,
+              "journal_ids": [
+                "f3080c65-a745-45bf-b916-05dfac397f6f",
+                "fd424e44-05ec-465e-8c56-0b657a176960"
+              ]
+            },
+            "attribution": {
+              "status": "ATTRIBUTED",
+              "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+              "version": "V5_R09",
+              "category": "AUDITION",
+              "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+              "rate_bps": 1000,
+              "clicked_at": "2026-11-25T09:26:33.258Z",
+              "captured_at": "2026-11-25T09:26:33.379Z",
+              "rule_snapshot": {
+                "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                "data": {
+                  "rule": {
+                    "gp": {
+                      "STOCK": 1,
+                      "media": 2,
+                      "repeat": 2,
+                      "AUDITION": 3,
+                      "five_star": 1,
+                      "COMMERCIAL": 5,
+                      "CUSTOMIZATION": 5,
+                      "refund_penalty": 5
+                    },
+                    "rank": {
+                      "bayes_n": 10,
+                      "weights": [
+                        3000,
+                        2500,
+                        2000,
+                        1000,
+                        1500
+                      ],
+                      "halo_bps": [
+                        0,
+                        10000,
+                        11500,
+                        13000
+                      ],
+                      "bayes_mean": 4,
+                      "review_min": 10,
+                      "window_days": 30,
+                      "newcomer_days": 30,
+                      "cold_start_days": 7,
+                      "popularity_days": 7,
+                      "repeat_buyers_min": 20
+                    },
+                    "terms": "Isolated fixture, not approved production rules",
+                    "version": "synthetic-audition-referral",
+                    "starlight": null,
+                    "thresholds": [
+                      0,
+                      30,
+                      120,
+                      400,
+                      1000
+                    ],
+                    "referral_bps": {
+                      "STOCK": 1000,
+                      "AUDITION": 1000,
+                      "COMMERCIAL": 1000,
+                      "CUSTOMIZATION": 1000
+                    },
+                    "retention_bps": 5000,
+                    "aftercare_days": {
+                      "STOCK": 7,
+                      "AUDITION": 7,
+                      "COMMERCIAL": 7,
+                      "CUSTOMIZATION": 7
+                    },
+                    "retention_days": 90,
+                    "risk_first_penalty": 25,
+                    "referral_contract_policy": "CONTRACT_20261029"
+                  },
+                  "review": {
+                    "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                    "reason": "Independent synthetic rule"
+                  }
+                },
+                "kind": "RULE",
+                "parent_id": null,
+                "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                "current_status": "EFFECTIVE",
+                "object_version": 2,
+                "owner_party_id": null
+              },
+              "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+              "one_level_only": true,
+              "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+              "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+              "free_points_reward_enabled": false
+            },
+            "delta_minor": 0,
+            "amount_minor": 0,
+            "paid_out_minor": 0
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/engagement/referrals/sync",
+      "schema": "EngagementResponse",
+      "value": {
+        "meta": {
+          "request_id": "22d225ae-9de6-4268-b7cb-68c5e1fc7737",
+          "actor": {
+            "account_id": "9cdcd7f2-7fb9-48dd-b10e-0b9ad27c100f"
+          },
+          "acting_party": "39dc1f16-e2e9-4940-8786-16fffea01524"
+        },
+        "data": {
+          "id": "f00a678c-859e-4a90-b73c-1fee9e94929a",
+          "kind": "REFERRAL_COMMISSION",
+          "owner_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+          "parent_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+          "created_by": "3f9836f0-007d-4e29-bfe4-512f94580546",
+          "current_status": "REVERSED",
+          "object_version": 6,
+          "content_sha256": "529bd727a58f919da94e70b9cff3f11d99c0e77106b3861a7bdd2c0d635ef097",
+          "data": {
+            "as_of": "2026-11-25T09:26:33.936Z",
+            "meaning": "PLATFORM_BUDGET_OBLIGATION_NOT_TRANSFERRED",
+            "order_id": "030bdc3c-0c65-4860-916f-6a5fa13c2c83",
+            "financial": {
+              "received_minor": 10000,
+              "refunded_minor": 10000,
+              "net_minor": 0,
+              "environment": "PRODUCTION",
+              "first_at": 1795598793485,
+              "journal_ids": [
+                "f3080c65-a745-45bf-b916-05dfac397f6f",
+                "fd424e44-05ec-465e-8c56-0b657a176960"
+              ]
+            },
+            "attribution": {
+              "status": "ATTRIBUTED",
+              "link_id": "0a7b33a9-4ec2-47dc-8e18-3eba19aae2b8",
+              "version": "V5_R09",
+              "category": "AUDITION",
+              "click_id": "ed34ea06-346f-4c82-a0f0-ec1964855bb6",
+              "rate_bps": 1000,
+              "clicked_at": "2026-11-25T09:26:33.258Z",
+              "captured_at": "2026-11-25T09:26:33.379Z",
+              "rule_snapshot": {
+                "id": "7c6a7eca-c9c2-4af6-acad-0fcc6b753345",
+                "data": {
+                  "rule": {
+                    "gp": {
+                      "STOCK": 1,
+                      "media": 2,
+                      "repeat": 2,
+                      "AUDITION": 3,
+                      "five_star": 1,
+                      "COMMERCIAL": 5,
+                      "CUSTOMIZATION": 5,
+                      "refund_penalty": 5
+                    },
+                    "rank": {
+                      "bayes_n": 10,
+                      "weights": [
+                        3000,
+                        2500,
+                        2000,
+                        1000,
+                        1500
+                      ],
+                      "halo_bps": [
+                        0,
+                        10000,
+                        11500,
+                        13000
+                      ],
+                      "bayes_mean": 4,
+                      "review_min": 10,
+                      "window_days": 30,
+                      "newcomer_days": 30,
+                      "cold_start_days": 7,
+                      "popularity_days": 7,
+                      "repeat_buyers_min": 20
+                    },
+                    "terms": "Isolated fixture, not approved production rules",
+                    "version": "synthetic-audition-referral",
+                    "starlight": null,
+                    "thresholds": [
+                      0,
+                      30,
+                      120,
+                      400,
+                      1000
+                    ],
+                    "referral_bps": {
+                      "STOCK": 1000,
+                      "AUDITION": 1000,
+                      "COMMERCIAL": 1000,
+                      "CUSTOMIZATION": 1000
+                    },
+                    "retention_bps": 5000,
+                    "aftercare_days": {
+                      "STOCK": 7,
+                      "AUDITION": 7,
+                      "COMMERCIAL": 7,
+                      "CUSTOMIZATION": 7
+                    },
+                    "retention_days": 90,
+                    "risk_first_penalty": 25,
+                    "referral_contract_policy": "CONTRACT_20261029"
+                  },
+                  "review": {
+                    "by": "32959a61-656b-4a26-a517-6ef3d5373034",
+                    "reason": "Independent synthetic rule"
+                  }
+                },
+                "kind": "RULE",
+                "parent_id": null,
+                "created_by": "3098c5f5-6d0b-4447-a25a-97f5b3200c5f",
+                "content_sha256": "020e000422279334f3dd497b12187534e1096af5dd9b9681fff57afbfa6f99a1",
+                "current_status": "EFFECTIVE",
+                "object_version": 2,
+                "owner_party_id": null
+              },
+              "buyer_party_id": "b4d9d4a9-a73c-467d-a74b-eba5b149c22d",
+              "one_level_only": true,
+              "referrer_party_id": "39dc1f16-e2e9-4940-8786-16fffea01524",
+              "supplier_party_id": "09cd9456-378a-47b0-9c5d-60503fdb38de",
+              "free_points_reward_enabled": false
+            },
+            "delta_minor": 0,
+            "amount_minor": 0,
+            "paid_out_minor": 0
+          }
+        }
+      }
+    }
+  ]
+}

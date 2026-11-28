@@ -53,7 +53,7 @@ class ManuscriptHero extends StatelessWidget {
                   children: [
                     Text(title,
                         style: const TextStyle(
-                            color: const Color(0xFF151515),
+                            color: Color(0xFF151515),
                             fontSize: 24,
                             fontWeight: FontWeight.w700,
                             height: 1.35)),

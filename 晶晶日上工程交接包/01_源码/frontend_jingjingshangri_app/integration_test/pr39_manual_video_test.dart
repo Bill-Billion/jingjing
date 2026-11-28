@@ -60,8 +60,9 @@ void main() {
     }
     for (var i = 0; i < 30 && f.evaluate().isEmpty; i++) {
       final scroll = find.byType(Scrollable);
-      if (scroll.evaluate().isNotEmpty)
+      if (scroll.evaluate().isNotEmpty) {
         await t.drag(scroll.first, const Offset(0, -400));
+      }
       await frames(t, 2);
     }
     await wait(t, f);

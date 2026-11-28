@@ -15,3 +15,12 @@ export function isMatches(v:unknown):v is Json {
  if(!v||typeof v!=='object')return false;const d=v as Json
  return d.algorithm_version==='EXPLICIT_BUSINESS_FILTERS_V1'&&d.personalized===false&&d.price_personalized===false&&d.requires_business_validation===true&&d.principle==='EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER'&&typeof d.scan_limited==='boolean'&&d.filters&&typeof d.filters==='object'&&!Array.isArray(d.filters)&&Array.isArray(d.items)&&d.items.every((r:Json)=>r&&Array.isArray(r.reasons)&&r.reasons.length>0&&r.reasons.every((k:unknown)=>typeof k==='string'&&Object.hasOwn(matchReasons,k)))&&isSearch({...d,items:d.items.map((r:Json)=>r.item)})
 }
+export const rankingReasons:Record<string,string>={PUBLIC_CATALOG:'公开目录顺序',RECENT_BROWSING_CITY:'与你近期浏览的公开内容城市相关',RECENT_PURCHASE_CITY:'与你近期实际购买的公开内容城市相关'}
+export const discoveryReasons={...matchReasons,...rankingReasons}
+function isRanked(v:unknown,matching:boolean):v is Json {
+ if(!v||typeof v!=='object')return false;const d=v as Json
+ const principle=d.personalized?'RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG':'PUBLIC_CATALOG_ORDER'
+ return typeof d.personalized==='boolean'&&d.price_personalized===false&&d.candidate_limit===500&&typeof d.catalog_truncated==='boolean'&&d.algorithm_version===(matching?'EXPLICIT_FILTERS_CITY_ACTIVITY_V1':'CITY_ACTIVITY_V1')&&d.principle===(matching?'EXPLICIT_FILTERS_THEN_':'')+principle&&(!matching||d.requires_business_validation===true&&d.filters&&typeof d.filters==='object'&&!Array.isArray(d.filters))&&Array.isArray(d.items)&&d.items.every((r:Json)=>r&&Array.isArray(r.reasons)&&r.reasons.length>0&&r.reasons.every((k:unknown)=>typeof k==='string'&&Object.hasOwn(matching?discoveryReasons:rankingReasons,k))&&r.reasons.filter((k:string)=>Object.hasOwn(rankingReasons,k)).length===1&&(d.personalized||r.reasons.includes('PUBLIC_CATALOG')))&&isSearch({...d,items:d.items.map((r:Json)=>r.item)})
+}
+export const isRecommendations=(v:unknown):v is Json=>isRanked(v,false)
+export const isRecommendedMatches=(v:unknown):v is Json=>isRanked(v,true)

@@ -1,0 +1,68 @@
+{
+  "frontend_sha": "0566dac6511271ab2c00f5ac85f4322b37f6b16c",
+  "backend_sha": "7e35958a6e53de1f33f526de16a0f2be0e5cb60c",
+  "request_id": "271edcf0-f955-4fb5-9d22-7737525de67d",
+  "order_id": "db125d9d-931c-47b1-81f0-9173e0f77db4",
+  "synthetic_only": true,
+  "steps": [
+    {
+      "name": "resume-original-pending-answer-without-reupload-or-resubmit"
+    },
+    {
+      "name": "applicant-cannot-download-before-review"
+    },
+    {
+      "name": "approval-blocked-until-actual-proposal-file-read"
+    },
+    {
+      "name": "separate-reviewer-reads-and-approves-same-attachment"
+    },
+    {
+      "name": "unrelated-account-cannot-download"
+    }
+  ],
+  "requests": [
+    {
+      "role": "reviewer",
+      "method": "GET",
+      "path": "/api/v1/me",
+      "status": 200
+    },
+    {
+      "role": "reviewer",
+      "method": "GET",
+      "path": "/api/v1/me/parties",
+      "status": 200
+    },
+    {
+      "role": "reviewer",
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "status": 200
+    },
+    {
+      "role": "reviewer",
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/271edcf0-f955-4fb5-9d22-7737525de67d",
+      "status": 200
+    },
+    {
+      "role": "reviewer",
+      "method": "GET",
+      "path": "/api/v1/privacy/operations/requests/271edcf0-f955-4fb5-9d22-7737525de67d/evidence/377c2a19-46f1-4d87-9ae2-9b6c1c5934a4/content",
+      "status": 200
+    },
+    {
+      "role": "reviewer",
+      "method": "POST",
+      "path": "/api/v1/privacy/operations/requests/271edcf0-f955-4fb5-9d22-7737525de67d/review",
+      "status": 200
+    }
+  ],
+  "failures": [],
+  "asset_id": "377c2a19-46f1-4d87-9ae2-9b6c1c5934a4",
+  "resumed_from": ".local/qa18/frontend-fix-20261125/privacy-web-third/result.json",
+  "sha256": "0ab558827d3068a6b769bc45b551019223b3162c9d3604e7a7d99a8235110623",
+  "byte_size": 3376,
+  "status": "PASS"
+}

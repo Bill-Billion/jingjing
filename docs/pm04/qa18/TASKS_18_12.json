@@ -1,0 +1,334 @@
+{
+  "cycle": "PM04-G1-20261125",
+  "mode": "NO_NEW_REQUIREMENTS",
+  "controller": "chengcongcong222",
+  "frontend": "Bill-Billion",
+  "gate": "MACHINE_TESTING",
+  "formal_source": "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+  "groups": [
+    {
+      "group": "01",
+      "name": "现货商品上架与试镜方案",
+      "test_scope": "上架新商品、试镜方案、定价及审核",
+      "test_hints": "stock.integration.test.cjs / auditions.integration.test.cjs",
+      "frontend_joined": "本人、机构、运营的真实提交与读取；先报错再重读",
+      "reverse": "未实名/不合法内容不能发布；旧单价不得覆盖；拒审与待审不得冒充公开",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "02",
+      "name": "机构逐人确认出演授权",
+      "test_scope": "本人同意、机构逐人受托、员工核权",
+      "test_hints": "artists.integration.test.cjs / artists-contract.integration.test.cjs",
+      "frontend_joined": "App艺人同意，Vue机构看同一关系及撤权后退回",
+      "reverse": "代理不可代签肖像声音/人格授权；换身份失权；历史资产不转移",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "03",
+      "name": "商品退回修改与再次提交",
+      "test_scope": "退回、修改新版本、复审与旧单冻结",
+      "test_hints": "stock.integration.test.cjs / stock-commercial.integration.test.cjs",
+      "frontend_joined": "真实旧版和新版内容、审核按钮和返回",
+      "reverse": "原订单许可/交付不受新版本改写；重复提交原键恢复",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "04",
+      "name": "本人资料删除和办理进度",
+      "test_scope": "本人申请、审核、回应、实际文件及删除状态",
+      "test_hints": "privacy-execution.integration.test.cjs / privacy-response-delivery.integration.test.cjs",
+      "frontend_joined": "本人App申请→运营受理→另一审核员→本人下载",
+      "reverse": "资料越权拒绝、未删除不可报已删、外部执行状态独立",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "05",
+      "name": "艺人肖像和作品封面管理",
+      "test_scope": "本人/受托的封面、造型、声音授权及受控预览",
+      "test_hints": "stock-media.integration.test.cjs / artists.integration.test.cjs",
+      "frontend_joined": "Flutter本人与机构表单、Web独审及公开展示",
+      "reverse": "授权到期/撤回后停止公开与私有读取；尺寸时长边界",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "06",
+      "name": "出品机构资料与精选艺人",
+      "test_scope": "机构资料审核及精选艺人公开关系",
+      "test_hints": "directory.integration.test.cjs",
+      "frontend_joined": "Vue机构编辑→独审→App公开机构/精选",
+      "reverse": "机构失权后不可再邀约；他机构私有资料不泄露",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "07",
+      "name": "城市选择与搜索",
+      "test_scope": "城市同义、条件匹配、分页及本人偏好",
+      "test_hints": "discovery.integration.test.cjs / catalog-city.test.cjs",
+      "frontend_joined": "App/Vue搜索过滤、续页、返回与刷新",
+      "reverse": "错误城市、身份无权、游标重放、禁个性化后仍正确搜索",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "08",
+      "name": "收藏与浏览记录",
+      "test_scope": "收藏浏览、清空、跨端历史和撤权",
+      "test_hints": "collections.integration.test.cjs",
+      "frontend_joined": "App本人收藏/足迹及Vue受控历史",
+      "reverse": "跨账号不可见、清空不回流、已下架内容不能泄露",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "09",
+      "name": "正式产品反馈与举报",
+      "test_scope": "工单/举报、补件、反通知、独审结果",
+      "test_hints": "support.integration.test.cjs / infringement.integration.test.cjs",
+      "frontend_joined": "App发起→运营复核及通知→App确认",
+      "reverse": "受限原件不外泄；处理状态不能假成功；重复举报不多开案",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "10",
+      "name": "消息未读与批量已读",
+      "test_scope": "实际消息、批量已读、未读数及业务回跳",
+      "test_hints": "notifications.integration.test.cjs",
+      "frontend_joined": "App多身份打开、已读批量、回到原业务；Vue运营",
+      "reverse": "撤销身份后旧消息不可泄露；断网回跳不重发业务写",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "11",
+      "name": "合同作品和收入统一入口",
+      "test_scope": "本人/机构合同、作品、应收与已收三事实",
+      "test_hints": "personal-center.integration.test.cjs / finance.test.cjs",
+      "frontend_joined": "App/网页按真实订单跳到合同/作品/收入",
+      "reverse": "旧合同非签署、应收非已付、别人合同不能见",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "12",
+      "name": "开票申请与人工处理",
+      "test_scope": "同单开票、补件、审核、发票文件及退款更正",
+      "test_hints": "invoices.integration.test.cjs",
+      "frontend_joined": "App申请、Vue税务人工处理与审核",
+      "reverse": "未收款不可虚构现金发票；已退款金额不可重复开票",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "13",
+      "name": "更换登录手机号",
+      "test_scope": "旧号凭据、新号绑定、旧会话失效及历史连续",
+      "test_hints": "phone-change.integration.test.cjs",
+      "frontend_joined": "App换号→新号登录→原订单/发票/工单",
+      "reverse": "原号码重新注册是新账号；断网/验证码不重复办理",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "14",
+      "name": "晶钻累计与记录说明",
+      "test_scope": "累计、可用、待冲回、过期与兑换",
+      "test_hints": "wallet.integration.test.cjs / wallet-totals.test.cjs",
+      "frontend_joined": "App钱包与权益详情、Vue账面核对",
+      "reverse": "退款/重复事件不重复累计；晶钻不是人民币",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "15",
+      "name": "故事草稿与多人共创发起",
+      "test_scope": "草稿/补件/权限、有效不同权利人/开工、交付",
+      "test_hints": "customization.integration.test.cjs / cocreation.integration.test.cjs",
+      "frontend_joined": "App草稿发起→各角色会签→Web独审→App领取",
+      "reverse": "同人多个数字人不充人数；付款未核/授权撤回不放行",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "16",
+      "name": "业务模拟与测试资料",
+      "test_scope": "所有仿真供应者、样片、权限、停止恢复",
+      "test_hints": "providers.test.cjs / trade-providers.test.cjs / test-isolation.test.cjs",
+      "frontend_joined": "把App/Web连接相同隔离环境，记录各自产物",
+      "reverse": "不混生产；测试超过时限不得续期；有界清理与回滚",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "17",
+      "name": "12条业务完整跨端办理",
+      "test_scope": "E2E-01…E2E-12均按原登记者跨api/app/web+异常",
+      "test_hints": "详见下表（12条源测试）",
+      "frontend_joined": "跨角色同业务记录、原请求、文件与钱账",
+      "reverse": "12条不是12个后端单测，不能拼不同库或跳过失败反例",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "group": "18",
+      "name": "完整测试版本交付",
+      "test_scope": "CI、版本冻结、备份恢复、回滚、到期和构建冒烟",
+      "test_hints": "scripts/full_business_check.py / CI workflows",
+      "frontend_joined": "候选App/FlutterWeb/Vue构建；签名和实体机另验",
+      "reverse": "只准测试候选，不用debug冒充正式包；最终需维护者审阅",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    }
+  ],
+  "e2e": [
+    {
+      "id": "E2E-01",
+      "name": "现货视频购买",
+      "flow": "公开合法商品→许可→下单→模拟付款→下载→售后与退款",
+      "test_hint": "stock.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-02",
+      "name": "人工定制",
+      "flow": "提交需求→报价合同→分期款→制作版次→确认与交付→售后",
+      "test_hint": "customization-delivery.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-03",
+      "name": "线下试镜",
+      "flow": "上架可约→预约/付款→接拒→6图1视频或原规则材料→确认结算/退款",
+      "test_hint": "auditions.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-04",
+      "name": "通告投稿及商单",
+      "flow": "发布/审核→艺人单向投稿→感兴趣→客服→报价订单→会话",
+      "test_hint": "notices.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-05",
+      "name": "多人共创",
+      "flow": "10位有效独立权利人→邀请/付费→开工→片段领取→退出与逆向",
+      "test_hint": "cocreation-modern-journey.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-06",
+      "name": "晶钻与制作券",
+      "flow": "合规消费→赠分→兑换→HOLD→付款核销/取消释放→退款冲回",
+      "test_hint": "redemption-checkout.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-07",
+      "name": "晶钻抽奖及奖品",
+      "flow": "成年资格→审核奖池→十连→固定中奖→奖励/兑现→断网恢复",
+      "test_hint": "redemption-lottery.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-08",
+      "name": "星探储值及会员",
+      "flow": "充值→成长/资格→到期/续期→冻结/恢复→退款",
+      "test_hint": "wallet-cross-period.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-09",
+      "name": "曝光权益及月冠军",
+      "flow": "曝光权益绑定/到期→投票→评分→申诉→奖励兑现",
+      "test_hint": "championship-contract.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-10",
+      "name": "原MCN合作与旧单",
+      "flow": "已有机构-艺人互认→原样片/商单成交→换绑→退款/旧单结算",
+      "test_hint": "mcn-stock-orders.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-11",
+      "name": "个人信息与注销",
+      "flow": "授权撤回→实际阻断→本人隐私申请→运营答复/独审→本人领取",
+      "test_hint": "privacy-copy.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    },
+    {
+      "id": "E2E-12",
+      "name": "参演发行收入",
+      "flow": "参演约定→多方会签/付款→履约→发行凭证→收入/清算",
+      "test_hint": "participation-amendment.integration.test.cjs",
+      "state": "NOT_RUN",
+      "machine_pass": false,
+      "formal_accepted": false
+    }
+  ],
+  "phases": [
+    "T0_FREEZE",
+    "T1_FIRST_PASS",
+    "T2_DEFECT_REMEDIATION",
+    "T3_FULL_REGRESSION",
+    "T4_DEVICE_MANUAL",
+    "T5_FORMAL_ACCEPTANCE"
+  ],
+  "constraints": [
+    "MCN新冷启动不在本轮",
+    "原E2E10不可取消",
+    "原未成年人条款后置但必交",
+    "不改业务和正式验收状态",
+    "不合并部署",
+    "仅隔离MySQL/模拟服务"
+  ]
+}

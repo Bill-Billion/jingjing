@@ -1,0 +1,127 @@
+{
+  "run_id": "pm04-g1-search-collections-20261125-07",
+  "stage": "T1_DISCOVERY",
+  "goal": "ACTIVE",
+  "product_source": "07822585dc90d589f8e3363957b0024ff9d1f769",
+  "runtime_environment_source": "73fac5447a9bdb3b00ae497a27994f918662bf7a",
+  "last_driver_source": "1bd4ca7461f254262b9bf4a12ac51a4f0354180d",
+  "retention_test_commit": "417adcb220445eed674f85122371a4ec6bf11796",
+  "frontend_received": "2eeaeee16ad55d7894a159535707ceeb6438c095",
+  "api_version": "0.31.79-rc.2",
+  "migration_last": "0225",
+  "migration_count": 225,
+  "product_changed": false,
+  "environment": "jx_test_stock_pm03_b5951fee1103cb2cc12b0d48",
+  "expires_at": "2026-11-25T14:20:04.550Z",
+  "ports": {
+    "api": 57976,
+    "app": 5500,
+    "vue": 5173
+  },
+  "stock_id": "85f0e27c-13bb-4d02-8580-ec3ea99d7dba",
+  "notice_id": "10025c9f-1a93-4c15-8034-8aeb37e0954f",
+  "checks": [
+    {
+      "attempt": "1795588774751",
+      "name": "api-city-alias-keyword-stable-pagination-account-bound-cursor-personalization-off",
+      "records": [
+        "01a832a5-92e5-45cc-9250-40af34dd5471",
+        "85f0e27c-13bb-4d02-8580-ec3ea99d7dba",
+        "921c784b-52b3-47c4-8c72-e989b29b42ff",
+        "ebdb8654-cb6b-4994-bb7a-83312d13e6dd"
+      ]
+    },
+    {
+      "attempt": "1795588774751",
+      "name": "vue-real-search-clears-old-results-and-applies-price-filter"
+    },
+    {
+      "attempt": "1795588774751",
+      "name": "flutter-real-search-and-explicit-budget-without-personalization"
+    },
+    {
+      "attempt": "1795588774751",
+      "name": "history-default-off-and-detail-opening-does-not-record"
+    },
+    {
+      "attempt": "1795588774751",
+      "name": "flutter-favorite-unknown-result-recovers-original-key-body-once"
+    },
+    {
+      "attempt": "1795588774751",
+      "name": "same-account-app-vue-favorites-other-account-isolated-and-cursor-bound"
+    },
+    {
+      "attempt": "1795588774751",
+      "name": "vue-single-delete-app-clear-invalidates-old-cursor-without-touching-favorites"
+    },
+    {
+      "attempt": "1795588774751",
+      "name": "disabled-history-does-not-return-after-opening-detail"
+    },
+    {
+      "attempt": "1795588774751",
+      "name": "unlisted-favorite-redacts-public-fields-on-both-clients-and-can-be-removed"
+    },
+    {
+      "attempt": "1795588888623",
+      "name": "flutter-kept-tab-shared-city-manual-override-and-restore-without-location"
+    }
+  ],
+  "check_entries": 10,
+  "distinct_check_names": 10,
+  "attempt_count": 3,
+  "failed_attempts_preserved": 2,
+  "terminal_driver_exit_code": 0,
+  "group_success_attempts": {
+    "G07": "1795588888623",
+    "G08": "1795588774751"
+  },
+  "retention": {
+    "passed": 5,
+    "failed": 0,
+    "requests": 216,
+    "created_approved_notices": 201,
+    "retained_history": 200,
+    "database_removed": true,
+    "checks": [
+      {
+        "name": "defaults-and-opt-in",
+        "days": 30,
+        "max_entries": 200
+      },
+      {
+        "name": "201-real-visits-200-retained",
+        "created_and_reviewed": 201,
+        "http_visits": 201,
+        "api_rows": 200,
+        "stored_rows": 200,
+        "oldest_absent": true
+      },
+      {
+        "name": "day31-and-expired-physically-purged-day29-retained",
+        "stored_rows": 198,
+        "favorite_preserved": true
+      },
+      {
+        "name": "trim-clear-and-replay-do-not-resurrect",
+        "stored_history_after_clear": 0,
+        "favorites": 1
+      }
+    ]
+  },
+  "issue": "QA18-TEST-020",
+  "formal_acceptance_updated": false,
+  "groups_closed": 0,
+  "full_regression_complete": false,
+  "limits": [
+    "Synthetic real HTTP/browser only, not physical Android",
+    "G08 completed in attempt1; G07 search in attempt1 and kept-tab in attempt3; later attempts skip completed checks",
+    "Browser result counts did not reach a second page; stable cursor boundary was API limit1, retention API limit100",
+    "Cross-account browser isolation uses separate authenticated contexts, not a live in-place login switch",
+    "Retention uses separate isolated database, real 201 approved notices and real HTTP visits; only time fields of three owned synthetic history rows adjusted for expiry",
+    "No location granted; location acquisition feature is currently disabled, so no native permission-dialog denial claimed",
+    "Stock85f0e27c was unlisted through normal seller API, favorite removed, history off/empty; notice favorite remains",
+    "Initial retention test executed untracked; exact byte SHA and later unchanged commit recorded separately"
+  ]
+}

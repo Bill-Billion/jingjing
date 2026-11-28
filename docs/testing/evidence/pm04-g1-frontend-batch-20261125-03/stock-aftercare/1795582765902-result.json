@@ -1,0 +1,295 @@
+{
+  "result": "PASS",
+  "order_id": "d3c6439d-1427-4fda-bc81-d69099becee8",
+  "payment_id": "9f82f05a-69b4-49be-bb3c-b05f4869dc1a",
+  "synthetic_only": true,
+  "cases": [
+    {
+      "license_action": "KEEP",
+      "amount_minor": 40,
+      "case_id": "e191800f-0b0f-432c-a234-7b43743e2d68",
+      "decided": true,
+      "refund_id": "f867d3db-cc32-48ef-b597-9c254e3d98ef",
+      "approved": true,
+      "executed": true,
+      "reconciled": true,
+      "complete": true
+    },
+    {
+      "license_action": "REVOKE",
+      "amount_minor": 60,
+      "case_id": "5779aa99-2d0a-4362-9945-89937422269a",
+      "decided": true,
+      "refund_id": "926451b1-08d1-4ef9-994f-b1f3691d33f4",
+      "approved": true,
+      "executed": true,
+      "reconciled": true,
+      "complete": true
+    }
+  ],
+  "checks": [
+    {
+      "name": "flutter-web-browser-save-matches-original-file",
+      "sha256": "aa5680914cf5cf08d268913a27b9eef59a665566f10ee33979e2c76520f67fb0",
+      "bytes": 43551
+    },
+    {
+      "name": "web-buyer-opened-original-case",
+      "case_id": "e191800f-0b0f-432c-a234-7b43743e2d68",
+      "license_action": "KEEP"
+    },
+    {
+      "name": "web-independent-amount-and-license",
+      "case_id": "e191800f-0b0f-432c-a234-7b43743e2d68",
+      "amount_minor": 40,
+      "license_action": "KEEP"
+    },
+    {
+      "name": "same-order-refund-and-license-observed-in-api-vue-flutter-web",
+      "case_id": "e191800f-0b0f-432c-a234-7b43743e2d68",
+      "refund_id": "f867d3db-cc32-48ef-b597-9c254e3d98ef",
+      "license_action": "KEEP",
+      "total_refunded_minor": 40
+    },
+    {
+      "name": "web-buyer-opened-original-case",
+      "case_id": "5779aa99-2d0a-4362-9945-89937422269a",
+      "license_action": "REVOKE"
+    },
+    {
+      "name": "web-independent-amount-and-license",
+      "case_id": "5779aa99-2d0a-4362-9945-89937422269a",
+      "amount_minor": 60,
+      "license_action": "REVOKE"
+    },
+    {
+      "name": "same-order-refund-and-license-observed-in-api-vue-flutter-web",
+      "case_id": "5779aa99-2d0a-4362-9945-89937422269a",
+      "refund_id": "926451b1-08d1-4ef9-994f-b1f3691d33f4",
+      "license_action": "REVOKE",
+      "total_refunded_minor": 100
+    },
+    {
+      "name": "revocation-does-not-remotely-erase-existing-browser-copy"
+    }
+  ],
+  "requests": [
+    {
+      "source": "browser",
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/cases",
+      "key_sha256": "3c93893701683797107dd79530f270677a3c599fef2e7105c05bacf5bddd6403",
+      "body_sha256": "d4a1ad9347ee1e0c14657db417a1348caf085f9f26b500b607031034705c18a8"
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8",
+      "status": 200
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/content",
+      "status": 409
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/case-resolution",
+      "status": 400
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8",
+      "status": 200
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/content",
+      "status": 409
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/case-resolution",
+      "status": 403
+    },
+    {
+      "source": "browser",
+      "role": "stock_reviewer",
+      "path": "/api/v1/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/case-resolution",
+      "key_sha256": "2740cc0a69a6928412d2e0171efa2766461d7c28b47d14afd7167387d1359f3f",
+      "body_sha256": "1bf5b559c23043a6ea3541a97631fec029ddd056495a2c1422acc2375f543979"
+    },
+    {
+      "source": "browser",
+      "role": "stock_buyer",
+      "path": "/api/v1/trade/refunds",
+      "key_sha256": "1b236d260a17bb2184183b2cfd64cef98b7ac066934b5a22f6bc8264a453876c",
+      "body_sha256": "e19a218333590290e1ba881ce34eb648b1cae30ef1e8d15af38c074cf03b1563"
+    },
+    {
+      "source": "browser",
+      "role": "stock_reviewer",
+      "path": "/api/v1/trade/records/f867d3db-cc32-48ef-b597-9c254e3d98ef/reviews",
+      "key_sha256": "bfde88857c400a5941ccd1759a9a395294875426f490a785f55e7bf609ddce0a",
+      "body_sha256": "1cf65e84bcfbeeb85abd505b3d14803f66c32370fb446d5c0ef9938e4fa6220b"
+    },
+    {
+      "source": "browser",
+      "role": "stock_reviewer",
+      "path": "/api/v1/trade/refunds/f867d3db-cc32-48ef-b597-9c254e3d98ef/execution",
+      "key_sha256": "156975fd5485ba58bbd345750c10ca078c24afb0bb474ce312f19c59db1e1455",
+      "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/content",
+      "status": 409
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/testing/payments/outcome",
+      "status": 200
+    },
+    {
+      "source": "browser",
+      "role": "stock_buyer",
+      "path": "/api/v1/trade/refunds/f867d3db-cc32-48ef-b597-9c254e3d98ef/reconciliation",
+      "key_sha256": "db50d042adc7b6dd3db028f6b38c12b1761b3b9071b437bd3559f2c20cc18cef",
+      "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8",
+      "status": 200
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/trade/records/d3c6439d-1427-4fda-bc81-d69099becee8",
+      "status": 200
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/content",
+      "status": 200
+    },
+    {
+      "source": "browser",
+      "role": "stock_buyer",
+      "path": "/api/v1/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/cases",
+      "key_sha256": "133e2ca0f0ff1200ec6d6154cc3977c2862df46f98a5d740630d973d619b225f",
+      "body_sha256": "77199c47070bedb0d80c559e690396b3ae71e72b6334864703f53e429391d0c4"
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8",
+      "status": 200
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/content",
+      "status": 409
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/case-resolution",
+      "status": 403
+    },
+    {
+      "source": "browser",
+      "role": "stock_reviewer",
+      "path": "/api/v1/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/case-resolution",
+      "key_sha256": "f61777439340ffef9152ee21da30420d5463e910261a5651b92a2eb93c912891",
+      "body_sha256": "0f00b1e679938a31eb77876e1a8e324e1e2188063e8549ff3b8f01501812f5db"
+    },
+    {
+      "source": "browser",
+      "role": "stock_buyer",
+      "path": "/api/v1/trade/refunds",
+      "key_sha256": "ab5bdbd1fe5e34b6c81d32c026187ef3cd32b28713ef3ddb096681cff8fb50a5",
+      "body_sha256": "0a406a3a48482160393de66c07bb1ff18f1aeafe365ec09f0a492bd400a01293"
+    },
+    {
+      "source": "browser",
+      "role": "stock_reviewer",
+      "path": "/api/v1/trade/records/926451b1-08d1-4ef9-994f-b1f3691d33f4/reviews",
+      "key_sha256": "b9b0c43efee798b1d92a49b34ee6414c040677bf2e33ddb13934b54cb871c549",
+      "body_sha256": "1cf65e84bcfbeeb85abd505b3d14803f66c32370fb446d5c0ef9938e4fa6220b"
+    },
+    {
+      "source": "browser",
+      "role": "stock_reviewer",
+      "path": "/api/v1/trade/refunds/926451b1-08d1-4ef9-994f-b1f3691d33f4/execution",
+      "key_sha256": "5dbca146cc9dfc38d460c319a3d05accc9aa384124233c23d9888318a53351d5",
+      "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/content",
+      "status": 409
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/testing/payments/outcome",
+      "status": 200
+    },
+    {
+      "source": "browser",
+      "role": "stock_buyer",
+      "path": "/api/v1/trade/refunds/926451b1-08d1-4ef9-994f-b1f3691d33f4/reconciliation",
+      "key_sha256": "ee3e89614280f71512930ede5503442251b8e6e67017300601d582d3d9b97342",
+      "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8",
+      "status": 200
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/trade/records/d3c6439d-1427-4fda-bc81-d69099becee8",
+      "status": 200
+    },
+    {
+      "source": "api-observation-or-simulator",
+      "role": "stock_buyer",
+      "path": "/stock/purchases/d3c6439d-1427-4fda-bc81-d69099becee8/content",
+      "status": 409
+    }
+  ],
+  "attempts": [
+    {
+      "id": "1795582740860",
+      "source": "aab38c7aec1c2b18bdabc600aa006e0a6afb62fd",
+      "started_at": "2026-11-25T04:59:00.887Z"
+    },
+    {
+      "id": "1795582765902",
+      "source": "e92b1aaffcac709b609aec8702fa9f89626b8878",
+      "started_at": "2026-11-25T04:59:25.933Z"
+    }
+  ],
+  "saved_file": ".local\\qa18\\frontend-batch-20261125-03\\stock-aftercare\\browser-saved-original.mp4",
+  "completed": true,
+  "limits": [
+    "Synthetic provider receipts, not real money",
+    "Flutter Web download, not Android device save",
+    "Two approved cases on the same payment; not all E2E reverse scenarios or formal signoff"
+  ]
+}

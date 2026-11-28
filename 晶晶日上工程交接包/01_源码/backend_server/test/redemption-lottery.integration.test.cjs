@@ -23,7 +23,7 @@ test('lottery actual HTTP: immutable odds, independent review, stock and atomic 
   const draw=(pool,count=10,operation=key(),who=buyer)=>request('/redemption/draws',who,{operation,body:{pool_id:pool.id,rules_sha256:pool.data.rules_sha256,count}});
   // Advance only this isolated fixture's publication timestamps. Production has no bypass/clock override.
   async function ageNotice(p){const data=structuredClone(p.data),published=new Date(Date.now()-8*86400000).toISOString();data.publication_notice=require('../src/modules/redemption/lottery-policy').publicationNotice(published,data.ends_at);data.rules_sha256=require('../src/modules/redemption/lottery-policy').rulesHash(data);const content_sha256=digest(data);await db.execute('UPDATE redemption_records SET data_json=?,data_sha256=? WHERE id=?',[JSON.stringify(data),content_sha256,p.id]);return {...p,data,content_sha256};}
-  let pool,stock;
+  let pool,stock,blockedTenOperation;
   await t.test('creator cannot approve; rules and finance require separate reviewers; unpublished draw denied',async()=>{
    stock=await freeStock();pool=await create(stock);await assert.rejects(draw(pool),{code:'LOTTERY_NOT_OPEN'});await assert.rejects(review(pool,producer,'RULES'),{code:'SELF_REVIEW_FORBIDDEN'});
    pool=await review(pool,reviewer,'RULES');await assert.rejects(review(pool,reviewer,'FINANCE'),{code:'INDEPENDENT_FINANCE_REVIEW_REQUIRED'});pool=await review(pool,outsider,'FINANCE');assert.equal(pool.current_status,'PUBLISHED');assert.equal(pool.data.prize_promises[0].template.production.face_minor,50000);
@@ -37,6 +37,26 @@ test('lottery actual HTTP: immutable odds, independent review, stock and atomic 
    const original=pool.data.rules_sha256;pool=await ageNotice(pool);assert.notEqual(pool.data.rules_sha256,original);
    await assert.rejects(draw({...pool,data:{...pool.data,rules_sha256:original}}),{code:'LOTTERY_NOT_OPEN'});
   });
+  await t.test('pending refund reversal blocks single and ten draws without spending, issuing or reserving a command',async()=>{
+   // Isolated negative-state fixture only. The real refund-to-shortfall transition
+   // is independently covered by wallet-refund-entitlement-journey; this checks
+   // the actual lottery HTTP gate even when other available points are sufficient.
+   const [[row]]=await db.execute("SELECT * FROM wallet_records WHERE owner_party_id=? AND kind='EARNING' LIMIT 1",[buyer.personal_party_id]);assert(row);
+   const original=typeof row.data_json==='string'?JSON.parse(row.data_json):row.data_json;
+   const changed={...original,pending_shortfall:4};
+   const counts=async()=>Object.fromEntries(await Promise.all(['redemption_records','redemption_commands','redemption_audit','wallet_records','wallet_audit'].map(async table=>[table,Number((await db.execute('SELECT COUNT(*) n FROM '+table))[0][0].n)])));
+   const before=await counts(),balanceBefore=(await request('/wallet/summary',buyer)).available_points;assert(balanceBefore>=2700);
+   blockedTenOperation=key();
+   await db.execute("UPDATE wallet_records SET current_status='REVERSAL_PENDING',data_json=?,data_sha256=? WHERE id=?",[JSON.stringify(changed),digest(changed),row.id]);
+   try{
+    for(const [count,op]of [[1,key()],[10,blockedTenOperation]])await assert.rejects(draw(pool,count,op),{code:'POINTS_REVERSAL_PENDING'});
+    const after=await request('/wallet/summary',buyer);assert.equal(after.points_pending_reversal,4);assert.equal(after.available_points,balanceBefore);
+    assert.deepEqual(await counts(),before);
+    const [[current]]=await db.execute('SELECT data_json FROM redemption_records WHERE id=?',[stock.id]);const data=typeof current.data_json==='string'?JSON.parse(current.data_json):current.data_json;assert.equal(data.issued,0);
+   }finally{await db.execute('UPDATE wallet_records SET current_status=?,data_json=?,data_sha256=? WHERE id=?',[row.current_status,JSON.stringify(original),row.data_sha256,row.id]);}
+   assert.equal((await request('/wallet/summary',buyer)).points_pending_reversal,0);
+   assert.equal((await request('/wallet/summary',buyer)).available_points,balanceBefore);
+  });
   await t.test('reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected',async()=>{
    async function evidenceRead(who,asset=evidence.id){return fetch(base+'/redemption/records/'+pool.id+'/evidence/'+asset,{headers:{Authorization:'Bearer '+who.token}});}
    let response=await evidenceRead(reviewer);assert.equal(response.status,200);assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(await response.text(),'synthetic REVIEW_EVIDENCE');assert.equal((await evidenceRead(producer)).status,403);assert.equal((await evidenceRead(buyer)).status,403);assert.equal((await evidenceRead(outsider)).status,200);
@@ -44,7 +64,7 @@ test('lottery actual HTTP: immutable odds, independent review, stock and atomic 
    const [[row]]=await db.execute('SELECT object_key FROM supply_assets WHERE id=?',[evidence.id]);const original=S.files.get(row.object_key);S.files.set(row.object_key,Buffer.from('synthetic corrupt'));assert.equal((await evidenceRead(reviewer)).status,503);S.files.set(row.object_key,original);
   });
   await t.test('retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge',async()=>{
-   const op=key(),a=await draw(pool,10,op);assert.equal(a.data.results.length,10);assert.equal(new Set(a.data.results.map(x=>x.grant_id)).size,10);assert.equal(a.data.points,2700);assert.equal(a.current_status,'SETTLED');assert.deepEqual(await draw(pool,10,op),a);
+   const op=blockedTenOperation,a=await draw(pool,10,op);assert.equal(a.data.results.length,10);assert.equal(new Set(a.data.results.map(x=>x.grant_id)).size,10);assert.equal(a.data.points,2700);assert.equal(a.current_status,'SETTLED');assert.deepEqual(await draw(pool,10,op),a);
    await assert.rejects(draw(pool,1,op),{code:'IDEMPOTENCY_CONFLICT'});
    const results=await Promise.allSettled([draw(pool),draw(pool)]);assert.equal(results.filter(x=>x.status==='fulfilled').length,1);assert.equal(results.find(x=>x.status==='rejected').reason.code,'LOTTERY_STOCK_NOT_READY');
    await assert.rejects(draw(pool,1),{code:'LOTTERY_STOCK_NOT_READY'});assert.equal(Number((await db.execute("SELECT COUNT(*) n FROM redemption_records WHERE kind='DRAW' AND parent_id=?",[pool.id]))[0][0].n),2);

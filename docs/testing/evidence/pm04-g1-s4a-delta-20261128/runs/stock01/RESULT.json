@@ -1,0 +1,100 @@
+{
+  "database": "jx_test_qa18_tail_supply_33ee711464a30b10973a",
+  "product": "053168fb6e06b80680101702a733357309368809",
+  "started_at": "2026-11-28T02:42:19.397Z",
+  "checkout": "1fdfa80e070c9a30ee9d7091a317afff9f96fcb0",
+  "checks": [
+    {
+      "name": "G01-G03-G05 original purchase survives two rejected/reviewed versions with distinct previews; revoked consent blocks fresh use",
+      "status": "FAIL",
+      "message": "locator.waitFor: Timeout 11000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/当前身份还没有可办理的真人档案/) to be visible\u001b[22m\n"
+    }
+  ],
+  "requests": [
+    {
+      "role": "seller",
+      "path": "/stock/listings",
+      "method": "GET",
+      "status": 200,
+      "sha256": "41b8f9f99b85521d4f3f896a04855b61771d5878d3e8651540ffc2a29d265e9e",
+      "bytes": 217
+    },
+    {
+      "role": "seller",
+      "path": "/stock/sales-publications",
+      "method": "GET",
+      "status": 200,
+      "sha256": "abca226191b3880a9f239b069189e97cd42011db9476be7f5fc58bfc546301f8",
+      "bytes": 1007
+    }
+  ],
+  "last_migration": {
+    "version": "0225",
+    "name": "0225_production_delivery_views.sql",
+    "status": "APPLIED"
+  },
+  "browser_requests": [
+    {
+      "surface": "app",
+      "role": "outsider",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "7bf08919-59df-4599-ada1-eaad043b8ba3",
+      "sha256": "0e1e5f4a70bd1076492e1f57278ea71b890d05194b4b7670d8d1c1c38ecba6c5"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "39149958ff10927fb0094c83e84f14336d8a5f3938fa92cc2cf13d284b1d2572"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "700ef74f1c67e4f891cfe0b8528ae956009dd58177ad3ed910967d4e8bbe2d29"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "path": "/api/v1/artists/people",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1decea7b45dd904cf8f39e04ae4fd9a5589474a0c6252298ab031c962edf887b"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "path": "/api/v1/stock/sales-publications",
+      "method": "GET",
+      "status": 200,
+      "sha256": "f8568b67652116442b02c69c1323554cf4c7e3080cf169a9116b532fe10b54b4"
+    }
+  ],
+  "browser_checks": [
+    {
+      "surface": "app",
+      "role": "outsider",
+      "label": "first-listing-no-artist",
+      "result": "FAIL",
+      "message": "locator.waitFor: Timeout 11000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText(/当前身份还没有可办理的真人档案/) to be visible\u001b[22m\n"
+    }
+  ],
+  "served_checkout": "e887301530c24f9751e074cd297535c3aac7cdb9",
+  "builds": {
+    "app": {
+      "files": 74,
+      "sha256": "87f331e857391cbaf00aaa1da974a6954c0dfe07eabedc0b4a422b318bf44f17"
+    },
+    "vue": {
+      "files": 93,
+      "sha256": "bab320ad70408b55984610c1c8381308debf4e2bb11fb0feb12198da1f47008d"
+    }
+  },
+  "finished_at": "2026-11-28T02:42:40.340Z"
+}

@@ -1,0 +1,614 @@
+{
+  "new_execution": false,
+  "source": "c8cf81f8d741582a5770e6db546b91a15b0064cd",
+  "run_id": "backend-acceptance-2026-11-25T21-08-15-701Z-f6296e",
+  "private_original_sha256": "b0591cb7dffaab84af598ad2d4c83187f9e74fec5a4b0204c920b36574e8a9bf",
+  "case_count": 29,
+  "limits": "Safe projection of original stored HTTP fixtures, not raw wire bodies. Original files remain local; no headers, tokens, phones, names, document bodies or coordinates exported. Status codes were not stored by old collector; schema/error code and original test assertions are retained without inventing status.",
+  "cases": [
+    {
+      "index": 0,
+      "method": "POST",
+      "path": "/api/v1/wallet/rules",
+      "schema": "ErrorResponse",
+      "error_code": "WALLET_OPERATOR_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 1,
+      "method": "POST",
+      "path": "/api/v1/wallet/rules",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "kind": "RULE",
+            "owner_party_id": null,
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "dda0d225eb8452b90d7a95b4f2f64ba51fb978db8a24ced51e8d66cf47cdb9e9"
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "method": "POST",
+      "path": "/api/v1/wallet/rules/1d55f665-35d8-476c-aef7-9b1ae2cbc302/review",
+      "schema": "ErrorResponse",
+      "error_code": "SELF_REVIEW_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 3,
+      "method": "POST",
+      "path": "/api/v1/wallet/rules/1d55f665-35d8-476c-aef7-9b1ae2cbc302/review",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "kind": "RULE",
+            "owner_party_id": null,
+            "parent_id": null,
+            "current_status": "EFFECTIVE",
+            "object_version": 2,
+            "content_sha256": "6a20a4a809592bc07ea857f92192b7278948522e5d2d39f66e73ed0ff546008c"
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "method": "GET",
+      "path": "/api/v1/wallet/rules",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "content_sha256": "6a20a4a809592bc07ea857f92192b7278948522e5d2d39f66e73ed0ff546008c"
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "ErrorResponse",
+      "error_code": "WALLET_RULE_CHANGED",
+      "facts": []
+    },
+    {
+      "index": 6,
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "ErrorResponse",
+      "error_code": "INVALID_INPUT",
+      "facts": []
+    },
+    {
+      "index": 7,
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "74ca4c37-f099-4c45-ae96-67ecfff42d98",
+            "kind": "ACCOUNT",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "current_status": "ACTIVE",
+            "object_version": 1,
+            "content_sha256": "5a7ce48d13f1a6ffd8112b6bcf29b9f7f344112be92557ee371b58f85be51830"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302"
+          }
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "74ca4c37-f099-4c45-ae96-67ecfff42d98",
+            "kind": "ACCOUNT",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "current_status": "ACTIVE",
+            "object_version": 1,
+            "content_sha256": "5a7ce48d13f1a6ffd8112b6bcf29b9f7f344112be92557ee371b58f85be51830"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302"
+          }
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "ErrorResponse",
+      "error_code": "ARTIST_PARTY_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 10,
+      "method": "POST",
+      "path": "/api/v1/wallet/recharges",
+      "schema": "ErrorResponse",
+      "error_code": "CUSTODY_PROVIDER_NOT_CONNECTED",
+      "facts": []
+    },
+    {
+      "index": 11,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "74ca4c37-f099-4c45-ae96-67ecfff42d98",
+            "rule_id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "recorded_balance_minor": 0,
+            "available_balance_minor": 0,
+            "reserved_balance_minor": 0,
+            "available_points": 0,
+            "cumulative_points": {
+              "version": "NET_ISSUED_V1",
+              "issued": 0,
+              "withdrawn": 0,
+              "net_issued": 0
+            },
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "method": "POST",
+      "path": "/api/v1/wallet/accounts",
+      "schema": "ErrorResponse",
+      "error_code": "VERIFIED_ADULT_REQUIRED",
+      "facts": []
+    },
+    {
+      "index": 13,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "2155fea4-ab8f-44ff-84a4-8272c4d214c8",
+            "kind": "EARNING",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": "7a6b422c-7f48-4d32-9bdf-c1227d855c97",
+            "current_status": "PENDING",
+            "object_version": 1,
+            "content_sha256": "8d1759b7f475c805d9f48558f9b99837f4669d041c2d187385e2dca78e3114ef"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "order_id": "7a6b422c-7f48-4d32-9bdf-c1227d855c97"
+          }
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "ErrorResponse",
+      "error_code": "WALLET_NOT_FOUND",
+      "facts": []
+    },
+    {
+      "index": 15,
+      "method": "POST",
+      "path": "/api/v1/wallet/earnings/sync",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "2155fea4-ab8f-44ff-84a4-8272c4d214c8",
+            "kind": "EARNING",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": "7a6b422c-7f48-4d32-9bdf-c1227d855c97",
+            "current_status": "ISSUED",
+            "object_version": 2,
+            "content_sha256": "9b35162407275fb3a0288301506bcca26982fa7172bbc1cd3874a06b65fc5290"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "order_id": "7a6b422c-7f48-4d32-9bdf-c1227d855c97"
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "74ca4c37-f099-4c45-ae96-67ecfff42d98",
+            "rule_id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "recorded_balance_minor": 30000,
+            "available_balance_minor": 30000,
+            "reserved_balance_minor": 0,
+            "available_points": 0,
+            "cumulative_points": {
+              "version": "NET_ISSUED_V1",
+              "issued": 10,
+              "withdrawn": 10,
+              "net_issued": 0
+            },
+            "points_pending_reversal": 4,
+            "points_block_reason": "POINTS_REVERSAL_PENDING",
+            "qualifying_growth": 0
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 0
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "74ca4c37-f099-4c45-ae96-67ecfff42d98",
+            "rule_id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "recorded_balance_minor": 30000,
+            "available_balance_minor": 30000,
+            "reserved_balance_minor": 0,
+            "available_points": 6,
+            "cumulative_points": {
+              "version": "NET_ISSUED_V1",
+              "issued": 20,
+              "withdrawn": 10,
+              "net_issued": 10
+            },
+            "points_pending_reversal": 0,
+            "points_block_reason": "VERIFIED_ADULT_REQUIRED",
+            "qualifying_growth": 10
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 10
+          }
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "method": "POST",
+      "path": "/api/v1/wallet/level-six",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "3e90b9c2-9461-44c3-b8e5-520e92ff123b",
+            "kind": "LEVEL_REVIEW",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": null,
+            "current_status": "IN_REVIEW",
+            "object_version": 1,
+            "content_sha256": "5ae60db14c6f2fe4e72715916beace9c26e2d74be6b45e7c9c9192952ec6555c"
+          }
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "method": "POST",
+      "path": "/api/v1/wallet/level-six/3e90b9c2-9461-44c3-b8e5-520e92ff123b/review",
+      "schema": "ErrorResponse",
+      "error_code": "WALLET_OPERATOR_FORBIDDEN",
+      "facts": []
+    },
+    {
+      "index": 20,
+      "method": "POST",
+      "path": "/api/v1/wallet/level-six/3e90b9c2-9461-44c3-b8e5-520e92ff123b/review",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "3e90b9c2-9461-44c3-b8e5-520e92ff123b",
+            "kind": "LEVEL_REVIEW",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": null,
+            "current_status": "APPROVED",
+            "object_version": 2,
+            "content_sha256": "67b66e4ca79c67f7bef015092728099ca55e6d7a48e945c5d8fbba48f77fe192"
+          }
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "3e90b9c2-9461-44c3-b8e5-520e92ff123b",
+            "kind": "LEVEL_REVIEW",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": null,
+            "current_status": "APPROVED",
+            "object_version": 2,
+            "content_sha256": "67b66e4ca79c67f7bef015092728099ca55e6d7a48e945c5d8fbba48f77fe192"
+          }
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "method": "GET",
+      "path": "/api/v1/wallet/summary",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "account_id": "74ca4c37-f099-4c45-ae96-67ecfff42d98",
+            "rule_id": "1d55f665-35d8-476c-aef7-9b1ae2cbc302",
+            "recorded_balance_minor": 30000,
+            "available_balance_minor": 10000,
+            "reserved_balance_minor": 20000,
+            "available_points": 6,
+            "cumulative_points": {
+              "version": "NET_ISSUED_V1",
+              "issued": 20,
+              "withdrawn": 10,
+              "net_issued": 10
+            },
+            "points_pending_reversal": 0,
+            "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+            "qualifying_growth": 10
+          }
+        },
+        {
+          "pointer": "data/membership",
+          "facts": {
+            "qualifying_growth": 10
+          }
+        }
+      ]
+    },
+    {
+      "index": 23,
+      "method": "POST",
+      "path": "/api/v1/trade/payments",
+      "schema": "ErrorResponse",
+      "error_code": "CUSTODY_PROVIDER_NOT_CONNECTED",
+      "facts": []
+    },
+    {
+      "index": 24,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "0de8940f-696c-4bdd-92ee-5604889f5448",
+            "kind": "CASH_SPEND",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": "71b13440-8120-4442-8afa-050ed2fcff26",
+            "current_status": "RELEASED",
+            "object_version": 2,
+            "content_sha256": "927d6a8ff05104751264d258dadd128f2f986c8293b0ff18fddb8e9415e66399"
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "order_id": "d300b5c0-ff38-4add-90f3-7648638b5c27",
+            "account_id": "74ca4c37-f099-4c45-ae96-67ecfff42d98",
+            "payment_id": "71b13440-8120-4442-8afa-050ed2fcff26"
+          }
+        },
+        {
+          "pointer": "data/items/1",
+          "facts": {
+            "id": "0e4037ce-a1b6-430c-8420-f8df60317dda",
+            "kind": "CASH_SPEND",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": "a1ba605f-6083-49df-9d08-8a64739adc1d",
+            "current_status": "UNKNOWN",
+            "object_version": 2,
+            "content_sha256": "4a8bf3e8a93dbce73a8782138b05190919ca7ca78b97b667eceffbea9f052679"
+          }
+        },
+        {
+          "pointer": "data/items/1/data",
+          "facts": {
+            "order_id": "a0c565a4-8771-4e91-b1c9-59a3a4d026d5",
+            "account_id": "74ca4c37-f099-4c45-ae96-67ecfff42d98",
+            "payment_id": "a1ba605f-6083-49df-9d08-8a64739adc1d"
+          }
+        },
+        {
+          "pointer": "data/items/2",
+          "facts": {
+            "id": "4d7147ff-3084-4cea-8ff3-6d34b1f1a0a6",
+            "kind": "CASH_SPEND",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": "6c5a8822-499a-4155-8603-2ce8e5d70f82",
+            "current_status": "SPENT",
+            "object_version": 3,
+            "content_sha256": "37ac6e0a0640cc26dcb08c45719916b18dcfdaaec8f413e4381344e8a37edd27"
+          }
+        },
+        {
+          "pointer": "data/items/2/data",
+          "facts": {
+            "order_id": "655b0372-bdfc-46db-83ed-707c27f3760f",
+            "account_id": "74ca4c37-f099-4c45-ae96-67ecfff42d98",
+            "payment_id": "6c5a8822-499a-4155-8603-2ce8e5d70f82"
+          }
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "8e325143-2648-4cb9-b9d4-7e94ce72cb09",
+            "kind": "CASH_REFUND",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": "4d7147ff-3084-4cea-8ff3-6d34b1f1a0a6",
+            "current_status": "SUCCEEDED",
+            "object_version": 1,
+            "content_sha256": "13bd8f21c2d3ab5b08d244849bb59c9daa064cb67dabe593405ff9e681b850c3"
+          }
+        },
+        {
+          "pointer": "data/items/0/data",
+          "facts": {
+            "refund_id": "4f0d0e1e-ac32-4fca-a352-a5951cf2a006",
+            "payment_id": "6c5a8822-499a-4155-8603-2ce8e5d70f82"
+          }
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "method": "GET",
+      "path": "/api/v1/wallet/records",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data/items/0",
+          "facts": {
+            "id": "f1d004ac-63a5-4b99-a2d3-58799fdd0da5",
+            "kind": "CASH_RECONCILIATION",
+            "owner_party_id": "eecb40a0-aed3-4e75-b75b-880e1d7d0724",
+            "parent_id": "74ca4c37-f099-4c45-ae96-67ecfff42d98",
+            "current_status": "DIFFERENCE",
+            "object_version": 1,
+            "content_sha256": "4a522f9235ae54c3ea577d12127aa978765b9c4fa9d54c7cf05956b95dbf9930"
+          }
+        }
+      ]
+    },
+    {
+      "index": 27,
+      "method": "POST",
+      "path": "/api/v1/wallet/check-in",
+      "schema": "ErrorResponse",
+      "error_code": "WALLET_FREE_REWARD_NOT_ENABLED",
+      "facts": []
+    },
+    {
+      "index": 28,
+      "method": "POST",
+      "path": "/api/v1/wallet/check-in",
+      "schema": "WalletResponse",
+      "error_code": null,
+      "facts": [
+        {
+          "pointer": "data",
+          "facts": {
+            "id": "dbde6777-051f-4f84-8469-6d97ffb9cc29",
+            "kind": "EARNING",
+            "owner_party_id": "03eec270-84dd-4366-86ec-ec961cf3d64c",
+            "parent_id": null,
+            "current_status": "ISSUED",
+            "object_version": 1,
+            "content_sha256": "c9665e4b4adc5e5aa60df7e0a5cf5ed01df0646eb216dfe869490d96c6d189fe"
+          }
+        },
+        {
+          "pointer": "data/data",
+          "facts": {
+            "rule_id": "752847ef-fcd6-4aeb-b175-178f462c7737"
+          }
+        }
+      ]
+    }
+  ]
+}

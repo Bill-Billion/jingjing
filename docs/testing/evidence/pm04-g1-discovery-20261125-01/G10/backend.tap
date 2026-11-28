@@ -1,0 +1,65 @@
+TAP version 13
+# Subtest: notification counts and exact-set read receipts through actual HTTP and commit races
+    # Subtest: four-channel counts are current-account and party scoped
+    ok 1 - four-channel counts are current-account and party scoped
+      ---
+      duration_ms: 132.4237
+      type: 'test'
+      ...
+    # Subtest: new message and a lower-ID late commit survive read-all
+    ok 2 - new message and a lower-ID late commit survive read-all
+      ---
+      duration_ms: 96.8909
+      type: 'test'
+      ...
+    # Subtest: single reads and selected-channel read-all share the same receipt table
+    ok 3 - single reads and selected-channel read-all share the same receipt table
+      ---
+      duration_ms: 75.8314
+      type: 'test'
+      ...
+    # Subtest: account privacy is rechecked even within a shared party
+    ok 4 - account privacy is rechecked even within a shared party
+      ---
+      duration_ms: 27.8558
+      type: 'test'
+      ...
+    # Subtest: expired or damaged snapshots cannot clear messages
+    ok 5 - expired or damaged snapshots cannot clear messages
+      ---
+      duration_ms: 55.6407
+      type: 'test'
+      ...
+    # Subtest: concurrent read-all updates once and keeps other account read rows untouched
+    ok 6 - concurrent read-all updates once and keeps other account read rows untouched
+      ---
+      duration_ms: 35.3584
+      type: 'test'
+      ...
+    # Subtest: same account switches valid identities without clearing the other inbox
+    ok 7 - same account switches valid identities without clearing the other inbox
+      ---
+      duration_ms: 85.4555
+      type: 'test'
+      ...
+    # Subtest: failed second receipt rolls back the whole bulk action; original request can recover
+    ok 8 - failed second receipt rolls back the whole bulk action; original request can recover
+      ---
+      duration_ms: 63.7245
+      type: 'test'
+      ...
+    1..8
+ok 1 - notification counts and exact-set read receipts through actual HTTP and commit races
+  ---
+  duration_ms: 8480.9007
+  type: 'test'
+  ...
+1..1
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8696.0493

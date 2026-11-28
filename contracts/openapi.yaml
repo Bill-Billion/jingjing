@@ -2,7 +2,7 @@ openapi: 3.1.1
 jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
 info:
   title: 晶选片场 R0.6 Platform Foundation API
-  version: 0.31.79-rc.1
+  version: 0.31.82-rc.1
   description: Account, contract, supply and licensing API candidate. Isolated verification only; real providers
     and front-end integration remain unverified.
 servers:
@@ -228,6 +228,64 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/RedemptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+  /api/v1/projects/candidates/{record_id}/recast-sources:
+    get:
+      operationId: listParticipationRecastSources
+      summary: 读取本人已确认候选的受限换角来源
+      description: 仅当前OWNER可读取本人CONFIRMED候选在PREPARING且无现行方案的同项目同角色换角来源。只返回已退出旧演员的现行、已会签、存在可核对净付款的约定标识/版本/摘要及主体标识，不返回旧条款、素材、金额、签署意见或旧订单。原完整记录权限不变。该目录不授予写入权；原换角提交仍核版本、当前候选、资金、独审及必要各方确认。过滤后页可能为空，仍按next_cursor继续。
+      tags:
+      - projects
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      x-actor-scope: ACTING_PARTY
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - $ref: '#/components/parameters/ActingParty'
+      - name: record_id
+        in: path
+        required: true
+        schema: &qa35id001
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema: *qa35id001
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: 读取本人已确认候选的受限换角来源
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipationRecastSourcesResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -26820,6 +26878,69 @@ paths:
           $ref: '#/components/responses/PreconditionRequired'
       x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
       description: 只读选项不执行处理，不代替再次核验及独立审核。未生效、不适用的规则不列出；过滤可能产生空页，next_cursor非空时应继续翻页。
+  /api/v1/privacy/operations/requests/{request_id}/response-file-options:
+    get:
+      operationId: listPrivacyResponseFileOptions
+      summary: 当前办理人选择既有私有复核材料，离页后可继续原申请
+      tags:
+      - privacy
+      x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
+      parameters:
+      - $ref: '#/components/parameters/RequestId'
+      - name: request_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      responses:
+        '200':
+          description: Personal request response; read remaining actions and execution
+            status separately.
+          headers:
+            X-Request-Id:
+              $ref: '#/components/headers/RequestId'
+            Cache-Control:
+              $ref: '#/components/headers/NoStore'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrivacyResponseFileOptionsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '503':
+          $ref: '#/components/responses/Unavailable'
+        '412':
+          $ref: '#/components/responses/PreconditionFailed'
+        '428':
+          $ref: '#/components/responses/PreconditionRequired'
+      x-actor-scope: ACCOUNT_OR_AUTHORIZED_REVIEWER
+      description: Only the current authorized handler's READY REVIEW_EVIDENCE metadata,
+        excluding active content/infringement restrictions. The request must be PROCESSING
+        or FOLLOW_UP; self handling is forbidden. Does not prove that a file belongs
+        to this request or approve its contents. Existing actual-byte verification and
+        independent review remain mandatory.
   /api/v1/privacy/operations/requests/{request_id}/retention-policy-options:
     get:
       operationId: listPrivacyRetentionPolicyOptions
@@ -35797,7 +35918,7 @@ paths:
     post:
       operationId: retryRechargeRefundTask
       summary: 独立操作人按原案件重试失败任务
-      description: 明确核对本人、有效监护关系或独审权限；响应白名单不含商户绑定、渠道回执、任务编号和他人材料。排队不代表退款成功；真实渠道未注册。
+      description: 明确核对本人、有效监护关系或独审权限；仅实际FAILED或BLOCKED任务可人工重试。原任务尚在PENDING、RUNNING或自动RETRY，或已经终态时返回409/JOB_NOT_RETRYABLE，保留同一任务和原退款，不视为此前未成功或服务故障。响应白名单不含商户绑定、渠道回执、任务编号和他人材料。排队不代表退款成功；真实渠道未注册。
       tags:
       - wallet
       x-implementation-status: IMPLEMENTED_ISOLATED_TESTS
@@ -50698,21 +50819,89 @@ components:
             $ref: '#/components/schemas/SupplyCredit'
           minItems: 1
           maxItems: 30
-    SupplyAvatarData:
+    ParticipationRecastSourcesResponse:
       type: object
       additionalProperties: false
       required:
-      - display_name
-      - material_asset_ids
-      - provider_asset_ref
+      - meta
+      - data
       properties:
-        display_name:
-          type: string
-          minLength: 1
-          maxLength: 120
-        material_asset_ids: *fullschema007
-        provider_asset_ref:
-          type: 'null'
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - candidate_id
+          - candidate_version
+          - candidate_sha256
+          - project_id
+          - role_id
+          - items
+          - next_cursor
+          properties:
+            candidate_id:
+              type: string
+              format: uuid
+            candidate_version:
+              type: integer
+              minimum: 1
+            candidate_sha256:
+              type: string
+              pattern: ^[a-f0-9]{64}$
+            project_id:
+              type: string
+              format: uuid
+            role_id:
+              type: string
+              format: uuid
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - object_version
+                - content_sha256
+                - owner_party_id
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  object_version:
+                    type: integer
+                    minimum: 1
+                  content_sha256:
+                    type: string
+                    pattern: ^[a-f0-9]{64}$
+                  owner_party_id:
+                    type: string
+                    format: uuid
+            next_cursor:
+              anyOf:
+              - type: string
+                format: uuid
+              - type: 'null'
+    SupplyAvatarData:
+      description: Legacy supply avatars and existing artist-linked archives retain their distinct strict data shapes. Artist-linked material versions are managed by the artist LOOK/VOICE APIs.
+      oneOf:
+      - type: object
+        additionalProperties: false
+        required:
+        - display_name
+        - material_asset_ids
+        - provider_asset_ref
+        properties:
+          display_name:
+            type: string
+            minLength: 1
+            maxLength: 120
+          material_asset_ids: *fullschema007
+          provider_asset_ref:
+            type: 'null'
+      - $ref: '#/components/schemas/ArtistAvatar/properties/data'
     SupplyConsentData:
       type: object
       additionalProperties: false
@@ -58278,6 +58467,15 @@ components:
       type: object
       additionalProperties: false
       properties:
+        allowed_actions:
+          description: Current actor's effective actions for this person and acting party, intersecting staff grants with the artist's delegation. Informational only; every write rechecks current authorization, identity and consent. Older responses may omit this field; employees must not infer rights from organization-wide delegation alone.
+          type: array
+          uniqueItems: true
+          minItems: 0
+          maxItems: 7
+          items:
+            type: string
+            enum: [COMMISSION_PRODUCTION, READ_PROFILE, MANAGE_MATERIALS, MANAGE_AVATARS, SUBMIT_LISTING, SUBMIT_COOPERATION, MANAGE_AUDITIONS]
         person:
           $ref: '#/components/schemas/ArtistPerson'
         avatars:
@@ -66676,10 +66874,53 @@ components:
       - reason
 
 
+    RedemptionSourceCatalog:
+      type: object
+      additionalProperties: false
+      description: Server-owned original contract category snapshot. Optional for historical pools; never inferred into an old record. Disabled categories are not drawable prizes or inventory promises.
+      properties:
+        version:
+          const: CONTRACT_20261029_FIRST_PHASE
+        items:
+          type: array
+          minItems: 12
+          maxItems: 12
+          uniqueItems: true
+          items:
+            oneOf:
+            - type: object
+              additionalProperties: false
+              properties:
+                key:
+                  const: final
+                kind:
+                  const: INTERVIEW_FINAL
+                enabled:
+                  const: false
+                weight:
+                  const: 0
+              required: [key, kind, enabled, weight]
+            - type: object
+              additionalProperties: false
+              properties:
+                key:
+                  enum: [priority, open, free, credit1000, credit500, credit200, credit100, credit50, exposure, points, none]
+                kind:
+                  enum: [INTERVIEW_PRIORITY, INTERVIEW_OPEN, PRODUCTION_FREE, PRODUCTION_CREDIT, EXPOSURE, POINT_BACK, NONE]
+                enabled:
+                  const: true
+                weight:
+                  type: integer
+                  minimum: 1
+                  maximum: 10000
+              required: [key, kind, enabled, weight]
+      required: [version, items]
     RedemptionPoolView:
       type: object
       additionalProperties: false
       properties:
+        source_catalog:
+          $ref: '#/components/schemas/RedemptionSourceCatalog'
         publication_notice:
           $ref: '#/components/schemas/LotteryPublicationNotice'
         id: &RedemptionPoolView_001
@@ -66988,6 +67229,8 @@ components:
       type: object
       additionalProperties: false
       properties:
+        source_catalog:
+          $ref: '#/components/schemas/RedemptionSourceCatalog'
         publication_notice:
           $ref: '#/components/schemas/LotteryPublicationNotice'
         config:
@@ -74221,6 +74464,60 @@ components:
       required:
       - meta
       - data
+    PrivacyResponseFileOptionsResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - meta
+      - data
+      properties:
+        meta:
+          $ref: '#/components/schemas/Meta'
+        data:
+          type: object
+          additionalProperties: false
+          required:
+          - request_id
+          - handler_account_id
+          - items
+          - next_cursor
+          properties:
+            request_id:
+              type: string
+              format: uuid
+            handler_account_id:
+              type: string
+              format: uuid
+            items:
+              type: array
+              maxItems: 100
+              items:
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - content_sha256
+                - byte_size
+                - media_type
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  content_sha256:
+                    type: string
+                    pattern: ^[a-f0-9]{64}$
+                  byte_size:
+                    type: integer
+                    minimum: 1
+                  media_type:
+                    type: string
+                    minLength: 1
+                    maxLength: 100
+            next_cursor:
+              type:
+              - string
+              - 'null'
+              format: uuid
     PrivacyRetentionPolicyOptionsResponse:
       type: object
       additionalProperties: false

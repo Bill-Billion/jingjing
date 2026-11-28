@@ -1,0 +1,143 @@
+TAP version 13
+# Subtest: one wallet keeps original recharge lots through renewal, expiry, spending and original-route refunds
+    # Subtest: two actual recharge receipts reach the first threshold without creating consumption growth
+    ok 1 - two actual recharge receipts reach the first threshold without creating consumption growth
+      ---
+      duration_ms: 132.0298
+      type: 'test'
+      ...
+    # Subtest: renewal extends the same account once and expiry preserves every original balance lot
+    ok 2 - renewal extends the same account once and expiry preserves every original balance lot
+      ---
+      duration_ms: 75.7527
+      type: 'test'
+      ...
+    # Subtest: expired membership still spends existing funds and actual stock acceptance establishes the original earning
+    ok 3 - expired membership still spends existing funds and actual stock acceptance establishes the original earning
+      ---
+      duration_ms: 240.5692
+      type: 'test'
+      ...
+    # Subtest: actual accepted consumption matures and a later recharge restores membership without buying growth
+    ok 4 - actual accepted consumption matures and a later recharge restores membership without buying growth
+      ---
+      duration_ms: 51.2973
+      type: 'test'
+      ...
+    # Subtest: unsent refund cancellation releases its hold; unknown result keeps it until original-route receipt settles once
+    ok 5 - unsent refund cancellation releases its hold; unknown result keeps it until original-route receipt settles once
+      ---
+      duration_ms: 110.7053
+      type: 'test'
+      ...
+    # Subtest: refund of the same accepted purchase restores its original recharge lot and reverses only its consumption growth
+    ok 6 - refund of the same accepted purchase restores its original recharge lot and reverses only its consumption growth
+      ---
+      duration_ms: 87.8806
+      type: 'test'
+      ...
+    # Subtest: a later recharge restores one year from its own receipt while original rules and settled refunds stay unchanged
+    ok 7 - a later recharge restores one year from its own receipt while original rules and settled refunds stay unchanged
+      ---
+      duration_ms: 31.4738
+      type: 'test'
+      ...
+    1..7
+ok 1 - one wallet keeps original recharge lots through renewal, expiry, spending and original-route refunds
+  ---
+  duration_ms: 8279.4691
+  type: 'test'
+  ...
+# Subtest: wallet rule rejects guessed/missing limits, aftercare and changed 365-day commitment
+ok 2 - wallet rule rejects guessed/missing limits, aftercare and changed 365-day commitment
+  ---
+  duration_ms: 2.0902
+  type: 'test'
+  ...
+# Subtest: integer money conversion, rounding and cumulative proportional refund never use floating point
+ok 3 - integer money conversion, rounding and cumulative proportional refund never use floating point
+  ---
+  duration_ms: 0.2925
+  type: 'test'
+  ...
+# Subtest: payment alone, pending aftercare and unspecified periods never earn points
+ok 4 - payment alone, pending aftercare and unspecified periods never earn points
+  ---
+  duration_ms: 0.9558
+  type: 'test'
+  ...
+# Subtest: cumulative 300 yuan unlocks one year and contributes zero growth
+ok 5 - cumulative 300 yuan unlocks one year and contributes zero growth
+  ---
+  duration_ms: 8.224
+  type: 'test'
+  ...
+# Subtest: large one-time topup cannot buy several membership years
+ok 6 - large one-time topup cannot buy several membership years
+  ---
+  duration_ms: 0.1477
+  type: 'test'
+  ...
+# Subtest: renewal counted once per membership year, expiration retains growth and topup restores
+ok 7 - renewal counted once per membership year, expiration retains growth and topup restores
+  ---
+  duration_ms: 1.0619
+  type: 'test'
+  ...
+# Subtest: sixth level requires independent current qualification in addition to growth
+ok 8 - sixth level requires independent current qualification in addition to growth
+  ---
+  duration_ms: 0.2979
+  type: 'test'
+  ...
+# Subtest: refunded topups and future receipts do not falsely qualify
+ok 9 - refunded topups and future receipts do not falsely qualify
+  ---
+  duration_ms: 0.1587
+  type: 'test'
+  ...
+# Subtest: pending topup counts against limits and cooldown to prevent concurrent overspend
+ok 10 - pending topup counts against limits and cooldown to prevent concurrent overspend
+  ---
+  duration_ms: 0.7293
+  type: 'test'
+  ...
+# Subtest: earliest-expiring points first; holds and expired batches are excluded
+ok 11 - earliest-expiring points first; holds and expired batches are excluded
+  ---
+  duration_ms: 1.0107
+  type: 'test'
+  ...
+# Subtest: spending, expiry and free points do not change qualified consumption growth
+ok 12 - spending, expiry and free points do not change qualified consumption growth
+  ---
+  duration_ms: 0.2722
+  type: 'test'
+  ...
+# Subtest: refund plan accounts for already spent and expired points without negative balances or cash debt
+ok 13 - refund plan accounts for already spent and expired points without negative balances or cash debt
+  ---
+  duration_ms: 0.1675
+  type: 'test'
+  ...
+# Subtest: partial refund points equal the historical rate applied to cumulative net paid, regardless of timing
+ok 14 - partial refund points equal the historical rate applied to cumulative net paid, regardless of timing
+  ---
+  duration_ms: 0.2769
+  type: 'test'
+  ...
+# Subtest: daily recharge caps use the China business day, including the UTC date boundary
+ok 15 - daily recharge caps use the China business day, including the UTC date boundary
+  ---
+  duration_ms: 0.1234
+  type: 'test'
+  ...
+1..15
+# tests 22
+# suites 0
+# pass 22
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8578.9453

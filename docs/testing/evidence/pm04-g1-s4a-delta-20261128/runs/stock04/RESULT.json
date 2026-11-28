@@ -1,0 +1,357 @@
+{
+  "database": "jx_test_qa18_tail_supply_28cb6bccc32f90db32bd",
+  "product": "053168fb6e06b80680101702a733357309368809",
+  "started_at": "2026-11-28T02:48:10.944Z",
+  "checkout": "1fdfa80e070c9a30ee9d7091a317afff9f96fcb0",
+  "checks": [
+    {
+      "name": "G01-G03-G05 original purchase survives two rejected/reviewed versions with distinct previews; revoked consent blocks fresh use",
+      "status": "FAIL",
+      "message": "locator.waitFor: Timeout 11000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('这份商品审核已退回', { exact: true }) to be visible\u001b[22m\n"
+    }
+  ],
+  "requests": [
+    {
+      "role": "seller",
+      "path": "/stock/listings",
+      "method": "GET",
+      "status": 200,
+      "sha256": "579f6ce8d591f62cd77bd2ffd107aed9c5d15fb4fe45c7016a2f7bf2d0ef78b1",
+      "bytes": 217
+    },
+    {
+      "role": "seller",
+      "path": "/stock/sales-publications",
+      "method": "GET",
+      "status": 200,
+      "sha256": "93682ade3c634c46ba7b66b77b510ef262b87bb4ea7e732f7be90c364b9b9a47",
+      "bytes": 1007
+    },
+    {
+      "role": "seller",
+      "path": "/stock/listings",
+      "method": "POST",
+      "status": 200,
+      "sha256": "ee0fd1610b5333ebdd8797ab07ebd756b95ead56b6bb9fe885adf1167135791b",
+      "bytes": 2817
+    },
+    {
+      "role": "seller",
+      "path": "/stock/listings",
+      "method": "POST",
+      "status": 200,
+      "sha256": "98d8571fc41656bba111f0388041584444940c07f79555bb26564e663b0be785",
+      "bytes": 2817
+    },
+    {
+      "role": "buyer",
+      "path": "/stock/catalog/885c2644-5f8c-4e3b-9dac-f2734a1e2b97",
+      "method": "GET",
+      "status": 409,
+      "code": "STOCK_NOT_LISTED",
+      "sha256": "1004ff7515237d9b0f8bc8bf8c776f3cacd8b853a63c2e553b9f894f48e01b60",
+      "bytes": 260
+    },
+    {
+      "role": "reviewer",
+      "path": "/stock/listings/885c2644-5f8c-4e3b-9dac-f2734a1e2b97/reviews",
+      "method": "POST",
+      "status": 200,
+      "sha256": "0f3ebb61c148ed672ce6a4f89f57079168545fe1dc57d4236b55a7a61257d33b",
+      "bytes": 3102
+    },
+    {
+      "role": "buyer",
+      "path": "/stock/catalog/885c2644-5f8c-4e3b-9dac-f2734a1e2b97",
+      "method": "GET",
+      "status": 409,
+      "code": "STOCK_NOT_LISTED",
+      "sha256": "78bdfbec3c814293485769c89ba7c66bfb781c540bd87d94189901932b70da94",
+      "bytes": 260
+    },
+    {
+      "role": "reviewer",
+      "path": "/stock/listings/885c2644-5f8c-4e3b-9dac-f2734a1e2b97/reviews",
+      "method": "POST",
+      "status": 200,
+      "sha256": "86eb045dff17b44debb3b98d3e0e91d1bab4564d26dce83c1eddfc36dd840026",
+      "bytes": 3426
+    },
+    {
+      "role": "buyer",
+      "path": "/stock/catalog/885c2644-5f8c-4e3b-9dac-f2734a1e2b97",
+      "method": "GET",
+      "status": 200,
+      "sha256": "5bebf87f8864c5fb7db71542d2b82c37dd37ca1fa5177176bb94dac1e080c2e2",
+      "bytes": 986
+    },
+    {
+      "role": "buyer",
+      "path": "/stock/catalog/885c2644-5f8c-4e3b-9dac-f2734a1e2b97/preview",
+      "method": "GET",
+      "status": 200,
+      "sha256": "266afc751348c60ac342687fd409fd96ff1b1474e539d07ca829acd27a0c0304",
+      "bytes": 2606
+    },
+    {
+      "role": "buyer",
+      "path": "/stock/purchases/dd0c4608-57eb-421f-9f12-7adac4c12281",
+      "method": "GET",
+      "status": 200,
+      "sha256": "24d613f6cc213d8c82eb3bcf3bc1b4aa6d97f03fef6890f6299438873f3dc7d3",
+      "bytes": 1433
+    },
+    {
+      "role": "buyer",
+      "path": "/stock/purchases/dd0c4608-57eb-421f-9f12-7adac4c12281/content",
+      "method": "GET",
+      "status": 200,
+      "sha256": "a79ceadd19e965c87d3a999fa071cadfc179e0ffb0be29f19fe41da3f7dbb950",
+      "bytes": 23600
+    },
+    {
+      "role": "seller",
+      "path": "/stock/listings/885c2644-5f8c-4e3b-9dac-f2734a1e2b97/revisions",
+      "method": "POST",
+      "status": 200,
+      "sha256": "ba5f9514e95b2838ad1d314d7c15fc03fc72ec465d3b1234d99def048f7cf006",
+      "bytes": 2894
+    },
+    {
+      "role": "reviewer",
+      "path": "/stock/listings/9f158c70-960a-4e02-b9db-a852d92bea18/reviews",
+      "method": "POST",
+      "status": 200,
+      "sha256": "6b906167862ed597570a0b8b915e2b6709caa3c77e83b41c6793ad9c3a2a4716",
+      "bytes": 3034
+    }
+  ],
+  "last_migration": {
+    "version": "0225",
+    "name": "0225_production_delivery_views.sql",
+    "status": "APPLIED"
+  },
+  "browser_requests": [
+    {
+      "surface": "app",
+      "role": "outsider",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "990d9d02-2ac4-423f-a7b8-055b3a104b55",
+      "state": "ACTIVE",
+      "sha256": "5de78b11b605efb384380a98d3004847aa750b1574ebca0c1e26cdb51b631a44"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "6c58d7e5e0ea41a314bcf6a0895c5261d66328ca2f728e51ae245a64422420a6"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "1e1c599e-e93c-4022-9a66-3081beb390a7",
+      "state": "ACTIVE",
+      "sha256": "f6a190e3f6ffd1936daabe57329f37c30f1bcaef348de90e10a8a38964207eba"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "981f3d05ae1559d9fefed00fcfe5b8cfc41be146d75986b5df2f5188bc06bfe0"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "cc919c1e322a072e0dc26e21b3478ee0072cd97ef3c942ce944043621a67da43"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "path": "/api/v1/stock/listings",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1338f80ff98a6d916a10ebaf5e466c74e5995f87433e098b860ea7ba75f8646e"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "path": "/api/v1/artists/people",
+      "method": "GET",
+      "status": 200,
+      "sha256": "5d3daf32780cadfaea423340eac27c8e7ab4b97fdfc72fd328e2069aa446182c"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "path": "/api/v1/stock/seller-eligibility",
+      "method": "GET",
+      "status": 200,
+      "sha256": "7f5e5caad90ede9442bc5c69773c3c47538d34700c30e270f6c9f0bcdd6d5627"
+    },
+    {
+      "surface": "app",
+      "role": "seller",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "1e1c599e-e93c-4022-9a66-3081beb390a7",
+      "state": "ACTIVE",
+      "sha256": "19f706855d6af31a91bea7acc6c9c34a0ee496e574443fd041ea5ebfab4f4a8e"
+    },
+    {
+      "surface": "app",
+      "role": "seller",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "767c6942857624951b5425123ee7c5af6759ef1de024607bdd11193271b774e8"
+    },
+    {
+      "surface": "app",
+      "role": "seller",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "c86d1f3abebf0a0021bd720027525a1a04d4dabd6f116f2f5cd2f91fca7fb033"
+    },
+    {
+      "surface": "app",
+      "role": "seller",
+      "path": "/api/v1/stock/listings/885c2644-5f8c-4e3b-9dac-f2734a1e2b97",
+      "method": "GET",
+      "status": 200,
+      "id": "885c2644-5f8c-4e3b-9dac-f2734a1e2b97",
+      "state": "IN_REVIEW",
+      "sha256": "0e11d67cfab2178524939bbb58ed122df073cc57e19ce28bea2b799981287610"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "1e1c599e-e93c-4022-9a66-3081beb390a7",
+      "state": "ACTIVE",
+      "sha256": "107fc1c6898755bd9a8086a8c0d0a376da3633c9d155d1b541aab9b9c053b6fd"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "76b574a138fc57b5560b294cb06eb281b49848791300a2e660e058efc353b34f"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "fb11220e964579b4d6522d27bf85bb12635a28f8be236152e0704b3d83414459"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "path": "/api/v1/stock/listings/885c2644-5f8c-4e3b-9dac-f2734a1e2b97",
+      "method": "GET",
+      "status": 200,
+      "id": "885c2644-5f8c-4e3b-9dac-f2734a1e2b97",
+      "state": "IN_REVIEW",
+      "sha256": "00eedfd007767a2ce316019403aa813b4395f3887585b2484b89f1805f3f14fc"
+    },
+    {
+      "surface": "app",
+      "role": "seller",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "1e1c599e-e93c-4022-9a66-3081beb390a7",
+      "state": "ACTIVE",
+      "sha256": "c33ffd683788012fe36b6f9e62c4bf877cde918b34be04808c445c90fb572a4a"
+    },
+    {
+      "surface": "app",
+      "role": "seller",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "4b3ea9b07d0c38cc80ea565ae337a16eea07d971d1172f0ef5b009ea23c56c4f"
+    },
+    {
+      "surface": "app",
+      "role": "seller",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "24410af9e85bb7dd0e39cb6801c2354d45f463c0e72d077f98ab666da062f339"
+    },
+    {
+      "surface": "app",
+      "role": "seller",
+      "path": "/api/v1/stock/listings/9f158c70-960a-4e02-b9db-a852d92bea18",
+      "method": "GET",
+      "status": 200,
+      "id": "9f158c70-960a-4e02-b9db-a852d92bea18",
+      "state": "REJECTED",
+      "sha256": "ef4888db252c5ff18c53b8cb29015bfe7c51f30beb899fbfe84670bc734f0282"
+    }
+  ],
+  "browser_checks": [
+    {
+      "surface": "app",
+      "role": "outsider",
+      "label": "first-listing-no-selected-person",
+      "result": "PASS"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "label": "first-listing-unverified-halo",
+      "result": "PASS"
+    },
+    {
+      "surface": "app",
+      "role": "seller",
+      "label": "first-review",
+      "result": "PASS"
+    },
+    {
+      "surface": "vue",
+      "role": "seller",
+      "label": "first-review",
+      "result": "PASS"
+    },
+    {
+      "surface": "app",
+      "role": "seller",
+      "label": "revision-returned",
+      "result": "FAIL",
+      "message": "locator.waitFor: Timeout 11000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('这份商品审核已退回', { exact: true }) to be visible\u001b[22m\n"
+    }
+  ],
+  "served_checkout": "e887301530c24f9751e074cd297535c3aac7cdb9",
+  "builds": {
+    "app": {
+      "files": 74,
+      "sha256": "87f331e857391cbaf00aaa1da974a6954c0dfe07eabedc0b4a422b318bf44f17"
+    },
+    "vue": {
+      "files": 93,
+      "sha256": "bab320ad70408b55984610c1c8381308debf4e2bb11fb0feb12198da1f47008d"
+    }
+  },
+  "finished_at": "2026-11-28T02:48:39.623Z"
+}

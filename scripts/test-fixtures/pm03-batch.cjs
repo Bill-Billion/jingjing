@@ -60,6 +60,7 @@ async function seed(db,out,deadline,check,storageAt){
   }
   accounts[role]={...byAccount.get(u.account_id),party_id:u.acting_party_id||u.personal_party_id};
  }
+ f.scenarios.phone_change=require('./pm03-phone-targets.cjs').targets(accounts);
  const storage=storageAt(out)();for(const [k,body]of f.allFiles())await storage.put({key:k,body});
  check();
  return {secret:f.secret,merchant_party_id:S.seller.personal_party_id,customization_merchant_party_id:f.merchantId,accounts,scenarios:f.scenarios,

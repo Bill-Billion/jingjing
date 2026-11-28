@@ -1,0 +1,97 @@
+{
+  "kind": "T1_SCOPED_EXECUTION",
+  "new_business_execution": true,
+  "reason": "原完整后端运行已通过此文件，但未设置JX_INVOICE_EVIDENCE_DIR、未留存可核对的该文件HTTP记录；本次仅补跑此原文件一次并捕获113响应。没有改业务源码/断言、未跑其他业务或前端。",
+  "source_commit": "849dc30a1dbae3e3b05e3f652856b8a167c92fc8",
+  "backend_product_source": "9df45f62b7430f8bcf68131ccf6fba25ec0e7188",
+  "app_vue_product_source": "c4f12488486eb95cd19068bb84103ad46c00297f",
+  "frontend_executed": false,
+  "api_version": "0.31.81-rc.1",
+  "migration_count": 225,
+  "migration_last": "0225",
+  "environment": "isolated-mysql8.4.11-loopback33316/pm04-g1-discovery-t1-invoice-20261126/G12",
+  "database_scope": "Original test creates and drops its own random jx_test_invoices_ database; exact random DB name was not emitted by original test. Isolated server datadir verified as full-flow/.local/mysql/runtime/data; no persistent business database mutated.",
+  "command": "JX_MYSQL_TEST_ENV_FILE=<local full-flow test configuration> JX_INVOICE_EVIDENCE_DIR=<controlled output> node scripts/qa18-backend-discovery.cjs G12 pm04-g1-discovery-t1-invoice-20261126",
+  "result": "PASS",
+  "checks": 15,
+  "fail": 0,
+  "skip": 0,
+  "http_cases": 113,
+  "contract_result": "PASS",
+  "synthetic_business_ids": [
+    "01cfb34e-c510-458c-802e-86cfd0488759",
+    "2126d5e4-ae07-46a2-a1d5-4a20a6dd6aa7",
+    "24a9d556-da25-4975-bb82-053bd47b2e18",
+    "2a050784-2d8e-4c04-a723-53480396d36f",
+    "3306750d-0897-47b4-848e-06496b1cee1d",
+    "376317fd-2a55-422a-bac2-15186c924dba",
+    "3e6d54c3-e8b1-4118-be03-889cc0d663a9",
+    "437be4ff-8758-4ddf-ab29-671bd002d2e0",
+    "549fc963-5f71-4d2f-b330-f03a7fbbcb75",
+    "5a463d5f-51d1-468f-8818-4de112a1b999",
+    "5f037ad1-432b-4a0b-9c33-c631fe5c100c",
+    "66e28027-4269-49b9-9ee7-49b6a29acefc",
+    "93f40d57-b51c-4255-a924-307e7491846e",
+    "94e7b0a4-572a-486f-966f-34934ba5017c",
+    "95667f2f-3002-46d7-906e-977f68fe22cd",
+    "b290efc6-c4ad-4bfd-9561-4665da6dee16",
+    "ba43c7cc-5dbc-4917-a05b-c59bc16713a3",
+    "c15e9b40-db4c-4ae8-b0d9-eed18013a9a2",
+    "d4bfadc5-adba-46b8-ab01-1d90be4d9f09",
+    "d71d9362-bbd1-4007-adf7-9c42bd02242e",
+    "de6cccde-1a20-43d0-ac40-f7651d008851",
+    "e71152ca-72c6-427d-b971-29b56a3559b8",
+    "e95693fa-f0e9-45fb-a81e-b9d0b3d88c85",
+    "ea7b80c3-ef3e-4c53-aaf3-81b2861f84a8",
+    "f7207c20-07e6-45b8-836b-56dc21e9a609"
+  ],
+  "proofs": [
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/summary.json",
+      "sha256": "5c4967e33d0837de6ad5f0c8810fd31a24f2d1f08ecc96997d78376c0837d5f1"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/source-manifest.json",
+      "sha256": "e328afa099735a1a2e88b098b7c6a5a7a7f782fe238ebf4634d0bd4414934c78"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/checks.jsonl",
+      "sha256": "b97afae709cafb32d8a6b2cc0751950d3be8e9217d2174ee50706fbe25e33453"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/backend.tap",
+      "sha256": "7f96f39a66520a3fc2ac60b64e3ea28613ec1f395f5cc79e9276efde9231e0df"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/CONTRACT.json",
+      "sha256": "e967f3bb1091e551045bcfabb8c05d416599c287da5861b89431fbe02f11cc62"
+    },
+    {
+      "path": "docs/testing/evidence/pm04-g1-t1-invoice-20261126/HTTP_TRACE_INDEX.json",
+      "sha256": "06c4ed448e9675f880c6286708f5dd5eacd5c00bc8e47c7dc12347cfeb03bff7"
+    }
+  ],
+  "initial_connection_note": "Obsolete core local configuration returned ER_ACCESS_DENIED_ERROR before tests; verified full-flow configuration and server datadir then ran. No credential output or configuration mutation.",
+  "original_assertions": {
+    "normal": [
+      "paid order and current remaining amount",
+      "original request supplement, independent issue and simulated label",
+      "pre-issue withdrawal",
+      "after issued document, same original order refund and correction retain historical document"
+    ],
+    "reverse": [
+      "three concurrent same-key creates occupy once, same key changed body rejected",
+      "two competing60-of100 requests yield one200 and one409",
+      "zero cash/unpaid and foreign actor forbidden",
+      "refund pending and completed reduce current basis; correction cannot exceed remainder",
+      "stale versions, revoked grants, private document access and response-transport revocation rejected",
+      "audit rollback and current command-result recovery retain current state without duplicate mutation"
+    ]
+  },
+  "limits": [
+    "Synthetic test fixtures and local HTTP; not live tax supplier or payment channel",
+    "One original test file; no whole G12 or18-group closure",
+    "No App/Vue/native run in this supplemental execution",
+    "No final T3 batch or formal acceptance promotion"
+  ]
+}

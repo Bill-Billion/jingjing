@@ -30,4 +30,14 @@ function candidate({costs,cost_basis}){
  const p=prizes.map(([key,kind,weight])=>{if(!Object.hasOwn(costs,key))throw error('LOTTERY_REVIEWED_COST_REQUIRED',409);return {key,kind,weight,estimated_cost_minor:costs[key]};});
  return require('./lottery-policy').pool({version:'CONTRACT_20261029_CANDIDATE',source_profile:'CONTRACT_20261029',cost_basis,algorithm:'NINE_THEN_CONDITIONAL_TENTH_V1',single_points:300,ten_points:2700,prizes:p});
 }
-module.exports={prizes,checkConfig,checkBindings,candidate};
+// Retain the original reserved category separately from drawable prizes. It has
+// no binding, stock promise or probability and cannot be enabled by a client.
+function sourceCatalog(config){
+ if(config.source_profile!=='CONTRACT_20261029')return null;
+ checkConfig(config);
+ return {version:'CONTRACT_20261029_FIRST_PHASE',items:[
+  {key:'final',kind:'INTERVIEW_FINAL',enabled:false,weight:0},
+  ...prizes.map(([key,kind,weight])=>({key,kind,enabled:true,weight}))
+ ]};
+}
+module.exports={prizes,checkConfig,checkBindings,candidate,sourceCatalog};

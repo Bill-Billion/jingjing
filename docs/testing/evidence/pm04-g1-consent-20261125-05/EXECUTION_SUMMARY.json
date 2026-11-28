@@ -1,0 +1,114 @@
+{
+  "run_id": "pm04-g1-consent-20261125-05",
+  "stage": "T1_DISCOVERY",
+  "goal": "ACTIVE",
+  "result": "PASS_SCOPED_CHAIN_WITH_RECORDED_RESUMES",
+  "product_source": "07822585dc90d589f8e3363957b0024ff9d1f769",
+  "last_driver_source": "65e646b1da7828201e60a3e03e02d18eb104801b",
+  "frontend_received": "2eeaeee16ad55d7894a159535707ceeb6438c095",
+  "api_version": "0.31.79-rc.2",
+  "migration_last": "0225",
+  "migration_count": 225,
+  "product_changed_this_round": false,
+  "environment": "jx_test_stock_pm03_9b70dda9fe3062fe99d13580",
+  "expires_at": "2026-11-25T13:28:48.040Z",
+  "records": {
+    "person_id": "a935c3ac-77ef-4be6-b193-58aa9d9e1dd6",
+    "avatar_id": "33106bf6-efeb-4edc-9dff-20f36451189f",
+    "consent_id": "8c7b8ed2-eca6-41f0-afa3-ef6ba6ea3984",
+    "delegation_id": "32e56b22-48e4-4a4d-96bb-4b957c6151ef",
+    "previous_withdrawn_mandates": [
+      {
+        "id": "68b2726e-6c06-44a1-9e51-7cb3a4a1baeb",
+        "proof_id": "b27726cb-0398-4339-97dc-1ecbf0b79c45",
+        "reason": "Original withdrawal succeeded; App cached-page refresh driver stopped at the bottom button. New explicit personal mandate is required to reproduce a loaded page, never silently restore the old grant."
+      }
+    ],
+    "staff_grant_id": "f0dc80c0-0a24-4a65-a50c-91f85d668f70",
+    "material_id": "7e0773e6-96f7-45e5-b9a7-b9384daaf596",
+    "material_sha256": "6b1048f8a6d40bac0b2954c18fefa40c4ea7a96120fc2e54b7317c0e43c2bbec",
+    "variant_id": "616c40ae-f312-469a-aa35-3af65ed6b65f"
+  },
+  "checks": [
+    {
+      "name": "app-personal-face-only-private-archive-consent",
+      "consent_id": "8c7b8ed2-eca6-41f0-afa3-ef6ba6ea3984",
+      "proof_id": "9a14c7ba-6dfe-4f59-9336-8a74dce509aa"
+    },
+    {
+      "name": "personal-self-review-refused",
+      "status": 403
+    },
+    {
+      "name": "independent-vue-review-same-consent",
+      "consent_id": "8c7b8ed2-eca6-41f0-afa3-ef6ba6ea3984"
+    },
+    {
+      "name": "app-withdraws-original-mandate-with-history-preserved"
+    },
+    {
+      "name": "app-explicit-mandate-linked-to-original-accepted-relation",
+      "delegation_id": "68b2726e-6c06-44a1-9e51-7cb3a4a1baeb"
+    },
+    {
+      "name": "real-api-owner-grants-only-this-person-materials",
+      "grant_id": "f0dc80c0-0a24-4a65-a50c-91f85d668f70"
+    },
+    {
+      "name": "staff-cannot-sign-personal-consent-or-read-private-mandate-proof"
+    },
+    {
+      "name": "vue-employee-upload-keeps-personal-ownership",
+      "asset_id": "7e0773e6-96f7-45e5-b9a7-b9384daaf596"
+    },
+    {
+      "name": "face-consent-cannot-authorize-voice-version",
+      "status": 409
+    },
+    {
+      "name": "vue-staff-saves-same-person-look-with-personal-consent",
+      "variant_id": "616c40ae-f312-469a-aa35-3af65ed6b65f"
+    },
+    {
+      "name": "same-variant-and-private-material-actually-read-by-both-surfaces"
+    },
+    {
+      "name": "withdrawn-personal-consent-prevents-new-version-despite-live-agency"
+    },
+    {
+      "name": "original-withdrawal-file-denial-verified-before-new-explicit-retest-mandate"
+    },
+    {
+      "name": "app-explicit-mandate-linked-to-original-accepted-relation",
+      "delegation_id": "32e56b22-48e4-4a4d-96bb-4b957c6151ef"
+    },
+    {
+      "name": "same-variant-and-private-material-actually-read-by-both-surfaces"
+    },
+    {
+      "name": "both-surfaces-remove-private-state-on-real-forbidden-refresh"
+    },
+    {
+      "name": "withdrawal-rejects-former-agency-files-but-preserves-personal-assets"
+    }
+  ],
+  "check_entries": 17,
+  "distinct_check_names": 15,
+  "attempt_count": 10,
+  "preserved_failed_attempts": 9,
+  "terminal_attempt_exit_code": 0,
+  "driver_fix_issue": "QA18-TEST-017",
+  "formal_acceptance_updated": false,
+  "groups_closed": 0,
+  "full_regression_complete": false,
+  "scope_limits": [
+    "Synthetic loopback environment and files only; no real charges or real person data",
+    "Flutter Web executes real App code; no Android physical-device claim",
+    "Owner staff grant was performed through API, not a Vue grant form",
+    "The consent covers FACE and PRIVATE_ARCHIVE only; no sales/public-display/L1/old-order claim",
+    "First withdrawal succeeded. A new explicit personal mandate was created after verifying denial to retest cached-page refresh; history was never silently restored",
+    "The first same-variant check included App record/Vue file; the final attempt additionally downloaded the same bytes from App",
+    "Readonly SelectableText values are rendered on canvas but absent from DOM innerText/textarea.value; verified response, field presence and saved screenshot separately",
+    "This resumed discovery chain is not a fresh one-shot final 18-group regression"
+  ]
+}

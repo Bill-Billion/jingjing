@@ -1,0 +1,299 @@
+TAP version 13
+# Subtest: coupon checkout preserves original promises and real payment facts
+    # Subtest: one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases
+    ok 1 - one grant cannot be held by two quotes; original quote stays unchanged; cancellation releases
+      ---
+      duration_ms: 869.4648
+      type: 'test'
+      ...
+    # Subtest: hold detail after leaving returns current hold version and excludes other owners
+    ok 2 - hold detail after leaving returns current hold version and excludes other owners
+      ---
+      duration_ms: 25.176
+      type: 'test'
+      ...
+    # Subtest: new 30/40/30 coupon quote and contract preserve net amounts and script milestone
+    ok 3 - new 30/40/30 coupon quote and contract preserve net amounts and script milestone
+      ---
+      duration_ms: 186.5701
+      type: 'test'
+      ...
+    # Subtest: unaccepted hold can be released, stale preview and unauthorized access rejected
+    ok 4 - unaccepted hold can be released, stale preview and unauthorized access rejected
+      ---
+      duration_ms: 147.5502
+      type: 'test'
+      ...
+    # Subtest: actual drawn credit keeps its original grant through unknown payment and refund without restoring the prize
+    ok 5 - actual drawn credit keeps its original grant through unknown payment and refund without restoring the prize
+      ---
+      duration_ms: 444.5662
+      type: 'test'
+      ...
+    # Subtest: full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse
+    ok 6 - full entitlement is not cash payment; cancel before start releases; start consumes once and cannot reuse
+      ---
+      duration_ms: 1227.7935
+      type: 'test'
+      ...
+    # Subtest: co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source
+    ok 7 - co-creation credit binds original benefit once, preserves expiry, excludes referral and rechecks cancelled source
+      ---
+      duration_ms: 464.1485
+      type: 'test'
+      ...
+    # Subtest: same actual drawn production credit completes all four stages and original refunds without restoring prize or draw stake
+    ok 8 - same actual drawn production credit completes all four stages and original refunds without restoring prize or draw stake
+      ---
+      duration_ms: 1304.2704
+      type: 'test'
+      ...
+    # Subtest: same 30/40/30 coupon order completes, earns net-consumption points and refunds without restoring a used coupon
+    ok 9 - same 30/40/30 coupon order completes, earns net-consumption points and refunds without restoring a used coupon
+      ---
+      duration_ms: 1243.4629
+      type: 'test'
+      ...
+    1..9
+ok 1 - coupon checkout preserves original promises and real payment facts
+  ---
+  duration_ms: 15155.1106
+  type: 'test'
+  ...
+# cross-grant schedule HTTP 409 REWARD_EVIDENCE_NOT_FOUND
+# Subtest: supplier evidence is explicitly linked to one grant and only an independent operator can read it
+    # Subtest: cannot schedule a grant using evidence explicitly submitted only to another grant
+    ok 1 - cannot schedule a grant using evidence explicitly submitted only to another grant
+      ---
+      duration_ms: 16.0544
+      type: 'test'
+      ...
+# cross-purpose completion HTTP 409 REWARD_EVIDENCE_NOT_FOUND
+    # Subtest: completion requires this grant completion evidence; original schedule and finish replay remain stable
+    ok 2 - completion requires this grant completion evidence; original schedule and finish replay remain stable
+      ---
+      duration_ms: 197.4522
+      type: 'test'
+      ...
+    1..2
+ok 2 - supplier evidence is explicitly linked to one grant and only an independent operator can read it
+  ---
+  duration_ms: 9922.6552
+  type: 'test'
+  ...
+# Subtest: lottery actual HTTP: immutable odds, independent review, stock and atomic points
+    # Subtest: creator cannot approve; rules and finance require separate reviewers; unpublished draw denied
+    ok 1 - creator cannot approve; rules and finance require separate reviewers; unpublished draw denied
+      ---
+      duration_ms: 303.5733
+      type: 'test'
+      ...
+    # Subtest: newly reviewed pools publish seven-day notice before drawing; no points or stock deducted
+    ok 2 - newly reviewed pools publish seven-day notice before drawing; no points or stock deducted
+      ---
+      duration_ms: 65.2855
+      type: 'test'
+      ...
+    # Subtest: pending refund reversal blocks single and ten draws without spending, issuing or reserving a command
+    ok 3 - pending refund reversal blocks single and ten draws without spending, issuing or reserving a command
+      ---
+      duration_ms: 111.0539
+      type: 'test'
+      ...
+    # Subtest: reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected
+    ok 4 - reviewers can actually inspect linked evidence; owner, unrelated file and corruption are rejected
+      ---
+      duration_ms: 82.9212
+      type: 'test'
+      ...
+    # Subtest: retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge
+    ok 5 - retry keeps same winners; concurrent last ten stock succeeds only once; no stock no charge
+      ---
+      duration_ms: 146.6459
+      type: 'test'
+      ...
+    # Subtest: insufficient points rolls back draw, stock and command; retired version preserves old results
+    ok 6 - insufficient points rolls back draw, stock and command; retired version preserves old results
+      ---
+      duration_ms: 274.6671
+      type: 'test'
+      ...
+    # Subtest: ten guarantee survives mostly no-win pool and records actual conditional draws
+    ok 7 - ten guarantee survives mostly no-win pool and records actual conditional draws
+      ---
+      duration_ms: 163.2784
+      type: 'test'
+      ...
+    # Subtest: new-contract pool cannot draw before a consumer policy is independently reviewed
+    ok 8 - new-contract pool cannot draw before a consumer policy is independently reviewed
+      ---
+      duration_ms: 117.4624
+      type: 'test'
+      ...
+    # Subtest: rational confirmation and participation limits precede point deduction; recovery returns original winners
+    ok 9 - rational confirmation and participation limits precede point deduction; recovery returns original winners
+      ---
+      duration_ms: 252.8451
+      type: 'test'
+      ...
+    # Subtest: same actual winning interview cancels pending schedule on extension and fallback without redrawing
+    ok 10 - same actual winning interview cancels pending schedule on extension and fallback without redrawing
+      ---
+      duration_ms: 369.379
+      type: 'test'
+      ...
+    # Subtest: same drawn interview expires then receives one reviewed fallback; retired-pool replay preserves original winners and stake
+    ok 11 - same drawn interview expires then receives one reviewed fallback; retired-pool replay preserves original winners and stake
+      ---
+      duration_ms: 319.1908
+      type: 'test'
+      ...
+    # Subtest: actual winning interview not selected can receive one reviewed fallback without redrawing or cancelling the completed appointment
+    ok 12 - actual winning interview not selected can receive one reviewed fallback without redrawing or cancelling the completed appointment
+      ---
+      duration_ms: 447.4283
+      type: 'test'
+      ...
+    # Subtest: not-selected interview can extend once, preserve the first attempt, and resolve a second unsuccessful attempt on the same grant
+    ok 13 - not-selected interview can extend once, preserve the first attempt, and resolve a second unsuccessful attempt on the same grant
+      ---
+      duration_ms: 480.6778
+      type: 'test'
+      ...
+    # Subtest: completed interview without an explicit not-selected result stays ineligible for this remedy
+    ok 14 - completed interview without an explicit not-selected result stays ineligible for this remedy
+      ---
+      duration_ms: 340.6983
+      type: 'test'
+      ...
+    # Subtest: verified winner without any avatar cannot bind invented material but can extend and receive the original fallback on the same draw
+    ok 15 - verified winner without any avatar cannot bind invented material but can extend and receive the original fallback on the same draw
+      ---
+      duration_ms: 230.7324
+      type: 'test'
+      ...
+    # Subtest: unbound winning remedy can finish after prize expiry but revoked reviewer cannot execute or replay its result
+    ok 16 - unbound winning remedy can finish after prize expiry but revoked reviewer cannot execute or replay its result
+      ---
+      duration_ms: 220.5937
+      type: 'test'
+      ...
+    # Subtest: same drawn interview with withdrawn production consent blocks use but keeps the independently reviewed remedy available
+    ok 17 - same drawn interview with withdrawn production consent blocks use but keeps the independently reviewed remedy available
+      ---
+      duration_ms: 291.848
+      type: 'test'
+      ...
+    1..17
+ok 3 - lottery actual HTTP: immutable odds, independent review, stock and atomic points
+  ---
+  duration_ms: 13804.2155
+  type: 'test'
+  ...
+# Subtest: original coupon scope: manual drama eligible, samples and avatar services excluded
+    # Subtest: manual drama outline is frozen in actual coupon quote/order and a separately reviewed original script project
+    ok 1 - manual drama outline is frozen in actual coupon quote/order and a separately reviewed original script project
+      ---
+      duration_ms: 663.6642
+      type: 'test'
+      ...
+    # Subtest: MANUAL_SAMPLE cannot be approved as coupon stock or consume an otherwise valid coupon
+    ok 2 - MANUAL_SAMPLE cannot be approved as coupon stock or consume an otherwise valid coupon
+      ---
+      duration_ms: 357.5845
+      type: 'test'
+      ...
+    # Subtest: AVATAR_CREATION cannot be approved as coupon stock or consume an otherwise valid coupon
+    ok 3 - AVATAR_CREATION cannot be approved as coupon stock or consume an otherwise valid coupon
+      ---
+      duration_ms: 145.4939
+      type: 'test'
+      ...
+    # Subtest: AVATAR_HOSTING cannot be approved as coupon stock or consume an otherwise valid coupon
+    ok 4 - AVATAR_HOSTING cannot be approved as coupon stock or consume an otherwise valid coupon
+      ---
+      duration_ms: 116.7739
+      type: 'test'
+      ...
+    1..4
+ok 4 - original coupon scope: manual drama eligible, samples and avatar services excluded
+  ---
+  duration_ms: 9913.2165
+  type: 'test'
+  ...
+# Subtest: contract pool retains disabled source item and historical snapshots
+not ok 5 - contract pool retains disabled source item and historical snapshots
+  ---
+  duration_ms: 8008.5935
+  type: 'test'
+  location: 'R:\\backend_server\\test\\redemption-source-catalog.integration.test.cjs:4:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Cannot find module '../../../../scripts/test-fixtures/qa18-contract-lottery.cjs'
+    Require stack:
+    - R:\backend_server\test\redemption-source-catalog.integration.test.cjs
+  code: 'MODULE_NOT_FOUND'
+  stack: |-
+    Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)
+    defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    Function._load (node:internal/modules/cjs/loader:1192:37)
+    TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    wrapModuleLoad (node:internal/modules/cjs/loader:237:24)
+    Module.require (node:internal/modules/cjs/loader:1463:12)
+    require (node:internal/modules/helpers:147:16)
+    TestContext.<anonymous> (R:\backend_server\test\redemption-source-catalog.integration.test.cjs:16:24)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+  ...
+# Subtest: reward remedy preserves one grant and all pending schedules across invalid binding
+    # Subtest: return original points cancels the still-pending schedule atomically; rejection and replay cannot resurrect it
+    ok 1 - return original points cancels the still-pending schedule atomically; rejection and replay cannot resurrect it
+      ---
+      duration_ms: 258.367
+      type: 'test'
+      ...
+    # Subtest: one-time interview extension cancels old pending slot and permits a fresh schedule
+    ok 2 - one-time interview extension cancels old pending slot and permits a fresh schedule
+      ---
+      duration_ms: 154.286
+      type: 'test'
+      ...
+    # Subtest: rejected remedy preserves pending slot; stale and changed commands cannot change the outcome
+    ok 3 - rejected remedy preserves pending slot; stale and changed commands cannot change the outcome
+      ---
+      duration_ms: 132.8163
+      type: 'test'
+      ...
+    # Subtest: withdrawn public participation blocks acceptance but permits declining the original future slot
+    ok 4 - withdrawn public participation blocks acceptance but permits declining the original future slot
+      ---
+      duration_ms: 173.4459
+      type: 'test'
+      ...
+    # Subtest: confirmed but no longer public award cannot finish; remedy cancels its approved slot once
+    ok 5 - confirmed but no longer public award cannot finish; remedy cancels its approved slot once
+      ---
+      duration_ms: 161.2624
+      type: 'test'
+      ...
+    # Subtest: withdrawn interview production consent still permits refusal and remedy with a private own-record copy
+    ok 6 - withdrawn interview production consent still permits refusal and remedy with a private own-record copy
+      ---
+      duration_ms: 175.5788
+      type: 'test'
+      ...
+    1..6
+ok 6 - reward remedy preserves one grant and all pending schedules across invalid binding
+  ---
+  duration_ms: 8989.8632
+  type: 'test'
+  ...
+1..6
+# tests 44
+# suites 0
+# pass 43
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 66984.6745

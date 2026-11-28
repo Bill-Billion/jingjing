@@ -173,6 +173,17 @@ test('recharge refund role-separated HTTP and personal guardian copies',{skip:!p
    assert.equal((await http(buyer2,own+'/'+item.id+'/cancellation',{method:'POST',party:buyer2.personal_party_id,body:{reason:'not own'},version:item.object_version})).status,404);
    guardianCase=ok(await http(buyer2,own+'/'+guardianCase.id+'/cancellation',{method:'POST',party:buyer2.personal_party_id,body:{reason:'synthetic child cancels unsent'},version:guardianCase.object_version}));assert.equal(guardianCase.current_status,'CANCELLED');
   });
+  await t.test('queued original refund refuses manual retry with a stable business conflict and no extra task',async()=>{
+   const created=await request(100),approved=await R.review(reviewer.ctx,reviewInput(created));
+   const current=ok(await http(reviewer,ops+'/'+approved.id+'/scheduling',{method:'POST',body:{},version:approved.object_version}));
+   const raw=await read(current),jobId=raw.data.dispatch_job_id,jobs=require('../src/infrastructure/jobs/repository').createJobRepository(db),before=await jobs.get(jobId);assert.equal(before.status,'PENDING');
+   const args={method:'POST',body:{reason:'Already queued: keep original worker task'},version:current.object_version,op:key()};
+   for(let n=0;n<2;n++){const rejected=await http(reviewer,ops+'/'+current.id+'/retry',args);assert.equal(rejected.status,409,JSON.stringify(rejected.value));assert.equal(rejected.value.error.code,'JOB_NOT_RETRYABLE');}
+   assert.deepEqual(await jobs.get(jobId),before);assert.equal((await read(current)).object_version,raw.object_version);
+   assert.equal((await db.execute('SELECT id FROM platform_jobs WHERE business_key=?',[current.id]))[0].length,1);
+   assert.equal((await db.execute('SELECT id FROM platform_job_retries WHERE job_id=?',[jobId]))[0].length,0);
+   records.push({case_id:current.id,job_id:jobId,status:'PENDING',manual_retry_status:409,duplicate_task:false});
+  });
   await fs.writeFile(path.resolve(__dirname,'../../../..','.local/recharge-refund-api-http.json'),JSON.stringify({synthetic_only:true,cases:fixtures},null,2));
   await fs.writeFile(path.resolve(__dirname,'../../../..','.local/recharge-refund-api-journey.json'),JSON.stringify({synthetic_only:true,records,guardian_case_id:guardianCase.id,guardian_link_id:link.id,frontend_run:false,live_provider_enabled:false},null,2));
  }finally{if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}if(db)await db.close();await control.query('DROP DATABASE IF EXISTS '+mysql.escapeId(name));await control.end();}

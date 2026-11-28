@@ -1,0 +1,156 @@
+{
+  "kind": "T1_ACTUAL_PARTIAL_REVIEW",
+  "new_business_execution": true,
+  "environment": "jx_test_qa18_free_0de3c50c69e8ecd909c4",
+  "original_environment": "jx_test_qa18_points_60898647dc3b28d20c84",
+  "versions": {
+    "backend": "ac24b00b4bef36bac86eb6677aaa1fd4732689a9",
+    "app": "dac064f4a4a7942f059266b20fc128a2544da228",
+    "vue": "c4f12488486eb95cd19068bb84103ad46c00297f",
+    "browser_initial": "25a13e4e5a82b6702d6c920479f282ece2bb34ac",
+    "browser_fixed": "d763212f04a49b7c16fea5859cc57e95e8d239f2",
+    "census_initial": "fc7f050d57f3a8586b6bf630aad78af0598de983",
+    "census_fixed": "2a270bedc4dfe4bba0c6655d604038cb249dca34"
+  },
+  "api_version": "0.31.82-rc.1",
+  "migrations": 225,
+  "last_migration": "0225",
+  "business_ids": {
+    "grant_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+    "earning_id": "812d4420-fce5-4b51-9281-8ca336d338da",
+    "project_id": "f08cc136-f8cc-47ae-b143-dada4b51a15e"
+  },
+  "orders": [
+    {
+      "id": "114da9f7-5401-4394-b678-a02bbc04744a",
+      "status": "PAID",
+      "financial": {
+        "net_minor": 70000,
+        "received_minor": 70000,
+        "refunded_minor": 0
+      },
+      "payments": 1,
+      "refunds": 0
+    },
+    {
+      "id": "13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "status": "REWARD_FUNDED",
+      "financial": {
+        "net_minor": 0,
+        "received_minor": 0,
+        "refunded_minor": 0
+      },
+      "payments": 0,
+      "refunds": 0
+    },
+    {
+      "id": "176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "status": "CANCELLED",
+      "financial": {
+        "net_minor": 0,
+        "received_minor": 0,
+        "refunded_minor": 0
+      },
+      "payments": 0,
+      "refunds": 0
+    }
+  ],
+  "holds": [
+    {
+      "id": "160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+      "parent_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "current_status": "USED"
+    },
+    {
+      "id": "4923ea19-f974-4d49-a637-87508e7540cd",
+      "parent_id": "7e743f30-0b88-4b5c-ab14-d380a391eb1e",
+      "current_status": "RELEASED"
+    },
+    {
+      "id": "5556818a-ea34-4df0-9139-819d59d59f08",
+      "parent_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "current_status": "RELEASED"
+    },
+    {
+      "id": "d889b316-aa3c-4f46-84ab-f63b46367daa",
+      "parent_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "current_status": "RELEASED"
+    },
+    {
+      "id": "e496ba06-d2e2-42ff-ad97-12fef216d52e",
+      "parent_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "current_status": "RELEASED"
+    }
+  ],
+  "cash_branch_prior": {
+    "path": "docs/testing/evidence/pm04-g1-t1-earned-authority-20261126/T1_EARNED_AUTHORITY_REVIEW.json",
+    "sha256": "a623949a8f1ac102e46f9c6315adbaa07d554281b1c9ffd748f7ca20f9db5c21"
+  },
+  "commands": [
+    "node scripts/qa18-free-clone.cjs jx_test_qa18_restore_bdc04646bf1a1b8a896a7144 .local/qa18/free-production-20261125-20/environment02 .local/qa18/t1-free-clone-20261126-01",
+    "node scripts/qa18-free-authority-browser.mjs (V5_ACCESS_FILE and QA18_OUTPUT_DIR private; second attempt uses QA18_PRIOR_RESULT)",
+    "node scripts/qa18-free-authority-check.cjs .local/qa18/t1-free-clone-20261126-01 .local/qa18/t1-free-authority-20261126-02 .local/qa18/t1-free-authority-census02"
+  ],
+  "executions": [
+    {
+      "source": "25a13e4e5a82b6702d6c920479f282ece2bb34ac",
+      "result": "FAIL",
+      "checks": 17,
+      "requests": 49,
+      "result_proof": {
+        "path": "docs/testing/evidence/pm04-g1-t1-free-authority-20261126/browser01/RESULT.json",
+        "sha256": "9e81879674e08478a8b41464e611d64adcb7baa706e3b47227a14d5d63290aec"
+      },
+      "raw_log": {
+        "path": "docs/testing/evidence/pm04-g1-t1-free-authority-20261126/browser01/process.log",
+        "sha256": "6d35e801a47546cb39805801d62dbc6559cec334f69ca3df46026f103fbdf677"
+      }
+    },
+    {
+      "source": "d763212f04a49b7c16fea5859cc57e95e8d239f2",
+      "result": "PASS_TARGETED_REMAINDER",
+      "checks": 16,
+      "requests": 77,
+      "result_proof": {
+        "path": "docs/testing/evidence/pm04-g1-t1-free-authority-20261126/browser02/RESULT.json",
+        "sha256": "89ec758e063fd3470738bfd97bc8df60b42af8a38bf8791217a1c190d208707b"
+      },
+      "raw_log": {
+        "path": "docs/testing/evidence/pm04-g1-t1-free-authority-20261126/browser02/process.log",
+        "sha256": "3a646801a94a6b51021d8e111aab493336eb2c7251488d4b155fedf742eb2691"
+      }
+    }
+  ],
+  "database_proof": {
+    "path": "docs/testing/evidence/pm04-g1-t1-free-authority-20261126/POST_AUTHORITY_CENSUS.json",
+    "sha256": "fe49d9283f178cacf291f51ec0bf07aebfa9c91dfedfa000870278f8c721b9b2"
+  },
+  "partial_slots": [
+    {
+      "key": "E2E-06|api|unauthorized",
+      "decision": "PARTIAL",
+      "observed": "API owner200 vs unrelated404; forged party403; outsiders cannot lock original used grant or release5original holds; delivered project buyer/producer200 vsartist404/forged403; original final file23600bytes owner200/artist404.",
+      "remaining": "Both branch record ownership boundaries now observed, but original identity-change and independent-review authority obligations still require exact evidence; not complete unauthorized slot."
+    },
+    {
+      "key": "E2E-06|app|unauthorized",
+      "decision": "PARTIAL",
+      "observed": "app actual owner/outsider requests for original grant and used/cancelled orders200/404, private title not shown to outsider.",
+      "remaining": "Both branch record ownership boundaries now observed, but original identity-change and independent-review authority obligations still require exact evidence; not complete unauthorized slot."
+    },
+    {
+      "key": "E2E-06|web|unauthorized",
+      "decision": "PARTIAL",
+      "observed": "web actual owner/outsider requests for original grant and used/cancelled orders200/404, private title not shown to outsider. Vue additionally owner/outsider originalUSEDhold200/404.",
+      "remaining": "Both branch record ownership boundaries now observed, but original identity-change and independent-review authority obligations still require exact evidence; not complete unauthorized slot."
+    }
+  ],
+  "limits": [
+    "33 distinct checks are a17+16 same-clone continuation, not one clean full run.",
+    "Cash and zero-cash authority remain distinct environments, never one final same-version PASS.",
+    "This checks existing original USED grants/holds, source/zero-cash/cancel orders, delivered project and final file; actual identity changes/independent-review duties remain.",
+    "Original batch has5holds:4 belong to used70aee25c,1 released belongs to7e743f30; both grants come from the same original draw.",
+    "No original lottery distribution or pending draw UI recovery claim. Flutter Web is not native-device validation.",
+    "Expired original secret was not retained. New clone-only secret/session issue is explicit synthetic access, not production SMS login."
+  ]
+}

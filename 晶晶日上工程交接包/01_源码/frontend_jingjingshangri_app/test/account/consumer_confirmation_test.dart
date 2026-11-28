@@ -24,7 +24,7 @@ class Harness {
     adapter = FakeAccountAdapter(handler: (r) async {
       final override = await handler?.call(r);
       if (override != null) return override;
-      if (r.path == '$risk/preview')
+      if (r.path == '$risk/preview') {
         return envelope({
           'configured': configured,
           'required': required,
@@ -35,7 +35,8 @@ class Harness {
           'target': {...r.queryParameters, 'amount_minor': 100},
           'expires_in_seconds': 60
         });
-      if (r.path == '$risk/confirm')
+      }
+      if (r.path == '$risk/confirm') {
         return envelope({
           'id': invitationId,
           'owner_party_id': personId,
@@ -44,8 +45,10 @@ class Harness {
             'preview': {'preview_sha256': r.data['preview_sha256']}
           }
         });
-      if (r.path == pay || r.path.endsWith('/reconciliation'))
+      }
+      if (r.path == pay || r.path.endsWith('/reconciliation')) {
         return envelope({'id': invitationId, 'current_status': 'CREATED'});
+      }
       return adapter.defaultReply(r);
     });
   }
@@ -85,8 +88,9 @@ void main() {
         return envelope({'code': 'VERIFIED_ADULT_REQUIRED'},
             status: 409, error: true);
       }
-      if (r.path == '/api/v1/trade/records/$invitationId')
+      if (r.path == '/api/v1/trade/records/$invitationId') {
         return pending.future;
+      }
       return null;
     };
     final action = h.session.write('POST', path,
@@ -332,9 +336,10 @@ void main() {
       await p;
       expect(h.confirmations.first.headers['Idempotency-Key'],
           isNot(h.confirmations.last.headers['Idempotency-Key']));
-      if (h.payments.length > 1)
+      if (h.payments.length > 1) {
         expect(h.payments.first.headers['Idempotency-Key'],
             h.payments.last.headers['Idempotency-Key']);
+      }
       h.dispose();
     }
   });

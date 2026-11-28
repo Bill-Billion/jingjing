@@ -6,6 +6,9 @@
 
 # 导航与新版页面验收
 
+2026-11-27 复核冻结候选 `053168fb`。App 仍使用广场、试镜、通告、消息、我的五栏。现货目录和已购旧地址接入当前现货子页，`/ai-create` 进入人工祝福定制表单。Web 故事收件列表和详情仍共用工作区菜单，真实岗位与登录回跳由原路由和接口判断。下方各轮的可办范围和菜单项数保留为历史。当前旧地址与页面去向见[图册映射](gallery-page-map.md#2026-11-27旧图册导航去向)，两端验证见[S3-C 执行回执](../pm04/qa18/S3_C_MACHINE_TAIL_20261127.md)。
+
+
 2026-10-17按V5第一轮更新。保留用户2026-09-30要求的入口稳定、共享菜单、正常返回和真实权限；当前五栏及业务归属以V5为准。第一轮只接通文字故事、草稿、提交和运营受理，不能把已可进入的页面或后端后续轮能力当作整套业务完成。
 
 ## 当前导航规则
@@ -28,7 +31,7 @@ App顶层为广场、试镜、通告、消息、我的，对应规范地址如�
 
 ## 旧地址兼容
 
-以下为本轮 `lib/app.dart` 的实际映射；历史地址可兼容，目的页面必须使用新版壳和真实业务。规范入口、登录返回白名单与测试保持一致。
+以下为冻结候选 `lib/app.dart` 的实际映射。历史地址保留兼容，目的页面使用当前导航及业务权限。规范入口、登录返回白名单与测试同步核对。
 
 |旧地址|当前目的地|
 |---|---|
@@ -38,8 +41,10 @@ App顶层为广场、试镜、通告、消息、我的，对应规范地址如�
 |`/enter`、`/theater`、`/launch`、`/custom-request`|新故事 `/customization/new`，不回旧入戏目录|
 |`/customization/request?requestId=…`|兼容故事详情；新增链接统一使用UUID路径|
 |`/roles`、`/projects`、`/role-market`、`/project-detail`|公开项目子页 `/projects/catalogue`，不再作为成角主栏|
-|`/video-lib`、`/video-order`、`/sample-library`、`/sample-order-detail`|明确现成视频正在接入，不把制作项目当已购现货商城|
-|`/ai-create`|明确生成条件和未开放状态，回到真实制作项目办理|
+|`/video-lib`、`/sample-library`|公开现货目录 `/stock/catalog`|
+|`/video-order`|本人已购 `/stock/purchases`|
+|`/sample-order-detail?orderId=…`|按原订单读取 `/stock/purchase?orderId=…`，沿用登录和办理主体门禁|
+|`/ai-create`|新建故事子页，预选人工祝福品类 `blessing_manual`，提交后由运营受理|
 
 完整映射以[App实际路由](../../晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/lib/app.dart)为准。未知本地地址或外部URL不得伪装成已有业务；提供返回当前新版主入口的办法。越权、不存在及失效私有记录仍须拒绝，不能放宽权限来消除业务404。
 

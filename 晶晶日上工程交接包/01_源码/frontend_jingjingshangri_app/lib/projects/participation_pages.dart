@@ -12,7 +12,14 @@ import '../engagement/community_support.dart';
 import '../supply/supply_api.dart';
 import '../supply/supply_files.dart';
 import '../trade/trade_widgets.dart';
-import 'project_models.dart' show projectDigest, ProjectRecord;
+import 'project_models.dart'
+    show
+        projectDigest,
+        ProjectRecord,
+        projectMap,
+        projectList,
+        projectHash,
+        projectInt;
 import 'project_api.dart';
 
 const participationModes = {
@@ -60,6 +67,39 @@ Map<String, dynamic> participationRecord(Object? raw,
         d['confirmers'] is List && communityId(d['evidence_asset_id']));
   }
   return r;
+}
+
+Map<String, dynamic> participationRecastSources(
+    Object? raw, Map<String, dynamic> candidate) {
+  final d = projectMap(raw, keys: [
+    'candidate_id',
+    'candidate_version',
+    'candidate_sha256',
+    'project_id',
+    'role_id',
+    'items',
+    'next_cursor'
+  ]);
+  communityRequire(candidate['kind'] == 'CANDIDATE' &&
+      candidate['current_status'] == 'CONFIRMED' &&
+      d['candidate_id'] == candidate['id'] &&
+      d['candidate_version'] == candidate['object_version'] &&
+      d['candidate_sha256'] == candidate['content_sha256'] &&
+      d['project_id'] == candidate['project_id'] &&
+      d['role_id'] == communityMap(candidate['data'])['role_id'] &&
+      (d['next_cursor'] == null || communityId(d['next_cursor'])));
+  final ids = <String>{};
+  for (final value in projectList(d['items'])) {
+    final x = projectMap(value,
+        keys: ['id', 'object_version', 'content_sha256', 'owner_party_id']);
+    communityRequire(communityId(x['id']) &&
+        ids.add(x['id']) &&
+        projectInt(x['object_version'], min: 1) &&
+        projectHash(x['content_sha256']) &&
+        communityId(x['owner_party_id']) &&
+        x['owner_party_id'] != candidate['owner_party_id']);
+  }
+  return d;
 }
 
 void participationRevenue(Map<String, dynamic> revenue) {
@@ -211,6 +251,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
   String draftSignature() => jsonEncode([
         for (final controller in controllers) controller.text,
         selectedCandidate,
+        selectedRecastSource,
         selectedRule,
         mode,
         usage,
@@ -256,7 +297,15 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
   String mode = 'FIXED_FEE', usage = 'EXISTING_MATERIAL';
   bool exclusive = false, agreed = false, initialized = false;
   String? selectedCandidate, milestoneKey, cursor, nextCursor, projectNotice;
-  String? selectedRule, rulesCandidate, ruleCursor;
+  String? selectedRule, rulesCandidate, ruleCursor, selectedRecastSource;
+  List<Map<String, dynamic>> recastSources = [];
+  Map<String, dynamic>? get recastSource {
+    for (final source in recastSources) {
+      if (source['id'] == selectedRecastSource) return source;
+    }
+    return null;
+  }
+
   List<Map<String, dynamic>> availableRules = [];
   bool rulesBusy = false;
   final ruleCursors = <String>{};
@@ -290,6 +339,8 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
     projectNotice = null;
     progress = null;
     availableRules = [];
+    recastSources = [];
+    selectedRecastSource = null;
     selectedRule = null;
     rulesCandidate = null;
     ruleCursor = null;
@@ -329,6 +380,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
       agreed = false;
       checking = true;
       error = null;
+      if (widget.view == 'recast') recastSources = [];
     });
     try {
       Map<String, dynamic>? r, p, pr;
@@ -353,7 +405,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
             kind: 'PROJECT');
       }
       if (p != null) {
-        if (['agreements', 'new', 'amend'].contains(widget.view)) {
+        if (['agreements', 'new', 'amend', 'recast'].contains(widget.view)) {
           cast = await all(p['id'], 'CANDIDATE');
           final currentRoles = await all(p['id'], 'ROLE');
           if (mounted && t == ticket) roles = currentRoles;
@@ -381,7 +433,34 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
               pr['milestones'] is List);
         }
       }
-      if (['new', 'amend'].contains(widget.view) && !widget.income) {
+      if (widget.view == 'recast') {
+        communityRequire(!widget.income &&
+            r?['kind'] == 'CANDIDATE' &&
+            r?['owner_party_id'] == session.partyId &&
+            r?['current_status'] == 'CONFIRMED');
+        final sources = <Map<String, dynamic>>[],
+            seen = <String>{},
+            ids = <String>{};
+        String? cursor;
+        do {
+          final d = participationRecastSources(
+              await api.read('candidates/${r!['id']}/recast-sources',
+                  query: {'limit': 100, if (cursor != null) 'cursor': cursor}),
+              r);
+          final page = communityItems(d);
+          communityRequire(page.every((x) => ids.add(x['id'])));
+          sources.addAll(page);
+          cursor = d['next_cursor'];
+          communityRequire(cursor == null || seen.add(cursor));
+        } while (cursor != null);
+        if (!mounted || t != ticket) return;
+        recastSources = sources;
+        if (!sources.any((x) => x['id'] == selectedRecastSource)) {
+          selectedRecastSource =
+              sources.length == 1 ? sources.single['id'] : null;
+        }
+      }
+      if (['new', 'amend', 'recast'].contains(widget.view) && !widget.income) {
         final list = <ArtistPerson>[], seen = <String>{};
         String? c;
         do {
@@ -403,7 +482,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         confirmations = cs;
         nextCursor = next;
       });
-      if (!initialized && ['new', 'amend'].contains(widget.view)) {
+      if (!initialized && ['new', 'amend', 'recast'].contains(widget.view)) {
         initializeForm();
         initialized = true;
       }
@@ -507,6 +586,17 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
   @override
   Future<void> reconcilePending() async {
     final p = recoverySuffix!.split('/');
+    if (p.length == 3 && p[0] == 'participations' && p[2] == 'amendments') {
+      // The new performer has no access to the previous private agreement.
+      // Read the original request's own candidate, without imposing today's
+      // proposal eligibility on replay of a possibly committed operation.
+      final id = communityMap(recovery!['body'])['candidate_id'];
+      communityRequire(communityId(id));
+      final candidate = participationRecord(await api.read('records/$id'),
+          id: id, kind: 'CANDIDATE');
+      communityRequire(candidate['owner_party_id'] == session.partyId);
+      return;
+    }
     if (p.length > 1) {
       await api.read('records/${p[1]}');
     } else {
@@ -1227,7 +1317,9 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
       if (!mounted ||
           epoch != session.epoch ||
           t != ticket ||
-          candidate?['id'] != cid) return;
+          candidate?['id'] != cid) {
+        return;
+      }
       communityRequire(page['candidate_id'] == cid);
       final items = communityItems(page), next = page['next_cursor'];
       for (final r in items) {
@@ -1247,8 +1339,9 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         ruleCursor = next;
       });
     } catch (e) {
-      if (mounted && epoch == session.epoch && t == ticket)
+      if (mounted && epoch == session.epoch && t == ticket) {
         setState(() => fail(e));
+      }
     } finally {
       if (mounted) setState(() => rulesBusy = false);
     }
@@ -1259,7 +1352,8 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
     final old = record?['kind'] == 'PARTICIPATION'
             ? communityMap(record!['data'])
             : null,
-        amending = widget.view == 'amend';
+        amending = ['amend', 'recast'].contains(widget.view);
+    final source = widget.view == 'recast' ? recastSource : record;
     final amount = communityMinorOrNull(fee.text),
         canRule = widget.income ||
             amount == 0 ||
@@ -1276,7 +1370,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
       communityFact('项目', communityMap(project!['data'])['title']),
       if (!widget.income) ...[
         communityFact('当前角色', roleTitle(candidate)),
-        if (amending)
+        if (widget.view == 'amend')
           communitySelect(
               '同一角色中已确认的本人候选记录',
               selectedCandidate,
@@ -1293,6 +1387,24 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
               enabled
                   ? (v) => draftChanged(() => selectedCandidate = v)
                   : null),
+        if (widget.view == 'recast') ...[
+          communitySelect(
+              '待替换的旧参演约定',
+              selectedRecastSource,
+              [
+                for (final old in recastSources)
+                  (
+                    old['id'] as String,
+                    '旧参演方 ${communityShort(old['owner_party_id'])} · 约定版本${old['object_version']}'
+                  )
+              ],
+              enabled
+                  ? (v) => draftChanged(() => selectedRecastSource = v)
+                  : null),
+          appNotice(recastSources.isEmpty
+              ? '当前没有可办理换角的旧约定；请核对旧参演方是否已退出，以及项目是否已重新进入筹备。'
+              : '请独立填写本人的新条款。旧方保留金额须另行协商，后续由原参演方及其他必要参与方确认。'),
+        ],
         communityFact(
             '原候选片酬',
             candidate == null
@@ -1418,7 +1530,12 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
           enabled ? (v) => setState(() => agreed = v == true) : null),
       tradeButton(
           '保存本次约定并提交独立审核',
-          enabled && !rulesBusy && agreed && canRule && evidence.length == 1
+          enabled &&
+                  !rulesBusy &&
+                  agreed &&
+                  canRule &&
+                  evidence.length == 1 &&
+                  (!amending || source != null)
               ? () => submit(() async {
                     String suffix;
                     Map<String, dynamic> body;
@@ -1450,10 +1567,10 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                           v.kind == 'LOOK' &&
                           v.avatarId == communityMap(c['data'])['avatar_id']));
                       suffix = amending
-                          ? 'participations/${record!['id']}/amendments'
+                          ? 'participations/${source!['id']}/amendments'
                           : 'candidates/${c['id']}/participations';
                       version = amending
-                          ? record!['object_version']
+                          ? source!['object_version']
                           : c['object_version'];
                       body = {
                         'cast': cast,
@@ -1464,7 +1581,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
                           'candidate_id': c['id'],
                           'fee_minor': n,
                           'old_retained_minor':
-                              record!['owner_party_id'] == c['owner_party_id']
+                              source!['owner_party_id'] == c['owner_party_id']
                                   ? null
                                   : communityMinor(retained.text, '旧方保留金额',
                                       zero: true),
@@ -1524,7 +1641,7 @@ class _ProjectAgreementState extends CommunityPageState<_ProjectAgreement> {
         ...feedback,
         ...switch (widget.view) {
           'agreement' => agreementView(),
-          'new' || 'amend' => formView(),
+          'new' || 'amend' || 'recast' => formView(),
           'revision' => revisionView(),
           _ => listView()
         },

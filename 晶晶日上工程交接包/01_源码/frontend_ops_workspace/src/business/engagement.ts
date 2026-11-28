@@ -39,7 +39,7 @@ op('reward-review','独立审核真实奖励库存','/engagement/reward-stock/:r
 op('competition','按已定榜单与库存登记冠军活动','/engagement/competitions',[text('title','活动名称',160),id('snapshot_id','已核定榜单快照'),id('reward_stock_id','已审真实奖励库存'),date('starts_at','投票开始'),date('ends_at','投票结束'),date('appeal_until','申诉截止'),group('rules','活动计分与平票规则',[integer('official_bps','独立评判权重（万分比）',0,10000),integer('ranking_bps','原榜单权重（万分比）',0,10000),integer('vote_bps','已核实票数权重（万分比）',0,10000),integer('vote_cost','每票所需晶钻',1,100000),integer('daily_cap','每人每日上限',1,100),fixed('tie_mode','平票处理','MANUAL_REVIEW'),fixed('void_point_policy','风险票晶钻处理','HOLD_FOR_APPEAL')])],'none',false,['reviews']),
 op('competition-review','独立审核活动规则','/engagement/competitions/:record_id/review',review(),'none',true,['reviews']),
 op('candidate-review','独立核验本次候选资格','/engagement/candidates/:record_id/review',review(),'none',true,['reviews']),
-op('judge','独立记录真实评判','/engagement/judgments',[id('candidate_id','本期候选人'),integer('realism','真实度',1,5),integer('fit','适配度',1,5),integer('completeness','完成度',1,5),reason()],'none',false,['reviews']),
+op('judge','独立记录真实评判','/engagement/judgments',[id('candidate_id','本期候选人'),integer('realism','真实度（0—100分）',0,100),integer('fit','适配度（0—100分）',0,100),integer('completeness','完成度（0—100分）',0,100),reason()],'none',false,['reviews']),
 op('vote-review','独立核对原投票风险','/engagement/votes/:record_id/review',[select('decision','真实核对结果',[['SUSPEND','暂停计票待申诉'],['VOID','核定无效'],['RESTORE','核定恢复'],['RETURN_POINTS','按原记录返还晶钻']]),reason()],'none',true,['reviews']),
 op('appeal-resolve','独立处理本次申诉','/engagement/appeals/:record_id/resolve',[reason()],'none',true,['reviews']),
 op('tie','提出平票处理依据','/engagement/tie-reviews',[id('event_id','本期活动'),id('candidate_id','建议获奖候选人'),reason()],'none',false,['reviews']),

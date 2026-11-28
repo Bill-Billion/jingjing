@@ -60,6 +60,7 @@ String privacyStatus(Object? value) =>
       'RETRY': '等待服务重试',
       'SUCCEEDED': '本项处理已核实',
       'FAILED': '本项处理失败，待工作人员核对',
+      'BLOCKED': '处理服务受阻，待工作人员核对原请求',
       'DEAD': '本项处理失败，待工作人员核对',
     }[value] ??
     '状态待核对';
@@ -71,6 +72,17 @@ String privacyTargetLabel(Object? action) => switch (action) {
       'RESTRICT_CONTENT' || 'RELEASE_CONTENT' => '一项作品内容（作品名称与限制范围待核对）',
       _ => '具体对象待核对',
     };
+
+String privacyModelState(Object? state) =>
+    const {
+      'READY': '模型可用',
+      'DELETE_REQUIRED': '授权已撤回，待办理模型删除',
+      'DELETING': '删除处理中，等待供应商结果',
+      'DELETED': '该模型已确认删除',
+      'MODEL_REGISTERED': '模型已登记',
+      'WITHDRAWN': '已撤回',
+    }[state] ??
+    communityState(state);
 
 class PrivacyPage extends StatelessWidget {
   const PrivacyPage({super.key, this.view = 'requests', this.recordId});
@@ -728,28 +740,27 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         version: preferenceVersion,
         method: 'PATCH',
         account: true,
-        reload: false,
-        validate: (r) {
-          communityRequire(r['object_version'] is int &&
-              r['personalization'] == body['personalization'] &&
-              r['marketing'] == body['marketing'] &&
-              r['rest_reminder_minutes'] == body['rest_reminder_minutes']);
-          for (final field in ['push_enabled', 'night_reminder_enabled']) {
-            if (body.containsKey(field)) {
-              communityRequire(r[field] is bool && r[field] == body[field]);
-            }
-          }
-          if (body.containsKey('quiet_hours')) {
-            final expected = communityMap(body['quiet_hours']);
-            final actual = communityMap(r['quiet_hours']);
-            communityRequire(actual['enabled'] is bool &&
-                actual['start_minute'] is int &&
-                actual['end_minute'] is int &&
-                actual['enabled'] == expected['enabled'] &&
-                actual['start_minute'] == expected['start_minute'] &&
-                actual['end_minute'] == expected['end_minute']);
-          }
-        });
+        reload: false, validate: (r) {
+      communityRequire(r['object_version'] is int &&
+          r['personalization'] == body['personalization'] &&
+          r['marketing'] == body['marketing'] &&
+          r['rest_reminder_minutes'] == body['rest_reminder_minutes']);
+      for (final field in ['push_enabled', 'night_reminder_enabled']) {
+        if (body.containsKey(field)) {
+          communityRequire(r[field] is bool && r[field] == body[field]);
+        }
+      }
+      if (body.containsKey('quiet_hours')) {
+        final expected = communityMap(body['quiet_hours']);
+        final actual = communityMap(r['quiet_hours']);
+        communityRequire(actual['enabled'] is bool &&
+            actual['start_minute'] is int &&
+            actual['end_minute'] is int &&
+            actual['enabled'] == expected['enabled'] &&
+            actual['start_minute'] == expected['start_minute'] &&
+            actual['end_minute'] == expected['end_minute']);
+      }
+    });
     if (r != null && mounted) {
       loadedPreferences = false;
       await load();
@@ -758,7 +769,8 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
 
   Widget _quietTimeField(TextEditingController controller, String label) {
     final parsed = int.tryParse(controller.text);
-    final value = parsed != null && parsed >= 0 && parsed < 1440 ? parsed : null;
+    final value =
+        parsed != null && parsed >= 0 && parsed < 1440 ? parsed : null;
     final text = value == null
         ? '请选择时间'
         : '${(value ~/ 60).toString().padLeft(2, '0')}:${(value % 60).toString().padLeft(2, '0')}';
@@ -768,18 +780,28 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         subtitle: Text(text),
         trailing: const Icon(Icons.schedule),
         enabled: enabled,
-        onTap: !enabled ? null : () async {
-          final epoch = widget.session.epoch, currentTicket = ticket;
-          final picked = await showTimePicker(
-              context: context,
-              initialTime: TimeOfDay(hour: (value ?? 0) ~/ 60, minute: (value ?? 0) % 60),
-              builder: (context, child) => MediaQuery(
-                  data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
-                  child: child!));
-          if (!mounted || picked == null || !enabled ||
-              widget.session.epoch != epoch || ticket != currentTicket) return;
-          setState(() => controller.text = '${picked.hour * 60 + picked.minute}');
-        });
+        onTap: !enabled
+            ? null
+            : () async {
+                final epoch = widget.session.epoch, currentTicket = ticket;
+                final picked = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay(
+                        hour: (value ?? 0) ~/ 60, minute: (value ?? 0) % 60),
+                    builder: (context, child) => MediaQuery(
+                        data: MediaQuery.of(context)
+                            .copyWith(alwaysUse24HourFormat: true),
+                        child: child!));
+                if (!mounted ||
+                    picked == null ||
+                    !enabled ||
+                    widget.session.epoch != epoch ||
+                    ticket != currentTicket) {
+                  return;
+                }
+                setState(() =>
+                    controller.text = '${picked.hour * 60 + picked.minute}');
+              });
   }
 
   List<Widget> preferenceView() => [
@@ -809,7 +831,6 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           _quietTimeField(quietEnd, '夜间结束（北京时间）'),
           const Text('按北京时间保存，起止不能相同；开始晚于结束表示跨午夜。'),
         ],
-
         if (remotePreferences?['marketing'] == true)
           tradeButton(
               '关闭营销通知',
@@ -1078,7 +1099,8 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
         SelectableText('${r['id']}', style: const TextStyle(fontSize: 12)),
         const SizedBox(height: 12),
         const Text('审核答复与实际执行分别记录。请继续查看下方处理方案、期限及执行结果。',
-            style: TextStyle(fontSize: 13, color: AccountTheme.muted, height: 1.6)),
+            style: TextStyle(
+                fontSize: 13, color: AccountTheme.muted, height: 1.6)),
       ]),
       communityFact('申请范围',
           (q['scopes'] as List).map((s) => privacyScopes[s] ?? s).join('、')),
@@ -1320,6 +1342,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                   'ACCOUNT_DISPLAY_NAME_UPDATED': '展示名已更新，历史记录不改',
                   'ACCOUNT_ACCESS_CLOSED': '账号访问已关闭',
                   'FILE_ACCESS_REMOVED': '当前文件访问已停止',
+                  'CURRENT_OBJECT_ABSENT': '当前存储对象已确认不可读',
                   'CONTENT_RESTRICTED': '指定内容已受限制',
                   'ONE_RESTRICTION_RELEASED': '已解除指定一项限制'
                 }[d['effect']] ??
@@ -1342,8 +1365,8 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
           appNotice('此列表只覆盖已登记的制作模型和创建任务，空列表不代表本人没有其他资料或供应商副本。'),
           for (final x in models)
             communitySection('本人模型 ${communityShort(x['asset_id'])}', [
-              communityFact('模型进展', communityState(x['asset_status'])),
-              communityFact('所用授权', communityState(x['consent_status'])),
+              communityFact('模型进展', privacyModelState(x['asset_status'])),
+              communityFact('所用授权', privacyModelState(x['consent_status'])),
               communityField(why, '撤回授权的明确原因', lines: 2, enabled: enabled),
               tradeButton(
                   '撤回这份本人授权',
@@ -1387,11 +1410,11 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
             ]),
           for (final x in creations)
             communitySection('本人创建任务', [
-              communityFact(
-                  '任务进展', communityState(x['current_status'] ?? x['status'])),
+              communityFact('任务进展',
+                  privacyModelState(x['current_status'] ?? x['status'])),
               communityFact('后台进展', communityState(x['job_status'])),
               if (x['consent_id'] != null)
-                communityFact('所用授权', communityState(x['consent_status']))
+                communityFact('所用授权', privacyModelState(x['consent_status']))
             ]),
           for (final x in actions)
             communityFact(

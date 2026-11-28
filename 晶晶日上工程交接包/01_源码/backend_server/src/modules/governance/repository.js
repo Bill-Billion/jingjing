@@ -57,6 +57,20 @@ function createGovernanceRepository(db, {resolvePrincipal=async()=>null, authori
     if(value.id!==row.id)throw error('STORED_CONTENT_MISMATCH',503);
     return value;
   }
+  async function readPartySnapshot(tx,context,input) {
+    shape(input,['snapshot_id','party_id']);
+    id(input.snapshot_id);
+    id(input.party_id);
+    const a=await actor(tx,context);
+    const membership=await one(tx,`SELECT p.kind,p.personal_account_id,p.current_status AS party_status,
+      m.current_status AS membership_status,m.role_code
+      FROM parties p JOIN party_memberships m ON m.party_id=p.id
+      WHERE p.id=? AND m.account_id=? FOR SHARE`,[input.party_id,a.account_id]);
+    if(!membership||membership.membership_status!=='ACTIVE'||['SUSPENDED','CLOSED'].includes(membership.party_status))throw error('SNAPSHOT_NOT_FOUND',404);
+    const value=await snapshot(tx,a,input.snapshot_id);
+    if(!value.party_ids.includes(input.party_id))throw error('SNAPSHOT_NOT_FOUND',404);
+    return {value,a,membership};
+  }
   return Object.freeze({
     async createSource(context,input) {
       input=JSON.parse(content.canonical(input));shape(input,['content','operation_key']);
@@ -201,18 +215,9 @@ function createGovernanceRepository(db, {resolvePrincipal=async()=>null, authori
     async readSnapshot(context,snapshotId) {
       return db.withTransaction(async tx=>snapshot(tx,await actor(tx,context),snapshotId));
     },
+    readPartySnapshot,
     async readSnapshotForParty(context,input) {
-      shape(input,['snapshot_id','party_id']);id(input.snapshot_id);id(input.party_id);
-      return db.withTransaction(async tx=>{
-        const a=await actor(tx,context);
-        const membership=await one(tx,`SELECT p.current_status AS party_status,m.current_status AS membership_status
-          FROM parties p JOIN party_memberships m ON m.party_id=p.id
-          WHERE p.id=? AND m.account_id=? FOR SHARE`,[input.party_id,a.account_id]);
-        if(!membership||membership.membership_status!=='ACTIVE'||['SUSPENDED','CLOSED'].includes(membership.party_status))throw error('SNAPSHOT_NOT_FOUND',404);
-        const value=await snapshot(tx,a,input.snapshot_id);
-        if(!value.party_ids.includes(input.party_id))throw error('SNAPSHOT_NOT_FOUND',404);
-        return value;
-      });
+      return db.withTransaction(async tx=>(await readPartySnapshot(tx,context,input)).value);
     },
   });
 }

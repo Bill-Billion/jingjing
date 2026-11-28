@@ -193,7 +193,9 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
     if (sourceBusy ||
         !enabled ||
         checking ||
-        widget.guardian && guardianLink == null) return;
+        widget.guardian && guardianLink == null) {
+      return;
+    }
     final epoch = session.epoch,
         sourceTicket = ticket,
         before = more ? rechargeCursor : null;
@@ -223,7 +225,9 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
         if (!mounted ||
             epoch != session.epoch ||
             sourceTicket != ticket ||
-            link != guardianLink) return;
+            link != guardianLink) {
+          return;
+        }
         communityRequire(page['guardian_link_id'] == link &&
             communityId(page['child_party_id']));
         final next = page['next_cursor'], items = communityItems(page);
@@ -259,8 +263,9 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
         rechargeCursor = page.cursor;
       });
     } catch (e) {
-      if (mounted && epoch == session.epoch && sourceTicket == ticket)
+      if (mounted && epoch == session.epoch && sourceTicket == ticket) {
         setState(() => fail(e));
+      }
     } finally {
       if (mounted) setState(() => sourceBusy = false);
     }
@@ -293,26 +298,30 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
       // The list is a minimal index. Identity/child fields belong to the
       // permission-checked detail and must not be inferred from a list item.
       final links = <Map<String, dynamic>>[];
-      for (final item in communityItems(page).where((r) =>
-          r['kind'] == 'LINK' && r['current_status'] == 'ACTIVE')) {
+      for (final item in communityItems(page).where(
+          (r) => r['kind'] == 'LINK' && r['current_status'] == 'ACTIVE')) {
         communityRequire(communityId(item['id']));
         final link = await CommunityApi(session, 'guardians')
             .read('records/${item['id']}', account: true);
         if (!mounted || epoch != session.epoch || t != ticket) return;
         communityRequire(link['id'] == item['id'] && link['kind'] == 'LINK');
         if (link['guardian_account_id'] == session.account?['id'] &&
-            link['current_status'] == 'ACTIVE') links.add(link);
+            link['current_status'] == 'ACTIVE') {
+          links.add(link);
+        }
       }
-      for (final r in links)
+      for (final r in links) {
         communityRequire(
             communityId(r['id']) && communityId(r['child_account_id']));
+      }
       setState(() {
         guardianLinks = [...guardianLinks, ...links];
         linkCursor = next;
       });
     } catch (e) {
-      if (mounted && epoch == session.epoch && t == ticket)
+      if (mounted && epoch == session.epoch && t == ticket) {
         setState(() => fail(e));
+      }
     } finally {
       if (mounted) setState(() => sourceBusy = false);
     }
@@ -323,10 +332,11 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
     final suffix = recoverySuffix ?? '';
     final match = RegExp(r'^recharge-refunds/([0-9a-fA-F-]{36})/cancellation$')
         .firstMatch(suffix);
-    if (match != null)
+    if (match != null) {
       id = match[1];
-    else if (suffix != api.collection)
+    } else if (suffix != api.collection) {
       throw const AccountError(400, 'INVALID_ACTION');
+    }
     await load();
   }
 
@@ -346,16 +356,19 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
           .owner(); // Evidence is uploaded under the guardian's own personal party.
       final source =
           refundSources.firstWhere((r) => r['id'] == selectedRecharge);
-      if (widget.guardian)
+      if (widget.guardian) {
         communityRequire(communityId(guardianLink) && communityId(childParty));
+      }
       final money = communityMinor(amount.text, '申请退款金额');
       final data = source;
       communityRequire(
           data['amount_minor'] is int && data['refunded_minor'] is int);
-      if (money > data['amount_minor'] - data['refunded_minor'])
+      if (money > data['amount_minor'] - data['refunded_minor']) {
         throw const AccountError(400, '申请金额超过本次读取的充值未退款金额');
-      if (evidence.isEmpty || evidence.length > 20)
+      }
+      if (evidence.isEmpty || evidence.length > 20) {
         throw const AccountError(400, '请上传1至20份退款依据');
+      }
       final result = await act(
           api.collection,
           {
@@ -380,8 +393,9 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
         await load();
       }
     } catch (e) {
-      if (mounted && epoch == session.epoch)
+      if (mounted && epoch == session.epoch) {
         setState(() => error = communityError(e));
+      }
     }
   }
 
@@ -408,15 +422,18 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
         !enabled ||
         checking ||
         record?['id'] != r['id'] ||
-        record?['object_version'] != r['object_version']) return;
+        record?['object_version'] != r['object_version']) {
+      return;
+    }
     try {
       await act('recharge-refunds/${r['id']}/cancellation',
           {'reason': communityRequired(cancellation.text, '取消原因', max: 2000)},
           version: r['object_version'],
           validate: (value) => communityRequire(value['id'] == r['id']));
     } catch (e) {
-      if (mounted && epoch == session.epoch)
+      if (mounted && epoch == session.epoch) {
         setState(() => error = communityError(e));
+      }
     }
   }
 
@@ -464,22 +481,27 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
               const Text('以监护人本人的身份申请。先选择有效监护关系，再读取该子女的原充值；证明须使用监护人自己的个人身份上传。'),
               tradeButton('读取本人的有效监护关系', locked ? null : readGuardianLinks,
                   outline: true),
-              for (final link in guardianLinks)
-                RadioListTile<String>(
-                    value: link['id'],
-                    groupValue: guardianLink,
-                    title: Text(
-                        '${communityMap(link['data'])['relationship']} · 子女 ${communityShort(link['child_account_id'])}'),
-                    onChanged: locked
-                        ? null
-                        : (v) => setState(() {
-                              guardianLink = v;
-                              childParty = null;
-                              guardianRecharges = [];
-                              rechargeCursor = null;
-                              selectedRecharge = null;
-                              agreed = false;
-                            })),
+              RadioGroup<String>(
+                  groupValue: guardianLink,
+                  onChanged: (value) {
+                    if (locked || value == null) return;
+                    setState(() {
+                      guardianLink = value;
+                      childParty = null;
+                      guardianRecharges = [];
+                      rechargeCursor = null;
+                      selectedRecharge = null;
+                      agreed = false;
+                    });
+                  },
+                  child: Column(children: [
+                    for (final link in guardianLinks)
+                      RadioListTile<String>(
+                          value: link['id'],
+                          enabled: !locked,
+                          title: Text(
+                              '${communityMap(link['data'])['relationship']} · 子女 ${communityShort(link['child_account_id'])}')),
+                  ])),
               if (linkCursor != null)
                 tradeButton('继续读取监护关系',
                     locked ? null : () => readGuardianLinks(more: true),
@@ -500,20 +522,24 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
                       ? null
                       : () => sources(),
                   outline: true),
-              for (final source in refundSources)
-                RadioListTile<String>(
-                    value: source['id'],
-                    groupValue: selectedRecharge,
-                    title: Text(
-                        '${communityMoney(source['amount_minor'])} · ${source['id']}'),
-                    subtitle:
-                        Text('已退款 ${communityMoney(source['refunded_minor'])}'),
-                    onChanged: locked
-                        ? null
-                        : (v) => setState(() {
-                              selectedRecharge = v;
-                              agreed = false;
-                            })),
+              RadioGroup<String>(
+                  groupValue: selectedRecharge,
+                  onChanged: (value) {
+                    if (locked || value == null) return;
+                    setState(() {
+                      selectedRecharge = value;
+                      agreed = false;
+                    });
+                  },
+                  child: Column(children: [
+                    for (final source in refundSources)
+                      RadioListTile<String>(
+                          value: source['id'],
+                          enabled: !locked,
+                          title: Text(
+                              '${communityMoney(source['amount_minor'])} · ${source['id']}'),
+                          subtitle: Text('已退款 ${communityMoney(source['refunded_minor'])}')),
+                  ])),
               if (rechargeCursor != null)
                 tradeButton('继续读取充值', locked ? null : () => sources(more: true),
                     outline: true),
@@ -571,7 +597,10 @@ class _RefundState extends CommunityPageState<_RefundScreen> {
                 if (!widget.guardian &&
                     ['IN_REVIEW', 'APPROVED']
                         .contains(r['current_status'])) ...[
-                  communityField(cancellation, '取消原因', enabled: !locked),
+                  Semantics(
+                      container: true,
+                      child: communityField(cancellation, '取消原因',
+                          enabled: !locked)),
                   tradeButton('取消未发送的申请', locked ? null : cancelRefund,
                       outline: true),
                 ],

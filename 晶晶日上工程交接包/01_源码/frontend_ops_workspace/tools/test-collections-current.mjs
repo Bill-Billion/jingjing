@@ -1,0 +1,24 @@
+import assert from 'node:assert/strict'
+import {fileURLToPath} from 'node:url'
+import {createServer} from 'vite'
+import vue from '@vitejs/plugin-vue'
+import {createSSRApp,h} from 'vue'
+import {renderToString} from '@vue/server-renderer'
+import {createPinia} from 'pinia'
+import {createMemoryHistory,createRouter,RouterView} from 'vue-router'
+const root=fileURLToPath(new URL('..',import.meta.url)),server=await createServer({root,configFile:false,plugins:[vue()],resolve:{alias:{'@':root+'/src'}},server:{middlewareMode:true,hmr:false},appType:'custom'})
+const old={fetch:globalThis.fetch,window:globalThis.window,storage:Object.getOwnPropertyDescriptor(globalThis,'sessionStorage')}
+Object.defineProperty(globalThis,'sessionStorage',{configurable:true,value:{getItem:()=>null,setItem:()=>{},removeItem:()=>{}}});globalThis.window={addEventListener(){},removeEventListener(){},confirm:()=>true}
+const id=n=>String(n).padStart(8,'0')+'-0000-4000-8000-000000000001',account=id(1),response=data=>new Response(JSON.stringify({meta:{request_id:'synthetic-private-list',actor:{account_id:account},acting_party:null},data}),{headers:{'Content-Type':'application/json'}}),failure=(status,code)=>new Response(JSON.stringify({error:{code,message:'synthetic failure'}}),{status,headers:{'Content-Type':'application/json'}})
+const prefs={history_enabled:true,object_version:2,history_days:30,history_max_entries:200},entry=n=>({kind:'NOTICE',target_id:id(n),recorded_at:'2026-11-25T00:00:00.000Z',availability:'AVAILABLE',title:'Private remembered title '+n,city:'北京市'})
+const tests=[],test=(name,run)=>tests.push({name,run})
+try{
+ const {default:View}=await server.ssrLoadModule('/src/views/CollectionsView.vue'),{useSessionStore}=await server.ssrLoadModule('/src/stores/session.ts')
+ async function view(section){const router=createRouter({history:createMemoryHistory(),routes:[{path:'/me/collections/:section',component:View},{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push('/me/collections/'+section);await router.isReady();const pinia=createPinia(),session=useSessionStore(pinia);session.token='synthetic-collections-token';session.account={id:account,display_name:'Synthetic account',current_status:'ACTIVE'};let vm;const app=createSSRApp({render:()=>h(RouterView)}).use(pinia).use(router);app.mixin({created(){if(this.$options.__name==='CollectionsView')vm=this.$.setupState}});await renderToString(app);assert(vm);return vm}
+ async function loaded(section){let deny=null,finish=null;globalThis.fetch=async(url,o)=>{assert.equal(o.headers['X-Acting-Party'],undefined);if(String(url).endsWith('/preferences'))return response(prefs);const cursor=new URL(String(url),'http://local').searchParams.get('cursor');if(cursor){if(deny)return failure(deny.status,deny.code);if(finish)return new Promise(r=>finish(r));return response({items:[entry(11)],next_cursor:null})}return response({items:[entry(10)],next_cursor:'original-cursor'})};const vm=await view(section);await vm.load();assert.equal(vm.items.length,1);return {vm,deny(value){deny=value},hold(fn){finish=fn}}}
+ test('another client clears history: invalid original cursor removes retained titles and pagination',async()=>{const {vm,deny}=await loaded('history');assert.equal(vm.history,true);deny({status:400,code:'INVALID_CURSOR'});await vm.load(true);assert.deepEqual(vm.items,[]);assert.equal(vm.cursor,null);assert.equal(vm.error.code,'INVALID_CURSOR')})
+ for(const [status,code]of [[401,'AUTHENTICATION_REQUIRED'],[403,'ACCESS_DENIED']])test('lost account access '+status+' clears already loaded private favorites',async()=>{const {vm,deny}=await loaded('favorites');deny({status,code});await vm.load(true);assert.deepEqual(vm.items,[]);assert.equal(vm.cursor,null)})
+ test('normal continuation retains the original page and appends the next item',async()=>{const {vm}=await loaded('history');await vm.load(true);assert.deepEqual(vm.items.map(x=>x.target_id),[id(10),id(11)]);assert.equal(vm.cursor,null)})
+ test('a late list response after local reset cannot restore private titles',async()=>{const {vm,hold}=await loaded('favorites');let finish;hold(r=>{finish=r});const pending=vm.load(true);for(let n=0;n<20&&!finish;n++)await new Promise(r=>setTimeout(r,0));assert(finish);vm.reset();finish(response({items:[entry(11)],next_cursor:null}));await pending;assert.deepEqual(vm.items,[]);assert.equal(vm.cursor,null)})
+ let failed=0;for(const {name,run}of tests){try{await run();console.log('PASS '+name)}catch(e){failed++;console.error('FAIL '+name+'\n'+e.stack)}}console.log(JSON.stringify({tests:tests.length,passed:tests.length-failed,failed}));if(failed)process.exitCode=1
+}finally{globalThis.fetch=old.fetch;if(old.window===undefined)delete globalThis.window;else globalThis.window=old.window;if(old.storage)Object.defineProperty(globalThis,'sessionStorage',old.storage);else delete globalThis.sessionStorage;await server.close()}

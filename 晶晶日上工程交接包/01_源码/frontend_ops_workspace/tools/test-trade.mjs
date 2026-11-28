@@ -7,6 +7,7 @@ import { renderToString } from '@vue/server-renderer'
 import { createPinia } from 'pinia'
 import { createMemoryHistory, createRouter, RouterView } from 'vue-router'
 const root=fileURLToPath(new URL('..',import.meta.url)),server=await createServer({root,configFile:false,plugins:[vue()],resolve:{alias:{'@':`${root}/src`}},server:{middlewareMode:true},appType:'custom'})
+const priorStorage=Object.getOwnPropertyDescriptor(globalThis,'sessionStorage'),storage=new Map();Object.defineProperty(globalThis,'sessionStorage',{configurable:true,value:{getItem:k=>storage.get(k)??null,setItem:(k,v)=>storage.set(k,String(v)),removeItem:k=>storage.delete(k)}})
 const originalFetch=globalThis.fetch,id=n=>`${String(n).padStart(8,'0')}-0000-4000-8000-000000000001`,who={token:'trade-private',accountId:id(1),partyId:id(2)},reviewer={...who,partyId:null},hash='a'.repeat(64),stamp='2026-10-02T00:00:00.000Z',end='2027-10-02T00:00:00.000Z'
 const review=()=>({decision:'APPROVED',reason:'明确审核依据',account_id:id(4)})
 const specification=()=>({version:'原版本',service_tier:'明确档位',sample_seconds:30,final_seconds:120,revision_limit:2,deliverables:['已约定交付'],terms:'保存的旧条款 <script>literal</script>'})
@@ -26,7 +27,7 @@ const defer=()=>{let resolve;const promise=new Promise(r=>resolve=r);return {pro
 const tests=[],test=(name,run)=>tests.push({name,run})
 try{
  const api=await server.ssrLoadModule('/src/api/modules/trade.ts'),{useTrade}=await server.ssrLoadModule('/src/composables/useTrade.ts'),{loginRedirect}=await server.ssrLoadModule('/src/router/loginRedirect.ts'),{tradeRoutes}=await server.ssrLoadModule('/src/router/tradeRoutes.ts')
- const state=(admin=false)=>{const context=reactive({...admin?reviewer:who,revision:0,scope:'trade'}),scope=effectScope(),ui=scope.run(()=>useTrade(()=>context));return {ui,context,scope}}
+ const state=(admin=false,preserve=false)=>{if(!preserve)storage.clear();const context=reactive({...admin?reviewer:who,revision:0,scope:'trade'}),scope=effectScope(),ui=scope.run(()=>useTrade(()=>context));return {ui,context,scope}}
  const command=()=>({path:'/trade/payments',body:{order_id:id(12),installment_key:'首期'},resultKind:'PAYMENT',label:'建立本期付款记录'})
  test('实DTO包含六类记录；拒绝错误金额、币种、规格和款项计算',async()=>{for(const f of [spec,quote,order,payment,refund,legacy])assert.ok(api.isTradeRecord(f()));for(const change of [r=>r.data.amount_minor=0.01,r=>r.data.currency='USD',r=>r.data.allocations[0].amount_minor=1,r=>r.data.checkout={kind:'WEB_READY'}]){const p=payment();change(p);assert.equal(api.isTradeRecord(p),false)}const q=quote();q.data.lines[0].specification.deliverables=Array.from({length:31},(_,n)=>`d${n}`);assert.equal(api.isTradeRecord(q),false);const o=order();o.data.financial.net_minor=1;assert.equal(api.isTradeRecord(o),false)})
  test('测试环境渠道回执明确不代表真实资金到账',async()=>{const {default:Panel}=await server.ssrLoadModule('/src/components/TradeRecordPanel.vue'),p=payment();p.data.environment='SANDBOX';const html=await renderToString(createSSRApp({render:()=>h(Panel,{record:p})}));assert.match(html,/测试环境.*不代表真实资金到账/);p.data.environment='PRODUCTION';const production=await renderToString(createSSRApp({render:()=>h(Panel,{record:p})}));assert(!production.includes('测试环境中的付款记录，不代表真实资金到账'))})
@@ -85,5 +86,29 @@ try{
  test('原数字人服务报价只选择匹配商品，固定数量及一次付款，客户主体仍明确填写',async()=>{
   const {default:Form}=await server.ssrLoadModule('/src/components/TradeQuoteForm.vue'),q=serviceQuote(),source={id:id(71),person_id:id(72),avatar_id:id(73),current_status:'REQUESTED',data:{kind:'AVATAR_HOSTING',spec_id:id(10),specification:q.data.artist_service.specification,price_minor:8700,currency:'CNY'}},good=spec();good.data=q.data.lines[0];const wrong=spec();wrong.id=id(44);wrong.data.title='不相干商品';const router=createRouter({history:createMemoryHistory(),routes:[{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push('/trade/quotes/new');await router.isReady();const html=await renderToString(createSSRApp({render:()=>h(Form,{disabled:false,specs:[good,wrong],artistService:source})}).use(router));assert.ok(html.includes('trade-artist-request'));assert.equal(html.includes('不相干商品'),false);assert.equal(html.includes('关联已确认商单提案'),false);assert.match(html,/<input[^>]*readonly[^>]*data-testid="trade-quote-quantity-0"/);const buyer=html.match(/<input[^>]*data-testid="trade-quote-buyer"[^>]*>/)[0];assert.ok(buyer.includes('value=""'));assert.equal(buyer.includes('readonly'),false)
  })
+
+ test('刷新后保留原退款请求；账号、主体、路由隔离，先GET再原key/body/version恢复',async()=>{
+  const calls=[];let posts=0;globalThis.fetch=async(url,o)=>{calls.push({url,o});return o.method==='POST'?++posts===1?failure(503,'SERVICE_UNAVAILABLE'):response(refund()):response(refund())}
+  const first=state(),c={path:`/trade/refunds/${id(14)}/reconciliation`,body:{reason:'原请求'},version:7,targetId:id(14),resultKind:'REFUND',label:'核对退款'};
+  await first.ui.write(c);const key=first.ui.pending.value.key;first.scope.stop();assert(![...storage.values()].join('').includes(who.token));
+  for(const patch of [{accountId:id(99)},{partyId:id(99)},{scope:'other-route'}]){const other=state(false,true);Object.assign(other.context,patch);other.ui.restorePending();assert.equal(other.ui.pending.value,null);other.scope.stop()}
+  const next=state(false,true);next.context.token='new-authenticated-session';let completed=null;assert(next.ui.restorePending(r=>completed=r.id));assert.equal(next.ui.pending.value.key,key);assert.equal(next.ui.pending.value.checked,false);
+  await next.ui.write({...c,body:{reason:'不能替代原请求'}});await next.ui.retry();assert.equal(posts,1);
+  await next.ui.checkPending();await next.ui.retry();assert.equal(posts,2);assert.equal(completed,id(14));assert.equal(next.ui.pending.value,null);assert.equal(storage.size,0);
+  const writes=calls.filter(c=>c.o.method==='POST');assert.equal(writes[0].o.headers['Idempotency-Key'],writes[1].o.headers['Idempotency-Key']);assert.equal(writes[0].o.headers['If-Match'],writes[1].o.headers['If-Match']);assert.equal(writes[0].o.body,writes[1].o.body);assert.equal(calls[1].o.method,'GET');next.scope.stop()
+ })
+ test('POST已确认但最新读取失败，刷新后只GET原结果，不重发付款',async()=>{
+  let posts=0,gets=0;globalThis.fetch=async(_url,o)=>o.method==='POST'?(posts++,response(payment())):++gets===1?failure(503,'SERVICE_UNAVAILABLE'):response(payment());
+  const first=state();await first.ui.write(command());assert.equal(first.ui.pending.value.resultId,id(13));first.scope.stop();const next=state(false,true);next.ui.restorePending();await next.ui.checkPending();assert.equal(posts,1);assert.equal(gets,2);assert.equal(next.ui.pending.value,null);assert.equal(storage.size,0);next.scope.stop()
+ })
+ test('未知请求恢复遇409不当作原操作失败；撤权读取拒绝不得重发',async()=>{
+  let posts=0,deny=false;globalThis.fetch=async(_url,o)=>o.method==='POST'?(++posts===1?failure(503,'SERVICE_UNAVAILABLE'):failure(409,'STATE_CHANGED')):deny?failure(403,'FORBIDDEN'):response(refund());
+  const first=state(),c={path:`/trade/refunds/${id(14)}/reconciliation`,body:{},targetId:id(14),resultKind:'REFUND',label:'核对'};await first.ui.write(c);const key=first.ui.pending.value.key;await first.ui.checkPending();await first.ui.retry();assert.equal(first.ui.pending.value.key,key);assert.equal(posts,2);first.scope.stop();
+  const next=state(false,true);next.ui.restorePending();deny=true;await next.ui.checkPending();await next.ui.retry();assert.equal(posts,2);assert.equal(next.ui.detail.value,null);assert.equal(next.ui.pending.value,null);assert.equal(next.ui.error.value.status,403);assert(storage.size>0);next.scope.stop()
+ })
+ test('保存失败或损坏的原请求拒绝新POST；明确注销清除恢复资料',async()=>{
+  let posts=0;globalThis.fetch=async()=>{posts++;return response(payment())};const first=state(),original=globalThis.sessionStorage.setItem;globalThis.sessionStorage.setItem=()=>{throw Error('quota')};try{await first.ui.write(command());assert.equal(posts,0);assert.equal(first.ui.error.value.code,'CLIENT_RECOVERY_STORAGE_UNAVAILABLE')}finally{globalThis.sessionStorage.setItem=original;first.scope.stop()}
+  const next=state();storage.set('ops.service.commands','broken-json');await next.ui.write(command());assert.equal(posts,0);assert.equal(next.ui.error.value.code,'CLIENT_RECOVERY_STORAGE_UNAVAILABLE');const {clearSavedWrites}=await server.ssrLoadModule('/src/api/pendingWrites.ts');clearSavedWrites();assert.equal(storage.size,0);next.scope.stop()
+ })
  for(const {name,run}of tests){await run();console.log(`✓ ${name}`)}console.log(`\n${tests.length} trade checks passed.`)
-}finally{globalThis.fetch=originalFetch;await server.close()}
+}finally{globalThis.fetch=originalFetch;if(priorStorage)Object.defineProperty(globalThis,'sessionStorage',priorStorage);else delete globalThis.sessionStorage;await server.close()}

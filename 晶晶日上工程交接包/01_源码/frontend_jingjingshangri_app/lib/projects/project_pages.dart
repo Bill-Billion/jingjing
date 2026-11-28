@@ -530,16 +530,6 @@ class _RecordState extends State<_Record> {
                     r)
               ]
             ]),
-        if (record?.kind == 'CANDIDATE' &&
-            record?.owner == api.owner() &&
-            record?.status == 'CONFIRMED')
-          tradeButton(
-              '提出本人参演约定',
-              locked
-                  ? null
-                  : () => open(
-                      '/projects/participation?view=new&recordId=${record!.id}'),
-              outline: true),
         if (p.owner == api.owner()) ...[
           tradeSection('发行办理', [
             for (final r in kinds['RELEASE'] ?? []) ...[
@@ -613,6 +603,16 @@ class _RecordState extends State<_Record> {
           if (r.data['note'] != null) projectParagraph(r.data['note'])
         ]),
         if (r.owner == api.owner()) ...[
+          if (r.status == 'CONFIRMED') ...[
+            tradeButton(
+                '提出本人参演约定',
+                locked ? null : () => open('/projects/participation?view=new&recordId=${r.id}'),
+                outline: true),
+            tradeButton(
+                '基于本角色提出换角新约',
+                locked ? null : () => open('/projects/participation?view=recast&recordId=${r.id}'),
+                outline: true)
+          ],
           if (r.status == 'INVITED')
             tradeButton(
                 '回应邀请',

@@ -122,8 +122,9 @@ void main() {
           'next_cursor': null
         });
       }
-      if (r.path == '/api/v1/stock/seller-eligibility')
+      if (r.path == '/api/v1/stock/seller-eligibility') {
         return envelope(eligibility());
+      }
       if (r.path == '/api/v1/stock/participant-options') {
         return envelope({
           'items': [

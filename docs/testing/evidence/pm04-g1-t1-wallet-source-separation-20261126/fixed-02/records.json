@@ -1,0 +1,1195 @@
+{
+  "synthetic_only": true,
+  "database": "jx_test_qa18_sources_172241d45a7334deb8e4",
+  "started_at": "2026-11-26T12:51:11.550Z",
+  "clock_steps": [
+    {
+      "minutes": 0,
+      "at": "2026-11-24T12:51:11.000Z"
+    },
+    {
+      "minutes": 2,
+      "at": "2026-11-24T12:53:11.000Z"
+    },
+    {
+      "minutes": 4,
+      "at": "2026-11-24T12:55:11.000Z"
+    }
+  ],
+  "checks": [
+    {
+      "label": "same personal account has a reviewed supplier payable and a separately opened consumer wallet",
+      "result": "PASS"
+    },
+    {
+      "label": "reviewed 6000-point coupon and 12000-fen payable do not fund a 13500-fen cash payment",
+      "result": "PASS"
+    },
+    {
+      "label": "one payment consumes exactly two original recharge lots and uses its coupon only on verified receipt",
+      "result": "PASS"
+    },
+    {
+      "label": "partial and remaining order refunds restore only original lots, never cash out the coupon or add supplier payable",
+      "result": "PASS"
+    },
+    {
+      "label": "withdrawal stays disabled while an independently approved mistaken recharge refunds the restored original source",
+      "result": "PASS"
+    },
+    {
+      "label": "another account cannot read any of the four private asset classes or forge balances",
+      "result": "PASS"
+    }
+  ],
+  "stages": [
+    {
+      "label": "four-assets-before-hold",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 6000,
+        "available_balance_minor": 6000,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 6000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "AVAILABLE",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "insufficient-cash-no-asset-conversion",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 6000,
+        "available_balance_minor": 6000,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 6000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "HELD",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "cash-held-from-two-sources",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 14000,
+        "available_balance_minor": 500,
+        "reserved_balance_minor": 13500,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 14000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "HELD",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "pending-payment-retains-hold",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 14000,
+        "available_balance_minor": 500,
+        "reserved_balance_minor": 13500,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 14000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "HELD",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "verified-cash-payment-coupon-used",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 500,
+        "available_balance_minor": 500,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 14000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "USED",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "later-recharge-is-a-separate-source",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 9500,
+        "available_balance_minor": 9500,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 23000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "USED",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "6a5aa688-3e59-4c3c-a4da-ddd29f104c86",
+          "amount_minor": 9000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "unknown-refund-4000",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 9500,
+        "available_balance_minor": 9500,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 23000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "USED",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "6a5aa688-3e59-4c3c-a4da-ddd29f104c86",
+          "amount_minor": 9000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "original-refund-4000",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 13500,
+        "available_balance_minor": 13500,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 23000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "USED",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "6a5aa688-3e59-4c3c-a4da-ddd29f104c86",
+          "amount_minor": 9000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "unknown-refund-9500",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 13500,
+        "available_balance_minor": 13500,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 23000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "USED",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "6a5aa688-3e59-4c3c-a4da-ddd29f104c86",
+          "amount_minor": 9000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "original-refund-13500",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 23000,
+        "available_balance_minor": 23000,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 23000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "USED",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "6a5aa688-3e59-4c3c-a4da-ddd29f104c86",
+          "amount_minor": 9000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "original-recharge-refund-reserved",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 23000,
+        "available_balance_minor": 17000,
+        "reserved_balance_minor": 6000,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 23000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "USED",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "6a5aa688-3e59-4c3c-a4da-ddd29f104c86",
+          "amount_minor": 9000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "original-recharge-refunded-once",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 17000,
+        "available_balance_minor": 17000,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 17000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "USED",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 6000
+        },
+        {
+          "id": "6a5aa688-3e59-4c3c-a4da-ddd29f104c86",
+          "amount_minor": 9000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    },
+    {
+      "label": "final-four-ledgers-still-separated",
+      "wallet": {
+        "account_id": "b847de38-d81b-466b-887d-0aa676aff71d",
+        "rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+        "currency": "CNY",
+        "recorded_balance_minor": 17000,
+        "available_balance_minor": 17000,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 17000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+      "grant_status": "USED",
+      "lots": [
+        {
+          "id": "0b074aba-878d-4b86-b3c1-37ff2097e620",
+          "amount_minor": 6000,
+          "refunded_minor": 6000
+        },
+        {
+          "id": "6a5aa688-3e59-4c3c-a4da-ddd29f104c86",
+          "amount_minor": 9000,
+          "refunded_minor": 0
+        },
+        {
+          "id": "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+          "amount_minor": 8000,
+          "refunded_minor": 0
+        }
+      ]
+    }
+  ],
+  "complete": true,
+  "api_base": "http://127.0.0.1:59255/api/v1",
+  "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+  "income": {
+    "order_id": "b01e1899-8f93-4b3d-9896-29233323a24e",
+    "payment_id": "4a71399c-cff8-4c1c-8f94-93e88ff1ce89",
+    "agreement_id": "e1604ab3-1914-440d-ae36-0b1655c0c617",
+    "settlement_id": "9c87d5d5-ef32-489b-ab2f-66acec669ad7",
+    "supplier_payable_minor": 12000,
+    "paid_minor": 0,
+    "fulfillment": "Not completed; payable is accrued but cannot be paid or spent as wallet cash"
+  },
+  "wallet_rule_id": "24a2d09c-a793-46ae-a1c6-52f5b9f0ef84",
+  "payment_input": {
+    "party_id": "1de1c493-4fcd-491b-a09a-99eed604b278",
+    "order_id": "7986a038-9319-48dd-9a0e-1e122699b28a",
+    "installment_key": "first",
+    "operation_key": "2d150d41-79e6-4f29-a10a-7a1a9e01145a"
+  },
+  "coupon": {
+    "grant_id": "f89159f9-5ca1-4e8a-858e-c5b921467969",
+    "hold_id": "acbe558e-0567-4aeb-a1c4-0573624958f4",
+    "order_id": "7986a038-9319-48dd-9a0e-1e122699b28a"
+  },
+  "payment_id": "59331d4a-5a52-488d-8876-6f4a942b6a97",
+  "spend_id": "0aff2af3-4c49-485d-834a-d76045a45792",
+  "topup_ids": [
+    "0b074aba-878d-4b86-b3c1-37ff2097e620",
+    "7d44bd02-62ee-4fe1-a334-52f0ee50b0ce",
+    "6a5aa688-3e59-4c3c-a4da-ddd29f104c86"
+  ],
+  "order_refund_ids": [
+    "5fc4aaac-09ab-4490-8067-5d776eb2026d",
+    "5ad07a36-20cc-4e99-891c-76655ca45e18"
+  ],
+  "recharge_refund_id": "ec47b735-2852-40be-a7eb-1f3c514e0c7e",
+  "database_removed": true,
+  "services_stopped": true,
+  "finished_at": "2026-11-26T12:51:20.743Z"
+}

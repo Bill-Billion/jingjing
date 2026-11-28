@@ -17,7 +17,7 @@ async function sourceDigest() {
   const prefix = '晶晶日上工程交接包/01_源码/backend_server/';
   const tracked = execFileSync('git',['ls-files','-z','--',prefix+'src',prefix+'migrations/mysql-runtime',prefix+'test/helpers',prefix+'test/support',prefix+'scripts/test-network-guard.cjs',prefix+'package.json',prefix+'package-lock.json'],{cwd:root,windowsHide:true}).toString('utf8').split('\0').filter(Boolean);
   const untracked = execFileSync('git',['ls-files','--others','--exclude-standard','-z','--',prefix+'src'],{cwd:root,windowsHide:true}).toString('utf8').split('\0').filter(Boolean);
-  const files = [...new Set([...tracked,...untracked,'scripts/stock-sandbox.cjs','scripts/test-fixtures/pm03-stock.cjs','scripts/test-fixtures/pm03-batch.cjs','scripts/v5-r05-r12-seed.cjs','scripts/test-fixtures/private-state.cjs','contracts/openapi.yaml'])].sort();
+  const files = [...new Set([...tracked,...untracked,'scripts/stock-sandbox.cjs','scripts/test-fixtures/pm03-stock.cjs','scripts/test-fixtures/pm03-media.cjs','scripts/test-fixtures/pm03-batch.cjs','scripts/test-fixtures/pm03-phone-targets.cjs','scripts/v5-r05-r12-seed.cjs','scripts/test-fixtures/private-state.cjs','contracts/openapi.yaml'])].sort();
   const hash = createHash('sha256');
   for(const file of files) hash.update(file+'\0').update(await fs.readFile(path.join(root,file))).update('\0');
   return hash.digest('hex');
@@ -155,7 +155,7 @@ async function run() {
       await privateJson(path.join(out,'state.json'),state);
     }
     const sms = {call:async(operation,input,context)=>{
-      if(operation !== 'send' || !Object.values(state.accounts).some(u=>u.phone === input.phone)) fail('PM03_UNKNOWN_SYNTHETIC_PHONE');
+      if(operation !== 'send' || !require('./pm03-phone-targets.cjs').allowed(state,input.phone)) fail('PM03_UNKNOWN_SYNTHETIC_PHONE');
       const dest = path.join(out,'sms'); await fs.mkdir(dest,{recursive:true});
       await privateJson(path.join(dest,context.request_id+'.json'),{synthetic_only:true,challenge_id:context.request_id,...input});
       return {accepted:true};
@@ -173,7 +173,14 @@ async function run() {
     // sufficient for their first login; this never changes production defaults.
     const authSettings={sessionMs:duration,...state.mode==='BATCH'?{ipSendsPerHour:100,totalSendsPerHour:200,ipLoginsPerMinute:100}:{}};
     const app = load('src/http/account-api').createAccountApi({db,secret:state.secret,sms,authSettings,supplyStorageFactory:storageAt(out),tradeProvidersFactory:()=>sim,
-      supplyEnv:state.mode==='BATCH'?{MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}:undefined,tradeEnv:state.customization_merchant_party_id?{CUSTOMIZATION_MERCHANT_PARTY_ID:state.customization_merchant_party_id,MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}:undefined,allowedOrigins:origins});
+      supplyEnv:state.mode==='BATCH'?{
+        ...require('./pm03-media.cjs').mediaEnvironment(process.env),
+        NODE_ENV:'test',
+        INVOICE_SANDBOX_ENABLED:'true',
+        MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029',
+        ARTIST_CONTRACT_POLICY:'CONTRACT_20261029',
+        ARTIST_PLATFORM_MERCHANT_PARTY_ID:state.customization_merchant_party_id,
+      }:undefined,tradeEnv:state.customization_merchant_party_id?{CUSTOMIZATION_MERCHANT_PARTY_ID:state.customization_merchant_party_id,MARKETPLACE_CONTRACT_POLICY:'CONTRACT_20261029'}:undefined,allowedOrigins:origins});
     const allowed = /^\/api\/v1\/(auth|me|parties|stock|trade|notices|artists|supply|operations)(\/|$)/;
     server = require('node:http').createServer(async(req,res)=>{
       const error = (status,code) => {res.writeHead(status,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify({error:{code}}));};

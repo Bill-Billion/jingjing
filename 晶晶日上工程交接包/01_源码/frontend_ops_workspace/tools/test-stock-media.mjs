@@ -95,6 +95,41 @@ try {
   for(const [section,detail,count] of cases){const pinia=createPinia(),session=sessionFor(pinia),router=createRouter({history:createMemoryHistory(),routes:[{path:'/stock/:section/:recordId?',component:View,meta:{domain:'stock'}},{path:'/:pathMatch(.*)*',component:{render:()=>null}}]});await router.push(`/stock/${section}${detail?'/'+id(20):''}`);await router.isReady();let vm;const app=createSSRApp({render:()=>h(RouterView)}).use(pinia).use(router);app.mixin({created(){if(this.$options.__name==='BusinessView')vm=this.$.setupState},serverPrefetch(){if(this.$options.__name==='BusinessView')vm.ui.data.value=detail?record():{items:[record()],next_cursor:null}}});const html=await renderToString(app);assert.equal((html.match(/data-testid="stock-public-media"/g)||[]).length,count);if(section==='catalog'&&detail)assert.ok(html.includes('播放影片预览'));vm.ui.clear();session.$dispose()}
   const source=readFileSync(root+'/src/components/business/StockPublicMedia.vue','utf8');assert.ok(source.includes('IntersectionObserver'));assert.ok(source.includes('visibilitychange'));assert.ok(source.includes('object-fit:contain'))
  })
+ test('已购影片按付款、当前售后和明确保留或撤销的许可显示入口',async()=>{
+  const {default:View}=await server.ssrLoadModule('/src/views/BusinessView.vue')
+  const cases = [
+   ['PAID', {status:'ACTIVE'}, true],
+   ['PAID', {status:'ACTIVE',license:{scope:'COMMERCIAL_LIMITED',valid_from:'2001-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z'}}, true],
+   ['PAID', {status:'ACTIVE',license:{scope:'COMMERCIAL_LIMITED',valid_from:'2001-01-01T00:00:00.000Z',valid_until:'2002-01-01T00:00:00.000Z'}}, false],
+   ['PAID', {status:'ACTIVE',license:{scope:'COMMERCIAL_LIMITED',valid_from:'2098-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z'}}, false],
+   ['AWAITING_PAYMENT', {status:'AWAITING_PAYMENT'}, false],
+   ['PAYMENT_REVIEW_REQUIRED', {status:'ACTIVE'}, false],
+   ['PAID', {status:'ACTIVE',current_case_id:id(23)}, false],
+   ['PARTIALLY_REFUNDED', {status:'ACTIVE',refund_plan:{license_action:'KEEP'}}, true],
+   ['REFUNDED', {status:'ACTIVE',refund_plan:{license_action:'KEEP'}}, true],
+   ['REFUNDED', {status:'REVOKED',refund_plan:{license_action:'REVOKE'}}, false],
+  ]
+  for(const [order_status,data,canDownload] of cases){
+   const pinia=createPinia(),session=sessionFor(pinia)
+   const router=createRouter({history:createMemoryHistory(),routes:[
+    {path:'/stock/:section/:recordId?',component:View,meta:{domain:'stock'}},
+    {path:'/:pathMatch(.*)*',component:{render:()=>null}},
+   ]})
+   await router.push('/stock/purchases/'+id(20))
+   await router.isReady()
+   let vm
+   const app=createSSRApp({render:()=>h(RouterView)}).use(pinia).use(router)
+   app.mixin({
+    created(){if(this.$options.__name==='BusinessView')vm=this.$.setupState},
+    serverPrefetch(){if(this.$options.__name==='BusinessView')vm.ui.data.value={order_id:id(20),object_version:1,order_status,data}},
+   })
+   try{
+    const html=await renderToString(app)
+    assert.equal(html.includes('明确取得正式影片'),canDownload,JSON.stringify({order_status,data}))
+    if(data.status==='REVOKED')assert.ok(html.includes('本单许可已撤销'))
+   }finally{vm.ui.clear();session.$dispose()}
+  }
+ })
  for(const {name,run}of tests){await run();console.log('✓ '+name)}console.log(`\n${tests.length} stock-media checks passed.`)
 } finally {
  globalThis.fetch=old.fetch;URL.createObjectURL=old.create;URL.revokeObjectURL=old.revoke

@@ -1,6 +1,11 @@
 import { domains } from '@/business'
+import { normalizeDirectoryCity } from '@/business/directoryCity'
 /** Only supported private entry routes may be resumed after login. */
 export function loginRedirect(target: unknown): string {
+  if (typeof target === 'string') {
+    const cityLink = /^\/auditions\/catalog\?city=([^&#]+)$/.exec(target)
+    if (cityLink && normalizeDirectoryCity(new URLSearchParams('city='+cityLink[1]).get('city'))) return target
+  }
   const uuid = '[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}'
   if (typeof target === 'string' && new RegExp(`^/wallet-refunds/operations(?:/${uuid})?$`).test(target)) return target
   if (typeof target === 'string' && new RegExp(`^/(?:me/phone-change|invoices/(?:requests(?:/${uuid})?|orders/${uuid}/new|operations/(?:handle|verify)(?:/${uuid})?))$`).test(target)) return target

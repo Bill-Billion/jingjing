@@ -1,0 +1,72 @@
+node : WebSocket server error: Port 24678 is already in use
+所在位置 行:2 字符: 1
++ node tools/test-stock-media.mjs *> "D:/ccc/博士资料/7.项目/2026-晶晶日上/worktr ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (WebSocket serve... already in use:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+✓ 现货媒体严格验证完整字段、范围、预览来源和版本；拒绝多余字段与伪时长
+✓ 媒体与JPEG请求只有账号凭证，核对身份和版本且禁缓存
+✓ 错账号、主体、影片或新版本的媒体回复均不采用
+✓ 封面核对JPEG类型、大小、摘要和签名后才可解码，拒绝HTML或其他字节
+✓ 完整片和预览时长独立显示，保留亚秒数值，无默认0秒
+✓ 未进入可见区域不请求，成功后仅保留内存URL，离开即释放
+[Vue warn]: Failed to resolve component: RouterLink
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomEleme
+nt.
+  at <ApiErrorAlert error= {
+  status: 409,
+  code: 'STOCK_NOT_LISTED',
+  message: 'internal stock failure',
+  retryable: false,
+  requestId: 'synthetic-stock-read',
+  requestMethod: 'GET'
+} >
+  at <App>
+[Vue warn]: Failed to resolve component: RouterLink
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomEleme
+nt.
+  at <ApiErrorAlert error= {
+  status: 409,
+  code: 'STOCK_RIGHTS_CHANGED',
+  message: 'internal stock failure',
+  retryable: false,
+  requestId: 'synthetic-stock-read',
+  requestMethod: 'GET'
+} >
+  at <App>
+[Vue warn]: Failed to resolve component: RouterLink
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomEleme
+nt.
+  at <ApiErrorAlert error= {
+  status: 409,
+  code: 'STOCK_SALE_CONSENT_REQUIRED',
+  message: 'internal stock failure',
+  retryable: false,
+  requestId: 'synthetic-stock-read',
+  requestMethod: 'GET'
+} >
+  at <App>
+[Vue warn]: Failed to resolve component: RouterLink
+If this is a native custom element, make sure to exclude it from component resolution via compilerOptions.isCustomEleme
+nt.
+  at <ApiErrorAlert error= {
+  status: 409,
+  code: 'MEDIA_SOURCE_CHANGED',
+  message: 'internal stock failure',
+  retryable: false,
+  requestId: 'synthetic-stock-read',
+  requestMethod: 'GET'
+} >
+  at <App>
+✓ 作品下架、授权和媒体版本变化给出读取指引，不误导重新提交或购买
+✓ 重试先清旧图时长；401/403/404/409/503明确失败，之后能手动恢复
+✓ 新版本/换影片/换身份/会话修订/路径切换立即清旧图并忽略迟到回复
+✓ 退出或账号变化时清资料，读取摘要期间的旧结果不能再生成对象URL
+✓ 可见封面处理最多两个并行，排队项离开不发请求且不占用后续槽位
+✓ 图片解码失败或实际尺寸不符立即撤销；旧图片事件不清新图
+✓ 真实媒体组件渲染两种时长、真实封面及重试提示，文案安全转义
+✓ 实际BusinessView的现货目录和详情都接组件，预览入口仍独立可用
+✓ 已购影片按付款、当前售后和明确保留或撤销的许可显示入口
+
+15 stock-media checks passed.

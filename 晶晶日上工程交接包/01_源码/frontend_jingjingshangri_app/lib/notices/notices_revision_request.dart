@@ -19,7 +19,7 @@ class NoticeRevisionRequestPage extends StatelessWidget {
 }
 
 class _RevisionApi extends NoticesApi {
-  _RevisionApi(AccountSession session, this.id, this.onInvalid) : super(session);
+  _RevisionApi(super.session, this.id, this.onInvalid);
   final String id;
   final void Function(AccountError) onInvalid;
   @override
@@ -76,10 +76,12 @@ class _RevisionRequestState extends State<_RevisionRequest> {
     if (identity == currentIdentity) return;
     identity = currentIdentity;
     ticket++;
-    if (mounted) setState(() {
+    if (mounted) {
+      setState(() {
       source = null; busy = false; stale = true;
       error = '身份或权限已变化，原私有内容已清空。';
     });
+    }
   }
   bool owns(NoticeRecord record) => record.kind == 'NOTICE' &&
       record.id == widget.id && record.raw['parent_id'] == null &&
@@ -105,7 +107,9 @@ class _RevisionRequestState extends State<_RevisionRequest> {
 
   Future<void> refresh({bool initial = false}) async {
     if (busy || !initial && (api.pending(suffix) != null ||
-        formKey.currentState?.busy == true)) return;
+        formKey.currentState?.busy == true)) {
+      return;
+    }
     if (!initial) {
       final request = ticket, epoch = widget.session.epoch, party = widget.session.partyId;
       if (!await (formKey.currentState?.confirmDiscardChanges() ?? Future.value(true))) return;

@@ -1,0 +1,204 @@
+TAP version 13
+# Subtest: partial or wrong-variant preview labels cannot become apparently complete cover metadata
+ok 1 - partial or wrong-variant preview labels cannot become apparently complete cover metadata
+  ---
+  duration_ms: 1.9504
+  type: 'test'
+  ...
+# Subtest: damaged JPEG headers and oversized comments are rejected instead of appending an unbound label
+ok 2 - damaged JPEG headers and oversized comments are rejected instead of appending an unbound label
+  ---
+  duration_ms: 0.5669
+  type: 'test'
+  ...
+# Subtest: actual remuxed video with missing or wrong labels is refused before cover export
+ok 3 - actual remuxed video with missing or wrong labels is refused before cover export
+  ---
+  duration_ms: 740.674
+  type: 'test'
+  ...
+# Subtest: actual video bytes receive visible text and embedded AI metadata
+ok 4 - actual video bytes receive visible text and embedded AI metadata
+  ---
+  duration_ms: 668.1463
+  type: 'test'
+  ...
+# Subtest: unconfigured tools and invalid marking policy never claim processed output
+ok 5 - unconfigured tools and invalid marking policy never claim processed output
+  ---
+  duration_ms: 0.4439
+  type: 'test'
+  ...
+# Subtest: private media jobs bind permission, source bytes, policy and provider result
+    # Subtest: another account cannot process or read private material
+    ok 1 - another account cannot process or read private material
+      ---
+      duration_ms: 9.5387
+      type: 'test'
+      ...
+    # Subtest: marked output is privately persisted and source bytes remain unchanged
+    ok 2 - marked output is privately persisted and source bytes remain unchanged
+      ---
+      duration_ms: 131.559
+      type: 'test'
+      ...
+    # Subtest: lost upload response recovers verified private bytes without rendering or uploading twice
+    ok 3 - lost upload response recovers verified private bytes without rendering or uploading twice
+      ---
+      duration_ms: 135.0752
+      type: 'test'
+      ...
+    # Subtest: recovery rejects altered stored output and keeps the task uncompleted
+    ok 4 - recovery rejects altered stored output and keeps the task uncompleted
+      ---
+      duration_ms: 121.55
+      type: 'test'
+      ...
+    # Subtest: recovery cannot finish after the owner is suspended
+    ok 5 - recovery cannot finish after the owner is suspended
+      ---
+      duration_ms: 133.633
+      type: 'test'
+      ...
+    # Subtest: publication requires receipt for exact output, variant and active policy
+    ok 6 - publication requires receipt for exact output, variant and active policy
+      ---
+      duration_ms: 7.0838
+      type: 'test'
+      ...
+    # Subtest: new marking rejects missing, false or inconsistent label receipts before reserving or uploading
+    ok 7 - new marking rejects missing, false or inconsistent label receipts before reserving or uploading
+      ---
+      duration_ms: 472.2364
+      type: 'test'
+      ...
+    # Subtest: old incomplete checkpoint cannot finish even when its bytes and digest match
+    ok 8 - old incomplete checkpoint cannot finish even when its bytes and digest match
+      ---
+      duration_ms: 90.2119
+      type: 'test'
+      ...
+    # Subtest: publication rejects incomplete historical receipts despite a valid stored digest
+    ok 9 - publication rejects incomplete historical receipts despite a valid stored digest
+      ---
+      duration_ms: 35.6359
+      type: 'test'
+      ...
+    # Subtest: actual processed private video retains separate AI and preview labels after save and download
+    ok 10 - actual processed private video retains separate AI and preview labels after save and download
+      ---
+      duration_ms: 2108.9983
+      type: 'test'
+      ...
+    # Subtest: video submission remains pending and retry queries the persisted original task
+    ok 11 - video submission remains pending and retry queries the persisted original task
+      ---
+      duration_ms: 90.8452
+      type: 'test'
+      ...
+    # Subtest: permission withdrawn while queued blocks processing without provider call
+    ok 12 - permission withdrawn while queued blocks processing without provider call
+      ---
+      duration_ms: 67.7613
+      type: 'test'
+      ...
+    # Subtest: unknown video submit outcome never automatically resubmits
+    ok 13 - unknown video submit outcome never automatically resubmits
+      ---
+      duration_ms: 66.2605
+      type: 'test'
+      ...
+    # Subtest: machine review can be cleared only by an independent authorized reviewer and retains original outcome
+    ok 14 - machine review can be cleared only by an independent authorized reviewer and retains original outcome
+      ---
+      duration_ms: 195.5977
+      type: 'test'
+      ...
+    # Subtest: HTTP queues the same private media task and exposes only its owner progress
+    ok 15 - HTTP queues the same private media task and exposes only its owner progress
+      ---
+      duration_ms: 559.2646
+      type: 'test'
+      ...
+    1..15
+ok 6 - private media jobs bind permission, source bytes, policy and provider result
+  ---
+  duration_ms: 47674.0294
+  type: 'test'
+  ...
+# Subtest: moderation rejects unrecognised or incomplete clean-looking responses
+ok 7 - moderation rejects unrecognised or incomplete clean-looking responses
+  ---
+  duration_ms: 0.7227
+  type: 'test'
+  ...
+# Subtest: manual production processes private files before version submission and preserves labels through paid HTTP delivery
+    # Subtest: first file can be moderated before its first version without weakening submission gates
+    ok 1 - first file can be moderated before its first version without weakening submission gates
+      ---
+      duration_ms: 371.6535
+      type: 'test'
+      ...
+    # Subtest: only the assigned production account may process ready files; review requires production authority
+    ok 2 - only the assigned production account may process ready files; review requires production authority
+      ---
+      duration_ms: 244.8025
+      type: 'test'
+      ...
+    # Subtest: queued file processing stops after the assigned production account changes
+    ok 3 - queued file processing stops after the assigned production account changes
+      ---
+      duration_ms: 352.0309
+      type: 'test'
+      ...
+    # Subtest: actual marked and moderated preview/final files pass every manual production stage
+    ok 4 - actual marked and moderated preview/final files pass every manual production stage
+      ---
+      duration_ms: 3129.1379
+      type: 'test'
+      ...
+    # Subtest: withdrawn receipt blocks buyer acceptance, paid download and review; old version source can still be repaired by its producer
+    ok 5 - withdrawn receipt blocks buyer acceptance, paid download and review; old version source can still be repaired by its producer
+      ---
+      duration_ms: 479.0219
+      type: 'test'
+      ...
+    # Subtest: paid HTTP bytes retain AI labels while only the preview has the commercial watermark
+    ok 6 - paid HTTP bytes retain AI labels while only the preview has the commercial watermark
+      ---
+      duration_ms: 265.1535
+      type: 'test'
+      ...
+    # Subtest: current marking and moderation evidence are rechecked before bytes and after storage returns
+    ok 7 - current marking and moderation evidence are rechecked before bytes and after storage returns
+      ---
+      duration_ms: 109.0064
+      type: 'test'
+      ...
+    # Subtest: policy changes block previously accepted media without changing historical acceptance
+    ok 8 - policy changes block previously accepted media without changing historical acceptance
+      ---
+      duration_ms: 35.3333
+      type: 'test'
+      ...
+    # Subtest: refund case and completed refund keep delivered bytes inaccessible and preserve accepted history
+    ok 9 - refund case and completed refund keep delivered bytes inaccessible and preserve accepted history
+      ---
+      duration_ms: 149.0824
+      type: 'test'
+      ...
+    1..9
+ok 8 - manual production processes private files before version submission and preserves labels through paid HTTP delivery
+  ---
+  duration_ms: 48334.6117
+  type: 'test'
+  ...
+1..8
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 49360.244

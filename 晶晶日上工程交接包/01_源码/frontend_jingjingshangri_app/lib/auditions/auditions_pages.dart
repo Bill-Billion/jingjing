@@ -293,10 +293,14 @@ class _AuditionsScreenState extends State<_AuditionsScreen> {
       if (mounted && t == ticket) setState(() {});
     } on AccountError catch (e) {
       if (mounted && t == ticket && widget.session.epoch == epoch &&
-          widget.session.partyId == p) setState(() => error = v5Error(e));
+          widget.session.partyId == p) {
+        setState(() => error = v5Error(e));
+      }
     } finally {
       if (mounted && t == ticket && widget.session.epoch == epoch &&
-          widget.session.partyId == p) setState(() => busy = false);
+          widget.session.partyId == p) {
+        setState(() => busy = false);
+      }
     }
   }
 

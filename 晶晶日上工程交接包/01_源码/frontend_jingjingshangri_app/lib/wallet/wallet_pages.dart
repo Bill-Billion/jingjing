@@ -419,18 +419,18 @@ class _WalletScreenState extends State<_WalletScreen> {
                 tilePadding: EdgeInsets.zero,
                 title: const Text('查看会员年与实际资格'),
                 children: [
-              tradeFact(
+              _membershipFact(
                   '当前有效会员', s.membership['active'] == true ? '有效' : '未生效或已到期'),
-              tradeFact('当前有效等级', s.membership['level']),
-              tradeFact('已达到成长等级', s.membership['attained_level']),
-              tradeFact(
+              _membershipFact('当前有效等级', s.membership['level']),
+              _membershipFact('已达到成长等级', s.membership['attained_level']),
+              _membershipFact(
                   '会员年有效至',
                   s.membership['valid_until'] == null
                       ? '尚无有效会员年'
                       : tradeDate(s.membership['valid_until'])),
-              tradeFact(
+              _membershipFact(
                   '续年累计充值进度', v5Money(s.membership['renewal_credit_minor'])),
-              tradeFact('资格原因', _reason(s.membership['reason'], '实际资格有效')),
+              _membershipFact('资格原因', _reason(s.membership['reason'], '实际资格有效')),
               if (s.membership['level_six_review_required'] == true)
                 appNotice('成长门槛已达到六级所需条件，仍须另行独立资质审核。')
             ]),
@@ -652,6 +652,14 @@ class _WalletScreenState extends State<_WalletScreen> {
           tradeButton('重新核对本页', busy ? null : () => load(), outline: true),
         ]);
   }
+
+  // SelectableText on Flutter Web can expose an empty disabled textarea.
+  // Keep the visible/selectable value and give this fact one complete spoken label.
+  Widget _membershipFact(String label, Object? value) => Semantics(
+      container: true,
+      excludeSemantics: true,
+      label: '$label: ${value ?? '—'}',
+      child: tradeFact(label, value));
 
   List<Widget> _rechargeEstimate(String? text, WalletSummary s) {
     int amount;

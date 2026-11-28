@@ -1,3 +1,4 @@
+import 'dart:async';
 import '../rights/rights_widgets.dart';
 import '../rights/rights_models.dart' show commercialUses;
 import 'dart:typed_data';
@@ -75,6 +76,7 @@ class _StockScreenState extends State<_StockScreen> {
   StockOffer? offer;
   StockListing? listing;
   StockPurchase? purchase;
+  Timer? purchaseLicenseTimer;
   String? cursor, error, notice;
   String channel = 'ALIPAY';
   bool busy = false,
@@ -122,7 +124,37 @@ class _StockScreenState extends State<_StockScreen> {
   void dispose() {
     ticket++;
     city.dispose();
+    purchaseLicenseTimer?.cancel();
     super.dispose();
+  }
+
+  void setPurchase(StockPurchase? value) {
+    purchase = value;
+    schedulePurchaseLicenseRefresh();
+  }
+
+  void schedulePurchaseLicenseRefresh() {
+    purchaseLicenseTimer?.cancel();
+    final license = purchase?.license.data;
+    if (license == null || license['scope'] != 'COMMERCIAL_LIMITED') return;
+    final now = DateTime.now().toUtc();
+    final from = DateTime.parse(license['valid_from']);
+    final until = DateTime.parse(license['valid_until']);
+    final boundary = now.isBefore(from) ? from : until;
+    if (!now.isBefore(boundary)) return;
+    // Stay within browser timer limits for multi-year commercial licenses.
+    const maxDelay = Duration(days: 1);
+    final delay = boundary.difference(now);
+    purchaseLicenseTimer = Timer(delay > maxDelay ? maxDelay : delay, () {
+      if (!mounted) return;
+      setState(() {
+        if (purchase?.usable != true) {
+          opened = false;
+          notified = false;
+        }
+      });
+      schedulePurchaseLicenseRefresh();
+    });
   }
 
   Future<void> load({bool more = false}) async {
@@ -142,7 +174,7 @@ class _StockScreenState extends State<_StockScreen> {
         cursor = null;
         offer = null;
         listing = null;
-        purchase = null;
+        setPurchase(null);
         opened = false;
         notified = false;
         licenseRead = false;
@@ -184,7 +216,7 @@ class _StockScreenState extends State<_StockScreen> {
           final r = await api.purchase(widget.id ?? '');
           if (!mounted || t != ticket) return;
           api.check(epoch, p);
-          purchase = r;
+          setPurchase(r);
         default:
           throw const AccountError(400, 'INVALID_PATH');
       }
@@ -285,7 +317,7 @@ class _StockScreenState extends State<_StockScreen> {
           opened: opened, onMarkReadPhase: (writing) => markingRead = writing);
       if (!mounted) return;
       setState(() {
-        purchase = r;
+        setPurchase(r);
         notified = true;
         notice = '本次实际交付通知已标记本人已读；尚未开始收件计时。';
       });
@@ -322,7 +354,7 @@ class _StockScreenState extends State<_StockScreen> {
       final r = await api.action(current, action, {}, retry: pending != null);
       if (!mounted) return;
       setState(() {
-        purchase = r;
+        setPurchase(r);
         notice = action == 'receipt' ? '收件已记录，期限以服务器时间为准。' : '本次明确确认已由服务器记录。';
       });
     } on AccountError catch (e) {
@@ -330,7 +362,7 @@ class _StockScreenState extends State<_StockScreen> {
         setState(() {
           error = v5Error(e, writing: true);
           if (e.status == 412) {
-            purchase = null;
+            setPurchase(null);
             opened = false;
             notified = false;
           }
@@ -911,14 +943,18 @@ class _StockScreenState extends State<_StockScreen> {
                     if (!mounted || mediaTicket != ticket ||
                         mediaEpoch != widget.session.epoch ||
                         mediaParty != widget.session.partyId ||
-                        purchase?.orderId != p.orderId) return;
+                        purchase?.orderId != p.orderId) {
+                      return;
+                    }
                     final current = await api.purchase(p.orderId);
                     if (!mounted || mediaTicket != ticket ||
                         mediaEpoch != widget.session.epoch ||
                         mediaParty != widget.session.partyId ||
-                        purchase?.orderId != p.orderId) return;
+                        purchase?.orderId != p.orderId) {
+                      return;
+                    }
                     setState(() {
-                      purchase = current;
+                      setPurchase(current);
                       opened = true;
                     });
                   }),

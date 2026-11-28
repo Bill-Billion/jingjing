@@ -1,0 +1,60 @@
+{
+  "result": "SOURCE_SCOPE_CORRECTION",
+  "source": {
+    "path": "docs/testing/FULL_BUSINESS_ACCEPTANCE_20261028.json",
+    "sha256": "31536c6806c4451b226d33b31cd1e8b8a1b7a72881e36eb59624b0a2bca499d9"
+  },
+  "criteria": {
+    "E2E-06": {
+      "work": "合格消费→售后后发分→固定兑换→锁券→付款失败释放→重付核销→退款",
+      "source_expected": "储值/晶钻/成长/券不同账；满减及适用商品由生效版本检查",
+      "effective_expected": "从合格消费、售后结束发分开始，兑换、锁定、失败释放及重付闭环；现金制作金首笔付款确认后核销，全额服务权益另走0现金/开工核销/开工前取消释放；退款不足晶钻记待冲回且不重复扣。",
+      "required_cases": [
+        "normal",
+        "reverse",
+        "unauthorized",
+        "duplicate",
+        "state_change",
+        "recovery"
+      ],
+      "required_surfaces": [
+        "api",
+        "app",
+        "web"
+      ]
+    },
+    "ACC-DEL-22.01": {
+      "work": "固定兑换",
+      "source_expected": "50/100/200/500元制作金分别对应6000/12000/24000/60000晶钻。；兑换需原子扣分发券和幂等，不是抽奖结果页替代商城。",
+      "effective_expected": null,
+      "required_cases": [
+        "normal",
+        "reverse"
+      ],
+      "required_surfaces": [
+        "api"
+      ]
+    },
+    "ACC-DEL-22.03": {
+      "work": "锁券退款",
+      "source_expected": "支付失败释放，成功核销；退单/侵权/卖方违约分别按正式策略。；不得一刀切“退款不返”写死所有法律情形。",
+      "effective_expected": "有现金应付的制作金在首笔付款确认后核销，退款不返券且不超实付；全额服务权益现金为0，确认具体服务及免付金额后下单，开工核销、开工前取消释放，开工后按已公布规则处理且不退现金。",
+      "required_cases": [
+        "normal",
+        "reverse"
+      ],
+      "required_surfaces": [
+        "api"
+      ]
+    }
+  },
+  "source_requirement_unchanged": true,
+  "correction": "固定兑换仅为50/100/200/500元制作金。原全额服务权益明确另走0现金分支，不要求新增免费制作固定兑换。两支分别按原业务锚点审定；不同历史环境/产品不拼成当前最终版本PASS。",
+  "retained": "全部原正常、反向、越权、重复、状态变化及恢复义务保持；本次仅审定正常和反向的两种明确分支。其他场景缺口不因两个分支完成而自动通过。",
+  "not_original_requirement": "原固定兑换链必须另兑换免费制作券",
+  "policy_reference": {
+    "path": "晶晶日上工程交接包/01_源码/backend_server/src/modules/redemption/policy.js",
+    "source": "ac24b00b4bef36bac86eb6677aaa1fd4732689a9",
+    "note": "Only PRODUCTION_CREDIT accepts non-null exchange_points; source requirement, not implementation alone, establishes scope."
+  }
+}

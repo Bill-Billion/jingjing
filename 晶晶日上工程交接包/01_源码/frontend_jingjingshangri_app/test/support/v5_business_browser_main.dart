@@ -38,7 +38,7 @@ Future<void> main() async {
         receiveTimeout: const Duration(seconds: 20),
         followRedirects: false,
         validateStatus: (_) => true));
-    final api = AccountApi(dio: dio),
+    final api = AccountApi(dio: dio, persistTrade: true),
         account = await api.request('GET', '/api/v1/me', token: token);
     if (account['id'] != a['account_id']) throw StateError('Account mismatch');
     var bootstrap = true;

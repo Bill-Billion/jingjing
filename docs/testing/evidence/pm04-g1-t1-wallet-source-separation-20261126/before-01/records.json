@@ -1,0 +1,148 @@
+{
+  "synthetic_only": true,
+  "database": "jx_test_qa18_sources_618e8b335860b8932287",
+  "started_at": "2026-11-26T12:50:12.613Z",
+  "clock_steps": [
+    {
+      "minutes": 0,
+      "at": "2026-11-24T12:50:12.000Z"
+    },
+    {
+      "minutes": 2,
+      "at": "2026-11-24T12:52:12.000Z"
+    }
+  ],
+  "checks": [
+    {
+      "label": "same personal account has a reviewed supplier payable and a separately opened consumer wallet",
+      "result": "PASS"
+    },
+    {
+      "label": "reviewed 6000-point coupon and 12000-fen payable do not fund a 13500-fen cash payment",
+      "result": "FAIL",
+      "error": "ERR_ASSERTION"
+    },
+    {
+      "label": "one payment consumes exactly two original recharge lots and uses its coupon only on verified receipt",
+      "result": "FAIL",
+      "error": "PAYMENT_MERCHANT_MISMATCH"
+    },
+    {
+      "label": "partial and remaining order refunds restore only original lots, never cash out the coupon or add supplier payable",
+      "result": "FAIL",
+      "error": "Cannot read properties of undefined (reading 'id')"
+    },
+    {
+      "label": "withdrawal stays disabled while an independently approved mistaken recharge refunds the restored original source",
+      "result": "FAIL",
+      "error": "ERR_ASSERTION"
+    },
+    {
+      "label": "another account cannot read any of the four private asset classes or forge balances",
+      "result": "FAIL",
+      "error": "ERR_ASSERTION"
+    }
+  ],
+  "stages": [
+    {
+      "label": "four-assets-before-hold",
+      "wallet": {
+        "account_id": "510059ec-74e3-4903-92e2-6d451970d189",
+        "rule_id": "ce856afe-f57c-4db3-9cb6-95a6ac33d903",
+        "currency": "CNY",
+        "recorded_balance_minor": 6000,
+        "available_balance_minor": 6000,
+        "reserved_balance_minor": 0,
+        "available_points": 1000,
+        "cumulative_points": {
+          "version": "NET_ISSUED_V1",
+          "issued": 7000,
+          "withdrawn": 0,
+          "net_issued": 7000
+        },
+        "points_pending_reversal": 0,
+        "points_actions_enabled": false,
+        "points_block_reason": "POINTS_USES_NOT_CONNECTED",
+        "point_uses": {
+          "vote_enabled": false,
+          "redemption_enabled": false,
+          "lottery_enabled": false
+        },
+        "qualifying_growth": 0,
+        "membership": {
+          "active": false,
+          "level": 0,
+          "attained_level": 1,
+          "qualifying_growth": 0,
+          "valid_until": null,
+          "renewal_credit_minor": 6000,
+          "level_six_review_required": false,
+          "reason": "TOPUP_THRESHOLD_NOT_MET"
+        },
+        "custody": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "spending": {
+          "enabled": false,
+          "reason": "CUSTODY_PROVIDER_NOT_CONNECTED"
+        },
+        "withdrawal_enabled": false,
+        "transfer_enabled": false
+      },
+      "income": {
+        "agreement_id": "3952f400-efbe-40ca-83bc-7fd701ed2f23",
+        "currency": "CNY",
+        "environment": "SANDBOX",
+        "customer_payment_separate": true,
+        "received_minor": 60000,
+        "receivable_minor": 140000,
+        "items": [
+          {
+            "party_id": "58c7733a-6006-48d8-aa61-86ed8546d212",
+            "accrued_minor": 12000,
+            "adjustment_minor": 0,
+            "paid_minor": 0,
+            "balance_minor": 12000,
+            "expected_accrued_minor": 12000,
+            "available_minor": 0,
+            "recovery_due_minor": 0,
+            "reason_code": "FINANCE_DELIVERY_NOT_ACCEPTED",
+            "meaning": "PAYABLE_NOT_YET_TRANSFERRED"
+          }
+        ]
+      },
+      "grant_id": "7eb6fb43-64dd-46f3-8a66-6717b86e90b6",
+      "grant_status": "AVAILABLE",
+      "lots": [
+        {
+          "id": "1e22b3a7-9e94-469f-a984-c557a048038a",
+          "amount_minor": 6000,
+          "refunded_minor": 0
+        }
+      ]
+    }
+  ],
+  "complete": false,
+  "api_base": "http://127.0.0.1:63366/api/v1",
+  "party_id": "58c7733a-6006-48d8-aa61-86ed8546d212",
+  "income": {
+    "order_id": "d26e4fc8-de11-4e9c-b1e6-e7ca2391843e",
+    "payment_id": "c474cfbf-9cf2-4806-bad5-bf9e3815c13b",
+    "agreement_id": "3952f400-efbe-40ca-83bc-7fd701ed2f23",
+    "settlement_id": "3d2b4e42-0ffb-48c0-ae3c-c22457c5a43e",
+    "supplier_payable_minor": 12000,
+    "paid_minor": 0,
+    "fulfillment": "Not completed; payable is accrued but cannot be paid or spent as wallet cash"
+  },
+  "wallet_rule_id": "ce856afe-f57c-4db3-9cb6-95a6ac33d903",
+  "payment_input": {
+    "party_id": "58c7733a-6006-48d8-aa61-86ed8546d212",
+    "order_id": "a41740d8-11fb-4ab3-8ffa-b92f651e87b8",
+    "installment_key": "first",
+    "operation_key": "5cb632e0-1c3c-4264-82a4-45e694a40ff0"
+  },
+  "database_removed": true,
+  "services_stopped": true,
+  "finished_at": "2026-11-26T12:50:21.401Z"
+}

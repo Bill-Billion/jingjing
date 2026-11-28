@@ -1,0 +1,484 @@
+{
+  "synthetic_only": true,
+  "cases": [
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/consumer-risk/status",
+      "schema": "ConsumerRiskStatusResponse",
+      "value": {
+        "meta": {
+          "request_id": "823219bf-2b12-403b-a6a9-39c3e1b15744",
+          "actor": {
+            "account_id": "511ff100-078d-40ea-8250-0d4afebeb7b7"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "configured": false,
+          "rule": null,
+          "real_services_enabled": false
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/consumer-risk/rules",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "59037245-bd8a-4790-a02a-0236e3b9380d",
+          "actor": {
+            "account_id": "845fb911-c5bb-492d-ac67-d1554fa14216"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "be646d9d-c15a-4ae7-a3ab-502b08c42ca9",
+          "kind": "CONSUMER_RISK_RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "845fb911-c5bb-492d-ac67-d1554fa14216",
+          "current_status": "IN_REVIEW",
+          "object_version": 1,
+          "content_sha256": "fbe265c947d501f465e94d730f47743aefc5af4130bfb1539668b383af530ffe",
+          "data": {
+            "rule": {
+              "version": "SYNTHETIC_ONLY",
+              "source_ref": "synthetic:37",
+              "message": "Synthetic read and confirm",
+              "window_seconds": 3600,
+              "trigger_count": 2,
+              "large_recharge_minor": 100,
+              "night": null,
+              "confirmation_seconds": 600,
+              "lottery_window_max_draws": 10,
+              "lottery_daily_points": 3000
+            },
+            "review": null
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/consumer-risk/rules/be646d9d-c15a-4ae7-a3ab-502b08c42ca9/review",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "2568e12f-1607-40e8-9715-fa10f3380ccf",
+          "actor": {
+            "account_id": "845fb911-c5bb-492d-ac67-d1554fa14216"
+          },
+          "acting_party": null
+        },
+        "error": {
+          "code": "SELF_REVIEW_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/consumer-risk/rules/be646d9d-c15a-4ae7-a3ab-502b08c42ca9/review",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "7aa8197b-edd8-4103-8890-18c82f50bf5a",
+          "actor": {
+            "account_id": "4d315305-7260-4e57-b3b0-aa62a245f842"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "id": "be646d9d-c15a-4ae7-a3ab-502b08c42ca9",
+          "kind": "CONSUMER_RISK_RULE",
+          "owner_party_id": null,
+          "parent_id": null,
+          "created_by": "845fb911-c5bb-492d-ac67-d1554fa14216",
+          "current_status": "EFFECTIVE",
+          "object_version": 2,
+          "content_sha256": "3d324140d5576f8ce41adb8a76edf560eac6b3c9a9b3c70aae0cd999c997fe6c",
+          "data": {
+            "rule": {
+              "night": null,
+              "message": "Synthetic read and confirm",
+              "version": "SYNTHETIC_ONLY",
+              "source_ref": "synthetic:37",
+              "trigger_count": 2,
+              "window_seconds": 3600,
+              "confirmation_seconds": 600,
+              "large_recharge_minor": 100,
+              "lottery_daily_points": 3000,
+              "lottery_window_max_draws": 10
+            },
+            "review": {
+              "by": "4d315305-7260-4e57-b3b0-aa62a245f842",
+              "reason": "Independent synthetic thresholds",
+              "at": "2026-11-25T12:52:24.202Z"
+            }
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/consumer-risk/rules",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "c64163ec-1a78-46d5-b914-6a3b52402aba",
+          "actor": {
+            "account_id": "4d315305-7260-4e57-b3b0-aa62a245f842"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "items": [
+            {
+              "id": "be646d9d-c15a-4ae7-a3ab-502b08c42ca9",
+              "kind": "CONSUMER_RISK_RULE",
+              "owner_party_id": null,
+              "parent_id": null,
+              "created_by": "845fb911-c5bb-492d-ac67-d1554fa14216",
+              "current_status": "EFFECTIVE",
+              "object_version": 2,
+              "content_sha256": "3d324140d5576f8ce41adb8a76edf560eac6b3c9a9b3c70aae0cd999c997fe6c",
+              "data": {
+                "rule": {
+                  "night": null,
+                  "message": "Synthetic read and confirm",
+                  "version": "SYNTHETIC_ONLY",
+                  "source_ref": "synthetic:37",
+                  "trigger_count": 2,
+                  "window_seconds": 3600,
+                  "confirmation_seconds": 600,
+                  "large_recharge_minor": 100,
+                  "lottery_daily_points": 3000,
+                  "lottery_window_max_draws": 10
+                },
+                "review": {
+                  "at": "2026-11-25T12:52:24.202Z",
+                  "by": "4d315305-7260-4e57-b3b0-aa62a245f842",
+                  "reason": "Independent synthetic thresholds"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/consumer-risk/status",
+      "schema": "ConsumerRiskStatusResponse",
+      "value": {
+        "meta": {
+          "request_id": "b8a3f3d5-e6a2-4885-a9ce-6a7b95a53f70",
+          "actor": {
+            "account_id": "511ff100-078d-40ea-8250-0d4afebeb7b7"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "configured": true,
+          "rule": {
+            "id": "be646d9d-c15a-4ae7-a3ab-502b08c42ca9",
+            "kind": "CONSUMER_RISK_RULE",
+            "owner_party_id": null,
+            "parent_id": null,
+            "created_by": "845fb911-c5bb-492d-ac67-d1554fa14216",
+            "current_status": "EFFECTIVE",
+            "object_version": 2,
+            "content_sha256": "3d324140d5576f8ce41adb8a76edf560eac6b3c9a9b3c70aae0cd999c997fe6c",
+            "data": {
+              "rule": {
+                "night": null,
+                "message": "Synthetic read and confirm",
+                "version": "SYNTHETIC_ONLY",
+                "source_ref": "synthetic:37",
+                "trigger_count": 2,
+                "window_seconds": 3600,
+                "confirmation_seconds": 600,
+                "large_recharge_minor": 100,
+                "lottery_daily_points": 3000,
+                "lottery_window_max_draws": 10
+              },
+              "review": {
+                "at": "2026-11-25T12:52:24.202Z",
+                "by": "4d315305-7260-4e57-b3b0-aa62a245f842",
+                "reason": "Independent synthetic thresholds"
+              }
+            }
+          },
+          "real_services_enabled": false
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/consumer-risk/preview",
+      "schema": "ErrorResponse",
+      "value": {
+        "meta": {
+          "request_id": "9d67dbf8-ea25-41cf-9f4e-e25f92c88702",
+          "actor": {
+            "account_id": "9c26a688-0779-497d-8517-cf4cc577621b"
+          },
+          "acting_party": "24c4b3d2-8280-4df1-952f-64101a77f0d1"
+        },
+        "error": {
+          "code": "ARTIST_PARTY_FORBIDDEN",
+          "message": "请求未通过校验或权限检查",
+          "retryable": false,
+          "details": []
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/wallet/consumer-risk/preview",
+      "schema": "ConsumerRiskPreviewResponse",
+      "value": {
+        "meta": {
+          "request_id": "2be95a6b-fb3f-40cd-a5b6-df7cdba1517d",
+          "actor": {
+            "account_id": "511ff100-078d-40ea-8250-0d4afebeb7b7"
+          },
+          "acting_party": "24c4b3d2-8280-4df1-952f-64101a77f0d1"
+        },
+        "data": {
+          "configured": true,
+          "required": true,
+          "rule_id": "be646d9d-c15a-4ae7-a3ab-502b08c42ca9",
+          "preview_sha256": "a7baf749021381ac4eef7b93cbcdc18331b9d55a14b7bd2832c85bc36a4bf2cc",
+          "reasons": [
+            "FREQUENT_CASH_REQUESTS"
+          ],
+          "message": "Synthetic read and confirm",
+          "target": {
+            "kind": "PAYMENT",
+            "order_id": "bd72b949-db9f-4dd0-bd8a-77fa2ce8fbfd",
+            "installment_key": "stock",
+            "request_key": "0bfeae98-42e5-4bb2-a9aa-0b8ea77a5984",
+            "amount_minor": 100
+          },
+          "expires_in_seconds": 600
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/consumer-risk/confirm",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "5daa421c-66c4-475f-9145-358f48220d05",
+          "actor": {
+            "account_id": "511ff100-078d-40ea-8250-0d4afebeb7b7"
+          },
+          "acting_party": "24c4b3d2-8280-4df1-952f-64101a77f0d1"
+        },
+        "data": {
+          "id": "f5311b50-64b0-4952-91ec-907f32b9172f",
+          "kind": "CONSUMER_RISK_ACK",
+          "owner_party_id": "24c4b3d2-8280-4df1-952f-64101a77f0d1",
+          "parent_id": "be646d9d-c15a-4ae7-a3ab-502b08c42ca9",
+          "created_by": "511ff100-078d-40ea-8250-0d4afebeb7b7",
+          "current_status": "CONFIRMED",
+          "object_version": 1,
+          "content_sha256": "f36901361274faf2161298c76934064c0485e5b2c402ec61f277e402ad7c7624",
+          "data": {
+            "preview": {
+              "configured": true,
+              "required": true,
+              "rule_id": "be646d9d-c15a-4ae7-a3ab-502b08c42ca9",
+              "preview_sha256": "a7baf749021381ac4eef7b93cbcdc18331b9d55a14b7bd2832c85bc36a4bf2cc",
+              "reasons": [
+                "FREQUENT_CASH_REQUESTS"
+              ],
+              "message": "Synthetic read and confirm",
+              "target": {
+                "kind": "PAYMENT",
+                "order_id": "bd72b949-db9f-4dd0-bd8a-77fa2ce8fbfd",
+                "installment_key": "stock",
+                "request_key": "0bfeae98-42e5-4bb2-a9aa-0b8ea77a5984",
+                "amount_minor": 100
+              },
+              "expires_in_seconds": 600
+            },
+            "confirmed_by": "511ff100-078d-40ea-8250-0d4afebeb7b7",
+            "confirmed_at": "2026-11-25T12:52:24.478Z",
+            "expires_at": "2026-11-25T13:02:24.479Z"
+          }
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/wallet/consumer-risk/confirm",
+      "schema": "WalletResponse",
+      "value": {
+        "meta": {
+          "request_id": "1ad82193-848e-40a6-9a95-d2536b0362c5",
+          "actor": {
+            "account_id": "511ff100-078d-40ea-8250-0d4afebeb7b7"
+          },
+          "acting_party": "24c4b3d2-8280-4df1-952f-64101a77f0d1"
+        },
+        "data": {
+          "id": "f5311b50-64b0-4952-91ec-907f32b9172f",
+          "kind": "CONSUMER_RISK_ACK",
+          "owner_party_id": "24c4b3d2-8280-4df1-952f-64101a77f0d1",
+          "parent_id": "be646d9d-c15a-4ae7-a3ab-502b08c42ca9",
+          "created_by": "511ff100-078d-40ea-8250-0d4afebeb7b7",
+          "current_status": "CONFIRMED",
+          "object_version": 1,
+          "content_sha256": "f36901361274faf2161298c76934064c0485e5b2c402ec61f277e402ad7c7624",
+          "data": {
+            "preview": {
+              "configured": true,
+              "required": true,
+              "rule_id": "be646d9d-c15a-4ae7-a3ab-502b08c42ca9",
+              "preview_sha256": "a7baf749021381ac4eef7b93cbcdc18331b9d55a14b7bd2832c85bc36a4bf2cc",
+              "reasons": [
+                "FREQUENT_CASH_REQUESTS"
+              ],
+              "message": "Synthetic read and confirm",
+              "target": {
+                "kind": "PAYMENT",
+                "order_id": "bd72b949-db9f-4dd0-bd8a-77fa2ce8fbfd",
+                "installment_key": "stock",
+                "request_key": "0bfeae98-42e5-4bb2-a9aa-0b8ea77a5984",
+                "amount_minor": 100
+              },
+              "expires_in_seconds": 600
+            },
+            "confirmed_by": "511ff100-078d-40ea-8250-0d4afebeb7b7",
+            "confirmed_at": "2026-11-25T12:52:24.478Z",
+            "expires_at": "2026-11-25T13:02:24.479Z"
+          }
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/preferences",
+      "schema": "PrivacyPreferencesResponse",
+      "value": {
+        "meta": {
+          "request_id": "ded4c504-cf4c-4363-a042-83c82f80d444",
+          "actor": {
+            "account_id": "511ff100-078d-40ea-8250-0d4afebeb7b7"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "object_version": 0,
+          "push_enabled": false,
+          "night_reminder_enabled": false,
+          "quiet_hours": {
+            "enabled": false,
+            "start_minute": 1320,
+            "end_minute": 480
+          },
+          "personalization": false,
+          "marketing": false,
+          "rest_reminder_minutes": 0
+        }
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/privacy/preferences",
+      "schema": "PrivacyPreferencesResponse",
+      "value": {
+        "meta": {
+          "request_id": "f5990f00-15fb-44f5-8d22-f59f0e9567fb",
+          "actor": {
+            "account_id": "511ff100-078d-40ea-8250-0d4afebeb7b7"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "object_version": 1,
+          "push_enabled": true,
+          "night_reminder_enabled": true,
+          "quiet_hours": {
+            "enabled": false,
+            "start_minute": 1320,
+            "end_minute": 480
+          },
+          "personalization": false,
+          "marketing": true,
+          "rest_reminder_minutes": 0
+        }
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/api/v1/privacy/preferences",
+      "schema": "PrivacyPreferencesResponse",
+      "value": {
+        "meta": {
+          "request_id": "48104d1d-2fcf-4c2f-a60b-d25566b8ddf9",
+          "actor": {
+            "account_id": "511ff100-078d-40ea-8250-0d4afebeb7b7"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "object_version": 2,
+          "push_enabled": true,
+          "night_reminder_enabled": true,
+          "quiet_hours": {
+            "enabled": false,
+            "end_minute": 480,
+            "start_minute": 1320
+          },
+          "marketing": true,
+          "personalization": false,
+          "rest_reminder_minutes": 0
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/privacy/usage",
+      "schema": "PersonalUsageResponse",
+      "value": {
+        "meta": {
+          "request_id": "06439718-5527-4792-b788-4a90723b1ded",
+          "actor": {
+            "account_id": "511ff100-078d-40ea-8250-0d4afebeb7b7"
+          },
+          "acting_party": null
+        },
+        "data": {
+          "object_version": 0,
+          "enabled": false,
+          "local_date": "2026-11-25",
+          "timezone": "Asia/Shanghai",
+          "day_seconds": 0,
+          "reminder_seconds": 0,
+          "rest_reminder_minutes": 0,
+          "rest_due": false,
+          "seconds_until_reminder": null,
+          "heartbeat_seconds": 30,
+          "idle_after_seconds": 90,
+          "as_of": "2026-11-25T12:52:25.296Z",
+          "measurement": "FOREGROUND_HEARTBEAT_ESTIMATE",
+          "purpose": "PERSONAL_REST_REMINDER",
+          "night_reminder": {
+            "enabled": true,
+            "due": false,
+            "timezone": "Asia/Shanghai",
+            "start_minute": 1320,
+            "end_minute": 480
+          }
+        }
+      }
+    }
+  ]
+}

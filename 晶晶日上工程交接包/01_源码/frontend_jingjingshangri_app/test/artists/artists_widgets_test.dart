@@ -200,8 +200,8 @@ void main() {
 
   testWidgets('窄屏完整显示授权对象长名称，展开选项也不省略或溢出', (t) async {
     const shared = '这是一份用于核对本人授权对象的较长数字人名称，保持原名以免误选相似授权对象，尾部编号为';
-    const name = '${shared}甲一号';
-    const alternative = '${shared}乙二号';
+    const name = '$shared甲一号';
+    const alternative = '$shared乙二号';
     const alternativeId = 'a2222222-2222-4222-8222-222222222223';
     final detail = detailData();
     (detail['avatars'][0]['data'] as Map)['display_name'] = name;

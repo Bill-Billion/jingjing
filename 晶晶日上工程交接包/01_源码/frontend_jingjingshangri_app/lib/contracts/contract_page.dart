@@ -9,6 +9,7 @@ import 'contract_api.dart';
 import 'contract_reader.dart';
 import 'contract_text.dart';
 import 'contract_signing_boundary.dart';
+import 'sandbox_signing_panel.dart';
 
 class ContractPage extends StatefulWidget {
   const ContractPage({super.key, this.snapshotId});
@@ -92,6 +93,22 @@ class _ContractPageState extends State<ContractPage> {
               height: 1.6)));
   Widget _text(dynamic data) => ContractText(value: data);
 
+  void _confirmIdentity(AccountSession session) {
+    if (session.isLoggedIn) {
+      Navigator.pushNamed(context, '/account');
+      return;
+    }
+    final snapshotId = widget.snapshotId;
+    final contractRoute = Uri(path: '/contract', queryParameters: {
+      if (snapshotId != null && snapshotId.isNotEmpty) 'snapshotId': snapshotId,
+    });
+    Navigator.pushNamed(
+        context,
+        Uri(path: '/login', queryParameters: {
+          'returnRoute': contractRoute.toString(),
+        }).toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     final session = context.watch<AccountSession>();
@@ -133,8 +150,7 @@ class _ContractPageState extends State<ContractPage> {
                                                 '请先登录，再选择办事身份。'),
                                         FilledButton(
                                             onPressed: () =>
-                                                Navigator.pushNamed(
-                                                    context, '/account'),
+                                                _confirmIdentity(session),
                                             child: Text(session.isLoggedIn
                                                 ? '前往选择身份'
                                                 : '前往登录')),
@@ -305,6 +321,16 @@ class _ContractPageState extends State<ContractPage> {
                                           ],
                                         ],
                                         icon: Icons.history),
+                                    if (enableSandboxSigning &&
+                                        designatedSandboxSigner(
+                                            snapshot, reader.session))
+                                      SandboxSigningPanel(
+                                        key: ValueKey([
+                                          snapshot['id'],
+                                          reader.session.epoch
+                                        ].join(':')),
+                                        snapshot: snapshot,
+                                      ),
                                     _card(
                                         '相关服务是否可用',
                                         [

@@ -8,6 +8,10 @@ async function main(){
  if(process.argv.length!==(retained?4:3))throw Error('Usage: node scripts/pm03-batch-smoke.cjs ENV_DIRECTORY [--verify-retained]');
  const out=path.resolve(process.argv[2]);assert.equal(path.dirname(out),path.join(root,'.local/stock-sandbox'));assert.match(path.basename(out),/^jx_test_stock_pm03_[a-f0-9]{24}$/);
  const access=JSON.parse(await fs.readFile(path.join(out,'access.json'),'utf8'));assert.equal(access.mode,'BATCH');assert.equal(access.synthetic_only,true);assert.match(access.base_url,/^http:\/\/127\.0\.0\.1:[0-9]+\/api\/v1$/);assert.ok(Date.parse(access.expires_at)>Date.now());
+ const contractText=await fs.readFile(path.join(root,'contracts/openapi.yaml'),'utf8');
+ const contractVersion=contractText.match(/^  version:\s*['"]?([^\s'"]+)/m)?.[1];
+ assert.ok(contractVersion,'checked-in OpenAPI version is required');
+ assert.equal(access.versions.contract,contractVersion,'environment must match the checked-in contract before any write');
  const people=structuredClone(access.accounts),checks=[],records={},s=access.scenarios;
  async function call(method,url,role,body,account=false,version){
   const u=people[role],res=await fetch(access.base_url+url,{method,headers:{...u?.token?{Authorization:'Bearer '+u.token}:{},...u&&!account?{'X-Acting-Party':u.party_id}:{},...body?{'Content-Type':'application/json','Idempotency-Key':key()}:{},...version?{'If-Match':'"'+version+'"'}:{}},...body?{body:JSON.stringify(body)}:{}});
@@ -54,7 +58,13 @@ async function main(){
   ok(await call('GET','/engagement/mcn/dashboard','mcn_staff'),'mcn');
   ok(await call('GET','/projects/records/'+s.participation.project_id,'reviewer',null,true),'operator');
  });
- await check('exact contract and applied database migration',async()=>{assert.equal(access.versions.contract,'0.31.79-rc.1');assert.equal(access.versions.migration,'0225');assert.equal(access.versions.applied_migrations,225);});
+ await check('current artist contract and free service catalog are configured',async()=>{
+  const services=ok(await call('GET','/artists/services','buyer',null,true),'artist services');
+  assert.equal(services.offers.current_status,'CONFIGURED');assert.equal(services.offers.contract_policy,'CONTRACT_20261029');
+  assert.deepEqual(new Set(services.offers.free_services.map(x=>x.kind)),new Set(['AVATAR_CREATION','AVATAR_HOSTING']));
+  for(const item of services.offers.free_services){assert.equal(item.price_minor,0);assert.equal(item.currency,'CNY');assert.equal(item.payment_requirement,'NONE');}
+ });
+ await check('exact contract and applied database migration',async()=>{assert.equal(access.versions.contract,contractVersion);assert.equal(access.versions.migration,'0225');assert.equal(access.versions.applied_migrations,225);});
  const privateFile=path.join(out,'batch-smoke-private.json');await fs.writeFile(privateFile,'',{mode:0o600});await require('./test-fixtures/private-state.cjs').protectPrivateState(privateFile);await fs.writeFile(privateFile,JSON.stringify({people,records,source_sha256:access.source_sha256}));
  const result={status:'PASS',synthetic_only:true,frontend_tested:false,checks,records,versions:access.versions,source_sha256:access.source_sha256,revision:access.revision,checked_at:new Date().toISOString(),limits:access.coverage};
  await fs.writeFile(path.join(out,'batch-smoke.json'),JSON.stringify(result,null,2));console.log(JSON.stringify({status:'PASS',checks:checks.length,frontend_tested:false}));

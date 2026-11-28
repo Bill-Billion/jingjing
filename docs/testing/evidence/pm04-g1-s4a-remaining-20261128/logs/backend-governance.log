@@ -1,0 +1,179 @@
+TAP version 13
+# Subtest: content module runs without database, login, provider or third-party dependencies
+ok 1 - content module runs without database, login, provider or third-party dependencies
+  ---
+  duration_ms: 59.1945
+  type: 'test'
+  ...
+# Subtest: key ordering does not change content identity; wording and array order do
+ok 2 - key ordering does not change content identity; wording and array order do
+  ---
+  duration_ms: 1.7228
+  type: 'test'
+  ...
+# Subtest: JSON roundtrip preserves the hash, including Unicode and numeric-looking keys
+ok 3 - JSON roundtrip preserves the hash, including Unicode and numeric-looking keys
+  ---
+  duration_ms: 0.4321
+  type: 'test'
+  ...
+# Subtest: ambiguous values, accessors and hidden data are rejected without running getters
+ok 4 - ambiguous values, accessors and hidden data are rejected without running getters
+  ---
+  duration_ms: 0.603
+  type: 'test'
+  ...
+# Subtest: cycles, sparse arrays, invalid Unicode, excessive depth and byte size are rejected
+ok 5 - cycles, sparse arrays, invalid Unicode, excessive depth and byte size are rejected
+  ---
+  duration_ms: 1.4707
+  type: 'test'
+  ...
+# Subtest: special object keys stay data and cannot change prototypes
+ok 6 - special object keys stay data and cannot change prototypes
+  ---
+  duration_ms: 0.2743
+  type: 'test'
+  ...
+# Subtest: rules are deeply detached and frozen; new wording requires new content
+ok 7 - rules are deeply detached and frozen; new wording requires new content
+  ---
+  duration_ms: 2.2537
+  type: 'test'
+  ...
+# Subtest: empty or missing commitments never acquire invented business defaults
+ok 8 - empty or missing commitments never acquire invented business defaults
+  ---
+  duration_ms: 2.8796
+  type: 'test'
+  ...
+# Subtest: draft, review, merely approved, retired and future rules cannot enter new snapshots
+ok 9 - draft, review, merely approved, retired and future rules cannot enter new snapshots
+  ---
+  duration_ms: 2.4436
+  type: 'test'
+  ...
+# Subtest: timestamps must be explicit UTC instants and real calendar dates
+ok 10 - timestamps must be explicit UTC instants and real calendar dates
+  ---
+  duration_ms: 0.6959
+  type: 'test'
+  ...
+# Subtest: later rule changes and retirement do not rewrite historical commitments
+ok 11 - later rule changes and retirement do not rewrite historical commitments
+  ---
+  duration_ms: 0.9497
+  type: 'test'
+  ...
+# Subtest: duplicate parties or conflicting versions of the same rule are rejected
+ok 12 - duplicate parties or conflicting versions of the same rule are rejected
+  ---
+  duration_ms: 1.4721
+  type: 'test'
+  ...
+# Subtest: tampered promises, participants or nested rule content are detected after storage roundtrip
+ok 13 - tampered promises, participants or nested rule content are detected after storage roundtrip
+  ---
+  duration_ms: 1.1644
+  type: 'test'
+  ...
+# Subtest: sealing never grants signed, paid or effective-license status
+ok 14 - sealing never grants signed, paid or effective-license status
+  ---
+  duration_ms: 0.6512
+  type: 'test'
+  ...
+# Subtest: unknown formats are rejected, instead of being silently reinterpreted
+ok 15 - unknown formats are rejected, instead of being silently reinterpreted
+  ---
+  duration_ms: 0.7559
+  type: 'test'
+  ...
+# Subtest: reviewed contract sources and business service checks use real isolated MySQL
+    # Subtest: valid login alone cannot record, review or seal; request principals cannot be forged
+    ok 1 - valid login alone cannot record, review or seal; request principals cannot be forged
+      ---
+      duration_ms: 11.0198
+      type: 'test'
+      ...
+    # Subtest: draft source requires an explicit review; immutable content then becomes an unsigned snapshot
+    ok 2 - draft source requires an explicit review; immutable content then becomes an unsigned snapshot
+      ---
+      duration_ms: 48.4854
+      type: 'test'
+      ...
+    # Subtest: a revised promise creates a new version and cannot replace old source or snapshot
+    ok 3 - a revised promise creates a new version and cannot replace old source or snapshot
+      ---
+      duration_ms: 63.9565
+      type: 'test'
+      ...
+    # Subtest: retries and concurrent reviews produce one source and one accepted version
+    ok 4 - retries and concurrent reviews produce one source and one accepted version
+      ---
+      duration_ms: 41.8058
+      type: 'test'
+      ...
+    # Subtest: unrelated readers, missing rules and unknown terms are not silently accepted
+    ok 5 - unrelated readers, missing rules and unknown terms are not silently accepted
+      ---
+      duration_ms: 18.4281
+      type: 'test'
+      ...
+    # Subtest: withdrawal prevents first sealing but does not delete already preserved history
+    ok 6 - withdrawal prevents first sealing but does not delete already preserved history
+      ---
+      duration_ms: 71.9964
+      type: 'test'
+      ...
+    # Subtest: source audit failure rolls back both content and retry record
+    ok 7 - source audit failure rolls back both content and retry record
+      ---
+      duration_ms: 26.549
+      type: 'test'
+      ...
+    # Subtest: modified source content and withdrawn reader membership fail before sealing
+    ok 8 - modified source content and withdrawn reader membership fail before sealing
+      ---
+      duration_ms: 47.8754
+      type: 'test'
+      ...
+    # Subtest: default service blocks all external business actions even for preserved contracts
+    ok 9 - default service blocks all external business actions even for preserved contracts
+      ---
+      duration_ms: 19.3083
+      type: 'test'
+      ...
+    # Subtest: service state requires matching environment, configuration revision and verification evidence
+    ok 10 - service state requires matching environment, configuration revision and verification evidence
+      ---
+      duration_ms: 38.7882
+      type: 'test'
+      ...
+    # Subtest: command defaults to offline preview and requires a real session before execution
+    ok 11 - command defaults to offline preview and requires a real session before execution
+      ---
+      duration_ms: 212.243
+      type: 'test'
+      ...
+    # Subtest: reviewed persisted source is returned through the real authorized HTTP endpoint
+    ok 12 - reviewed persisted source is returned through the real authorized HTTP endpoint
+      ---
+      duration_ms: 487.3585
+      type: 'test'
+      ...
+    1..12
+ok 16 - reviewed contract sources and business service checks use real isolated MySQL
+  ---
+  duration_ms: 9751.2091
+  type: 'test'
+  ...
+1..16
+# tests 28
+# suites 0
+# pass 28
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 12062.1415

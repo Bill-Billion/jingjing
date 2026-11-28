@@ -1,0 +1,38 @@
+{
+  "issue": "QA18-ENV-063",
+  "disposition": "RETARGET_PASS",
+  "historical_root_cause": "UNKNOWN_RETAINED",
+  "product_bug_confirmed": false,
+  "original_failure": {
+    "path": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds04.log",
+    "sha256": "d30b2117efd03cf319efbe34e097c7d1fa780171269fe440fafae6dd5fd42844"
+  },
+  "original_same_record_resume": {
+    "path": "docs/testing/evidence/pm04-g1-wallet-membership-20261125-22/refunds05.log",
+    "sha256": "869f7bf24182cb1d332812a077c17e62e7bd5d7e63dc017e1e5f2f5d7b34d05e"
+  },
+  "previous_readonly_audit": {
+    "path": "docs/testing/evidence/pm04-g1-t1-evidence-review-20261126/ENV063_ARCHIVE_REVIEW.json",
+    "sha256": "b85063f4ca57cab53ccc9dc50aa23fd92943be4d4ba77ddbd6eb88e0ed466368"
+  },
+  "current_retest": {
+    "path": "docs/testing/evidence/pm04-g1-t1-membership-startup-20261126/attempt4/RESULT.json",
+    "sha256": "6ba083f706d07ee1eb3beed57adc55ad9f11283d48d6b03bd437971581ffb6a6"
+  },
+  "tested_script_source": "edd178f094b8ba412e6886991d14b2dc60008c1f",
+  "app_source": "dac064f4a4a7942f059266b20fc128a2544da228",
+  "facts": [
+    "Original failure occurred before Flutter semantics initialization; original same-order continuation passed after driver context cleanup.",
+    "Current original /wallet/scout page passed all 26 page-only reads and 26 context-close reads, including read22, with exact API membership facts.",
+    "Legacy lifecycle demonstrably retained 26 contexts; corrected lifecycle retained zero after every read. Both current arms passed; no retrospective causal claim.",
+    "No current pageerror, console error, failed static/API request or crash;260 business GET responses200. 676 App inputs and74 browser build files unchanged.",
+    "No new recharge, order, refund, expired login restoration or business clock changes; wallet before/after identical."
+  ],
+  "t1_reason": "No reproducible current machine failure remains after scoped original-page retest and original-record recovery. Old missing telemetry remains an explicit limitation, not an endlessly unhandled failure or a confirmed product defect.",
+  "t3_followup": "Use context.close for completed pages. Retain startup/asset/process telemetry in final same-version batch. If blank recurs, keep original evidence and triage; no automatic formal signoff.",
+  "not_claimed": [
+    "Historical cause proven",
+    "Original22 environment reproduced",
+    "Whole E2E08/current full App/native/151 accepted"
+  ]
+}

@@ -1,0 +1,333 @@
+{
+  "product": "053168fb6e06b80680101702a733357309368809",
+  "started_at": "2026-11-28T02:53:06.265Z",
+  "checks": [
+    {
+      "name": "vue contract surface shows persisted service restrictions",
+      "result": "PASS",
+      "contract": "a6563a6d-dab6-4ad6-bc87-0f89acbf5705",
+      "checked": [
+        {
+          "action": "START_PAYMENT",
+          "reason": "PROVIDER_NOT_IMPLEMENTED"
+        },
+        {
+          "action": "START_IDENTITY_CHECK",
+          "reason": "PROVIDER_NOT_IMPLEMENTED"
+        },
+        {
+          "action": "START_SIGNING",
+          "reason": "PROVIDER_NOT_IMPLEMENTED"
+        },
+        {
+          "action": "START_DIGITAL_HUMAN",
+          "reason": "PROVIDER_NOT_IMPLEMENTED"
+        }
+      ]
+    },
+    {
+      "name": "app contract surface shows persisted service restrictions",
+      "result": "FAIL",
+      "message": "locator.click: Timeout 11000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('身份核验服务', { exact: true }).last()\u001b[22m\n"
+    },
+    {
+      "name": "app private storage loss and exact original retrieval",
+      "result": "FAIL",
+      "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'SERVICE_UNAVAILABLE'\n- 'PRIVATE_CONTENT_MISMATCH'\n"
+    },
+    {
+      "name": "vue private storage loss and exact original retrieval",
+      "result": "FAIL",
+      "message": "page.waitForResponse: Timeout 10000ms exceeded while waiting for event \"response\""
+    }
+  ],
+  "browser_requests": [
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "fb372c57-423e-451c-88e3-0536ac977809",
+      "state": "ACTIVE",
+      "sha256": "609265ba5d55872b4892d021c58eec69ba9e7e7108b6a7702fa8bbcb44252fcb"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1f1825a85d2945be4ffee19d86c9bba0acd07a130f871e06672f071f41b0ff55"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "db3cbfd9b0198c7597dba23ebb59d369f637c4cd5a65a50a099375e779cd182a"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/content",
+      "method": "GET",
+      "status": 200,
+      "id": "a6563a6d-dab6-4ad6-bc87-0f89acbf5705",
+      "state": "SEALED",
+      "sha256": "64c2cf72a5953941f268cbd46e87424afef5d2631717129f8bbf425726116397"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/business-readiness",
+      "method": "GET",
+      "status": 200,
+      "state": "NOT_ENABLED",
+      "sha256": "a43ca52732df10d3859b758df367221b2b5febe2f4dd0e672d008b5ac872878e"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/business-readiness",
+      "method": "GET",
+      "status": 200,
+      "state": "NOT_ENABLED",
+      "sha256": "e37b09c382afad6e061cbff2282386224691d4d4e2809fa7fa7b6e4a84e6a6c7"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/business-readiness",
+      "method": "GET",
+      "status": 200,
+      "state": "NOT_ENABLED",
+      "sha256": "e3a6e9825ee61a773999316f8fe40a2a99d8bfa39ab17bbbdd65a67c2a1d1962"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/business-readiness",
+      "method": "GET",
+      "status": 200,
+      "state": "NOT_ENABLED",
+      "sha256": "8cccedff843267e2c02a809ab6b442aab2c65c9466c5f477509719fe8f28ba87"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "fb372c57-423e-451c-88e3-0536ac977809",
+      "state": "ACTIVE",
+      "sha256": "1dd0c5835431283f6eaa529d94af433be22380d43dc7f907494a55e91a850c42"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "58ea13572f86db9eb7d9414e07d5570d67af71b77e289b33ecab25db28623213"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "f902a5e96da2a2860e975119b5aa00e6c619e3d681078193d284b2d181f66c27"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/content",
+      "method": "GET",
+      "status": 200,
+      "id": "a6563a6d-dab6-4ad6-bc87-0f89acbf5705",
+      "state": "SEALED",
+      "sha256": "f8d5cc5fc38631e7c636e4627db934fa4e8fcd4e5f057ef8768df155574338db"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/business-readiness",
+      "method": "GET",
+      "status": 200,
+      "state": "NOT_ENABLED",
+      "sha256": "fe8c756701ebc5b173f806a10b4fe3c759122bd2501437d3db3ae96518f80409"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "fb372c57-423e-451c-88e3-0536ac977809",
+      "state": "ACTIVE",
+      "sha256": "d9a8ccf97dbe65691a336237c7d9342b1bc408ad63412a1a2dc84a72bfc90601"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "c66dcd28ba1e4d5f8b0bcf72ddd352767038e940fd781a1a4c4897e9a509c11f"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "807cfe7774febd2010ee5d042127ca6dfad463c34f633cbf5f74bd33e65a8346"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/124e64c9-6829-4f71-b2ef-4265a223cdb0",
+      "method": "GET",
+      "status": 200,
+      "id": "124e64c9-6829-4f71-b2ef-4265a223cdb0",
+      "state": "FOLLOW_UP",
+      "sha256": "4439cab1a7e074554b9b346c678357ff6253d3a5f7e1b2558d4cf2c0d8ad1af8"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/124e64c9-6829-4f71-b2ef-4265a223cdb0/history",
+      "method": "GET",
+      "status": 200,
+      "sha256": "502ccb47a0cacbac6145c58b5257045ad6ee54115bace932cb401647f5429bed"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/124e64c9-6829-4f71-b2ef-4265a223cdb0/executions",
+      "method": "GET",
+      "status": 200,
+      "sha256": "a13bd99a28b799eb7c4747fab37b3883f0d4d51138febde4d78d68225a937c72"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/124e64c9-6829-4f71-b2ef-4265a223cdb0/evidence/d8f82eb8-e597-4438-96fd-baba8ccf039f/content",
+      "method": "GET",
+      "status": 503,
+      "error": "SERVICE_UNAVAILABLE",
+      "sha256": "9cca308e14da702f89ac44c3b0325a8fb53c2cc302df5efd851ba48dc6b5baf4"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "fb372c57-423e-451c-88e3-0536ac977809",
+      "state": "ACTIVE",
+      "sha256": "1bdce191e559262f706a9958cd9c05f279d2c3fd9db53f36da6f89f708f15c6e"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "ccaba6b99fb16fa48ce38d91e3212e05a47166022353993bb39e7fa8641b1095"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "69ba555471f14b542c9faaffc5f002f648292374459b66b6958af1e18326ba28"
+    },
+    {
+      "surface": "vue",
+      "role": "buyer",
+      "path": "/api/v1/privacy/requests/124e64c9-6829-4f71-b2ef-4265a223cdb0",
+      "method": "GET",
+      "status": 200,
+      "id": "124e64c9-6829-4f71-b2ef-4265a223cdb0",
+      "state": "FOLLOW_UP",
+      "sha256": "289a7c58afd2c22bc893e3fa2eeca2c0ea00e5f6d6ddb06508e696c889d3be06"
+    }
+  ],
+  "api": [
+    {
+      "path": "/trade/records/fe55f52f-670d-4a04-a362-3fc45dc3095e",
+      "status": 200,
+      "sha256": "aae87aef1c66a16461d3f31b9129ba87abaa16d153086f242e7299fc15ec9638"
+    },
+    {
+      "path": "/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/content",
+      "status": 200,
+      "sha256": "a6e8487ecd30edf513a7c848a9628a7dc00d56a7aa83deabddff1b76afa1a6d6"
+    },
+    {
+      "path": "/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/business-readiness?action=START_PAYMENT",
+      "status": 200,
+      "sha256": "5c8cbec8af29e56c0306dda1e617b85ca19a0a63d372ed63fcbcd1c0fa92fae6"
+    },
+    {
+      "path": "/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/business-readiness?action=START_IDENTITY_CHECK",
+      "status": 200,
+      "sha256": "8831cf57d5ef9951c511f26ec3a00303d152e622baf8e287b6ad55a1d0976fa4"
+    },
+    {
+      "path": "/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/business-readiness?action=START_SIGNING",
+      "status": 200,
+      "sha256": "56fc6bc7262566cfd97956bc71248174cbf2b92502e867e7f91a6779f28c5cce"
+    },
+    {
+      "path": "/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/business-readiness?action=START_DIGITAL_HUMAN",
+      "status": 200,
+      "sha256": "2e005c91ca21d38ae20562375012f8d7ead7490c0b251fdd58e3b73776daedc5"
+    },
+    {
+      "path": "/privacy/requests/124e64c9-6829-4f71-b2ef-4265a223cdb0",
+      "status": 200,
+      "sha256": "169f6c57614e16820e336c561c0f95096a3107f64d5f3a7176e29194129f426e"
+    },
+    {
+      "path": "/privacy/requests/124e64c9-6829-4f71-b2ef-4265a223cdb0",
+      "status": 200,
+      "sha256": "d18c471df4346e2fe4a600c72e6299bbd3f0d82333eb2cc514c74a695107c04f"
+    },
+    {
+      "path": "/contract-snapshots/a6563a6d-dab6-4ad6-bc87-0f89acbf5705/content",
+      "status": 200,
+      "sha256": "5b2ff60caf7a868821aa463bde1c9be341051e04028c2770a7c5b56e8e43de55"
+    }
+  ],
+  "source_database": "jx_test_qa18_privacy_170df71eb1fc4e2a6be5",
+  "clone": "jx_test_qa18_s4delta_e887fc92e09b7c339ab8",
+  "initial_dump_sha256": "f71f43f9929ceee864a89708d326169a66492db3bbd2986f396122241f1cb0dd",
+  "schema_tables": 189,
+  "migration_count": 225,
+  "exact_restored_file_count": 3,
+  "new_synthetic_sessions": 4,
+  "contract_fixture": {
+    "id": "a6563a6d-dab6-4ad6-bc87-0f89acbf5705",
+    "business_ref": "synthetic:s4a:fe55f52f-670d-4a04-a362-3fc45dc3095e",
+    "signing_method": "NOT_SIGNED"
+  },
+  "served_checkout": "e887301530c24f9751e074cd297535c3aac7cdb9",
+  "builds": {
+    "app": {
+      "files": 74,
+      "sha256": "87f331e857391cbaf00aaa1da974a6954c0dfe07eabedc0b4a422b318bf44f17"
+    },
+    "vue": {
+      "files": 93,
+      "sha256": "bab320ad70408b55984610c1c8381308debf4e2bb11fb0feb12198da1f47008d"
+    }
+  },
+  "result": "PARTIAL",
+  "original_sql_unchanged": true,
+  "finished_at": "2026-11-28T02:53:47.068Z"
+}

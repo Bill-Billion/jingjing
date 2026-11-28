@@ -3,6 +3,17 @@ const {id,shape,label,error}=require('../party/policy'),{digest}=require('../gov
 const C=require('./checks'),P=require('./participation-policy'),S=require('./participation-state');
 function methods(H){const {db,actor,owner,operator,access,insert,save,mutate,audit}=H;
  return {
+ async participationRecastSources(ctx,{record_id,party_id,after='',limit=20}){
+  if(after)id(after);if(!Number.isInteger(limit)||limit<1||limit>100)throw error('INVALID_LIST',400);
+  return db.withTransaction(async tx=>{const a=await actor(tx,ctx);await owner(tx,a,party_id);const c=await C.load(tx,record_id,'CANDIDATE','FOR SHARE');if(c.owner_party_id!==party_id)throw error('PROJECT_NOT_FOUND',404);
+   if(c.current_status!=='CONFIRMED')throw error('PARTICIPATION_CAST_NOT_CONFIRMED',409);const p=await C.load(tx,c.project_id,'PROJECT','FOR SHARE');await C.active(tx,p.owner_party_id);if(p.current_status!=='PREPARING'||p.data.current_plan_id||p.data.scope.valid_until<=new Date().toISOString())throw error('PROJECT_REVISION_REQUIRED',409);
+   // Only a withdrawn performer on this exact role can supply a replacement source.
+   // Return identifiers and versions only: never old terms, assets, money or signatures.
+   const [rows]=await tx.execute("SELECT r.* FROM project_records r JOIN project_records oldc ON oldc.id=JSON_UNQUOTE(JSON_EXTRACT(r.data_json,'$.candidate_id')) WHERE r.project_id=? AND r.kind='PARTICIPATION' AND r.current_status='APPROVED' AND r.id>? AND r.owner_party_id<>? AND JSON_UNQUOTE(JSON_EXTRACT(r.data_json,'$.role_id'))=? AND oldc.kind='CANDIDATE' AND oldc.current_status='WITHDRAWN' ORDER BY r.id LIMIT ?",[p.id,after,party_id,c.data.role_id,limit+1]);const items=[],A=require('./participation-amendment');
+   for(const row of rows.slice(0,limit)){const r=C.dto(row);if(r.data.amendment&&!await A.activated(tx,r))continue;try{await C.allConfirmed(tx,r);if(!(await A.sourceFunds(tx,r)).some(x=>x.net_minor>0))continue;}catch(e){if(e.status===409)continue;throw e;}items.push({id:r.id,object_version:r.object_version,content_sha256:r.content_sha256,owner_party_id:r.owner_party_id});}
+   return {candidate_id:c.id,candidate_version:c.object_version,candidate_sha256:c.content_sha256,project_id:p.id,role_id:c.data.role_id,items,next_cursor:rows.length>limit?rows[limit-1].id:null};
+  });
+ },
  async reopenParticipationProject(ctx,i){shape(i,['record_id','party_id','expected_version','reason','evidence_asset_id','operation_key']);label(i.reason,4000);
   return mutate(ctx,i,'REOPEN_PROJECT',async(tx,a,p,r)=>{await owner(tx,a,i.party_id);if(r.kind!=='PROJECT'||p.owner_party_id!==i.party_id)throw error('PROJECT_PARTY_FORBIDDEN');},async(tx,a,p)=>{if(!['PREPARING','STARTED'].includes(p.current_status)||!p.data.current_plan_id)throw error('PROJECT_PLAN_REQUIRED',409);await C.evidence(tx,i.evidence_asset_id,p.owner_party_id);
    const [attempts]=await tx.execute("SELECT * FROM project_records WHERE project_id=? AND kind='RELEASE' FOR UPDATE",[p.id]);

@@ -26,6 +26,32 @@ const matchReasons = {
   'AUDITION_MODE_MATCH': '符合试镜方式',
   'NOTICE_TYPE_MATCH': '符合通告类型'
 };
+const rankingReasons = {
+  'PUBLIC_CATALOG': '公开目录顺序',
+  'RECENT_BROWSING_CITY': '与你近期浏览的公开内容城市相关',
+  'RECENT_PURCHASE_CITY': '与你近期实际购买的公开内容城市相关',
+};
+const discoveryReasons = {...matchReasons, ...rankingReasons};
+
+void validateDiscoveryRanking(Map<String, dynamic> d, {required bool matching}) {
+  communityRequire(d['personalized'] is bool &&
+      d['price_personalized'] == false &&
+      d['candidate_limit'] == 500 && d['catalog_truncated'] is bool &&
+      d['algorithm_version'] == (matching
+          ? 'EXPLICIT_FILTERS_CITY_ACTIVITY_V1' : 'CITY_ACTIVITY_V1'));
+  final principle = d['personalized'] == true
+      ? 'RECENT_PURCHASE_CITY_THEN_BROWSING_CITY_THEN_CATALOG'
+      : 'PUBLIC_CATALOG_ORDER';
+  communityRequire(d['principle'] == '${matching ? 'EXPLICIT_FILTERS_THEN_' : ''}$principle');
+  if (matching) communityRequire(d['requires_business_validation'] == true);
+  for (final row in communityItems(d)) {
+    final why = row['reasons'];
+    communityRequire(why is List && why.isNotEmpty &&
+        why.every((v) => (matching ? discoveryReasons : rankingReasons).containsKey(v)) &&
+        why.where(rankingReasons.containsKey).length == 1 &&
+        (d['personalized'] == true || why.contains('PUBLIC_CATALOG')));
+  }
+}
 const discoveryKinds = {
   'ARTIST': '艺人',
   'STOCK': '作品',
@@ -155,6 +181,8 @@ class _PublicSearchState extends State<_PublicSearch> {
       budget = TextEditingController(),
       tag = TextEditingController();
   bool matching = false, activeMatching = false;
+  bool recommended = false, activeRecommended = false;
+  Map<String, dynamic>? ranking;
   String purpose = '',
       commercialUse = '',
       halo = '',
@@ -223,6 +251,7 @@ class _PublicSearchState extends State<_PublicSearch> {
     ticket++;
     rows = [];
     reasons.clear();
+    ranking = null;
     cursor = null;
     seen.clear();
     busy = false;
@@ -235,6 +264,7 @@ class _PublicSearchState extends State<_PublicSearch> {
       try {
         activeFilters = filters();
         activeMatching = matching;
+        activeRecommended = recommended;
       } catch (e) {
         setState(() => error = communityError(e));
         return;
@@ -252,8 +282,11 @@ class _PublicSearchState extends State<_PublicSearch> {
       error = null;
     });
     try {
+      final endpoint = activeRecommended
+          ? (activeMatching ? 'recommended-matches' : 'recommendations')
+          : (activeMatching ? 'matches' : 'search');
       final d = await CommunityApi(widget.session, 'discovery')
-          .read(activeMatching ? 'matches' : 'search', account: true, query: {
+          .read(endpoint, account: true, query: {
         ...activeFilters,
         'kind': activeKind,
         'limit': 20,
@@ -262,7 +295,8 @@ class _PublicSearchState extends State<_PublicSearch> {
         if (previous != null) 'cursor': previous,
       });
       final raw = validatePublicPage(d, previous: previous);
-      if (activeMatching) {
+      if (activeRecommended) validateDiscoveryRanking(d, matching: activeMatching);
+      if (activeMatching && !activeRecommended) {
         communityRequire(d['algorithm_version'] ==
                 'EXPLICIT_BUSINESS_FILTERS_V1' &&
             d['personalized'] == false &&
@@ -270,6 +304,8 @@ class _PublicSearchState extends State<_PublicSearch> {
             d['requires_business_validation'] == true &&
             d['principle'] == 'EXPLICIT_FILTERS_THEN_PUBLIC_CATALOG_ORDER' &&
             d['scan_limited'] is bool);
+      }
+      if (activeMatching) {
         final f = communityMap(d['filters']);
         communityRequire(f.length == activeFilters.length &&
             activeFilters.entries.every((e) =>
@@ -277,11 +313,11 @@ class _PublicSearchState extends State<_PublicSearch> {
         for (final r in raw) {
           communityRequire(r['reasons'] is List &&
               (r['reasons'] as List).isNotEmpty &&
-              (r['reasons'] as List).every((v) => matchReasons.containsKey(v)));
+              (r['reasons'] as List).every((v) => (activeRecommended ? discoveryReasons : matchReasons).containsKey(v)));
           communityMap(r['item']);
         }
       }
-      final result = activeMatching
+      final result = activeMatching || activeRecommended
           ? raw.map((r) => communityMap(r['item'])).toList()
           : raw;
       communityRequire(d['kind'] == activeKind);
@@ -303,7 +339,7 @@ class _PublicSearchState extends State<_PublicSearch> {
       final next = d['next_cursor'] as String?;
       communityRequire(next == null || seen.add(next));
       setState(() {
-        if (activeMatching) {
+        if (activeMatching || activeRecommended) {
           for (final r in raw) {
             final item = communityMap(r['item']);
             reasons[(item['listing_id'] ?? item['id']) as String] =
@@ -312,15 +348,21 @@ class _PublicSearchState extends State<_PublicSearch> {
         }
         rows = [...rows, ...result];
         cursor = next;
+        ranking = activeRecommended ? {
+          'personalized': d['personalized'],
+          'catalog_truncated': d['catalog_truncated'],
+        } : null;
       });
     } catch (e) {
       if (mounted && t == ticket) {
         setState(() {
           error = communityError(e);
           if (e is AccountError &&
-              [400, 401, 403, 404, 409].contains(e.status)) {
+              [400, 401, 403, 404, 409, 412].contains(e.status)) {
             rows = [];
             cursor = null;
+            reasons.clear();
+            ranking = null;
           }
         });
       }
@@ -357,9 +399,9 @@ class _PublicSearchState extends State<_PublicSearch> {
             const SizedBox(height: 8),
             Text(metadata,
                 style: const TextStyle(fontSize: 12, color: AccountTheme.muted)),
-            if (activeMatching) ...[
+            if (activeMatching || activeRecommended) ...[
               const SizedBox(height: 6),
-              Text('符合所选条件：${(reasons[id] ?? []).map((r) => matchReasons[r]).join('、')}',
+              Text('${activeRecommended ? '排序依据' : '符合所选条件'}：${(reasons[id] ?? []).map((r) => discoveryReasons[r]).join('、')}',
                   style: const TextStyle(fontSize: 12, color: AccountTheme.accent)),
             ],
             if (activeKind == 'AUDITION' || activeKind == 'STOCK') ...[
@@ -465,6 +507,21 @@ class _PublicSearchState extends State<_PublicSearch> {
                         color: kind == item.key ? AccountTheme.accent : AccountTheme.muted))))),
         ]),
         const SizedBox(height: 16),
+        SwitchListTile(
+            title: const Text('参考我的浏览与交易排序'),
+            subtitle: const Text('仅在隐私设置已开启个性化推荐时使用；不会自动修改你的设置。'),
+            value: recommended,
+            onChanged: (v) => setState(() {
+                  recommended = v;
+                  clearResults();
+                })),
+        if (recommended) ...[
+          const Text('在当前公开结果中，先按明确条件筛选，再优先展示近期实际购买城市、近期浏览城市的内容，其余按公开目录顺序。不改变价格，也不代替授权或成交。'),
+          TextButton(onPressed: () async {
+            await Navigator.pushNamed(context, '/privacy?view=preferences');
+            if (mounted) await load();
+          }, child: const Text('调整个性化推荐')),
+        ],
         SwitchListTile(
             title: const Text('按明确条件匹配'),
             value: matching,
@@ -594,8 +651,15 @@ class _PublicSearchState extends State<_PublicSearch> {
         if (busy) const LinearProgressIndicator(),
         if (error != null)
           Text(error!, style: const TextStyle(color: AccountTheme.danger)),
+        if (ranking != null) ...[
+          Text(ranking!['personalized'] == true
+              ? '当前使用已开启的个性化偏好。每条结果列出实际排序依据。'
+              : '当前个性化推荐已关闭，按公开目录顺序展示，仍可筛选和办理。'),
+          if (ranking!['catalog_truncated'] == true)
+            const Text('当前目录内容较多，本次推荐只覆盖前500条候选，请补充城市或关键词缩小范围。'),
+        ],
         const Padding(padding: EdgeInsets.symmetric(vertical: 16),
-            child: Text('按公开资料筛选，不代表接受邀约或授予使用权。关闭个性化推荐仍可搜索；这里只按明确条件查找，不生成虚构AI匹配率。',
+            child: Text('按公开资料筛选，不代表接受邀约或授予使用权。关闭个性化推荐仍可搜索，不生成虚构AI匹配率。',
                 style: TextStyle(fontSize: 12, color: AccountTheme.muted, height: 1.6))),
         if (rows.isNotEmpty) ...[
           Row(children: [
@@ -620,7 +684,7 @@ class _PublicSearchState extends State<_PublicSearch> {
         TextButton(
             onPressed: busy ? null : () => chooseKind('AUDITION'),
             child: Text(kind == 'AUDITION' ? '当前正在查找试镜方案' : '另外查找试镜方案')),
-        const Text('这里只按公开资料和明确条件筛选，不使用个性化推荐；关闭个性化仍可搜索。结果不代表邀约、出演授权或成交，进入详情后仍须核对权限。',
+        const Text('结果不代表邀约、出演授权或成交，进入详情后仍须核对权限。关闭个性化仍可按公开资料和明确条件查找。',
             style: TextStyle(color: AccountTheme.muted, height: 1.6)),
       ]);
 }

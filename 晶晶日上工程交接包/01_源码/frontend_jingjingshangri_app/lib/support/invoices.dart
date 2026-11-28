@@ -440,7 +440,9 @@ class _InvoicesState extends State<_Invoices> {
     }
     if (create && recovery == null) {
       if (eligibility == null || eligibility!['available_minor'] <= 0 ||
-          eligibility!['environment'] == null || amountInputError != null) return;
+          eligibility!['environment'] == null || amountInputError != null) {
+        return;
+      }
       final confirmed = await tradeConfirm(context, '核对本次开票申请', [
         tradeFact('原订单', widget.orderId),
         tradeFact('抬头类型', kind == 'PERSON' ? '个人' : '企业'),
@@ -594,7 +596,9 @@ class _InvoicesState extends State<_Invoices> {
       if (!mounted) return;
       final saved = await FilePicker.saveFile(
           fileName: document == null
-              ? '开票材料-$id'
+              // Application history has no trusted filename/type. Keep bytes
+              // unchanged and use a neutral suffix required by the web picker.
+              ? '开票材料-$id.bin'
               : content!['simulated']
                   ? '模拟凭证-非真实发票-$id.txt'
                   : '票据-$id.pdf',

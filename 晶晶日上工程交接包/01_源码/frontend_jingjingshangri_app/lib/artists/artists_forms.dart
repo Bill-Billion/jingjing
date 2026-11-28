@@ -200,10 +200,11 @@ class _ArtistFormState extends State<_ArtistForm> {
         !self) {
       return false;
     }
-    if (['AVATAR', 'VARIANT'].contains(mode) &&
+    if (mode == 'AVATAR' &&
         !actions.contains('MANAGE_AVATARS')) {
       return false;
     }
+    if (mode == 'VARIANT' && !actions.contains('MANAGE_MATERIALS')) return false;
     if (mode == 'LISTING' && !actions.contains('SUBMIT_LISTING')) return false;
     if ([
           'AVATAR',
@@ -628,7 +629,9 @@ class _ArtistFormState extends State<_ArtistForm> {
                       fileBusy = v;
                       if (v) {
                         uploadingCategory = entry.key;
-                      } else if (!unresolvedFile) uploadingCategory = null;
+                      } else if (!unresolvedFile) {
+                        uploadingCategory = null;
+                      }
                     });
                   }
                 },
@@ -822,7 +825,9 @@ class _ArtistFormState extends State<_ArtistForm> {
                 fileBusy = b;
                 if (b) {
                   uploadingCategory = 'other';
-                } else if (!unresolvedFile) uploadingCategory = null;
+                } else if (!unresolvedFile) {
+                  uploadingCategory = null;
+                }
               });
             }
           },
@@ -1017,15 +1022,23 @@ class _ArtistFormState extends State<_ArtistForm> {
                 Text('L1免费核验；L2按已审服务申请人工审核。L3不在此付费升级。付款只进入审核流程，不代表认证通过。',
                     style: TextStyle(fontSize: 12, height: 1.6, color: AccountTheme.muted)),
               ])),
-          for (final option in const [(1, 'L1免费认证'), (2, 'L2认证审核')])
-            Container(
-                decoration: const BoxDecoration(
-                    border: Border(bottom: BorderSide(color: AccountTheme.border))),
-                child: RadioListTile<int>(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(option.$2),
-                    value: option.$1, groupValue: halo,
-                    onChanged: enabled ? (v) => change(() => halo = v!) : null)),
+          RadioGroup<int>(
+              groupValue: halo,
+              onChanged: (value) {
+                if (!enabled || value == null) return;
+                change(() => halo = value);
+              },
+              child: Column(children: [
+                for (final option in const [(1, 'L1免费认证'), (2, 'L2认证审核')])
+                  Container(
+                      decoration: const BoxDecoration(
+                          border: Border(bottom: BorderSide(color: AccountTheme.border))),
+                      child: RadioListTile<int>(
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(option.$2),
+                          value: option.$1,
+                          enabled: enabled)),
+              ])),
           if (halo == 2)
             select(
                 '沿用同一笔L2审核服务',

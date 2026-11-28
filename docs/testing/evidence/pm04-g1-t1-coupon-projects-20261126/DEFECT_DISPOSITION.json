@@ -1,0 +1,181 @@
+{
+  "defect": {
+    "bug_id": "QA18-TEST-156",
+    "discovered_at": "2026-11-26T10:50:05.186Z",
+    "group_ids": "G16/G17",
+    "acceptance_ids": "ACC-DEL-22.02",
+    "e2e_ids": "",
+    "severity": "P2",
+    "kind": "TEST_FIXTURE",
+    "owner": "chengcongcong222",
+    "status": "RETARGET_PASS",
+    "version": "732fa79408e3bf49f8c0a7206ea8ec6960a8e9d2",
+    "environment": "disposable localhost33316",
+    "actual_record_id": "",
+    "role": "",
+    "original_key_sha256": "",
+    "expected": "先按正常本人确认流程准备人工样片报价，再验证制作金拒用。",
+    "observed": "夹具遗漏bind/confirm本人样片许可，在报价前遭MANUAL_SAMPLE_CONFIRMATION_REQUIRED；未进入被测券拒用。另做剧/创建/托管3场景通过，1子场景及父项失败。",
+    "request_endpoint": "",
+    "response_code": "MANUAL_SAMPLE_CONFIRMATION_REQUIRED",
+    "reproduction": "node --test test/redemption-original-scope.integration.test.cjs",
+    "before_proof_path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-before-01/backend.tap",
+    "before_sha256": "7cf64435beba9f9be384884558a63b0bfc37e8e63de7c744c0005ec83a38878b",
+    "root_cause": "offer({productType:MANUAL_SAMPLE})未按已有manual-sample原流程绑定本人资料并确认。保留门禁，补合法前置。",
+    "fix_commit": "8b6fce2269d96482ac692029c8d332e1c4a0a722",
+    "target_retest_path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-fixed-02/summary.json",
+    "target_retest_result": "4业务子场景+父项PASS，38响应契约PASS；人工样片按正常本人许可确认，生产规则未改。原3PASS/2FAIL保留。",
+    "regression_run_id": "",
+    "reviewer": ""
+  },
+  "attempts": [
+    {
+      "source": "732fa79408e3bf49f8c0a7206ea8ec6960a8e9d2",
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-before-01/summary.json",
+        "sha256": "921456b06109d1b4cca8ba581b5fb53bedf3fbd6f1dd2372249075ecfa5d2c30"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-before-01/backend.tap",
+          "sha256": "7cf64435beba9f9be384884558a63b0bfc37e8e63de7c744c0005ec83a38878b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-before-01/checks.jsonl",
+          "sha256": "772e37ee2542eea4816d0d45121d2cea0d64c692a564da40085e30e23752b6a9"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-before-01/source-manifest.json",
+          "sha256": "5bfaef4db3e2f7d45ff6c5fef27e8cfb65bb3ff22b364c9b4511e978be23a5ab"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-before-01/HTTP_INDEX.json",
+          "sha256": "6b3e0fcf65f13f9c53226927dfa63c3faae0b7bafd247618704841f29c4f99b1"
+        }
+      ],
+      "records": [
+        {
+          "kind": "MANUAL_DRAMA",
+          "story_id": "f1aa9477-f150-4fde-9e1b-085d0e789a1f",
+          "submission_id": "14f160b4-da6d-474b-a441-5d4a240c8c8f",
+          "spec_id": "b1a228a9-6dc8-4216-8c46-e0b7486b9ccb",
+          "quote_id": "80de8bdb-5508-48f4-8c9e-cb126b7183b4",
+          "grant_id": "b64beacd-da76-4880-86ee-f5e3c8a1201c",
+          "hold_id": "bb26994a-798a-4cf2-8a9f-312abad7bb37",
+          "order_id": "b0b22a54-c7db-4eb9-bec3-ffe72317aa23",
+          "production_id": "b99e3b3d-d045-4fdb-9607-8dc8942a5046",
+          "script_version_id": "59f3b957-606e-4dcc-ad0c-808be2e79fbf",
+          "total_minor": 45000,
+          "installments": [
+            13500,
+            18000,
+            13500
+          ],
+          "received_minor": 0
+        },
+        {
+          "kind": "AVATAR_CREATION",
+          "spec_id": "db19553f-bca7-4905-b61c-125f4aae90ac",
+          "quote_id": "11fc2e46-d63c-4e0e-98a6-dd818a85bbc3",
+          "rejected_stock_id": "60ee17eb-9163-4ff7-9b79-b40c6e2c2abf",
+          "grant_id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+          "grant_status": "AVAILABLE",
+          "stock_error": "REWARD_SPEC_NOT_AVAILABLE",
+          "checkout_error": "COUPON_QUOTE_NOT_ELIGIBLE",
+          "new_hold_count": 0
+        },
+        {
+          "kind": "AVATAR_HOSTING",
+          "spec_id": "a11d09b2-22ec-4f0c-a457-b7155e77b75f",
+          "quote_id": "ff1552c2-b427-48c0-92c5-fd323f003ae9",
+          "rejected_stock_id": "71f0dbdf-de14-4be6-8a63-576db0a96a46",
+          "grant_id": "5d40544d-2987-42c1-9bc2-073fc34e329c",
+          "grant_status": "AVAILABLE",
+          "stock_error": "REWARD_SPEC_NOT_AVAILABLE",
+          "checkout_error": "COUPON_QUOTE_NOT_ELIGIBLE",
+          "new_hold_count": 0
+        }
+      ]
+    },
+    {
+      "source": "8b6fce2269d96482ac692029c8d332e1c4a0a722",
+      "summary": {
+        "path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-fixed-02/summary.json",
+        "sha256": "918ed3861791203e6b8b4c5f4a19c0648851fa13b764e6ee12ede66921583a55"
+      },
+      "raw_logs": [
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-fixed-02/backend.tap",
+          "sha256": "af7097a5dcf13b857186450be729e428c557c875ea8bf84eb8ca4f3c58bc049c"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-fixed-02/checks.jsonl",
+          "sha256": "e77d2b27b12ecc82939dc5245004ac67a7dff6c68fdc89ee3b3fbf028a20da54"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-fixed-02/source-manifest.json",
+          "sha256": "0f8599dbccd572bf0e3df999abf8c81ad4f3a676bc452edb6980a9ca5a8cb42b"
+        },
+        {
+          "path": "docs/testing/evidence/pm04-g1-t1-coupon-projects-20261126/coupon-fixed-02/HTTP_INDEX.json",
+          "sha256": "bd43ab53c1a8f1f6ac52fec0c35c57c8e8d15195dcda5a98408203837d5509e3"
+        }
+      ],
+      "records": [
+        {
+          "kind": "MANUAL_DRAMA",
+          "story_id": "a7abc29a-3c32-4177-9878-0f110bc2eb68",
+          "submission_id": "d7aa1528-ed97-41d3-97b4-14366267ee88",
+          "spec_id": "38d5b7ea-88a4-4d11-b092-c9a414327eb9",
+          "quote_id": "1e8a75df-5a48-439f-acc7-ec27a47338d4",
+          "grant_id": "67267d85-c149-4e6d-b402-3b59c7d3e361",
+          "hold_id": "7480904b-3cc6-4908-9de9-52a66f24d339",
+          "order_id": "9013bbde-32be-493e-9712-64401f59441e",
+          "production_id": "362e486a-c6ff-437c-a4b3-4582065e0b4d",
+          "script_version_id": "48c3127f-a284-4881-9882-900a6d131cf6",
+          "total_minor": 45000,
+          "installments": [
+            13500,
+            18000,
+            13500
+          ],
+          "received_minor": 0
+        },
+        {
+          "kind": "MANUAL_SAMPLE",
+          "spec_id": "127ba9ab-e6aa-40de-a803-87d09384e766",
+          "quote_id": "809e09b8-d736-4579-8296-ed93de530f82",
+          "rejected_stock_id": "6adff2dd-43a3-4743-b8b7-b40491821a4e",
+          "grant_id": "286441e8-a599-40f1-9c16-d0c7fe98a3f5",
+          "grant_status": "AVAILABLE",
+          "stock_error": "REWARD_SPEC_NOT_AVAILABLE",
+          "checkout_error": "COUPON_PRODUCT_NOT_ELIGIBLE",
+          "new_hold_count": 0
+        },
+        {
+          "kind": "AVATAR_CREATION",
+          "spec_id": "31665f3a-5d2e-4995-bd02-0b9e1fd58d95",
+          "quote_id": "8f266efe-2973-4709-8820-9150b512ffac",
+          "rejected_stock_id": "459337ef-d3be-4700-ac55-15344c562b1a",
+          "grant_id": "286441e8-a599-40f1-9c16-d0c7fe98a3f5",
+          "grant_status": "AVAILABLE",
+          "stock_error": "REWARD_SPEC_NOT_AVAILABLE",
+          "checkout_error": "COUPON_QUOTE_NOT_ELIGIBLE",
+          "new_hold_count": 0
+        },
+        {
+          "kind": "AVATAR_HOSTING",
+          "spec_id": "47e06762-2a3f-4802-a1ef-c652d0c64729",
+          "quote_id": "f8d65b9d-5544-46f1-9f14-56c571037099",
+          "rejected_stock_id": "8361af8f-35b1-4c66-a193-38948d8f82eb",
+          "grant_id": "286441e8-a599-40f1-9c16-d0c7fe98a3f5",
+          "grant_status": "AVAILABLE",
+          "stock_error": "REWARD_SPEC_NOT_AVAILABLE",
+          "checkout_error": "COUPON_QUOTE_NOT_ELIGIBLE",
+          "new_hold_count": 0
+        }
+      ]
+    }
+  ],
+  "product_defects_confirmed": 0
+}

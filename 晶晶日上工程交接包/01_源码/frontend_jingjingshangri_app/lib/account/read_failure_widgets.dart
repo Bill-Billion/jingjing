@@ -139,7 +139,7 @@ class ReadSessionExpiredPage extends StatelessWidget {
     final content =
         Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       _stateHeading('账号验证', '登录已过期'),
-      _statePanel('登录状态已过期', '完成登录后重新核对查看${label}的权限。私有内容暂不展示，不会自动继续付款、签署或确认操作。'),
+      _statePanel('登录状态已过期', '完成登录后重新核对查看$label的权限。私有内容暂不展示，不会自动继续付款、签署或确认操作。'),
       const SizedBox(height: 24),
       Container(
           padding: const EdgeInsets.symmetric(vertical: 8),

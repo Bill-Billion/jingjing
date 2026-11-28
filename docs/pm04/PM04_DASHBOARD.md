@@ -1,5 +1,15 @@
 # PM04 当前任务驾驶舱
 
+**当前为 PM04 G1 原18组统一机测，下面旧独立开发节奏保留为历史。**
+
+[G1执行入口](qa18/README.md) · [实际运行回执](qa18/RUN_REPORT.md) · [前端机测交接](qa18/FRONTEND_HANDOFF.md)
+
+测试总负责人：chengcongcong222；运行批次：`pm04-g1-purchase-recommendations-20261126-47`；阶段：T1_DISCOVERY。
+
+顺序：首轮发现 → 集中修复 → 最终同版18组/12链完整回归 → 安装包人工体验 → 原151标准签收。
+
+机器执行事实独立于正式验收计数；缺件、失败及未测项见本轮回执。
+
 > 本页由 board.json 的 PM04 记录生成；原需求、历史统计和原件保留。
 
 [执行入口](README.md) · [计划](PM04_PLAN.md) · [原需求冻结](PM04_REQUIREMENTS_FREEZE_20261118.md)

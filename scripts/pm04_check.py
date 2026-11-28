@@ -53,6 +53,18 @@ def views(cycle):
               '更新领取：本人修改 board.json#pm04_cycle_20261118，再运行 python scripts/pm04_check.py --render。', '']
     if cycle.get('frontend_update'):
         lines += ['[前端联测证据和页面收尾清单](../reviews/pm04/JOINED_17_SCOPE_EVIDENCE.md)：当前 PR41 前后端 CI 已通过；JT-03 有本地局部证据，Android 模拟器和正式验收未完成。', '']
+    if cycle.get('qa18_execution'):
+        qa = cycle['qa18_execution']
+        lines[1:1] = ['', '**当前为 PM04 G1 原18组统一机测，下面旧独立开发节奏保留为历史。**', '',
+                      '[G1执行入口](qa18/README.md) · [实际运行回执](qa18/RUN_REPORT.md) · [前端机测交接](qa18/FRONTEND_HANDOFF.md)', '',
+                      '测试总负责人：{}；运行批次：`{}`；阶段：{}。'.format(qa['lead'], qa['run_id'], qa['stage']), '',
+                      '顺序：首轮发现 → 集中修复 → 最终同版18组/12链完整回归 → 安装包人工体验 → 原151标准签收。', '',
+                      '机器执行事实独立于正式验收计数；缺件、失败及未测项见本轮回执。']
+        html = html.replace('<body>', '<body><div style="padding:16px;background:#fff3cd;color:#222">'
+                            '当前：PM04 G1 原18组统一机测。下方旧阶段快照为历史。'
+                            '<a href="qa18/README.md">本轮入口</a> · '
+                            '<a href="qa18/RUN_REPORT.md">实际运行回执</a> · '
+                            '<a href="qa18/FRONTEND_HANDOFF.md">前端交接</a></div>', 1)
     return {'PM04_CYCLE.json': serialized(cycle), 'PM04_TASKS.json': serialized(definitions),
             'PM04_DASHBOARD.html': html, 'PM04_DASHBOARD.md': '\n'.join(lines)}
 

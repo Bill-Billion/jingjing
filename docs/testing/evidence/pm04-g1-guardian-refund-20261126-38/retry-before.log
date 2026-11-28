@@ -1,0 +1,94 @@
+TAP version 13
+# Subtest: recharge refund role-separated HTTP and personal guardian copies
+    # Subtest: authenticated personal request is idempotent and cannot forge source, party, receipt or guardian
+    ok 1 - authenticated personal request is idempotent and cannot forge source, party, receipt or guardian
+      ---
+      duration_ms: 141.2023
+      type: 'test'
+      ...
+    # Subtest: own lists, cursor and cancellation respect identity, current version and command replay
+    ok 2 - own lists, cursor and cancellation respect identity, current version and command replay
+      ---
+      duration_ms: 81.7416
+      type: 'test'
+      ...
+    # Subtest: independent queue and actual evidence bytes never expose own case or unrelated files
+    ok 3 - independent queue and actual evidence bytes never expose own case or unrelated files
+      ---
+      duration_ms: 96.5869
+      type: 'test'
+      ...
+    # Subtest: HTTP independent approval, scheduling and retry join the real worker without public dispatch or receipt input
+    ok 4 - HTTP independent approval, scheduling and retry join the real worker without public dispatch or receipt input
+      ---
+      duration_ms: 193.1529
+      type: 'test'
+      ...
+    # Subtest: guardian refund choices derive child party and recharge only from a currently active link
+    ok 5 - guardian refund choices derive child party and recharge only from a currently active link
+      ---
+      duration_ms: 56.2202
+      type: 'test'
+      ...
+    # Subtest: guardian HTTP uses own identity and evidence, separate child source, no self-review
+    ok 6 - guardian HTTP uses own identity and evidence, separate child source, no self-review
+      ---
+      duration_ms: 117.4414
+      type: 'test'
+      ...
+    # Subtest: own wallet and guardian copies redact task, channel, identity and review evidence
+    ok 7 - own wallet and guardian copies redact task, channel, identity and review evidence
+      ---
+      duration_ms: 90.8286
+      type: 'test'
+      ...
+    # Subtest: revoked guardian loses live case details and new requests but own child retains financial copy
+    ok 8 - revoked guardian loses live case details and new requests but own child retains financial copy
+      ---
+      duration_ms: 78.2388
+      type: 'test'
+      ...
+    # Subtest: queued original refund refuses manual retry with a stable business conflict and no extra task
+    not ok 9 - queued original refund refuses manual retry with a stable business conflict and no extra task
+      ---
+      duration_ms: 33.0698
+      type: 'test'
+      location: 'J:\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-api.integration.test.cjs:176:11'
+      failureType: 'testCodeFailure'
+      error: |-
+        {"meta":{"request_id":"1bc6f575-f6d6-4ed0-8c72-63368dc105f0","actor":{"account_id":"1236edcc-7a1f-4ba8-95d0-0b68d63bc046"},"acting_party":null},"error":{"code":"SERVICE_UNAVAILABLE","message":"服务暂不可用，请稍后核对状态","retryable":false,"details":[]}}
+        
+        503 !== 409
+        
+      code: 'ERR_ASSERTION'
+      name: 'AssertionError'
+      expected: 409
+      actual: 503
+      operator: 'strictEqual'
+      stack: |-
+        TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-api.integration.test.cjs:181:101)
+        process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async TestContext.<anonymous> (J:\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\backend_server\test\recharge-refund-api.integration.test.cjs:176:3)
+        async Test.run (node:internal/test_runner/test:1054:7)
+        async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+      ...
+    1..9
+not ok 1 - recharge refund role-separated HTTP and personal guardian copies
+  ---
+  duration_ms: 8451.6708
+  type: 'test'
+  location: 'J:\\worktrees\\pm04-qa18\\晶晶日上工程交接包\\01_源码\\backend_server\\test\\recharge-refund-api.integration.test.cjs:6:1'
+  failureType: 'subtestsFailed'
+  error: '1 subtest failed'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..1
+# tests 10
+# suites 0
+# pass 8
+# fail 2
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 8667.4711

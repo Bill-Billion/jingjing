@@ -5,15 +5,17 @@ import { Document } from '@element-plus/icons-vue'
 import { useSessionStore } from '@/stores/session'
 import { useContractReader } from '@/composables/useContractReader'
 import { asApiError } from '@/api/client'
-import { serviceActions, serviceReasons } from '@/api/modules/contracts'
+import { designatedSandboxSigner, serviceActions, serviceReasons } from '@/api/modules/contracts'
 import ApiErrorAlert from '@/components/ApiErrorAlert.vue'
 import ContractText from '@/components/ContractText.vue'
+import SandboxSigningPanel from '@/components/SandboxSigningPanel.vue'
 import WorkspaceNav from '@/components/WorkspaceNav.vue'
 import '@/styles/supply.css'
 
 const session = useSessionStore(), route = useRoute(), router = useRouter()
 const reader = useContractReader(() => ({ token: session.token, partyId: session.selectedId, accountId: session.account?.id || '', revision: session.revision }))
 const { snapshotId, ruleId, action, snapshot, rule, readiness, error, busy, retryAt, canRead } = reader
+const sandboxSigningEnabled = import.meta.env.VITE_JX_ESIGN_SIMULATION === 'true'
 const initializing = ref(true), now = ref(Date.now()), copyNotice = ref('')
 const retrySeconds = computed(() => Math.max(0, Math.ceil((retryAt.value - now.value) / 1000)))
 let timer: number | undefined
@@ -105,6 +107,10 @@ async function moreParties() {
           </section>
           <section class="content-card supply-card"><h2>合同承诺及规则内容</h2><p class="helper before-content">以下保留合同中的原有名称与内容。</p><ContractText :value="snapshot.commitments" label="合同承诺原文" /></section>
           <section class="content-card supply-card"><div class="section-heading"><h2>封存与签署事实</h2><span class="status neutral" data-testid="signing-status">未签署</span></div><dl class="facts"><div><dt>内容状态</dt><dd>已封存</dd></div><div><dt>签署状态</dt><dd>未签署</dd></div></dl><p class="helper">封存保留这份内容，不表示合同已签署、已付款或许可已生效。</p></section>
+          <SandboxSigningPanel
+            v-if="sandboxSigningEnabled && designatedSandboxSigner(snapshot, session.account?.id || '', session.selectedId)"
+            :key="snapshot.id + ':' + session.revision"
+            :snapshot="snapshot" />
           <section class="content-card supply-card metadata-card"><h2>内容指纹</h2><p class="fingerprint copy-value"><span>{{ snapshot.content_sha256 }}</span><button class="copy-button" aria-label="复制合同内容指纹" @click="copyValue(snapshot.content_sha256, '内容指纹')">复制</button></p><p class="helper">用于核对内容的校验值。</p></section>
           <section class="content-card supply-card"><h2>这份合同采用的规则</h2><p class="helper before-content">显示封存时保留的版本，可展开查看原文。</p>
             <details v-for="item in snapshot.rule_contents" :key="item.id" class="rule-copy"><summary><strong>{{ item.rule_key }}</strong><span>版本 {{ item.version }}</span></summary><dl class="facts"><div><dt>规则编号</dt><dd>{{ item.id }}</dd></div><div><dt>内容指纹</dt><dd>{{ item.content_sha256 }}</dd></div></dl><ContractText :value="item.terms" :label="`${item.rule_key}的封存原文`" /></details>

@@ -1,0 +1,2740 @@
+{
+  "run": {
+    "run_id": "pm04-g1-20261126-privacy-copy-reg17",
+    "round": "discovery",
+    "created_at": "2026-11-25T20:33:37.690709+00:00",
+    "repo_head_at_init": "d5c5000d4889f16f7e996c3bbd6671217c9d29f6",
+    "backend_sha": "9df45f62b7430f8bcf68131ccf6fba25ec0e7188",
+    "app_sha": "182b1929588edb95c7045c7434c033b5e954a3d8",
+    "web_sha": "9df45f62b7430f8bcf68131ccf6fba25ec0e7188",
+    "environment": "QA40-loopback-synthetic-privacy-copy",
+    "real_payments": false,
+    "production_enabled": false,
+    "formal_acceptance_upgraded": false,
+    "machine_only": true,
+    "note": "API0.31.81-rc.1/225 migrations; actual App-Vue-independent review-App file; cross-fix discovery not final18/12"
+  },
+  "totals": {
+    "criteria": 151,
+    "groups": 18,
+    "routes": 12,
+    "slots": 578,
+    "observed": 0,
+    "passed": 0,
+    "failed": 0,
+    "blocked": 0,
+    "not_automatable": 0,
+    "not_run": 578,
+    "machine_complete_groups": 0,
+    "machine_complete_routes": 0,
+    "machine_complete_criteria": 0,
+    "formal_promotions": 0
+  },
+  "groups": [
+    {
+      "id": "01",
+      "name": "现货商品上架与试镜方案",
+      "exit": "新上架、退回重提、试镜方案及相关价格/资格均按实际状态展示。",
+      "required_slots": 56,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 56,
+      "machine_all_pass": false
+    },
+    {
+      "id": "02",
+      "name": "机构逐人确认出演授权",
+      "exit": "每位艺人授权与机构员工动作可追踪，失权后立即停止新操作。",
+      "required_slots": 82,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 82,
+      "machine_all_pass": false
+    },
+    {
+      "id": "03",
+      "name": "商品退回修改与再次提交",
+      "exit": "修改生成新版本，重新审核不覆盖旧订单许可及已购交付。",
+      "required_slots": 34,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 34,
+      "machine_all_pass": false
+    },
+    {
+      "id": "04",
+      "name": "本人资料删除和办理进度",
+      "exit": "同申请从受理到实际提供/删除及独审，剩余资料和合法保留有说明。",
+      "required_slots": 32,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 32,
+      "machine_all_pass": false
+    },
+    {
+      "id": "05",
+      "name": "艺人肖像和作品封面管理",
+      "exit": "封面、时长、造型与声音版本有合法来源，撤权后停止公开。",
+      "required_slots": 58,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 58,
+      "machine_all_pass": false
+    },
+    {
+      "id": "06",
+      "name": "出品机构资料与精选艺人",
+      "exit": "机构资格和公开展示范围正确，精选失效后不可继续邀约。",
+      "required_slots": 16,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 16,
+      "machine_all_pass": false
+    },
+    {
+      "id": "07",
+      "name": "城市选择与搜索",
+      "exit": "城市、关键词、匹配条件、分页返回和断网恢复均可实际使用。",
+      "required_slots": 20,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 20,
+      "machine_all_pass": false
+    },
+    {
+      "id": "08",
+      "name": "收藏与浏览记录",
+      "exit": "收藏与浏览跨端一致，关闭/清除不恢复，内容撤权后不露旧资料。",
+      "required_slots": 16,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 16,
+      "machine_all_pass": false
+    },
+    {
+      "id": "09",
+      "name": "正式产品反馈与举报",
+      "exit": "投诉、补件、反通知、复核及恢复权限可按同一案件办理。",
+      "required_slots": 36,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 36,
+      "machine_all_pass": false
+    },
+    {
+      "id": "10",
+      "name": "消息未读与批量已读",
+      "exit": "未读/全读/跳转与身份变化一致；真实推送独立验证。",
+      "required_slots": 48,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 48,
+      "machine_all_pass": false
+    },
+    {
+      "id": "11",
+      "name": "合同作品和收入统一入口",
+      "exit": "本人/机构合同、作品和应收入口准确；收款和约定金额不混淆。",
+      "required_slots": 92,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 92,
+      "machine_all_pass": false
+    },
+    {
+      "id": "12",
+      "name": "开票申请与人工处理",
+      "exit": "同一订单开票、退款更正、独审和受控文件有完整记录。",
+      "required_slots": 14,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 14,
+      "machine_all_pass": false
+    },
+    {
+      "id": "13",
+      "name": "更换登录手机号",
+      "exit": "换号、未知结果恢复、重新登录和原有业务连续；真实短信另验。",
+      "required_slots": 14,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 14,
+      "machine_all_pass": false
+    },
+    {
+      "id": "14",
+      "name": "晶钻累计与记录说明",
+      "exit": "可用/累计/待冲回分别显示，兑换抽奖与退款后账务相符。",
+      "required_slots": 54,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 54,
+      "machine_all_pass": false
+    },
+    {
+      "id": "15",
+      "name": "故事草稿与多人共创发起",
+      "exit": "草稿补件及多人邀请可恢复，真实权利人计数，按同订单制作交付。",
+      "required_slots": 68,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 68,
+      "machine_all_pass": false
+    },
+    {
+      "id": "16",
+      "name": "业务模拟与测试资料",
+      "exit": "同版资料可重建，模拟标识明显，失败清理和备份恢复真实执行。",
+      "required_slots": 48,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 48,
+      "machine_all_pass": false
+    },
+    {
+      "id": "17",
+      "name": "12条业务完整跨端办理",
+      "exit": "12条路线所需端与反例齐套，范围变化有依据，不以API通过代替。",
+      "required_slots": 476,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 476,
+      "machine_all_pass": false
+    },
+    {
+      "id": "18",
+      "name": "完整测试版本交付",
+      "exit": "固定源码/构建/配置及回退，业务签收、实际审阅与发布分别记录。",
+      "required_slots": 20,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 20,
+      "machine_all_pass": false
+    }
+  ],
+  "routes": [
+    {
+      "id": "E2E-01",
+      "name": "现货视频购买",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/stock.integration.test.cjs",
+      "original_scope": "商品展示→许可→下单→隔离付款→发权→播放/下载→售后",
+      "checks": [
+        "重复支付不重复发权",
+        "退款按KEEP/REVOKE结果处理",
+        "登录过期与权限撤回",
+        "文件失败后可恢复"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-04",
+      "name": "通告、投稿与商单",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/notices.integration.test.cjs",
+      "original_scope": "普通发布→审核→投稿/意向→客服→报价→订单→履约→售后",
+      "checks": [
+        "普通发布无星探门槛",
+        "官方冒用/未审不能公开",
+        "意向不自动开聊",
+        "商单取消退款/旧分成"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-02",
+      "name": "人生主角人工定制",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/customization-delivery.integration.test.cjs",
+      "original_scope": "故事→补件→报价/约定→30/40/30→制作→反馈→验收→下载",
+      "checks": [
+        "未确认脚本不能付中款",
+        "重复确认不重复记账",
+        "取消/退款和版本变化",
+        "断网后查询原结果"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-03",
+      "name": "线下试镜",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/auditions.integration.test.cjs",
+      "original_scope": "公开可约→预约付款→接拒→会话→交样→确认→售后/清分",
+      "checks": [
+        "拒单取消及退款",
+        "无权查看样片",
+        "状态变化和重复确认",
+        "争议与安全处理"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-10",
+      "name": "MCN机构与艺人管理",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/mcn-stock-orders.integration.test.cjs",
+      "original_scope": "加入/授权→分工→逐人/批量办理→换绑/撤权→旧单/结算",
+      "checks": [
+        "机构管理不代替本人同意",
+        "部分成功",
+        "原请求恢复",
+        "员工失权和旧订单"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-11",
+      "name": "个人信息与注销",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/privacy-copy.integration.test.cjs",
+      "original_scope": "本人申请→取数/整理→真实文件→独审→本人下载；撤回/删除",
+      "checks": [
+        "他人资料不可见",
+        "缺文件可恢复",
+        "切身份/撤权清缓存",
+        "外部处理回执分开"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-05",
+      "name": "多人共创",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/cocreation-modern-journey.integration.test.cjs",
+      "original_scope": "本人建房→邀请授权→人数锁定→成团/未成团→制作→个人成果",
+      "checks": [
+        "同人多形象不增人数",
+        "退出补位与锁定",
+        "未成团处理",
+        "片段越权与断点恢复"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-06",
+      "name": "晶钻与制作券",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/redemption-checkout.integration.test.cjs",
+      "original_scope": "合格消费→发分→兑换→锁券→抵扣→核销→取消/退款恢复",
+      "checks": [
+        "重复兑换/核销",
+        "失败释放和重付",
+        "退款积分不足",
+        "0现金与现金金额分开"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-07",
+      "name": "晶钻抽奖",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/redemption-lottery.integration.test.cjs",
+      "original_scope": "资格/规则→抽奖→查询原结果→领权益→兑现/补救",
+      "checks": [
+        "未成年限制",
+        "重复查询不扣第二次",
+        "奖品核销与补救",
+        "制作金对应订单退款"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-08",
+      "name": "星探储值与会员",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/wallet-cross-period.integration.test.cjs",
+      "original_scope": "充值→资格→消费成长→到期/续期→冻结恢复→退款冲回",
+      "checks": [
+        "未知付款先查原单",
+        "到期/续期",
+        "冻结与解冻",
+        "退款及成长冲回"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-09",
+      "name": "曝光权益与月冠军",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/championship-contract.integration.test.cjs",
+      "original_scope": "有效公开资产→曝光→到期/撤下；投票→评分→公示→兑奖",
+      "checks": [
+        "下架/到期停止曝光",
+        "重复投票边界",
+        "申诉与撤回",
+        "同奖励凭据兑现"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    },
+    {
+      "id": "E2E-12",
+      "name": "参演、发行与收入结算",
+      "test_hint": "晶晶日上工程交接包/01_源码/backend_server/test/participation-amendment.integration.test.cjs",
+      "original_scope": "独立合同→角色→付款→制作/会签→变更→发行依据→收入清算",
+      "checks": [
+        "换角不覆盖旧约定",
+        "改价与实际退款",
+        "四方权限/会签",
+        "收入依据与现金核对"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false
+    }
+  ],
+  "criteria": [
+    {
+      "id": "ACC-DEL-00.01",
+      "groups": [
+        "17",
+        "18"
+      ],
+      "required_slots": 1,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 1,
+      "machine_all_pass": false,
+      "formal_status_at_start": "NOT_RUN"
+    },
+    {
+      "id": "ACC-DEL-00.02",
+      "groups": [
+        "17",
+        "18"
+      ],
+      "required_slots": 1,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 1,
+      "machine_all_pass": false,
+      "formal_status_at_start": "NOT_RUN"
+    },
+    {
+      "id": "ACC-DEL-00.03",
+      "groups": [
+        "17",
+        "18"
+      ],
+      "required_slots": 1,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 1,
+      "machine_all_pass": false,
+      "formal_status_at_start": "NOT_RUN"
+    },
+    {
+      "id": "ACC-DEL-00.04",
+      "groups": [
+        "17",
+        "18"
+      ],
+      "required_slots": 1,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 1,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-01.01",
+      "groups": [
+        "02",
+        "13",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-01.02",
+      "groups": [
+        "02",
+        "13",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-01.03",
+      "groups": [
+        "02",
+        "10",
+        "11",
+        "13",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-01.04",
+      "groups": [
+        "02",
+        "12",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-02.01",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-02.02",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-02.03",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-02.04",
+      "groups": [
+        "02",
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-03.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-03.02",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-03.03",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-03.04",
+      "groups": [
+        "02",
+        "05",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-04.01",
+      "groups": [
+        "05",
+        "06",
+        "07",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-04.02",
+      "groups": [
+        "07",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-04.03",
+      "groups": [
+        "06",
+        "07",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-04.04",
+      "groups": [
+        "06",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-05.01",
+      "groups": [
+        "01",
+        "05",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-05.02",
+      "groups": [
+        "01",
+        "02",
+        "03",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-05.03",
+      "groups": [
+        "01",
+        "03",
+        "05",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-05.04",
+      "groups": [
+        "01",
+        "03",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-06.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-06.02",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-06.03",
+      "groups": [
+        "03",
+        "05",
+        "11",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-06.04",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-07.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-07.02",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "NOT_RUN"
+    },
+    {
+      "id": "ACC-DEL-07.03",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-07.04",
+      "groups": [
+        "12",
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-08.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-08.02",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-08.03",
+      "groups": [
+        "03",
+        "11",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-08.04",
+      "groups": [
+        "11",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-09.01",
+      "groups": [
+        "01",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-09.02",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-09.03",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-09.04",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-10.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-10.02",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-10.03",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-10.04",
+      "groups": [
+        "06",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-11.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-11.02",
+      "groups": [
+        "02",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-11.03",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-11.04",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-12.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-12.02",
+      "groups": [
+        "10",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-12.03",
+      "groups": [
+        "09",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-12.04",
+      "groups": [
+        "09",
+        "10",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-13.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-13.02",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-13.03",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-13.04",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-14.01",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-14.02",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-14.03",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-14.04",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-15.01",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-15.02",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-15.03",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-15.04",
+      "groups": [
+        "11",
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-16.01",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-16.02",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-16.03",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-16.04",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-17.01",
+      "groups": [
+        "14",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-17.02",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-17.03",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-17.04",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-18.01",
+      "groups": [
+        "14",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-18.02",
+      "groups": [
+        "14",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-18.03",
+      "groups": [
+        "14",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-18.04",
+      "groups": [
+        "14",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-19.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-19.02",
+      "groups": [
+        "06",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-19.03",
+      "groups": [
+        "14",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-19.04",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-20.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-20.02",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-20.03",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-20.04",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-21.01",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-21.02",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-21.03",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-21.04",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-22.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-22.02",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-22.03",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-22.04",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-23.01",
+      "groups": [
+        "04",
+        "08",
+        "09",
+        "13",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-23.02",
+      "groups": [
+        "04",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-23.03",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-23.04",
+      "groups": [
+        "08",
+        "09",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-24.01",
+      "groups": [
+        "04",
+        "05",
+        "08",
+        "09",
+        "12",
+        "15",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-24.02",
+      "groups": [
+        "05",
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-24.03",
+      "groups": [
+        "05",
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-24.04",
+      "groups": [
+        "16",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-25.01",
+      "groups": [
+        "02",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-25.02",
+      "groups": [
+        "02",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PASS"
+    },
+    {
+      "id": "ACC-DEL-25.03",
+      "groups": [
+        "02",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-25.04",
+      "groups": [
+        "11",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-26.01",
+      "groups": [
+        "01",
+        "09",
+        "12",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-26.02",
+      "groups": [
+        "01",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-26.03",
+      "groups": [
+        "04",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-26.04",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-27.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-27.02",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-27.03",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-27.04",
+      "groups": [
+        "11",
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-28.01",
+      "groups": [
+        "07",
+        "08",
+        "17"
+      ],
+      "required_slots": 4,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 4,
+      "machine_all_pass": false,
+      "formal_status_at_start": "NOT_RUN"
+    },
+    {
+      "id": "ACC-DEL-28.02",
+      "groups": [
+        "17",
+        "18"
+      ],
+      "required_slots": 4,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 4,
+      "machine_all_pass": false,
+      "formal_status_at_start": "NOT_RUN"
+    },
+    {
+      "id": "ACC-DEL-28.03",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 4,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 4,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-28.04",
+      "groups": [
+        "07",
+        "17"
+      ],
+      "required_slots": 4,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 4,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-29.01",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "NOT_RUN"
+    },
+    {
+      "id": "ACC-DEL-29.02",
+      "groups": [
+        "17",
+        "18"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-29.03",
+      "groups": [
+        "16",
+        "17",
+        "18"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-29.04",
+      "groups": [
+        "16",
+        "17",
+        "18"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-01",
+      "groups": [
+        "01",
+        "02",
+        "03",
+        "05",
+        "11",
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-02",
+      "groups": [
+        "11",
+        "15",
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-03",
+      "groups": [
+        "01",
+        "10",
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-04",
+      "groups": [
+        "02",
+        "10",
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-05",
+      "groups": [
+        "15",
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-06",
+      "groups": [
+        "14",
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-07",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-08",
+      "groups": [
+        "14",
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-09",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-10",
+      "groups": [
+        "02",
+        "11",
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-11",
+      "groups": [
+        "04",
+        "05",
+        "09",
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "E2E-12",
+      "groups": [
+        "11",
+        "17"
+      ],
+      "required_slots": 18,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 18,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "ACC-DEL-19.05",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 2,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 2,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-01",
+      "groups": [
+        "01"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-02",
+      "groups": [
+        "02"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-03",
+      "groups": [
+        "03"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-04",
+      "groups": [
+        "04"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-05",
+      "groups": [
+        "05"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-06",
+      "groups": [
+        "06"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-07",
+      "groups": [
+        "07"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-08",
+      "groups": [
+        "08"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-09",
+      "groups": [
+        "09"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-10",
+      "groups": [
+        "10"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-11",
+      "groups": [
+        "11"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-12",
+      "groups": [
+        "12"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-13",
+      "groups": [
+        "13"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-14",
+      "groups": [
+        "14"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-15",
+      "groups": [
+        "15"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-16",
+      "groups": [
+        "16"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-17",
+      "groups": [
+        "17"
+      ],
+      "required_slots": 14,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 14,
+      "machine_all_pass": false,
+      "formal_status_at_start": "PARTIAL"
+    },
+    {
+      "id": "TASK-18",
+      "groups": [
+        "18"
+      ],
+      "required_slots": 6,
+      "pass": 0,
+      "fail": 0,
+      "blocked": 0,
+      "not_automatable": 0,
+      "not_run": 6,
+      "machine_all_pass": false,
+      "formal_status_at_start": "NOT_RUN"
+    }
+  ],
+  "release_go": false,
+  "formal_acceptance_upgraded": false
+}

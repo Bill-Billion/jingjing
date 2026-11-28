@@ -337,7 +337,9 @@ class _NoticeScreenState extends State<_NoticeScreen> {
                     onTap: () => Navigator.pop(sheetContext, kind)),
             ])));
     if (!mounted || selected == null || busy || t != ticket ||
-        epoch != widget.session.epoch || party != widget.session.partyId) return;
+        epoch != widget.session.epoch || party != widget.session.partyId) {
+      return;
+    }
     go('/notices/submit?noticeId=$noticeId&kind=$selected');
   }
 
@@ -357,7 +359,9 @@ class _NoticeScreenState extends State<_NoticeScreen> {
             ])));
     if (!mounted || selected == null || selected == recordKind || busy ||
         t != ticket || epoch != widget.session.epoch ||
-        party != widget.session.partyId) return;
+        party != widget.session.partyId) {
+      return;
+    }
     setState(() { recordKind = selected; changedKind = true; });
     await load();
   }

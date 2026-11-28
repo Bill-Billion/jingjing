@@ -1,0 +1,872 @@
+{
+  "source": "d763212f04a49b7c16fea5859cc57e95e8d239f2",
+  "environment": "jx_test_qa18_free_0de3c50c69e8ecd909c4",
+  "original_environment": "jx_test_qa18_points_60898647dc3b28d20c84",
+  "started_at": "2026-11-26T15:38:29.491Z",
+  "checks": [
+    {
+      "name": "api-original-delivered-project-actor-boundaries",
+      "record_id": "f08cc136-f8cc-47ae-b143-dada4b51a15e",
+      "state": "DELIVERED"
+    },
+    {
+      "name": "api-original-final-file-owner-and-unrelated",
+      "record_id": "cd3395b7-ff27-46c0-862d-b63b4a551494",
+      "sha256": "a79ceadd19e965c87d3a999fa071cadfc179e0ffb0be29f19fe41da3f7dbb950"
+    },
+    {
+      "name": "app-buyer-grant",
+      "record_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "status": 200
+    },
+    {
+      "name": "app-buyer-used-order",
+      "record_id": "13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "status": 200
+    },
+    {
+      "name": "app-buyer-cancel-order",
+      "record_id": "176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "status": 200
+    },
+    {
+      "name": "app-outsider-grant",
+      "record_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "status": 404
+    },
+    {
+      "name": "app-outsider-used-order",
+      "record_id": "13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "status": 404
+    },
+    {
+      "name": "app-outsider-cancel-order",
+      "record_id": "176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "status": 404
+    },
+    {
+      "name": "web-buyer-grant",
+      "record_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "status": 200
+    },
+    {
+      "name": "web-buyer-used-order",
+      "record_id": "13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "status": 200
+    },
+    {
+      "name": "web-buyer-cancel-order",
+      "record_id": "176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "status": 200
+    },
+    {
+      "name": "web-outsider-grant",
+      "record_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "status": 404
+    },
+    {
+      "name": "web-outsider-used-order",
+      "record_id": "13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "status": 404
+    },
+    {
+      "name": "web-outsider-cancel-order",
+      "record_id": "176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "status": 404
+    },
+    {
+      "name": "web-buyer-original-used-hold",
+      "record_id": "160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+      "status": 200
+    },
+    {
+      "name": "web-outsider-original-used-hold",
+      "record_id": "160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+      "status": 404
+    }
+  ],
+  "requests": [
+    {
+      "surface": "api",
+      "role": "buyer",
+      "path": "/redemption/grants/70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "method": "GET",
+      "status": 200,
+      "sha256": "bb5545d059145877842d8411f8b9cb63524d7036e5589c6f0dc21dbbda8d103d",
+      "forged_other_party": false
+    },
+    {
+      "surface": "api",
+      "role": "buyer",
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "dead5061933b25e0f72d142ed86cf0196602e2a2df84753e1714af7aab50967c",
+      "forged_other_party": false
+    },
+    {
+      "surface": "api",
+      "role": "buyer",
+      "path": "/production/projects/f08cc136-f8cc-47ae-b143-dada4b51a15e/fulfillment",
+      "method": "GET",
+      "status": 200,
+      "sha256": "2d7e3eb92f54e76f3fc05185a895a109669c410a0e5af10583f5b677ca1be1b0",
+      "forged_other_party": false
+    },
+    {
+      "surface": "api",
+      "role": "producer",
+      "path": "/production/projects/f08cc136-f8cc-47ae-b143-dada4b51a15e/fulfillment",
+      "method": "GET",
+      "status": 200,
+      "sha256": "70c640996fe8a5bc316945f49849097006d875266f9dd8d2dbc82d33857e00e2",
+      "forged_other_party": false
+    },
+    {
+      "surface": "api",
+      "role": "artist",
+      "path": "/production/projects/f08cc136-f8cc-47ae-b143-dada4b51a15e/fulfillment",
+      "method": "GET",
+      "status": 404,
+      "code": "PRODUCTION_NOT_FOUND",
+      "sha256": "bb2698831e667c11ba7d2c25157421c44da28de733dbe7c8e3b02fd4778c142e",
+      "forged_other_party": false
+    },
+    {
+      "surface": "api",
+      "role": "artist",
+      "path": "/production/projects/f08cc136-f8cc-47ae-b143-dada4b51a15e/fulfillment",
+      "method": "GET",
+      "status": 403,
+      "code": "PRODUCTION_PARTY_FORBIDDEN",
+      "sha256": "1bc5ca4b05db3066adfc49cf34ef3358c6cf123056b6270100454e156fbeede8",
+      "forged_other_party": true
+    },
+    {
+      "surface": "api",
+      "role": "buyer",
+      "path": "/production/versions/cd3395b7-ff27-46c0-862d-b63b4a551494/content?variant=final",
+      "method": "GET",
+      "status": 200,
+      "bytes": 23600,
+      "sha256": "a79ceadd19e965c87d3a999fa071cadfc179e0ffb0be29f19fe41da3f7dbb950"
+    },
+    {
+      "surface": "api",
+      "role": "artist",
+      "path": "/production/versions/cd3395b7-ff27-46c0-862d-b63b4a551494/content?variant=final",
+      "method": "GET",
+      "status": 404,
+      "bytes": 298,
+      "sha256": "ed4b4791b04171f9bb7c1758b58ff86e725bdcccc59e8aed422997014c1c32a4"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-grant",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "2f3fbf29-6931-4fbd-af6c-8b9737532ff0",
+      "sha256": "991ab27be62e7092ff7613ba114da01eb730de29cd5f8ccaa1157fbb7bb94c6a"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-grant",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "54dc81d83e877466b8bc27385a605c8f54af49ba88da2f045f2cedd5d11adc35"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-grant",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "05351ee189737f2bbb1b88ed8d527532e1d694578ba1498230ba019a367b5f5e"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-grant",
+      "path": "/api/v1/redemption/grants/70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "method": "GET",
+      "status": 200,
+      "record_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "sha256": "af6e947790457912f269ce648d484d98e7b6cd41fe1ce89c8ac895eae9662676"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-grant",
+      "path": "/api/v1/redemption/holds/160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+      "method": "GET",
+      "status": 200,
+      "record_id": "160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+      "sha256": "c911cdddfb9b29e86f6b941fe11e85531fea9cd97cac8836d43d6835f817a8ac"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-grant",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200,
+      "sha256": "a7c9490cef7343b334e3ace0db2a90a60fd079d641524140189a1d09e68cc4d1"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-used-order",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "2f3fbf29-6931-4fbd-af6c-8b9737532ff0",
+      "sha256": "623a4c51b9de081115398db7e06e89e6821d85376580b82cbf3115bd87636e3f"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-used-order",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "01f8e98c3f31c7dfe9c963b233735a48e8d80fe143e054c5143c99d31c0f6eb9"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-used-order",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "5ae6865d4ffb13208ba044b514ea9a3a2d1b5cb46f3b9bf4f0ee4175c5c5c731"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-used-order",
+      "path": "/api/v1/trade/records/13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "method": "GET",
+      "status": 200,
+      "record_id": "13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "sha256": "66c577a1585e8a8e43a36ab0fbf80dcce7b646835c1827ec35ab3ebae328bf07"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-used-order",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200,
+      "sha256": "6d5c7ba53f0a94d6732679bc9508c7e9f8fbdcf97c6f552939b5102b79dae72b"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-used-order",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200,
+      "sha256": "83c8c1a1e52914ac00042c3a9b53b9e4364bfbb6b44b043d4b8970a0c3bd3085"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-used-order",
+      "path": "/api/v1/production/projects",
+      "method": "GET",
+      "status": 200,
+      "sha256": "f5605ff56cd88f8fedaa7c84e6cb1f3c07d1deb233b03bb9ff11a11341e969c2"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-used-order",
+      "path": "/api/v1/production/projects/f08cc136-f8cc-47ae-b143-dada4b51a15e/fulfillment",
+      "method": "GET",
+      "status": 200,
+      "sha256": "ce4cb51679407990e1deae89296cfe2679b18be6bbceab6bd81e47d2d291a5a1"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-cancel-order",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "2f3fbf29-6931-4fbd-af6c-8b9737532ff0",
+      "sha256": "7009567f10d9144716266dc0abbfe11031c8c3eb68ed97ba3dd636abb1a19adc"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-cancel-order",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1e949df7fff856c20984ae7981a93a931b60d1af2ebb70c6f344c21cbd32bc24"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-cancel-order",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "637eedcd4d53eb3812b098eaba311f3a5fd4435a1544f9711423e70a0beb034b"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-cancel-order",
+      "path": "/api/v1/trade/records/176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "method": "GET",
+      "status": 200,
+      "record_id": "176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "sha256": "2e568404a07849cb2a22e031ac7f6609dcb1904858a444845e9edfd322ced627"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-cancel-order",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200,
+      "sha256": "83680e89a5eb79bfba574cc9da9d4a1620a213e5e80d8c65fb550320c96fa938"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-cancel-order",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200,
+      "sha256": "dec77eee016be9651c7797f254ef1700d5cad4625ce81ea88aa707a7c59a3b6b"
+    },
+    {
+      "surface": "app",
+      "role": "buyer",
+      "tag": "app-buyer-cancel-order",
+      "path": "/api/v1/production/projects",
+      "method": "GET",
+      "status": 200,
+      "sha256": "85f52f6ba0ad3615b8f65bf48af9626ca1810e7adc20a5c1ae54646248dabf87"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-grant",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "381ed2d6-61b1-489d-b230-b43150433325",
+      "sha256": "7fbe6b3ae35be7f78ef59d9cb804d742c67a4c057b07ff73f6d5dfb1ec394e53"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-grant",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1394cb9bc9aab162ab8d8dfe522a2022d0b11c0cff0c9fcc659580a6bb479279"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-grant",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "4bc62a52dac8556db99ed1c0d306b760a154c984f981e2d8bc5ab8822f97a2dc"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-grant",
+      "path": "/api/v1/redemption/grants/70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "method": "GET",
+      "status": 404,
+      "code": "REDEMPTION_NOT_FOUND",
+      "sha256": "06f61f9232f0941cbf1c0e38e6e91a13b472a7d2c10bafdc278680ae687a04a4"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-used-order",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "381ed2d6-61b1-489d-b230-b43150433325",
+      "sha256": "d09f0613937bbc1ea1af2071e442a3055ccc4a7bd39e8e85964ada2029c2fa5e"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-used-order",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "624f9b4533c73ed415c0887084e92d14ba5b1ae04af8d0418afd88fbc644b475"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-used-order",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "6b01f542b5e68a5a685eb6414f6b341986f5fd641372b15806554141b00176e0"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-used-order",
+      "path": "/api/v1/trade/records/13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "method": "GET",
+      "status": 404,
+      "code": "TRADE_NOT_FOUND",
+      "sha256": "c5952f6c43726d54197adffcf0715996eddc2fa950b1b0cf9a161fd1c8d24226"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-cancel-order",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "381ed2d6-61b1-489d-b230-b43150433325",
+      "sha256": "1311f804ea1d9d601389461a763714d88018505db3ec249f5058c3c0163f60d0"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-cancel-order",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "7cf617899cfc7443faa96528e5b9bff30d6e356c00e053923950cfe276adb4f2"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-cancel-order",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "4aaa8dda8a73e48411df171df9e76650b54a3fa281a87b89c7684f8451d6afb3"
+    },
+    {
+      "surface": "app",
+      "role": "outsider",
+      "tag": "app-outsider-cancel-order",
+      "path": "/api/v1/trade/records/176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "method": "GET",
+      "status": 404,
+      "code": "TRADE_NOT_FOUND",
+      "sha256": "1e0a0dd16e34465aace97a057be8028f7e542c6976262324c5178a21c67e1084"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-grant",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "2f3fbf29-6931-4fbd-af6c-8b9737532ff0",
+      "sha256": "ad8ba17f91c758b6c6bd244f7452b5b3707867fe552d49c154ede535c5763ea6"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-grant",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "d29a9a341e7fb504b07f26af1f3d4b2868a4fd47bb2d13d2dbd01eede2941e1b"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-grant",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "ffbf98c66dcb341d2e0641e010aa5aa92e57472cecc350bb1e9b866b2ecfd5f0"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-grant",
+      "path": "/api/v1/redemption/grants/70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "method": "GET",
+      "status": 200,
+      "record_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "sha256": "72e7a092cb7b13389b070d50afa637955f8e840594fefbf409e0c680cef68dfe"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-used-order",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "2f3fbf29-6931-4fbd-af6c-8b9737532ff0",
+      "sha256": "1339937b28af0e0156393376052335157bdc7de7b0ee8f198734e85bdd2e7694"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-used-order",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "ec959767babc51daaa44aec9a474b0e0a5b2e2b97296c2152320bfccb23dd807"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-used-order",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "a279474195dfe8b432c4f8afe669f211688bb44df61a3f1056c01a536a80c074"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-used-order",
+      "path": "/api/v1/trade/records/13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "method": "GET",
+      "status": 200,
+      "record_id": "13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "sha256": "965dfb86140443a1c8b91a8e3e98fc6921b827f7e0a5aebd91e38abb5e297e4c"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-used-order",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1036248ceff729491789d98ed3be1b6d66989db59ad293d632c9087f6f09cd02"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-cancel-order",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "2f3fbf29-6931-4fbd-af6c-8b9737532ff0",
+      "sha256": "e17037a5a57e1fc525b4285171302d17a75655feb5a1820ff1120bcda171003d"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-cancel-order",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "005083c0cdd3f1d0455b329bb6d177161fba916b5d0dcbf1f485bd5536e41ad4"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-cancel-order",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "a6830d4c697688e97a2b658600a84716ee2605fd2744dc7805836e5786beebac"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-cancel-order",
+      "path": "/api/v1/trade/records/176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "method": "GET",
+      "status": 200,
+      "record_id": "176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "sha256": "e557853f52aafe633a57e740caac9cc72b0ac7b34506eda009bfa2bb742dcf5b"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-cancel-order",
+      "path": "/api/v1/trade/records",
+      "method": "GET",
+      "status": 200,
+      "sha256": "325b86df94f7a3461e4c72f451166a360a41de009cc109174ee52b6999a10e1e"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-grant",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "381ed2d6-61b1-489d-b230-b43150433325",
+      "sha256": "f7f4d29845fa2debf2b884a5748e9343e7d49057746b10bd5d971c9711519ec6"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-grant",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "9bfb7f7f5eb0d1a49190f52befdf4eeb13808d769066e689c631b541732c8e90"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-grant",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "238091a953487505566371a4007c7f92ae04d3e8ad8275096c08f65bf1338c44"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-grant",
+      "path": "/api/v1/redemption/grants/70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "method": "GET",
+      "status": 404,
+      "code": "REDEMPTION_NOT_FOUND",
+      "sha256": "48b87a8bbd0d2e612320961901d1f58a0692809906aca91872690b88462fe766"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-used-order",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "381ed2d6-61b1-489d-b230-b43150433325",
+      "sha256": "91890aafdeab0561043723de79f8784aa69b658bffd1119e0146649677b243a9"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-used-order",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "75cf1529654c6a2e29d57457afbc757cde2ccdd7316489d27de2cd00592169aa"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-used-order",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "bf62c5db183fa37a341b392d2ec878a216488286a9f815ac39a006215e2c94f3"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-used-order",
+      "path": "/api/v1/trade/records/13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+      "method": "GET",
+      "status": 404,
+      "code": "TRADE_NOT_FOUND",
+      "sha256": "ebb4c31550965d260b4eef190cf95d4243a69972bc8c81a4a508dbcd28f65a43"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-cancel-order",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "381ed2d6-61b1-489d-b230-b43150433325",
+      "sha256": "c6d27c5fc2da3188fff6028a2982d17fd36b729ba3739a84fe2aa30fde66977e"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-cancel-order",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "db3bab2fc052d07c936166c8b4c804faf1b9add376e3197d9e4ecbb5eddd7b9e"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-cancel-order",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1b73fba273c9e846bb0b2c6e72bd633c5b071eae7ad865d5d8860df5ccfd5e6d"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-cancel-order",
+      "path": "/api/v1/trade/records/176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+      "method": "GET",
+      "status": 404,
+      "code": "TRADE_NOT_FOUND",
+      "sha256": "7182a07513e7ea9c97b77938fd805f7ad61bd16f94e84ba3b6af7b5166a086ff"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-original-used-hold",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "2f3fbf29-6931-4fbd-af6c-8b9737532ff0",
+      "sha256": "c7d8eed3f7b1010e3919e024d42087fcf029d7b7bebc2f8a32a085a30e6f4a4f"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-original-used-hold",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "62b50b27a4ac2167c8dd62753cc4ddcb9c7fa6be0de7be50f620c6a69b160535"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-original-used-hold",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "423fabdc5b8ece34cf876b40a90424e93646971fe7272372bd85bc6d624d4f41"
+    },
+    {
+      "surface": "web",
+      "role": "buyer",
+      "tag": "web-buyer-original-used-hold",
+      "path": "/api/v1/redemption/holds/160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+      "method": "GET",
+      "status": 200,
+      "record_id": "160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+      "sha256": "9cb09672f2eed30ee98a71052c2cc7e75a88cb32febbd1b7dc8093f36a76816b"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-original-used-hold",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "record_id": "381ed2d6-61b1-489d-b230-b43150433325",
+      "sha256": "e29cd10e8cea7809cf96bf109aa706078684cc62ad8ed0ee702ec638e563c52d"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-original-used-hold",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "411397c6eac34e4361c83c7061e25fbcc53a0337073ecffe2900ff0d55b19cf6"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-original-used-hold",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "1128c5dc290145b3d8ac0cf860086ced546d62f60ad0d3df945d906c2f71bded"
+    },
+    {
+      "surface": "web",
+      "role": "outsider",
+      "tag": "web-outsider-original-used-hold",
+      "path": "/api/v1/redemption/holds/160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+      "method": "GET",
+      "status": 404,
+      "code": "REDEMPTION_NOT_FOUND",
+      "sha256": "a1756ec1556cc13f1ea6a8a9a5e42821bc8d76f8d275c7de53bc827fbc0712c5"
+    },
+    {
+      "surface": "api",
+      "role": "buyer",
+      "path": "/wallet/summary",
+      "method": "GET",
+      "status": 200,
+      "sha256": "ae348c45eabcd01c199dbace31a0b9c58f2a004eb08235c3534fb70393d69c24",
+      "forged_other_party": false
+    },
+    {
+      "surface": "api",
+      "role": "buyer",
+      "path": "/redemption/grants/70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+      "method": "GET",
+      "status": 200,
+      "sha256": "d3225d6b0f70797153e83f8e7906fba99c87f4f53ca5f86e49f13cc71ac9b3ae",
+      "forged_other_party": false
+    }
+  ],
+  "grant_id": "70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+  "source_order_id": "114da9f7-5401-4394-b678-a02bbc04744a",
+  "used_order_id": "13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+  "cancel_order_id": "176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+  "project_id": "f08cc136-f8cc-47ae-b143-dada4b51a15e",
+  "scope": "Current cloned original full-service branch authority only, not final18/12, original lottery odds or native device.",
+  "previously_completed": [
+    "api-private-owner-and-outsider-/redemption/grants/70aee25c-cbe2-4809-92b3-164a75e9dcfa",
+    "api-private-owner-and-outsider-/redemption/holds/160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+    "api-private-owner-and-outsider-/redemption/holds/4923ea19-f974-4d49-a637-87508e7540cd",
+    "api-private-owner-and-outsider-/redemption/holds/5556818a-ea34-4df0-9139-819d59d59f08",
+    "api-private-owner-and-outsider-/redemption/holds/d889b316-aa3c-4f46-84ab-f63b46367daa",
+    "api-private-owner-and-outsider-/redemption/holds/e496ba06-d2e2-42ff-ad97-12fef216d52e",
+    "api-original-money-record-114da9f7-5401-4394-b678-a02bbc04744a",
+    "api-original-money-record-13f50e81-af87-48ac-a65f-5a2b8ed191bb",
+    "api-original-money-record-176c0b8c-f1fa-4f51-92f6-2801fc3a08a1",
+    "api-no-forged-wallet-/wallet/summary",
+    "api-no-forged-wallet-/wallet/records?kind=EARNING",
+    "api-outsider-cannot-release-original-hold-160220b1-5ad5-45de-9a0a-e55b23d2cb40",
+    "api-outsider-cannot-release-original-hold-4923ea19-f974-4d49-a637-87508e7540cd",
+    "api-outsider-cannot-release-original-hold-5556818a-ea34-4df0-9139-819d59d59f08",
+    "api-outsider-cannot-release-original-hold-d889b316-aa3c-4f46-84ab-f63b46367daa",
+    "api-outsider-cannot-release-original-hold-e496ba06-d2e2-42ff-ad97-12fef216d52e",
+    "api-outsider-cannot-lock-original-free-service"
+  ],
+  "previous_attempt": {
+    "path": "J:\\worktrees\\pm04-qa18\\.local\\qa18\\t1-free-authority-20261126-01\\RESULT.json",
+    "source": "25a13e4e5a82b6702d6c920479f282ece2bb34ac",
+    "sha256": "9e81879674e08478a8b41464e611d64adcb7baa706e3b47227a14d5d63290aec",
+    "result": "FAIL"
+  },
+  "app_build": {
+    "manifest": "docs/testing/evidence/pm04-g1-t1-personal-ui-20261126/APP_BROWSER_BUILD_MANIFEST.json",
+    "source": "dac064f4a4a7942f059266b20fc128a2544da228",
+    "files": 74,
+    "all_bytes_verified": true
+  },
+  "web_build": {
+    "manifest": "docs/testing/evidence/pm04-g1-recommendations-20261126-46/VUE_BUILD_MANIFEST.json",
+    "source": "533c77c3088d409690ef2147baa14d8a123b2a54",
+    "files": 93,
+    "all_bytes_verified": true
+  },
+  "before": {
+    "grant_status": "USED",
+    "version": 9,
+    "points": 4300,
+    "wallet_sha256": "9f1c8a0db72a92665f14646b15bd7a1730d8b250bf812346c40eeff2a6b73165"
+  },
+  "after": {
+    "grant_status": "USED",
+    "version": 9,
+    "points": 4300,
+    "wallet_sha256": "9f1c8a0db72a92665f14646b15bd7a1730d8b250bf812346c40eeff2a6b73165"
+  },
+  "result": "PASS_TARGETED",
+  "complete": true,
+  "finished_at": "2026-11-26T15:39:09.056Z"
+}

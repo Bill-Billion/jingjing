@@ -285,15 +285,18 @@ class ProjectsApi {
     }
     void verify(ProjectRecord fresh) {
       check(epoch, p);
-      if (fresh.version != original.version || fresh.hash != original.hash ||
+      if (fresh.version != original.version ||
+          fresh.hash != original.hash ||
           fresh.data['evidence_asset_id'] != assetId) {
         throw const AccountError(412, 'VERSION_CONFLICT');
       }
-      if (fresh.owner != p && !(fresh.data['confirmers'] as List)
-          .any((signer) => signer['party_id'] == p)) {
+      if (fresh.owner != p &&
+          !(fresh.data['confirmers'] as List)
+              .any((signer) => signer['party_id'] == p)) {
         throw const AccountError(403, 'PROJECT_EVIDENCE_FORBIDDEN');
       }
     }
+
     verify(await record(original.id, kind: original.kind));
     final bytes = await session.readBytes(
         '/api/v1/projects/records/${original.id}/evidence/$assetId',
@@ -341,15 +344,28 @@ class ProjectsApi {
             projectIsId(r['created_by']));
         final data = projectMap(r['data']);
         if (kind == 'AVATAR') {
+          final linkedPerson = data.containsKey('artist_person_id');
           projectMap(data, keys: [
             'display_name',
             'material_asset_ids',
-            'provider_asset_ref'
+            'provider_asset_ref',
+            if (linkedPerson) ...[
+              'artist_person_id',
+              'archive_status',
+              'long_lived_model_status'
+            ]
           ]);
           projectRequire(projectText(data['display_name'], 120) &&
               data['provider_asset_ref'] == null &&
               r['current_status'] == 'RECORDED');
-          projectIds(data['material_asset_ids'], min: 1, max: 100);
+          if (linkedPerson) {
+            projectRequire(projectIsId(data['artist_person_id']) &&
+                ['EMPTY', 'DELIVERED'].contains(data['archive_status']) &&
+                data['long_lived_model_status'] == 'NOT_ENABLED');
+          }
+          // Linked artists keep material references on their LOOK/VOICE versions.
+          projectIds(data['material_asset_ids'],
+              min: linkedPerson ? 0 : 1, max: 100);
         } else {
           projectMap(data, keys: [
             'consent',

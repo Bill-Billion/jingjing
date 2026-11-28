@@ -1,0 +1,59 @@
+{
+  "result": "PASS",
+  "criterion": "TASK-18",
+  "surface": "operations",
+  "assertions": [
+    {
+      "id": "G18-RESTORE-SQL-FILES",
+      "case": "backup_restore",
+      "result": "PASS",
+      "evidence": [
+        "attempt02/CLONE_PROOF.json",
+        "attempt02/SUMMARY.json"
+      ],
+      "scope": "Authenticated encrypted snapshot restored into new synthetic clone; full canonical SQL identical before exactly3 new synthetic auth sessions;190 tables and52 file hashes preserved; source never modified. Backup source is recorded round36 snapshot, not a fresh live transaction."
+    },
+    {
+      "id": "G18-ROLLBACK-SAME-RECORDS",
+      "case": "rollback_preserves_orders_and_feedback",
+      "result": "PASS",
+      "evidence": [
+        "attempt02/candidate-before-result.json",
+        "attempt02/rollback-result.json",
+        "attempt02/candidate-after-result.json",
+        "attempt02/SUMMARY.json"
+      ],
+      "scope": "Three actual HTTP processes on same port: current bb99 product9df, old7e35958a, current bb99. Five exact orders, eight feedback records, two delivered projects and two original videos; business payloads and all190 tables unchanged after each phase; no schema down migration or production deployment."
+    },
+    {
+      "id": "G18-ORIGINAL-DEADLINE",
+      "case": "access_expiry",
+      "result": "PASS",
+      "evidence": [
+        "attempt02/CLONE_PROOF.json",
+        "attempt02/candidate-after-result.json",
+        "attempt02/expired-restart.log",
+        "attempt02/SUMMARY.json"
+      ],
+      "scope": "New180-second isolated rehearsal deadline preserved through all three starts; actual wall-clock expiry returns410; post-expiry start refused before opening DB/server; expired synthetic credential401; no original session renewed or business timestamp edited."
+    },
+    {
+      "id": "G18-BUILD-FREEZE",
+      "case": "build_freeze",
+      "result": "PASS",
+      "evidence": [
+        "SOURCE_IDENTITIES.json",
+        "ANDROID_ARTIFACT.json",
+        "android-signature.log",
+        "android-network-security.log"
+      ],
+      "scope": "App674 tracked files unchanged;74 normal Web and74 isolated Web build files,93 Vue files match archived hashes; CI source1f42 product/API/workflow trees equal current; debug acceptance APK retrieved and hash/source/certificate/appID checked. No actual installation, phone UX or configured-service smoke claimed."
+    }
+  ],
+  "not_covered": [
+    "candidate_ci for latest QA helper/document head",
+    "client_smoke of installable configured final package",
+    "18 groups/12 routes full same-version regression",
+    "maintainer formal acceptance"
+  ]
+}

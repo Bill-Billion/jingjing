@@ -307,7 +307,7 @@ class _PersonState extends State<_Person> {
                       ? null
                       : () => form('CONSENT', avatar: avatar.id),
                   outline: true),
-            if (actions.contains('MANAGE_AVATARS'))
+            if (actions.contains('MANAGE_MATERIALS'))
               tradeButton(
                   '保存${avatar.name}的造型或声音版本',
                   !can || busy

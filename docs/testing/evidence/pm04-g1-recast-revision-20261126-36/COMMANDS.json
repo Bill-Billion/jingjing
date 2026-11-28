@@ -1,0 +1,10 @@
+{
+  "guard": "node scripts/qa18-recast-old-production-guard.mjs <QA29env> <QA36out>",
+  "prepare": "node scripts/qa18-recast-production-prepare.cjs <QA29env> <QA36out>",
+  "production": "canonical physical QA paths,Edge; node scripts/qa18-recast-production-browser.mjs",
+  "revision": "same access; QA18_OUTPUT_DIR=<QA36out>/revision; node scripts/qa18-recast-revision-browser.mjs",
+  "census": "JX_MYSQL_TEST_ENV_FILE=<controlled localhost33316>; node scripts/qa18-recast-revision-record-check.cjs <QA29env> <QA36out>",
+  "contract": "validate_contract.validate([recast-revision-live-http.json,old-production-guard-http.json]); actual24responses",
+  "backup": "qa18-environment-assets.prepare; manager.backupEnvironment/verify/restore, explicit mysqldump/mysql executables",
+  "next": "Keep actual new paid order/project/plan/edition. Continue E2E08/minors and remaining required surfaces/scenarios, G18, style fixes and final18/12; do not recreate completed orders/refunds or claim the revised edition externally published."
+}
