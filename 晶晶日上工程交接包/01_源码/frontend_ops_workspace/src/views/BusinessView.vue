@@ -113,6 +113,14 @@ const stockFileBlocked = computed(() => {
  const plan = purchase.refund_plan as BusinessData | undefined
  const retained = (orderStatus === 'PARTIALLY_REFUNDED' || orderStatus === 'REFUNDED') && plan?.license_action === 'KEEP'
  if (purchase.status !== 'ACTIVE' || (orderStatus !== 'PAID' && !retained)) return '付款及许可确认后可取得正式影片。'
+ const license = purchase.license as BusinessData | undefined
+ if (license?.scope === 'COMMERCIAL_LIMITED') {
+  const start = Date.parse(String(license.valid_from))
+  const end = Date.parse(String(license.valid_until))
+  if (!Number.isFinite(start) || !Number.isFinite(end) || now.value < start || now.value >= end) {
+   return '商用许可尚未生效或已到期，正式影片暂不可取得。'
+  }
+ }
  return ''
 })
 const refOptions=ref<Record<string,ReferenceOption[]>>({}),refCursor=ref<Record<string,string>>({}),referenceSources=ref<Record<string,string>>({}),refBusy=ref(false),referenceNotice=ref('')

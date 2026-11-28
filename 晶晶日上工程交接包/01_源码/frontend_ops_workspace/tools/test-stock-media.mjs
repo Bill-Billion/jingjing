@@ -99,6 +99,9 @@ try {
   const {default:View}=await server.ssrLoadModule('/src/views/BusinessView.vue')
   const cases = [
    ['PAID', {status:'ACTIVE'}, true],
+   ['PAID', {status:'ACTIVE',license:{scope:'COMMERCIAL_LIMITED',valid_from:'2001-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z'}}, true],
+   ['PAID', {status:'ACTIVE',license:{scope:'COMMERCIAL_LIMITED',valid_from:'2001-01-01T00:00:00.000Z',valid_until:'2002-01-01T00:00:00.000Z'}}, false],
+   ['PAID', {status:'ACTIVE',license:{scope:'COMMERCIAL_LIMITED',valid_from:'2098-01-01T00:00:00.000Z',valid_until:'2099-01-01T00:00:00.000Z'}}, false],
    ['AWAITING_PAYMENT', {status:'AWAITING_PAYMENT'}, false],
    ['PAYMENT_REVIEW_REQUIRED', {status:'ACTIVE'}, false],
    ['PAID', {status:'ACTIVE',current_case_id:id(23)}, false],
