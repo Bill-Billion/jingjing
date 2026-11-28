@@ -206,7 +206,7 @@ async function main(){
         for(const surface of ['app','vue'])await visit(surface,scope,async page=>{
           if(normalApp&&surface==='app'){
             const phone=page.getByRole('textbox',{name:/手机号/});
-            const action=page.getByRole('button',{name:/登录后继续|前往账号与身份|手机号登录|去登录|先登录/}).first();
+            const action=page.getByRole('button',{name:/登录后继续|前往账号与身份|前往登录|手机号登录|去登录|先登录/}).first();
             if(!await phone.isVisible())await action.click();
             if(!await phone.isVisible()){
               const login=page.getByRole('button',{name:'手机号登录',exact:true});

@@ -10,7 +10,9 @@ const {openBrowser}=require('./test-fixtures/qa18-s4-artifact-browser.cjs');
 const baseDir=path.join(root,'.local/qa18/s4-a-remaining-20261128');
 const out=path.resolve(process.argv[2]||'');
 const vueVersion=process.argv[3];
-const appVersion='5902677d92ec11423dab0fa732ef28559ad7c4f0';
+const appVersion=process.argv[4]||'5902677d92ec11423dab0fa732ef28559ad7c4f0';
+const appBuild=process.argv[5]||'app-isolated-verified';
+const liveApp=process.argv.includes('--live-app');
 const floor='2020-01-01T00:00:00.000Z';
 
 async function main(){
@@ -118,7 +120,7 @@ async function main(){
     const frontendRoles={buyer:{account_id:buyer.account_id,party_id:org.party_id,bearer_token:buyer.token}};
     if(vueVersion){
       const directory=path.join(baseDir,'builds');
-      const app={dir:path.join(directory,'app-isolated-verified'),manifest:path.join(directory,'app-isolated-verified.json'),checkout:appVersion,source:appVersion};
+      const app={dir:path.join(directory,appBuild),manifest:path.join(directory,appBuild+'.json'),checkout:appVersion,source:appVersion};
       const vue={dir:path.join(directory,'vue-stock'),manifest:path.join(directory,'vue-stock.json'),checkout:vueVersion,source:vueVersion};
       browser=await openBrowser(api,frontendRoles,e,{app,vue});
     }
@@ -160,6 +162,13 @@ async function main(){
       for(const surface of ['vue','app']){
         const page=await browser.actor(surface,'buyer',pageRoute(surface));
         views.push({surface,page});
+        if(surface==='app'&&liveApp){
+          await page.clock.install({time:new Date()});
+          await page.reload({waitUntil:'domcontentloaded'});
+          const framework=page.locator('flt-semantics-placeholder');
+          await framework.waitFor({state:'attached'});
+          await framework.evaluate(element=>element.click());
+        }
         const reply=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1'+purchase+'/content',{timeout:12000});
         reply.catch(()=>{});
         await page.getByRole('button',{name:buttonLabel(surface),exact:true}).click();
@@ -176,8 +185,13 @@ async function main(){
     assert.equal((await content(409)).code,'STOCK_COMMERCIAL_LICENSE_NOT_ACTIVE');
     assert.deepEqual((await http(buyer,purchase,200,{party:org.party_id})).data.license,contract.data.license);
     for(const {surface,page} of views){
-      await page.clock.setFixedTime(new Date(simulated));
-      if(surface==='app'){
+      if(surface==='app'&&liveApp){
+        const browserNow=await page.evaluate(()=>Date.now());
+        await page.clock.fastForward(simulated-browserNow);
+        await page.getByText('当前许可或文件使用条件未满足',{exact:true}).waitFor({timeout:5000});
+        assert.equal(await page.getByRole('button',{name:buttonLabel(surface),exact:true}).count(),0);
+      }else await page.clock.setFixedTime(new Date(simulated));
+      if(surface==='app'&&!liveApp){
         const reloaded=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1'+purchase&&r.request().method()==='GET',{timeout:15000});
         reloaded.catch(()=>{});
         await page.reload({waitUntil:'domcontentloaded'});
@@ -188,12 +202,12 @@ async function main(){
         const aria=await page.locator('body').ariaSnapshot({timeout:2500});
         await fs.writeFile(path.join(out,'app-expiry.aria.txt'),aria);
         assert(aria.includes('当前许可或文件使用条件未满足'), 'The App did not display its restricted license state');
-      }else{
+      }else if(surface==='vue'){
         await page.getByText('商用许可尚未生效或已到期，正式影片暂不可取得。',{exact:true}).waitFor();
         assert.equal(await page.locator('video[src^="blob:"]').count(),0);
       }
       assert.equal(await page.getByRole('button',{name:buttonLabel(surface),exact:true}).count(),0);
-      e.checks.push({surface,expiry_denied:true,vue_existing_media_removed:surface==='vue'});
+      e.checks.push({surface,expiry_denied:true,existing_media_removed:surface==='vue'||liveApp});
       await page.context().close();
     }
     await db.execute('SET timestamp=0');
