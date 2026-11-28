@@ -1342,6 +1342,7 @@ class _PrivacyState extends CommunityPageState<_Privacy> {
                   'ACCOUNT_DISPLAY_NAME_UPDATED': '展示名已更新，历史记录不改',
                   'ACCOUNT_ACCESS_CLOSED': '账号访问已关闭',
                   'FILE_ACCESS_REMOVED': '当前文件访问已停止',
+                  'CURRENT_OBJECT_ABSENT': '当前存储对象已确认不可读',
                   'CONTENT_RESTRICTED': '指定内容已受限制',
                   'ONE_RESTRICTION_RELEASED': '已解除指定一项限制'
                 }[d['effect']] ??
