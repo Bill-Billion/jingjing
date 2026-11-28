@@ -24,7 +24,7 @@ async function createESignSimulator(db,env) {
     snapshot_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
     signer_party_id CHAR(36) CHARACTER SET ascii NOT NULL,
     actor_account_id CHAR(36) CHARACTER SET ascii NOT NULL,
-    operation_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+    operation_sha256 CHAR(64) CHARACTER SET ascii NOT NULL UNIQUE,
     current_status ENUM('PENDING','OUTCOME_UNKNOWN','SIMULATED_SUCCESS','SIMULATED_FAILURE') NOT NULL,
     object_version INT UNSIGNED NOT NULL,
     receipt_ref VARCHAR(64) CHARACTER SET ascii NULL
@@ -101,12 +101,13 @@ async function createESignSimulator(db,env) {
         const scoped=await scope(tx,governance,context,input);
         if(sha!==scoped.snapshot.content_sha256)throw error('SIMULATED_SIGNING_SNAPSHOT_CHANGED',409);
         const requestId=randomUUID();
-        const operation=digest([scoped.account,input.party_id,input.snapshot_id,sha,operationKey]);
+        const operation=digest([scoped.account,operationKey]);
         await tx.execute(`INSERT INTO test_esign_receipts
           (id,snapshot_id,snapshot_sha256,signer_party_id,actor_account_id,operation_sha256,current_status,object_version)
           VALUES (?,?,?,?,?,?,'PENDING',1) ON DUPLICATE KEY UPDATE id=id`,
           [requestId,input.snapshot_id,sha,input.party_id,scoped.account,operation]);
         const row=await select(tx,scoped,true);
+        if(!row)throw error('IDEMPOTENCY_CONFLICT',409);
         if(row.operation_sha256!==operation||row.signer_party_id!==input.party_id)throw error('SIMULATED_SIGNING_ALREADY_STARTED',409);
         const fresh=row.id===requestId;
         if(fresh)await append(tx,row);

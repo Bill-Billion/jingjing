@@ -14,6 +14,7 @@ const version=process.argv[4];
 const source='jx_test_qa18_privacy_170df71eb1fc4e2a6be5';
 const order='fe55f52f-670d-4a04-a362-3fc45dc3095e';
 const scenarios=['SUCCESS','FAILURE','TIMEOUT_THEN_SUCCESS'];
+const normalApp=mode==='browsers'&&process.env.QA18_ESIGN_CLIENTS==='normal';
 
 async function main(){
   assert(out.startsWith(baseDir+path.sep));
@@ -49,7 +50,20 @@ async function main(){
       await new Promise(resolve=>server.close(resolve));
       servers.delete(server);
     }
-    let server=await start({sandboxSigning:simulator});
+    const codes=new Map();
+    const syntheticPhone='13800138000';
+    const sms={async call(method,{phone,code},{request_id}){
+      assert(normalApp&&method==='send'&&phone===syntheticPhone);
+      codes.set(request_id,code);
+      return {accepted:true};
+    }};
+    if(normalApp){
+      const security=load('src/modules/auth/security').createSecurity(secret);
+      await db.execute('UPDATE auth_subjects SET account_id=NULL WHERE account_id=?',[roles.buyer.account_id]);
+      await db.execute('INSERT INTO auth_subjects(phone_hash,account_id) VALUES (?,?)',
+        [security.digest('phone',syntheticPhone),roles.buyer.account_id]);
+    }
+    let server=await start({sandboxSigning:simulator,...normalApp?{sms}:{}});
     async function call(role,method,route,status,{key=randomUUID(),body={},at=server,party}={}){
       const actor=roles[role];
       const response=await fetch(addr(at)+route,{method,headers:{Authorization:'Bearer '+actor.bearer_token,
@@ -124,6 +138,11 @@ async function main(){
           assert.equal((await call('buyer','POST',endpoint,200,{key,body})).receipt.current_status,
             scenario==='SUCCESS'?'SIMULATED_SUCCESS':'SIMULATED_FAILURE');
         }
+        if(scenario==='SUCCESS'){
+          const other=fixtures.FAILURE;
+          assert.equal((await call('buyer','POST',route(other),409,{key,body:{snapshot_sha256:other.content_sha256}})).code,'IDEMPOTENCY_CONFLICT');
+          assert.equal((await call('buyer','GET',route(other),200)).receipt,null);
+        }
         const initial=(await call('buyer','GET',endpoint,200)).receipt;
         if(scenario==='TIMEOUT_THEN_SUCCESS'){
           assert.equal(initial.current_status,'OUTCOME_UNKNOWN');
@@ -142,15 +161,17 @@ async function main(){
         evidence.checks.push({scenario,snapshot:snapshot.id,receipt:last.id,recovered:last.current_status});
       }
     }else{
-      const enable=process.env.QA18_ESIGN_CLIENTS==='plain'?'plain':'isolated';
+      const enable=normalApp||process.env.QA18_ESIGN_CLIENTS==='plain'?'plain':'isolated';
       const directory=path.join(baseDir,'builds');
-      const app={dir:path.join(directory,'app-'+enable),manifest:path.join(directory,'app-'+enable+'.json'),checkout:version,source:version};
+      const app=normalApp?{dir:path.join(root,'晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/build/s4-a-esign-normal03'),
+        manifest:path.join(directory,'app-normal.json'),checkout:version,source:version}
+        :{dir:path.join(directory,'app-'+enable+'-verified'),manifest:path.join(directory,'app-'+enable+'-verified.json'),checkout:version,source:version};
       const vue={dir:path.join(directory,'vue-'+enable),manifest:path.join(directory,'vue-'+enable+'.json'),checkout:version,source:version};
       browser=await openBrowser(addr(server),roles,evidence,{app,vue});
       const appPath=snapshot=>'/contract?snapshotId='+snapshot.id;
       const vuePath=snapshot=>'/contracts/'+snapshot.id;
       async function visit(surface,snapshot,fn){
-        const page=await browser.actor(surface,'buyer',surface==='app'?appPath(snapshot):vuePath(snapshot));
+        const page=await browser.actor(surface,'buyer',surface==='app'?appPath(snapshot):vuePath(snapshot),{anonymous:normalApp&&surface==='app'});
         try{await fn(page);}
         catch(error){
           const name=surface+'-'+snapshot.commitments.sandbox_signing?.scenario;
@@ -170,6 +191,7 @@ async function main(){
           if(surface==='vue')await page.getByRole('checkbox',{name:label,exact:true}).check();
           else{
             const toggle=page.getByRole('checkbox',{name:new RegExp(label)});
+            await toggle.waitFor();
             const bounds=await toggle.boundingBox();
             assert(bounds);
             await page.mouse.click(bounds.x+Math.min(24,bounds.width/2),bounds.y+bounds.height/2);
@@ -182,6 +204,43 @@ async function main(){
       }
       if(enable==='plain'){
         for(const surface of ['app','vue'])await visit(surface,scope,async page=>{
+          if(normalApp&&surface==='app'){
+            const phone=page.getByRole('textbox',{name:/手机号/});
+            const action=page.getByRole('button',{name:/登录后继续|前往账号与身份|手机号登录|去登录|先登录/}).first();
+            if(!await phone.isVisible())await action.click();
+            if(!await phone.isVisible()){
+              const login=page.getByRole('button',{name:'手机号登录',exact:true});
+              if(await login.count())await login.click();
+            }
+            async function input(field,value){
+              await field.click();
+              await page.keyboard.press('ControlOrMeta+A');
+              await page.keyboard.insertText(value);
+              assert.equal(await field.inputValue(),value);
+              await field.press('Tab');
+            }
+            function awaitPath(pathname){
+              const p=page.waitForResponse(r=>new URL(r.url()).pathname===pathname&&r.request().method()==='POST',{timeout:12000});
+              p.catch(()=>{});
+              return p;
+            }
+            await input(phone,syntheticPhone);
+            const challenge=awaitPath('/api/v1/auth/sms-challenges');
+            await page.getByRole('button',{name:'获取验证码',exact:true}).click();
+            const smsResult=await challenge;
+            assert.equal(smsResult.status(),200);
+            await input(page.getByRole('textbox',{name:/验证码/}),codes.get((await smsResult.json()).data.challenge_id));
+            const consent=page.getByRole('checkbox',{name:/同意用户协议与隐私政策/});
+            const area=await consent.boundingBox();
+            assert(area);
+            await page.mouse.click(area.x+Math.min(24,area.width/2),area.y+area.height/2);
+            await consent.and(page.locator('[aria-checked=true]')).waitFor();
+            const signedIn=awaitPath('/api/v1/auth/sessions');
+            await page.getByRole('button',{name:'登录并继续',exact:true}).click();
+            const loginResult=await signedIn;
+            assert.equal(loginResult.status(),200);
+            assert.equal((await loginResult.json()).data.account.id,roles.buyer.account_id);
+          }
           await page.waitForLoadState('networkidle',{timeout:15000});
           assert(evidence.browser_requests.some(x=>x.surface===surface&&x.path==='/api/v1'+contract(scope)&&x.status===200));
           assert.equal(await page.getByRole('heading',{name:'电子签隔离演练',exact:true}).count(),0);
@@ -191,9 +250,9 @@ async function main(){
         assert(!evidence.browser_requests.some(r=>r.path.startsWith('/api/v1/testing/esign/')));
       }else{
         await submit('vue',scope,200);
-        await visit('app',scope,async page=>await page.getByText('模拟签署成功',{exact:true}).waitFor());
+        await visit('app',scope,async page=>await page.getByRole('group',{name:/电子签隔离演练.*模拟签署成功/}).waitFor());
         await submit('app',fixtures.FAILURE,200);
-        await visit('vue',fixtures.FAILURE,async page=>await page.getByTestId('sandbox-signing-state').getByText('模拟签署失败').waitFor());
+        await visit('vue',fixtures.FAILURE,async page=>await page.getByText('模拟签署失败',{exact:true}).waitFor());
         const pending=fixtures.TIMEOUT_THEN_SUCCESS;
         await submit('vue',pending,503);
         const before=(await call('buyer','GET',route(pending),200)).receipt;
@@ -202,7 +261,7 @@ async function main(){
           const done=response(page,pending,'POST','/reconcile');
           await page.getByRole('button',{name:'核对原模拟签署结果',exact:true}).click();
           assert.equal((await done).status(),200);
-          await page.getByText('模拟签署成功',{exact:true}).waitFor();
+          await page.getByRole('group',{name:/电子签隔离演练.*模拟签署成功/}).waitFor();
         });
         await visit('vue',pending,async page=>await page.getByTestId('sandbox-signing-state').getByText('模拟签署成功',{exact:true}).waitFor());
         assert.equal((await call('buyer','GET',route(pending),200)).receipt.id,before.id);
@@ -211,7 +270,7 @@ async function main(){
     }
     const [rows]=await db.execute('SELECT id,snapshot_id,current_status,object_version,receipt_ref FROM test_esign_receipts ORDER BY snapshot_id');
     const [events]=await db.execute('SELECT receipt_id,current_status,object_version,receipt_ref FROM test_esign_receipt_events ORDER BY receipt_id,object_version');
-    if(mode==='browsers'&&process.env.QA18_ESIGN_CLIENTS==='plain'){
+    if(mode==='browsers'&&(normalApp||process.env.QA18_ESIGN_CLIENTS==='plain')){
       assert.equal(rows.length,0);
       assert.equal(events.length,0);
     }else{

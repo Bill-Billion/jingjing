@@ -12,6 +12,10 @@ const out=path.resolve(process.argv[2]||'');
 const surface=process.argv[3];
 const fixedVue=process.argv[4];
 const cityMode=process.argv[5]==='city';
+const offerMode=process.argv[5]==='offer';
+const offer='63cbd645-a01f-44e2-a1a0-c9554a38a232';
+const recordId=offerMode?offer:booking;
+const appNow='5902677d92ec11423dab0fa732ef28559ad7c4f0';
 const originalBuild='e887301530c24f9751e074cd297535c3aac7cdb9';
 const originalProduct='053168fb6e06b80680101702a733357309368809';
 
@@ -20,12 +24,12 @@ async function main(){
   assert(out.startsWith(path.join(root,'.local/qa18')+path.sep));
   const directory=path.join(root,'.local/stock-sandbox',source);
   const original=await read(path.join(directory,'access.json'));
-  const evidence={surface,booking,order,product:originalProduct,started_at:new Date().toISOString(),browser_requests:[],checks:[]};
+  const evidence={surface,booking,order,offer:offerMode?offer:undefined,product:originalProduct,started_at:new Date().toISOString(),browser_requests:[],checks:[]};
   await fs.mkdir(out,{recursive:true});
   const save=()=>fs.writeFile(path.join(out,'RESULT.json'),JSON.stringify(evidence,null,2)+'\n');
   let clone,server,browser;
   try{
-    const buyers=cityMode?['auditions_buyer']:['auditions_buyer','auditions_buyer2'];
+    const buyers=cityMode?['auditions_buyer']:offerMode?['auditions_seller','auditions_buyer2']:['auditions_buyer','auditions_buyer2'];
     clone=await cloneRecords({source,directory,out,actors:buyers,proof:evidence,restoreFiles:false});
     const {db,roles,secret}=clone;
     const authorizedPhones=new Set(buyers.map(r=>original.accounts[r].phone));
@@ -53,12 +57,15 @@ async function main(){
     server=load('src/http/account-api').createAccountApi({db,secret,sms}).listen(0,'127.0.0.1');
     await new Promise((ok,fail)=>{server.once('listening',ok);server.once('error',fail);});
     const base='http://127.0.0.1:'+server.address().port+'/api/v1';
-    const app={dir:path.join(root,'晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/build/s4-a2-normal-web'),
+    const currentBuilds=path.join(path.dirname(out),'builds');
+    const app=offerMode?{dir:path.join(root,'晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/build/s4-a-esign-normal03'),
+      manifest:path.join(currentBuilds,'app-normal.json'),checkout:appNow,source:appNow}
+      :{dir:path.join(root,'晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/build/s4-a2-normal-web'),
       manifest:path.join(root,'.local/qa18/s4-a2-20261127/APP_NORMAL_BUILD_MANIFEST.json'),checkout:originalBuild,source:originalProduct};
-    const vue=vueArtifact(out,fixedVue);
+    const vue=offerMode?{dir:path.join(currentBuilds,'vue-stock'),manifest:path.join(currentBuilds,'vue-stock.json'),checkout:fixedVue,source:fixedVue}:vueArtifact(out,fixedVue);
     browser=await openBrowser(base,roles,evidence,{app,vue});
     const city='上海';
-    const target=cityMode?'/auditions/catalog?city='+encodeURIComponent(city):surface==='app'?'/auditions/action?bookingId='+booking+'&action=support':'/auditions/bookings/'+booking+'?action=receipt';
+    const target=cityMode?'/auditions/catalog?city='+encodeURIComponent(city):offerMode?(surface==='app'?'/auditions/offer?offerId='+offer:'/auditions/offers/'+offer):surface==='app'?'/auditions/action?bookingId='+booking+'&action=support':'/auditions/bookings/'+booking+'?action=receipt';
     function response(page,url,method){const pending=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1'+url&&r.request().method()===method,{timeout:12000});pending.catch(()=>{});return pending;}
     async function fillFlutter(page,field,text){
       await field.click();
@@ -82,7 +89,7 @@ async function main(){
           assert.equal(new URL(page.url()).searchParams.get('redirect'),target);
           await page.getByTestId('phone-input').fill(phone);
         }
-        assert(!evidence.browser_requests.some(r=>r.role===role&&r.path==='/api/v1/auditions/records/'+booking&&r.status===200));
+        assert(!evidence.browser_requests.some(r=>r.role===role&&r.path==='/api/v1/auditions/records/'+recordId&&r.status===200));
         const challenge=response(page,'/auth/sms-challenges','POST');
         await (surface==='app'?page.getByRole('button',{name:'获取验证码',exact:true}):page.getByTestId('send-code')).click();
         const issued=await challenge;
@@ -98,7 +105,7 @@ async function main(){
           await page.mouse.click(bounds.x+Math.min(24,bounds.width/2),bounds.y+bounds.height/2);
           await agreement.and(page.locator('[aria-checked=true]')).waitFor();
         }else await page.getByTestId('code-input').fill(code);
-        const readback=response(page,cityMode?'/auditions/catalog':'/auditions/records/'+booking,'GET');
+        const readback=response(page,cityMode?'/auditions/catalog':'/auditions/records/'+recordId,'GET');
         const session=response(page,'/auth/sessions','POST');
         await (surface==='app'?page.getByRole('button',{name:'登录并继续',exact:true}):page.getByTestId('submit-login')).click();
         const loggedIn=await session;
@@ -120,11 +127,11 @@ async function main(){
           assert.equal(new URL(loaded.url()).searchParams.get('city'),city);
         }else if(allowed){
           const row=(await loaded.json()).data;
-          assert.equal(row.id,booking);
-          assert.equal(row.current_status,'FULFILLED');
+          assert.equal(row.id,recordId);
+          assert.equal(row.current_status,offerMode?'PUBLISHED':'FULFILLED');
         }
         if(surface==='app')assert.equal(new URL(page.url()).hash,'#'+target);
-        evidence.checks.push({role,anonymous_route_recovered:target,http:loaded.status(),normal_local_session:true,status:cityMode?'CITY_FILTER_PRESERVED':allowed?'FULFILLED':'DENIED'});
+        evidence.checks.push({role,anonymous_route_recovered:target,http:loaded.status(),normal_local_session:true,status:cityMode?'CITY_FILTER_PRESERVED':allowed?(offerMode?'PUBLISHED':'FULFILLED'):'DENIED'});
       }catch(error){
         const snapshot=await page.locator('body').ariaSnapshot({timeout:1500}).catch(()=>'');
         const redacted=snapshot.replace(/1[3-9]\d{9}/g,'[PHONE]').replace(/(?<![a-f0-9])\d{6}(?![a-f0-9])/g,'[CODE]');
@@ -135,7 +142,7 @@ async function main(){
     const writes=evidence.browser_requests.filter(r=>r.method!=='GET');
     assert(writes.every(r=>['/api/v1/auth/sms-challenges','/api/v1/auth/sessions'].includes(r.path)));
     evidence.result='PASS';
-    console.log('PASS product login resumes the original booking and action; unrelated identity remains denied');
+    console.log('PASS product login resumes the original registered destination and rejects an unrelated private reader');
   }catch(error){evidence.result='FAIL';evidence.failure=error.message.replace(/1[3-9]\d{9}/g,'[PHONE]');throw new Error(evidence.failure);}
   finally{
     try{
