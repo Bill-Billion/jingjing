@@ -34,7 +34,7 @@ import { readBusiness,recordId,rowData,rowsOf,versionOf,type BusinessData } from
 import { businessPrerequisite } from '@/business/prerequisites'
 import { actionAvailability } from '@/business/availability'
 import { clearBusinessLists,draftFingerprint,rememberBusinessList,restoreBusinessList } from '@/business/navigation'
-import { directoryCity,setDirectoryCity } from '@/business/directoryCity'
+import { directoryCity,normalizeDirectoryCity,setDirectoryCity } from '@/business/directoryCity'
 import DirectoryCityControl from '@/components/business/DirectoryCityControl.vue'
 import { labels,display } from '@/business/labels'
 import { ApiError,asApiError } from '@/api/client'
@@ -147,7 +147,19 @@ const rows=computed(()=>rowsOf(ui.data.value))
 const title=(r:BusinessData)=>String(r.title||rowData(r).title||(r.notice as BusinessData|undefined)?.title||(rowData(r).notice as BusinessData|undefined)?.title||(rowData(r).template as BusinessData|undefined)?.title||labels[String(r.kind)]||section.value.label)
 function clearFile(){ui.revoke();fileUrl.value=fileText.value=fileType.value=fileSource.value='';filePlayed.value=notifyRead.value=false}
 watch(stockFileBlocked, message => { if (message) clearFile() }, { flush: 'sync' })
-function reset(){stockAdmission.clear();creationVerifiedRequest.value='';creationProblem.value=null;listRequest++;syncingCity=true;referenceRequest++;refBusy.value=false;invitationContext.value=null;previousCursors.value=[];fieldErrors.value={};errorField.value='';draftBaseline.value='{}';ui.data.value=null;ui.result.value=null;chosenReferences.value=[];refOptions.value={};refCursor.value={};referenceSources.value={};referenceNotice.value='';selected.value=null;reference.value={...(isCocreationMaterials.value&&uuid(route.query.projectId)?{production_project_id:route.query.projectId}:{}),...Object.fromEntries(routeIds(section.value.detail||section.value.path).map(k=>[k,uuid(route.params.recordId)?route.params.recordId:''])),record_id:uuid(route.params.recordId)?route.params.recordId:'',request_id:uuid(route.params.recordId)?route.params.recordId:'',...domain.value.key==='daily-finance'?{report_id:route.params.recordId||route.query.reportId||''}:{},...section.value.path.includes(':order_id')?{order_id:route.params.recordId||''}:{},...section.value.path.includes(':project_id')?{project_id:route.params.recordId||''}:{}};filters.value=initial(section.value.query||[]);draft.value={};operationKey.value='';agreed.value=false;cursor.value='';assetId.value='';uploaded.value=null;uploadFile.value=null;clearFile();const position=restoreBusinessList(listKey(),cityField.value?directoryCity.value:undefined);if(position){filters.value=position.filters;cursor.value=position.cursor;previousCursors.value=position.previous}localCity.value=position?.city?.local||false;appliedDefaultCity.value=directoryCity.value;if(cityField.value&&!localCity.value)filters.value.city=directoryCity.value;lastReadCity.value=String(filters.value.city||'');syncingCity=false}
+function reset(){stockAdmission.clear();creationVerifiedRequest.value='';creationProblem.value=null;listRequest++;syncingCity=true;referenceRequest++;refBusy.value=false;invitationContext.value=null;previousCursors.value=[];fieldErrors.value={};errorField.value='';draftBaseline.value='{}';ui.data.value=null;ui.result.value=null;chosenReferences.value=[];refOptions.value={};refCursor.value={};referenceSources.value={};referenceNotice.value='';selected.value=null;reference.value={...(isCocreationMaterials.value&&uuid(route.query.projectId)?{production_project_id:route.query.projectId}:{}),...Object.fromEntries(routeIds(section.value.detail||section.value.path).map(k=>[k,uuid(route.params.recordId)?route.params.recordId:''])),record_id:uuid(route.params.recordId)?route.params.recordId:'',request_id:uuid(route.params.recordId)?route.params.recordId:'',...domain.value.key==='daily-finance'?{report_id:route.params.recordId||route.query.reportId||''}:{},...section.value.path.includes(':order_id')?{order_id:route.params.recordId||''}:{},...section.value.path.includes(':project_id')?{project_id:route.params.recordId||''}:{}};filters.value=initial(section.value.query||[]);draft.value={};operationKey.value='';agreed.value=false;cursor.value='';assetId.value='';uploaded.value=null;uploadFile.value=null;clearFile();const position=restoreBusinessList(listKey(),cityField.value?directoryCity.value:undefined);if(position){filters.value=position.filters;cursor.value=position.cursor;previousCursors.value=position.previous}localCity.value=position?.city?.local||false;appliedDefaultCity.value=directoryCity.value;if(cityField.value&&!localCity.value)filters.value.city=directoryCity.value;
+ const linkedCity = domain.value.key === 'auditions' && section.value.key === 'catalog' && cityField.value
+  ? normalizeDirectoryCity(route.query.city)
+  : null
+ if (linkedCity) {
+  localCity.value = true
+  if (filters.value.city !== linkedCity) {
+   filters.value.city = linkedCity
+   cursor.value = ''
+   previousCursors.value = []
+  }
+ }
+ lastReadCity.value=String(filters.value.city||'');syncingCity=false}
 watch(ui.securityRevision,()=>{if(ui.error.value)clearBusinessLists();reset()},{flush:'sync'})
 watch(()=>[session.account?.id,session.selectedId,session.expiresAt],clearBusinessLists,{flush:'sync'})
 function routeAction(){const key=typeof route.query.action==='string'?route.query.action:'';if(domain.value.operations.some(item=>item.key===key&&(!item.sections||item.sections.includes(section.value.key))))operationKey.value=key;if(isRoomCreation.value&&uuid(route.query.requestId)){draft.value.request_id=route.query.requestId;cleanDraft()}if(domain.value.key==='notices'&&key==='invitation'&&uuid(route.query.sourceListing)){const sub=draft.value.submission as BusinessData|undefined;if(sub)sub.source_listing_id=route.query.sourceListing;cleanDraft()}}

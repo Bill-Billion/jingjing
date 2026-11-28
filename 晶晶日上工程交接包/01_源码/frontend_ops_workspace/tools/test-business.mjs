@@ -263,6 +263,33 @@ try{
    assert.equal(urls.length,1);const query=new URL(urls[0],'https://test.invalid').searchParams;assert.equal(query.get('city'),'杭州');assert.equal(query.has('q'),false)
   }}finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
  })
+ test('试镜城市深链登录后保留原过滤，重复、过长及控制字符不进入登录回跳',async()=>{
+  const target='/auditions/catalog?city='+encodeURIComponent('上海')
+  assert.equal(loginRedirect(target),target)
+  for(const invalid of ['/auditions/catalog?city=','/auditions/catalog?city=上海&city=北京',
+   '/auditions/catalog?city='+('市'.repeat(101)),'/auditions/catalog?city=%0A上海',
+   '/auditions/catalog?city=上海&redirect=https://other.invalid','https://other.invalid'+target]){
+   assert.equal(loginRedirect(invalid),'/workspace')
+  }
+  const city=await server.ssrLoadModule('/src/business/directoryCity.ts')
+  const navigation=await server.ssrLoadModule('/src/business/navigation.ts')
+  city.setDirectoryCity('杭州')
+  navigation.clearBusinessLists()
+  const urls=[]
+  try{
+   await render(target,null,async vm=>{
+    globalThis.fetch=async url=>{urls.push(String(url));return response({items:[],next_cursor:id(7)},null)}
+    vm.reset()
+    await vm.load()
+    assert.equal(vm.filters.city,'上海')
+    assert.equal(vm.localCity,true)
+    assert.equal(city.directoryCity.value,'杭州')
+    assert.equal(new URL(urls.at(-1),'https://test.invalid').searchParams.get('city'),'上海')
+    await vm.useDefaultCity()
+    assert.equal(vm.filters.city,'杭州')
+   })
+  }finally{city.setDirectoryCity('');navigation.clearBusinessLists()}
+ })
  test('返回目录保留局部过滤与页码，默认城市改变只重置跟随目录的游标',async()=>{
   const city=await server.ssrLoadModule('/src/business/directoryCity.ts'),navigation=await server.ssrLoadModule('/src/business/navigation.ts')
   navigation.clearBusinessLists();city.setDirectoryCity('杭州')

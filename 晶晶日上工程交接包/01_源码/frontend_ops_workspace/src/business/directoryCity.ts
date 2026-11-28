@@ -5,10 +5,14 @@ import { readonly, ref } from 'vue'
 const city = ref('')
 export const directoryCity = readonly(city)
 
+export function normalizeDirectoryCity(value: unknown) {
+  if (typeof value !== 'string' || /[\u0000-\u001f]/.test(value)) return null
+  const cityName = value.trim()
+  return cityName.length <= 100 ? cityName : null
+}
+
 export function setDirectoryCity(value: string) {
-  const next = value.trim()
-  if (next.length > 100 || /[\r\n\u0000-\u001f]/.test(next)) {
-    throw new Error('请填写100字以内的城市名称。')
-  }
+  const next = normalizeDirectoryCity(value.trim())
+  if (next === null) throw new Error('请填写100字以内的城市名称。')
   city.value = next
 }
