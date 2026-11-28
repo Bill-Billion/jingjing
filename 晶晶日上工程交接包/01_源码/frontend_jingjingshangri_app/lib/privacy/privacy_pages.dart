@@ -60,6 +60,7 @@ String privacyStatus(Object? value) =>
       'RETRY': '等待服务重试',
       'SUCCEEDED': '本项处理已核实',
       'FAILED': '本项处理失败，待工作人员核对',
+      'BLOCKED': '处理服务受阻，待工作人员核对原请求',
       'DEAD': '本项处理失败，待工作人员核对',
     }[value] ??
     '状态待核对';
