@@ -1,0 +1,78 @@
+✓ 真实分类仅用账号读取，分类可空，含附件的自由创作模板按服务端显示
+✓ 本人读取带当前主体且拒绝跨账号、跨主体、运营动作、正文摘要和缺失ETag
+✓ 空文字草稿可创建、重新打开续写、保存后正式提交，始终使用当前版本
+✓ 正式提交定位必填错误，非法选择和附件地址不能伪装成答案
+✓ 必填附件允许先存文字草稿，缺少附件时正式提交定位错误
+✓ 未知创建先读列表，近似故事不算成功；恢复原键和原正文且不重复发起
+✓ 重复保存仅发一次，未知保存恢复原版本不跟随后改内容
+✓ 412保留未保存内容并重读，重新核对后才可写；刷新失权立即清空
+✓ 冲突重读网络失败仍保留脏稿，不会把已有故事误当新建
+✓ 真实页面412后读取失败仍显示原输入，刷新保留原内容并待核对后重试
+✓ 补件冲突读取失败保留逐项要求和原回复，失权仍清除私人输入
+✓ 补件从本人草稿读起，保存与正式补交分开，正式提交后读取响应进度
+✓ 补件空回复可存草稿但正式补交须逐项填写，过期上下文不可编辑
+✓ 未明确允许的本人操作不开放，正式故事不当成可续写草稿
+✓ 身份变化、A到B再到A、失权与迟到请求都不恢复私人草稿
+✓ 分页保持原游标，重复游标不循环，列表筛选在详情往返中保留
+✓ 本人历史读取保持主体，拒绝运营上下文与外部正文
+✓ 反复读取历史首屏可以复用相同下一页游标，续页循环仍拒绝
+✓ 真实本人页面选择实际模板、创建并跳转，所有子路由保留43项公共导航与单一高亮
+✓ 真实页面脏稿阻止离开、切模板与切身份，未知请求不可绕过离页保护
+✓ 真实页面未建故事先存草稿，附件通过受控入口且文字不当HTML
+✓ 登录返回只接受本人列表、新建与合法详情，拒绝手填权限与外链
+
+22 own-story checks passed.
+✓ 附件模板、正式答案与补件要求接受真实UUID，拒绝公开URL和任意编号
+✓ 选择文件校验8MiB、空文件、120字文件名和允许类型，不猜造资产
+✓ 主动请求历史正式保留原因，兼容旧响应且拒绝未知原因
+✓ 旧正式附件无需加载历史就显示保留原因并禁撤回，未引用附件仍可办理
+✓ 原字节上传有真实传输进度，100%传输不冒充服务器确认，回包核准后才绑定
+✓ 上传断线和待核对409保留原文件原key，先读后重放，重复点击不多传
+✓ 离页重开同故事恢复原文件和key；会话或身份改变清除内存恢复资料
+✓ 上传2xx跨故事、错主体、错摘要或未就绪时不能绑定，保留原请求待核对
+✓ 40记录上限是明确失败，不无限重试，也不把已选文件显示为上传成功
+✓ 运营空页仍有下一页时继续读取，原游标不变且全程无主体头
+✓ 撤回仅用附件版本，空正文和原key恢复；正式保留409不删除或清绑定
+✓ 二进制受控下载校验大小摘要，不内嵌文件，运营下载无主体且临时URL能清理
+✓ 切身份、请求故事和A到B再回A清原文件，迟到上传与下载均不可恢复
+✓ 撤回访问时取消在途下载，迟到二进制不创建临时URL或误报下载成功
+✓ 401/403/404读取失权清附件与选择；上传失权也不保留私人文件
+✓ 真实本人页面必须先建故事，上传后绑定真实id，保存和正式提交仍分离
+✓ 真实页面未知上传禁止保存，可确认暂离；相似文件不当成功，撤回解除本次关联
+✓ 明确暂离只放行一次导航，保留原文件和请求供同会话重开
+✓ 暂离确认不能带着旧身份或旧请求继续导航
+✓ 真实上传401沿用会话失效处理，清空故事、原文件与待确认操作
+✓ 补件换附件先存本人草稿，运营仍显示旧正式附件；正式补交后才产生新版本
+✓ 正式内容按其版本引用显示附件名大小，历史附件仍可读但没有公开媒体标签
+
+22 story-attachment checks passed.
+17:29:45 [vite] (client) Re-optimizing dependencies because vite config has changed
+PASS SUBMIT committed
+PASS SUBMIT absent409
+PASS SUBMIT wrongDigest
+PASS SUBMIT context
+PASS NOMINATE committed
+PASS NOMINATE absent409
+PASS NOMINATE wrongDigest
+PASS NOMINATE context
+PASS VOTE committed
+PASS VOTE absent409
+PASS VOTE wrongDigest
+PASS VOTE context
+PASS APPEAL committed
+PASS APPEAL absent409
+PASS APPEAL wrongDigest
+PASS APPEAL context
+{"passed":16,"failed":0}
+17:29:49 [vite] (client) [optimizer] scanning dependencies...
+PASS continuation validates current organization and appends the next distinct notice
+PASS current organization 401 clears old card and notices without another catalog read
+PASS current organization 403 clears old card and notices without another catalog read
+PASS current organization 404 clears old card and notices without another catalog read
+PASS current organization 409 clears old card and notices without another catalog read
+PASS a replacement approved profile restarts the list instead of appending into old profile state
+PASS duplicate page clicks issue one continuation and an obsolete response cannot restore cleared state
+{"tests":7,"passed":7,"failed":0}
+17:29:51 [vite] (client) Re-optimizing dependencies because vite config has changed
+共创邀请凭证解析、结果校验和无明文恢复记录通过
+notice quote options: 8 source, shape, cursor and hash checks passed

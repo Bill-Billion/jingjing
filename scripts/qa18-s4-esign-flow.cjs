@@ -11,6 +11,8 @@ const baseDir=path.join(root,'.local/qa18/s4-a-remaining-20261128');
 const out=path.resolve(process.argv[2]||'');
 const mode=process.argv[3]||'api';
 const version=process.argv[4];
+const normalBuild=process.argv[5] ? path.resolve(process.argv[5]) : null;
+const normalBuildVersion=process.argv[6] || version;
 const source='jx_test_qa18_privacy_170df71eb1fc4e2a6be5';
 const order='fe55f52f-670d-4a04-a362-3fc45dc3095e';
 const scenarios=['SUCCESS','FAILURE','TIMEOUT_THEN_SUCCESS'];
@@ -163,8 +165,8 @@ async function main(){
     }else{
       const enable=normalApp||process.env.QA18_ESIGN_CLIENTS==='plain'?'plain':'isolated';
       const directory=path.join(baseDir,'builds');
-      const app=normalApp?{dir:path.join(root,'晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/build/s4-a-esign-normal03'),
-        manifest:path.join(directory,'app-normal.json'),checkout:version,source:version}
+      const app=normalApp?{dir:normalBuild||path.join(root,'晶晶日上工程交接包/01_源码/frontend_jingjingshangri_app/build/s4-a-esign-normal03'),
+        manifest:normalBuild?normalBuild+'.json':path.join(directory,'app-normal.json'),checkout:normalBuildVersion,source:normalBuildVersion}
         :{dir:path.join(directory,'app-'+enable+'-verified'),manifest:path.join(directory,'app-'+enable+'-verified.json'),checkout:version,source:version};
       const vue={dir:path.join(directory,'vue-'+enable),manifest:path.join(directory,'vue-'+enable+'.json'),checkout:version,source:version};
       browser=await openBrowser(addr(server),roles,evidence,{app,vue});
@@ -203,7 +205,7 @@ async function main(){
         });
       }
       if(enable==='plain'){
-        for(const surface of ['app','vue'])await visit(surface,scope,async page=>{
+        for(const surface of normalBuild?['app']:['app','vue'])await visit(surface,scope,async page=>{
           if(normalApp&&surface==='app'){
             const phone=page.getByRole('textbox',{name:/手机号/});
             const action=page.getByRole('button',{name:/登录后继续|前往账号与身份|前往登录|手机号登录|去登录|先登录/}).first();
@@ -229,17 +231,31 @@ async function main(){
             await page.getByRole('button',{name:'获取验证码',exact:true}).click();
             const smsResult=await challenge;
             assert.equal(smsResult.status(),200);
-            await input(page.getByRole('textbox',{name:/验证码/}),codes.get((await smsResult.json()).data.challenge_id));
+            const otp=page.getByRole('textbox',{name:/验证码/});
+            const code=codes.get((await smsResult.json()).data.challenge_id);
+            assert.match(code,/^\d{6}$/);
+            await page.getByRole('button',{name:/获取验证码.*重新获取/}).waitFor();
+            await otp.click();
+            await page.keyboard.press('ControlOrMeta+A');
+            for(const digit of code)await page.keyboard.press(digit);
+            assert(await otp.inputValue()===code,'The Flutter verification field did not receive the generated code');
+            await otp.press('Tab');
             const consent=page.getByRole('checkbox',{name:/同意用户协议与隐私政策/});
             const area=await consent.boundingBox();
             assert(area);
             await page.mouse.click(area.x+Math.min(24,area.width/2),area.y+area.height/2);
             await consent.and(page.locator('[aria-checked=true]')).waitFor();
             const signedIn=awaitPath('/api/v1/auth/sessions');
+            const restored=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1'+contract(scope)&&r.request().method()==='GET',
+              {timeout:14000});
+            restored.catch(()=>{});
             await page.getByRole('button',{name:'登录并继续',exact:true}).click();
             const loginResult=await signedIn;
             assert.equal(loginResult.status(),200);
             assert.equal((await loginResult.json()).data.account.id,roles.buyer.account_id);
+            assert.equal((await restored).status(),200);
+            await page.waitForURL(u=>u.hash==='#'+appPath(scope));
+            evidence.checks.push({normal_contract_login_restored:scope.id});
           }
           await page.waitForLoadState('networkidle',{timeout:15000});
           assert(evidence.browser_requests.some(x=>x.surface===surface&&x.path==='/api/v1'+contract(scope)&&x.status===200));

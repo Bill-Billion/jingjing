@@ -16,7 +16,7 @@ const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 const read = async file => JSON.parse(await fs.readFile(file,'utf8'));
 
 async function cloneRecords({source, directory, out, actors, proof, resume, restoreFiles=true}){
-  assert.match(source,/^jx_test_(stock_pm03_[a-f0-9]{24}|qa18_(?:privacy|champion)_[a-f0-9]{20})$/);
+  assert.match(source,/^jx_test_(stock_pm03_[a-f0-9]{24}|qa18_(?:privacy|champion|points)_[a-f0-9]{20})$/);
   assert(path.resolve(out).startsWith(path.join(root,'.local/qa18')+path.sep));
   assert(path.resolve(directory).startsWith(path.join(root,'.local')+path.sep));
   const original=await read(path.join(directory,'access.json'));

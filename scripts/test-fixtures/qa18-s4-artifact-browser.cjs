@@ -31,7 +31,7 @@ function vueArtifact(runDir, source, defaultGeneration='fixed'){
     manifest:path.resolve(path.dirname(runDir),manifest),checkout:source,source};
 }
 
-async function openBrowser(api, roles, evidence, {vue,app} = {}) {
+async function openBrowser(api, roles, evidence, {vue,app,beforeResponse} = {}) {
   assert.equal(new URL(api).hostname, '127.0.0.1');
   const expires = new Date(Date.now()+600000).toISOString();
   const builds = {
@@ -103,6 +103,7 @@ async function openBrowser(api, roles, evidence, {vue,app} = {}) {
         if(endpoint)evidence.browser_requests.push({surface,role,path:url.pathname,transport_error:error.name});
         payload={status:502,body:'Local fixture transport failed'};
       }
+      if(endpoint&&beforeResponse)await beforeResponse({surface,role,path:url.pathname,method:req.method(),status:payload.status});
       await route.fulfill(payload).catch(error=>{
         if(!/Target page, context or browser has been closed/.test(error.message))throw error;
       });

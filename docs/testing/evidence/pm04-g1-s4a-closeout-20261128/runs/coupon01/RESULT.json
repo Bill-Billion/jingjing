@@ -1,0 +1,97 @@
+{
+  "source": "jx_test_qa18_points_f2bb76b929a704c47425",
+  "started_at": "2026-11-28T09:09:59.171Z",
+  "grant": "bf3dd77c-921f-44de-9838-43106c233ebc",
+  "holds": [
+    "e4f4ad57-07df-4a96-a8da-0331ecc05657",
+    "88b1f917-6f98-4ab9-8827-6e8c483080c6"
+  ],
+  "requests": [
+    {
+      "role": "buyer",
+      "route": "/redemption/grants/bf3dd77c-921f-44de-9838-43106c233ebc",
+      "http": 200,
+      "sha256": "f57cdac0f767b38bf452c809ee3accb3a5129ee90258fbf71f9b90de975b71fc"
+    },
+    {
+      "role": "buyer",
+      "route": "/redemption/holds/e4f4ad57-07df-4a96-a8da-0331ecc05657",
+      "http": 200,
+      "sha256": "7ee102b70102755f7bbad953a7b6f9c7176ae0aa83a118f867aae7a41837b52e"
+    },
+    {
+      "role": "outsider",
+      "route": "/redemption/holds/e4f4ad57-07df-4a96-a8da-0331ecc05657",
+      "http": 404,
+      "code": "REDEMPTION_NOT_FOUND",
+      "sha256": "aa355ec2f98073926b9a4f928218a4a126b024b312fa690dfe8c2b0e482036d3"
+    },
+    {
+      "role": "buyer",
+      "route": "/redemption/holds/e4f4ad57-07df-4a96-a8da-0331ecc05657/release",
+      "http": 409,
+      "code": "COUPON_CANCEL_ORDER_FIRST",
+      "sha256": "8b468d7fc0a0e749194a61632d596badbef0b30645fcf976ad37d79017d12e61"
+    },
+    {
+      "role": "buyer",
+      "route": "/redemption/holds/e4f4ad57-07df-4a96-a8da-0331ecc05657",
+      "http": 200,
+      "sha256": "5b8d5f08e16cf324a1a178b393d5119ef829d5120045259db1443df421d114a2"
+    },
+    {
+      "role": "buyer",
+      "route": "/redemption/holds/88b1f917-6f98-4ab9-8827-6e8c483080c6",
+      "http": 200,
+      "sha256": "6bb5df1061c202ad258ea827328c4f20f84c97350161f5b525b944bb53dd4501"
+    },
+    {
+      "role": "outsider",
+      "route": "/redemption/holds/88b1f917-6f98-4ab9-8827-6e8c483080c6",
+      "http": 404,
+      "code": "REDEMPTION_NOT_FOUND",
+      "sha256": "50eb9e29ed08566a436c3db9d6f18e26f9dc637bbdf8e070d7ee0e9ff586b670"
+    },
+    {
+      "role": "buyer",
+      "route": "/redemption/holds/88b1f917-6f98-4ab9-8827-6e8c483080c6/release",
+      "http": 409,
+      "code": "COUPON_CANCEL_ORDER_FIRST",
+      "sha256": "979942d6a077c76e2431a6b0bb35a66cbec9058c5dba90a6dffc19a6e10b3f1a"
+    },
+    {
+      "role": "buyer",
+      "route": "/redemption/holds/88b1f917-6f98-4ab9-8827-6e8c483080c6",
+      "http": 200,
+      "sha256": "770fff6ec7f83e47466c68fc1ffcc5904563d2a695fc852a1c4b4e345c435cea"
+    }
+  ],
+  "browser_requests": [],
+  "checks": [
+    {
+      "hold": "e4f4ad57-07df-4a96-a8da-0331ecc05657",
+      "state": "RELEASED",
+      "expiry_passed": true,
+      "version": 4,
+      "repeat_no_business_change": true
+    },
+    {
+      "hold": "88b1f917-6f98-4ab9-8827-6e8c483080c6",
+      "state": "USED",
+      "expiry_passed": true,
+      "version": 4,
+      "repeat_no_business_change": true
+    }
+  ],
+  "source_database": "jx_test_qa18_points_f2bb76b929a704c47425",
+  "clone": "jx_test_qa18_s4delta_a6193fab46077b384042",
+  "initial_dump_sha256": "f7d79abe4343aa0ac5131fd4f89c82bc9dcde4085c83ad49a2c71520b7c65df1",
+  "schema_tables": 190,
+  "migration_count": 225,
+  "exact_restored_file_count": 0,
+  "new_synthetic_sessions": 2,
+  "result": "FAIL",
+  "failure": "The input did not match the regular expression /^[a-f0-9-]{36}$/i. Input:\n\n'[redacted operation key]'\n",
+  "original_sql_unchanged": true,
+  "finished_at": "2026-11-28T09:10:09.867Z"
+}
