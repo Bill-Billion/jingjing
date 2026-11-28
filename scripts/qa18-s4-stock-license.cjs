@@ -188,7 +188,11 @@ async function main(){
       if(surface==='app'&&liveApp){
         const browserNow=await page.evaluate(()=>Date.now());
         await page.clock.fastForward(simulated-browserNow);
-        await page.getByText('当前许可或文件使用条件未满足',{exact:true}).waitFor({timeout:5000});
+        await page.clock.runFor(500);
+        const aria=await page.locator('body').ariaSnapshot({timeout:2500});
+        await fs.writeFile(path.join(out,'app-expiry.aria.txt'),aria);
+        assert(await page.evaluate(()=>Date.now())>=Date.parse(expires));
+        assert(aria.includes('当前许可或文件使用条件未满足'), 'The open App page did not show that the license expired');
         assert.equal(await page.getByRole('button',{name:buttonLabel(surface),exact:true}).count(),0);
       }else await page.clock.setFixedTime(new Date(simulated));
       if(surface==='app'&&!liveApp){

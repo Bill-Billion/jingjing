@@ -1,0 +1,246 @@
+✓ 运营列表、详情和受理只带Bearer，保留原游标、空正文和强版本
+✓ 草稿、正文混入摘要、身份错配和缺失ETag不得作为正式提交展示
+✓ 提交模板和答案必须一致，拒绝未声明字段、非法选择与附件冒充
+✓ 状态切换从首屏读取，游标原值传递且不接受重复游标
+✓ 受理按钮使用服务端动作权限，重复点击只发送一次
+✓ 网络未知结果先查询，再用原key、原空正文、原版本恢复
+✓ 412刷新原提交并要求重新核对，409已受理不再创建受理
+✓ 读写失权401/403/404清空提交、列表、游标及未知操作
+✓ 412后的重新读取若失权，不能残留旧正文和旧确认
+✓ 账号、主体、revision及离页清理隔离迟到读取，A到B再到A也不恢复旧正文
+✓ 详情切换时先清旧内容，较早响应不覆盖较新记录
+✓ 登录安全返回只接受列表及UUID详情，拒绝外链、query、伪岗位及不完整编号
+node : [Vue warn]: injection "Symbol(route location)" not found.
+所在位置 行:7 字符: 3
++   node "tools/$test.mjs" *>> "$d/vue-original-forms.log"
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([Vue warn]: inj...on)" not found.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+[Vue warn]: injection "Symbol(router)" not found.
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+[VUE_ROUTER_R0020] No active route record was found when calling `onBeforeRouteLeave()`. Maybe you called it inside of
+App.vue?
+├▶ fix: Call it from a component rendered inside <router-view> (a page component or one of its children), not from App.
+vue.
+╰▶ see: https://router.vuejs.org/guide/advanced/composition-api.html#Navigation-Guards
+[VUE_ROUTER_R0020] No active route record was found when calling `onBeforeRouteUpdate()`. Maybe you called it inside of
+ App.vue?
+├▶ fix: Call it from a component rendered inside <router-view> (a page component or one of its children), not from App.
+vue.
+╰▶ see: https://router.vuejs.org/guide/advanced/composition-api.html#Navigation-Guards
+[Vue warn]: resolveComponent can only be used in render() or setup().
+[Vue warn]: Non-function value encountered for default slot. Prefer function slots for better performance.
+  at <Anonymous to="/workspace" class="supply-brand" >
+  at <CustomizationIntakeView onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > >
+  at <RouterView>
+  at <App>
+[Vue warn]: Component <Anonymous> is missing template or render function.
+  at <Anonymous to="/workspace" class="supply-brand" >
+  at <CustomizationIntakeView onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > >
+  at <RouterView>
+  at <App>
+[Vue warn]: injection "Symbol(route location)" not found.
+  at <WorkspaceNav>
+  at <CustomizationIntakeView onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > >
+  at <RouterView>
+  at <App>
+[Vue warn]: Unhandled error during execution of watcher getter
+  at <WorkspaceNav>
+  at <CustomizationIntakeView onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > >
+  at <RouterView>
+  at <App>
+[Vue warn]: Unhandled error during execution of setup function
+  at <WorkspaceNav>
+  at <CustomizationIntakeView onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > >
+  at <RouterView>
+  at <App>
+[Vue warn]: Unhandled error during execution of render function
+  at <CustomizationIntakeView onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > >
+  at <RouterView>
+  at <App>
+R:/frontend_ops_workspace/src/components/WorkspaceNav.vue:502
+		(0,__vite_ssr_import_2__.watch)(() => route.fullPath, () => {
+		                                            ^
+
+TypeError: Cannot read properties of undefined (reading 'fullPath')
+    at query.value (R:/frontend_ops_workspace/src/components/WorkspaceNav.vue:502:47)
+    at callWithErrorHandling (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_workspace\nod
+e_modules\@vue\runtime-core\dist\runtime-core.cjs.js:200:33)
+    at callWithAsyncErrorHandling (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_workspac
+e\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:207:17)
+    at baseWatchOptions.call (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_workspace\nod
+e_modules\@vue\runtime-core\dist\runtime-core.cjs.js:890:47)
+    at ReactiveEffect.getter [as fn] (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_works
+pace\node_modules\@vue\reactivity\dist\reactivity.cjs.js:1865:29)
+    at ReactiveEffect.run (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_workspace\node_m
+odules\@vue\reactivity\dist\reactivity.cjs.js:268:19)
+    at job ([本机路径]\node_modules\@vue\rea
+ctivity\dist\reactivity.cjs.js:1915:31)
+    at Object.watch (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_workspace\node_modules
+\@vue\reactivity\dist\reactivity.cjs.js:1965:7)
+    at doWatch ([本机路径]\node_modules\@vue
+\runtime-core\dist\runtime-core.cjs.js:918:34)
+    at watch ([本机路径]\node_modules\@vue\r
+untime-core\dist\runtime-core.cjs.js:851:10)
+
+Node.js v22.19.0
+✓ 真实分类仅用账号读取，分类可空，含附件的自由创作模板按服务端显示
+✓ 本人读取带当前主体且拒绝跨账号、跨主体、运营动作、正文摘要和缺失ETag
+✓ 空文字草稿可创建、重新打开续写、保存后正式提交，始终使用当前版本
+✓ 正式提交定位必填错误，非法选择和附件地址不能伪装成答案
+✓ 必填附件允许先存文字草稿，缺少附件时正式提交定位错误
+✓ 未知创建先读列表，近似故事不算成功；恢复原键和原正文且不重复发起
+✓ 重复保存仅发一次，未知保存恢复原版本不跟随后改内容
+✓ 412保留未保存内容并重读，重新核对后才可写；刷新失权立即清空
+✓ 冲突重读网络失败仍保留脏稿，不会把已有故事误当新建
+node : [Vue warn]: injection "Symbol(route location)" not found.
+所在位置 行:7 字符: 3
++   node "tools/$test.mjs" *>> "$d/vue-original-forms.log"
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([Vue warn]: inj...on)" not found.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+[Vue warn]: injection "Symbol(router)" not found.
+[Vue warn]: Unhandled error during execution of watcher getter
+  at <CustomizationOwnView onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > >
+  at <RouterView>
+  at <App>
+[Vue warn]: Unhandled error during execution of setup function
+  at <CustomizationOwnView onVnodeUnmounted=fn<onVnodeUnmounted> ref=Ref< undefined > >
+  at <RouterView>
+  at <App>
+R:/frontend_ops_workspace/src/views/CustomizationOwnView.vue:50
+		const requestId = (0,__vite_ssr_import_1__.computed)(() => String(route.params.requestId || "")), creating = (0,__vit
+e_ssr_import_1__.computed)(() => route.name === "customization-own-new");
+		                                                                        ^
+
+TypeError: Cannot read properties of undefined (reading 'params')
+    at ComputedRefImpl.eval [as fn] (R:/frontend_ops_workspace/src/views/CustomizationOwnView.vue:50:75)
+    at refreshComputed (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_workspace\node_modu
+les\@vue\reactivity\dist\reactivity.cjs.js:422:28)
+    at get value ([本机路径]\node_modules\@v
+ue\reactivity\dist\reactivity.cjs.js:1745:5)
+    at eval (R:/frontend_ops_workspace/src/views/CustomizationOwnView.vue:65:45)
+    at snapshot (R:/frontend_ops_workspace/src/composables/useStoryAttachments.ts:20:40)
+    at callWithErrorHandling (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_workspace\nod
+e_modules\@vue\runtime-core\dist\runtime-core.cjs.js:200:33)
+    at callWithAsyncErrorHandling (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_workspac
+e\node_modules\@vue\runtime-core\dist\runtime-core.cjs.js:207:17)
+    at baseWatchOptions.call (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_workspace\nod
+e_modules\@vue\runtime-core\dist\runtime-core.cjs.js:890:47)
+    at ReactiveEffect.getter [as fn] (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_works
+pace\node_modules\@vue\reactivity\dist\reactivity.cjs.js:1865:29)
+    at ReactiveEffect.run (D:\ccc\博士资料\7.项目\2026-晶晶日上\worktrees\pm04-qa18\晶晶日上工程交接包\01_源码\frontend_ops_workspace\node_m
+odules\@vue\reactivity\dist\reactivity.cjs.js:268:19)
+
+Node.js v22.19.0
+15:00:36 [vite] (client) Re-optimizing dependencies because vite config has changed
+PASS assigned producer context: exact project/order/room/account/party; mismatches and non-cocreation rejected
+共创邀请凭证解析、结果校验和无明文恢复记录通过
+✓ 附件模板、正式答案与补件要求接受真实UUID，拒绝公开URL和任意编号
+✓ 选择文件校验8MiB、空文件、120字文件名和允许类型，不猜造资产
+✓ 主动请求历史正式保留原因，兼容旧响应且拒绝未知原因
+✓ 旧正式附件无需加载历史就显示保留原因并禁撤回，未引用附件仍可办理
+node : [Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+所在位置 行:7 字符: 3
++   node "tools/$test.mjs" *>> "$d/vue-original-forms.log"
++   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([Vue warn] onSc...ssociated with.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+✓ 原字节上传有真实传输进度，100%传输不冒充服务器确认，回包核准后才绑定
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+✓ 上传断线和待核对409保留原文件原key，先读后重放，重复点击不多传
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+✓ 离页重开同故事恢复原文件和key；会话或身份改变清除内存恢复资料
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+✓ 上传2xx跨故事、错主体、错摘要或未就绪时不能绑定，保留原请求待核对
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+✓ 40记录上限是明确失败，不无限重试，也不把已选文件显示为上传成功
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+✓ 运营空页仍有下一页时继续读取，原游标不变且全程无主体头
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+✓ 撤回仅用附件版本，空正文和原key恢复；正式保留409不删除或清绑定
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+✓ 二进制受控下载校验大小摘要，不内嵌文件，运营下载无主体且临时URL能清理
+[Vue warn] onScopeDispose() is called when there is no active effect scope to be associated with.
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ {
++   checked: false,
++   command: {
++     fieldKey: 'file',
++     key: '318b6980-3374-4385-89ac-ca3399084f7c',
++     kind: 'upload',
++     sha256: '97f25b531938b3db69122c5c89cdbd213739dbc233906cb1dd223a981b75607b',
++     source: {
++       displayName: '合成资料.txt',
++       file: File {
++         [Symbol(kHandle)]: Blob {},
++         [Symbol(kLength)]: 22,
++         [Symbol(kType)]: 'text/plain'
++       },
++       mediaType: 'text/plain'
++     }
++   }
++ }
+- null
+
+    at file:///R:/frontend_ops_workspace/tools/test-story-attachments.mjs:132:274
+    at async file:///R:/frontend_ops_workspace/tools/test-story-attachments.mjs:184:34 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: {
+    command: {
+      kind: 'upload',
+      key: '318b6980-3374-4385-89ac-ca3399084f7c',
+      fieldKey: 'file',
+      source: {
+        file: File {
+          [Symbol(kHandle)]: Blob {},
+          [Symbol(kLength)]: 22,
+          [Symbol(kType)]: 'text/plain'
+        },
+        displayName: '合成资料.txt',
+        mediaType: 'text/plain'
+      },
+      sha256: '97f25b531938b3db69122c5c89cdbd213739dbc233906cb1dd223a981b75607b'
+    },
+    checked: false
+  },
+  expected: null,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.19.0
+15:00:43 [vite] (client) Re-optimizing dependencies because vite config has changed
+PASS 明确阅读后才发原消费，确认键独立且不发送预览计算字段
+PASS 取消/双击/切身份不继续旧消费，迟到预览不能弹出
+PASS 确认响应丢失先原键恢复，再主动确认，原消费键不变
+PASS 消费响应丢失与页面刷新先恢复原结果，不被新预览状态阻断
+PASS 确认过期只在新点击后重读，换确认键保留消费键
+PASS 规则替换重新提示，原确认不能复用到新金额
+PASS 新合同奖池缺规则禁止发抽奖，历史池不谎称保护生效
+PASS 超限明确停止、无换键循环；机构不代本人确认
+PASS 旧付款已发出可查原回执，不创建另一笔；预览目标必须匹配
+PASS 规则和成本不内置经营阈值；成本缺失拒绝编码，来源明确
+PASS 只开夜间提醒时定时GET，不发心跳；同日已读不重复、次日再提示
+PASS 尚未发送的付款预览使用展开目标，确认和执行仍用原付款编号
+PASS 未核验仅可查本人已发出的旧付款，未发送或他人付款不得继续
+PASS 旧付款读取迟到且切身份时不继续核对
+consumer-protection: 14 scenario groups passed
+PASS pool stock: operator directory includes non-exchange free prize; own approved matching-kind inventory only; channels distinct; pagination retained; public exchange source unchanged
+PASS redemption spec selection: acting-party request; only published own private-customization specs; no unrelated/stock/draft records
