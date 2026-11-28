@@ -1,6 +1,8 @@
 ﻿param(
-  [ValidateSet('status','start','stop','test','preview')][string]$Action='status',
+  [ValidateSet('status','start','stop','test','preview','build-s4b')][string]$Action='status',
   [string]$AccessFile,
+  [string]$OutputDirectory,
+  [string]$FlutterBuildLog,
   [switch]$Visible
 )
 $ErrorActionPreference='Stop'
@@ -42,6 +44,40 @@ $flutter='J:\.local\tools\flutter\bin\flutter.bat'
 $runtime=Join-Path $repoRoot '.local/android-runtime'
 New-Item -ItemType Directory -Force $runtime | Out-Null
 if($Action -eq 'status') { & $emulator -accel-check; & $adb devices; exit $LASTEXITCODE }
+if($Action -eq 'build-s4b') {
+  if(!$OutputDirectory){throw 'Provide an existing .local QA output directory.'}
+  $destination=(Resolve-Path -LiteralPath $OutputDirectory).Path
+  $localRoot=(Resolve-Path -LiteralPath (Join-Path $repoRoot '.local')).Path
+  if(!$destination.StartsWith($localRoot+'\',[StringComparison]::OrdinalIgnoreCase)){throw 'Use the repository .local directory.'}
+  $apk=Join-Path $destination 'jingjing-s4b-local.apk'
+  if(Test-Path -LiteralPath $apk){throw 'This run already has an APK.'}
+  if($FlutterBuildLog){$FlutterBuildLog=(Resolve-Path -LiteralPath $FlutterBuildLog).Path}
+  $env:ORG_GRADLE_PROJECT_pm03Isolated='true'
+  $ErrorActionPreference='Continue'
+  Push-Location 'K:\'
+  try {
+    if($FlutterBuildLog){
+      $line=[regex]::Match((Get-Content -LiteralPath $FlutterBuildLog -Raw),'(?m)set CMD_LINE_ARGS=(?<args>-q .* assembleDebug)\s*$').Groups['args'].Value
+      $arguments=$line.Split(' ')
+      $encoded=[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes('JX_ACCOUNT_API_URL=http://127.0.0.1:54418'))
+      $propertyPattern='^-P(target-platform|target|base-application-name|dart-defines|dart-obfuscation|track-widget-creation|tree-shake-icons|flutter\.androidSdkRoot|flutter\.installedNdkVersions|flutter\.sdkManagerPath)=[a-zA-Z0-9+=/,._:\\-]+$'
+      $properties=$arguments | Where-Object {$_ -like '-P*'} | ForEach-Object {($_ -split '=',2)[0]}
+      $invalid=$arguments | Where-Object {$_ -notin '-q','assembleDebug' -and $_ -notmatch $propertyPattern}
+      if($invalid -or $properties.Count -ne ($properties | Sort-Object -Unique).Count -or $arguments.Count -lt 10 -or $arguments -notcontains '-Ptarget-platform=android-x64' -or $arguments -notcontains '-Ptarget=lib/main.dart' -or !$line.Contains("-Pdart-defines=$encoded")){
+        throw 'The log does not contain Flutter arguments for this local debug build.'
+      }
+      Push-Location 'android'
+      try { & .\gradlew.bat --offline @arguments } finally {Pop-Location}
+      $relativeApk='build/app/outputs/apk/debug/app-debug.apk'
+    } else {
+      & $flutter build apk --debug --no-pub --target-platform android-x64 --target lib/main.dart --dart-define=JX_ACCOUNT_API_URL=http://127.0.0.1:54418
+      $relativeApk='build/app/outputs/flutter-apk/app-debug.apk'
+    }
+    if($LASTEXITCODE -ne 0){exit $LASTEXITCODE}
+    Copy-Item -LiteralPath $relativeApk -Destination $apk -ErrorAction Stop
+  } finally {Pop-Location}
+  exit 0
+}
 $devices=& $adb devices
 $running=($devices -join "`n") -match 'emulator-5554\s+device'
 if($running){
