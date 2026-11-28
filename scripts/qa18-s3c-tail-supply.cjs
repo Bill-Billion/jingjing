@@ -21,9 +21,9 @@ async function main(){
   const proof={database,product,started_at:new Date().toISOString(),checkout:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),checks:[],requests:[]};
   const mysql=load('node_modules/mysql2/promise');
   const admin=await mysql.createConnection({host:env.MYSQL_HOST,port:+env.MYSQL_PORT,user:env.MYSQL_USER,password:env.MYSQL_PASSWORD,database:env.MYSQL_DATABASE});
-  let db,server;
+  let db,server,browser;
   const save=()=>fs.writeFile(path.join(out,'RESULT.json'),JSON.stringify(proof,null,2)+'\n');
-  async function stop(){if(server){server.closeAllConnections();await new Promise(r=>server.close(r));server=null;}}
+  async function stop(){if(browser){await browser.close();browser=null;}if(server){server.closeAllConnections();await new Promise(r=>server.close(r));server=null;}}
   async function section(name,body){try{await body();proof.checks.push({name,status:'PASS'});console.log('PASS '+name);}
     catch(e){proof.checks.push({name,status:'FAIL',message:e.message,code:e.code});console.error(name+': '+e.message);process.exitCode=1;}
     finally{await stop();await save();}}
@@ -75,6 +75,42 @@ async function main(){
       const {party_id,...original}=S.listingInput;
       const input={...original,file_id:full.id,preview_file_id:preview.id};
       await start(S,media);
+      if(process.env.QA_TAIL_SUPPLY_BROWSERS==='1'){
+        proof.browser_requests=[];
+        proof.browser_checks=[];
+        const roles=Object.fromEntries(Object.entries({seller,buyer,reviewer,outsider:buyer2}).map(([role,who])=>
+          [role,{bearer_token:who.token,party_id:who.personal_party_id,account_id:who.account_id}]));
+        browser=await require('./test-fixtures/qa18-s4-artifact-browser.cjs').openBrowser(
+          'http://127.0.0.1:'+server.address().port+'/api/v1',roles,proof);
+      }
+      async function observe(surface,role,route,label,observePage){
+        if(!browser)return;
+        console.log('Checking '+surface+' '+label);
+        const page=await browser.actor(surface,role,route);
+        try{
+          const value=await observePage(page);
+          proof.browser_checks.push({surface,role,label,result:'PASS'});
+          await save();
+          return value;
+        }catch(error){
+          proof.browser_checks.push({surface,role,label,result:'FAIL',message:error.message});
+          const snapshot=await page.locator('body').ariaSnapshot({timeout:2000}).catch(()=>'');
+          await fs.writeFile(path.join(out,surface+'-'+label+'.aria.txt'),snapshot);
+          await save();
+          throw error;
+        }finally{await page.context().close();}
+      }
+      async function bothStatuses(listing,marker,webLabel){
+        await observe('app','seller','/stock/listing?listingId='+listing.id,marker,async page=>{
+          await page.getByRole('group',{name:/^上架状态与审核/}).waitFor();
+          if(listing.current_status==='REJECTED')await page.getByRole('button',{name:'修改材料并重新提交审核',exact:true}).waitFor();
+        });
+        await observe('vue','seller','/stock/listings/'+listing.id,marker,async page=>{
+          await page.getByText(webLabel,{exact:true}).first().waitFor();
+        });
+        if(browser)for(const surface of ['app','vue']) assert(proof.browser_requests.some(row=>
+          row.surface===surface&&row.id===listing.id&&row.status===200&&row.state===listing.current_status),'Missing real '+surface+' response');
+      }
       const sellerGet=url=>call('seller',seller,url,{party});
       const publicGet=(url,opts)=>call('buyer',buyer,url,opts);
       const offer=id=>'/stock/catalog/'+id;
@@ -83,15 +119,74 @@ async function main(){
       const approve=(r,channel)=>call('reviewer',reviewer,'/stock/listings/'+r.id+'/reviews',{version:r.object_version,body:{channel,decision:'APPROVED',reason:'Independent synthetic review',verification:channel==='RIGHTS'?{rights_verified:true,all_people_authorized:true,seller_qualified:true,source_sha256:r.data.files.full_sha256}:{content_verified:true,preview_watermark_verified:true,ai_labels_verified:true,source_sha256:r.data.files.full_sha256}}});
       assert.equal((await sellerGet('/stock/listings')).items.length,0);
       assert((await sellerGet('/stock/sales-publications')).items.some(x=>x.spec_id===S.spec.id));
+      await observe('app','outsider','/stock/new','first-listing-no-selected-person',async page=>{
+        await page.getByRole('button',{name:'卖方具体真人',exact:true}).waitFor();
+        assert.equal(await page.getByRole('button',{name:'提交内容与权利双审核',exact:true}).count(),0);
+        assert(!proof.browser_requests.some(row=>row.role==='outsider'&&row.method==='POST'));
+      });
+      await observe('vue','seller','/stock/listings?action=listing','first-listing-unverified-halo',async page=>{
+        const eligibility=()=>page.getByTestId('stock-eligibility');
+        // Isolated negative precondition. Restore fixture in finally before any real listing.
+        await db.execute("UPDATE artist_records SET current_status='IN_REVIEW' WHERE id=?",[S.talentId]);
+        try {
+          await page.getByRole('button',{name:'读取可选卖方明确对应的真人',exact:true}).click();
+          await page.locator('#listing-seller_person_id').selectOption(seller.person.id);
+          await page.getByRole('button',{name:'重新核对上架资格',exact:true}).click();
+          await eligibility().getByText(/主角光环人工审核：未满足/).waitFor();
+          assert(await page.getByTestId('business-listing').isDisabled());
+          assert(!proof.browser_requests.some(row=>row.method==='POST'));
+        }finally {await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[S.talentId]);}
+      });
+      if(scope==='STOCK_ELIGIBILITY_ONLY'){
+        assert(browser);
+        await db.execute("UPDATE artist_records SET current_status='IN_REVIEW' WHERE id=?",[S.talentId]);
+        await observe('app','seller','/stock/new','first-listing-unverified-halo',async page=>{
+          await page.waitForLoadState('networkidle',{timeout:12000});
+          await page.getByRole('button',{name:'卖方具体真人',exact:true}).click();
+          const eligibility=page.waitForResponse(r=>{
+            const url=new URL(r.url());
+            return url.pathname==='/api/v1/stock/seller-eligibility'&&url.searchParams.get('person_id')===seller.person.id;
+          },{timeout:10000});
+          eligibility.catch(()=>{});
+          await page.getByRole('menuitem',{name:'synthetic person',exact:true}).click();
+          const result=await eligibility;
+          assert.equal(result.status(),200);
+          assert.equal((await result.json()).data.manual_review_approved,false);
+          await page.getByRole('textbox',{name:/画面与声音.*逐人核对/}).waitFor();
+          await page.getByRole('button',{name:'本作品可识别出镜人数',exact:true}).click();
+          await page.getByRole('menuitem',{name:'无可识别人物',exact:true}).click();
+          const submit=page.getByRole('button',{name:'提交内容与权利双审核',exact:true});
+          await submit.waitFor();
+          assert(await submit.isDisabled());
+          assert(!proof.browser_requests.some(row=>row.method==='POST'));
+        });
+        await db.execute("UPDATE artist_records SET current_status='APPROVED' WHERE id=?",[S.talentId]);
+        proof.first_gate={same_person:seller.person.id,app_and_vue:true,no_submission:true};
+        return;
+      }
       const k=key();
       let first=await call('seller',seller,'/stock/listings',{party,body:input,operation:k});
       assert.equal((await call('seller',seller,'/stock/listings',{party,body:input,operation:k})).id,first.id);
       await publicGet(offer(first.id),{status:409,code:'STOCK_NOT_LISTED'});
+      await bothStatuses(first,'first-review','待独立审核');
       first=await approve(first,'RIGHTS');
       await publicGet(offer(first.id),{status:409,code:'STOCK_NOT_LISTED'});
       first=await approve(first,'CONTENT');
       assert.equal((await publicGet(offer(first.id))).id,first.id);
       assert.equal(sha(await publicGet(offer(first.id)+'/preview',{expectedNoStore:true})),sha(b));
+      if(scope==='STOCK_PORTAL_ONLY'){
+        const origin='http://127.0.0.1:'+server.address().port;
+        const gates=[];
+        for(const route of ['/api/scripts/apply','/api/scripts/upload']){
+          const res=await fetch(origin+route,{method:'POST',headers:{Authorization:'Bearer '+seller.token,
+            'Content-Type':'application/json'},body:'{}',signal:AbortSignal.timeout(10000)});
+          const bytes=await res.arrayBuffer();
+          assert([404,410].includes(res.status),route);
+          gates.push({route,status:res.status,sha256:sha(Buffer.from(bytes))});
+        }
+        proof.simultaneous_paths={legacy_writer:gates,new_stock_listing:first.id,reviewed_preview_sha256:sha(b),status:first.current_status};
+        return;
+      }
       const order=await S.checkout(first);
       await S.payment(order);
       const purchased='/stock/purchases/'+order.id;
@@ -101,22 +196,67 @@ async function main(){
       let rejected=await revise(first,{...input,file_id:swapFile.id,preview_file_id:swapPreview.id,description:'Synthetic proposed replacement'},key());
       rejected=await call('reviewer',reviewer,'/stock/listings/'+rejected.id+'/reviews',{version:rejected.object_version,body:{channel:'CONTENT',decision:'REJECTED',reason:'Synthetic revision requires resubmission',verification:null}});
       assert.equal(rejected.current_status,'REJECTED');
+      await bothStatuses(rejected,'revision-returned','已退回');
       await publicGet(offer(rejected.id),{status:409,code:'STOCK_NOT_LISTED'});
       const rv={...input,file_id:swapFile.id,preview_file_id:swapPreview.id,description:'Synthetic independently corrected replacement'}, rk=key();
-      let next=await revise(rejected,rv,rk);
-      assert.equal((await revise(rejected,rv,rk)).id,next.id);
+      let next;
+      if(browser){
+        next=await observe('app','seller','/stock/listing?listingId='+rejected.id+'&action=revise','app-revise-same-listing',async page=>{
+          const edit=page.getByRole('textbox',{name:/作品内容与范围/});
+          await edit.click();
+          await page.keyboard.press('Control+A');
+          await page.keyboard.press('Backspace');
+          await page.keyboard.insertText(rv.description);
+          const submit=page.getByRole('button',{name:'提交内容与权利双审核',exact:true});
+          await submit.click();
+          const confirm=page.getByRole('button',{name:'确认办理',exact:true});
+          const response=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname==='/api/v1/stock/listings/'+rejected.id+'/revisions');
+          response.catch(()=>{});
+          await confirm.click();
+          const sent=await response,json=await sent.json();
+          assert.equal(sent.status(),200,json.error?.code);
+          assert.equal(json.data.data.previous_listing_id,rejected.id);
+          assert.equal(json.data.data.description,rv.description);
+          return json.data;
+        });
+        await bothStatuses(next,'new-revision-review','待独立审核');
+      }else{
+        next=await revise(rejected,rv,rk);
+        assert.equal((await revise(rejected,rv,rk)).id,next.id);
+      }
       await publicGet(offer(next.id)+'/preview',{status:409});
       await call('seller',seller,'/stock/listings/'+next.id+'/revisions',{party,version:9999,body:rv,status:412});
-      next=await approve(next,'CONTENT');
+      async function reviewReplacement(record,channel){
+        if(!browser)return approve(record,channel);
+        const kind=channel.toLowerCase();
+        return observe('vue','reviewer','/stock/reviews/'+record.id,'approve-'+kind,async page=>{
+          const title=channel==='CONTENT'?'独立审核影片内容':'独立审核销售权利';
+          await page.locator('.business-actions').getByRole('button',{name:title,exact:true}).click();
+          await page.locator('#'+kind+'-decision').selectOption('APPROVED');
+          await page.locator('#'+kind+'-reason').fill('独立核对原商品改版与本次材料，合成审核。');
+          for(const box of await page.locator('.business-form').last().locator('input[type=checkbox]').all())await box.check();
+          const wait=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname==='/api/v1/stock/listings/'+record.id+'/reviews');
+          wait.catch(()=>{});
+          await page.getByTestId('business-'+kind).click();
+          const response=await wait,json=await response.json();
+          assert.equal(response.status(),200,json.error?.code);
+          assert.equal(json.data.id,record.id);
+          return json.data;
+        });
+      }
+      next=await reviewReplacement(next,'CONTENT');
       await publicGet(offer(next.id),{status:409,code:'STOCK_NOT_LISTED'});
-      next=await approve(next,'RIGHTS');
+      next=await reviewReplacement(next,'RIGHTS');
       const pub=await publicGet(offer(next.id));
       assert.equal(pub.id,next.id);
       const newPreview=await publicGet(offer(next.id)+'/preview',{expectedNoStore:true});
       assert.equal(sha(newPreview),sha(newPreviewBytes));
       await publicGet(offer(first.id)+'/preview',{status:409,code:'STOCK_NOT_LISTED'});
       assert.equal(sha(await buy(purchased+'/content')),sha(a));
-      assert.equal((await buy(purchased)).contract_sha256,frozen.contract_sha256);
+      const originalPurchase=await buy(purchased);
+      assert.equal(originalPurchase.contract_sha256,frozen.contract_sha256);
+      assert.deepEqual(originalPurchase.data.license,frozen.data.license);
+      await bothStatuses(next,'replacement-listed','可销售');
       if(media.MEDIA_FFMPEG){
         const metadata=await publicGet(offer(next.id)+'/media',{expectedNoStore:true});
         const cover=await publicGet(offer(next.id)+'/cover',{expectedNoStore:true});

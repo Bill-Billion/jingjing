@@ -46,16 +46,22 @@ async function main() {
   const env = await json(process.env.JX_MYSQL_TEST_ENV_FILE);
   for (const [key,value] of Object.entries({NODE_ENV:'test',DB_CLIENT:'mysql',MYSQL_HOST:'127.0.0.1',MYSQL_PORT:'33316',MYSQL_USER:'jx_local',MYSQL_DATABASE:'jx_dev'})) assert.equal(env[key],value);
 
-  const baseline = path.join(root,'docs/testing/evidence/pm04-g1-quality-baseline-20261127');
+  const final = process.env.QA18_LIBRARY_FINAL_BUILDS === '1';
+  const baseline = path.join(root, final ? '.local/qa18/s4-a2-20261127' : 'docs/testing/evidence/pm04-g1-quality-baseline-20261127');
+  const appBuild = final ? 's4-a2-synthetic-web' : 'web';
   const builds = {
-    app:{base:path.join(code,'frontend_jingjingshangri_app/build/web'),manifest:'APP_BROWSER_BUILD_MANIFEST.json'},
-    web:{base:path.join(code,'frontend_ops_workspace/dist'),manifest:'VUE_BUILD_MANIFEST.json'},
+    app:{base:path.join(code,'frontend_jingjingshangri_app/build',appBuild),manifest:'APP_BROWSER_BUILD_MANIFEST.json'},
+    web:{base:final?path.join(baseline,'vue-final-build'):path.join(code,'frontend_ops_workspace/dist'),manifest:'VUE_BUILD_MANIFEST.json'},
   };
   const evidence = {product,original,clone,scenario:prior?'old-number-unavailable-entry':'existing-business-library',started_at:new Date().toISOString(),builds:{},checks:[],requests:[]};
   for (const [surface,build] of Object.entries(builds)) {
     const bytes = await fs.readFile(path.join(baseline,build.manifest));
     const spec = JSON.parse(bytes);
     assert.equal(spec.source,product);
+    if(final) {
+      assert.equal(spec.checkout,'e887301530c24f9751e074cd297535c3aac7cdb9');
+      evidence.served_build_checkout=spec.checkout;
+    }
     for (const file of spec.files) assert.equal(sha(await fs.readFile(path.join(build.base,file.path))),file.sha256,file.path);
     evidence.builds[surface] = {manifest:build.manifest,sha256:sha(bytes),files:spec.files.length};
   }
@@ -68,9 +74,12 @@ async function main() {
   await fs.writeFile(cfg,'',{flag:'wx'});
   await protectPrivateState(cfg);
   await fs.writeFile(cfg,'[client]\nhost=127.0.0.1\nport=33316\nuser=jx_local\npassword="'+env.MYSQL_PASSWORD.replace(/\\/g,'\\\\').replace(/"/g,'\\"')+'"\n');
+  const cliRoot = process.env.QA18_MYSQL_CLI_ROOT;
+  const cliCfg = cliRoot ? path.join(cliRoot, path.relative(root,cfg)) : cfg;
+  assert.equal(await fs.realpath(cliCfg), await fs.realpath(cfg));
   function cli(exe,args) {
-    const r=spawnSync(exe,['--defaults-extra-file='+cfg,...args],{stdio:['ignore','pipe','pipe'],encoding:'utf8',windowsHide:true,maxBuffer:64*1024*1024,timeout:30000});
-    assert.equal(r.status,0,'MYSQL_COMMAND_FAILED '+(r.stderr?.match(/ERROR \d+/)?.[0] || r.error?.code || r.status));
+    const r=spawnSync(exe,['--defaults-extra-file='+cliCfg,...args],{stdio:['ignore','pipe','pipe'],encoding:'utf8',windowsHide:true,maxBuffer:64*1024*1024,timeout:30000});
+    assert.equal(r.status,0,'MYSQL_COMMAND_FAILED '+(r.stderr?.replaceAll(env.MYSQL_PASSWORD,'[redacted]').trim().slice(0,400) || r.error?.code || r.status));
     return r.stdout;
   }
   const dump = name => cli(process.env.JX_MYSQLDUMP_EXE,[...dumpArgs,name]);
@@ -108,6 +117,7 @@ async function main() {
     }
     db = await load('src/infrastructure/database').openDatabase({...env,MYSQL_DATABASE:clone});
     const before = await census(db);
+    console.log('Protected original and initialized isolated read-only database');
     const [[edition]] = await db.execute("SELECT id FROM project_records WHERE project_id=? AND kind='EDITION'",[project]);
     const [[agreement]] = await db.execute("SELECT id FROM finance_records WHERE kind='AGREEMENT'");
     assert(edition?.id && agreement?.id);
@@ -175,6 +185,7 @@ async function main() {
     }
     assert.equal((await fetch(baseUrl+'/me/business/contracts',{method:'POST'})).status,405);
 
+    console.log('Verified original API lists, read targets, and income');
     const {chromium}=require(path.join(code,'frontend_ops_workspace/node_modules/playwright-core'));
     browser=await chromium.launch({executablePath:process.env.CHROME_PATH,headless:true});
     for (const surface of ['app','web']) {
@@ -186,7 +197,21 @@ async function main() {
         if(u.pathname==='/synthetic-access.json') return route.fulfill({json:{synthetic_only:true,base_url:'http://127.0.0.1:5500/api/v1',expires_at:expires,accounts:roles}});
         const headers=Object.fromEntries(Object.entries(q.headers()).filter(([k])=>!['host','origin','referer'].includes(k)));
         const target = u.pathname.startsWith('/api/v1/') ? origin+u.pathname+u.search : origin+'/__'+surface+u.pathname+u.search;
-        return route.fulfill({response:await route.fetch({url:target,headers})});
+        // Read via an independent bounded transport. Closing a page cannot cancel a shared
+        // Playwright request context while another routed asset is being served.
+        let payload;
+        try {
+          const response = await fetch(target,{headers,signal:AbortSignal.timeout(12000)});
+          const responseHeaders = Object.fromEntries([...response.headers].filter(([key])=>
+            !['content-encoding','content-length','transfer-encoding','connection'].includes(key)));
+          payload = {status:response.status,headers:responseHeaders,body:Buffer.from(await response.arrayBuffer())};
+        } catch(error) {
+          console.error('Fixture route failed',surface,u.pathname,error.name);
+          payload={status:502,body:'Local fixture transport failed'};
+        }
+        await route.fulfill(payload).catch(error=>{
+          if(!/Target page, context or browser has been closed/.test(error.message)) throw error;
+        });
       });
       if(surface==='web') await ctx.addInitScript(({role,expires})=>{
         sessionStorage.setItem('ops.session.token',role.bearer_token);
@@ -216,19 +241,20 @@ async function main() {
           evidence.checks.push({surface,name:'old-phone-unavailable-opens-support-without-changing-binding',api_writes:0});
         } catch(e) {
           evidence.failure={surface,group:'old-number-unavailable',message:e.message};
-          await fs.writeFile(path.join(out,surface+'-failed.aria.txt'),await page.locator('body').ariaSnapshot().catch(()=>''),'utf8');
+          await fs.writeFile(path.join(out,surface+'-failed.aria.txt'),await page.locator('body').ariaSnapshot({timeout:2000}).catch(()=>''),'utf8');
           throw e;
         } finally {await page.close();}
       }
       for(const spec of prior?[]:routeSpecs){
         const page=await ctx.newPage();
         const label=surface+'-'+spec.name;
+        console.log('Checking '+label);
         page.setDefaultTimeout(12000);
         try {
           const pageUrl=surface==='app'?'http://127.0.0.1:5500/?fixtureRole=artist#/library?section='+spec.name:'http://127.0.0.1:5173/me/business/'+spec.name;
           const listing=page.waitForResponse(r=>new URL(r.url()).pathname==='/api/v1/me/business/'+spec.name);
           listing.catch(()=>{});
-          await page.goto(pageUrl);
+          await page.goto(pageUrl,{waitUntil:'domcontentloaded',timeout:20000});
           if(surface==='app'){
             await page.locator('flt-semantics-placeholder').evaluate(e=>e.click());
           }
@@ -269,7 +295,7 @@ async function main() {
           evidence.checks.push({surface,name:spec.name,id:spec.id,status:spec.item.current_status,income:spec.item.income});
         } catch(e) {
           evidence.failure={surface,group:spec.name,message:e.message};
-          await fs.writeFile(path.join(out,label+'-failed.aria.txt'),await page.locator('body').ariaSnapshot().catch(()=>''),'utf8');
+          await fs.writeFile(path.join(out,label+'-failed.aria.txt'),await page.locator('body').ariaSnapshot({timeout:2000}).catch(()=>''),'utf8');
           throw e;
         } finally {await page.close();}
       }
@@ -281,7 +307,7 @@ async function main() {
     evidence.result='PASS';
   } catch(e){evidence.result='FAIL';evidence.failure??={message:e.message};throw e;}
   finally {
-    await browser?.close();
+    if(browser) await browser.close();
     if(server){server.closeAllConnections();await new Promise(r=>server.close(r));}
     await db?.close();
     await fs.unlink(cfg);

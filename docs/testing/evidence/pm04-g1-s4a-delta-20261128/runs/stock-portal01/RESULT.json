@@ -1,0 +1,119 @@
+{
+  "database": "jx_test_qa18_tail_supply_b21535362a4ebdfaf7e3",
+  "product": "053168fb6e06b80680101702a733357309368809",
+  "started_at": "2026-11-28T03:16:13.733Z",
+  "checkout": "1fdfa80e070c9a30ee9d7091a317afff9f96fcb0",
+  "checks": [
+    {
+      "name": "G01-G03-G05 original purchase survives two rejected/reviewed versions with distinct previews; revoked consent blocks fresh use",
+      "status": "PASS"
+    }
+  ],
+  "requests": [
+    {
+      "role": "seller",
+      "path": "/stock/listings",
+      "method": "GET",
+      "status": 200,
+      "sha256": "2990f727167f8d3135b94822e91ee54a9ed4c50181bae7414cae5e3843e1f225",
+      "bytes": 217
+    },
+    {
+      "role": "seller",
+      "path": "/stock/sales-publications",
+      "method": "GET",
+      "status": 200,
+      "sha256": "7326241bf13687b5e12825a63ec85a58b0b897029d263670f3a3510744a487b2",
+      "bytes": 1007
+    },
+    {
+      "role": "seller",
+      "path": "/stock/listings",
+      "method": "POST",
+      "status": 200,
+      "sha256": "84dda07ab4eed2c74c1620ec6ebf64fc128de072551435d4fe9ded762a0a1c37",
+      "bytes": 2817
+    },
+    {
+      "role": "seller",
+      "path": "/stock/listings",
+      "method": "POST",
+      "status": 200,
+      "sha256": "51e303de6cd6b275259537e0d3203bc68365fec429e8b65dd51dd5b1790442b1",
+      "bytes": 2817
+    },
+    {
+      "role": "buyer",
+      "path": "/stock/catalog/e4113dfe-8164-4177-9dae-7957a2b29550",
+      "method": "GET",
+      "status": 409,
+      "code": "STOCK_NOT_LISTED",
+      "sha256": "662748ed4a5a4d3e3df0b38dffd8e645f717850da65ad8913d622eb3b5188e37",
+      "bytes": 260
+    },
+    {
+      "role": "reviewer",
+      "path": "/stock/listings/e4113dfe-8164-4177-9dae-7957a2b29550/reviews",
+      "method": "POST",
+      "status": 200,
+      "sha256": "917260316837c9e34c8422802d3370c060d963604be17f354481c125165c9733",
+      "bytes": 3102
+    },
+    {
+      "role": "buyer",
+      "path": "/stock/catalog/e4113dfe-8164-4177-9dae-7957a2b29550",
+      "method": "GET",
+      "status": 409,
+      "code": "STOCK_NOT_LISTED",
+      "sha256": "bd3ac65f5c6f99e65840486128d6bd6730c5146c92f70a5013ef49e4937ca003",
+      "bytes": 260
+    },
+    {
+      "role": "reviewer",
+      "path": "/stock/listings/e4113dfe-8164-4177-9dae-7957a2b29550/reviews",
+      "method": "POST",
+      "status": 200,
+      "sha256": "e9f33bc5f27fca09ce73fd919e53c050cf520dc9379bcc386248183c4a60ce72",
+      "bytes": 3426
+    },
+    {
+      "role": "buyer",
+      "path": "/stock/catalog/e4113dfe-8164-4177-9dae-7957a2b29550",
+      "method": "GET",
+      "status": 200,
+      "sha256": "5e7005255399aaf659d19c1210e77a694adc603e66049eec3bc24340ba64b094",
+      "bytes": 986
+    },
+    {
+      "role": "buyer",
+      "path": "/stock/catalog/e4113dfe-8164-4177-9dae-7957a2b29550/preview",
+      "method": "GET",
+      "status": 200,
+      "sha256": "266afc751348c60ac342687fd409fd96ff1b1474e539d07ca829acd27a0c0304",
+      "bytes": 2606
+    }
+  ],
+  "last_migration": {
+    "version": "0225",
+    "name": "0225_production_delivery_views.sql",
+    "status": "APPLIED"
+  },
+  "simultaneous_paths": {
+    "legacy_writer": [
+      {
+        "route": "/api/scripts/apply",
+        "status": 404,
+        "sha256": "911094524378ac610dc419974ca5e2cc8f523866a4dec8f5781df3212607d638"
+      },
+      {
+        "route": "/api/scripts/upload",
+        "status": 404,
+        "sha256": "5f72a214a99f488d2a931b96baae41d079b14e4921c56babb126b5972b47c52b"
+      }
+    ],
+    "new_stock_listing": "e4113dfe-8164-4177-9dae-7957a2b29550",
+    "reviewed_preview_sha256": "266afc751348c60ac342687fd409fd96ff1b1474e539d07ca829acd27a0c0304",
+    "status": "LISTED"
+  },
+  "finished_at": "2026-11-28T03:16:20.859Z"
+}

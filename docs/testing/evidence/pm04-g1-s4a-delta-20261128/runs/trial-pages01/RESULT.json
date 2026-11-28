@@ -1,0 +1,133 @@
+{
+  "product": "053168fb6e06b80680101702a733357309368809",
+  "source_database": "jx_test_stock_pm03_bc0dc2acab3d0887a8f10285",
+  "settlement_id": "636868d6-802e-4944-a0ca-f781b06d492c",
+  "order_id": "1ca81699-247e-446a-883a-0bb54441f8b9",
+  "started_at": "2026-11-28T03:03:24.229Z",
+  "browser_requests": [
+    {
+      "surface": "app",
+      "role": "auditions_buyer",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "e20801a5-b913-4d85-bd32-3a07e2f11437",
+      "state": "ACTIVE",
+      "sha256": "792ba9496fbe3956a9bfe72272ca69a769db7b89d7e1e51798404f61a297b280"
+    },
+    {
+      "surface": "app",
+      "role": "auditions_buyer",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "12f67b8f8e2c79cb234a9e32e6cd33858fee074e614f3d841d4127a9ef13d047"
+    },
+    {
+      "surface": "app",
+      "role": "auditions_buyer",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "927da211778dd965773200bb47306c51b175740d09151243921b0e46e2675d3f"
+    },
+    {
+      "surface": "app",
+      "role": "auditions_buyer",
+      "path": "/api/v1/finance/records/636868d6-802e-4944-a0ca-f781b06d492c",
+      "method": "GET",
+      "status": 200,
+      "id": "636868d6-802e-4944-a0ca-f781b06d492c",
+      "state": "APPROVED",
+      "sha256": "478c8f7cf670d17e672d95aeda20301b240a82736038876f523e584793a1b459"
+    },
+    {
+      "surface": "app",
+      "role": "auditions_buyer",
+      "path": "/api/v1/finance/records/74eacdd9-93af-465d-99d7-480dd6fc5c76",
+      "method": "GET",
+      "status": 200,
+      "id": "74eacdd9-93af-465d-99d7-480dd6fc5c76",
+      "state": "APPROVED",
+      "sha256": "015f89efd91a30f0be327bd37b3a465aa59ea2486da7ed95c39c7c3b351b07f0"
+    },
+    {
+      "surface": "app",
+      "role": "auditions_buyer",
+      "path": "/api/v1/finance/records/636868d6-802e-4944-a0ca-f781b06d492c/confirmations",
+      "method": "GET",
+      "status": 200,
+      "sha256": "db002ab84df0991829494966f2e31e7bda53f9e80da0838da97cf8a94111316f"
+    },
+    {
+      "surface": "app",
+      "role": "auditions_buyer2",
+      "path": "/api/v1/me",
+      "method": "GET",
+      "status": 200,
+      "id": "1fa3f0aa-87c0-4ef3-821f-10ac0fd67692",
+      "state": "ACTIVE",
+      "sha256": "2e98e10e78588494324913ae389dede0978453524bb5a039ffa0d3a6a56dac12"
+    },
+    {
+      "surface": "app",
+      "role": "auditions_buyer2",
+      "path": "/api/v1/me/parties",
+      "method": "GET",
+      "status": 200,
+      "sha256": "2ba4ef86716c5ca95b8121938d2975bcb0da864a0f4e0039f6f2af2e5c0dd83f"
+    },
+    {
+      "surface": "app",
+      "role": "auditions_buyer2",
+      "path": "/api/v1/privacy/usage",
+      "method": "GET",
+      "status": 200,
+      "sha256": "205811757a3223923a5e9df08a13de43c535081333b4613bff9203e2e1b7bb5b"
+    },
+    {
+      "surface": "app",
+      "role": "auditions_buyer2",
+      "path": "/api/v1/finance/records/636868d6-802e-4944-a0ca-f781b06d492c",
+      "method": "GET",
+      "status": 404,
+      "error": "FINANCE_NOT_FOUND",
+      "sha256": "b03ba7ca2fefb232061b0733a69479616ecaccc02ff4bca66269eace234b5f5e"
+    }
+  ],
+  "checks": [
+    {
+      "surface": "app",
+      "role": "auditions_buyer",
+      "record_status": "APPROVED",
+      "http": 200
+    },
+    {
+      "surface": "app",
+      "role": "auditions_buyer2",
+      "record_status": "DENIED",
+      "http": 404
+    }
+  ],
+  "clone": "jx_test_qa18_s4delta_bff0af8e7457acae8998",
+  "initial_dump_sha256": "b007fde40f5acb11b0f90d0148b7d73df38911050c1c540ce8a0e5a35e0d3655",
+  "schema_tables": 190,
+  "migration_count": 225,
+  "exact_restored_file_count": 114,
+  "new_synthetic_sessions": 3,
+  "served_checkout": "e887301530c24f9751e074cd297535c3aac7cdb9",
+  "builds": {
+    "app": {
+      "files": 74,
+      "sha256": "87f331e857391cbaf00aaa1da974a6954c0dfe07eabedc0b4a422b318bf44f17"
+    },
+    "vue": {
+      "files": 93,
+      "sha256": "bab320ad70408b55984610c1c8381308debf4e2bb11fb0feb12198da1f47008d"
+    }
+  },
+  "result": "FAIL",
+  "failure": "The expression evaluated to a falsy value:\n\n  assert(access.some(x=>x.status===200&&x.id===record&&x.state==='APPROVED'))\n",
+  "original_sql_unchanged": true,
+  "finished_at": "2026-11-28T03:04:40.594Z"
+}
